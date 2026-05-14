@@ -1,0 +1,33 @@
+# dependencies
+node_modules/
+**/node_modules/
+
+# build output
+dist/
+dist-ssr/
+.next/
+**/.next/
+
+# logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# env files
+.env
+.env.*
+!.env.example
+
+# editor / system
+.DS_Store
+.vscode/
+.idea/
+
+# cache
+.cache/
+.temp/
+
+# keep old unrelated sub project out of this MVP
+brand-studio-next/
