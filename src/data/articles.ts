@@ -597,4 +597,422 @@ Solana 余额查询：
 - BTC Taproot 升级对签名模型的影响
 - Solana 版本化交易和查找表的机制`,
   },
+  {
+    id: 7,
+    slug: 'evm-call-proxy-patterns',
+    title: '合约调用与代理升级：从 delegatecall 到钻石代理的工程实践',
+    date: '2026-05-17',
+    summary:
+      '拆解 call / delegatecall / staticcall 的底层差异、透明代理 vs UUPS vs 钻石代理的取舍逻辑，以及不可升级合约的升级策略。',
+    tags: ['Solidity', 'EVM', 'Proxy', 'Upgradeability'],
+    readingTime: '14 min',
+    difficulty: '进阶',
+    content: `# 问题背景
+
+Solidity 合约一旦部署就不能修改代码——这是区块链的确定性承诺。但在工程实践中，bug 修复、功能迭代、gas 优化都需要合约升级。代理模式（Proxy Pattern）就是为解决这个矛盾而生的：把状态和逻辑分离，让不可变的代理指向可替换的逻辑合约。
+
+# 核心概念
+
+## call、delegatecall 和 staticcall
+
+这三个 opcode 是 EVM 合约间调用的基石，但行为完全不同：
+
+### call
+- 切换上下文到被调用合约
+- 修改目标合约的 storage
+- 可以发送 ETH
+- msg.sender 变成当前合约
+- 常用于标准的外部合约调用
+
+### delegatecall
+- 保持调用者的上下文（storage、msg.sender、msg.value）
+- 在被调用合约的代码逻辑中修改调用者的 storage
+- 核心特征："借代码，用自己的存储"
+- 代理模式的基础——代理合约用 delegatecall 执行逻辑合约的代码
+
+### staticcall
+- 只读调用，不允许修改任何状态
+- 如果被调用合约尝试写 storage 或 emit event 会 revert
+- 适用于 view 函数的外部调用
+- 比 call 更安全——保证了无副作用
+
+## 代理模式的核心机制
+
+代理合约的 storage 布局必须和逻辑合约完全一致。这不是建议，是硬约束：
+
+\`\`\`solidity
+// 代理合约
+contract Proxy {
+    address implementation; // slot 0
+    
+    fallback() external payable {
+        address impl = implementation;
+        assembly {
+            calldatacopy(0, 0, calldatasize())
+            let result := delegatecall(gas(), impl, 0, calldatasize(), 0, 0)
+            returndatacopy(0, 0, returndatasize())
+            switch result
+            case 0 { revert(0, returndatasize()) }
+            default { return(0, returndatasize()) }
+        }
+    }
+}
+\`\`\`
+
+关键：代理合约的 fallback 函数用 delegatecall 把调用转发给逻辑合约。逻辑合约的代码在代理合约的 storage 上下文中执行。
+
+# 透明代理 vs UUPS
+
+## 透明代理（Transparent Proxy）
+- 代理合约负责升级逻辑
+- admin 地址调用的是升级函数，普通用户调用的是逻辑合约函数
+- 每次调用多一次 SLOAD 检查 msg.sender 是否等于 admin
+- 部署时同时部署代理和逻辑合约
+
+## UUPS（Universal Upgradeable Proxy Standard）
+- 升级逻辑在逻辑合约内部（upgradeTo 函数）
+- 代理合约更轻量，只做转发
+- 比透明代理省 gas（不需要每次检查 admin）
+- 缺点：如果逻辑合约没有 upgradeTo 函数，合约就永远不能升级了
+
+工程选择：
+- 简单场景用透明代理（更安全但更贵）
+- gas 敏感场景用 UUPS（更省但需要正确编写 upgradeTo）
+- 两者都由 OpenZeppelin 提供了生产级实现
+
+## 钻石代理（Diamond Pattern / EIP-2535）
+
+当单个合约超过 24KB 部署限制时，需要钻石代理：
+- 不是一对一的代理映射，而是一对多
+- 一个钻石代理对应多个 facet 合约
+- 每个 facet 负责一组函数
+- 通过 function selector 映射到具体的 facet
+- 可以单独升级某个 facet 而不影响其他
+
+## 信标代理（Beacon Proxy）
+- 引入 Beacon 合约作为逻辑合约地址的注册中心
+- 多个代理合约指向同一个 Beacon，Beacon 指向同一个逻辑合约
+- 适合需要部署大量相同逻辑实例的场景（如 ERC721 工厂）
+- 升级逻辑合约时只需修改 Beacon，所有代理同步更新
+
+# 不可升级合约的升级策略
+
+如果已经部署了不可升级合约但没有预留代理机制：
+
+1. **迁移模式**：部署新合约 + 数据迁移工具（需要用户手动迁移）
+2. **Registry 模式**：部署一个 Registry 合约指向最新版本，前端始终从 Registry 读取地址
+3. **Wrapper 模式**：部署 Wrapper 合约包装旧合约，逐步迁移功能
+
+# 存储布局冲突的经典问题
+
+代理升级时最危险的就是 storage collision：
+- 新版本逻辑合约如果在原有 storage 变量之间插入新变量，会打乱 slot 分配
+- 旧数据会被错误解读
+- OpenZeppelin 的 Unstructured Storage 模式通过伪随机 slot 避免这个问题
+
+# 常见坑
+
+- delegatecall 后使用 selfdestruct。代理合约的状态会保留，但逻辑合约可能被删除导致代理失效
+- UUPS 的 upgradeTo 没有 onlyProxy 保护。攻击者可以通过逻辑合约直接修改 implementation
+- 钻石代理的 selector 冲突。两个 facet 有相同的函数选择器会导致路由混乱
+- 忘记初始化逻辑合约。透明代理的 initialize 函数如果没有 constructor 保护，可能被多次调用
+- storage gap 不足。升级合约时没有预留足够的 storage 空间给未来扩展
+
+# 可继续深入的方向
+
+- EIP-1967 标准代理 storage slot 的设计原理
+- OpenZeppelin Upgrades Plugin 的自动化安全校验
+- 多链代理治理：不同链上的代理如何由同一个 DAO 管理
+- 代理模式在 Layer 2 上的 gas 表现差异`,
+  },
+  {
+    id: 8,
+    slug: 'evm-create2-assembly-lifecycle',
+    title: 'EVM 深度工程：create2、内联汇编与合约生命周期管理',
+    date: '2026-05-17',
+    summary:
+      '深入 create2 确定性部署、Solidity 内联汇编的内存模型、合约自毁的边界条件和函数选择器的底层工作机制。',
+    tags: ['Solidity', 'EVM', 'Assembly', 'create2'],
+    readingTime: '14 min',
+    difficulty: '进阶',
+    content: `# 问题背景
+
+理解 EVM 的工作机制不只是学术兴趣——create2 确定性部署可以支撑工厂模式的 Gas 优化，内联汇编可以突破 Solidity 抽象层的限制，函数选择器是代理路由的核心，selfdestruct 的自毁边界直接影响安全审计。
+
+# create2 确定性部署
+
+## 和 create 的区别
+
+- create：新合约地址 = keccak256(sender, nonce)
+- create2：新合约地址 = keccak256(0xFF, sender, salt, bytecodeHash)
+- create 依赖 nonce，nonce 增加后无法重复得到同一个地址
+- create2 用 salt 控制地址，相同参数可以反复得到同一个地址
+
+## 工程应用场景
+
+1. **反事实部署（Counterfactual Deployment）**
+   - 在不知道合约地址的情况下与之交互
+   - 先计算地址，再部署合约
+   - 用于 Layer 2 和各种 bridge 协议
+
+2. **确定性工厂**
+   - 工厂合约用 create2 部署子合约
+   - 相同参数永远得到相同地址
+   - 部署前就可以计算地址
+
+3. **Metamorphic 合约**
+   - create2 + selfdestruct + create2 可以创建不同代码的合约在同一个地址
+   - 这是极其危险的技术，需要额外权限控制
+
+## create2 的安全性
+
+- create2 地址不会因为链上状态变化而改变
+- salt 暴露出的话攻击者可以抢先部署
+- 用 msg.sender 作为 salt 的一部分可以防止跨用户冲突
+
+# Solidity 内联汇编
+
+## 为什么需要内联汇编
+
+- Solidity 某些操作没有高级语言支持（如 extcodesize、returndatasize）
+- Gas 关键路径上的优化
+- 实现代理合约的 fallback（delegatecall 转发）
+
+## 内存模型
+
+EVM 内存是线性的字节数组：
+- 0x00 - 0x3f：临时存储区（scratch space）
+- 0x40 - 0x5f：空闲内存指针（free memory pointer）
+- 0x60 - 0x7f：零值槽（zero slot）
+- 0x80 开始：合约的存储变量区域
+
+内联汇编的内存操作需要注意：
+- mload(0x40) 读取空闲内存指针
+- mstore(0x40, newPtr) 更新空闲内存指针
+- 不要覆盖 0x00-0x7f 的保留区域
+
+## 典型模式
+
+\`\`\`solidity
+function getCodeSize(address addr) internal view returns (uint256 size) {
+    assembly {
+        size := extcodesize(addr)
+    }
+}
+\`\`\`
+
+\`\`\`solidity
+function delegateForward() internal {
+    assembly {
+        calldatacopy(0, 0, calldatasize())
+        let result := delegatecall(gas(), implementation, 0, calldatasize(), 0, 0)
+        returndatacopy(0, 0, returndatasize())
+        switch result
+        case 0 { revert(0, returndatasize()) }
+        default { return(0, returndatasize()) }
+    }
+}
+\`\`\`
+
+# 合约删除与自毁
+
+## selfdestruct 的行为
+
+- 从区块链状态中删除合约的 bytecode 和 storage
+- 剩余 ETH 强制转移到指定地址（即使是拒绝接收 ETH 的合约）
+- 这是 EVM 唯一强制转账的方式
+
+## 自毁的时机考量
+
+- 合约被自毁后，调用它不会 revert——而是无声成功（因为没有代码可以执行）
+- 攻击者可以自毁包含恶意逻辑的合约并用 create2 重新部署新代码
+- EIP-6049 已废弃 selfdestruct 的强制转账能力（将迁移到 SENDALL）
+
+## 工程中的使用场景
+
+- 合约迁移：旧合约自毁，资金转移到新合约
+- 合约工厂清理：子合约生命周期结束时的清理
+- 紧急停止：在攻击发生时自毁合约以阻止进一步损失
+
+# 函数选择器
+
+函数选择器是 keccak256("functionName(type1,type2,...)") 的前 4 字节：
+
+- transfer(address,uint256) → 0xa9059cbb
+- balanceOf(address) → 0x70a08231
+- upgradeTo(address) → 0x3659cfe6
+
+代理合约通过 abi.decode 解析 calldata 的前 4 字节来决定路由到哪个逻辑合约（或钻石的哪个 facet）。
+
+参数类型空格规则：uint256 不加空格，address 不加空格，但类型之间的逗号后不加空格——这是一个常见的编码错误。
+
+# 合约 Lib 库
+
+Solidity 的 library 有两种部署方式：
+
+1. **内嵌库（Internal）**
+   - 库代码直接嵌入调用合约
+   - 不增加外部调用开销
+   - 不占用独立地址
+
+2. **链接库（External / Deployed）**
+   - 库独立部署，多个合约共享同一个库地址
+   - 调用有外部委托调用开销
+   - 通过 delegatecall 执行
+
+OpenZeppelin 的库大多是内嵌库，而 Uniswap 的 FixedPoint 等数学库通常作为链接库以节省 bytecode。
+
+# 常见坑
+
+- create2 的 salt 碰撞：部署前不检查地址是否已存在
+- 内联汇编不更新 free memory pointer：后续 Solidity 代码可能覆盖已分配的内存
+- selfdestruct 后依赖 create2 重新部署的合约：Metamorphic 攻击
+- 函数选择器碰撞：两个不同的函数名产生相同的 4 字节选择器
+- library 使用了 storage 引用但作为 external library 部署时 storage 指针失效
+
+# 可继续深入的方向
+
+- EVM 的 storage slot packing 和 SSTORE 的 gas 退费机制
+- Yul optimization：手动优化内联汇编的 gas 成本
+- opcode 级合约分析：用 evmone 或 revm 调试合约执行的每一步
+- EIP-6780 对 selfdestruct 的限制——未来的合约自毁行为会如何变化`,
+  },
+  {
+    id: 9,
+    slug: 'eip-erc-protocol-evolution',
+    title: 'EIP 工程解读：从 ERC20 到 EIP7702 的协议演进与选择逻辑',
+    date: '2026-05-17',
+    summary:
+      '梳理 ERC20/721/1155 的工程差异、EIP1559 的 gas 模型变革、EIP4337 账户抽象和 EIP7702 的 EOA 升级路径。',
+    tags: ['EIP', 'ERC', 'Ethereum', 'Standards'],
+    readingTime: '14 min',
+    difficulty: '进阶',
+    content: `# 问题背景
+
+EIP（Ethereum Improvement Proposal）不是简单的 "标准列表"，每一次协议升级背后都有具体的工程问题在驱动。理解这些标准的演进逻辑，比记住它们的编号更重要。
+
+# ERC20 / ERC721 / ERC1155：代币标准的工程差异
+
+## ERC20
+
+- 同质化代币，每个单位的价值相同
+- 核心接口：transfer、approve、transferFrom
+- approve + transferFrom 的双步授权模式引入了已知的 race condition
+- ERC20 的 permit（EIP-2612）通过链下签名改善了 UX
+
+## ERC721
+
+- 非同质化代币，每个 tokenId 独一无二
+- 核心接口：ownerOf、safeTransferFrom、approve
+- tokenURI 为每个 token 绑定链下元数据（通常指向 IPFS）
+- 枚举扩展（ERC721Enumerable）和元数据扩展（ERC721Metadata）是可选的
+- 所有权枚举（遍历用户拥有的所有 token）的 gas 成本随持有量线性增长
+
+## ERC1155
+
+- 多代币标准：一个合约管理无限种 token（同质化和非同质化）
+- 批量转账：一次交易转移多种 token，大幅降低 gas
+- 安全转账回调：onERC1155Received 可以拒绝不支持的 token
+- 适合游戏场景——一个合约管理装备、货币、皮肤等所有资产
+- 缺点：事件索引更复杂，不支持 approve 模式
+
+## 工程选择逻辑
+
+- 单一资产类型 → ERC20 / ERC721
+- 多种资产类型混合 → ERC1155
+- 需要 approve + transferFrom 双步流程 → ERC20
+- 批量操作频繁 → ERC1155
+- 每个 token 需要独立的链下元数据 → ERC721
+
+# EIP1559：Gas 模型的范式转变
+
+不是 "降低 Gas"，而是改变了 Gas 的计算和分配方式：
+
+- 引入基础费用（baseFeePerGas），协议自动调整
+- 区块弹性：目标 gas 上限是 maxGasLimit 的 50%，超过后基础费用自动上涨
+- 引入优先费用（maxPriorityFeePerGas）作为矿工/验证者的小费
+- 基础费用被销毁而不是分配给矿工，减少了 ETH 的通胀率
+
+## 对合约开发的影响
+
+- tx.gasprice 不再可靠——应该用 block.basefee 和 tx.maxPriorityFeePerGas
+- 合约不能再用 "gas 价格低就不处理" 的逻辑
+- 费用估算需要同时考虑 baseFee 和 priorityFee
+
+# EIP1167：最小代理 Clone
+
+- 部署一个指向现有合约的克隆代理，只需要约 55 字节的 bytecode
+- 比全套部署便宜约 10 倍
+- 用于工厂模式大量部署相同的逻辑合约实例
+- 不是代理升级模式——克隆的代理指向固定逻辑合约
+- Uniswap V2 的 pair 合约工厂就是用的这种模式
+
+# EIP2930：可选访问列表
+
+- 交易可以预先声明想要访问的地址和 storage slot
+- 访问列表内的地址和 slot 使用更低的 gas 价格（热访问）
+- 复杂交易（如跨多个合约的套利）可以节省 5-10% 的 gas
+- 缺点是如果声明的 slot 没有被实际访问，白交了列表的 gas
+
+# EIP3643：合规代币标准
+
+- 为证券类代币设计的标准
+- 核心：onchainID 身份系统和 transfer 验证
+- 只有经过 KYC 认证的地址可以持有和转移代币
+- 不是替代 ERC20——是在 ERC20 之上加了合规层
+- 用于现实资产的代币化（如房地产、债券）
+
+# EIP4337：账户抽象
+
+- 不是共识层 EIP（账户抽象），而是通过智能合约钱包实现的替代内存池
+- UserOperation 替代传统交易结构
+- Bundler 收集 UserOperation 并打包提交到 EntryPoint 合约
+- Paymaster 机制允许第三方代付 gas
+- 核心价值：钱包可以用任何验证逻辑（社交恢复、多签、ECDSA），不局限于 EOA 的 secp256k1
+
+# EIP4844：Blob 交易
+
+- proto-danksharding 的第一步
+- 引入 Blob 携带交易——可以在交易中携带大块临时数据
+- L2 的 calldata 成本显著下降（rollup 将数据放在 blob 而不是 calldata）
+- Blob 数据在约 18 天后被丢弃——不是永久存储
+- 对 L1 合约开发没有直接影响，但对 L2 生态是革命性的
+
+# EIP7702：EOA 账户升级
+
+- 允许 EOA（外部账户）临时设置一个合约代码来执行
+- EOA 可以拥有智能合约钱包的能力（批量交易、gas 赞助、社交恢复）
+- 比 EIP4337 更底层的方案——不需要 Bundler 和 EntryPoint
+- 单笔交易设置 code + 执行 code
+- 这是让现有 EOA 用户无障碍过渡到智能钱包的桥梁
+
+# 协议演进的底层逻辑
+
+按时间线看 EIP/ERC 的演变：
+
+1. **建立基础**：ERC20 定义同质化代币标准
+2. **扩展资产类型**：ERC721（非同质化）、ERC1155（多代币）
+3. **优化经济模型**：EIP1559 改革 Gas 市场
+4. **降低部署成本**：EIP1167 最小代理
+5. **突破 L1 限制**：EIP4844 让 L2 更便宜
+6. **打破账户壁垒**：EIP4337（智能钱包）→ EIP7702（EOA 升级）
+
+每一步都不是孤立的——后面的一步往往解决前一步暴露出来的工程瓶颈。
+
+# 常见坑
+
+- ERC20 的 approve 后余额可能被消耗，导致 approve 的额度不再有意义（front-run）
+- ERC1155 的安全性回调如果不实现，token 可能被锁死在不支持 ERC1155 的合约里
+- EIP1559 后仍然用 tx.gasprice 做费用估算
+- EIP1167 克隆的代理完全复制原合约的逻辑——如果原合约有自毁逻辑，克隆也会受影响
+- EIP4337 的 UserOperation 如果 gas 设置太低，Bundler 不会打包，但用户可能不知道
+
+# 可继续深入的方向
+
+- Permit2（Uniswap）如何改进 ERC20 的 approve 流程
+- ERC6551 Token Bound Account：每个 NFT 可以有自己的钱包地址
+- EIP712 结构化签名在 EIP2612 permit 中的应用
+- EIP6900 模块化账户架构：智能账户的插件系统
+- 跨链代币标准（ERC7281 / xERC20）如何在多链场景下统一接口`,
+  },
 ]

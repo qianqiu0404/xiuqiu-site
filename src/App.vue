@@ -38,11 +38,10 @@ function goHome() {
       </button>
 
       <div class="nav-links" :class="{ open: navOpen }">
-        <a href="#" @click.prevent="goHome">首页</a>
-        <a href="#" @click.prevent="goHomeSection('capabilities')">能力</a>
-        <a href="#" @click.prevent="goHomeSection('projects')">项目</a>
-        <router-link to="/articles" @click="navOpen = false">文章</router-link>
-        <a href="#" @click.prevent="goHomeSection('about')">关于</a>
+        <a href="#" @click.prevent="goHomeSection('highlights')">Highlights</a>
+        <a href="#" @click.prevent="goHomeSection('projects')">Projects</a>
+        <router-link to="/articles" @click="navOpen = false">Writing</router-link>
+        <a href="#" @click.prevent="goHomeSection('about')">About</a>
       </div>
     </nav>
   </header>
@@ -53,8 +52,8 @@ function goHome() {
 
   <footer class="footer">
     <div class="container footer-inner">
-      <p>© {{ new Date().getFullYear() }} xiuqiu</p>
-      <p>Built with Vue · Deployed on Vercel</p>
+      <span>© {{ new Date().getFullYear() }} xiuqiu</span>
+      <span>Built with Vue · Deployed on Vercel</span>
     </div>
   </footer>
 </template>

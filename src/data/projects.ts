@@ -77,6 +77,51 @@ export const projects: Project[] = [
   },
   {
     id: 4,
+    name: 'prediction-market',
+    positioning:
+      'Web3 预测市场 MVP：从 mock 原型到链上闭环，实践合约开发、链上事件监听、全栈数据流和 Polymarket API 集成。',
+    coreAbilities: [
+      'Solidity 合约设计',
+      'Foundry 测试与部署',
+      'Go API 代理层',
+      '链上事件 Indexer',
+      'wagmi / viem 前端交互',
+      'Polymarket API 集成',
+    ],
+    talkingPoints: [
+      '从 Web2 mock 到链上闭环的渐进式开发策略',
+      '合约事件驱动架构 vs 轮询模式的取舍',
+      '为什么 Gamma API 只需要代理层而不是直接暴露',
+      '链上 Indexer 如何避免双花和重复事件',
+      '前端双路径设计：mock 预览 + 真实链上交易',
+    ],
+    techStack: ['Solidity', 'Foundry', 'Go', 'Next.js', 'wagmi', 'viem', 'GORM'],
+    github: 'https://github.com/qianqiu0404/prediction-market',
+  },
+  {
+    id: 5,
+    name: 'tss-mpc',
+    positioning:
+      '基于 GG18 协议的 Threshold Signature Scheme 多方计算签名方案实践，深入理解分布式密钥生成、门限签名和 DKG 的安全模型。',
+    coreAbilities: [
+      'MPC 分布式密钥生成',
+      'TSS 门限签名协议',
+      'DKG 安全模型理解',
+      'P2P 节点通信',
+      '多方签名协作流程',
+    ],
+    talkingPoints: [
+      'TSS 和 Multisig 的本质区别：链上验证 vs 链下计算',
+      '为什么 GG18 需要多轮交互',
+      'DKG 中的拜占庭容错如何工作',
+      'TSS 在钱包基础设施中的实际角色',
+      '从单签名到门限签名的安全等级跃迁',
+    ],
+    techStack: ['Go', 'Ed25519', 'ECDSA', 'P2P', 'gRPC', 'Protobuf'],
+    github: 'https://github.com/dapplink-baas/tss',
+  },
+  {
+    id: 6,
     name: 'Scaffold-ETH',
     positioning:
       'DApp 与智能合约实践项目，用于构建钱包连接、合约部署、前端读写链上数据的基础能力。',

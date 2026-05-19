@@ -107,12 +107,12 @@ function goHome() {
 <template>
   <section class="section page-top">
     <div class="container article-detail-container" v-if="article">
-      <router-link to="/articles" class="back-link">← 返回文章列表</router-link>
+      <router-link to="/articles" class="back-link">&larr; Back to Writing</router-link>
 
       <article class="article-detail">
         <header class="article-detail-header">
           <div class="article-detail-meta">
-            <time class="article-date">{{ article.date }}</time>
+            <time class="meta-tag">{{ article.date }}</time>
             <span class="meta-tag">{{ article.difficulty }}</span>
             <span class="meta-reading">{{ article.readingTime }}</span>
           </div>
@@ -129,17 +129,17 @@ function goHome() {
         ></div>
 
         <footer class="article-detail-footer">
-          <router-link to="/articles" class="back-link">← 返回文章列表</router-link>
-          <a href="#" @click.prevent="goHome" class="back-link">返回首页</a>
+          <router-link to="/articles" class="back-link">&larr; Back to Writing</router-link>
+          <a href="#" @click.prevent="goHome" class="back-link">Back to Home</a>
         </footer>
       </article>
     </div>
 
     <div class="container" v-else>
       <div class="not-found">
-        <p class="not-found-title">文章不存在</p>
-        <p class="not-found-desc">请检查 URL 是否正确，或返回文章列表查看所有可用文章。</p>
-        <router-link to="/articles" class="btn btn-primary">返回文章列表</router-link>
+        <p class="not-found-title">Article not found</p>
+        <p class="not-found-desc">The article you're looking for doesn't exist. Check the URL or browse all articles.</p>
+        <router-link to="/articles" class="btn btn-primary">View All Writing</router-link>
       </div>
     </div>
   </section>

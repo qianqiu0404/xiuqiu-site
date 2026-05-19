@@ -6,13 +6,12 @@ import { articles } from '../data/articles'
   <section class="section page-top">
     <div class="container">
       <div class="section-heading">
-        <p class="section-eyebrow">Articles</p>
-        <h2 class="section-title">技术文章</h2>
+        <p class="section-label">Writing</p>
+        <h2 class="section-title">Writing</h2>
         <p class="section-desc">
-          这些文章围绕 Web3 钱包、Go 后端、服务通信和 AI 编程工作流展开，
-          用于沉淀项目拆解和面试表达。
+          Technical writing on wallet architecture, service communication, signer boundaries, and backend data flow.
         </p>
-        <p class="article-count">共 {{ articles.length }} 篇</p>
+        <p class="article-count">{{ articles.length }} articles</p>
       </div>
 
       <div class="article-grid">
