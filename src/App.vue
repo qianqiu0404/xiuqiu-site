@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import AiChatWidget from './components/AiChatWidget.vue'
 
 const navOpen = ref(false)
 const router = useRouter()
@@ -56,4 +57,6 @@ function goHome() {
       <span>Built with Vue · Deployed on Vercel</span>
     </div>
   </footer>
+
+  <AiChatWidget />
 </template>
