@@ -248,6 +248,7 @@ export function findRelevantReferences(query: string, pageTitle?: string, max = 
         article.summary,
         article.tags.join(' '),
         article.conceptTags.join(' '),
+        article.suggestedQuestions.join(' '),
         article.slug,
       ].join(' '),
     )

@@ -21,7 +21,13 @@ const filteredArticles = computed(() => {
   return siteArticles.filter(article => {
     const matchesKeyword =
       !keyword ||
-      [article.title, article.summary, article.tags.join(' '), article.conceptTags.join(' ')]
+      [
+        article.title,
+        article.summary,
+        article.tags.join(' '),
+        article.conceptTags.join(' '),
+        article.suggestedQuestions.join(' '),
+      ]
         .join(' ')
         .toLowerCase()
         .includes(keyword)

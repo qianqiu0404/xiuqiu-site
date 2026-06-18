@@ -304,6 +304,43 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "ERC20 到 EIP7702 的演进反映了哪些工程取舍？",
       "协议标准如何影响钱包和 DApp 的设计？"
     ]
+  },
+  {
+    "id": 10,
+    "slug": "withdrawal-error-handling",
+    "title": "提现错误处理机制：自动重试、补偿任务与人工复核",
+    "date": "2026-06-18",
+    "summary": "提现错误不能简单按失败重发处理，而要按链上事实是否确定分层：网络和节点问题自动重试，系统状态落后自动补偿，链上事实不确定或账务有风险时人工复核。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Withdrawal",
+      "Backend",
+      "Security"
+    ],
+    "readingTime": "6 min",
+    "difficulty": "项目拆解",
+    "conceptTags": [
+      "wallet-backend",
+      "api-design",
+      "multi-chain",
+      "signer-service"
+    ],
+    "relatedProjectIds": [
+      1,
+      2
+    ],
+    "recommendedSlugs": [
+      "wallet-api-boundary",
+      "wallet-sign-signer",
+      "wallet-address-models",
+      "market-services-data-flow"
+    ],
+    "suggestedQuestions": [
+      "提现广播 timeout 时为什么不能直接重新发一笔？",
+      "提现系统如何区分自动重试、自动补偿和人工复核？",
+      "EVM nonce 和 BTC UTXO 在提现错误处理中有什么风险？"
+    ]
   }
 ]
 
@@ -442,5 +479,21 @@ export const articleSummaries: ArticleSummary[] = [
     ],
     "readingTime": "14 min",
     "difficulty": "进阶"
+  },
+  {
+    "id": 10,
+    "slug": "withdrawal-error-handling",
+    "title": "提现错误处理机制：自动重试、补偿任务与人工复核",
+    "date": "2026-06-18",
+    "summary": "提现错误不能简单按失败重发处理，而要按链上事实是否确定分层：网络和节点问题自动重试，系统状态落后自动补偿，链上事实不确定或账务有风险时人工复核。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Withdrawal",
+      "Backend",
+      "Security"
+    ],
+    "readingTime": "6 min",
+    "difficulty": "项目拆解"
   }
 ]
