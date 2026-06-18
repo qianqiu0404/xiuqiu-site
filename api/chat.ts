@@ -1,3 +1,5 @@
+import { buildKnowledgeContext, findRelevantReferences } from '../src/data/siteKnowledge.ts'
+
 declare const process: {
   env: Record<string, string | undefined>
 }
@@ -12,6 +14,7 @@ interface IncomingMessage {
 interface VercelRequest {
   method?: string
   body?: unknown
+  headers?: Record<string, string | string[] | undefined>
 }
 
 interface VercelResponse {
@@ -25,47 +28,73 @@ interface VercelResponse {
 const DEFAULT_MODEL = 'deepseek-v4-flash'
 const MAX_MESSAGE_LENGTH = 1000
 const MAX_HISTORY_MESSAGES = 6
+const REQUEST_TIMEOUT_MS = 16000
+const RATE_LIMIT_WINDOW_MS = 60_000
+const RATE_LIMIT_MAX_REQUESTS = 12
 
-const KNOWLEDGE_CONTEXT = `
-xiuqiu is a Web3 Wallet & Backend Developer.
-Focus areas: multi-chain wallet backend, signer services, Go backend infrastructure, Solidity/EVM, MPC/TSS, and AI-assisted engineering workflows.
+type ErrorCode =
+  | 'method_not_allowed'
+  | 'rate_limited'
+  | 'missing_api_key'
+  | 'invalid_messages'
+  | 'upstream_auth_error'
+  | 'upstream_error'
+  | 'upstream_invalid_json'
+  | 'upstream_invalid_answer'
+  | 'upstream_timeout'
+  | 'upstream_network_error'
 
-Projects:
-- wallet-api: 多链钱包后端 API 服务，负责组织地址生成、余额查询、交易构建、链配置管理和签名服务调用。
-  Engineering Focus: 多链钱包 API 设计, HTTP 服务入口, gRPC 内部服务调用, 链节点 RPC 接入, 钱包 API 层与签名层解耦
-  Tech Stack: Go, HTTP, gRPC, PostgreSQL, Redis, Web3 RPC
-- wallet-sign: 多链离线签名服务，负责 BTC、ETH、Solana、Cosmos 等链的交易签名能力，是钱包系统中安全边界更高的一层。
-  Engineering Focus: 私钥管理边界, 离线签名流程, 批量签名策略, 多链签名差异, 签名服务独立部署思路
-  Tech Stack: Go, TypeScript, BTC, ETH, Solana, Cosmos
-- market-services: 交易所行情服务项目，负责聚合、缓存、计算和展示交易所行情数据，用于沉淀 Go 后端服务设计能力。
-  Engineering Focus: HTTP 服务启动, gRPC 服务启动, Redis 行情缓存, PostgreSQL 数据持久化, Dashboard API 数据组装, 行情数据同步链路
-  Tech Stack: Go, HTTP, gRPC, Redis, PostgreSQL, GORM, Vite
-- prediction-market: Web3 预测市场 MVP：从 mock 原型到链上闭环，实践合约开发、链上事件监听、全栈数据流和 Polymarket API 集成。
-  Engineering Focus: Solidity 合约设计, Foundry 测试与部署, Go API 代理层, 链上事件 Indexer, wagmi / viem 前端交互, Polymarket API 集成
-  Tech Stack: Solidity, Foundry, Go, Next.js, wagmi, viem, GORM
-- tss-mpc: 基于 GG18 协议的 Threshold Signature Scheme 多方计算签名方案实践，深入理解分布式密钥生成、门限签名和 DKG 的安全模型。
-  Engineering Focus: MPC 分布式密钥生成, TSS 门限签名协议, DKG 安全模型理解, P2P 节点通信, 多方签名协作流程
-  Tech Stack: Go, Ed25519, ECDSA, P2P, gRPC, Protobuf
-- Scaffold-ETH: DApp 与智能合约实践项目，用于构建钱包连接、合约部署、前端读写链上数据的基础能力。
-  Engineering Focus: 钱包连接, 合约部署, 前端读取链上数据, 合约交互流程, DApp 基础工程结构
-  Tech Stack: Solidity, Next.js, Hardhat, Ethers, WalletConnect
+interface PageContext {
+  type: 'home' | 'articles' | 'article' | 'project'
+  title?: string
+  slug?: string
+  summary?: string
+}
 
-Articles:
-- API 到底是什么？从钱包后端项目理解系统调用
-  Summary: 从前端、后端、数据库、第三方服务、链节点和签名机之间的关系，拆解 API 在现代软件系统中的连接作用。
-  Tags: API, Backend, System Design, Wallet
-  Difficulty: 基础
-- HTTP、RPC、gRPC 的区别与项目使用场景
-  Summary: 结合钱包系统和行情服务，解释 HTTP 更适合对外接口，gRPC 更适合内部服务调用，RPC 是远程过程调用思想。
-  Tags: HTTP, RPC, gRPC, Backend
-  Difficulty: 进阶
-- wallet-api：多链钱包后端 API 的职责边界
-  Summary: 梳理多链钱包 API 服务如何组织链配置、接口入口、节点调用、交易构建和签名服务协作。
-  Tags: Web3, Wallet, Go, API
-  Difficulty: 项目拆解
-`.trim()
+interface RateLimitBucket {
+  count: number
+  resetAt: number
+}
 
-function parseBody(body: unknown): { messages?: unknown } {
+const rateLimitBuckets = new Map<string, RateLimitBucket>()
+
+function firstHeader(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value
+}
+
+function getRequestId(req: VercelRequest): string {
+  return firstHeader(req.headers?.['x-vercel-id']) || `local-${Date.now().toString(36)}`
+}
+
+function errorResponse(
+  res: VercelResponse,
+  status: number,
+  code: ErrorCode,
+  error: string,
+  requestId: string,
+  retryable = false,
+) {
+  return res.status(status).json({
+    error,
+    code,
+    retryable,
+    requestId,
+  })
+}
+
+function parseJson(text: string): { ok: true; value: unknown } | { ok: false } {
+  try {
+    return { ok: true, value: text ? JSON.parse(text) : {} }
+  } catch {
+    return { ok: false }
+  }
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value) && typeof value === 'object'
+}
+
+function parseBody(body: unknown): { messages?: unknown; pageContext?: unknown } {
   if (typeof body === 'string') {
     try {
       return JSON.parse(body)
@@ -75,10 +104,31 @@ function parseBody(body: unknown): { messages?: unknown } {
   }
 
   if (body && typeof body === 'object') {
-    return body as { messages?: unknown }
+    return body as { messages?: unknown; pageContext?: unknown }
   }
 
   return {}
+}
+
+function normalizePageContext(value: unknown): PageContext | undefined {
+  if (!value || typeof value !== 'object') return undefined
+
+  const candidate = value as Record<string, unknown>
+  if (
+    candidate.type !== 'home' &&
+    candidate.type !== 'articles' &&
+    candidate.type !== 'article' &&
+    candidate.type !== 'project'
+  ) {
+    return undefined
+  }
+
+  return {
+    type: candidate.type,
+    title: typeof candidate.title === 'string' ? candidate.title.trim().slice(0, 160) : undefined,
+    slug: typeof candidate.slug === 'string' ? candidate.slug.trim().slice(0, 120) : undefined,
+    summary: typeof candidate.summary === 'string' ? candidate.summary.trim().slice(0, 500) : undefined,
+  }
 }
 
 function normalizeMessages(value: unknown): IncomingMessage[] {
@@ -102,29 +152,76 @@ function normalizeMessages(value: unknown): IncomingMessage[] {
     .slice(-MAX_HISTORY_MESSAGES)
 }
 
+function getClientKey(req: VercelRequest): string {
+  const ip = firstHeader(req.headers?.['x-forwarded-for'])
+  return ip?.split(',')[0]?.trim() || 'anonymous'
+}
+
+function isRateLimited(clientKey: string): boolean {
+  const now = Date.now()
+  const bucket = rateLimitBuckets.get(clientKey)
+
+  if (!bucket || bucket.resetAt <= now) {
+    rateLimitBuckets.set(clientKey, {
+      count: 1,
+      resetAt: now + RATE_LIMIT_WINDOW_MS,
+    })
+    return false
+  }
+
+  bucket.count += 1
+  return bucket.count > RATE_LIMIT_MAX_REQUESTS
+}
+
+function buildPageContextPrompt(pageContext: PageContext | undefined): string {
+  if (!pageContext) return 'Current page context: unknown.'
+
+  return [
+    `Current page type: ${pageContext.type}`,
+    pageContext.title ? `Current page title: ${pageContext.title}` : '',
+    pageContext.slug ? `Current page slug: ${pageContext.slug}` : '',
+    pageContext.summary ? `Current page summary: ${pageContext.summary}` : '',
+  ]
+    .filter(Boolean)
+    .join('\n')
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   res.setHeader('Content-Type', 'application/json; charset=utf-8')
+  const requestId = getRequestId(req)
 
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Only POST requests are supported.' })
+    res.setHeader('Allow', 'POST')
+    return errorResponse(res, 405, 'method_not_allowed', 'Only POST requests are supported.', requestId)
+  }
+
+  if (isRateLimited(getClientKey(req))) {
+    res.setHeader('Retry-After', String(Math.ceil(RATE_LIMIT_WINDOW_MS / 1000)))
+    return errorResponse(res, 429, 'rate_limited', '提问太频繁了，请稍后再试。', requestId, true)
   }
 
   const apiKey = process.env.DEEPSEEK_API_KEY
 
   if (!apiKey) {
-    return res.status(500).json({ error: 'DeepSeek API Key 尚未配置。' })
+    return errorResponse(res, 500, 'missing_api_key', 'DeepSeek API Key 尚未配置。', requestId)
   }
 
-  const { messages } = parseBody(req.body)
+  const { messages, pageContext } = parseBody(req.body)
   const normalizedMessages = normalizeMessages(messages)
+  const normalizedPageContext = normalizePageContext(pageContext)
+  const lastUserMessage = [...normalizedMessages].reverse().find(message => message.role === 'user')
 
   if (normalizedMessages.length === 0) {
-    return res.status(400).json({ error: '请输入一个有效问题。' })
+    return errorResponse(res, 400, 'invalid_messages', '请输入一个有效问题。', requestId)
   }
+
+  const controller = new AbortController()
+  const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
 
   try {
     const deepseekResponse = await fetch('https://api.deepseek.com/chat/completions', {
       method: 'POST',
+      signal: controller.signal,
       headers: {
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
@@ -140,9 +237,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               'If the answer is not supported by the provided website context, say you are not sure instead of inventing experience or facts.',
               'Prefer Chinese. Use English technical terms only where they help clarity.',
               'Keep answers concise, practical, and grounded in the website context.',
+              'When helpful, cite exact project names and article titles from the website context.',
+              '',
+              buildPageContextPrompt(normalizedPageContext),
               '',
               'Website context:',
-              KNOWLEDGE_CONTEXT,
+              buildKnowledgeContext(),
             ].join('\n'),
           },
           ...normalizedMessages,
@@ -152,22 +252,68 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }),
     })
 
-    const payload = await deepseekResponse.json()
+    const responseText = await deepseekResponse.text()
+    const parsedPayload = parseJson(responseText)
+
+    if (!parsedPayload.ok) {
+      console.error('DeepSeek returned non-JSON response:', {
+        requestId,
+        status: deepseekResponse.status,
+        bodyPreview: responseText.slice(0, 200),
+      })
+      return errorResponse(res, 502, 'upstream_invalid_json', 'AI 服务返回格式异常，请稍后再试。', requestId, true)
+    }
+
+    const payload = parsedPayload.value
 
     if (!deepseekResponse.ok) {
-      console.error('DeepSeek API error:', payload)
-      return res.status(502).json({ error: '暂时无法连接 AI 服务，请稍后再试。' })
+      const upstreamError = isRecord(payload) && isRecord(payload.error) ? payload.error : undefined
+      console.error('DeepSeek API error:', {
+        requestId,
+        status: deepseekResponse.status,
+        errorType: upstreamError && typeof upstreamError.type === 'string' ? upstreamError.type : undefined,
+        errorCode: upstreamError && typeof upstreamError.code === 'string' ? upstreamError.code : undefined,
+      })
+
+      const isAuthError = deepseekResponse.status === 401 || deepseekResponse.status === 403
+      return errorResponse(
+        res,
+        502,
+        isAuthError ? 'upstream_auth_error' : 'upstream_error',
+        isAuthError ? 'AI 服务配置需要检查，请稍后再试。' : 'DeepSeek 返回错误，请稍后再试。',
+        requestId,
+        !isAuthError,
+      )
     }
 
-    const answer = payload?.choices?.[0]?.message?.content
+    const firstChoice = isRecord(payload) && Array.isArray(payload.choices) ? payload.choices[0] : undefined
+    const message = isRecord(firstChoice) && isRecord(firstChoice.message) ? firstChoice.message : undefined
+    const answer = typeof message?.content === 'string' ? message.content : undefined
 
     if (typeof answer !== 'string' || answer.trim().length === 0) {
-      return res.status(502).json({ error: 'AI 服务暂时没有返回有效回答。' })
+      return errorResponse(res, 502, 'upstream_invalid_answer', 'AI 服务暂时没有返回有效回答。', requestId, true)
     }
 
-    return res.status(200).json({ answer: answer.trim() })
+    return res.status(200).json({
+      answer: answer.trim(),
+      references: findRelevantReferences(lastUserMessage?.content || '', normalizedPageContext?.title),
+    })
   } catch (error) {
-    console.error('Chat API error:', error)
-    return res.status(500).json({ error: '暂时无法连接 AI 服务，请稍后再试。' })
+    const isTimeout = error instanceof Error && error.name === 'AbortError'
+    console.error('Chat API error:', {
+      requestId,
+      errorName: error instanceof Error ? error.name : 'UnknownError',
+      errorMessage: error instanceof Error ? error.message : String(error),
+    })
+    return errorResponse(
+      res,
+      isTimeout ? 504 : 502,
+      isTimeout ? 'upstream_timeout' : 'upstream_network_error',
+      isTimeout ? 'AI 服务响应超时，请稍后再试。' : '暂时无法连接 AI 服务，请稍后再试。',
+      requestId,
+      true,
+    )
+  } finally {
+    clearTimeout(timeoutId)
   }
 }

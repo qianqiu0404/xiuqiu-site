@@ -4,8 +4,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc && vite build",
+    "dev": "npm run generate:articles && vite",
+    "build": "npm run generate:articles && npm run generate:sitemap && npm run check:knowledge && npm run typecheck:api && vue-tsc && vite build && npm run generate:meta-pages",
+    "build:vite": "vue-tsc && vite build",
+    "generate:articles": "node scripts/generate-articles.mjs",
+    "generate:sitemap": "node scripts/generate-sitemap.mjs",
+    "generate:meta-pages": "node scripts/generate-meta-pages.mjs",
+    "check:knowledge": "node scripts/validate-knowledge.mjs",
+    "typecheck:api": "tsc --noEmit --target ES2020 --module ESNext --moduleResolution bundler --allowImportingTsExtensions --skipLibCheck --strict api/chat.ts",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -1,13 +1,37 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { articles } from '../data/articles'
+import {
+  getArticleBySlug,
+  getArticlesBySlugs,
+  getProjectsByIds,
+  siteArticles,
+} from '../data/siteKnowledge'
+import { setSeoMeta } from '../utils/seo'
 
 const route = useRoute()
 const router = useRouter()
-const slug = route.params.slug as string
+const slug = computed(() => route.params.slug as string)
 
-const article = computed(() => articles.find(a => a.slug === slug))
+const article = computed(() => {
+  const summary = getArticleBySlug(slug.value)
+  const fullArticle = articles.find(item => item.slug === slug.value)
+
+  if (!summary || !fullArticle) return undefined
+  return {
+    ...fullArticle,
+    ...summary,
+  }
+})
+const relatedProjects = computed(() => (article.value ? getProjectsByIds(article.value.relatedProjectIds) : []))
+const recommendedArticles = computed(() => (article.value ? getArticlesBySlugs(article.value.recommendedSlugs) : []))
+const nextArticle = computed(() => {
+  if (!article.value) return undefined
+
+  const index = siteArticles.findIndex(a => a.slug === article.value?.slug)
+  return siteArticles[(index + 1) % siteArticles.length]
+})
 
 function renderContent(text: string): string {
   const lines = text.split('\n')
@@ -102,6 +126,42 @@ function escapeHtml(text: string): string {
 function goHome() {
   router.push('/')
 }
+
+function askQuestion(question: string) {
+  if (!article.value) return
+
+  window.dispatchEvent(
+    new CustomEvent('ai-chat:ask', {
+      detail: {
+        prompt: question,
+        context: {
+          type: 'article',
+          title: article.value.title,
+          slug: article.value.slug,
+          summary: article.value.summary,
+        },
+      },
+    }),
+  )
+}
+
+watchEffect(() => {
+  if (!article.value) {
+    setSeoMeta({
+      title: 'Article not found | xiuqiu',
+      description: 'The requested xiuqiu writing page was not found.',
+      path: route.fullPath,
+    })
+    return
+  }
+
+  setSeoMeta({
+    title: `${article.value.title} | xiuqiu Writing`,
+    description: article.value.summary,
+    path: `/articles/${article.value.slug}`,
+    type: 'article',
+  })
+})
 </script>
 
 <template>
@@ -113,6 +173,7 @@ function goHome() {
         <header class="article-detail-header">
           <div class="article-detail-meta">
             <time class="meta-tag">{{ article.date }}</time>
+            <span v-if="article.updatedAt" class="meta-tag">Updated {{ article.updatedAt }}</span>
             <span class="meta-tag">{{ article.difficulty }}</span>
             <span class="meta-reading">{{ article.readingTime }}</span>
           </div>
@@ -133,6 +194,60 @@ function goHome() {
           <a href="#" @click.prevent="goHome" class="back-link">Back to Home</a>
         </footer>
       </article>
+
+      <section class="article-followup">
+        <div class="followup-block">
+          <p class="section-label">Related Projects</p>
+          <div class="followup-grid">
+            <article v-for="project in relatedProjects" :key="project.id" class="followup-card">
+              <h3>{{ project.name }}</h3>
+              <p>{{ project.positioning }}</p>
+              <button
+                class="project-link project-link-button"
+                type="button"
+                @click="askQuestion(`请结合《${article.title}》解释 ${project.name} 项目的工程价值。`)"
+              >
+                Ask AI &rarr;
+              </button>
+            </article>
+          </div>
+        </div>
+
+        <div class="followup-block">
+          <p class="section-label">Recommended Reading</p>
+          <div class="followup-links">
+            <router-link
+              v-for="item in recommendedArticles"
+              :key="item.slug"
+              :to="'/articles/' + item.slug"
+              class="followup-link"
+            >
+              <span>{{ item.title }}</span>
+              <small>{{ item.difficulty }} · {{ item.readingTime }}</small>
+            </router-link>
+          </div>
+        </div>
+
+        <div class="followup-block">
+          <p class="section-label">Ask Next</p>
+          <div class="suggested-question-list">
+            <button
+              v-for="question in article.suggestedQuestions"
+              :key="question"
+              class="suggested-question"
+              type="button"
+              @click="askQuestion(question)"
+            >
+              {{ question }}
+            </button>
+          </div>
+        </div>
+
+        <router-link v-if="nextArticle" :to="'/articles/' + nextArticle.slug" class="next-article">
+          <span>Next Article</span>
+          <strong>{{ nextArticle.title }}</strong>
+        </router-link>
+      </section>
     </div>
 
     <div class="container" v-else>

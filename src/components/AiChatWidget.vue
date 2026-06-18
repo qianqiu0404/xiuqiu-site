@@ -1,18 +1,42 @@
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import { getArticleBySlug, siteKnowledge } from '../data/siteKnowledge'
 
 type ChatRole = 'user' | 'assistant'
 
 interface ChatMessage {
   role: ChatRole
   content: string
+  references?: SiteReference[]
 }
 
+interface SiteReference {
+  type: 'article' | 'project' | 'capability'
+  title: string
+  href: string
+  summary: string
+}
+
+interface PageContext {
+  type: 'home' | 'articles' | 'article' | 'project'
+  title?: string
+  slug?: string
+  summary?: string
+}
+
+interface AskAiEventDetail {
+  prompt: string
+  context?: PageContext
+}
+
+const route = useRoute()
 const isOpen = ref(false)
 const input = ref('')
 const isLoading = ref(false)
 const errorMessage = ref('')
 const messageList = ref<HTMLElement | null>(null)
+const explicitPageContext = ref<PageContext | null>(null)
 const messages = ref<ChatMessage[]>([
   {
     role: 'assistant',
@@ -20,13 +44,62 @@ const messages = ref<ChatMessage[]>([
   },
 ])
 
-const quickPrompts = [
-  '介绍一下 xiuqiu 的 Web3 钱包项目',
-  'wallet-api 和 wallet-sign 的边界是什么？',
-  '哪些文章适合了解后端 API 和 gRPC？',
+const promptGroups = [
+  {
+    label: 'Projects',
+    prompts: [
+      '介绍一下 xiuqiu 的 Web3 钱包项目',
+      'wallet-api 和 wallet-sign 的边界是什么？',
+      'prediction-market 展示了哪些链上闭环能力？',
+    ],
+  },
+  {
+    label: 'Writing',
+    prompts: [
+      '哪些文章适合了解后端 API 和 gRPC？',
+      '给我一条学习多链钱包后端的阅读路径',
+      '推荐几篇理解 EVM 工程的文章',
+    ],
+  },
+  {
+    label: 'Learning Path',
+    prompts: [
+      '如果我是招聘方，应该如何理解 xiuqiu 的技术优势？',
+      '从钱包架构到签名服务应该按什么顺序学习？',
+      '请用 3 分钟解释这个网站的工程主线',
+    ],
+  },
 ]
 
 const canSend = computed(() => input.value.trim().length > 0 && !isLoading.value)
+const currentPageContext = computed<PageContext>(() => {
+  if (explicitPageContext.value) return explicitPageContext.value
+
+  if (route.name === 'article-detail') {
+    const slug = String(route.params.slug || '')
+    const article = getArticleBySlug(slug)
+    return {
+      type: 'article',
+      title: article?.title || 'Article detail',
+      slug,
+      summary: article?.summary,
+    }
+  }
+
+  if (route.name === 'articles') {
+    return {
+      type: 'articles',
+      title: 'Writing',
+      summary: `${siteKnowledge.articles.length} technical articles about wallet architecture, backend services, signer boundaries, EVM, and MPC/TSS.`,
+    }
+  }
+
+  return {
+    type: 'home',
+    title: siteKnowledge.owner.title,
+    summary: siteKnowledge.owner.summary,
+  }
+})
 
 function toggleChat() {
   isOpen.value = !isOpen.value
@@ -39,6 +112,13 @@ function toggleChat() {
 
 async function sendQuickPrompt(prompt: string) {
   input.value = prompt
+  await sendMessage()
+}
+
+async function askWithContext(detail: AskAiEventDetail) {
+  explicitPageContext.value = detail.context || null
+  isOpen.value = true
+  input.value = detail.prompt
   await sendMessage()
 }
 
@@ -63,11 +143,12 @@ async function sendMessage() {
       },
       body: JSON.stringify({
         messages: messages.value.slice(-6),
+        pageContext: currentPageContext.value,
       }),
     })
 
     const responseText = await response.text()
-    let payload: { answer?: unknown; error?: string } = {}
+    let payload: { answer?: unknown; error?: string; references?: unknown } = {}
 
     try {
       payload = responseText ? JSON.parse(responseText) : {}
@@ -86,6 +167,7 @@ async function sendMessage() {
     messages.value.push({
       role: 'assistant',
       content: payload.answer,
+      references: normalizeReferences(payload.references),
     })
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '暂时无法连接 AI 服务，请稍后再试。'
@@ -94,9 +176,27 @@ async function sendMessage() {
       content: '抱歉，AI 服务暂时不可用。你可以稍后再试，或直接通过 GitHub / Email 联系 xiuqiu。',
     })
   } finally {
+    explicitPageContext.value = null
     isLoading.value = false
     await scrollToBottom()
   }
+}
+
+function normalizeReferences(value: unknown): SiteReference[] {
+  if (!Array.isArray(value)) return []
+
+  return value
+    .filter((item): item is SiteReference => {
+      if (!item || typeof item !== 'object') return false
+      const candidate = item as Record<string, unknown>
+      return (
+        (candidate.type === 'article' || candidate.type === 'project' || candidate.type === 'capability') &&
+        typeof candidate.title === 'string' &&
+        typeof candidate.href === 'string' &&
+        typeof candidate.summary === 'string'
+      )
+    })
+    .slice(0, 4)
 }
 
 async function scrollToBottom() {
@@ -105,6 +205,20 @@ async function scrollToBottom() {
     messageList.value.scrollTop = messageList.value.scrollHeight
   }
 }
+
+function handleAskAi(event: Event) {
+  const detail = (event as CustomEvent<AskAiEventDetail>).detail
+  if (!detail?.prompt) return
+  void askWithContext(detail)
+}
+
+onMounted(() => {
+  window.addEventListener('ai-chat:ask', handleAskAi)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('ai-chat:ask', handleAskAi)
+})
 </script>
 
 <template>
@@ -128,6 +242,18 @@ async function scrollToBottom() {
           :class="'ai-message-' + message.role"
         >
           {{ message.content }}
+          <div v-if="message.references?.length" class="ai-references">
+            <p class="ai-references-title">Related on this site</p>
+            <a
+              v-for="reference in message.references"
+              :key="reference.type + reference.href + reference.title"
+              class="ai-reference"
+              :href="reference.href"
+            >
+              <span>{{ reference.title }}</span>
+              <small>{{ reference.type }}</small>
+            </a>
+          </div>
         </article>
         <article v-if="isLoading" class="ai-message ai-message-assistant ai-message-loading">
           Thinking...
@@ -135,16 +261,19 @@ async function scrollToBottom() {
       </div>
 
       <div class="ai-chat-prompts" aria-label="Suggested questions">
-        <button
-          v-for="prompt in quickPrompts"
-          :key="prompt"
-          class="ai-prompt"
-          type="button"
-          :disabled="isLoading"
-          @click="sendQuickPrompt(prompt)"
-        >
-          {{ prompt }}
-        </button>
+        <div v-for="group in promptGroups" :key="group.label" class="ai-prompt-group">
+          <p class="ai-prompt-label">{{ group.label }}</p>
+          <button
+            v-for="prompt in group.prompts"
+            :key="prompt"
+            class="ai-prompt"
+            type="button"
+            :disabled="isLoading"
+            @click="sendQuickPrompt(prompt)"
+          >
+            {{ prompt }}
+          </button>
+        </div>
       </div>
 
       <p v-if="errorMessage" class="ai-chat-error">{{ errorMessage }}</p>
@@ -303,11 +432,61 @@ async function scrollToBottom() {
   font-family: var(--mono);
 }
 
+.ai-references {
+  display: grid;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.ai-references-title {
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.ai-reference {
+  display: grid;
+  gap: 2px;
+  border: 1px solid var(--border-light);
+  border-radius: 10px;
+  background: var(--bg-warm);
+  color: var(--text);
+  padding: 8px 9px;
+}
+
+.ai-reference span {
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.ai-reference small {
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 10px;
+}
+
 .ai-chat-prompts {
+  display: grid;
+  gap: 10px;
+  padding: 12px 18px 0;
+}
+
+.ai-prompt-group {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  padding: 12px 18px 0;
+  gap: 7px;
+}
+
+.ai-prompt-label {
+  width: 100%;
+  color: var(--text-muted);
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1.2;
+  text-transform: uppercase;
 }
 
 .ai-prompt {
@@ -392,9 +571,9 @@ async function scrollToBottom() {
 
 @media (max-width: 768px) {
   .ai-chat {
-    right: 16px;
-    bottom: 16px;
-    left: 16px;
+    right: 18px;
+    bottom: 18px;
+    left: 18px;
     display: flex;
     justify-content: flex-end;
     pointer-events: none;
@@ -406,11 +585,28 @@ async function scrollToBottom() {
 
   .ai-chat-panel {
     right: 0;
-    bottom: 64px;
+    bottom: 62px;
     left: 0;
     width: 100%;
-    max-height: calc(100vh - 112px);
+    height: min(680px, calc(100dvh - 124px));
+    max-height: none;
     border-radius: 18px;
+  }
+
+  .ai-chat-messages {
+    min-height: 0;
+  }
+
+  .ai-chat-prompts {
+    max-height: 180px;
+    overflow-y: auto;
+    padding-bottom: 4px;
+  }
+
+  .ai-chat-toggle {
+    width: 46px;
+    height: 46px;
+    font-size: 13px;
   }
 
   .ai-chat-form {

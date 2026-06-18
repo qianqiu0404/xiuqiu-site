@@ -1,16 +1,31 @@
 <script setup lang="ts">
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { projects } from '../data/projects'
-import { articles } from '../data/articles'
+import {
+  engineeringMap,
+  getArticlesBySlugs,
+  getProjectsByIds,
+  getRelatedArticlesForProject,
+  siteArticles,
+  siteKnowledge,
+  siteProjects,
+  type SiteProject,
+  type EngineeringMapNode,
+} from '../data/siteKnowledge'
+import { setSeoMeta } from '../utils/seo'
 
 const router = useRouter()
+const selectedCapabilityId = ref<EngineeringMapNode['id']>('wallet-backend')
 
 function scrollTo(id: string) {
   const el = document.getElementById(id)
   if (el) el.scrollIntoView({ behavior: 'smooth' })
 }
 
-const homeArticles = articles.slice(0, 6)
+const homeArticles = siteArticles.slice(0, 6)
+const selectedCapability = computed(() => engineeringMap.find(node => node.id === selectedCapabilityId.value) || engineeringMap[0])
+const selectedCapabilityArticles = computed(() => getArticlesBySlugs(selectedCapability.value.articleSlugs))
+const selectedCapabilityProjects = computed(() => getProjectsByIds(selectedCapability.value.projectIds))
 
 const highlights = [
   {
@@ -53,6 +68,48 @@ const focuses = [
 function goArticle(slug: string) {
   router.push('/articles/' + slug)
 }
+
+function askAboutProject(project: SiteProject) {
+  window.dispatchEvent(
+    new CustomEvent('ai-chat:ask', {
+      detail: {
+        prompt: `请介绍 ${project.name} 项目，并说明它体现了哪些 Web3 钱包或后端工程能力。`,
+        context: {
+          type: 'project',
+          title: project.name,
+          summary: project.positioning,
+        },
+      },
+    }),
+  )
+}
+
+function askAboutCapability(node: EngineeringMapNode) {
+  window.dispatchEvent(
+    new CustomEvent('ai-chat:ask', {
+      detail: {
+        prompt: `请解释 ${node.title} 这项能力，并结合 xiuqiu 的项目和文章说明它的工程价值。`,
+        context: {
+          type: 'home',
+          title: node.title,
+          summary: node.subtitle,
+        },
+      },
+    }),
+  )
+}
+
+function selectCapability(node: EngineeringMapNode) {
+  selectedCapabilityId.value = node.id
+}
+
+onMounted(() => {
+  setSeoMeta({
+    title: 'xiuqiu | AI-native Web3 Wallet Engineering Portfolio',
+    description: siteKnowledge.owner.summary,
+    path: '/',
+  })
+})
 </script>
 
 <template>
@@ -90,8 +147,98 @@ function goArticle(slug: string) {
     </div>
   </section>
 
+  <!-- Engineering Map -->
+  <section id="engineering-map" class="section">
+    <div class="container">
+      <div class="section-heading">
+        <p class="section-label">Engineering Map</p>
+        <h2 class="section-title">How the work connects</h2>
+        <p class="section-desc">
+          A compact map of the systems thinking behind the projects and writing.
+        </p>
+      </div>
+      <div class="engineering-map">
+        <article v-for="node in engineeringMap" :key="node.id" class="map-card">
+          <div class="map-card-top">
+            <h3 class="map-title">{{ node.title }}</h3>
+            <span class="map-count">{{ node.projectIds.length }} projects</span>
+          </div>
+          <p class="map-desc">{{ node.subtitle }}</p>
+          <div class="map-links">
+            <button
+              v-for="article in getArticlesBySlugs(node.articleSlugs).slice(0, 2)"
+              :key="article.slug"
+              class="map-link"
+              type="button"
+              @click="goArticle(article.slug)"
+            >
+              {{ article.title }}
+            </button>
+          </div>
+          <button class="map-ask" type="button" @click="askAboutCapability(node)">
+            Ask AI about {{ node.title }} &rarr;
+          </button>
+        </article>
+      </div>
+
+      <div class="capability-explorer">
+        <div class="capability-tabs" aria-label="Explore by capability">
+          <button
+            v-for="node in engineeringMap"
+            :key="node.id"
+            class="capability-tab"
+            :class="{ active: node.id === selectedCapability.id }"
+            type="button"
+            @click="selectCapability(node)"
+          >
+            {{ node.title }}
+          </button>
+        </div>
+
+        <div class="capability-panel">
+          <div class="capability-panel-main">
+            <p class="section-label">Explore by Capability</p>
+            <h3>{{ selectedCapability.title }}</h3>
+            <p>{{ selectedCapability.subtitle }}</p>
+            <button class="btn btn-primary capability-ask" type="button" @click="askAboutCapability(selectedCapability)">
+              Ask AI about this capability
+            </button>
+          </div>
+
+          <div class="capability-panel-list">
+            <p class="project-abilities-title">Related Projects</p>
+            <button
+              v-for="project in selectedCapabilityProjects"
+              :key="project.id"
+              class="capability-link"
+              type="button"
+              @click="askAboutProject(project)"
+            >
+              <span>{{ project.name }}</span>
+              <small>{{ project.positioning }}</small>
+            </button>
+          </div>
+
+          <div class="capability-panel-list">
+            <p class="project-abilities-title">Related Writing</p>
+            <button
+              v-for="article in selectedCapabilityArticles"
+              :key="article.slug"
+              class="capability-link"
+              type="button"
+              @click="goArticle(article.slug)"
+            >
+              <span>{{ article.title }}</span>
+              <small>{{ article.difficulty }} · {{ article.readingTime }}</small>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Projects -->
-  <section id="projects" class="section">
+  <section id="projects" class="section section-alt">
     <div class="container">
       <div class="section-heading">
         <p class="section-label">Projects</p>
@@ -101,7 +248,7 @@ function goArticle(slug: string) {
         </p>
       </div>
       <div class="project-grid">
-        <article v-for="p in projects" :key="p.id" class="project-card">
+        <article v-for="p in siteProjects" :key="p.id" class="project-card">
           <h3 class="project-name">{{ p.name }}</h3>
           <p class="project-role">{{ p.positioning }}</p>
           <p class="project-abilities-title">Engineering Focus</p>
@@ -111,14 +258,31 @@ function goArticle(slug: string) {
           <div class="project-tech">
             <span v-for="t in p.techStack" :key="t" class="tech-tag">{{ t }}</span>
           </div>
-          <a :href="p.github" class="project-link" target="_blank" rel="noopener">View on GitHub &rarr;</a>
+          <div class="project-related">
+            <p class="project-abilities-title">Related Writing</p>
+            <button
+              v-for="article in getRelatedArticlesForProject(p.id).slice(0, 2)"
+              :key="article.slug"
+              class="related-chip"
+              type="button"
+              @click="goArticle(article.slug)"
+            >
+              {{ article.title }}
+            </button>
+          </div>
+          <div class="project-actions">
+            <button class="project-link project-link-button" type="button" @click="askAboutProject(p)">
+              Ask AI about this project &rarr;
+            </button>
+            <a :href="p.github" class="project-link" target="_blank" rel="noopener">GitHub &rarr;</a>
+          </div>
         </article>
       </div>
     </div>
   </section>
 
   <!-- Writing Preview -->
-  <section id="writing" class="section section-alt">
+  <section id="writing" class="section">
     <div class="container">
       <div class="section-heading">
         <p class="section-label">Writing</p>
