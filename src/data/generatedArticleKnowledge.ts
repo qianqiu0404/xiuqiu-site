@@ -341,6 +341,83 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "提现系统如何区分自动重试、自动补偿和人工复核？",
       "EVM nonce 和 BTC UTXO 在提现错误处理中有什么风险？"
     ]
+  },
+  {
+    "id": 11,
+    "slug": "mpc-wallet-sign-integration",
+    "title": "wallet-sign 接入 MPC：一次签名安全边界升级的工程复盘",
+    "date": "2026-06-19",
+    "summary": "这次改造里，我把 wallet-sign 从本地私钥签名机收敛成 SignerBackend 调度层，并将 MPC 作为生产级签名后端接入，让完整私钥不再落在单点服务里。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "MPC",
+      "TSS",
+      "wallet-sign",
+      "Security"
+    ],
+    "readingTime": "6 min",
+    "difficulty": "项目拆解",
+    "conceptTags": [
+      "mpc-tss",
+      "signer-service",
+      "wallet-backend",
+      "multi-chain"
+    ],
+    "relatedProjectIds": [
+      2,
+      5
+    ],
+    "recommendedSlugs": [
+      "wallet-sign-signer",
+      "wallet-api-boundary",
+      "wallet-address-models",
+      "withdrawal-error-handling"
+    ],
+    "suggestedQuestions": [
+      "这次 wallet-sign 接入 MPC 后，签名边界发生了什么变化？",
+      "为什么我没有让 wallet-api 或 wallet-service 直接感知 MPC？",
+      "MPC 接入后，SignerBackend 抽象解决了什么问题？"
+    ]
+  },
+  {
+    "id": 12,
+    "slug": "aws-cloudhsm-wallet-sign-integration",
+    "title": "wallet-sign 接入 AWS CloudHSM：一次生产级 HSM 签名架构复盘",
+    "date": "2026-06-19",
+    "summary": "这次改造里，我把 wallet-sign 从本地私钥签名升级为 AWS CloudHSM 支撑的生产级签名架构，让私钥在 HSM 内生成、不可导出，并通过 hsm-gateway 收敛 PKCS#11 复杂性。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "AWS",
+      "CloudHSM",
+      "HSM",
+      "wallet-sign",
+      "Security"
+    ],
+    "readingTime": "8 min",
+    "difficulty": "项目拆解",
+    "conceptTags": [
+      "signer-service",
+      "wallet-backend",
+      "multi-chain",
+      "mpc-tss"
+    ],
+    "relatedProjectIds": [
+      2,
+      5
+    ],
+    "recommendedSlugs": [
+      "mpc-wallet-sign-integration",
+      "wallet-sign-signer",
+      "wallet-api-boundary",
+      "withdrawal-error-handling"
+    ],
+    "suggestedQuestions": [
+      "这次 wallet-sign 接入 AWS CloudHSM 后，签名安全边界发生了什么变化？",
+      "为什么要在 wallet-sign 和 CloudHSM 之间加 hsm-gateway？",
+      "CloudHSM 签名失败时，为什么不能 fallback 到本地私钥？"
+    ]
   }
 ]
 
@@ -494,6 +571,41 @@ export const articleSummaries: ArticleSummary[] = [
       "Security"
     ],
     "readingTime": "6 min",
+    "difficulty": "项目拆解"
+  },
+  {
+    "id": 11,
+    "slug": "mpc-wallet-sign-integration",
+    "title": "wallet-sign 接入 MPC：一次签名安全边界升级的工程复盘",
+    "date": "2026-06-19",
+    "summary": "这次改造里，我把 wallet-sign 从本地私钥签名机收敛成 SignerBackend 调度层，并将 MPC 作为生产级签名后端接入，让完整私钥不再落在单点服务里。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "MPC",
+      "TSS",
+      "wallet-sign",
+      "Security"
+    ],
+    "readingTime": "6 min",
+    "difficulty": "项目拆解"
+  },
+  {
+    "id": 12,
+    "slug": "aws-cloudhsm-wallet-sign-integration",
+    "title": "wallet-sign 接入 AWS CloudHSM：一次生产级 HSM 签名架构复盘",
+    "date": "2026-06-19",
+    "summary": "这次改造里，我把 wallet-sign 从本地私钥签名升级为 AWS CloudHSM 支撑的生产级签名架构，让私钥在 HSM 内生成、不可导出，并通过 hsm-gateway 收敛 PKCS#11 复杂性。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "AWS",
+      "CloudHSM",
+      "HSM",
+      "wallet-sign",
+      "Security"
+    ],
+    "readingTime": "8 min",
     "difficulty": "项目拆解"
   }
 ]

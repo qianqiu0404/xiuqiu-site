@@ -36,4 +36,10 @@
   <url>
     <loc>https://xiuqiu-site.vercel.app/articles/withdrawal-error-handling</loc>
   </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/articles/mpc-wallet-sign-integration</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/articles/aws-cloudhsm-wallet-sign-integration</loc>
+  </url>
 </urlset>
