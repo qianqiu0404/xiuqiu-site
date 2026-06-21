@@ -146,9 +146,9 @@ export const engineeringMap: EngineeringMapNode[] = [
   {
     id: 'mpc-tss',
     title: 'MPC / TSS',
-    subtitle: 'Distributed key generation, threshold signatures, multi-party signing.',
+    subtitle: 'Threshold signature scheme, GG18 protocol, Paillier cryptosystem, key share security.',
     projectIds: [5],
-    articleSlugs: ['wallet-sign-signer', 'wallet-address-models'],
+    articleSlugs: ['mpc-wallet-sign-integration', 'thorchain-tss-attack-analysis'],
   },
 ]
 

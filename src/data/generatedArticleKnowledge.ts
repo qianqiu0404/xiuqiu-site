@@ -418,6 +418,169 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "为什么要在 wallet-sign 和 CloudHSM 之间加 hsm-gateway？",
       "CloudHSM 签名失败时，为什么不能 fallback 到本地私钥？"
     ]
+  },
+  {
+    "id": 13,
+    "slug": "wallet-evolution-2026",
+    "title": "2026 钱包发展趋势：从私钥管理到用户意图执行层",
+    "date": "2026-06-21",
+    "summary": "截至 2026 年 6 月，我对钱包演进的理解是：钱包正在从私钥管理工具，升级为多链资产入口、交易执行入口，以及身份、风控和账户抽象层。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Account Abstraction",
+      "MPC",
+      "Chain Abstraction",
+      "BTCFi"
+    ],
+    "readingTime": "6 min",
+    "difficulty": "进阶",
+    "conceptTags": [
+      "wallet-backend",
+      "multi-chain",
+      "mpc-tss",
+      "evm",
+      "signer-service"
+    ],
+    "relatedProjectIds": [
+      1,
+      2,
+      4,
+      5,
+      6
+    ],
+    "recommendedSlugs": [
+      "mpc-wallet-sign-integration",
+      "aws-cloudhsm-wallet-sign-integration",
+      "eip-erc-protocol-evolution",
+      "wallet-api-boundary",
+      "wallet-address-models",
+      "withdrawal-error-handling"
+    ],
+    "suggestedQuestions": [
+      "未来钱包为什么是用户意图执行层？",
+      "账户抽象和链抽象分别会改变钱包后端的哪些模块？",
+      "CEX 钱包和 Web3 钱包融合后，后端需要补齐哪些能力？"
+    ]
+  },
+  {
+    "id": 14,
+    "slug": "thorchain-tss-attack-analysis",
+    "title": "THORChain Asgard Vault 被攻击不是合约漏洞：TSS/MPC 实现缺陷的安全复盘",
+    "date": "2026-06-21",
+    "summary": "2026 年 5 月 15 日，THORChain 一个 Asgard vault 被攻击，损失约 10.7M 到 11M+ 美元。这不是典型 AMM 合约漏洞，而是攻击者混入验证节点集，利用旧版 GG20 TSS 实现里的 Paillier 参数校验问题，逐步泄露 vault key material，最终重构 vault 私钥并绕过正常签名流程转走多链资产。",
+    "tags": [
+      "Web3",
+      "Security",
+      "TSS",
+      "MPC",
+      "THORChain",
+      "Cross-chain"
+    ],
+    "readingTime": "13 min",
+    "difficulty": "进阶",
+    "conceptTags": [
+      "mpc-tss",
+      "signer-service",
+      "multi-chain"
+    ],
+    "relatedProjectIds": [
+      2,
+      5
+    ],
+    "recommendedSlugs": [
+      "mpc-wallet-sign-integration",
+      "aws-cloudhsm-wallet-sign-integration",
+      "wallet-sign-signer",
+      "wallet-evolution-2026",
+      "withdrawal-error-handling"
+    ],
+    "suggestedQuestions": [
+      "THORChain 的攻击和普通 DEX 合约攻击有什么本质区别？",
+      "GG20 TSS 的 Paillier 参数校验不足如何导致密钥泄露？",
+      "为什么 THORChain 的 solvency checker 没有拦截这次攻击？",
+      "TSS/MPC 系统设计中有哪些生产级安全边界容易被低估？",
+      "这次攻击对 wallet-sign 接入 MPC 有什么警示？"
+    ]
+  },
+  {
+    "id": 15,
+    "slug": "chainflip-cross-chain-dex-analysis",
+    "title": "Chainflip 工程拆解：原生资产跨链兑换网络如何工作",
+    "date": "2026-06-21",
+    "summary": "Chainflip 不是传统 wrapped bridge，而是用 validator 网络、TSS vault、State Chain 和 JIT AMM 实现原生资产跨链兑换，把 BTC、ETH、SOL、USDC 等资产的跨链闪兑体验协议化。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Cross-chain",
+      "DEX",
+      "MPC",
+      "Liquidity"
+    ],
+    "readingTime": "8 min",
+    "difficulty": "进阶",
+    "conceptTags": [
+      "multi-chain",
+      "mpc-tss",
+      "wallet-backend",
+      "signer-service"
+    ],
+    "relatedProjectIds": [
+      1,
+      2,
+      5,
+      6
+    ],
+    "recommendedSlugs": [
+      "thorchain-tss-attack-analysis",
+      "wallet-evolution-2026",
+      "mpc-wallet-sign-integration",
+      "wallet-api-boundary",
+      "wallet-address-models"
+    ],
+    "suggestedQuestions": [
+      "Chainflip 和普通跨链桥的本质区别是什么？",
+      "Chainflip 的 JIT AMM 为什么适合跨链兑换？",
+      "钱包接入 Chainflip 这类协议时，后端要处理哪些风险？"
+    ]
+  },
+  {
+    "id": 16,
+    "slug": "new-chain-integration-checklist",
+    "title": "钱包系统上线一条新链，需要调研什么",
+    "date": "2026-06-21",
+    "summary": "上线一条新链不能只看能不能转账，而要系统调研链模型、地址体系、签名交易、充值扫链、提现构建、手续费、归集、节点、异常、风控、安全、账务和测试。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Backend",
+      "Multi-chain",
+      "Operations"
+    ],
+    "readingTime": "8 min",
+    "difficulty": "项目拆解",
+    "conceptTags": [
+      "wallet-backend",
+      "multi-chain",
+      "signer-service",
+      "api-design"
+    ],
+    "relatedProjectIds": [
+      1,
+      2
+    ],
+    "recommendedSlugs": [
+      "wallet-api-boundary",
+      "wallet-address-models",
+      "wallet-sign-signer",
+      "withdrawal-error-handling",
+      "wallet-evolution-2026"
+    ],
+    "suggestedQuestions": [
+      "钱包系统上线一条新链前，为什么不能只测试转账？",
+      "Account 模型和 UTXO 模型会怎样影响充值、提现和归集？",
+      "新链接入时，账务和对账为什么必须提前设计？"
+    ]
   }
 ]
 
@@ -604,6 +767,73 @@ export const articleSummaries: ArticleSummary[] = [
       "HSM",
       "wallet-sign",
       "Security"
+    ],
+    "readingTime": "8 min",
+    "difficulty": "项目拆解"
+  },
+  {
+    "id": 13,
+    "slug": "wallet-evolution-2026",
+    "title": "2026 钱包发展趋势：从私钥管理到用户意图执行层",
+    "date": "2026-06-21",
+    "summary": "截至 2026 年 6 月，我对钱包演进的理解是：钱包正在从私钥管理工具，升级为多链资产入口、交易执行入口，以及身份、风控和账户抽象层。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Account Abstraction",
+      "MPC",
+      "Chain Abstraction",
+      "BTCFi"
+    ],
+    "readingTime": "6 min",
+    "difficulty": "进阶"
+  },
+  {
+    "id": 14,
+    "slug": "thorchain-tss-attack-analysis",
+    "title": "THORChain Asgard Vault 被攻击不是合约漏洞：TSS/MPC 实现缺陷的安全复盘",
+    "date": "2026-06-21",
+    "summary": "2026 年 5 月 15 日，THORChain 一个 Asgard vault 被攻击，损失约 10.7M 到 11M+ 美元。这不是典型 AMM 合约漏洞，而是攻击者混入验证节点集，利用旧版 GG20 TSS 实现里的 Paillier 参数校验问题，逐步泄露 vault key material，最终重构 vault 私钥并绕过正常签名流程转走多链资产。",
+    "tags": [
+      "Web3",
+      "Security",
+      "TSS",
+      "MPC",
+      "THORChain",
+      "Cross-chain"
+    ],
+    "readingTime": "13 min",
+    "difficulty": "进阶"
+  },
+  {
+    "id": 15,
+    "slug": "chainflip-cross-chain-dex-analysis",
+    "title": "Chainflip 工程拆解：原生资产跨链兑换网络如何工作",
+    "date": "2026-06-21",
+    "summary": "Chainflip 不是传统 wrapped bridge，而是用 validator 网络、TSS vault、State Chain 和 JIT AMM 实现原生资产跨链兑换，把 BTC、ETH、SOL、USDC 等资产的跨链闪兑体验协议化。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Cross-chain",
+      "DEX",
+      "MPC",
+      "Liquidity"
+    ],
+    "readingTime": "8 min",
+    "difficulty": "进阶"
+  },
+  {
+    "id": 16,
+    "slug": "new-chain-integration-checklist",
+    "title": "钱包系统上线一条新链，需要调研什么",
+    "date": "2026-06-21",
+    "summary": "上线一条新链不能只看能不能转账，而要系统调研链模型、地址体系、签名交易、充值扫链、提现构建、手续费、归集、节点、异常、风控、安全、账务和测试。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Backend",
+      "Multi-chain",
+      "Operations"
     ],
     "readingTime": "8 min",
     "difficulty": "项目拆解"

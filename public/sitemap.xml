@@ -42,4 +42,16 @@
   <url>
     <loc>https://xiuqiu-site.vercel.app/articles/aws-cloudhsm-wallet-sign-integration</loc>
   </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/articles/wallet-evolution-2026</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/articles/thorchain-tss-attack-analysis</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/articles/chainflip-cross-chain-dex-analysis</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/articles/new-chain-integration-checklist</loc>
+  </url>
 </urlset>
