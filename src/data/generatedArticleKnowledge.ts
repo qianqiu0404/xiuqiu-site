@@ -581,6 +581,80 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "Account 模型和 UTXO 模型会怎样影响充值、提现和归集？",
       "新链接入时，账务和对账为什么必须提前设计？"
     ]
+  },
+  {
+    "id": 17,
+    "slug": "lubian-weak-private-key-op-return",
+    "title": "LuBian 事件复盘：弱私钥熵与 BTC OP_RETURN 链上留言",
+    "date": "2026-06-21",
+    "summary": "LuBian 事件不是 DEX 或智能合约漏洞，而是 BTC 钱包私钥生成熵不足导致私钥可枚举；后续 LuBian 通过 1500+ 笔 OP_RETURN 交易在 Bitcoin 链上留言，请求攻击者归还资金。",
+    "tags": [
+      "Web3",
+      "Security",
+      "Bitcoin",
+      "Wallet",
+      "OP_RETURN"
+    ],
+    "readingTime": "6 min",
+    "difficulty": "进阶",
+    "conceptTags": [
+      "wallet-backend",
+      "signer-service",
+      "multi-chain"
+    ],
+    "relatedProjectIds": [
+      1,
+      2
+    ],
+    "recommendedSlugs": [
+      "wallet-sign-signer",
+      "wallet-address-models",
+      "new-chain-integration-checklist",
+      "withdrawal-error-handling"
+    ],
+    "suggestedQuestions": [
+      "LuBian 事件为什么是私钥生成安全事故？",
+      "BTC OP_RETURN 链上留言是怎么工作的？",
+      "钱包系统为什么不能自研随机数或 keygen 算法？"
+    ]
+  },
+  {
+    "id": 18,
+    "slug": "kelpdao-layerzero-dvn-verification-failure",
+    "title": "KelpDAO 事件复盘：LayerZero 单 DVN 与跨链验证路径失效",
+    "date": "2026-06-21",
+    "summary": "KelpDAO 事件不是重入、价格操纵或私钥泄露，而是 LayerZero 跨链验证路径失效：Unichain 到 Ethereum 路径只配置单一 DVN，攻击者让验证层读取伪造链状态，最终释放 116,500 rsETH。",
+    "tags": [
+      "Web3",
+      "Security",
+      "Cross-chain",
+      "LayerZero",
+      "Bridge",
+      "DeFi"
+    ],
+    "readingTime": "6 min",
+    "difficulty": "进阶",
+    "conceptTags": [
+      "multi-chain",
+      "wallet-backend",
+      "mpc-tss"
+    ],
+    "relatedProjectIds": [
+      1,
+      5,
+      6
+    ],
+    "recommendedSlugs": [
+      "chainflip-cross-chain-dex-analysis",
+      "thorchain-tss-attack-analysis",
+      "wallet-evolution-2026",
+      "new-chain-integration-checklist"
+    ],
+    "suggestedQuestions": [
+      "KelpDAO 事件为什么是跨链验证路径失败？",
+      "LayerZero DVN 单点配置有什么风险？",
+      "为什么 Aave 没被直接攻击却会被波及？"
+    ]
   }
 ]
 
@@ -837,5 +911,38 @@ export const articleSummaries: ArticleSummary[] = [
     ],
     "readingTime": "8 min",
     "difficulty": "项目拆解"
+  },
+  {
+    "id": 17,
+    "slug": "lubian-weak-private-key-op-return",
+    "title": "LuBian 事件复盘：弱私钥熵与 BTC OP_RETURN 链上留言",
+    "date": "2026-06-21",
+    "summary": "LuBian 事件不是 DEX 或智能合约漏洞，而是 BTC 钱包私钥生成熵不足导致私钥可枚举；后续 LuBian 通过 1500+ 笔 OP_RETURN 交易在 Bitcoin 链上留言，请求攻击者归还资金。",
+    "tags": [
+      "Web3",
+      "Security",
+      "Bitcoin",
+      "Wallet",
+      "OP_RETURN"
+    ],
+    "readingTime": "6 min",
+    "difficulty": "进阶"
+  },
+  {
+    "id": 18,
+    "slug": "kelpdao-layerzero-dvn-verification-failure",
+    "title": "KelpDAO 事件复盘：LayerZero 单 DVN 与跨链验证路径失效",
+    "date": "2026-06-21",
+    "summary": "KelpDAO 事件不是重入、价格操纵或私钥泄露，而是 LayerZero 跨链验证路径失效：Unichain 到 Ethereum 路径只配置单一 DVN，攻击者让验证层读取伪造链状态，最终释放 116,500 rsETH。",
+    "tags": [
+      "Web3",
+      "Security",
+      "Cross-chain",
+      "LayerZero",
+      "Bridge",
+      "DeFi"
+    ],
+    "readingTime": "6 min",
+    "difficulty": "进阶"
   }
 ]
