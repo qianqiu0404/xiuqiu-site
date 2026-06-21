@@ -102,6 +102,11 @@ const projectMetadata: Record<number, Pick<SiteProject, 'conceptTags' | 'related
 
 export const siteArticles: SiteArticle[] = articleKnowledge
 
+export const siteArticlesByNewest: SiteArticle[] = [...siteArticles].sort((a, b) => {
+  const dateOrder = b.date.localeCompare(a.date)
+  return dateOrder || b.id - a.id
+})
+
 export const siteProjects: SiteProject[] = projects.map(project => ({
   ...project,
   ...projectMetadata[project.id],

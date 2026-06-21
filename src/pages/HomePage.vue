@@ -6,7 +6,7 @@ import {
   getArticlesBySlugs,
   getProjectsByIds,
   getRelatedArticlesForProject,
-  siteArticles,
+  siteArticlesByNewest,
   siteKnowledge,
   siteProjects,
   type SiteProject,
@@ -22,7 +22,7 @@ function scrollTo(id: string) {
   if (el) el.scrollIntoView({ behavior: 'smooth' })
 }
 
-const homeArticles = siteArticles.slice(0, 6)
+const homeArticles = siteArticlesByNewest.slice(0, 6)
 const selectedCapability = computed(() => engineeringMap.find(node => node.id === selectedCapabilityId.value) || engineeringMap[0])
 const selectedCapabilityArticles = computed(() => getArticlesBySlugs(selectedCapability.value.articleSlugs))
 const selectedCapabilityProjects = computed(() => getProjectsByIds(selectedCapability.value.projectIds))

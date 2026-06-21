@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { engineeringMap, siteArticles, siteKnowledge, type KnowledgeTag } from '../data/siteKnowledge'
+import { engineeringMap, siteArticles, siteArticlesByNewest, siteKnowledge, type KnowledgeTag } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
 
 const query = ref('')
@@ -18,7 +18,7 @@ const allDifficulties = computed(() => ['All', ...Array.from(new Set(siteArticle
 const filteredArticles = computed(() => {
   const keyword = query.value.trim().toLowerCase()
 
-  return siteArticles.filter(article => {
+  return siteArticlesByNewest.filter(article => {
     const matchesKeyword =
       !keyword ||
       [
