@@ -60,4 +60,10 @@
   <url>
     <loc>https://xiuqiu-site.vercel.app/articles/kelpdao-layerzero-dvn-verification-failure</loc>
   </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/articles/evm-internal-transfer-deposit-indexer</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/articles/cex-evm-wallet-deposit-withdrawal-loop</loc>
+  </url>
 </urlset>

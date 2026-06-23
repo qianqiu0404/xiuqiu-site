@@ -655,6 +655,82 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "LayerZero DVN 单点配置有什么风险？",
       "为什么 Aave 没被直接攻击却会被波及？"
     ]
+  },
+  {
+    "id": 19,
+    "slug": "evm-internal-transfer-deposit-indexer",
+    "title": "EVM 充值扫链进阶：如何识别 Internal Txns 原生币入账",
+    "date": "2026-06-23",
+    "summary": "在 EVM 链上，原生币充值不一定只来自外层 tx.value。Bridge、聚合器和合约钱包可能通过内部调用把 native coin 转入充值地址，扫链服务需要从区块交易、日志和 execution trace 里共同识别这类入账。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Backend",
+      "Indexer",
+      "EVM",
+      "Bridge"
+    ],
+    "readingTime": "8 min",
+    "difficulty": "项目拆解",
+    "conceptTags": [
+      "wallet-backend",
+      "multi-chain",
+      "api-design"
+    ],
+    "relatedProjectIds": [
+      1,
+      2
+    ],
+    "recommendedSlugs": [
+      "new-chain-integration-checklist",
+      "wallet-api-boundary",
+      "wallet-address-models",
+      "withdrawal-error-handling",
+      "chainflip-cross-chain-dex-analysis"
+    ],
+    "suggestedQuestions": [
+      "为什么 MetaMask Bridge 过来的 BNB 会出现在 Internal Txns 里？",
+      "EVM 原生币充值为什么不能只看 tx.to 和 tx.value？",
+      "扫链服务要怎么扫到 internal transfer 类型的原生币充值？"
+    ]
+  },
+  {
+    "id": 20,
+    "slug": "cex-evm-wallet-deposit-withdrawal-loop",
+    "title": "从充值到提现：我完整跑通了一条交易所 EVM 钱包链路",
+    "date": "2026-06-23",
+    "summary": "这篇复盘记录我如何跑通交易所钱包充值提现闭环：把一条 EVM 链从地址生成、充值扫链、余额入账、提现冻结、交易构建、签名广播、receipt 确认到业务通知串成完整资金链路。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Backend",
+      "Exchange Wallet",
+      "EVM"
+    ],
+    "readingTime": "8 min",
+    "difficulty": "项目拆解",
+    "conceptTags": [
+      "wallet-backend",
+      "multi-chain",
+      "api-design",
+      "evm"
+    ],
+    "relatedProjectIds": [
+      1,
+      2
+    ],
+    "recommendedSlugs": [
+      "evm-internal-transfer-deposit-indexer",
+      "withdrawal-error-handling",
+      "new-chain-integration-checklist",
+      "wallet-api-boundary",
+      "wallet-sign-signer"
+    ],
+    "suggestedQuestions": [
+      "交易所钱包充值提现闭环是什么？",
+      "为什么 broadcasted 不等于提现成功？",
+      "提现时 available_balance 和 lock_balance 应该怎么变化？"
+    ]
   }
 ]
 
@@ -944,5 +1020,38 @@ export const articleSummaries: ArticleSummary[] = [
     ],
     "readingTime": "6 min",
     "difficulty": "进阶"
+  },
+  {
+    "id": 19,
+    "slug": "evm-internal-transfer-deposit-indexer",
+    "title": "EVM 充值扫链进阶：如何识别 Internal Txns 原生币入账",
+    "date": "2026-06-23",
+    "summary": "在 EVM 链上，原生币充值不一定只来自外层 tx.value。Bridge、聚合器和合约钱包可能通过内部调用把 native coin 转入充值地址，扫链服务需要从区块交易、日志和 execution trace 里共同识别这类入账。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Backend",
+      "Indexer",
+      "EVM",
+      "Bridge"
+    ],
+    "readingTime": "8 min",
+    "difficulty": "项目拆解"
+  },
+  {
+    "id": 20,
+    "slug": "cex-evm-wallet-deposit-withdrawal-loop",
+    "title": "从充值到提现：我完整跑通了一条交易所 EVM 钱包链路",
+    "date": "2026-06-23",
+    "summary": "这篇复盘记录我如何跑通交易所钱包充值提现闭环：把一条 EVM 链从地址生成、充值扫链、余额入账、提现冻结、交易构建、签名广播、receipt 确认到业务通知串成完整资金链路。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Backend",
+      "Exchange Wallet",
+      "EVM"
+    ],
+    "readingTime": "8 min",
+    "difficulty": "项目拆解"
   }
 ]
