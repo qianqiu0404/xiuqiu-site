@@ -771,6 +771,45 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "跨链库存失衡会怎样影响桥和跨链兑换报价？",
       "钱包后端如何在流动性变差时兜住跨链体验？"
     ]
+  },
+  {
+    "id": 22,
+    "slug": "bitcoin-utxo-ordinals-runes-indexer",
+    "title": "Bitcoin 区块里都是 UTXO，为什么还能有 NFT 和 Token",
+    "date": "2026-06-24",
+    "summary": "Bitcoin 本身没有账户模型、智能合约 NFT 或 ERC20 余额表，但 UTXO 交易可以携带 OP_RETURN、Taproot witness 和 inscription 数据，再由 Ordinals、BRC-20、Runes 等协议和链下索引器解释成 NFT 或 Token 状态。",
+    "tags": [
+      "Bitcoin",
+      "UTXO",
+      "Ordinals",
+      "Runes",
+      "Indexer",
+      "Wallet"
+    ],
+    "readingTime": "7 min",
+    "difficulty": "进阶",
+    "conceptTags": [
+      "wallet-backend",
+      "multi-chain",
+      "signer-service"
+    ],
+    "relatedProjectIds": [
+      1,
+      2,
+      6
+    ],
+    "recommendedSlugs": [
+      "wallet-address-models",
+      "lubian-weak-private-key-op-return",
+      "new-chain-integration-checklist",
+      "wallet-evolution-2026",
+      "wallet-sign-signer"
+    ],
+    "suggestedQuestions": [
+      "Bitcoin 都是 UTXO 交易，为什么还能有 NFT 和 Token？",
+      "Ordinals、BRC-20 和 Runes 分别依赖什么数据结构？",
+      "BTC 钱包为什么需要链下索引器才能展示铭文和 Rune 资产？"
+    ]
   }
 ]
 
@@ -1109,6 +1148,23 @@ export const articleSummaries: ArticleSummary[] = [
       "Backend"
     ],
     "readingTime": "9 min",
+    "difficulty": "进阶"
+  },
+  {
+    "id": 22,
+    "slug": "bitcoin-utxo-ordinals-runes-indexer",
+    "title": "Bitcoin 区块里都是 UTXO，为什么还能有 NFT 和 Token",
+    "date": "2026-06-24",
+    "summary": "Bitcoin 本身没有账户模型、智能合约 NFT 或 ERC20 余额表，但 UTXO 交易可以携带 OP_RETURN、Taproot witness 和 inscription 数据，再由 Ordinals、BRC-20、Runes 等协议和链下索引器解释成 NFT 或 Token 状态。",
+    "tags": [
+      "Bitcoin",
+      "UTXO",
+      "Ordinals",
+      "Runes",
+      "Indexer",
+      "Wallet"
+    ],
+    "readingTime": "7 min",
     "difficulty": "进阶"
   }
 ]
