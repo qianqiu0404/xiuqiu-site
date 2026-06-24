@@ -661,7 +661,7 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "slug": "evm-internal-transfer-deposit-indexer",
     "title": "EVM 充值扫链进阶：如何识别 Internal Txns 原生币入账",
     "date": "2026-06-23",
-    "summary": "在 EVM 链上，原生币充值不一定只来自外层 tx.value。Bridge、聚合器和合约钱包可能通过内部调用把 native coin 转入充值地址，扫链服务需要从区块交易、日志和 execution trace 里共同识别这类入账。",
+    "summary": "EVM Internal Native Transfer 不会出现在外层 tx.to，也不一定出现在 receipt logs。交易所要识别这类充值，本质是解析 EVM 的 CALL 执行树，通过 debug_traceTransaction 或 trace_transaction 找到 value > 0 且 to 命中平台充值地址的调用节点。",
     "tags": [
       "Web3",
       "Wallet",
@@ -670,7 +670,7 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "EVM",
       "Bridge"
     ],
-    "readingTime": "8 min",
+    "readingTime": "5 min",
     "difficulty": "项目拆解",
     "conceptTags": [
       "wallet-backend",
@@ -686,12 +686,12 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "wallet-api-boundary",
       "wallet-address-models",
       "withdrawal-error-handling",
-      "chainflip-cross-chain-dex-analysis"
+      "cex-evm-wallet-deposit-withdrawal-loop"
     ],
     "suggestedQuestions": [
-      "为什么 MetaMask Bridge 过来的 BNB 会出现在 Internal Txns 里？",
-      "EVM 原生币充值为什么不能只看 tx.to 和 tx.value？",
-      "扫链服务要怎么扫到 internal transfer 类型的原生币充值？"
+      "Internal Native Transfer 怎么通过 CALL 树解析？",
+      "为什么 receipt logs 看不到原生币内部转账？",
+      "ETH 普通充值、ERC20 和 Internal ETH 充值分别应该看哪里？"
     ]
   },
   {
@@ -730,6 +730,46 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "交易所钱包充值提现闭环是什么？",
       "为什么 broadcasted 不等于提现成功？",
       "提现时 available_balance 和 lock_balance 应该怎么变化？"
+    ]
+  },
+  {
+    "id": 21,
+    "slug": "bridge-liquidity-after-market-crash",
+    "title": "市场暴跌后，为什么跨链桥和跨链兑换会变难用",
+    "date": "2026-06-24",
+    "summary": "市场暴跌后，跨链桥和跨链兑换的流动性会变差，本质是单边逃离、LP 撤流动性、做市商扩大价差、跨链库存失衡和价格波动风险同时发生。钱包后端不能只展示 quote，而要把跨链交易建模成可观测、可解释、可补偿的异步状态机。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Cross-chain",
+      "Liquidity",
+      "Bridge",
+      "Backend"
+    ],
+    "readingTime": "9 min",
+    "difficulty": "进阶",
+    "conceptTags": [
+      "wallet-backend",
+      "multi-chain",
+      "api-design"
+    ],
+    "relatedProjectIds": [
+      1,
+      2,
+      5,
+      6
+    ],
+    "recommendedSlugs": [
+      "chainflip-cross-chain-dex-analysis",
+      "wallet-evolution-2026",
+      "new-chain-integration-checklist",
+      "cex-evm-wallet-deposit-withdrawal-loop",
+      "thorchain-tss-attack-analysis"
+    ],
+    "suggestedQuestions": [
+      "市场暴跌后为什么桥接流动性会变差？",
+      "跨链库存失衡会怎样影响桥和跨链兑换报价？",
+      "钱包后端如何在流动性变差时兜住跨链体验？"
     ]
   }
 ]
@@ -1026,7 +1066,7 @@ export const articleSummaries: ArticleSummary[] = [
     "slug": "evm-internal-transfer-deposit-indexer",
     "title": "EVM 充值扫链进阶：如何识别 Internal Txns 原生币入账",
     "date": "2026-06-23",
-    "summary": "在 EVM 链上，原生币充值不一定只来自外层 tx.value。Bridge、聚合器和合约钱包可能通过内部调用把 native coin 转入充值地址，扫链服务需要从区块交易、日志和 execution trace 里共同识别这类入账。",
+    "summary": "EVM Internal Native Transfer 不会出现在外层 tx.to，也不一定出现在 receipt logs。交易所要识别这类充值，本质是解析 EVM 的 CALL 执行树，通过 debug_traceTransaction 或 trace_transaction 找到 value > 0 且 to 命中平台充值地址的调用节点。",
     "tags": [
       "Web3",
       "Wallet",
@@ -1035,7 +1075,7 @@ export const articleSummaries: ArticleSummary[] = [
       "EVM",
       "Bridge"
     ],
-    "readingTime": "8 min",
+    "readingTime": "5 min",
     "difficulty": "项目拆解"
   },
   {
@@ -1053,5 +1093,22 @@ export const articleSummaries: ArticleSummary[] = [
     ],
     "readingTime": "8 min",
     "difficulty": "项目拆解"
+  },
+  {
+    "id": 21,
+    "slug": "bridge-liquidity-after-market-crash",
+    "title": "市场暴跌后，为什么跨链桥和跨链兑换会变难用",
+    "date": "2026-06-24",
+    "summary": "市场暴跌后，跨链桥和跨链兑换的流动性会变差，本质是单边逃离、LP 撤流动性、做市商扩大价差、跨链库存失衡和价格波动风险同时发生。钱包后端不能只展示 quote，而要把跨链交易建模成可观测、可解释、可补偿的异步状态机。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Cross-chain",
+      "Liquidity",
+      "Bridge",
+      "Backend"
+    ],
+    "readingTime": "9 min",
+    "difficulty": "进阶"
   }
 ]
