@@ -4,7 +4,7 @@
   "slug": "thorchain-tss-attack-analysis",
   "title": "THORChain Asgard Vault 被攻击不是合约漏洞：TSS/MPC 实现缺陷的安全复盘",
   "date": "2026-06-21",
-  "summary": "2026 年 5 月 15 日，THORChain 一个 Asgard vault 被攻击，损失约 10.7M 到 11M+ 美元。这不是典型 AMM 合约漏洞，而是攻击者混入验证节点集，利用旧版 GG20 TSS 实现里的 Paillier 参数校验问题，逐步泄露 vault key material，最终重构 vault 私钥并绕过正常签名流程转走多链资产。",
+  "summary": "从 TSS/MPC 签名安全边界复盘 THORChain Asgard vault 攻击：旧版 GG20 实现的 Paillier 参数校验不足，让恶意节点逐步泄露 key material 并重构 vault 私钥。",
   "tags": [
     "Web3",
     "Security",
@@ -52,6 +52,8 @@
 一句话总结：
 
 > 这不是交易合约被打穿，而是管钱的 TSS/MPC 金库钥匙被推出来了。
+
+所以这篇文章的重点不是“跨链 DEX 事故”，而是签名系统事故。它和 `wallet-sign`、MPC、CloudHSM 文章放在一起看，讨论的是同一个问题：当资金控制权收敛到某套签名系统里，协议实现、参数校验、节点准入和链上异常出金监控是否真的能撑住生产环境。
 
 # THORChain 的钱是怎么保管的
 

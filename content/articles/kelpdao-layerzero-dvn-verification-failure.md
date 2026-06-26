@@ -4,7 +4,7 @@
   "slug": "kelpdao-layerzero-dvn-verification-failure",
   "title": "KelpDAO 事件复盘：LayerZero 单 DVN 与跨链验证路径失效",
   "date": "2026-06-21",
-  "summary": "KelpDAO 事件不是重入、价格操纵或私钥泄露，而是 LayerZero 跨链验证路径失效：Unichain 到 Ethereum 路径只配置单一 DVN，攻击者让验证层读取伪造链状态，最终释放 116,500 rsETH。",
+  "summary": "从跨链验证路径角度复盘 KelpDAO：问题不是普通合约漏洞，而是单 DVN、RPC 可信边界和源链事实验证失效导致目标链释放 rsETH。",
   "tags": [
     "Web3",
     "Security",
@@ -47,6 +47,8 @@ KelpDAO 事件不是普通合约漏洞。
 2026 年 4 月 18 日，攻击者利用 KelpDAO 的 LayerZero 跨链配置和验证路径问题，让 Ethereum 主网 adapter 释放了 **116,500 rsETH**。后续第二笔约 **40,000 rsETH** 的释放尝试被 emergency multisig 冻结 recipient 后阻止。
 
 这类事件的危险之处在于：链上合约可以完全按照代码规则执行，但代码信任的输入已经坏了。
+
+所以这篇复盘的重点不是“某个桥又被黑了”，而是跨链系统里的事实来源问题：目标链到底相信谁观察到的源链状态，RPC、DVN、packet 和 adapter 之间的信任边界是否足够分散。
 
 # KelpDAO 和 rsETH 跨链模型
 
@@ -283,6 +285,8 @@ RPC / indexer 是否多源交叉验证
 最终结论是：
 
 > 跨链桥的安全不只取决于目标链合约，也取决于源链事实如何被观察、验证和传递。
+
+放到钱包后端语境里，KelpDAO 的价值在于提醒：接入跨链协议时，不能只把 bridge 当成一个 API。钱包需要理解跨链路径的验证者数量、RPC 依赖、异常限额、冻结能力和最终到账语义，否则前端展示的“桥接中”背后可能是一条单点验证路径。
 
 # 参考来源
 

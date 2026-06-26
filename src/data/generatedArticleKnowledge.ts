@@ -28,7 +28,7 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "slug": "api-system-calls",
     "title": "API 到底是什么？从钱包后端项目理解系统调用",
     "date": "2026-05-14",
-    "summary": "从前端、后端、数据库、第三方服务、链节点和签名机之间的关系，拆解 API 在现代软件系统中的连接作用。",
+    "summary": "作为基础补充，解释 API 为什么是系统能力边界；核心工程用法已在 wallet-api 职责边界文章中展开。",
     "tags": [
       "API",
       "Backend",
@@ -47,8 +47,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
       3
     ],
     "recommendedSlugs": [
-      "http-rpc-grpc",
-      "wallet-api-boundary"
+      "wallet-api-boundary",
+      "cex-evm-wallet-deposit-withdrawal-loop"
     ],
     "suggestedQuestions": [
       "这篇文章如何解释钱包 API 的系统边界？",
@@ -60,7 +60,7 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "slug": "http-rpc-grpc",
     "title": "HTTP、RPC、gRPC 的区别与项目使用场景",
     "date": "2026-05-16",
-    "summary": "结合钱包系统和行情服务，解释 HTTP 更适合对外接口，gRPC 更适合内部服务调用，RPC 是远程过程调用思想。",
+    "summary": "作为基础补充，解释 HTTP、RPC、gRPC 的边界；在钱包工程里重点落到 wallet-api 对外 HTTP、wallet-sign 内部 gRPC。",
     "tags": [
       "HTTP",
       "RPC",
@@ -79,8 +79,9 @@ export const articleKnowledge: ArticleKnowledge[] = [
       3
     ],
     "recommendedSlugs": [
-      "api-system-calls",
-      "market-services-data-flow"
+      "wallet-sign-signer",
+      "wallet-api-boundary",
+      "cex-evm-wallet-deposit-withdrawal-loop"
     ],
     "suggestedQuestions": [
       "HTTP、RPC、gRPC 在钱包系统里分别适合什么场景？",
@@ -92,7 +93,7 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "slug": "wallet-api-boundary",
     "title": "wallet-api：多链钱包后端 API 的职责边界",
     "date": "2026-05-19",
-    "summary": "梳理多链钱包 API 服务如何组织链配置、接口入口、节点调用、交易构建和签名服务协作。",
+    "summary": "梳理多链钱包 API 服务如何组织链配置、接口入口、节点 RPC 转换、交易构建、错误处理和签名服务协作。",
     "tags": [
       "Web3",
       "Wallet",
@@ -116,7 +117,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     ],
     "suggestedQuestions": [
       "wallet-api 应该负责什么，不应该负责什么？",
-      "多链钱包 API 的核心复杂度在哪里？"
+      "多链钱包 API 的核心复杂度在哪里？",
+      "为什么 API 不是一个 URL，而是钱包系统的能力边界？"
     ]
   },
   {
@@ -149,7 +151,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     ],
     "suggestedQuestions": [
       "为什么签名机要从 API 层独立出来？",
-      "签名服务如何降低私钥暴露风险？"
+      "签名服务如何降低私钥暴露风险？",
+      "为什么 wallet-api 和 wallet-sign 之间适合用内部 RPC / gRPC？"
     ]
   },
   {
@@ -468,7 +471,7 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "slug": "thorchain-tss-attack-analysis",
     "title": "THORChain Asgard Vault 被攻击不是合约漏洞：TSS/MPC 实现缺陷的安全复盘",
     "date": "2026-06-21",
-    "summary": "2026 年 5 月 15 日，THORChain 一个 Asgard vault 被攻击，损失约 10.7M 到 11M+ 美元。这不是典型 AMM 合约漏洞，而是攻击者混入验证节点集，利用旧版 GG20 TSS 实现里的 Paillier 参数校验问题，逐步泄露 vault key material，最终重构 vault 私钥并绕过正常签名流程转走多链资产。",
+    "summary": "从 TSS/MPC 签名安全边界复盘 THORChain Asgard vault 攻击：旧版 GG20 实现的 Paillier 参数校验不足，让恶意节点逐步泄露 key material 并重构 vault 私钥。",
     "tags": [
       "Web3",
       "Security",
@@ -587,7 +590,7 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "slug": "lubian-weak-private-key-op-return",
     "title": "LuBian 事件复盘：弱私钥熵与 BTC OP_RETURN 链上留言",
     "date": "2026-06-21",
-    "summary": "LuBian 事件不是 DEX 或智能合约漏洞，而是 BTC 钱包私钥生成熵不足导致私钥可枚举；后续 LuBian 通过 1500+ 笔 OP_RETURN 交易在 Bitcoin 链上留言，请求攻击者归还资金。",
+    "summary": "从钱包 key generation 安全角度复盘 LuBian：BTC 私钥生成熵不足会让地址可枚举，OP_RETURN 链上留言只是事故后的链上痕迹。",
     "tags": [
       "Web3",
       "Security",
@@ -623,7 +626,7 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "slug": "kelpdao-layerzero-dvn-verification-failure",
     "title": "KelpDAO 事件复盘：LayerZero 单 DVN 与跨链验证路径失效",
     "date": "2026-06-21",
-    "summary": "KelpDAO 事件不是重入、价格操纵或私钥泄露，而是 LayerZero 跨链验证路径失效：Unichain 到 Ethereum 路径只配置单一 DVN，攻击者让验证层读取伪造链状态，最终释放 116,500 rsETH。",
+    "summary": "从跨链验证路径角度复盘 KelpDAO：问题不是普通合约漏洞，而是单 DVN、RPC 可信边界和源链事实验证失效导致目标链释放 rsETH。",
     "tags": [
       "Web3",
       "Security",
@@ -819,7 +822,7 @@ export const articleSummaries: ArticleSummary[] = [
     "slug": "api-system-calls",
     "title": "API 到底是什么？从钱包后端项目理解系统调用",
     "date": "2026-05-14",
-    "summary": "从前端、后端、数据库、第三方服务、链节点和签名机之间的关系，拆解 API 在现代软件系统中的连接作用。",
+    "summary": "作为基础补充，解释 API 为什么是系统能力边界；核心工程用法已在 wallet-api 职责边界文章中展开。",
     "tags": [
       "API",
       "Backend",
@@ -834,7 +837,7 @@ export const articleSummaries: ArticleSummary[] = [
     "slug": "http-rpc-grpc",
     "title": "HTTP、RPC、gRPC 的区别与项目使用场景",
     "date": "2026-05-16",
-    "summary": "结合钱包系统和行情服务，解释 HTTP 更适合对外接口，gRPC 更适合内部服务调用，RPC 是远程过程调用思想。",
+    "summary": "作为基础补充，解释 HTTP、RPC、gRPC 的边界；在钱包工程里重点落到 wallet-api 对外 HTTP、wallet-sign 内部 gRPC。",
     "tags": [
       "HTTP",
       "RPC",
@@ -849,7 +852,7 @@ export const articleSummaries: ArticleSummary[] = [
     "slug": "wallet-api-boundary",
     "title": "wallet-api：多链钱包后端 API 的职责边界",
     "date": "2026-05-19",
-    "summary": "梳理多链钱包 API 服务如何组织链配置、接口入口、节点调用、交易构建和签名服务协作。",
+    "summary": "梳理多链钱包 API 服务如何组织链配置、接口入口、节点 RPC 转换、交易构建、错误处理和签名服务协作。",
     "tags": [
       "Web3",
       "Wallet",
@@ -1022,7 +1025,7 @@ export const articleSummaries: ArticleSummary[] = [
     "slug": "thorchain-tss-attack-analysis",
     "title": "THORChain Asgard Vault 被攻击不是合约漏洞：TSS/MPC 实现缺陷的安全复盘",
     "date": "2026-06-21",
-    "summary": "2026 年 5 月 15 日，THORChain 一个 Asgard vault 被攻击，损失约 10.7M 到 11M+ 美元。这不是典型 AMM 合约漏洞，而是攻击者混入验证节点集，利用旧版 GG20 TSS 实现里的 Paillier 参数校验问题，逐步泄露 vault key material，最终重构 vault 私钥并绕过正常签名流程转走多链资产。",
+    "summary": "从 TSS/MPC 签名安全边界复盘 THORChain Asgard vault 攻击：旧版 GG20 实现的 Paillier 参数校验不足，让恶意节点逐步泄露 key material 并重构 vault 私钥。",
     "tags": [
       "Web3",
       "Security",
@@ -1072,7 +1075,7 @@ export const articleSummaries: ArticleSummary[] = [
     "slug": "lubian-weak-private-key-op-return",
     "title": "LuBian 事件复盘：弱私钥熵与 BTC OP_RETURN 链上留言",
     "date": "2026-06-21",
-    "summary": "LuBian 事件不是 DEX 或智能合约漏洞，而是 BTC 钱包私钥生成熵不足导致私钥可枚举；后续 LuBian 通过 1500+ 笔 OP_RETURN 交易在 Bitcoin 链上留言，请求攻击者归还资金。",
+    "summary": "从钱包 key generation 安全角度复盘 LuBian：BTC 私钥生成熵不足会让地址可枚举，OP_RETURN 链上留言只是事故后的链上痕迹。",
     "tags": [
       "Web3",
       "Security",
@@ -1088,7 +1091,7 @@ export const articleSummaries: ArticleSummary[] = [
     "slug": "kelpdao-layerzero-dvn-verification-failure",
     "title": "KelpDAO 事件复盘：LayerZero 单 DVN 与跨链验证路径失效",
     "date": "2026-06-21",
-    "summary": "KelpDAO 事件不是重入、价格操纵或私钥泄露，而是 LayerZero 跨链验证路径失效：Unichain 到 Ethereum 路径只配置单一 DVN，攻击者让验证层读取伪造链状态，最终释放 116,500 rsETH。",
+    "summary": "从跨链验证路径角度复盘 KelpDAO：问题不是普通合约漏洞，而是单 DVN、RPC 可信边界和源链事实验证失效导致目标链释放 rsETH。",
     "tags": [
       "Web3",
       "Security",

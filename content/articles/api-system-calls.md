@@ -4,7 +4,7 @@
   "slug": "api-system-calls",
   "title": "API 到底是什么？从钱包后端项目理解系统调用",
   "date": "2026-05-14",
-  "summary": "从前端、后端、数据库、第三方服务、链节点和签名机之间的关系，拆解 API 在现代软件系统中的连接作用。",
+  "summary": "作为基础补充，解释 API 为什么是系统能力边界；核心工程用法已在 wallet-api 职责边界文章中展开。",
   "tags": [
     "API",
     "Backend",
@@ -23,8 +23,8 @@
     3
   ],
   "recommendedSlugs": [
-    "http-rpc-grpc",
-    "wallet-api-boundary"
+    "wallet-api-boundary",
+    "cex-evm-wallet-deposit-withdrawal-loop"
   ],
   "suggestedQuestions": [
     "这篇文章如何解释钱包 API 的系统边界？",

@@ -29,7 +29,8 @@
   ],
   "suggestedQuestions": [
     "为什么签名机要从 API 层独立出来？",
-    "签名服务如何降低私钥暴露风险？"
+    "签名服务如何降低私钥暴露风险？",
+    "为什么 wallet-api 和 wallet-sign 之间适合用内部 RPC / gRPC？"
   ]
 }
 ---
@@ -100,6 +101,35 @@ wallet-api → gRPC SignTransaction(request)
   → 返回签名后的交易
 ```
 
+## 为什么内部调用更适合 RPC / gRPC
+
+`wallet-api` 对外暴露 HTTP，是因为前端、管理台和外部调用方更适合使用 JSON、状态码、鉴权 Header 和清晰的资源路径。
+
+但 `wallet-api` 调用 `wallet-sign` 时，调用语义已经不是“访问一个网页资源”，而是“请求一次内部签名能力”：
+
+```text
+SignTransaction(chainId, unsignedTx, keyRef)
+SignDigest(chainId, digest, keyRef)
+GetPublicKey(keyRef)
+```
+
+这类调用天然接近 RPC。gRPC 的价值不在于“比 HTTP 高级”，而在于它适合内部服务之间定义强类型契约：proto 明确字段、Go 代码自动生成、调用方式接近本地函数，也更容易给签名能力加超时、审计、限流和内部鉴权。
+
+所以这里的技术选择不是为了炫技，而是为了表达安全边界：
+
+```text
+公网 HTTP:
+  面向用户请求和业务语义
+
+内部 gRPC:
+  面向签名能力和强类型契约
+
+签名机:
+  只暴露给受信任的内部服务
+```
+
+如果把 `wallet-sign` 的 gRPC 接口直接暴露给公网，或者让前端直接传待签名内容给签名机，就等于绕过了 `wallet-api` 的风控、参数校验和业务状态机。
+
 # 工程设计取舍
 
 ## 批量签名策略
@@ -120,6 +150,7 @@ wallet-api → gRPC SignTransaction(request)
 
 - API 层直接处理私钥。这是最严重的错误，等于把资产安全交给公网接口
 - 签名机暴露给公网。签名机应该只在内部网络可达
+- 把内部 gRPC 当成外部开放 API。签名能力必须经过 wallet-api 的业务校验和风控编排
 - 不校验签名内容。签名机应该拒绝明显不合理的签名请求
 - 批量签名无并发限制。大量签名请求同时到达可能导致资源耗尽或死锁
 - 错误信息泄露敏感细节。签名失败的原因如果包含私钥状态信息，等于主动暴露安全细节

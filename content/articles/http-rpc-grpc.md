@@ -4,7 +4,7 @@
   "slug": "http-rpc-grpc",
   "title": "HTTP、RPC、gRPC 的区别与项目使用场景",
   "date": "2026-05-16",
-  "summary": "结合钱包系统和行情服务，解释 HTTP 更适合对外接口，gRPC 更适合内部服务调用，RPC 是远程过程调用思想。",
+  "summary": "作为基础补充，解释 HTTP、RPC、gRPC 的边界；在钱包工程里重点落到 wallet-api 对外 HTTP、wallet-sign 内部 gRPC。",
   "tags": [
     "HTTP",
     "RPC",
@@ -23,8 +23,9 @@
     3
   ],
   "recommendedSlugs": [
-    "api-system-calls",
-    "market-services-data-flow"
+    "wallet-sign-signer",
+    "wallet-api-boundary",
+    "cex-evm-wallet-deposit-withdrawal-loop"
   ],
   "suggestedQuestions": [
     "HTTP、RPC、gRPC 在钱包系统里分别适合什么场景？",
