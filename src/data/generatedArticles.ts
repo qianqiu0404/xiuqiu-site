@@ -820,5 +820,172 @@ export const articles: Article[] = [
       "BTC 钱包为什么需要链下索引器才能展示铭文和 Rune 资产？"
     ],
     "content": "# Bitcoin 区块里都是 UTXO，为什么还能有 NFT 和 Token\n\nBitcoin 本身没有账户模型，没有智能合约 NFT，也没有 ERC20 那种合约余额表。\n\n它的底层非常克制：\n\n```text\n花掉旧 UTXO\n-> 生成新 UTXO\n```\n\n但 Bitcoin 生态里又确实出现了 Ordinals、Inscriptions、BRC-20、Runes 这些看起来像 NFT 或 Token 的资产。\n\n这个矛盾可以用一句话解释：\n\n```text\nBitcoin 主链负责保存和验证 UTXO\n协议规则负责定义数据格式\n链下索引器负责解释这些数据\n钱包和市场负责展示成 NFT / Token\n```\n\n所以 Bitcoin 上的 NFT / Token，不是像 Ethereum 那样由智能合约原生管理，而是通过 UTXO 交易携带数据，再由链下索引器解释出来的资产层。\n\n# Bitcoin 区块里的交易，本质都是 UTXO\n\nEthereum 里，我们常说：\n\n```text\nAlice 账户余额 -1 ETH\nBob 账户余额 +1 ETH\n```\n\nBitcoin 不是这样。\n\nBitcoin 没有“账户余额”这个字段，它只有一堆还没有被花掉的交易输出，也就是 UTXO：\n\n```text\nUnspent Transaction Output\n未花费的交易输出\n```\n\n你钱包里显示 1 BTC，底层可能不是一个整体，而是几个 UTXO 加起来：\n\n```text\n0.2 BTC\n0.3 BTC\n0.5 BTC\n= 1 BTC\n```\n\n当你要转 0.6 BTC 给别人时，钱包可能选择两个 UTXO 作为输入：\n\n```text\ninputs:\n  0.3 BTC\n  0.5 BTC\n\noutputs:\n  0.6 BTC 给对方\n  0.1999 BTC 找零给自己\n\nfee:\n  0.0001 BTC\n```\n\n所以 Bitcoin 交易的核心结构是：\n\n```text\n旧 UTXO 作为 input 被花掉\n新 UTXO 作为 output 被创建\n```\n\n一个 Bitcoin 区块里的绝大多数普通交易，本质都在做这件事。\n\n# Coinbase 交易是特殊的 UTXO 创建交易\n\nBitcoin 区块里的第一笔交易叫 Coinbase 交易。\n\n这里的 Coinbase 不是交易所 Coinbase，而是 Bitcoin 协议里的矿工奖励交易。\n\n普通交易需要引用之前的 UTXO：\n\n```text\ninput: 之前某笔交易产生的 UTXO\noutput: 新的 UTXO\n```\n\nCoinbase 交易没有普通输入。它是矿工挖出新区块后，协议允许矿工创建的区块奖励：\n\n```text\ninput: coinbase\noutput: miner reward address\n```\n\n矿工收到的金额由两部分组成：\n\n```text\n区块补贴 + 当前区块所有交易手续费\n```\n\n例如某个矿池在 Coinbase 交易里收到：\n\n```text\n3.14297184 BTC\n```\n\n如果当前区块补贴是：\n\n```text\n3.125 BTC\n```\n\n那么多出来的部分就是该区块里其他交易贡献的手续费：\n\n```text\n3.14297184 BTC\n= 3.125 BTC 区块补贴\n+ 0.01797184 BTC 手续费\n```\n\nCoinbase 交易本身不是普通用户交易，它的作用是创建矿工奖励 UTXO。\n\n# Bitcoin 本身没有原生 NFT / Token\n\nBitcoin 节点真正理解的是：\n\n```text\n这个 UTXO 是否存在\n这个 UTXO 是否已经被花掉\n签名是否有效\n脚本是否满足花费条件\n交易是否符合共识规则\n```\n\nBitcoin 主链不会原生理解：\n\n```text\n这是不是 NFT\n这是不是 BRC-20\n这是不是 Rune\n这个图片是谁的\n这个 Token 余额是多少\n```\n\n这些都是协议层和索引器解释出来的结果。\n\n所以更准确地说：\n\n```text\nBitcoin 本身没有 NFT / Token 状态\n但 Bitcoin 交易可以携带数据\n这些数据可以被协议和索引器解释成资产状态\n```\n\n这也是 BTC 生态资产和 EVM 合约资产最大的区别。\n\n# Ordinals / Inscriptions：最像 BTC NFT\n\nOrdinals 可以粗略理解成：\n\n```text\n给每一个 satoshi 编号\n再把某段数据绑定到某个 satoshi 上\n```\n\nBitcoin 的最小单位是 satoshi：\n\n```text\n1 BTC = 100,000,000 sats\n```\n\nOrdinals 的思路是：每个 sat 都可以被排序、编号和追踪。如果某个 sat 绑定了一段图片、文本、JSON、HTML 或其他内容，就可以形成 inscription。\n\n所以 Bitcoin NFT 的本质不是：\n\n```text\n智能合约里记录 ownerOf(tokenId)\n```\n\n而更像是：\n\n```text\n某个 UTXO 里包含一个被编号和追踪的 sat\n这个 sat 绑定了一段 inscription 数据\n谁控制这个 UTXO，谁就控制这个 inscription\n```\n\n这和 Ethereum NFT 完全不同。\n\nEthereum NFT 是合约说了算：\n\n```text\nERC721.ownerOf(tokenId) = address\n```\n\nBitcoin Ordinals 是索引器按规则解释：\n\n```text\n某个 sat 当前在哪个 UTXO 里\n这个 sat 是否绑定了 inscription 数据\n```\n\n所以 Ordinals 的关键不是智能合约，而是：\n\n```text\nUTXO\nsat 编号规则\nTaproot witness / inscription 数据\n链下索引器\n```\n\n# BRC-20：把 JSON 当成 Token 指令\n\nBRC-20 是 Bitcoin 上较早流行的一种 Token 协议。\n\n它不是智能合约，也没有 ERC20 那种合约余额表。\n\n它的做法是把一段 JSON 数据写入 inscription，例如：\n\n```json\n{\n  \"p\": \"brc-20\",\n  \"op\": \"transfer\",\n  \"tick\": \"ordi\",\n  \"amt\": \"100\"\n}\n```\n\n这段 JSON 对 Bitcoin 节点来说，只是交易里携带的数据。\n\nBitcoin 节点不会理解：\n\n```text\n这是一笔 BRC-20 转账\n```\n\n真正理解它的是链下索引器。\n\n索引器会按 BRC-20 协议规则扫描区块：\n\n```text\n发现 deploy 指令 -> 创建 ticker\n发现 mint 指令 -> 记录铸造数量\n发现 transfer 指令 -> 更新可转余额\n```\n\n所以 BRC-20 的本质是：\n\n```text\n把 Token 状态变化写成文本数据\n再由链下索引器还原出一套 Token 账本\n```\n\nBitcoin 负责保存数据，索引器负责解释数据。\n\n# Runes：更贴近 UTXO 的 Token 协议\n\nRunes 也是 Bitcoin 上的同质化 Token 协议，但它比 BRC-20 更贴近 UTXO 模型。\n\nBRC-20 依赖 inscription 和 JSON，数据更重，也更依赖文本指令。\n\nRunes 的思路更像：\n\n```text\n把 Token 状态绑定到 UTXO 上\n通过 OP_RETURN 表达协议数据\n由索引器按规则解释 Rune 的分配和转移\n```\n\n一个 UTXO 在 Bitcoin 主链看来可能只是：\n\n```text\n0.00000546 BTC\n```\n\n但在 Runes 索引器看来，它也可能代表：\n\n```text\n1000 个某 Rune Token\n```\n\n注意，Bitcoin 主链仍然只认识这个 UTXO 有多少 BTC。\n\n它并不知道：\n\n```text\n这个 UTXO 里还有 1000 个 Rune Token\n```\n\nRune Token 的余额、分配和流转，仍然要靠协议规则和索引器解释。\n\n# OP_RETURN 只是链上数据，不等于 NFT\n\n`OP_RETURN` 是 Bitcoin Script 里的一个操作码，可以把一小段数据放进交易 output 里。\n\n一个 OP_RETURN output 大概长这样：\n\n```text\nvalue: 0 BTC\nscriptPubKey: OP_RETURN <data>\n```\n\n它的特点是：\n\n```text\n不可花费\n不进入长期 UTXO set\n适合放协议标记、链上留言、时间戳证明或元数据\n```\n\n但看到 OP_RETURN，不代表它就是 NFT，也不代表它就是 Token。\n\n它可能是：\n\n```text\n矿池标记\n链上留言\nRunes 协议数据\n时间戳证明\n其他协议元数据\n```\n\n所以 OP_RETURN 是“写数据”的一种方式，不是资产本身。\n\n如果要理解 OP_RETURN 链上留言，可以看 LuBian 那篇。这里更关心的是：BTC 生态里的资产协议，如何利用链上数据和链下索引器组合出额外资产状态。\n\n# 链下索引器才是关键\n\n这篇文章真正想表达的重点是索引器。\n\nBitcoin 主链只负责：\n\n```text\n验证 UTXO 是否能被花费\n验证签名是否正确\n验证交易是否符合共识规则\n把交易数据写进区块\n```\n\n它不会负责：\n\n```text\n识别 inscription\n计算 BRC-20 余额\n计算 Rune token 分配\n判断某张图片当前属于谁\n展示某个地址持有哪些铭文\n```\n\n这些都需要链下索引器完成。\n\n索引器做的事情是：\n\n```text\n扫描 Bitcoin 区块\n解析交易 inputs / outputs / witness / OP_RETURN\n按 Ordinals / BRC-20 / Runes 协议规则解释数据\n生成额外资产账本\n提供给钱包、浏览器、市场和 API 使用\n```\n\n所以你在区块浏览器或市场里看到：\n\n```text\nInscription\nRune\nBRC-20 Transfer\n```\n\n本质上是索引服务解析出来的结果，不是 Bitcoin 协议原生字段。\n\n这对钱包后端特别重要。\n\n如果钱包只接 Bitcoin Core RPC，它能拿到 BTC 交易和 UTXO，但不一定能直接知道：\n\n```text\n这个 UTXO 是否携带 inscription\n这个地址有哪些 Rune 资产\n这个 BRC-20 transfer 是否有效\n这个 UTXO 能不能安全拿去当普通 BTC 找零\n```\n\n所以 BTC 钱包如果要支持 Ordinals / Runes / BRC-20，必须额外接入或自建资产索引能力。\n\n# 和 Ethereum NFT / ERC20 的区别\n\nBitcoin 资产协议和 Ethereum 合约资产的区别，可以这样看：\n\n| 对比项 | Ethereum NFT / Token | Bitcoin Ordinals / Runes / BRC-20 |\n| --- | --- | --- |\n| 底层模型 | 账户模型 | UTXO 模型 |\n| 资产表达 | 智能合约状态 | 交易数据 + 协议规则 |\n| 所有权判断 | `ownerOf` / `balanceOf` | sat / UTXO 当前归属 |\n| 数据位置 | 合约 storage、event、URI / IPFS | witness、OP_RETURN、inscription 数据 |\n| 状态更新 | 合约调用 | UTXO 转移 + 索引器解析 |\n| 主链是否理解 NFT | EVM 理解合约逻辑 | Bitcoin 不理解 NFT 概念 |\n| 钱包依赖 | RPC + 合约 ABI / event | BTC 节点 + 协议索引器 |\n\n一句话总结：\n\n```text\nEthereum NFT 是合约资产\nBitcoin Ordinals 更像是被编号和追踪的特殊 UTXO 数据资产\n```\n\n# 钱包后端的启发\n\n从钱包后端角度看，BTC 不能只当成“另一个 RPC”。\n\n如果只是普通 BTC 收发，钱包重点是：\n\n```text\n地址生成\nUTXO 查询\n选币\n找零\nsat/vB 手续费\n签名\n广播\n确认数\n```\n\n但如果要支持 Ordinals / Runes / BRC-20，还要多一层资产索引和 UTXO 保护：\n\n```text\n识别 inscription 所在 UTXO\n避免把带 inscription 的 UTXO 当普通 BTC 找零花掉\n识别 Rune / BRC-20 的资产余额\n处理协议规则下的转移有效性\n区分钱包 BTC 余额和协议资产余额\n处理粉尘、找零和 UTXO 污染问题\n```\n\n这也是 BTC 钱包工程复杂的地方。\n\nETH 钱包可以问合约：\n\n```text\nbalanceOf(address)\nownerOf(tokenId)\n```\n\nBTC 钱包则要问：\n\n```text\n哪些 UTXO 属于这个地址？\n哪些 UTXO 携带 inscription？\n这些 inscription / Rune / BRC-20 状态按哪个索引器规则计算？\n这笔交易会不会误花掉特殊 UTXO？\n```\n\n所以 BTC 资产支持的难点，不只是交易构建，而是资产索引、UTXO 管理和协议规则解释。\n\n# 最后总结\n\nBitcoin 区块里的交易，本质上都是 UTXO 交易。\n\n普通交易是在花掉旧 UTXO，生成新 UTXO。\n\nCoinbase 交易是矿工挖出新区块后，创建区块奖励 UTXO。\n\nOrdinals、BRC-20、Runes 这些协议，并没有改变 Bitcoin 的底层模型。它们只是利用 Bitcoin 交易可以携带数据的能力，把额外信息写入链上，再由链下索引器解释成 NFT 或 Token 状态。\n\n所以最终可以这样理解：\n\n```text\nBitcoin 主链负责保存和验证 UTXO\nOrdinals / Runes / BRC-20 负责定义数据规则\n链下索引器负责解释这些数据\n钱包和市场负责展示成 NFT / Token\n```\n\nBitcoin 没有变成 Ethereum。\n\n它仍然是 UTXO 系统。只是大家在 UTXO、witness、OP_RETURN 和索引器之上，构建出了一层额外的资产解释层。"
+  },
+  {
+    "id": 23,
+    "slug": "web3-narrative-participation-framework",
+    "title": "进入 Web3 新叙事的四种方式：RWA、Perp DEX 与稳定币支付",
+    "date": "2026-06-29",
+    "summary": "进入一个 Web3 叙事不等于购买名字最响的代币。本文用用户体验、资金参与、股权或代币价值捕获、工程建设四层框架，对比 RWA、Perp DEX 与稳定币支付的系统结构、参与方式和风险边界。",
+    "tags": [
+      "Web3",
+      "RWA",
+      "Perp DEX",
+      "Stablecoin",
+      "Builder",
+      "Wallet"
+    ],
+    "readingTime": "5 min",
+    "difficulty": "进阶",
+    "conceptTags": [
+      "wallet-backend",
+      "api-design",
+      "evm",
+      "multi-chain"
+    ],
+    "relatedProjectIds": [
+      1,
+      3,
+      4,
+      6
+    ],
+    "recommendedSlugs": [
+      "rwa-tokenized-stocks-structure",
+      "perp-dex-user-capital-builder",
+      "stablecoin-x402-agent-payments",
+      "wallet-evolution-2026",
+      "wallet-api-boundary"
+    ],
+    "suggestedQuestions": [
+      "进入一个 Web3 叙事有哪些不同方式？",
+      "为什么购买项目代币不等于分享项目收入？",
+      "RWA、Perp DEX 和稳定币支付分别有哪些建设机会？"
+    ],
+    "content": "# 进入 Web3 新叙事的四种方式：RWA、Perp DEX 与稳定币支付\n\n进入一个叙事，不等于购买它名字最响的代币。\n\n当 RWA、Perp DEX、稳定币支付或 AI Agent 支付成为热点时，最容易发生的误判是：先找到一个同名代币，再把买入代币理解成参与行业增长。\n\n但一个产业的用户增长、交易量和收入，并不会自动流向所有相关代币。真正进入一个方向，至少有四种不同的位置：\n\n```text\n用户体验\n-> 资金参与\n-> 股权 / 代币价值捕获\n-> 工程建设\n```\n\n四层之间没有天然的高低之分。它们只是代表不同的权利、收益来源、风险和认知深度。对开发者来说，工程建设往往是最容易建立真实反馈的一层：产品有没有用户、接口是否稳定、资金如何结算、风险由谁承担，都会在实现过程中变得具体。\n\n本文不讨论币价，也不提供仓位建议。它尝试回答的是：截至 2026 年 6 月，RWA、Perp DEX 和稳定币支付分别是什么系统，普通用户、资金提供者、资产持有人和建设者究竟在参与什么。\n\n# 第一层：作为用户进入\n\n用户层回答的是最基础的问题：这个产品解决了什么实际需求？\n\n对三个方向来说，用户动作并不相同：\n\n| 方向 | 用户实际完成的动作 | 最先观察什么 |\n| --- | --- | --- |\n| RWA | 通过合规入口购买或持有代币化资产 | 权利结构、KYC、赎回资格 |\n| Perp DEX | 入金、下单、管理仓位、出金 | 成交、滑点、Funding、清算规则 |\n| 稳定币支付 | 使用稳定币付款、收款或购买 API | 手续费、到账、退款、对账 |\n\n当一次真实流程跑完后，很多抽象叙事会立刻落地。\n\n例如，RWA 用户会发现自己购买的可能不是底层股票本身，而是由特定发行实体创建、以托管资产支持的链上凭证；Perp DEX 用户会发现“链上交易”仍然需要理解保证金和清算；稳定币支付用户则会遇到网络、币种、授权、到账确认和商户履约。\n\n用户层的价值不在于赚到多少钱，而在于建立第一手产品认知。\n\n# 第二层：作为资金提供者进入\n\n资金参与不是简单地“存进去赚收益”。资金在系统里承担了明确职责。\n\n在 RWA 产品中，资金可能用于申购代币化国债、股票敞口或其他现实资产凭证，收益依赖底层资产、发行结构和赎回机制。\n\n在 Perp DEX 中，资金可能进入 Vault、做市策略或保险基金相关结构，承担交易对手、做市损益、清算和智能合约风险。它不是固定收益账户。\n\n在稳定币支付中，资金可能以商户结算余额、流动性、垫资或 facilitator 结算能力的形式存在。支付规模越大，稳定币脱锚、链上拥堵、合规冻结和账务差错就越不能被忽略。\n\n判断资金层时，我更关心三个问题：\n\n```text\n资金被谁控制\n收益从哪里产生\n发生亏损时由谁承担\n```\n\n如果这三个问题没有答案，“收益率”本身就没有足够的信息含量。\n\n# 第三层：通过股权或代币参与价值捕获\n\n这是最容易混淆的一层。\n\n一个协议交易量增长，不代表其代币一定获得手续费；一个 RWA 平台资产规模增长，也不代表治理代币持有人拥有发行公司的股权；一个支付协议被广泛使用，也不意味着必须存在能够捕获支付收入的代币。\n\n分析价值捕获时，需要把资产名称放到一边，直接检查权利：\n\n```text\n是否拥有股权或利润分配权\n是否能够获得协议手续费\n是否存在回购、销毁或质押收益\n代币是否只是治理或激励工具\n流通量和后续解锁如何变化\n收入增长是否必须经过该资产\n```\n\n“项目很好”和“某个资产能捕获项目价值”是两个独立命题。\n\nRWA 里还要额外区分三种资产：底层现实资产、发行平台的公司股权、协议治理代币。三者可能来自同一个品牌，但权利完全不同。\n\n# 第四层：作为建设者进入\n\n建设者不是站在叙事外面卖铲子，而是在解决系统真正缺少的能力。\n\nRWA 需要的并不只是发一个 ERC20：\n\n```text\n资产身份和法律实体映射\nKYC / KYB 与地址资格\n转账限制和冻结能力\n净值、企业行动和赎回状态\n托管资产与链上供应量对账\n税务和审计记录\n```\n\nPerp DEX 的建设机会来自交易系统和数据：\n\n```text\n行情与订单簿\n持仓和成交同步\n清算监控\n跟单与风险控制\nAPI wallet 权限\n断线恢复和订单状态校验\n```\n\n稳定币与 Agent 支付需要的则是支付基础设施：\n\n```text\n报价和币种选择\n钱包授权与签名\n支付验证和结算\n商户账务和退款\nAgent 额度与白名单\n风控、审计和异常恢复\n```\n\n这些能力和钱包后端的主线并不遥远。它们仍然依赖地址、签名、链上确认、状态机、账务、风控和多链抽象。\n\n# 三个方向放在一起比较\n\n| 维度 | RWA | Perp DEX | 稳定币 / Agent 支付 |\n| --- | --- | --- | --- |\n| 核心需求 | 把现实资产权利映射到链上 | 提供链上衍生品交易 | 让价值可以程序化结算 |\n| 核心系统 | 发行、托管、合规、赎回 | 订单、保证金、Funding、清算 | HTTP、钱包、验证、结算、账务 |\n| 主要风险 | 法律权利和发行人风险 | 杠杆、清算和市场风险 | 稳定币、签名、履约和对账风险 |\n| 建设门槛 | 合规与金融结构较高 | 交易系统与风控较高 | 小型实验门槛最低 |\n| 与钱包后端关系 | 合规资产展示与转账 | 交易执行和账户状态 | 签名、支付与资金状态 |\n\n从工程实践顺序看，稳定币支付最适合做小实验；Perp DEX 适合通过数据工具理解交易系统；RWA 则需要先理解法律结构和赎回权，再讨论技术和资产。\n\n# 一个月的验证路径\n\n与其一次性判断哪个方向最有前景，不如让三个方向各完成一次可验证动作。\n\n第一周，完成一次稳定币支付实验：\n\n```text\n创建测试 API\n-> 返回支付要求\n-> 客户端签名付款\n-> 服务端验证结算\n-> 记录订单与链上交易\n```\n\n第二周，以低风险方式完整体验一次 Perp DEX 的入金、下单、订单查询和出金流程，重点记录状态变化，不把杠杆当成学习工具。\n\n第三周，选择一个 RWA 产品，画出：\n\n```text\n投资者\n-> 发行实体\n-> 托管机构\n-> 底层资产\n-> 链上 Token\n-> 赎回\n```\n\n第四周，把观察结果做成一个小型建设成果，例如支付 API、交易风险看板或 RWA 资产结构页。\n\n# 最后理解\n\n真正进入一个叙事，不是给自己贴上“持有者”的标签，而是知道自己站在系统的哪一层。\n\n作为用户，我获得产品能力；作为资金提供者，我承担明确风险以换取收益；作为资产持有人，我需要验证权利和现金流；作为建设者，我通过解决真实问题获得收入和认知。\n\n对开发者而言，建设的特殊价值在于它会迫使所有模糊概念接受系统验证：钱从哪里来，状态如何推进，失败如何恢复，收入由谁支付，风险最终落在谁身上。\n\n这比仅仅购买一个带有热门名字的资产，更接近真正站在产业内部。"
+  },
+  {
+    "id": 24,
+    "slug": "rwa-tokenized-stocks-structure",
+    "title": "RWA 与美股上链：你持有的究竟是什么",
+    "date": "2026-06-29",
+    "summary": "代币化美股不是把股票直接变成 ERC20。本文从发行实体、SPV、托管资产、结构化票据、链上 Token 和赎回权拆解 RWA 产品，并分析钱包接入这类资产时需要处理的合规、状态和对账边界。",
+    "tags": [
+      "Web3",
+      "RWA",
+      "Tokenized Stocks",
+      "Wallet",
+      "Compliance",
+      "Backend"
+    ],
+    "readingTime": "6 min",
+    "difficulty": "进阶",
+    "conceptTags": [
+      "wallet-backend",
+      "multi-chain",
+      "evm",
+      "api-design"
+    ],
+    "relatedProjectIds": [
+      1,
+      2,
+      4,
+      6
+    ],
+    "recommendedSlugs": [
+      "web3-narrative-participation-framework",
+      "wallet-evolution-2026",
+      "wallet-api-boundary",
+      "new-chain-integration-checklist",
+      "stablecoin-x402-agent-payments"
+    ],
+    "suggestedQuestions": [
+      "代币化美股持有人拥有的是股票还是经济敞口？",
+      "RWA 产品里的 SPV、托管机构和链上 Token 分别负责什么？",
+      "钱包接入受限 RWA 资产时需要处理哪些状态和风险？"
+    ],
+    "content": "# RWA 与美股上链：你持有的究竟是什么\n\n“美股上链”听起来像是把一股股票铸造成一个 Token，然后在区块链上自由转账。\n\n真实结构通常没有这么直接。\n\n链上 Token 只是最终呈现给用户的资产接口。它背后可能还存在发行实体、SPV、托管机构、证券账户、销售条款、KYC、司法辖区限制和赎回流程。\n\n所以研究 RWA，第一步不是看 Token 名称，而是回答：\n\n```text\nToken 对应什么法律权利\n底层资产由谁持有\n持有人如何申购和赎回\n发行人失败时如何主张权利\n链上转账受到哪些限制\n```\n\n本文以代币化美股为主要场景，并用 Ondo Global Markets 的公开结构作为案例。它不是所有 RWA 产品的统一模板，而是帮助理解“链上资产展示”和“链下权利结构”如何连接。\n\n# 系统如何运作\n\n一个常见的代币化证券结构可以抽象成：\n\n```text\n用户完成 KYC / 资格检查\n-> 用户提交申购并支付稳定币或法币\n-> 发行实体或其合作方购买底层证券\n-> 证券由托管机构持有\n-> 链上合约铸造对应 Token\n-> Token 在允许的地址和网络中流通\n-> 用户赎回时销毁 Token\n-> 发行结构出售或交割底层资产\n-> 用户收到稳定币、法币或约定资产\n```\n\n这里至少存在两套状态。\n\n第一套是链下金融状态：证券是否买入、托管、分红、拆股、停牌或出售。\n\n第二套是链上 Token 状态：铸造量、持有人、转账、冻结、销毁和跨链供应量。\n\n一个生产级 RWA 系统必须让两套状态持续对齐。链上总供应量不能脱离托管资产，企业行动也不能只在链下发生而不反映到持有人权益。\n\n# 股票、SPV 和 Token 不是一件东西\n\n理解代币化美股时，需要把几个角色拆开。\n\n## 底层股票\n\n这是传统市场中的证券，例如某家上市公司的普通股。它存在于证券市场、经纪商和托管体系中。\n\n## 发行实体或 SPV\n\nSPV 是为特定发行或资产隔离目的设立的特殊目的实体。它可以持有或通过托管安排控制底层资产，并依据销售条款向 Token 持有人承担义务。\n\n## 链上 Token\n\nToken 是用户在钱包里看到、可以被合约识别的链上凭证。它代表的具体权利取决于法律文件和发行结构，而不是取决于它是不是 ERC20。\n\n因此，下面两句话可能同时成立：\n\n```text\nToken 的价值跟踪某只股票\nToken 持有人并不是该上市公司的登记股东\n```\n\n# Ondo 案例：结构化票据而不是直接持股\n\n截至 2026 年 6 月，Ondo Global Markets 的官方法律说明把其代币化股票描述为由 BVI 发行实体发行的 structured note，也就是结构化票据。发行实体通过受监管的托管经纪商持有对应底层证券，并为 Token 持有人设置相应的担保权益。\n\n官方文件同时说明，Token 持有人可以按相应条款获得底层资产价值变化带来的经济敞口和赎回价值，但不拥有底层公司的股东投票权、股东信息权等传统股东权利。\n\n这意味着用户需要区分：\n\n```text\n价格和企业行动带来的经济敞口\n!=\n直接登记持股和完整股东权利\n```\n\n此外，发行和销售受到 KYC、司法辖区、制裁及证券法规限制。能在二级市场接收 Token，不等于一定拥有直接向发行方申购或赎回的资格。\n\n这个案例的重要性不在于评价产品好坏，而在于展示一个事实：智能合约无法替代法律权利说明。\n\n# 价值在哪里捕获\n\nRWA 方向里至少有三类不同资产：\n\n| 资产 | 可能拥有的权利 | 不应自动假设的权利 |\n| --- | --- | --- |\n| 代币化股票或票据 | 底层资产经济敞口、合同约定赎回权 | 直接股东权利 |\n| 发行平台公司股权 | 公司利润和治理相关权利 | 底层资产本身的直接所有权 |\n| 协议治理代币 | 治理、激励或特定协议用途 | 公司股权、全部平台收入 |\n\n因此，“RWA 规模增长”并不能直接推出“某个 RWA 治理代币应该增值”。\n\n价值捕获必须落到具体机制：发行费、管理费、赎回费、利差、协议收入、回购、质押收益或股权分配。没有明确连接时，品牌相关性不能替代现金流权利。\n\n# 参与者承担什么风险\n\n代币化证券把传统金融风险和链上风险叠在了一起。\n\n## 发行人与法律结构风险\n\nToken 持有人的请求权通常指向发行实体，而不是直接指向上市公司。需要理解破产隔离、担保权益、适用法律和争议处理机制。\n\n## 托管与经纪风险\n\n底层资产需要由经纪商或托管方持有。链上合约运行正常，不代表链下证券一定可用、未被冻结或能够及时出售。\n\n## 稳定币与结算风险\n\n申购、交易和赎回经常以稳定币结算。用户同时承担稳定币发行人、链和结算通道风险。\n\n## 合约与跨链风险\n\nToken 可能支持多链流通。每增加一条链，就增加合约升级、桥接、权限和跨链供应量对账的复杂度。\n\n## 流动性与折溢价风险\n\n二级市场价格可能偏离对应证券净值。传统证券休市而链上市场持续交易时，价格发现和套利能力尤其容易发生变化。\n\n## 合规与冻结风险\n\n受监管资产通常不会拥有完全无许可的转账能力。合约可能包含地址资格、暂停、冻结或强制转移机制。司法辖区变化也可能影响申购、持有和赎回。\n\n# 钱包接入 RWA 资产时要做什么\n\n普通 ERC20 接入常常只需要合约地址、symbol、decimals 和余额查询。RWA 资产远远不够。\n\n钱包后端至少需要额外维护：\n\n```text\n发行实体和法律文件\n底层资产标识和交易时段\n支持的网络与合约地址\n地址是否满足持有和转账资格\n申购、赎回和暂停状态\n净值、市场价格和更新时间\n企业行动与分配记录\n冻结、黑名单和司法辖区提示\n```\n\n交易前不能只执行余额检查，还可能需要检查发送方和接收方资格：\n\n```text\n用户发起 RWA Token 转账\n-> 钱包读取资产限制\n-> 检查目标地址资格\n-> 模拟合约调用\n-> 展示可能的冻结或失败原因\n-> 用户签名\n-> 广播并跟踪链上状态\n```\n\n如果钱包提供申购和赎回入口，还要把链下订单状态与链上交易关联起来：\n\n```text\nsubmitted\n-> compliance_checking\n-> payment_confirmed\n-> asset_purchasing\n-> token_minted\n-> completed\n```\n\n这里的状态机和交易所钱包充值提现很相似：链上成功只是一个阶段，业务完成还依赖发行方确认、资产交割和账务记录。\n\n# 作为建设者可以做什么\n\nRWA 的建设机会集中在链上与链下边界，而不是重复发行一个资产名称相似的 Token。\n\n可以落地的方向包括：\n\n- 展示发行实体、托管方、底层资产和赎回权的数据终端；\n- 统一多发行方的净值、交易时段、企业行动和资产状态；\n- 为钱包提供受限 Token 的转账预检和失败原因解释；\n- 对账托管资产、链上供应量和多链流通量；\n- 为用户生成申购、赎回、分红和税务记录；\n- 在借贷场景中识别 RWA 的流动性、冻结和预言机风险。\n\n这些工具真正服务的是“可信地知道自己持有什么”，而不仅是让资产在钱包里显示一个图标。\n\n# 最后理解\n\nRWA 的核心不是把现实资产名字写进区块链，而是把链下权利、托管资产和链上状态连接起来。\n\n分析代币化美股时，我会沿着这条链路逐层确认：\n\n```text\n底层证券\n-> 托管机构\n-> 发行实体 / SPV\n-> 合同权利\n-> 链上 Token\n-> 持有人资格\n-> 申购与赎回\n```\n\n只有这条链路完整，链上 Token 才不只是一个跟随股票名字波动的符号。\n\n# 参考资料\n\n- [Ondo Global Markets - Legal & Regulatory](https://docs.ondo.finance/ondo-global-markets/legal-and-regulatory)\n- [Ondo Global Markets - Overview](https://docs.ondo.finance/ondo-global-markets/overview)\n- [Ondo Global Markets - Eligibility](https://docs.ondo.finance/ondo-global-markets/eligibility)"
+  },
+  {
+    "id": 25,
+    "slug": "perp-dex-user-capital-builder",
+    "title": "Perp DEX 参与路径：从交易用户到 Builder",
+    "date": "2026-06-29",
+    "summary": "Perp DEX 不只是一个可以买卖永续合约的前端。本文从保证金、Funding、清算、订单状态和 API 工具拆解其资金流，并区分交易用户、Vault 资金、代币持有人与 Builder 的收益来源和风险。",
+    "tags": [
+      "Web3",
+      "Perp DEX",
+      "Trading",
+      "Hyperliquid",
+      "API",
+      "Risk"
+    ],
+    "readingTime": "6 min",
+    "difficulty": "进阶",
+    "conceptTags": [
+      "api-design",
+      "go-infra",
+      "evm",
+      "wallet-backend"
+    ],
+    "relatedProjectIds": [
+      3,
+      4,
+      6
+    ],
+    "recommendedSlugs": [
+      "web3-narrative-participation-framework",
+      "market-services-data-flow",
+      "chainflip-cross-chain-dex-analysis",
+      "bridge-liquidity-after-market-crash",
+      "wallet-evolution-2026"
+    ],
+    "suggestedQuestions": [
+      "Perp DEX 里的保证金、Funding 和清算如何形成完整资金流？",
+      "为什么 Perp DEX 交易量增长不等于平台代币捕获收入？",
+      "开发者如何通过 API 和 Builder Codes 参与 Perp DEX？"
+    ],
+    "content": "# Perp DEX 参与路径：从交易用户到 Builder\n\nPerp DEX 是普通用户最容易直接体验的 Web3 交易产品之一。\n\n存入保证金、选择交易对、开仓和平仓，整个流程看起来和中心化交易所的永续合约很接近。但把交易搬到链上，并没有消除保证金、Funding、清算和对手方风险，只是改变了订单、资产和状态的保存与验证方式。\n\n真正理解 Perp DEX，需要区分四种角色：\n\n```text\n交易用户\n资金或 Vault 参与者\n平台股权 / 代币持有人\nBuilder 和工具开发者\n```\n\n四种角色面对的收入来源和风险不同。交易量属于协议，不一定属于某个代币；Vault 的历史收益不等于固定收益；Builder 收入则来自自己真正带来的订单和用户。\n\n# 系统如何运作\n\n永续合约没有传统期货的固定到期日。为了让合约价格贴近标的现货价格，系统通常通过 Funding 在多空持仓之间周期性转移资金。\n\n一笔仓位可以抽象为：\n\n```text\n用户存入保证金\n-> 提交订单\n-> 订单进入订单簿或撮合机制\n-> 成交后形成仓位\n-> 仓位持续计算未实现盈亏与 Funding\n-> 保证金率下降到阈值时进入清算\n-> 用户平仓或被清算\n-> 已实现盈亏回到账户\n```\n\n系统至少维护以下状态：\n\n- 账户权益与可用保证金；\n- 多空仓位、开仓均价和未实现盈亏；\n- 挂单、成交、撤单和拒单；\n- 标记价格、预言机价格和 Funding；\n- 维持保证金、清算价格和清算记录；\n- 手续费、返佣和 Builder fee。\n\n这些状态不是一条简单链上转账能够表达的。对钱包或交易终端来说，展示余额只是入口，真正的产品能力是持续同步账户与订单状态。\n\n# 订单簿、保证金和清算\n\n订单簿描述市场愿意在哪些价格买卖多少资产。用户提交订单后，订单可能处于：\n\n```text\nsubmitted\n-> open\n-> partially_filled\n-> filled\n```\n\n也可能进入：\n\n```text\nrejected\ncanceled\nexpired\n```\n\n工程上不能把 HTTP 请求成功等同于订单成交。请求被节点接受、订单进入撮合、部分成交和全部成交是不同状态。\n\n保证金则决定用户能够承受多大的价格波动。杠杆越高，价格只需发生更小幅度的反向变化，就可能使账户低于维持保证金要求。\n\n清算并不是平台随意关闭仓位，而是风险系统在账户权益不足时减少或接管风险敞口。任何交易工具如果只显示潜在收益、不清晰展示清算价格和保证金变化，都没有完整表达产品风险。\n\n# Funding 不是利息账户\n\nFunding 的目标是让永续合约价格靠近现货价格。\n\n当永续价格明显高于现货，多头可能向空头支付 Funding；反过来，则可能由空头向多头支付。具体计算和结算周期取决于协议。\n\n因此 Funding 收益不是稳定利息：\n\n```text\nFunding 方向会改变\n仓位价格会波动\n交易成本会累积\n极端行情可能触发清算\n```\n\n只看到某段时间的正 Funding，就把持仓理解成固定收益策略，会漏掉价格和杠杆风险。\n\n# 四类参与者分别获得什么\n\n## 交易用户\n\n交易用户通过方向、价差、套利或对冲获得盈亏，同时支付手续费、滑点和 Funding，并承担清算风险。\n\n对新用户来说，最有价值的第一步是以可承受规模跑通入金、下单、撤单、平仓和出金，而不是用高杠杆验证系统。\n\n## Vault 或资金参与者\n\nVault 可能执行做市、跟单或其他交易策略。资金提供者分享策略盈亏，也承担策略、交易员、合约、流动性和提款限制风险。\n\n判断 Vault 时，需要看：\n\n```text\n策略由谁执行\n仓位是否透明\n最大回撤是多少\n提款是否有延迟\n收益是否来自承担尾部风险\n```\n\n## 平台股权或代币持有人\n\n平台交易量增长只能说明产品被使用。它是否进入某个资产的价值，需要继续检查：\n\n```text\n手续费归协议、团队还是用户\n是否存在回购或收入分配\n代币是否只有治理和激励用途\n流通量和解锁如何变化\n协议能否在没有该代币的情况下运行\n```\n\n代币名称与平台品牌相同，也不能替代这一步。\n\n## Builder\n\nBuilder 通过终端、策略、数据、路由或用户体验为协议带来订单。它的价值来自真实使用，而不是被动等待叙事扩张。\n\n截至 2026 年 6 月，Hyperliquid 的 Builder Codes 允许用户授权某个 Builder 的最大费用，Builder 在代用户发送的订单中携带自己的地址和费率，并从实际成交中收取费用。用户可以撤销授权，费用逻辑随订单处理。\n\n这给工具开发者提供了一条清晰路径：\n\n```text\n做出用户愿意使用的交易工具\n-> 用户明确授权 Builder fee\n-> 工具提交带 Builder Code 的订单\n-> 订单成交\n-> Builder 获得费用\n```\n\n# API 工具可以解决什么\n\nPerp DEX 的公开数据和账户接口可以支持很多实际工具：\n\n- 多市场行情与订单簿终端；\n- 地址持仓、盈亏和成交分析；\n- 清算地图与保证金风险提醒；\n- 大额成交和异常 Funding 监控；\n- 交易日志、成本和税务统计；\n- 经用户授权的策略与跟单工具；\n- Builder fee 收入和订单归因看板。\n\nHyperliquid 的 Info endpoint 可以查询市场和用户状态，WebSocket 适合持续接收行情和账户更新。时间范围接口存在分页和历史数量限制，因此本地服务不能只依赖临时查询，还需要持续消费、落库和补偿。\n\n一个典型的数据链路可以是：\n\n```text\nWebSocket 行情 / 用户事件\n-> collector\n-> 标准化 market / order / fill / position\n-> PostgreSQL + Redis\n-> 风险计算\n-> API / dashboard / alert\n```\n\n这和行情服务的工程结构非常接近，但多了账户签名、订单状态和资金风险。\n\n# 交易工具的工程边界\n\n## 签名和 API wallet\n\n交易工具不应该长期保存用户主钱包私钥。协议支持 agent 或 API wallet 时，应使用受限权限完成下单，并把授权、撤销和额度清晰展示给用户。\n\n主钱包负责高权限操作，交易密钥负责有限操作，是比“把私钥交给机器人”更合理的边界。\n\n## 幂等和订单标识\n\n网络超时后，客户端不能不知道订单是否已经提交就盲目重发。需要使用客户端订单 ID、查询订单状态，并对重复请求进行幂等处理。\n\n## 限流和本地缓存\n\n公开 API 存在请求和用户限额。行情、元数据和历史成交应合理缓存，WebSocket 与 REST 查询需要相互补偿。\n\n## 断线恢复\n\nWebSocket 重连后，要根据最后游标或时间戳回补订单与成交，重新校验持仓快照。否则前端看似恢复连接，账户状态可能已经缺失。\n\n## 风险提示\n\n工具必须把杠杆、清算价格、Funding、滑点和订单拒绝原因翻译成用户能理解的状态。只负责“把订单发出去”不等于完成交易产品。\n\n# 参与者承担什么风险\n\nPerp DEX 把市场、协议和操作风险叠加在一起：\n\n- 杠杆和清算风险；\n- 标记价格和预言机异常；\n- 极端行情下的流动性与滑点；\n- 合约、共识或跨链入金风险；\n- API wallet 授权和前端供应链风险；\n- Vault 策略和提款流动性风险；\n- 协议规则、手续费与资产上线变化。\n\nBuilder 还多承担一层产品责任：错误订单、陈旧行情、重复提交或错误风险提示都可能直接造成用户资金损失。\n\n# 作为建设者可以做什么\n\n对开发者来说，一个小而真实的切入点可以是“地址交易风险看板”：\n\n```text\n输入用户地址\n-> 同步仓位、保证金和挂单\n-> 计算清算距离与集中风险\n-> 展示 Funding 和费用\n-> 监听风险阈值\n-> 通过邮件、Webhook 或 Telegram 提醒\n```\n\n它不需要先做完整交易终端，也不需要替用户保管资金。先解决状态同步和风险解释，就能检验数据质量、用户需求和付费意愿。\n\n# 最后理解\n\nPerp DEX 的核心不只是“把合约交易搬上链”，而是把订单、保证金、Funding、清算和账户状态组成一个持续运行的交易系统。\n\n作为用户，最重要的是理解杠杆和状态；作为资金提供者，要看收益究竟来自什么风险；作为代币持有人，要验证交易收入如何进入资产；作为 Builder，则要为真实订单流提供可靠产品。\n\n对工程师而言，Builder 路径很有吸引力，因为它让产品价值、用户使用和收入之间形成了可以验证的闭环。\n\n# 参考资料\n\n- [Hyperliquid - Info endpoint](https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint)\n- [Hyperliquid - Builder Codes](https://hyperliquid.gitbook.io/hyperliquid-docs/trading/builder-codes)\n- [Hyperliquid Documentation](https://hyperliquid.gitbook.io/hyperliquid-docs)"
+  },
+  {
+    "id": 26,
+    "slug": "stablecoin-x402-agent-payments",
+    "title": "稳定币与 AI Agent 支付：x402 如何让 API 自主结算",
+    "date": "2026-06-29",
+    "summary": "x402 把 HTTP 402、钱包签名、支付验证和链上结算组合成按次付费协议，让人类客户端和 AI Agent 可以为 API 自动支付稳定币。本文拆解其调用流程、钱包权限、商户账务和失败恢复边界。",
+    "tags": [
+      "Web3",
+      "Stablecoin",
+      "x402",
+      "AI Agent",
+      "Payments",
+      "API"
+    ],
+    "readingTime": "6 min",
+    "difficulty": "进阶",
+    "conceptTags": [
+      "wallet-backend",
+      "api-design",
+      "evm",
+      "signer-service"
+    ],
+    "relatedProjectIds": [
+      1,
+      2,
+      3,
+      6
+    ],
+    "recommendedSlugs": [
+      "web3-narrative-participation-framework",
+      "wallet-api-boundary",
+      "wallet-sign-signer",
+      "cex-evm-wallet-deposit-withdrawal-loop",
+      "wallet-evolution-2026"
+    ],
+    "suggestedQuestions": [
+      "x402 如何让 AI Agent 自动为 API 支付稳定币？",
+      "支付验证成功为什么不等于商户业务已经履约？",
+      "Agent 钱包需要哪些额度、白名单和审计控制？"
+    ],
+    "content": "# 稳定币与 AI Agent 支付：x402 如何让 API 自主结算\n\n稳定币支付看起来只需要两步：用户转出 USDC，商户收到 USDC。\n\n但真正把它做成产品，还需要回答一整组问题：\n\n```text\n这次请求应该付多少钱\n允许使用哪条链和哪种资产\n谁授权钱包签名\n服务端如何验证支付\n支付和订单如何关联\n重复请求会不会重复扣款\n链上成功后业务是否已经履约\n失败时如何重试、退款和对账\n```\n\nx402 的价值，是把其中一部分能力放进标准 HTTP 请求流程：服务端用 `402 Payment Required` 返回支付要求，客户端完成签名，再携带支付证明重新请求资源。\n\n截至 2026 年 6 月，x402 官方提供 TypeScript、Go 和 Python 客户端与服务端 SDK，并支持 EVM 和 Solana 相关支付路径。它适合 API 按次收费、数字内容付费和 AI Agent 自主购买服务。\n\n# 系统如何运作\n\nx402 的核心流程可以概括为：\n\n```text\n客户端请求付费资源\n-> 服务端返回 402 和支付要求\n-> 客户端钱包构造并签署支付\n-> 客户端携带 PAYMENT-SIGNATURE 再次请求\n-> 服务端或 facilitator 验证支付\n-> facilitator 执行或协助链上结算\n-> 服务端返回资源\n```\n\n从 HTTP 视角看，它仍然是请求与响应；从钱包视角看，它增加了一次受约束的资产授权；从商户视角看，它需要把支付结果与订单和履约关联起来。\n\n# 402 响应里表达了什么\n\n普通 API 在用户没有权限时可能返回 `401` 或 `403`。x402 使用 `402` 表示：资源存在，但客户端需要先满足支付条件。\n\n支付要求通常需要告诉客户端：\n\n```text\n支付金额\n资产\n网络\n收款方\n支付方案\n资源或请求标识\n有效时间\n```\n\n客户端不应该根据页面文字猜测金额，而应解析结构化支付要求，确认它符合自己的预算和网络策略后再签名。\n\n# facilitator 为什么存在\n\n商户可以自己实现链上验证和结算，但这意味着要处理不同网络、Token 标准、签名方案、RPC、广播和确认。\n\nfacilitator 把这些复杂性收敛成服务接口：\n\n```text\n资源服务提交支付载荷\n-> facilitator 验证签名和支付条件\n-> facilitator 返回验证结果\n-> facilitator 执行结算\n-> 返回链上交易或结算状态\n```\n\n这和钱包后端里的 Chain Adapter 很相似：上层关心“这笔支付是否满足要求”，底层处理具体网络和资产。\n\n但 facilitator 不是魔法。接入第三方 facilitator 意味着商户依赖它的可用性、规则、网络支持和结算正确性；自建则需要自己承担链上基础设施和安全责任。\n\n# 支付成功不等于业务完成\n\n这是支付系统里最重要的状态边界。\n\n区块链结算成功，只能证明资产转移满足链上规则。它不能证明 API 已经返回正确结果，也不能证明数字内容已经交付。\n\n一笔付费 API 请求至少有两条状态链：\n\n```text\n支付状态：\ncreated -> signed -> verified -> submitted -> settled\n\n履约状态：\npending -> processing -> delivered / failed\n```\n\n二者需要通过稳定的 payment ID 或 order ID 关联。\n\n如果支付已经 settled，但模型调用超时，服务端不能要求用户无条件再付一次。合理做法是让同一订单能够重试履约，或进入退款与人工处理流程。\n\n# 幂等、重放和重复扣款\n\n网络请求可能超时，客户端可能自动重试，Agent 也可能因为没有收到响应而再次调用。\n\n服务端需要确保：\n\n```text\n同一支付证明不能无限消费资源\n同一订单重复请求不会重复结算\n一次支付允许的资源范围是明确的\n过期支付要求不能继续使用\n请求内容不能在签名后被替换\n```\n\n典型幂等键可以由商户订单 ID、资源 ID 和支付载荷共同确定。验证支付之前先查询订单，结算后原子更新支付与履约状态。\n\n# Agent 钱包不是一把无限额私钥\n\nAI Agent 自主支付并不意味着把一个装满资金的私钥交给模型。\n\nAgent 钱包需要策略边界：\n\n```text\n单笔最高金额\n每日或每周期预算\n允许的资产和网络\n允许访问的商户或域名\n允许购买的资源类型\n授权有效期\n异常频率限制\n人工撤销入口\n```\n\n签名服务还应把模型提出的自然语言意图转换成可审计的支付请求：\n\n```text\nAgent 决定购买某个 API\n-> policy engine 检查预算和白名单\n-> wallet 构造受约束支付\n-> signer 校验结构化交易\n-> 完成签名\n-> 记录意图、请求、支付和响应\n```\n\n模型可以提出支付意图，但不应绕过策略直接控制私钥。这和 `wallet-api -> wallet-sign` 的安全边界一致：业务层负责决策，签名层只对符合策略的结构化数据签名。\n\n# 商户账务和对账\n\n收到稳定币不等于账务自动完成。\n\n商户需要记录：\n\n- 原始订单金额和计价币种；\n- 实际支付资产、数量和网络；\n- 支付要求、签名载荷和付款地址；\n- facilitator 验证与结算结果；\n- 链上交易哈希和确认状态；\n- 服务交付结果；\n- 退款、争议和费用。\n\n对账至少要比较三份数据：\n\n```text\n业务订单\nfacilitator 结算记录\n链上收款地址和 Token 余额\n```\n\n如果只依赖 facilitator 回调，可能漏掉链上已结算但通知失败的订单；如果只扫链，又可能无法知道某笔转账购买了哪个资源。\n\n# 价值在哪里捕获\n\n稳定币和 Agent 支付的价值不一定需要由一个概念代币承接。\n\n真实收入可能来自：\n\n- API 或数字内容本身的按次收费；\n- facilitator 的验证和结算服务费；\n- 商户支付网关和账务软件；\n- 钱包托管、策略控制和签名服务；\n- 稳定币发行和储备资产收益；\n- 多链路由、Gas 代付和兑换服务；\n- 风控、身份和合规服务。\n\n判断某个资产是否捕获这个增长，仍然需要检查手续费、股权、治理、回购和强制使用关系。协议使用量增长，不会自动让所有带有“AI 支付”标签的资产获得收入。\n\n# 参与者承担什么风险\n\n## 稳定币风险\n\n稳定币可能出现脱锚、冻结、赎回或发行人风险。商户需要明确接受哪些资产，以及是否自动转换或保留余额。\n\n## 网络和合约风险\n\n链拥堵、RPC 异常、合约漏洞和 Token 授权都会影响支付。多链支持扩大覆盖面，也扩大监控和对账范围。\n\n## facilitator 风险\n\n第三方 facilitator 可能不可用、延迟或返回错误结果。商户应保存验证证据，并为关键业务设计降级和补偿流程。\n\n## 钱包和签名风险\n\nAgent 如果拥有过宽权限，提示注入、错误工具调用或密钥泄露可能直接变成资金损失。\n\n## 履约风险\n\n链上不可逆支付不能自动解决退款和服务质量。用户仍然需要知道服务失败后由谁处理、何时恢复或退款。\n\n# 用 Go 做一个最小实验\n\n一个适合验证 x402 的小产品是“链上地址风险分析 API”。\n\n产品行为：\n\n```text\nGET /risk/address/0x...\n价格：0.01 USDC / 次\n返回：地址标签、交互风险、基础统计和风险说明\n```\n\n服务可以拆成：\n\n```text\nHTTP API\n-> x402 payment middleware\n-> order / idempotency store\n-> risk analysis service\n-> payment ledger\n-> chain reconciliation worker\n```\n\n一次请求的执行顺序：\n\n```text\n1. 客户端请求风险报告\n2. 服务端返回 402 支付要求\n3. 客户端钱包签署 0.01 USDC 支付\n4. facilitator 验证并结算\n5. 服务端创建或读取幂等订单\n6. 风险服务生成报告\n7. 保存履约结果并返回\n8. 后台任务核对链上结算\n```\n\nGo 版本可以用官方 x402 Go SDK 接入 `net/http` 或 Gin。第一版使用测试网、固定价格和单一资产，先验证支付与履约状态，不急着扩展多链。\n\n# 作为建设者可以做什么\n\n围绕稳定币与 Agent 支付，可以继续发展：\n\n- API 计费、套餐与预算管理；\n- Agent 钱包策略和授权控制；\n- 多链稳定币支付路由；\n- 商户结算、退款和会计导出；\n- facilitator 可用性和结算监控；\n- 支付风险评分与异常拦截；\n- MCP 或 Agent 工具的按次付费市场。\n\n这些方向都需要钱包后端能力：构造支付、隔离签名、追踪交易、维护账务、处理失败，并向用户解释状态。\n\n# 最后理解\n\nx402 不是让 HTTP 自己拥有金钱，而是给 HTTP 请求增加一个标准化的链上支付协商过程。\n\n它解决了“客户端如何知道该付什么、如何提交支付证明、服务端如何验证”的问题，但生产系统还必须补上钱包策略、幂等、履约、退款、账务和对账。\n\nAI Agent 支付真正值得关注的地方，也不是 Agent 会不会自动买东西，而是它能否在明确预算、权限和审计边界内完成一次可信交易。\n\n# 参考资料\n\n- [Coinbase Developer Platform - x402 Overview](https://docs.cdp.coinbase.com/x402/welcome)\n- [Coinbase Developer Platform - How x402 Works](https://docs.cdp.coinbase.com/x402/core-concepts/how-it-works)\n- [Coinbase Developer Platform - x402 Network Support](https://docs.cdp.coinbase.com/x402/network-support)"
   }
 ]

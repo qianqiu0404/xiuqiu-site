@@ -813,6 +813,169 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "Ordinals、BRC-20 和 Runes 分别依赖什么数据结构？",
       "BTC 钱包为什么需要链下索引器才能展示铭文和 Rune 资产？"
     ]
+  },
+  {
+    "id": 23,
+    "slug": "web3-narrative-participation-framework",
+    "title": "进入 Web3 新叙事的四种方式：RWA、Perp DEX 与稳定币支付",
+    "date": "2026-06-29",
+    "summary": "进入一个 Web3 叙事不等于购买名字最响的代币。本文用用户体验、资金参与、股权或代币价值捕获、工程建设四层框架，对比 RWA、Perp DEX 与稳定币支付的系统结构、参与方式和风险边界。",
+    "tags": [
+      "Web3",
+      "RWA",
+      "Perp DEX",
+      "Stablecoin",
+      "Builder",
+      "Wallet"
+    ],
+    "readingTime": "5 min",
+    "difficulty": "进阶",
+    "conceptTags": [
+      "wallet-backend",
+      "api-design",
+      "evm",
+      "multi-chain"
+    ],
+    "relatedProjectIds": [
+      1,
+      3,
+      4,
+      6
+    ],
+    "recommendedSlugs": [
+      "rwa-tokenized-stocks-structure",
+      "perp-dex-user-capital-builder",
+      "stablecoin-x402-agent-payments",
+      "wallet-evolution-2026",
+      "wallet-api-boundary"
+    ],
+    "suggestedQuestions": [
+      "进入一个 Web3 叙事有哪些不同方式？",
+      "为什么购买项目代币不等于分享项目收入？",
+      "RWA、Perp DEX 和稳定币支付分别有哪些建设机会？"
+    ]
+  },
+  {
+    "id": 24,
+    "slug": "rwa-tokenized-stocks-structure",
+    "title": "RWA 与美股上链：你持有的究竟是什么",
+    "date": "2026-06-29",
+    "summary": "代币化美股不是把股票直接变成 ERC20。本文从发行实体、SPV、托管资产、结构化票据、链上 Token 和赎回权拆解 RWA 产品，并分析钱包接入这类资产时需要处理的合规、状态和对账边界。",
+    "tags": [
+      "Web3",
+      "RWA",
+      "Tokenized Stocks",
+      "Wallet",
+      "Compliance",
+      "Backend"
+    ],
+    "readingTime": "6 min",
+    "difficulty": "进阶",
+    "conceptTags": [
+      "wallet-backend",
+      "multi-chain",
+      "evm",
+      "api-design"
+    ],
+    "relatedProjectIds": [
+      1,
+      2,
+      4,
+      6
+    ],
+    "recommendedSlugs": [
+      "web3-narrative-participation-framework",
+      "wallet-evolution-2026",
+      "wallet-api-boundary",
+      "new-chain-integration-checklist",
+      "stablecoin-x402-agent-payments"
+    ],
+    "suggestedQuestions": [
+      "代币化美股持有人拥有的是股票还是经济敞口？",
+      "RWA 产品里的 SPV、托管机构和链上 Token 分别负责什么？",
+      "钱包接入受限 RWA 资产时需要处理哪些状态和风险？"
+    ]
+  },
+  {
+    "id": 25,
+    "slug": "perp-dex-user-capital-builder",
+    "title": "Perp DEX 参与路径：从交易用户到 Builder",
+    "date": "2026-06-29",
+    "summary": "Perp DEX 不只是一个可以买卖永续合约的前端。本文从保证金、Funding、清算、订单状态和 API 工具拆解其资金流，并区分交易用户、Vault 资金、代币持有人与 Builder 的收益来源和风险。",
+    "tags": [
+      "Web3",
+      "Perp DEX",
+      "Trading",
+      "Hyperliquid",
+      "API",
+      "Risk"
+    ],
+    "readingTime": "6 min",
+    "difficulty": "进阶",
+    "conceptTags": [
+      "api-design",
+      "go-infra",
+      "evm",
+      "wallet-backend"
+    ],
+    "relatedProjectIds": [
+      3,
+      4,
+      6
+    ],
+    "recommendedSlugs": [
+      "web3-narrative-participation-framework",
+      "market-services-data-flow",
+      "chainflip-cross-chain-dex-analysis",
+      "bridge-liquidity-after-market-crash",
+      "wallet-evolution-2026"
+    ],
+    "suggestedQuestions": [
+      "Perp DEX 里的保证金、Funding 和清算如何形成完整资金流？",
+      "为什么 Perp DEX 交易量增长不等于平台代币捕获收入？",
+      "开发者如何通过 API 和 Builder Codes 参与 Perp DEX？"
+    ]
+  },
+  {
+    "id": 26,
+    "slug": "stablecoin-x402-agent-payments",
+    "title": "稳定币与 AI Agent 支付：x402 如何让 API 自主结算",
+    "date": "2026-06-29",
+    "summary": "x402 把 HTTP 402、钱包签名、支付验证和链上结算组合成按次付费协议，让人类客户端和 AI Agent 可以为 API 自动支付稳定币。本文拆解其调用流程、钱包权限、商户账务和失败恢复边界。",
+    "tags": [
+      "Web3",
+      "Stablecoin",
+      "x402",
+      "AI Agent",
+      "Payments",
+      "API"
+    ],
+    "readingTime": "6 min",
+    "difficulty": "进阶",
+    "conceptTags": [
+      "wallet-backend",
+      "api-design",
+      "evm",
+      "signer-service"
+    ],
+    "relatedProjectIds": [
+      1,
+      2,
+      3,
+      6
+    ],
+    "recommendedSlugs": [
+      "web3-narrative-participation-framework",
+      "wallet-api-boundary",
+      "wallet-sign-signer",
+      "cex-evm-wallet-deposit-withdrawal-loop",
+      "wallet-evolution-2026"
+    ],
+    "suggestedQuestions": [
+      "x402 如何让 AI Agent 自动为 API 支付稳定币？",
+      "支付验证成功为什么不等于商户业务已经履约？",
+      "Agent 钱包需要哪些额度、白名单和审计控制？"
+    ]
   }
 ]
 
@@ -1168,6 +1331,74 @@ export const articleSummaries: ArticleSummary[] = [
       "Wallet"
     ],
     "readingTime": "7 min",
+    "difficulty": "进阶"
+  },
+  {
+    "id": 23,
+    "slug": "web3-narrative-participation-framework",
+    "title": "进入 Web3 新叙事的四种方式：RWA、Perp DEX 与稳定币支付",
+    "date": "2026-06-29",
+    "summary": "进入一个 Web3 叙事不等于购买名字最响的代币。本文用用户体验、资金参与、股权或代币价值捕获、工程建设四层框架，对比 RWA、Perp DEX 与稳定币支付的系统结构、参与方式和风险边界。",
+    "tags": [
+      "Web3",
+      "RWA",
+      "Perp DEX",
+      "Stablecoin",
+      "Builder",
+      "Wallet"
+    ],
+    "readingTime": "5 min",
+    "difficulty": "进阶"
+  },
+  {
+    "id": 24,
+    "slug": "rwa-tokenized-stocks-structure",
+    "title": "RWA 与美股上链：你持有的究竟是什么",
+    "date": "2026-06-29",
+    "summary": "代币化美股不是把股票直接变成 ERC20。本文从发行实体、SPV、托管资产、结构化票据、链上 Token 和赎回权拆解 RWA 产品，并分析钱包接入这类资产时需要处理的合规、状态和对账边界。",
+    "tags": [
+      "Web3",
+      "RWA",
+      "Tokenized Stocks",
+      "Wallet",
+      "Compliance",
+      "Backend"
+    ],
+    "readingTime": "6 min",
+    "difficulty": "进阶"
+  },
+  {
+    "id": 25,
+    "slug": "perp-dex-user-capital-builder",
+    "title": "Perp DEX 参与路径：从交易用户到 Builder",
+    "date": "2026-06-29",
+    "summary": "Perp DEX 不只是一个可以买卖永续合约的前端。本文从保证金、Funding、清算、订单状态和 API 工具拆解其资金流，并区分交易用户、Vault 资金、代币持有人与 Builder 的收益来源和风险。",
+    "tags": [
+      "Web3",
+      "Perp DEX",
+      "Trading",
+      "Hyperliquid",
+      "API",
+      "Risk"
+    ],
+    "readingTime": "6 min",
+    "difficulty": "进阶"
+  },
+  {
+    "id": 26,
+    "slug": "stablecoin-x402-agent-payments",
+    "title": "稳定币与 AI Agent 支付：x402 如何让 API 自主结算",
+    "date": "2026-06-29",
+    "summary": "x402 把 HTTP 402、钱包签名、支付验证和链上结算组合成按次付费协议，让人类客户端和 AI Agent 可以为 API 自动支付稳定币。本文拆解其调用流程、钱包权限、商户账务和失败恢复边界。",
+    "tags": [
+      "Web3",
+      "Stablecoin",
+      "x402",
+      "AI Agent",
+      "Payments",
+      "API"
+    ],
+    "readingTime": "6 min",
     "difficulty": "进阶"
   }
 ]
