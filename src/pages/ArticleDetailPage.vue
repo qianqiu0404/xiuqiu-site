@@ -33,6 +33,53 @@ const nextArticle = computed(() => {
   return siteArticles[(index + 1) % siteArticles.length]
 })
 
+function splitTableRow(line: string): string[] {
+  let row = line.trim()
+
+  if (row.startsWith('|')) row = row.slice(1)
+  if (row.endsWith('|') && !row.endsWith('\\|')) row = row.slice(0, -1)
+
+  const cells: string[] = []
+  let cell = ''
+  let escaped = false
+
+  for (const char of row) {
+    if (escaped) {
+      cell += char === '|' ? '|' : `\\${char}`
+      escaped = false
+      continue
+    }
+
+    if (char === '\\') {
+      escaped = true
+      continue
+    }
+
+    if (char === '|') {
+      cells.push(cell.trim())
+      cell = ''
+      continue
+    }
+
+    cell += char
+  }
+
+  if (escaped) cell += '\\'
+  cells.push(cell.trim())
+
+  return cells
+}
+
+function isTableSeparator(line: string): boolean {
+  const cells = splitTableRow(line)
+  return cells.length > 0 && cells.every(cell => /^:?-{3,}:?$/.test(cell))
+}
+
+function renderTableRow(cells: string[], tag: 'th' | 'td', columnCount: number): string {
+  const normalizedCells = Array.from({ length: columnCount }, (_, index) => cells[index] || '')
+  return `<tr>${normalizedCells.map(cell => `<${tag}>${escapeHtml(cell)}</${tag}>`).join('')}</tr>`
+}
+
 function renderContent(text: string): string {
   const lines = text.split('\n')
   const result: string[] = []
@@ -58,6 +105,36 @@ function renderContent(text: string): string {
     if (inCode) {
       result.push(escapeHtml(line))
       continue
+    }
+
+    // GFM-style table: header row followed by a separator row.
+    if (line.includes('|') && i + 1 < lines.length && isTableSeparator(lines[i + 1])) {
+      const headerCells = splitTableRow(line)
+      const separatorCells = splitTableRow(lines[i + 1])
+
+      if (headerCells.length === separatorCells.length) {
+        if (inList) { result.push('</ul>'); inList = false }
+
+        const bodyRows: string[][] = []
+        let nextLineIndex = i + 2
+
+        while (nextLineIndex < lines.length && lines[nextLineIndex].trim() && lines[nextLineIndex].includes('|')) {
+          bodyRows.push(splitTableRow(lines[nextLineIndex]))
+          nextLineIndex++
+        }
+
+        result.push('<div class="article-table-wrap">')
+        result.push('<table class="article-table">')
+        result.push(`<thead>${renderTableRow(headerCells, 'th', headerCells.length)}</thead>`)
+        if (bodyRows.length) {
+          result.push(`<tbody>${bodyRows.map(row => renderTableRow(row, 'td', headerCells.length)).join('')}</tbody>`)
+        }
+        result.push('</table>')
+        result.push('</div>')
+
+        i = nextLineIndex - 1
+        continue
+      }
     }
 
     // Headers
