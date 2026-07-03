@@ -1016,6 +1016,47 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "Skill、Automation、MCP 和 Obsidian 在工作流中分别负责什么？",
       "如何把一次性 AI 对话变成可恢复、可验证的工程工作流？"
     ]
+  },
+  {
+    "id": 28,
+    "slug": "multi-chain-wallet-resource-state",
+    "title": "钱包后端不能隐藏的资源状态：Nonce、UTXO、Blockhash 与 Object Version",
+    "date": "2026-07-03",
+    "summary": "多链钱包可以统一转账、签名和广播的业务语义，但不能隐藏决定交易唯一性、时效性和可执行性的资源状态。这篇文章用 EVM nonce、ERC-4337 nonce key、BTC UTXO、Solana blockhash 和 Sui object version，复盘资源如何解析、预占和冻结，以及资源过期后为什么需要重新构建和签名。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Multi-chain",
+      "Nonce",
+      "UTXO",
+      "Solana",
+      "Sui"
+    ],
+    "readingTime": "6 min",
+    "difficulty": "项目拆解",
+    "conceptTags": [
+      "wallet-backend",
+      "multi-chain",
+      "signer-service",
+      "api-design"
+    ],
+    "relatedProjectIds": [
+      1,
+      2
+    ],
+    "recommendedSlugs": [
+      "new-chain-integration-checklist",
+      "wallet-address-models",
+      "wallet-api-boundary",
+      "wallet-sign-signer",
+      "withdrawal-error-handling",
+      "eip-erc-protocol-evolution"
+    ],
+    "suggestedQuestions": [
+      "为什么多链钱包不能把 nonce、UTXO、blockhash 和 objectRef 全部藏在 adaptor 里？",
+      "资源过期后为什么需要重新构建和签名？",
+      "wallet-service、wallet-api、wallet-sign 三个钱包服务分别负责哪一层资源状态？"
+    ]
   }
 ]
 
@@ -1456,6 +1497,24 @@ export const articleSummaries: ArticleSummary[] = [
       "Obsidian"
     ],
     "readingTime": "10 min",
+    "difficulty": "项目拆解"
+  },
+  {
+    "id": 28,
+    "slug": "multi-chain-wallet-resource-state",
+    "title": "钱包后端不能隐藏的资源状态：Nonce、UTXO、Blockhash 与 Object Version",
+    "date": "2026-07-03",
+    "summary": "多链钱包可以统一转账、签名和广播的业务语义，但不能隐藏决定交易唯一性、时效性和可执行性的资源状态。这篇文章用 EVM nonce、ERC-4337 nonce key、BTC UTXO、Solana blockhash 和 Sui object version，复盘资源如何解析、预占和冻结，以及资源过期后为什么需要重新构建和签名。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Multi-chain",
+      "Nonce",
+      "UTXO",
+      "Solana",
+      "Sui"
+    ],
+    "readingTime": "6 min",
     "difficulty": "项目拆解"
   }
 ]
