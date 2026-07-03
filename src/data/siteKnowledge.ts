@@ -155,6 +155,17 @@ export const engineeringMap: EngineeringMapNode[] = [
     projectIds: [5],
     articleSlugs: ['mpc-wallet-sign-integration', 'thorchain-tss-attack-analysis'],
   },
+  {
+    id: 'ai-engineering',
+    title: 'AI Engineering Workflows',
+    subtitle: 'Verified engineering loops, reusable skills, scheduled research, and MCP-backed knowledge workflows.',
+    projectIds: [1, 2, 3],
+    articleSlugs: [
+      'codex-ai-workflow-system-retrospective',
+      'cex-evm-wallet-deposit-withdrawal-loop',
+      'stablecoin-x402-agent-payments',
+    ],
+  },
 ]
 
 export const siteKnowledge: SiteKnowledge = {

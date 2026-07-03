@@ -50,7 +50,7 @@ const highlights = [
   },
   {
     title: 'AI-assisted Engineering',
-    desc: 'Using AI agents to accelerate project analysis, MVP delivery, documentation, and engineering review workflows.',
+    desc: 'Building verified engineering loops, reusable Skills, scheduled Automations, and MCP-backed knowledge workflows with human review boundaries.',
   },
 ]
 

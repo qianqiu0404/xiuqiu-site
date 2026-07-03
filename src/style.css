@@ -1050,6 +1050,7 @@ img {
   margin-bottom: 16px;
   color: var(--text-secondary);
   line-height: 1.8;
+  overflow-wrap: anywhere;
 }
 
 .article-detail-body p.p-break {
@@ -1144,6 +1145,7 @@ img {
   margin-bottom: 4px;
   color: var(--text-secondary);
   line-height: 1.7;
+  overflow-wrap: anywhere;
 }
 
 .article-detail-footer {

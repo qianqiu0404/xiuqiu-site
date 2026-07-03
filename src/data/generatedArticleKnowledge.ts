@@ -976,6 +976,46 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "支付验证成功为什么不等于商户业务已经履约？",
       "Agent 钱包需要哪些额度、白名单和审计控制？"
     ]
+  },
+  {
+    "id": 27,
+    "slug": "codex-ai-workflow-system-retrospective",
+    "title": "从重复任务到可恢复工作流：我的 Codex、Skill、Automation 与 MCP 实践",
+    "date": "2026-07-03",
+    "summary": "这篇复盘记录我如何把钱包工程验证、公众号增量同步和每日 Web3 研究，从一次性 AI 对话沉淀成三种可重复、可验证、可恢复的工作流，并用 MCP 和 Obsidian 建立知识回流。",
+    "tags": [
+      "AI Engineering",
+      "Codex",
+      "Workflow",
+      "Automation",
+      "MCP",
+      "Obsidian"
+    ],
+    "readingTime": "10 min",
+    "difficulty": "项目拆解",
+    "conceptTags": [
+      "ai-engineering",
+      "wallet-backend",
+      "api-design",
+      "go-infra"
+    ],
+    "relatedProjectIds": [
+      1,
+      2,
+      3
+    ],
+    "recommendedSlugs": [
+      "cex-evm-wallet-deposit-withdrawal-loop",
+      "wallet-api-boundary",
+      "market-services-data-flow",
+      "stablecoin-x402-agent-payments",
+      "wallet-evolution-2026"
+    ],
+    "suggestedQuestions": [
+      "钱包验证 loop、公众号 Skill 和每日 Automation 有什么区别？",
+      "Skill、Automation、MCP 和 Obsidian 在工作流中分别负责什么？",
+      "如何把一次性 AI 对话变成可恢复、可验证的工程工作流？"
+    ]
   }
 ]
 
@@ -1400,5 +1440,22 @@ export const articleSummaries: ArticleSummary[] = [
     ],
     "readingTime": "6 min",
     "difficulty": "进阶"
+  },
+  {
+    "id": 27,
+    "slug": "codex-ai-workflow-system-retrospective",
+    "title": "从重复任务到可恢复工作流：我的 Codex、Skill、Automation 与 MCP 实践",
+    "date": "2026-07-03",
+    "summary": "这篇复盘记录我如何把钱包工程验证、公众号增量同步和每日 Web3 研究，从一次性 AI 对话沉淀成三种可重复、可验证、可恢复的工作流，并用 MCP 和 Obsidian 建立知识回流。",
+    "tags": [
+      "AI Engineering",
+      "Codex",
+      "Workflow",
+      "Automation",
+      "MCP",
+      "Obsidian"
+    ],
+    "readingTime": "10 min",
+    "difficulty": "项目拆解"
   }
 ]
