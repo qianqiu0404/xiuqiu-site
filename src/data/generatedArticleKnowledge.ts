@@ -1057,6 +1057,47 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "资源过期后为什么需要重新构建和签名？",
       "wallet-service、wallet-api、wallet-sign 三个钱包服务分别负责哪一层资源状态？"
     ]
+  },
+  {
+    "id": 29,
+    "slug": "erc4337-useroperation-lifecycle",
+    "title": "ERC-4337 工程拆解：一笔 UserOperation 如何验证、支付 Gas 并进入链上",
+    "date": "2026-07-07",
+    "summary": "从钱包后端视角拆解一笔 UserOperation 如何经过 nonce 分配、账户签名、Bundler 模拟、Paymaster 验证、EntryPoint 执行和 Gas 结算，并说明账户抽象为什么没有消除状态机。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "ERC-4337",
+      "Account Abstraction",
+      "Bundler",
+      "Paymaster"
+    ],
+    "readingTime": "8 min",
+    "difficulty": "项目拆解",
+    "conceptTags": [
+      "wallet-backend",
+      "signer-service",
+      "api-design",
+      "evm"
+    ],
+    "relatedProjectIds": [
+      1,
+      2,
+      4
+    ],
+    "recommendedSlugs": [
+      "multi-chain-wallet-resource-state",
+      "wallet-api-boundary",
+      "wallet-sign-signer",
+      "eip-erc-protocol-evolution",
+      "wallet-evolution-2026",
+      "withdrawal-error-handling"
+    ],
+    "suggestedQuestions": [
+      "UserOperation 已经签名，为什么 Bundler 还需要模拟验证？",
+      "ERC-4337 的 nonce key 和 sequence 如何支持并行操作？",
+      "Paymaster 支付 Gas 后，钱包后端需要记录哪些资金状态？"
+    ]
   }
 ]
 
@@ -1515,6 +1556,23 @@ export const articleSummaries: ArticleSummary[] = [
       "Sui"
     ],
     "readingTime": "6 min",
+    "difficulty": "项目拆解"
+  },
+  {
+    "id": 29,
+    "slug": "erc4337-useroperation-lifecycle",
+    "title": "ERC-4337 工程拆解：一笔 UserOperation 如何验证、支付 Gas 并进入链上",
+    "date": "2026-07-07",
+    "summary": "从钱包后端视角拆解一笔 UserOperation 如何经过 nonce 分配、账户签名、Bundler 模拟、Paymaster 验证、EntryPoint 执行和 Gas 结算，并说明账户抽象为什么没有消除状态机。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "ERC-4337",
+      "Account Abstraction",
+      "Bundler",
+      "Paymaster"
+    ],
+    "readingTime": "8 min",
     "difficulty": "项目拆解"
   }
 ]

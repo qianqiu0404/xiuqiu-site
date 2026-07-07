@@ -118,14 +118,14 @@ export const engineeringMap: EngineeringMapNode[] = [
     title: 'Web3 Wallet Backend',
     subtitle: 'API boundary, chain adapters, transaction construction, unified responses.',
     projectIds: [1, 2],
-    articleSlugs: ['multi-chain-wallet-resource-state', 'wallet-api-boundary', 'wallet-address-models', 'api-system-calls'],
+    articleSlugs: ['erc4337-useroperation-lifecycle', 'multi-chain-wallet-resource-state', 'wallet-api-boundary', 'wallet-address-models', 'api-system-calls'],
   },
   {
     id: 'signer-service',
     title: 'Signer Service',
     subtitle: 'Private-key isolation, offline signing, batch signing, security boundary.',
     projectIds: [2, 5],
-    articleSlugs: ['multi-chain-wallet-resource-state', 'wallet-sign-signer', 'wallet-api-boundary'],
+    articleSlugs: ['erc4337-useroperation-lifecycle', 'multi-chain-wallet-resource-state', 'wallet-sign-signer', 'wallet-api-boundary'],
   },
   {
     id: 'multi-chain',
@@ -146,7 +146,7 @@ export const engineeringMap: EngineeringMapNode[] = [
     title: 'EVM Engineering',
     subtitle: 'Contracts, proxy patterns, create2, assembly, EIP/ ERC evolution.',
     projectIds: [4, 6],
-    articleSlugs: ['evm-call-proxy-patterns', 'evm-create2-assembly-lifecycle', 'eip-erc-protocol-evolution'],
+    articleSlugs: ['erc4337-useroperation-lifecycle', 'eip-erc-protocol-evolution', 'evm-call-proxy-patterns', 'evm-create2-assembly-lifecycle'],
   },
   {
     id: 'mpc-tss',
