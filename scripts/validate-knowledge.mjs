@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { articleKnowledge } from '../src/data/generatedArticleKnowledge.ts'
 import { projects } from '../src/data/projects.ts'
 import { engineeringMap, siteProjects } from '../src/data/siteKnowledge.ts'
+import { learningRecords } from '../src/data/generatedLearningRecords.ts'
 
 const sitemapSource = readFileSync(new URL('../public/sitemap.xml', import.meta.url), 'utf8')
 const articleSlugs = new Set(articleKnowledge.map(article => article.slug))
@@ -48,6 +49,14 @@ engineeringMap.forEach(node => {
   node.projectIds.forEach(projectId => {
     if (!projectIds.has(projectId)) {
       addError(`${node.title}: map project does not exist: ${projectId}`)
+    }
+  })
+})
+
+learningRecords.forEach(record => {
+  record.projectIds.forEach(projectId => {
+    if (!projectIds.has(projectId)) {
+      addError(`${record.slug}: related project does not exist: ${projectId}`)
     }
   })
 })

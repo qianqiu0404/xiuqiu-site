@@ -2,6 +2,7 @@
 {
   "id": 18,
   "slug": "kelpdao-layerzero-dvn-verification-failure",
+  "kind": "research",
   "title": "KelpDAO 事件复盘：LayerZero 单 DVN 与跨链验证路径失效",
   "date": "2026-06-21",
   "summary": "从跨链验证路径角度复盘 KelpDAO：问题不是普通合约漏洞，而是单 DVN、RPC 可信边界和源链事实验证失效导致目标链释放 rsETH。",
@@ -21,8 +22,7 @@
   ],
   "relatedProjectIds": [
     1,
-    5,
-    6
+    5
   ],
   "recommendedSlugs": [
     "chainflip-cross-chain-dex-analysis",

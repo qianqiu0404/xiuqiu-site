@@ -2,6 +2,7 @@
 {
   "id": 13,
   "slug": "wallet-evolution-2026",
+  "kind": "research",
   "title": "2026 钱包发展趋势：从私钥管理到用户意图执行层",
   "date": "2026-06-21",
   "summary": "截至 2026 年 6 月，我对钱包演进的理解是：钱包正在从私钥管理工具，升级为多链资产入口、交易执行入口，以及身份、风控和账户抽象层。",
@@ -24,9 +25,7 @@
   "relatedProjectIds": [
     1,
     2,
-    4,
-    5,
-    6
+    5
   ],
   "recommendedSlugs": [
     "mpc-wallet-sign-integration",

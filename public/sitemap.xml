@@ -4,7 +4,28 @@
     <loc>https://xiuqiu-site.vercel.app/</loc>
   </url>
   <url>
+    <loc>https://xiuqiu-site.vercel.app/engineering</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/learning</loc>
+  </url>
+  <url>
     <loc>https://xiuqiu-site.vercel.app/articles</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/projects/7</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/projects/1</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/projects/2</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/projects/3</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/projects/5</loc>
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/articles/api-system-calls</loc>
@@ -92,5 +113,8 @@
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/articles/erc4337-useroperation-lifecycle</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/articles/minimal-multi-agent-coding-workflow</loc>
   </url>
 </urlset>

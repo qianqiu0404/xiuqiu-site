@@ -1,10 +1,18 @@
 import { writeFileSync } from 'node:fs'
 import { articleSummaries } from '../src/data/generatedArticleKnowledge.ts'
+import { projects } from '../src/data/projects.ts'
 
 const SITE_URL = 'https://xiuqiu-site.vercel.app'
 const articleSlugs = articleSummaries.map(article => article.slug)
 
-const routes = ['/', '/articles', ...articleSlugs.map(slug => `/articles/${slug}`)]
+const routes = [
+  '/',
+  '/engineering',
+  '/learning',
+  '/articles',
+  ...projects.map(project => `/projects/${project.id}`),
+  ...articleSlugs.map(slug => `/articles/${slug}`),
+]
 const urls = routes
   .map(route => {
     const loc = route === '/' ? `${SITE_URL}/` : `${SITE_URL}${route}`

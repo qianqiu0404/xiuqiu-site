@@ -1,21 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter } from 'vue-router'
 import AiChatWidget from './components/AiChatWidget.vue'
 
 const navOpen = ref(false)
 const router = useRouter()
-const route = useRoute()
-
-function goHomeSection(section: string) {
-  navOpen.value = false
-  if (route.path !== '/') {
-    router.push('/#' + section)
-  } else {
-    const el = document.getElementById(section)
-    if (el) el.scrollIntoView({ behavior: 'smooth' })
-  }
-}
 
 function goHome() {
   navOpen.value = false
@@ -39,10 +28,10 @@ function goHome() {
       </button>
 
       <div class="nav-links" :class="{ open: navOpen }">
-        <a href="#" @click.prevent="goHomeSection('highlights')">Highlights</a>
-        <a href="#" @click.prevent="goHomeSection('projects')">Projects</a>
-        <router-link to="/articles" @click="navOpen = false">Writing</router-link>
-        <a href="#" @click.prevent="goHomeSection('about')">About</a>
+        <router-link to="/" @click="navOpen = false">首页</router-link>
+        <router-link to="/engineering" @click="navOpen = false">工程档案</router-link>
+        <router-link to="/learning" @click="navOpen = false">学习复盘</router-link>
+        <router-link to="/articles" @click="navOpen = false">工程笔记</router-link>
       </div>
     </nav>
   </header>
@@ -54,7 +43,7 @@ function goHome() {
   <footer class="footer">
     <div class="container footer-inner">
       <span>© {{ new Date().getFullYear() }} xiuqiu</span>
-      <span>Built with Vue · Deployed on Vercel</span>
+      <span>持续记录，持续验证</span>
     </div>
   </footer>
 

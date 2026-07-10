@@ -2,6 +2,7 @@
 {
   "id": 14,
   "slug": "thorchain-tss-attack-analysis",
+  "kind": "research",
   "title": "THORChain Asgard Vault 被攻击不是合约漏洞：TSS/MPC 实现缺陷的安全复盘",
   "date": "2026-06-21",
   "summary": "从 TSS/MPC 签名安全边界复盘 THORChain Asgard vault 攻击：旧版 GG20 实现的 Paillier 参数校验不足，让恶意节点逐步泄露 key material 并重构 vault 私钥。",

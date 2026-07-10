@@ -2,6 +2,7 @@
 {
   "id": 17,
   "slug": "lubian-weak-private-key-op-return",
+  "kind": "research",
   "title": "LuBian 事件复盘：弱私钥熵与 BTC OP_RETURN 链上留言",
   "date": "2026-06-21",
   "summary": "从钱包 key generation 安全角度复盘 LuBian：BTC 私钥生成熵不足会让地址可枚举，OP_RETURN 链上留言只是事故后的链上痕迹。",

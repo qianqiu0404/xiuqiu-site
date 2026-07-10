@@ -1,6 +1,6 @@
 # xiuqiu-site
 
-AI-native Web3 Wallet Engineering Portfolio built with Vue, Vite, and Vercel Serverless Functions.
+项目驱动的 Web3 钱包后端公开学习档案，使用 Vue、Vite 和 Vercel Serverless Functions 构建。
 
 ## Architecture
 
@@ -57,3 +57,9 @@ When adding a new project:
 2. Add project metadata in `src/data/siteKnowledge.ts`.
 3. Reference the project from article frontmatter via `relatedProjectIds` when relevant.
 3. Run `npm run build`.
+
+## Public Learning Workflow
+
+- Public learning records live in `content/learning/*.md` and must set `"publish": true` plus `"kind": "learning-log"` in JSON frontmatter.
+- To curate records from Obsidian locally, run `npm run sync:learning -- "/absolute/path/to/vault"`.
+- The sync script ignores every note without the explicit public markers. Hosted builds read committed site content only and never access the local Obsidian vault.

@@ -2,6 +2,7 @@
 {
   "id": 8,
   "slug": "evm-create2-assembly-lifecycle",
+  "kind": "engineering-note",
   "title": "EVM 深度工程：create2、内联汇编与合约生命周期管理",
   "date": "2026-06-06",
   "summary": "深入 create2 确定性部署、Solidity 内联汇编的内存模型、合约自毁的边界条件和函数选择器的底层工作机制。",
@@ -16,10 +17,7 @@
   "conceptTags": [
     "evm"
   ],
-  "relatedProjectIds": [
-    4,
-    6
-  ],
+  "relatedProjectIds": [],
   "recommendedSlugs": [
     "evm-call-proxy-patterns",
     "eip-erc-protocol-evolution"

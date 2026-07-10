@@ -2,6 +2,7 @@
 {
   "id": 7,
   "slug": "evm-call-proxy-patterns",
+  "kind": "engineering-note",
   "title": "合约调用与代理升级：从 delegatecall 到钻石代理的工程实践",
   "date": "2026-06-02",
   "summary": "拆解 call / delegatecall / staticcall 的底层差异、透明代理 vs UUPS vs 钻石代理的取舍逻辑，以及不可升级合约的升级策略。",
@@ -16,10 +17,7 @@
   "conceptTags": [
     "evm"
   ],
-  "relatedProjectIds": [
-    4,
-    6
-  ],
+  "relatedProjectIds": [],
   "recommendedSlugs": [
     "evm-create2-assembly-lifecycle",
     "eip-erc-protocol-evolution"

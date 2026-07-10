@@ -2,6 +2,7 @@
 {
   "id": 23,
   "slug": "web3-narrative-participation-framework",
+  "kind": "research",
   "title": "进入 Web3 新叙事的四种方式：RWA、Perp DEX 与稳定币支付",
   "date": "2026-06-29",
   "summary": "进入一个 Web3 叙事不等于购买名字最响的代币。本文用用户体验、资金参与、股权或代币价值捕获、工程建设四层框架，对比 RWA、Perp DEX 与稳定币支付的系统结构、参与方式和风险边界。",
@@ -22,9 +23,7 @@
   ],
   "relatedProjectIds": [
     1,
-    3,
-    4,
-    6
+    3
   ],
   "recommendedSlugs": [
     "rwa-tokenized-stocks-structure",
@@ -208,4 +207,3 @@ Agent 额度与白名单
 对开发者而言，建设的特殊价值在于它会迫使所有模糊概念接受系统验证：钱从哪里来，状态如何推进，失败如何恢复，收入由谁支付，风险最终落在谁身上。
 
 这比仅仅购买一个带有热门名字的资产，更接近真正站在产业内部。
-

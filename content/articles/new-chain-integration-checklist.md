@@ -2,6 +2,7 @@
 {
   "id": 16,
   "slug": "new-chain-integration-checklist",
+  "kind": "engineering-note",
   "title": "钱包系统上线一条新链，需要调研什么",
   "date": "2026-06-21",
   "summary": "上线一条新链不能只看能不能转账，而要系统调研链模型、地址体系、签名交易、充值扫链、提现构建、手续费、归集、节点、异常、风控、安全、账务和测试。",

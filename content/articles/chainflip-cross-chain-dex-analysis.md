@@ -2,6 +2,7 @@
 {
   "id": 15,
   "slug": "chainflip-cross-chain-dex-analysis",
+  "kind": "research",
   "title": "Chainflip 工程拆解：原生资产跨链兑换网络如何工作",
   "date": "2026-06-21",
   "summary": "Chainflip 不是传统 wrapped bridge，而是用 validator 网络、TSS vault、State Chain 和 JIT AMM 实现原生资产跨链兑换，把 BTC、ETH、SOL、USDC 等资产的跨链闪兑体验协议化。",
@@ -23,8 +24,7 @@
   "relatedProjectIds": [
     1,
     2,
-    5,
-    6
+    5
   ],
   "recommendedSlugs": [
     "thorchain-tss-attack-analysis",

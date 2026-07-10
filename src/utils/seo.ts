@@ -1,6 +1,6 @@
-const DEFAULT_TITLE = 'xiuqiu | Web3 Wallet & Backend Developer'
+const DEFAULT_TITLE = 'xiuqiu｜Web3 钱包后端学习档案'
 const DEFAULT_DESCRIPTION =
-  'xiuqiu — Building practical systems around multi-chain wallets, signer services, Go backend infrastructure, and AI-assisted engineering workflows.'
+  '记录交易所钱包后端、多链 RPC、独立签名、TypeScript 离线钱包与 Go 数据服务的代码实践、验证证据和工程边界。'
 const SITE_URL = 'https://xiuqiu-site.vercel.app'
 
 interface SeoOptions {

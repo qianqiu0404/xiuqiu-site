@@ -2,6 +2,7 @@
 {
   "id": 21,
   "slug": "bridge-liquidity-after-market-crash",
+  "kind": "research",
   "title": "市场暴跌后，为什么跨链桥和跨链兑换会变难用",
   "date": "2026-06-24",
   "summary": "市场暴跌后，跨链桥和跨链兑换的流动性会变差，本质是单边逃离、LP 撤流动性、做市商扩大价差、跨链库存失衡和价格波动风险同时发生。钱包后端不能只展示 quote，而要把跨链交易建模成可观测、可解释、可补偿的异步状态机。",
@@ -22,8 +23,7 @@
   "relatedProjectIds": [
     1,
     2,
-    5,
-    6
+    5
   ],
   "recommendedSlugs": [
     "chainflip-cross-chain-dex-analysis",

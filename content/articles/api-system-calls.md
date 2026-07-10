@@ -2,6 +2,7 @@
 {
   "id": 1,
   "slug": "api-system-calls",
+  "kind": "engineering-note",
   "title": "API 到底是什么？从钱包后端项目理解系统调用",
   "date": "2026-05-14",
   "summary": "作为基础补充，解释 API 为什么是系统能力边界；核心工程用法已在 wallet-api 职责边界文章中展开。",

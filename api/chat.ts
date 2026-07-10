@@ -45,7 +45,7 @@ type ErrorCode =
   | 'upstream_network_error'
 
 interface PageContext {
-  type: 'home' | 'articles' | 'article' | 'project'
+  type: 'home' | 'engineering' | 'learning' | 'articles' | 'article' | 'project'
   title?: string
   slug?: string
   summary?: string
@@ -116,6 +116,8 @@ function normalizePageContext(value: unknown): PageContext | undefined {
   const candidate = value as Record<string, unknown>
   if (
     candidate.type !== 'home' &&
+    candidate.type !== 'engineering' &&
+    candidate.type !== 'learning' &&
     candidate.type !== 'articles' &&
     candidate.type !== 'article' &&
     candidate.type !== 'project'
@@ -232,10 +234,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           {
             role: 'system',
             content: [
-              'You are the AI guide for xiuqiu personal website.',
+              'You are the AI guide for xiuqiu public engineering learning archive.',
               'Answer only questions related to xiuqiu, the listed projects, listed articles, Web3 wallets, signer services, backend engineering, and AI-assisted engineering workflows.',
               'If the answer is not supported by the provided website context, say you are not sure instead of inventing experience or facts.',
               'Prefer Chinese. Use English technical terms only where they help clarity.',
+              'Clearly distinguish implemented or verified facts, current limitations, and future learning plans.',
               'Keep answers concise, practical, and grounded in the website context.',
               'When helpful, cite exact project names and article titles from the website context.',
               '',

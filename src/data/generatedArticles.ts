@@ -22,6 +22,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "8 min",
     "difficulty": "基础",
+    "kind": "engineering-note",
     "conceptTags": [
       "api-design",
       "wallet-backend"
@@ -55,6 +56,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "10 min",
     "difficulty": "进阶",
+    "kind": "engineering-note",
     "conceptTags": [
       "api-design",
       "go-infra"
@@ -89,6 +91,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "12 min",
     "difficulty": "项目拆解",
+    "kind": "engineering-note",
     "conceptTags": [
       "wallet-backend",
       "api-design",
@@ -123,6 +126,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "12 min",
     "difficulty": "项目拆解",
+    "kind": "engineering-note",
     "conceptTags": [
       "signer-service",
       "wallet-backend",
@@ -158,6 +162,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "12 min",
     "difficulty": "项目拆解",
+    "kind": "engineering-note",
     "conceptTags": [
       "go-infra",
       "api-design"
@@ -189,6 +194,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "12 min",
     "difficulty": "进阶",
+    "kind": "engineering-note",
     "conceptTags": [
       "multi-chain",
       "signer-service",
@@ -222,13 +228,11 @@ export const articles: Article[] = [
     ],
     "readingTime": "14 min",
     "difficulty": "进阶",
+    "kind": "engineering-note",
     "conceptTags": [
       "evm"
     ],
-    "relatedProjectIds": [
-      4,
-      6
-    ],
+    "relatedProjectIds": [],
     "recommendedSlugs": [
       "evm-create2-assembly-lifecycle",
       "eip-erc-protocol-evolution"
@@ -253,13 +257,11 @@ export const articles: Article[] = [
     ],
     "readingTime": "14 min",
     "difficulty": "进阶",
+    "kind": "engineering-note",
     "conceptTags": [
       "evm"
     ],
-    "relatedProjectIds": [
-      4,
-      6
-    ],
+    "relatedProjectIds": [],
     "recommendedSlugs": [
       "evm-call-proxy-patterns",
       "eip-erc-protocol-evolution"
@@ -284,14 +286,12 @@ export const articles: Article[] = [
     ],
     "readingTime": "14 min",
     "difficulty": "进阶",
+    "kind": "research",
     "conceptTags": [
       "evm",
       "api-design"
     ],
-    "relatedProjectIds": [
-      4,
-      6
-    ],
+    "relatedProjectIds": [],
     "recommendedSlugs": [
       "evm-call-proxy-patterns",
       "evm-create2-assembly-lifecycle"
@@ -317,6 +317,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "6 min",
     "difficulty": "项目拆解",
+    "kind": "engineering-note",
     "conceptTags": [
       "wallet-backend",
       "api-design",
@@ -356,6 +357,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "6 min",
     "difficulty": "项目拆解",
+    "kind": "engineering-note",
     "conceptTags": [
       "mpc-tss",
       "signer-service",
@@ -396,6 +398,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "8 min",
     "difficulty": "项目拆解",
+    "kind": "engineering-note",
     "conceptTags": [
       "signer-service",
       "wallet-backend",
@@ -435,6 +438,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "6 min",
     "difficulty": "进阶",
+    "kind": "research",
     "conceptTags": [
       "wallet-backend",
       "multi-chain",
@@ -445,9 +449,7 @@ export const articles: Article[] = [
     "relatedProjectIds": [
       1,
       2,
-      4,
-      5,
-      6
+      5
     ],
     "recommendedSlugs": [
       "mpc-wallet-sign-integration",
@@ -480,6 +482,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "13 min",
     "difficulty": "进阶",
+    "kind": "research",
     "conceptTags": [
       "mpc-tss",
       "signer-service",
@@ -521,6 +524,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "8 min",
     "difficulty": "进阶",
+    "kind": "research",
     "conceptTags": [
       "multi-chain",
       "mpc-tss",
@@ -530,8 +534,7 @@ export const articles: Article[] = [
     "relatedProjectIds": [
       1,
       2,
-      5,
-      6
+      5
     ],
     "recommendedSlugs": [
       "thorchain-tss-attack-analysis",
@@ -562,6 +565,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "8 min",
     "difficulty": "项目拆解",
+    "kind": "engineering-note",
     "conceptTags": [
       "wallet-backend",
       "multi-chain",
@@ -601,6 +605,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "6 min",
     "difficulty": "进阶",
+    "kind": "research",
     "conceptTags": [
       "wallet-backend",
       "signer-service",
@@ -639,6 +644,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "6 min",
     "difficulty": "进阶",
+    "kind": "research",
     "conceptTags": [
       "multi-chain",
       "wallet-backend",
@@ -646,8 +652,7 @@ export const articles: Article[] = [
     ],
     "relatedProjectIds": [
       1,
-      5,
-      6
+      5
     ],
     "recommendedSlugs": [
       "chainflip-cross-chain-dex-analysis",
@@ -678,6 +683,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "5 min",
     "difficulty": "项目拆解",
+    "kind": "engineering-note",
     "conceptTags": [
       "wallet-backend",
       "multi-chain",
@@ -716,6 +722,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "8 min",
     "difficulty": "项目拆解",
+    "kind": "engineering-note",
     "conceptTags": [
       "wallet-backend",
       "multi-chain",
@@ -756,6 +763,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "9 min",
     "difficulty": "进阶",
+    "kind": "research",
     "conceptTags": [
       "wallet-backend",
       "multi-chain",
@@ -764,8 +772,7 @@ export const articles: Article[] = [
     "relatedProjectIds": [
       1,
       2,
-      5,
-      6
+      5
     ],
     "recommendedSlugs": [
       "chainflip-cross-chain-dex-analysis",
@@ -797,6 +804,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "7 min",
     "difficulty": "进阶",
+    "kind": "research",
     "conceptTags": [
       "wallet-backend",
       "multi-chain",
@@ -804,8 +812,7 @@ export const articles: Article[] = [
     ],
     "relatedProjectIds": [
       1,
-      2,
-      6
+      2
     ],
     "recommendedSlugs": [
       "wallet-address-models",
@@ -837,6 +844,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "5 min",
     "difficulty": "进阶",
+    "kind": "research",
     "conceptTags": [
       "wallet-backend",
       "api-design",
@@ -845,9 +853,7 @@ export const articles: Article[] = [
     ],
     "relatedProjectIds": [
       1,
-      3,
-      4,
-      6
+      3
     ],
     "recommendedSlugs": [
       "rwa-tokenized-stocks-structure",
@@ -879,6 +885,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "6 min",
     "difficulty": "进阶",
+    "kind": "research",
     "conceptTags": [
       "wallet-backend",
       "multi-chain",
@@ -887,9 +894,7 @@ export const articles: Article[] = [
     ],
     "relatedProjectIds": [
       1,
-      2,
-      4,
-      6
+      2
     ],
     "recommendedSlugs": [
       "web3-narrative-participation-framework",
@@ -921,6 +926,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "6 min",
     "difficulty": "进阶",
+    "kind": "research",
     "conceptTags": [
       "api-design",
       "go-infra",
@@ -928,9 +934,7 @@ export const articles: Article[] = [
       "wallet-backend"
     ],
     "relatedProjectIds": [
-      3,
-      4,
-      6
+      3
     ],
     "recommendedSlugs": [
       "web3-narrative-participation-framework",
@@ -962,6 +966,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "6 min",
     "difficulty": "进阶",
+    "kind": "research",
     "conceptTags": [
       "wallet-backend",
       "api-design",
@@ -971,8 +976,7 @@ export const articles: Article[] = [
     "relatedProjectIds": [
       1,
       2,
-      3,
-      6
+      3
     ],
     "recommendedSlugs": [
       "web3-narrative-participation-framework",
@@ -1004,6 +1008,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "10 min",
     "difficulty": "项目拆解",
+    "kind": "learning-log",
     "conceptTags": [
       "ai-engineering",
       "wallet-backend",
@@ -1046,6 +1051,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "6 min",
     "difficulty": "项目拆解",
+    "kind": "engineering-note",
     "conceptTags": [
       "wallet-backend",
       "multi-chain",
@@ -1087,6 +1093,7 @@ export const articles: Article[] = [
     ],
     "readingTime": "8 min",
     "difficulty": "项目拆解",
+    "kind": "engineering-note",
     "conceptTags": [
       "wallet-backend",
       "signer-service",
@@ -1095,8 +1102,7 @@ export const articles: Article[] = [
     ],
     "relatedProjectIds": [
       1,
-      2,
-      4
+      2
     ],
     "recommendedSlugs": [
       "multi-chain-wallet-resource-state",
@@ -1112,5 +1118,44 @@ export const articles: Article[] = [
       "Paymaster 支付 Gas 后，钱包后端需要记录哪些资金状态？"
     ],
     "content": "# ERC-4337 工程拆解：一笔 UserOperation 如何验证、支付 Gas 并进入链上\n\n理解 ERC-4337 时，我最初很容易把它简化成一句话：智能账户构建一笔 `UserOperation`，用户签名，再由 Bundler 帮忙上链。\n\n这句话没有错，但它隐藏了真正重要的工程问题。\n\n```text\n用户完成签名\n!= Bundler 接受\n!= EntryPoint 验证通过\n!= 目标调用执行成功\n```\n\n签名只能证明某套账户规则认可了这次操作。它没有回答 nonce 是否仍然有效、谁承担 Gas、Paymaster 是否接受、验证依赖的链上状态是否变化，也没有证明目标合约最终执行成功。\n\n因此，ERC-4337 并没有消除钱包后端状态机。它把一笔普通交易背后原本相对固定的验证过程，拆成了智能账户、Bundler、EntryPoint、Paymaster 和链上执行之间的协作。\n\n这篇文章沿着一笔 USDC 转账走完全程，重点回答三个问题：\n\n```text\nUserOperation 已经签名，为什么还要模拟？\n谁授权操作，和谁支付 Gas，有什么区别？\n钱包后端应该保存哪些中间状态？\n```\n\n# 从用户意图到链上执行\n\n假设用户想通过智能账户转出 100 USDC，并由 Paymaster 赞助 Gas。\n\n从用户界面看，这可能只有一次确认。但在系统内部，它会经过一条更长的链路：\n\n```text\n用户确认转出 100 USDC\n-> wallet-service 创建业务订单\n-> wallet-api 构建 UserOperation\n-> 查询 nonce key / sequence\n-> wallet-sign 签署 userOpHash\n-> 提交给 Bundler\n-> Bundler 离链模拟验证\n-> 进入 UserOperation mempool\n-> Bundler 打包 handleOps\n-> EntryPoint 执行验证阶段\n-> 智能账户调用 USDC 合约\n-> EntryPoint 结算实际 Gas\n-> wallet-service 根据 receipt 推进订单状态\n```\n\n这里真正进入以太坊区块的，不是 UserOperation 本身。\n\nBundler 会收集一个或多个 UserOperation，构建一笔调用 `EntryPoint.handleOps()` 的普通链上交易。EntryPoint 再逐项验证和执行这些操作。\n\n所以 UserOperation 更像一份等待基础设施验证和打包的操作请求，而不是另一种可以直接发送给区块生产者的普通交易。\n\n# UserOperation 究竟承诺了什么\n\nUserOperation 的字段很多，但可以先按职责分成四组。\n\n| 分组 | 典型内容 | 解决的问题 |\n| --- | --- | --- |\n| 身份与防重放 | `sender`、`nonce` | 谁发起操作，这次操作是否重复 |\n| 执行意图 | `callData` | 智能账户最终要调用什么 |\n| Gas 边界 | verification、execution、pre-verification Gas 和费用字段 | 最多允许消耗多少执行资源 |\n| 部署与赞助 | factory、paymaster 相关数据 | 账户如何创建，谁承担 Gas |\n\n链上调用使用的是打包后的 `PackedUserOperation`。具体编码会随着规范和 EntryPoint 版本演进，但钱包后端最需要理解的边界没有变化：签名不是只覆盖“给谁转多少钱”。\n\n`userOpHash` 还会绑定 UserOperation 内容、EntryPoint 和 chainId。这样同一份签名不能被随意拿到另一条链或另一个 EntryPoint 上使用。\n\n对 `wallet-sign` 来说，这意味着签名前至少要能解释：\n\n```text\nsender 是谁\ncallData 最终调用什么\n使用哪个 nonce\n在哪条链执行\n信任哪个 EntryPoint\nGas 上限是多少\n是否使用 Paymaster\n```\n\n如果签名服务只收到一个不透明 hash 并直接签名，智能账户虽然支持更灵活的授权，平台自己的签名安全边界却反而退化了。\n\n# Semi-abstracted Nonce：不再只有一条队列\n\n普通 EOA 使用单调递增的账户 nonce。同一账户的交易天然排成一条队列，前一笔卡住时，后续 nonce 通常也会受到影响。\n\nERC-4337 把 UserOperation 的 `uint256 nonce` 解释成两部分：\n\n```text\n192-bit key\n+\n64-bit sequence\n```\n\n`key` 可以代表一条独立的操作通道，`sequence` 在该通道内单调递增。\n\n例如，一个智能账户可以约定：\n\n```text\nkey 0 -> 普通资产转账\nkey 1 -> 管理员和恢复操作\nkey 2 -> Session Key 小额支付\n```\n\n三条通道可以拥有各自的 sequence。管理操作不必和高频小额支付争抢同一条 nonce 队列。\n\n但“可以并行”不等于“不用管理”。EntryPoint 仍然会校验每个 key 对应的 sequence。Bundler 如果接收同一 sender 的多个操作，也要跟踪 mempool 中已经占用的 key 和 sequence。\n\n钱包后端不能只保存一个最终的 `userOpHash`，而应该把资源状态和业务订单绑定：\n\n```text\nsender\nentry_point\nnonce_key\nnonce_sequence\nbusiness_order_id\nuser_op_hash\nstatus\n```\n\n如果两个 worker 为同一 sender 和 nonce key 分配了相同 sequence，最终仍会发生冲突。Semi-abstracted nonce 扩展了并行模型，没有替平台解决并发控制。\n\n# 为什么 Bundler 必须先模拟验证\n\n普通 EOA 交易的基本有效性可以用固定规则检查：签名能否恢复出发送者、nonce 是否正确、余额是否足够、chainId 是否匹配。\n\nUserOperation 的验证逻辑却可以由智能账户和 Paymaster 合约定义。Bundler 不能只看字段格式就知道它是否有效，必须在当前链上状态下运行验证过程。\n\n模拟需要确认的内容包括：\n\n```text\nnonce 是否有效\n智能账户是否认可签名\n账户是否需要部署\nvalidAfter / validUntil 是否满足\nPaymaster 是否愿意赞助\n预付资金是否覆盖最大成本\n验证过程是否符合 Bundler 的准入规则\n```\n\n当前 ERC-4337 规范把 simulation 描述为对 EntryPoint 执行离链 view call 或 trace call，并应用验证阶段的共享规则。实现和版本可能提供不同辅助接口，因此不应该把旧版本里的某个 `simulateValidation()` 函数名当成永久不变的协议边界。\n\n这里最重要的理解是：\n\n> 模拟验证是准入检查，不是最终执行证明。\n\n模拟通过后，UserOperation 才有资格进入 Bundler 的本地 mempool 或继续传播。但在真正上链前，账户状态、nonce、Paymaster 额度和有效期都可能变化。\n\n不同 Bundler 还可能有不同的费用阈值、声誉策略和 mempool 规则。因此，一个 Bundler 接受操作，也不等于所有 Bundler 都会接受。\n\n# 授权操作和支付 Gas 是两件事\n\n账户抽象经常被描述为“可以让别人代付 Gas”。这个体验背后至少有四个容易混淆的概念。\n\n| 概念 | 作用 |\n| --- | --- |\n| Prefund | 当前 UserOperation 为覆盖最大可能成本需要准备的资金 |\n| Deposit | Account 或 Paymaster 存放在 EntryPoint 中、可用于支付未来操作 Gas 的余额 |\n| Stake | Factory、Paymaster 等实体为获得特定验证能力提供的带延迟退出经济承诺 |\n| Actual Gas Cost | 验证和执行完成后，根据实际消耗结算的费用 |\n\n在没有 Paymaster 时，智能账户需要保证 EntryPoint 能获得足够的预付资金。如果账户在 EntryPoint 中已有 deposit，可以从 deposit 覆盖；不足部分会作为 `missingAccountFunds` 交给账户验证逻辑处理。\n\n使用 Paymaster 时，Paymaster 的验证逻辑决定是否赞助这次操作。它可以检查用户身份、目标合约、金额、有效期或平台额度，然后通过自己的 EntryPoint deposit 承担 Gas。\n\n这形成了两条独立关系：\n\n```text\n用户或账户策略 -> 授权执行 100 USDC 转账\nPaymaster 策略 -> 同意承担这次操作的 Gas\n```\n\nPaymaster 同意付费，不能替代用户对资产转移的授权。用户签名有效，也不能强迫 Paymaster 提供赞助。\n\n即使目标调用最终 revert，Paymaster 仍可能已经承担验证和执行消耗的 Gas。因此钱包后端不仅要记录“是否使用 Paymaster”，还需要记录赞助请求、验证结果、最大成本、实际成本和结算结果。\n\n# EntryPoint 如何完成验证和执行\n\n可以把 `handleOps` 的工作理解成两个阶段。\n\n## 验证阶段\n\n```text\n必要时通过 factory 创建账户\n-> 校验 nonce\n-> 计算最大可能费用\n-> 调用 Account.validateUserOp\n-> 调用 Paymaster validation（如果存在）\n-> 检查 deposit / prefund\n-> 检查有效时间和其他验证结果\n```\n\n智能账户的 `validateUserOp` 会检查 EntryPoint 是否可信、签名是否满足账户策略，并返回签名或授权信息以及有效时间范围。\n\nPaymaster 存在时，EntryPoint 还会调用 Paymaster 的验证逻辑。任何关键验证失败，都可能让该 UserOperation 被拒绝执行。\n\n## 执行阶段\n\n```text\n调用智能账户执行 callData\n-> 智能账户调用 USDC 合约\n-> 记录执行成功或 revert\n-> 调用 Paymaster postOp（如果需要）\n-> 计算实际 Gas 成本\n-> 退回未使用的预付资金\n-> 向 Bundler beneficiary 支付费用\n```\n\n验证成功和目标调用成功是两个不同结果。\n\nUserOperation 可以通过账户与 Paymaster 验证，但在调用 USDC 时因为余额不足、合约暂停或业务参数错误而 revert。此时不能把它当成“从未发送”，因为链上已经执行了验证并消耗 Gas。\n\n# 钱包三件套如何接入 ERC-4337\n\n把这条链路映射回我的钱包三件套后，职责可以这样划分。\n\n## wallet-service：业务状态和恢复策略\n\n`wallet-service` 不负责拼装 PackedUserOperation，但需要保存足够的中间事实：\n\n```text\nbusiness_order_id\nsender\nnonce_key / sequence\nuser_op_hash\ngas_sponsor\nvalidation_status\nbundler_submission\nentry_point\ntransaction_hash\nactual_gas_cost\nexecution_result\n```\n\n它还要处理幂等、替换、超时、业务补偿和用户状态展示。\n\n## wallet-api：账户抽象基础设施适配\n\n`wallet-api` 负责和链、Bundler 及 EntryPoint 交互：\n\n```text\n解析智能账户地址\n查询 nonce\n构建 UserOperation\n估算 Gas\n调用 Bundler RPC 提交\n查询 UserOperation receipt\n解析最终链上事件和 transaction hash\n```\n\n它不应该把所有步骤揉成一个没有中间结果的 `send()`。模拟失败、Paymaster 拒绝和 Bundler 丢弃需要被上层区分处理。\n\n## wallet-sign：签署被冻结的完整意图\n\n`wallet-sign` 只签署经过业务和策略校验的完整 UserOperation。签名前要确认：\n\n```text\nchainId\nEntryPoint\nsender\nnonce\ncallData\n费用上限\nPaymaster 相关字段\n```\n\n签名完成后，如果这些字段发生变化，就应该重新走策略校验和签名。`wallet-api` 不能为了让 Bundler 接受请求，在签名后静默刷新关键字段。\n\n# 钱包后端建议保存的状态机\n\n下面的状态不是 ERC-4337 规定的链上枚举，而是钱包后端为了追踪一笔业务操作可以采用的内部模型。\n\n```text\nCREATED\n-> BUILT\n-> SIGNED\n-> SIMULATED\n-> SUBMITTED\n-> INCLUDED\n-> EXECUTED\n```\n\n异常状态需要保留失败语义：\n\n| 状态 | 含义 | 典型恢复动作 |\n| --- | --- | --- |\n| VALIDATION_REJECTED | nonce、签名、账户验证或有效期不满足 | 修正原因后重新构建和签名 |\n| SPONSOR_REJECTED | Paymaster 不接受或资金不足 | 更换 Gas 来源并重新校验 |\n| DROPPED | Bundler 未继续保留或传播操作 | 检查 nonce、有效期和替换规则 |\n| EXPIRED | 授权或赞助有效窗口已经结束 | 重新构建、估算和签名 |\n| REPLACED | 相同 sender / nonce 的新操作替换旧操作 | 关联新旧 userOpHash，停止追踪旧操作 |\n| EXECUTION_REVERTED | 验证通过但目标调用失败 | 记录链上结果和实际 Gas，不重复执行业务 |\n\n这组状态最重要的价值，是阻止系统把所有失败都归为 `send_failed`。\n\n模拟失败时，操作还没有进入链上；执行 revert 时，链上事实和 Gas 消耗已经发生。二者显然不能使用同一套重试策略。\n\n# 回到最初的三个问题\n\n第一，UserOperation 已经签名，为什么还要模拟？\n\n因为签名只证明账户授权。模拟还要检查 nonce、账户验证、Paymaster、有效期、prefund 和 Bundler 准入规则。\n\n第二，谁授权操作和谁支付 Gas 有什么区别？\n\n账户签名决定资产操作是否被允许，Account 或 Paymaster 的 EntryPoint deposit 决定谁承担执行成本。两套策略可以独立成功或失败。\n\n第三，钱包后端为什么仍然需要状态机？\n\n因为一笔 UserOperation 会经过构建、签名、模拟、提交、打包、验证、执行和结算。每个阶段的失败事实和恢复动作都不同。\n\n最终我对 ERC-4337 的理解是：\n\n**账户抽象让签名、恢复和 Gas 支付变得可编程，但没有抽象掉资金系统对 nonce、验证结果、执行状态和费用结算的责任。**\n\n# 参考资料\n\n- [EIP-4337: Account Abstraction Using Alt Mempool](https://eips.ethereum.org/EIPS/eip-4337)\n- [ERC-7769: JSON-RPC API for ERC-4337](https://eips.ethereum.org/EIPS/eip-7769)\n- [ERC-4337 Bundler Simulation Requirements](https://docs.erc4337.io/bundlers/simulation-requirements.html)\n- [eth-infinitism/account-abstraction](https://github.com/eth-infinitism/account-abstraction)\n- [EntryPoint.sol](https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/core/EntryPoint.sol)"
+  },
+  {
+    "id": 30,
+    "slug": "minimal-multi-agent-coding-workflow",
+    "title": "从单 Agent 到最小 Multi-Agent：我的 AI Coding 工作流进化",
+    "date": "2026-07-09",
+    "summary": "这篇成长日志记录我如何从让 AI 直接帮我写代码，进化到用 Planner、Worker、Reviewer 三个角色组织复杂 Coding 任务，让 AI Coding 变成有边界、有交接、有审查的工程流程。",
+    "tags": [
+      "AI Engineering",
+      "Codex",
+      "Multi-Agent",
+      "Workflow",
+      "Coding"
+    ],
+    "readingTime": "6 min",
+    "difficulty": "项目拆解",
+    "kind": "learning-log",
+    "conceptTags": [
+      "ai-engineering",
+      "go-infra",
+      "api-design"
+    ],
+    "relatedProjectIds": [
+      1,
+      2,
+      3
+    ],
+    "recommendedSlugs": [
+      "codex-ai-workflow-system-retrospective",
+      "erc4337-useroperation-lifecycle",
+      "cex-evm-wallet-deposit-withdrawal-loop",
+      "wallet-api-boundary"
+    ],
+    "suggestedQuestions": [
+      "为什么最小 Multi-Agent 只需要 Planner、Worker 和 Reviewer？",
+      "Multi-Agent Coding 和普通 AI 写代码有什么区别？",
+      "什么时候应该使用 Multi-Agent，什么时候不应该？"
+    ],
+    "content": "# 从单 Agent 到最小 Multi-Agent：我的 AI Coding 工作流进化\n\n我一开始使用 AI Coding 时，最常见的方式是把一个目标直接交给 Codex：\n\n```text\n帮我实现这个功能\n帮我修这个 bug\n帮我把这篇文章写进网站\n```\n\n这种方式对小任务很有效。目标清楚、文件少、验证简单时，一个 Agent 往往可以直接完成。\n\n但随着我开始用 AI 处理更复杂的事情，问题也变得明显：一个任务里同时包含需求澄清、代码修改、内容判断、构建验证和风险审查时，如果全部交给同一个连续对话，很容易出现三种偏差。\n\n```text\n目标漂移：做着做着开始扩展不必要的功能\n边界遗漏：只完成表面实现，没有想清楚模块职责\n验证不足：代码能跑，但没有认真检查失败路径和回归风险\n```\n\n这也是我开始需要 Multi-Agent 的原因。\n\n但我后来意识到，最小的 Multi-Agent Coding 并不是同时开很多个 AI，也不是让一堆 Agent 自己讨论到天亮。对我来说，最有用的版本反而很小：固定三个角色。\n\n```text\nPlanner\nWorker\nReviewer\n```\n\n它们分别对应工程任务里最容易混在一起、但最好拆开的三个动作：\n\n```text\n先想清楚\n再完成任务\n最后挑问题\n```\n\n# 最小 Multi-Agent 不是养很多 AI\n\n我现在对 Multi-Agent 的理解可以压缩成一句话：\n\n```text\nMulti-Agent = Role + Context + Handoff + Evaluation\n```\n\n也就是说，关键不是 Agent 的数量，而是每个角色有没有明确职责、共享了哪些上下文、怎么交接结果，以及最后如何评价质量。\n\n如果没有这些边界，Agent 越多越容易乱。\n\n一个 Agent 可能在没有完整上下文的情况下改代码；另一个 Agent 可能重复前一个 Agent 已经做过的判断；第三个 Agent 可能只是在重新总结，而没有真正审查风险。这样看起来很热闹，但对工程结果没有帮助。\n\n所以我现在采用的是最小版本：\n\n```text\n我\n-> Planner\n-> Worker\n-> Reviewer\n-> 我\n```\n\n这里的重点是最后还要回到“我”。AI 可以计划、执行和审查，但最终目标是否正确、风险是否接受、内容是否符合我的表达，仍然需要我判断。\n\n# Planner：先把任务变成可执行边界\n\nPlanner 不负责写代码，也不负责直接改文章。\n\n它的价值是先把一个模糊目标拆成可执行边界：\n\n```text\n目标是什么\n不做什么\n要碰哪些文件\n成功标准是什么\n有哪些风险\n需要怎样验证\n```\n\n比如我说“把一篇 Multi-Agent Coding 的文章写进 xiuqiu-site”，如果直接执行，模型很容易只新增一个 Markdown 文件。但 Planner 应该先判断这篇文章在网站中的位置：\n\n```text\n它是 AI Engineering 方向的成长日志\n它应该承接 Codex Workflow 复盘\n它不应该写成工具教程\n它需要加入 AI Engineering 的阅读路径\n它需要通过文章生成、知识索引、sitemap 和构建验证\n```\n\n这个阶段最重要的不是产出很多文字，而是把任务边界收窄到 Worker 可以稳定执行。\n\nPlanner 的好坏，决定了后面所有执行是否会偏航。\n\n# Worker：按计划完成，不擅自扩大目标\n\nWorker 的职责是执行计划。\n\n这听起来简单，但它有一个很重要的约束：Worker 不应该随意改变目标。\n\n如果 Planner 已经明确“本次只新增文章，不修改文章系统”，那 Worker 就不应该顺手重构 Markdown 渲染器、调整首页布局、增加新组件，或者把 Obsidian 也一起写了。\n\n在我的使用里，Worker 更像一个非常专注的执行者：\n\n```text\n根据 frontmatter 规范新增文章\n按既定结构写正文\n把新文章加入对应知识路径\n运行构建脚本\n根据错误做最小修复\n```\n\n这和单 Agent 直接执行的区别在于：Worker 的自由度被前面的计划约束住了。\n\n这种约束不是为了限制 AI，而是为了保护工程任务本身。复杂项目里最怕的不是 AI 写不出代码，而是它写得太主动，把无关部分也改了。\n\n# Reviewer：不是总结，而是挑问题\n\nReviewer 的职责不是把 Worker 的结果再夸一遍，也不是重新复述实现过程。\n\n它应该站在审查者角度问：\n\n```text\n有没有违反原始目标？\n有没有遗漏测试？\n有没有破坏已有行为？\n有没有过度设计？\n有没有信息泄露？\n有没有内容口吻不符合网站定位？\n```\n\n对代码任务来说，Reviewer 要看 bug、类型错误、边界条件和回归风险。\n\n对文章任务来说，Reviewer 要看结构是否清楚、内容是否像我自己的表达、有没有变成“AI 工具宣传”、有没有暴露内部路径或隐私信息。\n\n我越来越觉得，AI Coding 里最容易被低估的是 Reviewer。\n\n因为模型很擅长生成，但生成之后如果没有另一轮冷静审查，就很容易把“看起来完整”误认为“真的完成”。\n\n# 一条最小工作流\n\n把这三个角色合起来，我现在理解的最小 Multi-Agent Coding 流程是：\n\n```text\n我提出目标\n-> Planner 拆任务、边界和验收标准\n-> Worker 按计划执行实现或写作\n-> Reviewer 审查 bug、遗漏、风险和表达\n-> 我决定接受、修改或继续迭代\n```\n\n这条流程看起来比“直接让 AI 做”慢一点，但对复杂任务更稳。\n\n它把一个大而模糊的任务拆成了几个相对清晰的责任段。每个阶段的输出都可以被下一阶段检查，而不是所有判断都混在同一段对话里。\n\n我现在会把它理解成一种轻量工程流程，而不是炫技式的 Agent 编排。\n\n# 它适合什么任务\n\n我不会对所有事情都使用 Multi-Agent。\n\n如果只是改一个 typo、查一个简单概念、调整一段普通文案，使用 Multi-Agent 反而会增加负担。\n\n它更适合这些任务：\n\n```text\n新功能实现\n复杂 bug 排查\n钱包状态机调整\n签名模块安全边界修改\n生产事故或安全事件复盘\n长文章重写和内容结构调整\n需要构建验证的 AI Coding 任务\n```\n\n这些任务的共同点是：它们不只是“做完”，还需要说明为什么这样做、哪些地方不能动、如何证明结果可信。\n\n如果一个任务的失败成本较高，或者它涉及多个模块、多个状态、多个验证步骤，我就更愿意使用 Planner / Worker / Reviewer 的拆分。\n\n# 和我现有工作流的关系\n\n我之前已经把一些重复任务沉淀成了工作流：\n\n```text\n钱包工程验证 loop\n公众号增量同步 Skill\nWeb3 每日研究 Automation\nObsidian MCP 知识查询\n```\n\n这些系统解决的是“任务如何反复运行”的问题。\n\n而 Multi-Agent Coding 解决的是另一个问题：一次复杂任务内部，AI 应该如何分工。\n\n两者的关系可以这样理解：\n\n```text\nWorkflow 解决任务如何反复运行\nMulti-Agent 解决一次复杂任务如何分工和审查\n```\n\n例如，钱包工程验证 loop 可能每天都要运行。但在某一次运行中，如果发现提现状态机有 bug，我仍然需要一个小型 Multi-Agent 流程来处理：\n\n```text\nPlanner：判断 bug 涉及 withdraw、sendout、账务还是通知\nWorker：做最小修复并运行验证\nReviewer：检查是否引入重复出金、状态卡死或账务不平风险\n```\n\n所以 Multi-Agent 不是替代 Workflow，而是 Workflow 里的复杂步骤可以使用的组织方式。\n\n# 我真正学到的变化\n\n这段时间我最大的变化，不是“我更会写 Prompt 了”，也不是“AI 更强了”。\n\n更准确地说，是我开始学会设计 AI 的工作边界。\n\n以前我更关心怎么把问题问得足够具体，让 AI 给出一个结果。现在我更关心：\n\n```text\n谁负责计划\n谁负责执行\n谁负责审查\n中间结果怎么交接\n最终由谁判断\n```\n\n这让我对 AI Coding 的理解发生了变化。\n\nAI 不是一个万能执行黑盒。它更像一组可以被组织起来的认知角色：有的适合拆问题，有的适合做实现，有的适合挑毛病。\n\n当这些角色被明确下来，AI 才更像工程协作者，而不是一次性答案生成器。\n\n# 对我的网站和学习系统意味着什么\n\n这篇文章本身也提醒我一件事：我不应该只把结果写进 xiuqiu-site，还应该把“我如何得到这个结果”的方法沉淀下来。\n\n比如 Web3 钱包文章展示的是工程理解；AI Workflow 文章展示的是我如何把重复任务变成可恢复系统；而这篇 Multi-Agent Coding 记录的是我如何组织 AI 完成复杂任务。\n\n它们合在一起，才构成一个更完整的能力画像：\n\n```text\n我理解钱包系统\n我能用 AI 辅助工程验证\n我能把 AI 工作方式沉淀成可复用流程\n我也能反过来审查 AI 的输出\n```\n\n这比单纯说“我会使用 AI 编程”更具体。\n\n# 复述卡\n\n这篇文章我希望自己最后能这样复述：\n\n```text\n一句话：\n最小 Multi-Agent Coding 是 Planner、Worker、Reviewer 三角色组成的工程闭环。\n\n一条流程：\n计划 -> 执行 -> 审查 -> 人类确认。\n\n三个边界：\nPlanner 不写代码，只拆目标和验收标准。\nWorker 不改目标，只按计划执行。\nReviewer 不做无依据扩展，只检查 bug、遗漏和风险。\n\n一个风险：\n没有清晰交接和验证，Agent 越多越乱。\n```\n\n所以我现在不会把 Multi-Agent 理解成“开更多 AI”。我会把它理解成一种更小、更朴素、也更工程化的协作方式：\n\n```text\n把复杂任务拆成角色\n把角色之间的交接说清楚\n把最终判断留给人\n```\n\n这才是我当前阶段最有用的 Multi-Agent Coding。"
   }
 ]

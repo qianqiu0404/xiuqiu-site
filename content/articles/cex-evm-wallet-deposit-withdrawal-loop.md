@@ -2,6 +2,7 @@
 {
   "id": 20,
   "slug": "cex-evm-wallet-deposit-withdrawal-loop",
+  "kind": "engineering-note",
   "title": "从充值到提现：我完整跑通了一条交易所 EVM 钱包链路",
   "date": "2026-06-23",
   "summary": "这篇复盘记录我如何跑通交易所钱包充值提现闭环：把一条 EVM 链从地址生成、充值扫链、余额入账、提现冻结、交易构建、签名广播、receipt 确认到业务通知串成完整资金链路。",

@@ -233,7 +233,7 @@ watchEffect(() => {
   }
 
   setSeoMeta({
-    title: `${article.value.title} | xiuqiu Writing`,
+    title: `${article.value.title}｜xiuqiu 工程笔记`,
     description: article.value.summary,
     path: `/articles/${article.value.slug}`,
     type: 'article',
@@ -244,7 +244,7 @@ watchEffect(() => {
 <template>
   <section class="section page-top">
     <div class="container article-detail-container" v-if="article">
-      <router-link to="/articles" class="back-link">&larr; Back to Writing</router-link>
+      <router-link to="/articles" class="back-link">&larr; 返回工程笔记</router-link>
 
       <article class="article-detail">
         <header class="article-detail-header">
@@ -267,14 +267,14 @@ watchEffect(() => {
         ></div>
 
         <footer class="article-detail-footer">
-          <router-link to="/articles" class="back-link">&larr; Back to Writing</router-link>
-          <a href="#" @click.prevent="goHome" class="back-link">Back to Home</a>
+          <router-link to="/articles" class="back-link">&larr; 返回工程笔记</router-link>
+          <a href="#" @click.prevent="goHome" class="back-link">返回首页</a>
         </footer>
       </article>
 
       <section class="article-followup">
         <div class="followup-block">
-          <p class="section-label">Related Projects</p>
+          <p class="section-label">相关项目</p>
           <div class="followup-grid">
             <article v-for="project in relatedProjects" :key="project.id" class="followup-card">
               <h3>{{ project.name }}</h3>
@@ -284,14 +284,14 @@ watchEffect(() => {
                 type="button"
                 @click="askQuestion(`请结合《${article.title}》解释 ${project.name} 项目的工程价值。`)"
               >
-                Ask AI &rarr;
+                请 AI 结合文章解释 &rarr;
               </button>
             </article>
           </div>
         </div>
 
         <div class="followup-block">
-          <p class="section-label">Recommended Reading</p>
+          <p class="section-label">推荐阅读</p>
           <div class="followup-links">
             <router-link
               v-for="item in recommendedArticles"
@@ -306,7 +306,7 @@ watchEffect(() => {
         </div>
 
         <div class="followup-block">
-          <p class="section-label">Ask Next</p>
+          <p class="section-label">继续追问</p>
           <div class="suggested-question-list">
             <button
               v-for="question in article.suggestedQuestions"
@@ -321,7 +321,7 @@ watchEffect(() => {
         </div>
 
         <router-link v-if="nextArticle" :to="'/articles/' + nextArticle.slug" class="next-article">
-          <span>Next Article</span>
+          <span>下一篇</span>
           <strong>{{ nextArticle.title }}</strong>
         </router-link>
       </section>
@@ -329,9 +329,9 @@ watchEffect(() => {
 
     <div class="container" v-else>
       <div class="not-found">
-        <p class="not-found-title">Article not found</p>
-        <p class="not-found-desc">The article you're looking for doesn't exist. Check the URL or browse all articles.</p>
-        <router-link to="/articles" class="btn btn-primary">View All Writing</router-link>
+        <p class="not-found-title">文章不存在</p>
+        <p class="not-found-desc">请检查链接，或返回浏览全部工程笔记。</p>
+        <router-link to="/articles" class="btn btn-primary">查看全部工程笔记</router-link>
       </div>
     </div>
   </section>

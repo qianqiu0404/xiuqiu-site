@@ -7,13 +7,20 @@ const query = ref('')
 const selectedCapability = ref<KnowledgeTag | 'All'>('All')
 const selectedTag = ref('All')
 const selectedDifficulty = ref('All')
+const selectedKind = ref<'All' | (typeof siteArticles)[number]['kind']>('All')
 
 const capabilityOptions = computed(() => [
-  { id: 'All' as const, title: 'All capabilities' },
+  { id: 'All' as const, title: '全部学习主题' },
   ...engineeringMap.map(node => ({ id: node.id, title: node.title })),
 ])
 const allTags = computed(() => ['All', ...Array.from(new Set(siteArticles.flatMap(article => article.tags))).sort()])
 const allDifficulties = computed(() => ['All', ...Array.from(new Set(siteArticles.map(article => article.difficulty)))])
+const kindOptions = [
+  { id: 'All', title: '全部内容类型' },
+  { id: 'engineering-note', title: '工程笔记' },
+  { id: 'research', title: '技术研究' },
+  { id: 'learning-log', title: '学习复盘' },
+] as const
 
 const filteredArticles = computed(() => {
   const keyword = query.value.trim().toLowerCase()
@@ -32,11 +39,18 @@ const filteredArticles = computed(() => {
         .toLowerCase()
         .includes(keyword)
     const matchesCapability =
-      selectedCapability.value === 'All' || article.conceptTags.includes(selectedCapability.value)
+      selectedCapability.value === 'All' ||
+      article.conceptTags.includes(selectedCapability.value as (typeof article.conceptTags)[number]) ||
+      Boolean(
+        engineeringMap
+          .find(node => node.id === selectedCapability.value)
+          ?.articleSlugs.includes(article.slug),
+      )
     const matchesTag = selectedTag.value === 'All' || article.tags.includes(selectedTag.value)
     const matchesDifficulty = selectedDifficulty.value === 'All' || article.difficulty === selectedDifficulty.value
+    const matchesKind = selectedKind.value === 'All' || article.kind === selectedKind.value
 
-    return matchesKeyword && matchesCapability && matchesTag && matchesDifficulty
+    return matchesKeyword && matchesCapability && matchesTag && matchesDifficulty && matchesKind
   })
 })
 
@@ -47,20 +61,20 @@ const readingPaths: {
   slugs: string[]
 }[] = [
   {
-    title: 'Wallet Backend Path',
-    desc: 'Start from API boundary, then move into signer and multi-chain models.',
+    title: '钱包后端学习路径',
+    desc: '从 API 职责边界开始，再进入签名服务与多链模型。',
     capabilityId: 'wallet-backend',
     slugs: ['api-system-calls', 'wallet-api-boundary', 'wallet-sign-signer', 'wallet-address-models'],
   },
   {
-    title: 'Go Infra Path',
-    desc: 'Understand service communication and backend data flow.',
+    title: 'Go 后端工程路径',
+    desc: '理解服务通信、缓存、持久化与后端数据流。',
     capabilityId: 'go-infra',
     slugs: ['http-rpc-grpc', 'market-services-data-flow'],
   },
   {
-    title: 'EVM Engineering Path',
-    desc: 'Follow contracts, proxy patterns, create2, assembly, and protocol evolution.',
+    title: 'EVM 学习路径',
+    desc: '沿合约调用、代理模式、create2、assembly 与协议演进继续学习。',
     capabilityId: 'evm',
     slugs: ['evm-call-proxy-patterns', 'evm-create2-assembly-lifecycle', 'eip-erc-protocol-evolution'],
   },
@@ -94,12 +108,13 @@ function resetFilters() {
   selectedCapability.value = 'All'
   selectedTag.value = 'All'
   selectedDifficulty.value = 'All'
+  selectedKind.value = 'All'
 }
 
 onMounted(() => {
   setSeoMeta({
-    title: 'Writing | xiuqiu Web3 Wallet Engineering',
-    description: `Technical writing on wallet architecture, signer services, backend communication, EVM, and MPC/TSS. ${siteKnowledge.articles.length} articles available.`,
+    title: '工程笔记｜xiuqiu Web3 钱包学习档案',
+    description: `${siteKnowledge.articles.length} 篇关于交易所钱包、多链模型、签名服务、Go 后端与 AI 工程工作流的学习笔记。`,
     path: '/articles',
   })
 })
@@ -109,22 +124,29 @@ onMounted(() => {
   <section class="section page-top">
     <div class="container">
       <div class="section-heading">
-        <p class="section-label">Writing</p>
-        <h2 class="section-title">Writing</h2>
+        <p class="section-label">工程笔记</p>
+        <h2 class="section-title">从项目问题到可复查的学习记录</h2>
         <p class="section-desc">
-          Technical writing on wallet architecture, service communication, signer boundaries, and backend data flow.
+          记录钱包架构、服务通信、签名边界、资金状态与后端数据流中的真实问题和验证过程。
         </p>
         <p class="article-count">{{ filteredArticles.length }} / {{ siteArticles.length }} articles</p>
       </div>
 
       <div class="writing-tools">
         <label class="search-box">
-          <span>Search</span>
+          <span>搜索</span>
           <input v-model="query" type="search" placeholder="wallet-api, gRPC, EVM, signer..." />
         </label>
 
         <label class="filter-box">
-          <span>Capability</span>
+          <span>内容类型</span>
+          <select v-model="selectedKind">
+            <option v-for="kind in kindOptions" :key="kind.id" :value="kind.id">{{ kind.title }}</option>
+          </select>
+        </label>
+
+        <label class="filter-box">
+          <span>学习主题</span>
           <select v-model="selectedCapability">
             <option v-for="capability in capabilityOptions" :key="capability.id" :value="capability.id">
               {{ capability.title }}
@@ -133,20 +155,20 @@ onMounted(() => {
         </label>
 
         <label class="filter-box">
-          <span>Tag</span>
+          <span>标签</span>
           <select v-model="selectedTag">
             <option v-for="tag in allTags" :key="tag" :value="tag">{{ tag }}</option>
           </select>
         </label>
 
         <label class="filter-box">
-          <span>Difficulty</span>
+          <span>难度</span>
           <select v-model="selectedDifficulty">
             <option v-for="difficulty in allDifficulties" :key="difficulty" :value="difficulty">{{ difficulty }}</option>
           </select>
         </label>
 
-        <button class="filter-reset" type="button" @click="resetFilters">Reset</button>
+        <button class="filter-reset" type="button" @click="resetFilters">重置</button>
       </div>
 
       <div class="reading-paths">
@@ -167,7 +189,7 @@ onMounted(() => {
             </router-link>
           </div>
           <button class="path-ai-button" type="button" @click="askAboutReadingPath(path)">
-            Ask AI for this path ->
+            请 AI 解释这条路径 &rarr;
           </button>
         </article>
       </div>
@@ -183,6 +205,7 @@ onMounted(() => {
           <h3 class="article-title">{{ a.title }}</h3>
           <p class="article-summary">{{ a.summary }}</p>
           <div class="article-meta">
+            <span class="meta-tag">{{ kindOptions.find(kind => kind.id === a.kind)?.title }}</span>
             <span class="meta-tag">{{ a.difficulty }}</span>
             <span class="meta-reading">{{ a.readingTime }}</span>
           </div>
@@ -193,9 +216,9 @@ onMounted(() => {
       </div>
 
       <div v-if="filteredArticles.length === 0" class="empty-state">
-        <p class="not-found-title">No matching writing</p>
-        <p class="not-found-desc">Try another tag, difficulty, or keyword.</p>
-        <button class="btn btn-secondary" type="button" @click="resetFilters">Reset filters</button>
+        <p class="not-found-title">没有匹配的笔记</p>
+        <p class="not-found-desc">可以尝试其他标签、难度或关键词。</p>
+        <button class="btn btn-secondary" type="button" @click="resetFilters">重置筛选</button>
       </div>
     </div>
   </section>

@@ -2,6 +2,7 @@
 {
   "id": 12,
   "slug": "aws-cloudhsm-wallet-sign-integration",
+  "kind": "engineering-note",
   "title": "wallet-sign 接入 AWS CloudHSM：一次生产级 HSM 签名架构复盘",
   "date": "2026-06-19",
   "summary": "这次改造里，我把 wallet-sign 从本地私钥签名升级为 AWS CloudHSM 支撑的生产级签名架构，让私钥在 HSM 内生成、不可导出，并通过 hsm-gateway 收敛 PKCS#11 复杂性。",

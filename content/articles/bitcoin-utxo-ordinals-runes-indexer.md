@@ -2,6 +2,7 @@
 {
   "id": 22,
   "slug": "bitcoin-utxo-ordinals-runes-indexer",
+  "kind": "research",
   "title": "Bitcoin 区块里都是 UTXO，为什么还能有 NFT 和 Token",
   "date": "2026-06-24",
   "summary": "Bitcoin 本身没有账户模型、智能合约 NFT 或 ERC20 余额表，但 UTXO 交易可以携带 OP_RETURN、Taproot witness 和 inscription 数据，再由 Ordinals、BRC-20、Runes 等协议和链下索引器解释成 NFT 或 Token 状态。",
@@ -21,8 +22,7 @@
   ],
   "relatedProjectIds": [
     1,
-    2,
-    6
+    2
   ],
   "recommendedSlugs": [
     "wallet-address-models",

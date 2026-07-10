@@ -2,6 +2,7 @@
 {
   "id": 11,
   "slug": "mpc-wallet-sign-integration",
+  "kind": "engineering-note",
   "title": "wallet-sign 接入 MPC：一次签名安全边界升级的工程复盘",
   "date": "2026-06-19",
   "summary": "这次改造里，我把 wallet-sign 从本地私钥签名机收敛成 SignerBackend 调度层，并将 MPC 作为生产级签名后端接入，让完整私钥不再落在单点服务里。",

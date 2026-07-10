@@ -2,6 +2,7 @@
 {
   "id": 29,
   "slug": "erc4337-useroperation-lifecycle",
+  "kind": "engineering-note",
   "title": "ERC-4337 工程拆解：一笔 UserOperation 如何验证、支付 Gas 并进入链上",
   "date": "2026-07-07",
   "summary": "从钱包后端视角拆解一笔 UserOperation 如何经过 nonce 分配、账户签名、Bundler 模拟、Paymaster 验证、EntryPoint 执行和 Gas 结算，并说明账户抽象为什么没有消除状态机。",
@@ -22,8 +23,7 @@
   ],
   "relatedProjectIds": [
     1,
-    2,
-    4
+    2
   ],
   "recommendedSlugs": [
     "multi-chain-wallet-resource-state",
@@ -363,4 +363,3 @@ CREATED
 - [ERC-4337 Bundler Simulation Requirements](https://docs.erc4337.io/bundlers/simulation-requirements.html)
 - [eth-infinitism/account-abstraction](https://github.com/eth-infinitism/account-abstraction)
 - [EntryPoint.sol](https://github.com/eth-infinitism/account-abstraction/blob/develop/contracts/core/EntryPoint.sol)
-

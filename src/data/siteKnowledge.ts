@@ -1,19 +1,10 @@
 import { articleKnowledge, type ArticleKnowledge } from './generatedArticleKnowledge.ts'
 import { projects, type Project } from './projects.ts'
+import { learningRecords } from './generatedLearningRecords.ts'
 
-export type KnowledgeTag =
-  | 'wallet-backend'
-  | 'signer-service'
-  | 'multi-chain'
-  | 'go-infra'
-  | 'evm'
-  | 'mpc-tss'
-  | 'api-design'
-  | 'ai-engineering'
+export type KnowledgeTag = ArticleKnowledge['conceptTags'][number] | 'wallet-core'
 
-export interface SiteArticle extends ArticleKnowledge {
-  conceptTags: KnowledgeTag[]
-}
+export type SiteArticle = ArticleKnowledge
 
 export interface SiteProject extends Project {
   conceptTags: KnowledgeTag[]
@@ -50,6 +41,15 @@ export interface SiteReference {
 }
 
 const projectMetadata: Record<number, Pick<SiteProject, 'conceptTags' | 'relatedArticleSlugs' | 'suggestedQuestions'>> = {
+  7: {
+    conceptTags: ['wallet-core', 'multi-chain', 'signer-service', 'wallet-backend'],
+    relatedArticleSlugs: ['multi-chain-wallet-resource-state', 'wallet-sign-signer', 'wallet-address-models', 'wallet-api-boundary'],
+    suggestedQuestions: [
+      'wallet-core 如何处理不同链的离线签名输入？',
+      'wallet-core 的 TypeScript 实现如何避免把浮点金额带入交易构建？',
+      '这个项目如何验证多链交易构建与签名？',
+    ],
+  },
   1: {
     conceptTags: ['wallet-backend', 'api-design', 'multi-chain'],
     relatedArticleSlugs: ['api-system-calls', 'wallet-api-boundary', 'http-rpc-grpc', 'wallet-address-models'],
@@ -74,28 +74,12 @@ const projectMetadata: Record<number, Pick<SiteProject, 'conceptTags' | 'related
       '行情服务的数据同步链路如何拆分职责？',
     ],
   },
-  4: {
-    conceptTags: ['evm', 'go-infra'],
-    relatedArticleSlugs: ['evm-call-proxy-patterns', 'evm-create2-assembly-lifecycle', 'eip-erc-protocol-evolution'],
-    suggestedQuestions: [
-      'prediction-market 如何从 mock 走到链上闭环？',
-      '链上事件 Indexer 在这个项目里解决什么问题？',
-    ],
-  },
   5: {
     conceptTags: ['mpc-tss', 'signer-service'],
     relatedArticleSlugs: ['wallet-sign-signer', 'wallet-address-models'],
     suggestedQuestions: [
       'TSS 和普通多签的本质区别是什么？',
       'MPC/TSS 在钱包基础设施里承担什么角色？',
-    ],
-  },
-  6: {
-    conceptTags: ['evm', 'wallet-backend'],
-    relatedArticleSlugs: ['evm-call-proxy-patterns', 'eip-erc-protocol-evolution'],
-    suggestedQuestions: [
-      'Scaffold-ETH 适合沉淀哪些 DApp 基础能力？',
-      'Web3 前端和传统前端的主要差异是什么？',
     ],
   },
 }
@@ -114,53 +98,61 @@ export const siteProjects: SiteProject[] = projects.map(project => ({
 
 export const engineeringMap: EngineeringMapNode[] = [
   {
+    id: 'wallet-core',
+    title: 'wallet-core · TypeScript',
+    subtitle: 'TypeScript 多链离线密钥派生、交易构建、签名与链级资源输入。',
+    projectIds: [7],
+    articleSlugs: ['multi-chain-wallet-resource-state', 'wallet-sign-signer', 'wallet-address-models', 'wallet-api-boundary'],
+  },
+  {
     id: 'wallet-backend',
-    title: 'Web3 Wallet Backend',
-    subtitle: 'API boundary, chain adapters, transaction construction, unified responses.',
-    projectIds: [1, 2],
+    title: '交易所钱包后端',
+    subtitle: '多链 RPC、交易构建、充值提现状态机与服务职责边界。',
+    projectIds: [7, 1, 2],
     articleSlugs: ['erc4337-useroperation-lifecycle', 'multi-chain-wallet-resource-state', 'wallet-api-boundary', 'wallet-address-models', 'api-system-calls'],
   },
   {
     id: 'signer-service',
-    title: 'Signer Service',
-    subtitle: 'Private-key isolation, offline signing, batch signing, security boundary.',
-    projectIds: [2, 5],
+    title: '签名安全边界',
+    subtitle: '私钥隔离、离线签名、普通签名机与 TSS/MPC 演进。',
+    projectIds: [7, 2, 5],
     articleSlugs: ['erc4337-useroperation-lifecycle', 'multi-chain-wallet-resource-state', 'wallet-sign-signer', 'wallet-api-boundary'],
   },
   {
     id: 'multi-chain',
-    title: 'Multi-chain Models',
-    subtitle: 'BTC UTXO, ETH account model, Solana account/public-key model.',
-    projectIds: [1, 2],
+    title: '多链交易模型',
+    subtitle: 'BTC UTXO、EVM 账户、Solana blockhash 与 Sui object 模型。',
+    projectIds: [7, 1, 2],
     articleSlugs: ['multi-chain-wallet-resource-state', 'wallet-address-models', 'wallet-api-boundary'],
   },
   {
     id: 'go-infra',
-    title: 'Go Backend Infra',
-    subtitle: 'HTTP/gRPC services, Redis cache, PostgreSQL persistence, dashboard APIs.',
-    projectIds: [1, 3, 4],
+    title: 'Go 后端工程',
+    subtitle: 'HTTP/gRPC、Redis、PostgreSQL、异步 Worker 与服务生命周期。',
+    projectIds: [1, 2, 3],
     articleSlugs: ['http-rpc-grpc', 'market-services-data-flow'],
   },
   {
     id: 'evm',
-    title: 'EVM Engineering',
-    subtitle: 'Contracts, proxy patterns, create2, assembly, EIP/ ERC evolution.',
-    projectIds: [4, 6],
+    title: 'EVM 学习主题',
+    subtitle: '合约代理、create2、assembly 与 EIP/ERC 演进的学习笔记。',
+    projectIds: [7, 1],
     articleSlugs: ['erc4337-useroperation-lifecycle', 'eip-erc-protocol-evolution', 'evm-call-proxy-patterns', 'evm-create2-assembly-lifecycle'],
   },
   {
     id: 'mpc-tss',
     title: 'MPC / TSS',
-    subtitle: 'Threshold signature scheme, GG18 protocol, Paillier cryptosystem, key share security.',
+    subtitle: 'GG18、Paillier、Keygen/Sign、threshold 与 key share 安全边界。',
     projectIds: [5],
     articleSlugs: ['mpc-wallet-sign-integration', 'thorchain-tss-attack-analysis'],
   },
   {
     id: 'ai-engineering',
-    title: 'AI Engineering Workflows',
-    subtitle: 'Verified engineering loops, reusable skills, scheduled research, and MCP-backed knowledge workflows.',
+    title: 'AI 工程工作流',
+    subtitle: '可验证工程循环、Skills、自动化与知识工作流。',
     projectIds: [1, 2, 3],
     articleSlugs: [
+      'minimal-multi-agent-coding-workflow',
       'codex-ai-workflow-system-retrospective',
       'cex-evm-wallet-deposit-withdrawal-loop',
       'stablecoin-x402-agent-payments',
@@ -171,21 +163,22 @@ export const engineeringMap: EngineeringMapNode[] = [
 export const siteKnowledge: SiteKnowledge = {
   owner: {
     name: 'xiuqiu',
-    title: 'Web3 Wallet & Backend Developer',
+    title: 'Web3 钱包后端学习档案',
     summary:
-      'Building practical systems around multi-chain wallets, signer services, Go backend infrastructure, Solidity/EVM, MPC/TSS, and AI-assisted engineering workflows.',
+      '记录交易所钱包后端、多链 RPC、独立签名、TypeScript 离线钱包与 Go 数据服务的代码实践、验证证据和工程边界。',
     focus: [
-      'Web3 Wallet Backend',
-      'Multi-chain Signer',
-      'Solidity / EVM',
-      'MPC / TSS',
-      'Go Backend Infrastructure',
-      'AI-assisted Development',
+      '交易所钱包后端',
+      '多链 RPC 与 Chain Adaptor',
+      '独立签名服务',
+      'wallet-core / TypeScript',
+      'MPC / TSS 安全研究',
+      'Go 后端工程',
+      'AI 辅助开发与验证',
     ],
   },
   projects: siteProjects,
   articles: siteArticles,
-  tags: ['wallet-backend', 'signer-service', 'multi-chain', 'go-infra', 'evm', 'mpc-tss', 'api-design', 'ai-engineering'],
+  tags: ['wallet-core', 'wallet-backend', 'signer-service', 'multi-chain', 'go-infra', 'evm', 'mpc-tss', 'api-design', 'ai-engineering'],
   engineeringMap,
 }
 
@@ -222,7 +215,16 @@ export function buildKnowledgeContext(): string {
         `  Engineering Focus: ${project.coreAbilities.join(', ')}`,
         `  Talking Points: ${project.talkingPoints.join(', ')}`,
         `  Tech Stack: ${project.techStack.join(', ')}`,
+        `  Engineering Role: ${project.engineering.role}`,
+        `  System Boundary: ${project.engineering.systemBoundary}`,
+        `  Call Flow: ${project.engineering.callFlow.join(' -> ')}`,
+        `  Failure Scenarios: ${project.engineering.failureScenarios.join(' | ')}`,
+        `  Engineering Evidence: ${project.engineering.evidence.join(', ')}`,
+        `  Known Limits: ${project.engineering.knownLimits.join(', ')}`,
         `  Related Articles: ${getArticlesBySlugs(project.relatedArticleSlugs).map(article => article.title).join(' | ')}`,
+        project.learning
+          ? `  Learning record: ${project.learning.stage}; Goal: ${project.learning.goal}; Verified: ${project.learning.verified.join(', ')}; Verification: ${project.learning.verification.join(', ')}; Next: ${project.learning.nextSteps.join(', ')}`
+          : '',
       ].join('\n'),
     ),
     '',
@@ -235,8 +237,14 @@ export function buildKnowledgeContext(): string {
         `  Tags: ${article.tags.join(', ')}`,
         `  Concept Tags: ${article.conceptTags.join(', ')}`,
         `  Difficulty: ${article.difficulty}`,
+        `  Kind: ${article.kind}`,
         `  Related Projects: ${getProjectsByIds(article.relatedProjectIds).map(project => project.name).join(', ')}`,
       ].join('\n'),
+    ),
+    '',
+    'Curated learning records:',
+    ...learningRecords.map(record =>
+      `- ${record.title}: ${record.summary}; Achieved: ${record.achieved.join(', ')}; Reflection: ${record.reflection.join(', ')}; Next: ${record.nextSteps.join(', ')}`,
     ),
   ].join('\n')
 }

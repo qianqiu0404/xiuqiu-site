@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { articleSummaries } from '../src/data/generatedArticleKnowledge.ts'
+import { projects } from '../src/data/projects.ts'
 
 const SITE_URL = 'https://xiuqiu-site.vercel.app'
 const distIndexUrl = new URL('../dist/index.html', import.meta.url)
@@ -72,18 +73,36 @@ if (articleSummaries.length === 0) {
   throw new Error('No article summaries found for static meta page generation.')
 }
 
-const writingDescription = `Technical writing on wallet architecture, signer services, backend communication, EVM, and MPC/TSS. ${articleSummaries.length} articles available.`
+const writingDescription = `${articleSummaries.length} 篇关于交易所钱包、多链模型、签名服务、Go 后端与 AI 工程工作流的学习笔记。`
+
+writePage(
+  '/engineering',
+  replaceMeta(baseHtml, {
+    title: '工程档案｜xiuqiu Web3 钱包后端',
+    description: '面向技术面试官的交易所钱包工程档案：三服务架构、项目边界、失败场景和验证证据。',
+    path: '/engineering',
+  }),
+)
+
+writePage(
+  '/learning',
+  replaceMeta(baseHtml, {
+    title: '学习复盘｜xiuqiu',
+    description: '精选公开的 Web3 钱包工程学习进度、验证证据、失败复盘与下一步。',
+    path: '/learning',
+  }),
+)
 
 writePage(
   '/articles',
   replaceMeta(baseHtml, {
-    title: 'Writing | xiuqiu Web3 Wallet Engineering',
+    title: '工程笔记｜xiuqiu Web3 钱包学习档案',
     description: writingDescription,
     path: '/articles',
     structuredData: {
       '@context': 'https://schema.org',
       '@type': 'CollectionPage',
-      name: 'Writing | xiuqiu Web3 Wallet Engineering',
+      name: '工程笔记｜xiuqiu Web3 钱包学习档案',
       description: writingDescription,
       url: `${SITE_URL}/articles`,
       author: {
@@ -98,7 +117,7 @@ articleSummaries.forEach(article => {
   writePage(
     `/articles/${article.slug}`,
     replaceMeta(baseHtml, {
-      title: `${article.title} | xiuqiu Writing`,
+      title: `${article.title}｜xiuqiu 工程笔记`,
       description: article.summary,
       path: `/articles/${article.slug}`,
       type: 'article',
@@ -119,4 +138,15 @@ articleSummaries.forEach(article => {
   )
 })
 
-console.log(`Generated static meta pages for ${articleSummaries.length + 1} routes.`)
+projects.forEach(project => {
+  writePage(
+    `/projects/${project.id}`,
+    replaceMeta(baseHtml, {
+      title: `${project.name}｜xiuqiu 工程项目`,
+      description: project.positioning,
+      path: `/projects/${project.id}`,
+    }),
+  )
+})
+
+console.log(`Generated static meta pages for ${articleSummaries.length + projects.length + 3} routes.`)

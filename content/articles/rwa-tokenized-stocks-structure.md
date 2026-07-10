@@ -2,6 +2,7 @@
 {
   "id": 24,
   "slug": "rwa-tokenized-stocks-structure",
+  "kind": "research",
   "title": "RWA 与美股上链：你持有的究竟是什么",
   "date": "2026-06-29",
   "summary": "代币化美股不是把股票直接变成 ERC20。本文从发行实体、SPV、托管资产、结构化票据、链上 Token 和赎回权拆解 RWA 产品，并分析钱包接入这类资产时需要处理的合规、状态和对账边界。",
@@ -22,9 +23,7 @@
   ],
   "relatedProjectIds": [
     1,
-    2,
-    4,
-    6
+    2
   ],
   "recommendedSlugs": [
     "web3-narrative-participation-framework",

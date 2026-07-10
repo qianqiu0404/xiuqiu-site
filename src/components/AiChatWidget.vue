@@ -19,7 +19,7 @@ interface SiteReference {
 }
 
 interface PageContext {
-  type: 'home' | 'articles' | 'article' | 'project'
+  type: 'home' | 'engineering' | 'learning' | 'articles' | 'article' | 'project'
   title?: string
   slug?: string
   summary?: string
@@ -40,7 +40,7 @@ const explicitPageContext = ref<PageContext | null>(null)
 const messages = ref<ChatMessage[]>([
   {
     role: 'assistant',
-    content: '你好，我可以帮你快速了解 xiuqiu 的项目、文章和 Web3 钱包后端方向。',
+    content: '你好，我可以基于公开的项目证据，帮你了解 xiuqiu 当前学到了什么、如何验证，以及还有哪些边界。',
   },
 ])
 
@@ -50,7 +50,7 @@ const promptGroups = [
     prompts: [
       '介绍一下 xiuqiu 的 Web3 钱包项目',
       'wallet-api 和 wallet-sign 的边界是什么？',
-      'prediction-market 展示了哪些链上闭环能力？',
+      'wallet-core 展示了哪些 TypeScript 多链能力？',
     ],
   },
   {
@@ -91,6 +91,22 @@ const currentPageContext = computed<PageContext>(() => {
       type: 'articles',
       title: 'Writing',
       summary: `${siteKnowledge.articles.length} technical articles about wallet architecture, backend services, signer boundaries, EVM, and MPC/TSS.`,
+    }
+  }
+
+  if (route.name === 'engineering') {
+    return {
+      type: 'engineering',
+      title: '工程档案',
+      summary: '交易所钱包三服务、项目系统边界、调用链、失败场景和验证证据。',
+    }
+  }
+
+  if (route.name === 'learning') {
+    return {
+      type: 'learning',
+      title: '学习复盘',
+      summary: '精选公开的阶段目标、验证结果、复盘结论和下一步。',
     }
   }
 

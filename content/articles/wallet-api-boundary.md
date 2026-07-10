@@ -2,6 +2,7 @@
 {
   "id": 3,
   "slug": "wallet-api-boundary",
+  "kind": "engineering-note",
   "title": "wallet-api：多链钱包后端 API 的职责边界",
   "date": "2026-05-19",
   "summary": "梳理多链钱包 API 服务如何组织链配置、接口入口、节点 RPC 转换、交易构建、错误处理和签名服务协作。",

@@ -2,6 +2,7 @@
 {
   "id": 19,
   "slug": "evm-internal-transfer-deposit-indexer",
+  "kind": "engineering-note",
   "title": "EVM 充值扫链进阶：如何识别 Internal Txns 原生币入账",
   "date": "2026-06-23",
   "summary": "EVM Internal Native Transfer 不会出现在外层 tx.to，也不一定出现在 receipt logs。交易所要识别这类充值，本质是解析 EVM 的 CALL 执行树，通过 debug_traceTransaction 或 trace_transaction 找到 value > 0 且 to 命中平台充值地址的调用节点。",

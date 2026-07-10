@@ -2,6 +2,7 @@
 {
   "id": 9,
   "slug": "eip-erc-protocol-evolution",
+  "kind": "research",
   "title": "EIP 工程解读：从 ERC20 到 EIP7702 的协议演进与选择逻辑",
   "date": "2026-06-10",
   "summary": "梳理 ERC20/721/1155 的工程差异、EIP1559 的 gas 模型变革、EIP4337 账户抽象和 EIP7702 的 EOA 升级路径。",
@@ -17,10 +18,7 @@
     "evm",
     "api-design"
   ],
-  "relatedProjectIds": [
-    4,
-    6
-  ],
+  "relatedProjectIds": [],
   "recommendedSlugs": [
     "evm-call-proxy-patterns",
     "evm-create2-assembly-lifecycle"

@@ -14,9 +14,24 @@ const router = createRouter({
       component: () => import('../pages/ArticlesPage.vue'),
     },
     {
+      path: '/engineering',
+      name: 'engineering',
+      component: () => import('../pages/EngineeringPage.vue'),
+    },
+    {
+      path: '/learning',
+      name: 'learning',
+      component: () => import('../pages/LearningPage.vue'),
+    },
+    {
       path: '/articles/:slug',
       name: 'article-detail',
       component: () => import('../pages/ArticleDetailPage.vue'),
+    },
+    {
+      path: '/projects/:id',
+      name: 'project-detail',
+      component: () => import('../pages/ProjectDetailPage.vue'),
     },
     {
       path: '/:pathMatch(.*)*',
