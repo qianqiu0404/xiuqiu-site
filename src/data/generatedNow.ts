@@ -5,9 +5,10 @@ export interface NowSnapshot { updatedAt: string; headline: string; summary: str
 export const nowSnapshot: NowSnapshot = {
   "updatedAt": "2026-07-13",
   "headline": "正在把钱包工程判断变成可运行、可复核的公开证据",
-  "summary": "当前主线是 Exchange Wallet Infrastructure；公开侧重点是 Wallet Reliability Lab、wallet-core V1 和结构化工程证据，研究内容继续通过每日雷达沉淀。",
+  "summary": "当前主线是 Exchange Wallet Infrastructure；公开侧由 Wallet Reliability Lab 提供交互体验，Web3 Wallet Domain Engine 提供领域事实与测试，研究继续通过每日雷达沉淀。",
   "developmentProjectSlugs": [
     "exchange-wallet-system",
+    "wallet-reliability-lab",
     "web3-wallet-engineer-lab",
     "wallet-core"
   ],
@@ -23,12 +24,13 @@ export const nowSnapshot: NowSnapshot = {
   ],
   "featuredDeliverySlugs": [
     "wallet-reliability-lab-v1",
+    "wallet-domain-engine-v1",
     "wallet-core-public-v1",
     "wallet-failure-playbook-pr2"
   ],
   "nextFocus": [
     "固定 Exchange Wallet Infrastructure 四服务兼容基线并跑通失败注入",
-    "把 Wallet Lab 实验与 30 个异常手册继续双向关联",
+    "让 Wallet Lab 固定校验 Domain Engine Catalog v1",
     "为 wallet-core 补充链资源过期和错误单位负向测试",
     "连续核验每日研究雷达的真实自动发布记录"
   ]

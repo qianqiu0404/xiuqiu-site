@@ -38,6 +38,7 @@ onMounted(() => setSeoMeta({ title: 'xiuqiu｜Web3 钱包工程 × AI 协作', d
         <p class="hero-desc hero-desc-primary">我在开发交易所钱包基础设施，也在持续研究多链资源、签名安全与 AI 工程协作。</p>
         <div class="hero-actions hero-actions-left">
           <router-link class="btn btn-primary" to="/engineering">查看工程档案</router-link>
+          <a class="btn btn-secondary" href="https://wallet-reliability-lab.vercel.app" target="_blank" rel="noopener">运行 Wallet Lab</a>
           <router-link class="btn btn-secondary" to="/now">查看当前动态</router-link>
         </div>
       </div>
@@ -51,6 +52,16 @@ onMounted(() => setSeoMeta({ title: 'xiuqiu｜Web3 钱包工程 × AI 协作', d
           <div><dt>表达原则</dt><dd>事实 / 目标态 / 已知限制分开</dd></div>
         </dl>
       </aside>
+    </div>
+  </section>
+
+  <section class="portfolio-path-strip">
+    <div class="container portfolio-path-flow" aria-label="作品集证据路径">
+      <router-link to="/engineering"><span>01</span><strong>工程主页</strong></router-link><i>&rarr;</i>
+      <a href="https://wallet-reliability-lab.vercel.app" target="_blank" rel="noopener"><span>02</span><strong>在线实验</strong></a><i>&rarr;</i>
+      <a href="https://wallet-reliability-lab.vercel.app/lab/normal-withdrawal" target="_blank" rel="noopener"><span>03</span><strong>状态判断</strong></a><i>&rarr;</i>
+      <router-link to="/engineering/evidence"><span>04</span><strong>测试证据</strong></router-link><i>&rarr;</i>
+      <a href="https://github.com/qianqiu0404/wallet-reliability-lab" target="_blank" rel="noopener"><span>05</span><strong>GitHub 源码</strong></a>
     </div>
   </section>
 

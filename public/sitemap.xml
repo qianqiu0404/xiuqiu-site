@@ -46,6 +46,9 @@
     <loc>https://xiuqiu-site.vercel.app/projects/wallet-core</loc>
   </url>
   <url>
+    <loc>https://xiuqiu-site.vercel.app/projects/wallet-reliability-lab</loc>
+  </url>
+  <url>
     <loc>https://xiuqiu-site.vercel.app/projects/web3-wallet-engineer-lab</loc>
   </url>
   <url>
@@ -143,6 +146,9 @@
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/ai/deliveries/wallet-core-public-v1</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/ai/deliveries/wallet-domain-engine-v1</loc>
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/ai/deliveries/wallet-failure-playbook-pr2</loc>
