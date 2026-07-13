@@ -1,11 +1,13 @@
 ---
 {
   "id": 2,
+  "displayOrder": 4,
   "slug": "obsidian-knowledge-system",
   "title": "Obsidian 知识系统",
   "stage": "operational",
   "updatedAt": "2026-07-13",
   "summary": "把外部资料、AI 候选、项目记录和个人理解分层管理，通过人工审核与发布门禁维护唯一主库。",
+  "ownershipNote": "知识分层、审核规则和公开边界由我维护；资料、模型建议和部分模板保留各自来源。",
   "currentFocus": "减少重复笔记和未经核验的 AI 内容，让知识能回到钱包项目、面试讲解、文章和下一步行动。",
   "flow": ["来源进入资料库或收件箱", "AI 生成待审核候选", "人工核对代码与来源", "结论合并到唯一主库", "显式 publish: true 后生成公开内容"],
   "responsibilities": ["我决定哪些结论进入主库和公开站点", "AI 负责查重、结构化、关联与候选生成", "私人日记、求职计划和未核验内容永远不自动公开"],

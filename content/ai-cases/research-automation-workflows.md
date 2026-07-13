@@ -1,11 +1,13 @@
 ---
 {
   "id": 3,
+  "displayOrder": 3,
   "slug": "research-automation-workflows",
   "title": "Obsidian → xiuqiu-site 每日发布",
   "stage": "operational",
   "updatedAt": "2026-07-13",
   "summary": "五个定时任务先把研究输入写入 Obsidian；09:15 发布任务只读取四类公开区块，经来源、隐私、PR 与构建门禁进入每日研究雷达。",
+  "ownershipNote": "公开范围、发布门禁、失败语义和交付链路由我设计；资讯检索、摘要和托管能力来自外部工具。",
   "currentFocus": "让每日研究内容自动进入网站，同时保证私人笔记不被读取、外部链接不被创造、失败构建不能进入 main。",
   "flow": ["五个定时任务生成 Obsidian 输入", "只读取 crypto / radar / vibe / reading", "筛选并生成同日 radar Markdown", "校验来源 URL 与隐私边界", "创建或更新自动 PR", "构建通过后 squash merge", "Vercel 从 main 部署"],
   "responsibilities": ["我定义可公开范围、选题价值和最终研究行动", "AI 负责筛选、结构化和关联工程项目", "CI 只允许日报修改白名单文件并执行完整构建"],

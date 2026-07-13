@@ -57,6 +57,7 @@ const promptGroups = [
     label: 'AI Collaboration',
     prompts: [
       'xiuqiu 如何使用 AI 协作完成工程任务？',
+      '跨设备 Skill 工具链如何区分个人与第三方能力？',
       'Obsidian 知识系统如何避免公开私人内容？',
       '研究自动化如何处理来源、去重和失败？',
     ],
@@ -121,8 +122,8 @@ const currentPageContext = computed<PageContext>(() => {
   if (route.name === 'ai') {
     return {
       type: 'ai',
-      title: 'AI 协作',
-      summary: 'AI Coding 协作、Obsidian 知识系统与研究自动化三个可验证案例。',
+      title: 'AI 工作流',
+      summary: 'AI Coding、跨设备 Skill 工具链、每日研究发布与 Obsidian 知识治理四个真实 Loop。',
     }
   }
 

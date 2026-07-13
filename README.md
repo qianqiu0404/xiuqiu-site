@@ -65,7 +65,7 @@ When adding a new project:
 
 Frontmatter may use JSON or YAML. Projects use stable slugs for canonical URLs; legacy numeric project URLs continue to resolve.
 
-When adding an AI collaboration case, create a Markdown record in `content/ai-cases` with its real workflow, human responsibility, evidence, failure handling, limits, target outcome, and next milestone.
+When adding an AI collaboration case, create a Markdown record in `content/ai-cases` with a unique contiguous `displayOrder`, an explicit `ownershipNote`, its real workflow, human responsibility, evidence, failure handling, limits, target outcome, and next milestone.
 
 ## Public Learning Workflow
 

@@ -1,15 +1,25 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { aiStageLabels, getArticlesBySlugs, siteAiCases, siteKnowledge } from '../data/siteKnowledge'
+import { aiStageLabels, getArticlesBySlugs, siteAiCases } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
 
 function askAiCase(title: string, summary: string) {
   window.dispatchEvent(new CustomEvent('ai-chat:ask', { detail: { prompt: `请解释 ${title} 的真实流程、xiuqiu 本人的职责、已有证据、当前限制和下一里程碑。`, context: { type: 'ai', title, summary } } }))
 }
 
-const orderedCases = [...siteAiCases].sort((a, b) => Number(b.slug === 'research-automation-workflows') - Number(a.slug === 'research-automation-workflows'))
+function loopNumber(order: number) {
+  return String(order).padStart(2, '0')
+}
 
-onMounted(() => setSeoMeta({ title: 'AI 工作流｜xiuqiu', description: '每日研究发布、AI Coding 与 Obsidian 知识治理的真实流程和验证边界。', path: '/ai' }))
+function toggleDetailsFromKeyboard(event: KeyboardEvent) {
+  if (event.key !== 'Enter' && event.key !== ' ') return
+
+  event.preventDefault()
+  const details = (event.currentTarget as HTMLElement).closest('details')
+  if (details instanceof HTMLDetailsElement) details.open = !details.open
+}
+
+onMounted(() => setSeoMeta({ title: 'AI 工作流｜xiuqiu', description: 'AI Coding、跨设备 Skill 工具链、每日研究发布与 Obsidian 知识治理四个真实 Loop。', path: '/ai' }))
 </script>
 
 <template>
@@ -18,29 +28,33 @@ onMounted(() => setSeoMeta({ title: 'AI 工作流｜xiuqiu', description: '每�
       <header class="ai-page-hero">
         <p class="section-label">AI Workflows</p>
         <h1>AI 如何进入我的工作流</h1>
-        <p>从工程协作到每日研究发布：我定义目标与边界，AI 执行可检查的步骤，结果由测试、来源和人工判断验收。</p>
-        <div class="ai-principle-strip"><span>目标</span><span>证据</span><span>验收</span></div>
+        <p>四个真实 Loop 连接工程协作、Skill 复用、研究发布与知识治理。我负责目标、来源边界和最终验收，外部模型、工具与第三方 Skill 保留各自归属。</p>
+        <div class="ai-principle-strip"><span>目标由我定义</span><span>来源明确</span><span>证据可复核</span><span>失败可回流</span></div>
       </header>
 
-      <nav class="ai-case-nav" aria-label="AI collaboration cases">
-        <a v-for="item in orderedCases" :key="item.id" :href="`#${item.slug}`"><span>0{{ item.id }}</span>{{ item.title }}</a>
+      <nav class="ai-case-nav" aria-label="AI workflow loops">
+        <a v-for="item in siteAiCases" :key="item.id" :href="`#${item.slug}`"><span>{{ loopNumber(item.displayOrder) }}</span><strong>{{ item.title }}</strong></a>
       </nav>
 
-      <article v-for="item in orderedCases" :id="item.slug" :key="item.id" class="ai-case-detail">
-        <header><div><p class="section-label">Case 0{{ item.id }} · {{ aiStageLabels[item.stage] }}</p><h2>{{ item.title }}</h2><p>{{ item.summary }}</p></div><button class="btn btn-secondary" type="button" @click="askAiCase(item.title, item.summary)">请 AI 解释这个案例</button></header>
+      <article v-for="item in siteAiCases" :id="item.slug" :key="item.id" class="ai-case-detail">
+        <header><div><p class="section-label">Loop {{ loopNumber(item.displayOrder) }} · {{ aiStageLabels[item.stage] }}</p><h2>{{ item.title }}<small v-if="item.slug === 'cross-device-skill-toolchain'">SkillOps Loop</small></h2><p>{{ item.summary }}</p></div><button class="btn btn-secondary" type="button" @click="askAiCase(item.title, item.summary)">请 AI 解释</button></header>
+        <div class="ai-ownership-note"><span>来源与归属</span><p>{{ item.ownershipNote }}</p></div>
         <div class="ai-case-current"><span>当前重点</span><p>{{ item.currentFocus }}</p></div>
         <div class="ai-flow" aria-label="Workflow"><template v-for="(step, index) in item.flow" :key="step"><div><span>{{ index + 1 }}</span><p>{{ step }}</p></div><b v-if="index < item.flow.length - 1">&rarr;</b></template></div>
-        <div class="ai-case-columns">
+        <div class="ai-loop-core-grid">
           <section><p class="project-abilities-title">我的职责</p><ul class="learning-list"><li v-for="value in item.responsibilities" :key="value">{{ value }}</li></ul></section>
           <section><p class="project-abilities-title">已有证据</p><ul class="learning-list"><li v-for="value in item.evidence" :key="value">{{ value }}</li></ul></section>
-          <section><p class="project-abilities-title">失败处理</p><ul class="learning-list"><li v-for="value in item.failureHandling" :key="value">{{ value }}</li></ul></section>
-        </div>
-        <div class="ai-target-grid">
-          <section><p class="project-abilities-title">目标完成形态</p><p>{{ item.targetOutcome }}</p></section>
           <section><p class="project-abilities-title">下一里程碑</p><p>{{ item.nextMilestone }}</p></section>
-          <section><p class="project-abilities-title">当前限制</p><ul><li v-for="value in item.knownLimits" :key="value">{{ value }}</li></ul></section>
         </div>
-        <div class="ai-related-links"><p class="project-abilities-title">相关公开复盘</p><router-link v-for="article in getArticlesBySlugs(item.relatedArticleSlugs)" :key="article.slug" :to="`/articles/${article.slug}`">{{ article.title }} &rarr;</router-link></div>
+        <details class="ai-loop-details">
+          <summary @keydown="toggleDetailsFromKeyboard">查看目标态、失败处理与当前限制 <span>&darr;</span></summary>
+          <div class="ai-loop-details-grid">
+            <section><p class="project-abilities-title">目标完成形态</p><p>{{ item.targetOutcome }}</p></section>
+            <section><p class="project-abilities-title">失败处理</p><ul class="learning-list"><li v-for="value in item.failureHandling" :key="value">{{ value }}</li></ul></section>
+            <section><p class="project-abilities-title">当前限制</p><ul class="learning-list"><li v-for="value in item.knownLimits" :key="value">{{ value }}</li></ul></section>
+          </div>
+          <div class="ai-related-links"><p class="project-abilities-title">相关公开复盘</p><router-link v-for="article in getArticlesBySlugs(item.relatedArticleSlugs)" :key="article.slug" :to="`/articles/${article.slug}`">{{ article.title }} &rarr;</router-link></div>
+        </details>
       </article>
     </div>
   </section>

@@ -25,6 +25,11 @@ const signerBackends = [
   { name: 'MPC / TSS', state: '接入中', detail: '独立三节点 Keygen / Sign 已本地验证；正在收敛为 wallet-sign 后端，尚未完成端到端接入。' },
   { name: 'HSM', state: '下一阶段', detail: '计划保持同一签名契约，接入硬件密钥边界与生产级策略能力。' },
 ]
+const interviewProofs = [
+  { label: '系统主线', title: 'Exchange Wallet Infrastructure', evidence: '四个服务的代码入口、risk-service 核心单测和关键异常路径已经完成定位与记录。', slug: 'exchange-wallet-system' },
+  { label: 'TypeScript 多链', title: 'wallet-core', evidence: '类型检查、构建和多链 Jest 测试可以运行，链级资源输入保持显式。', slug: 'wallet-core' },
+  { label: '签名安全', title: 'TSS / MPC', evidence: '独立三节点 Keygen / Sign 已本地验证；wallet-sign 后端接入仍在进行。', slug: 'tss-mpc' },
+]
 
 function toggleInterviewMode() {
   void router.replace({ path: '/engineering', query: interviewMode.value ? {} : { mode: 'interview' } })
@@ -42,13 +47,13 @@ onMounted(() => setSeoMeta({ title: '工程档案｜xiuqiu Web3 钱包后端', d
     <div class="container">
       <header class="engineering-header">
         <div><p class="section-label">Engineering Portfolio</p><h1>Web3 钱包后端工程档案</h1><p>这里不按仓库数量展示能力，而是按系统问题组织证据：资金状态如何推进、多链差异如何隔离、签名边界如何保护、失败之后如何恢复。</p></div>
-        <div class="engineering-header-actions"><button class="btn btn-primary" type="button" @click="toggleInterviewMode">{{ interviewMode ? '退出快速模式' : '开启 3 分钟快速模式' }}</button><button class="btn btn-secondary" type="button" @click="askEngineering">请 AI 讲解</button></div>
+        <div class="engineering-header-actions"><button class="btn btn-primary" type="button" @click="toggleInterviewMode">{{ interviewMode ? '返回完整档案' : '进入面试速览' }}</button><button class="btn btn-secondary" type="button" @click="askEngineering">请 AI 讲解</button></div>
       </header>
 
       <section class="interview-summary" :class="{ active: interviewMode }">
         <div class="interview-summary-top"><div><p class="section-label">30 秒工程定位</p><h2>以 Exchange Wallet Infrastructure 为主线，用可运行实验和多链库补足验证证据</h2></div><span class="mode-badge">{{ interviewMode ? 'INTERVIEW MODE' : 'QUICK OVERVIEW' }}</span></div>
         <p>wallet-service、risk-service、wallet-api、wallet-sign 分别守住资金编排、风险控制、链交互和签名边界；wallet-core 用 TypeScript 验证多链离线交易；Wallet Engineer Lab 提供轻量可运行闭环。</p>
-        <div class="interview-proof-grid"><div><strong>1 条</strong><span>钱包系统主线</span></div><div><strong>3 项</strong><span>核心工程案例</span></div><div><strong>2 个</strong><span>重点异常恢复案例</span></div></div>
+        <div class="interview-proof-grid"><div><strong>{{ systemFlow.length }} 个</strong><span>服务边界</span></div><div><strong>{{ signerBackends.length }} 种</strong><span>签名后端</span></div><div><strong>{{ failureCases.length }} 个</strong><span>重点异常恢复案例</span></div></div>
       </section>
 
       <section class="engineering-section">
@@ -66,7 +71,12 @@ onMounted(() => setSeoMeta({ title: '工程档案｜xiuqiu Web3 钱包后端', d
         <div class="failure-grid"><article v-for="item in failureCases" :key="item.title" class="failure-card"><p class="project-abilities-title">Failure case</p><h3>{{ item.title }}</h3><p>{{ item.handling }}</p></article></div>
       </section>
 
-      <section class="engineering-section">
+      <section v-if="interviewMode" class="engineering-section interview-evidence-section">
+        <div class="section-heading section-heading-left"><p class="section-label">04 · 核心证据</p><h2 class="section-title">三项可以继续追问的工程证据</h2><p class="section-desc">速览到这里结束。每项证据都能继续进入项目边界、验证方式和当前限制。</p></div>
+        <div class="interview-evidence-grid"><router-link v-for="proof in interviewProofs" :key="proof.slug" :to="`/projects/${proof.slug}`"><span>{{ proof.label }}</span><h3>{{ proof.title }}</h3><p>{{ proof.evidence }}</p><strong>查看完整档案 &rarr;</strong></router-link></div>
+      </section>
+
+      <section v-if="!interviewMode" class="engineering-section">
         <div class="section-heading section-heading-left"><p class="section-label">04 · 核心案例</p><h2 class="section-title">阶段、证据和目标态放在一起</h2></div>
         <div class="engineering-projects">
           <article v-for="project in primaryProjects" :key="project.id" class="engineering-project evidence-state-card">
@@ -82,12 +92,12 @@ onMounted(() => setSeoMeta({ title: '工程档案｜xiuqiu Web3 钱包后端', d
         </div>
       </section>
 
-      <section class="engineering-section">
+      <section v-if="!interviewMode" class="engineering-section">
         <div class="section-heading section-heading-left"><p class="section-label">05 · 扩展探索</p><h2 class="section-title">安全与数据服务补充</h2><p class="section-desc">这些项目帮助扩展系统视野，但不会被包装成已经完成的生产能力。</p></div>
         <div class="extension-project-grid"><router-link v-for="project in extensionProjects" :key="project.id" :to="`/projects/${project.slug}`" class="extension-project-card"><div class="card-status-row"><span>{{ project.category }}</span><strong>{{ projectStageLabels[project.stage] }}</strong></div><h3>{{ project.name }}</h3><p>{{ project.positioning }}</p><small>下一里程碑：{{ project.nextMilestone }}</small></router-link></div>
       </section>
 
-      <section class="engineering-section">
+      <section v-if="!interviewMode" class="engineering-section">
         <div class="section-heading section-heading-left"><p class="section-label">06 · 延伸阅读</p><h2 class="section-title">从文章继续复核工程判断</h2></div>
         <div class="article-grid"><router-link v-for="article in engineeringArticles" :key="article.slug" :to="`/articles/${article.slug}`" class="article-card article-card-link"><time class="article-date">{{ article.date }}</time><h3 class="article-title">{{ article.title }}</h3><p class="article-summary">{{ article.summary }}</p></router-link></div>
       </section>

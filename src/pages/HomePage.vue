@@ -83,10 +83,10 @@ onMounted(() => setSeoMeta({ title: 'xiuqiu｜Web3 钱包工程 × AI 协作', d
 
   <section class="section">
     <div class="container">
-      <div class="section-heading section-heading-left"><p class="section-label">Automation</p><h2 class="section-title">AI 如何进入实际工作流</h2></div>
+      <div class="section-heading section-heading-left"><p class="section-label">Four Loops</p><h2 class="section-title">AI 如何进入实际工作流</h2><p class="section-desc">工程协作、Skill 复用、研究发布和知识治理都用真实流程与边界说明。</p></div>
       <div class="ai-case-preview-grid">
         <router-link v-for="item in siteAiCases" :key="item.id" :to="`/ai#${item.slug}`" class="ai-case-preview-card">
-          <div class="card-status-row"><span>0{{ item.id }}</span><strong>{{ aiStageLabels[item.stage] }}</strong></div><h3>{{ item.title }}</h3><p>{{ item.summary }}</p><small>{{ item.flow.slice(0, 3).join(' → ') }}</small>
+          <div class="card-status-row"><span>{{ String(item.displayOrder).padStart(2, '0') }}</span><strong>{{ aiStageLabels[item.stage] }}</strong></div><h3>{{ item.title }}</h3><p>{{ item.summary }}</p><small>{{ item.flow.slice(0, 3).join(' → ') }}</small>
         </router-link>
       </div>
     </div>

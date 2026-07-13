@@ -5,11 +5,13 @@ export type AiCaseStage = 'building' | 'verified-local' | 'operational'
 
 export interface AiCase {
   id: number
+  displayOrder: number
   slug: string
   title: string
   stage: AiCaseStage
   updatedAt: string
   summary: string
+  ownershipNote: string
   currentFocus: string
   flow: string[]
   responsibilities: string[]
@@ -24,11 +26,13 @@ export interface AiCase {
 export const aiCases: AiCase[] = [
   {
     "id": 1,
+    "displayOrder": 1,
     "slug": "ai-coding-collaboration",
     "title": "AI Coding 协作",
     "stage": "verified-local",
     "updatedAt": "2026-07-13",
     "summary": "用 Planner、Worker、Reviewer 和人工验收拆开计划、执行与审查，让 AI 修改代码时有边界、有交接、有验证。",
+    "ownershipNote": "协作协议、角色边界和验收方式由我设计；底层模型与编码工具来自外部产品。",
     "currentFocus": "把这套协作方式应用到钱包项目的真实改动，并让每次交付都能回到代码差异、测试结果和未解决风险。",
     "flow": [
       "定义目标与不做什么",
@@ -65,54 +69,62 @@ export const aiCases: AiCase[] = [
     ]
   },
   {
-    "id": 2,
-    "slug": "obsidian-knowledge-system",
-    "title": "Obsidian 知识系统",
-    "stage": "operational",
+    "id": 4,
+    "displayOrder": 2,
+    "slug": "cross-device-skill-toolchain",
+    "title": "跨设备 Skill 工具链",
+    "stage": "verified-local",
     "updatedAt": "2026-07-13",
-    "summary": "把外部资料、AI 候选、项目记录和个人理解分层管理，通过人工审核与发布门禁维护唯一主库。",
-    "currentFocus": "减少重复笔记和未经核验的 AI 内容，让知识能回到钱包项目、面试讲解、文章和下一步行动。",
+    "summary": "把重复使用的方法沉淀为 Skill，经来源分层、去敏和私有 Git 版本化，在 MacBook、Mac mini、Codex 与 Hermes 之间复用。",
+    "ownershipNote": "我负责工作流设计、个人 Skill 整理、来源标注、去敏、同步规则和验收；第三方 Skill 保留原作者归属，不视为我的原创。",
+    "currentFocus": "让 Skill 从单机文件变成可迁移、可更新、可验证的个人 Agent 工具链，同时避免把密钥、会话缓存和第三方内容错误公开。",
     "flow": [
-      "来源进入资料库或收件箱",
-      "AI 生成待审核候选",
-      "人工核对代码与来源",
-      "结论合并到唯一主库",
-      "显式 publish: true 后生成公开内容"
+      "从真实任务识别可重复方法",
+      "沉淀或整理个人 Skill",
+      "区分个人与第三方来源",
+      "扫描敏感内容并建立私有 Git 快照",
+      "MacBook 与 Mac mini 拉取版本",
+      "Codex 软链接与 Hermes external_dirs 加载",
+      "运行检查并把失败回流到 Skill"
     ],
     "responsibilities": [
-      "我决定哪些结论进入主库和公开站点",
-      "AI 负责查重、结构化、关联与候选生成",
-      "私人日记、求职计划和未核验内容永远不自动公开"
+      "我决定哪些方法值得沉淀，以及个人 Skill 的边界和验收标准",
+      "我维护来源、隐私规则、版本更新和两端恢复说明",
+      "第三方 Skill 只作为依赖或参考使用，不包装为本人原创"
     ],
     "evidence": [
-      "已建立项目、知识、资料、模板和归档分区",
-      "网站同步脚本只接受显式发布标记",
-      "钱包讲义、Go 学习和项目看板使用统一入口与维护规则"
+      "已建立两个私有 Skill 仓库并分别维护个人 Skill 与跨 Agent 打包结果",
+      "已整理新机器 clone、Codex 软链接与 Hermes external_dirs 的恢复说明",
+      "打包前排除缓存、统计、内部 manifest 与 Codex 内置 system skills",
+      "已执行敏感文件扫描，并比较重叠 Skill 避免静默覆盖"
     ],
     "failureHandling": [
-      "没有 publish: true 时同步器忽略笔记",
-      "内容重复时合并到唯一主库而不是新增第二份",
-      "来源或代码事实不足时保持候选状态"
+      "发现疑似密钥、Token 或本机状态文件时停止提交",
+      "同名 Skill 内容不一致时先比较来源，不直接覆盖",
+      "新机器缺少命令、MCP 或插件依赖时明确报告，不把 Git 同步当成可运行验证"
     ],
     "knownLimits": [
-      "发布记录仍需要人工挑选和编辑",
-      "站点不读取本机绝对路径",
-      "知识结构需要定期清理失效入口"
+      "两个仓库目前均为私有，因此网站不提供仓库链接",
+      "部分 Skill 来自第三方，不属于本人原创",
+      "Git 只能同步文件，不能自动安装命令、MCP、插件或模型配置",
+      "跨设备更新后仍需分别验证 Codex 与 Hermes 的发现和运行结果"
     ],
-    "targetOutcome": "让每次学习都可以沿来源、候选、核验、主库、项目和公开输出追踪，同时确保隐私内容无法因自动同步进入网站。",
-    "nextMilestone": "把项目里程碑也接入显式发布流程，并为同步前后的字段、隐私词和关联项目增加自动校验。",
+    "targetOutcome": "形成一条稳定的 SkillOps Loop：方法可以被沉淀、追踪来源、安全同步、跨 Agent 加载，并通过真实任务的失败继续迭代。",
+    "nextMilestone": "为个人 Skill 增加统一 manifest 与双端 smoke check，记录每次同步后哪些 Skill 被发现、哪些依赖仍然缺失。",
     "relatedArticleSlugs": [
-      "codex-ai-workflow-system-retrospective",
-      "minimal-multi-agent-coding-workflow"
+      "minimal-multi-agent-coding-workflow",
+      "codex-ai-workflow-system-retrospective"
     ]
   },
   {
     "id": 3,
+    "displayOrder": 3,
     "slug": "research-automation-workflows",
     "title": "Obsidian → xiuqiu-site 每日发布",
     "stage": "operational",
     "updatedAt": "2026-07-13",
     "summary": "五个定时任务先把研究输入写入 Obsidian；09:15 发布任务只读取四类公开区块，经来源、隐私、PR 与构建门禁进入每日研究雷达。",
+    "ownershipNote": "公开范围、发布门禁、失败语义和交付链路由我设计；资讯检索、摘要和托管能力来自外部工具。",
     "currentFocus": "让每日研究内容自动进入网站，同时保证私人笔记不被读取、外部链接不被创造、失败构建不能进入 main。",
     "flow": [
       "五个定时任务生成 Obsidian 输入",
@@ -148,6 +160,50 @@ export const aiCases: AiCase[] = [
     "relatedArticleSlugs": [
       "codex-ai-workflow-system-retrospective",
       "web3-narrative-participation-framework"
+    ]
+  },
+  {
+    "id": 2,
+    "displayOrder": 4,
+    "slug": "obsidian-knowledge-system",
+    "title": "Obsidian 知识系统",
+    "stage": "operational",
+    "updatedAt": "2026-07-13",
+    "summary": "把外部资料、AI 候选、项目记录和个人理解分层管理，通过人工审核与发布门禁维护唯一主库。",
+    "ownershipNote": "知识分层、审核规则和公开边界由我维护；资料、模型建议和部分模板保留各自来源。",
+    "currentFocus": "减少重复笔记和未经核验的 AI 内容，让知识能回到钱包项目、面试讲解、文章和下一步行动。",
+    "flow": [
+      "来源进入资料库或收件箱",
+      "AI 生成待审核候选",
+      "人工核对代码与来源",
+      "结论合并到唯一主库",
+      "显式 publish: true 后生成公开内容"
+    ],
+    "responsibilities": [
+      "我决定哪些结论进入主库和公开站点",
+      "AI 负责查重、结构化、关联与候选生成",
+      "私人日记、求职计划和未核验内容永远不自动公开"
+    ],
+    "evidence": [
+      "已建立项目、知识、资料、模板和归档分区",
+      "网站同步脚本只接受显式发布标记",
+      "钱包讲义、Go 学习和项目看板使用统一入口与维护规则"
+    ],
+    "failureHandling": [
+      "没有 publish: true 时同步器忽略笔记",
+      "内容重复时合并到唯一主库而不是新增第二份",
+      "来源或代码事实不足时保持候选状态"
+    ],
+    "knownLimits": [
+      "发布记录仍需要人工挑选和编辑",
+      "站点不读取本机绝对路径",
+      "知识结构需要定期清理失效入口"
+    ],
+    "targetOutcome": "让每次学习都可以沿来源、候选、核验、主库、项目和公开输出追踪，同时确保隐私内容无法因自动同步进入网站。",
+    "nextMilestone": "把项目里程碑也接入显式发布流程，并为同步前后的字段、隐私词和关联项目增加自动校验。",
+    "relatedArticleSlugs": [
+      "codex-ai-workflow-system-retrospective",
+      "minimal-multi-agent-coding-workflow"
     ]
   }
 ]

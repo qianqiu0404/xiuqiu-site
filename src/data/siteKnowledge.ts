@@ -150,6 +150,7 @@ export const siteKnowledge: SiteKnowledge = {
       '独立签名与 TSS/MPC',
       'Go 与 TypeScript',
       'AI Coding 协作',
+      '跨设备 Skill 工具链与来源治理',
       'Obsidian 知识与自动化工作流',
     ],
   },
@@ -221,6 +222,7 @@ export function buildKnowledgeContext(): string {
       [
         `- ${item.title}: ${item.summary}`,
         `  Status: ${aiStageLabels[item.stage]}`,
+        `  Ownership: ${item.ownershipNote}`,
         `  Flow: ${item.flow.join(' -> ')}`,
         `  Human responsibility: ${item.responsibilities.join(' | ')}`,
         `  Evidence: ${item.evidence.join(' | ')}`,
@@ -270,7 +272,7 @@ export function findRelevantReferences(query: string, pageTitle?: string, max = 
   }))
 
   const aiRefs = siteAiCases.map(item => ({
-    score: scoreText(queryTokens, [item.title, item.summary, item.currentFocus, item.flow.join(' '), item.evidence.join(' ')].join(' ')) + (pageTitle === item.title ? 10 : 0),
+    score: scoreText(queryTokens, [item.title, item.summary, item.ownershipNote, item.currentFocus, item.flow.join(' '), item.evidence.join(' ')].join(' ')) + (pageTitle === item.title ? 10 : 0),
     ref: { type: 'ai' as const, title: item.title, href: `/ai#${item.slug}`, summary: item.summary },
   }))
 

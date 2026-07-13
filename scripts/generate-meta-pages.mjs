@@ -88,8 +88,8 @@ writePage(
 writePage(
   '/ai',
   replaceMeta(baseHtml, {
-    title: 'AI 协作｜xiuqiu 工程工作流',
-    description: 'AI Coding 协作、Obsidian 知识系统与研究自动化三个可验证案例。',
+    title: 'AI 工作流｜xiuqiu',
+    description: 'AI Coding、跨设备 Skill 工具链、每日研究发布与 Obsidian 知识治理四个真实 Loop。',
     path: '/ai',
   }),
 )
