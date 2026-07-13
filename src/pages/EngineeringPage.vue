@@ -53,7 +53,7 @@ onMounted(() => setSeoMeta({ title: '工程档案｜xiuqiu Web3 钱包后端', d
 
       <section class="overview-summary" :class="{ active: overviewMode }">
         <div class="overview-summary-top"><div><p class="section-label">工程概览</p><h2>以 Exchange Wallet Infrastructure 为主线，用可运行实验和多链库补足验证证据</h2></div><span class="mode-badge">{{ overviewMode ? 'FOCUS VIEW' : 'QUICK OVERVIEW' }}</span></div>
-        <p>wallet-service、risk-service、wallet-api、wallet-sign 分别守住资金编排、风险控制、链交互和签名边界；wallet-core 用 TypeScript 验证多链离线交易；Wallet Reliability Lab 提供六个可运行异常实验。</p>
+        <p>wallet-service、risk-service、wallet-api、wallet-sign 分别守住资金编排、风险控制、链交互和签名边界；Wallet Domain Engine 提供领域不变量，Wallet Reliability Lab 提供三个成熟的提现可靠性交互实验。</p>
         <div class="overview-proof-grid"><div><strong>{{ systemFlow.length }} 个</strong><span>服务边界</span></div><div><strong>{{ signerBackends.length }} 种</strong><span>签名后端</span></div><div><strong>{{ failureCases.length }} 个</strong><span>重点异常恢复案例</span></div></div>
       </section>
 

@@ -93,6 +93,71 @@ export const deliveryRecords: DeliveryRecord[] = [
     "publish": true
   },
   {
+    "slug": "wallet-domain-engine-v1",
+    "title": "Web3 Wallet Domain Engine 场景契约",
+    "date": "2026-07-13",
+    "status": "delivered",
+    "kind": "engineering",
+    "summary": "将公开 Go 钱包实验收敛为底层领域引擎、资金不变量和 Scenario Catalog v1。",
+    "projectSlugs": [
+      "web3-wallet-engineer-lab"
+    ],
+    "goal": "为交互实验台和工程证据提供稳定、可执行、不会与产品界面竞争的事实层。",
+    "scope": [
+      "Go 领域 API 与不变量",
+      "一条基线和六个异常模型",
+      "Scenario Catalog v1 Schema",
+      "技术 Catalog Inspector",
+      "race CI 和敏感信息门禁"
+    ],
+    "aiContribution": [
+      "协助拆分 Engine 与 Lab 的产品职责",
+      "补 Catalog Schema 与契约检查",
+      "调整 README、技术检查页和 CI"
+    ],
+    "humanDecisions": [
+      "三个仓库保持独立",
+      "Engine 拥有领域事实和测试",
+      "旧 Pages 只作为技术检查页"
+    ],
+    "reviewFindings": [
+      "旧仓库与新 Lab 使用相同品牌造成定位冲突",
+      "共享 Catalog 已存在但没有公开 Schema",
+      "CI 未显式执行 go vet 和 race"
+    ],
+    "corrections": [
+      "重命名为 Web3 Wallet Domain Engine",
+      "发布 Catalog v1 Schema",
+      "CI 增加 vet 与 race，并把正式 Demo 指向独立 Lab"
+    ],
+    "evidenceSlugs": [
+      "wallet-engine-catalog",
+      "wallet-engine-invariants",
+      "engineering-observability-demo"
+    ],
+    "publicLinks": [
+      {
+        "label": "公开仓库",
+        "url": "https://github.com/qianqiu0404/web3-wallet-engineer-lab"
+      },
+      {
+        "label": "定位调整 PR #3",
+        "url": "https://github.com/qianqiu0404/web3-wallet-engineer-lab/pull/3"
+      },
+      {
+        "label": "Catalog Inspector",
+        "url": "https://qianqiu0404.github.io/web3-wallet-engineer-lab/"
+      }
+    ],
+    "knownLimits": [
+      "内存模型不等同于生产账本",
+      "不连接真实链与签名机",
+      "Pages 不部署 Go API"
+    ],
+    "nextStep": "发布 Catalog v1 tag，并让 Wallet Reliability Lab 固定校验版本和 checksum。",
+    "publish": true
+  },
+  {
     "slug": "wallet-failure-playbook-pr2",
     "title": "钱包异常恢复手册",
     "date": "2026-07-13",
@@ -152,68 +217,67 @@ export const deliveryRecords: DeliveryRecord[] = [
   },
   {
     "slug": "wallet-reliability-lab-v1",
-    "title": "Wallet Reliability Lab 六个异常实验",
+    "title": "Wallet Reliability Lab 提现可靠性工作台",
     "date": "2026-07-13",
     "status": "delivered",
     "kind": "engineering",
-    "summary": "把正常提现作为基线，用 Go 断言和 Vue 时间线实现六个钱包异常恢复实验。",
+    "summary": "用三种提现路径、Vue 工程工作台和 Go Runner 展示正常状态机、可重试广播与链上事实补偿。",
     "projectSlugs": [
-      "web3-wallet-engineer-lab"
+      "wallet-reliability-lab"
     ],
-    "goal": "为钱包异常手册提供可运行、可阅读、不会接触真实资金的公开工程证据。",
+    "goal": "让钱包状态判断成为可操作、可重放并能继续定位测试证据的公开作品。",
     "scope": [
-      "共享场景 Catalog",
-      "六个异常的资金不变量",
-      "Go 模型与测试",
-      "Vue 静态实验台",
-      "CI 与 GitHub Pages"
+      "三种提现场景",
+      "Vue 交互工作台",
+      "Go Runner actions 与 SSE",
+      "并发和重连修复",
+      "CI、Vercel 与公开安全门禁"
     ],
     "aiContribution": [
-      "协助将异常描述转成确定性场景数据",
-      "实现 Go 不变量模型和交互式状态时间线",
-      "补充 CI、Pages 与敏感信息门禁"
+      "协助将状态判断转成交互步骤和测试边界",
+      "实现 Runner API、顺序 SSE 与响应式页面",
+      "补充公开仓库、CI、许可证和部署配置"
     ],
     "humanDecisions": [
-      "只保留一个主 Wallet Lab，避免重复仓库",
-      "正常流程不计入六个异常",
-      "确定 fail-closed、canonical 事实和反向分录等恢复原则"
+      "确认新 Lab 是唯一正式交互体验",
+      "确认公开版只运行 simulation",
+      "决定底层 Go 领域引擎独立维护并通过 Catalog 契约互链"
     ],
     "reviewFindings": [
-      "原公开 Lab 只覆盖最小 happy path",
-      "本地 reliability lab 的 TypeScript 与 Go 场景存在重复事实源",
-      "部分实验名称尚未与网站异常 slug 对齐"
+      "初版前端只探测 Runner，没有真正使用 actions 与 SSE",
+      "重复 start、暂停/重置和订阅取消存在并发风险",
+      "本地服务地址不应返回浏览器"
     ],
     "corrections": [
-      "用共享 JSON 同时供 Go 与 Vue 校验",
-      "统一六个实验与异常手册关联",
-      "删除目的导向文档并强化当前边界"
+      "前端接入 Runner run/action/event 链路并保留浏览器 fallback",
+      "使用单播放器 generation 和无丢事件 SSE 通知模型",
+      "脱敏 capabilities 并增加 race 与重连测试"
     ],
     "evidenceSlugs": [
       "wallet-lab-implementation",
       "wallet-lab-tests",
-      "wallet-lab-demo",
-      "engineering-observability-demo"
+      "wallet-lab-demo"
     ],
     "publicLinks": [
       {
         "label": "公开仓库",
-        "url": "https://github.com/qianqiu0404/web3-wallet-engineer-lab"
-      },
-      {
-        "label": "交付 PR #1",
-        "url": "https://github.com/qianqiu0404/web3-wallet-engineer-lab/pull/1"
+        "url": "https://github.com/qianqiu0404/wallet-reliability-lab"
       },
       {
         "label": "在线实验台",
-        "url": "https://qianqiu0404.github.io/web3-wallet-engineer-lab/"
+        "url": "https://wallet-reliability-lab.vercel.app"
+      },
+      {
+        "label": "GitHub Actions",
+        "url": "https://github.com/qianqiu0404/wallet-reliability-lab/actions"
       }
     ],
     "knownLimits": [
-      "使用内存与确定性模拟，不连接生产服务",
-      "Go Runner 不在线上部署",
-      "MPC/TSS 和 HSM 只作为签名可用性边界表达"
+      "公开版不部署 Go Runner 或连接真实服务",
+      "首版只覆盖三个提现场景",
+      "本地 Engine adapter 仍是后续迭代"
     ],
-    "nextStep": "继续增加 RPC 多节点仲裁和账务 outbox 的故障注入，但仍保持每个实验有独立资金不变量。",
+    "nextStep": "固定引用 Wallet Domain Engine 的 Catalog v1 release，并补齐自动化浏览器 E2E。",
     "publish": true
   }
 ]

@@ -1,5 +1,5 @@
 ---
-{"slug":"wallet-lab-demo","title":"六个异常恢复交互实验","capabilityIds":["request-idempotency","fund-state","risk-authorization","signer-boundary","broadcast-finality","reconciliation","observability"],"projectSlugs":["web3-wallet-engineer-lab"],"kind":"demo","status":"verified","visibility":"public","summary":"静态实验台可逐步展开故障注入、资金不变量、止损动作、恢复依据和状态时间线。","verifiedAt":"2026-07-13","url":"https://qianqiu0404.github.io/web3-wallet-engineer-lab/","failureSlugs":["duplicate-request-id","broadcast-result-unknown","chain-success-local-failure","credited-deposit-reorg","evm-nonce-gap","risk-signer-unavailable"],"deliverySlugs":["wallet-reliability-lab-v1"]}
+{"slug":"wallet-lab-demo","title":"三个提现可靠性交互实验","capabilityIds":["fund-state","risk-authorization","signer-boundary","broadcast-finality","reconciliation","observability"],"projectSlugs":["wallet-reliability-lab"],"kind":"demo","status":"verified","visibility":"public","summary":"在线实验台支持正常提现、可重试广播失败和广播后补偿恢复的开始、暂停、单步、重置与开发者证据查看。","verifiedAt":"2026-07-13","url":"https://wallet-reliability-lab.vercel.app","failureSlugs":["rpc-lag-rate-limit","chain-success-local-failure","long-pending-transaction"],"deliverySlugs":["wallet-reliability-lab-v1"]}
 ---
 
-网页运行确定性模拟，Go Runner 不在线上部署。
+公开网页只运行确定性模拟，不部署 Runner 或连接真实节点。

@@ -3570,6 +3570,49 @@ img {
   .system-arrow { transform: rotate(90deg); text-align: center; }
 }
 
+.portfolio-path-strip {
+  border-top: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-light);
+  background: #fff;
+}
+
+.portfolio-path-flow {
+  min-height: 92px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.portfolio-path-flow a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.portfolio-path-flow a span {
+  color: var(--accent);
+  font: 600 11px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.portfolio-path-flow a:hover strong { color: var(--accent); }
+.portfolio-path-flow i { color: var(--text-muted); font-style: normal; }
+
+@media (max-width: 760px) {
+  .portfolio-path-flow {
+    padding-top: 18px;
+    padding-bottom: 18px;
+    align-items: stretch;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .portfolio-path-flow i { display: none; }
+  .portfolio-path-flow a:last-child { grid-column: 1 / -1; }
+}
+
 @media (max-width: 480px) {
   .control-status-panel,
   .capability-track-card,

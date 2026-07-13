@@ -24,8 +24,9 @@ export interface EvidenceRecord {
 export const evidenceRecords: EvidenceRecord[] = [
   {
     "slug": "engineering-observability-demo",
-    "title": "健康检查、指标与恢复证据展示",
+    "title": "Domain Engine 健康检查与指标",
     "capabilityIds": [
+      "request-idempotency",
       "observability"
     ],
     "projectSlugs": [
@@ -34,12 +35,12 @@ export const evidenceRecords: EvidenceRecord[] = [
     "kind": "demo",
     "status": "partial",
     "visibility": "public",
-    "summary": "公开 Lab 提供健康检查、Prometheus 文本指标、审计日志和实验时间线；真实告警、追踪与多实例运行仍未实现。",
+    "summary": "公开 Domain Engine 提供健康检查、Prometheus 文本指标、审计日志和 Catalog Inspector；真实告警、追踪与多实例运行仍未实现。",
     "verifiedAt": "2026-07-13",
     "url": "https://github.com/qianqiu0404/web3-wallet-engineer-lab",
     "failureSlugs": [],
     "deliverySlugs": [
-      "wallet-reliability-lab-v1"
+      "wallet-domain-engine-v1"
     ]
   },
   {
@@ -210,49 +211,15 @@ export const evidenceRecords: EvidenceRecord[] = [
     ]
   },
   {
-    "slug": "wallet-lab-demo",
-    "title": "六个异常恢复交互实验",
+    "slug": "wallet-engine-catalog",
+    "title": "Scenario Catalog v1 契约",
     "capabilityIds": [
       "request-idempotency",
       "fund-state",
       "risk-authorization",
       "signer-boundary",
       "broadcast-finality",
-      "reconciliation",
-      "observability"
-    ],
-    "projectSlugs": [
-      "web3-wallet-engineer-lab"
-    ],
-    "kind": "demo",
-    "status": "verified",
-    "visibility": "public",
-    "summary": "静态实验台可逐步展开故障注入、资金不变量、止损动作、恢复依据和状态时间线。",
-    "verifiedAt": "2026-07-13",
-    "url": "https://qianqiu0404.github.io/web3-wallet-engineer-lab/",
-    "failureSlugs": [
-      "duplicate-request-id",
-      "broadcast-result-unknown",
-      "chain-success-local-failure",
-      "credited-deposit-reorg",
-      "evm-nonce-gap",
-      "risk-signer-unavailable"
-    ],
-    "deliverySlugs": [
-      "wallet-reliability-lab-v1"
-    ]
-  },
-  {
-    "slug": "wallet-lab-implementation",
-    "title": "Wallet Reliability Lab 状态机实现",
-    "capabilityIds": [
-      "request-idempotency",
-      "fund-state",
-      "risk-authorization",
-      "signer-boundary",
-      "broadcast-finality",
-      "reconciliation",
-      "observability"
+      "reconciliation"
     ],
     "projectSlugs": [
       "web3-wallet-engineer-lab"
@@ -260,9 +227,9 @@ export const evidenceRecords: EvidenceRecord[] = [
     "kind": "implementation",
     "status": "verified",
     "visibility": "public",
-    "summary": "公开 Go 项目包含钱包领域 API、六个异常恢复模型和共享场景目录，不接触真实私钥与资产。",
+    "summary": "版本化 JSON Catalog 与公开 Schema 统一一条正常基线、六个异常模型、资金不变量、恢复依据和 Go 测试名称。",
     "verifiedAt": "2026-07-13",
-    "url": "https://github.com/qianqiu0404/web3-wallet-engineer-lab",
+    "url": "https://github.com/qianqiu0404/web3-wallet-engineer-lab/tree/main/scenarios",
     "failureSlugs": [
       "duplicate-request-id",
       "broadcast-result-unknown",
@@ -272,20 +239,19 @@ export const evidenceRecords: EvidenceRecord[] = [
       "risk-signer-unavailable"
     ],
     "deliverySlugs": [
-      "wallet-reliability-lab-v1"
+      "wallet-domain-engine-v1"
     ]
   },
   {
-    "slug": "wallet-lab-tests",
-    "title": "Wallet Reliability Lab Go 断言",
+    "slug": "wallet-engine-invariants",
+    "title": "Wallet Domain Engine 资金不变量",
     "capabilityIds": [
       "request-idempotency",
       "fund-state",
       "risk-authorization",
       "signer-boundary",
       "broadcast-finality",
-      "reconciliation",
-      "observability"
+      "reconciliation"
     ],
     "projectSlugs": [
       "web3-wallet-engineer-lab"
@@ -293,9 +259,9 @@ export const evidenceRecords: EvidenceRecord[] = [
     "kind": "test",
     "status": "verified",
     "visibility": "public",
-    "summary": "Go 测试断言重复请求只冻结一次、结果未知必须暂停、canonical 补偿幂等、reorg 写反向分录、replacement 只有一个终态以及关键依赖 fail-closed。",
+    "summary": "Go 测试断言重复请求只冻结一次、结果未知必须暂停、canonical 补偿幂等、reorg 使用反向分录、replacement 只有一个终态以及关键依赖 fail-closed。",
     "verifiedAt": "2026-07-13",
-    "command": "go test ./...",
+    "command": "go test -race ./...",
     "url": "https://github.com/qianqiu0404/web3-wallet-engineer-lab/actions",
     "failureSlugs": [
       "duplicate-request-id",
@@ -304,6 +270,92 @@ export const evidenceRecords: EvidenceRecord[] = [
       "credited-deposit-reorg",
       "evm-nonce-gap",
       "risk-signer-unavailable"
+    ],
+    "deliverySlugs": [
+      "wallet-domain-engine-v1"
+    ]
+  },
+  {
+    "slug": "wallet-lab-demo",
+    "title": "三个提现可靠性交互实验",
+    "capabilityIds": [
+      "fund-state",
+      "risk-authorization",
+      "signer-boundary",
+      "broadcast-finality",
+      "reconciliation",
+      "observability"
+    ],
+    "projectSlugs": [
+      "wallet-reliability-lab"
+    ],
+    "kind": "demo",
+    "status": "verified",
+    "visibility": "public",
+    "summary": "在线实验台支持正常提现、可重试广播失败和广播后补偿恢复的开始、暂停、单步、重置与开发者证据查看。",
+    "verifiedAt": "2026-07-13",
+    "url": "https://wallet-reliability-lab.vercel.app",
+    "failureSlugs": [
+      "rpc-lag-rate-limit",
+      "chain-success-local-failure",
+      "long-pending-transaction"
+    ],
+    "deliverySlugs": [
+      "wallet-reliability-lab-v1"
+    ]
+  },
+  {
+    "slug": "wallet-lab-implementation",
+    "title": "Wallet Reliability Lab 交互与 Runner 实现",
+    "capabilityIds": [
+      "fund-state",
+      "risk-authorization",
+      "signer-boundary",
+      "broadcast-finality",
+      "reconciliation",
+      "observability"
+    ],
+    "projectSlugs": [
+      "wallet-reliability-lab"
+    ],
+    "kind": "implementation",
+    "status": "verified",
+    "visibility": "public",
+    "summary": "Vue 工作台通过 Runner run/action/SSE 接口运行三个提现场景，Runner 不可用时退回公开安全的浏览器确定性模拟。",
+    "verifiedAt": "2026-07-13",
+    "url": "https://github.com/qianqiu0404/wallet-reliability-lab",
+    "failureSlugs": [
+      "rpc-lag-rate-limit",
+      "chain-success-local-failure",
+      "long-pending-transaction"
+    ],
+    "deliverySlugs": [
+      "wallet-reliability-lab-v1"
+    ]
+  },
+  {
+    "slug": "wallet-lab-tests",
+    "title": "Wallet Reliability Lab Runner 与状态机测试",
+    "capabilityIds": [
+      "fund-state",
+      "broadcast-finality",
+      "reconciliation",
+      "observability"
+    ],
+    "projectSlugs": [
+      "wallet-reliability-lab"
+    ],
+    "kind": "test",
+    "status": "verified",
+    "visibility": "public",
+    "summary": "前端测试验证场景事实与确定性推进，Go race 测试覆盖单播放器、暂停/重置代次、SSE 续传、并发取消和本地地址脱敏。",
+    "verifiedAt": "2026-07-13",
+    "command": "npm test && go test -race ./...",
+    "url": "https://github.com/qianqiu0404/wallet-reliability-lab/actions",
+    "failureSlugs": [
+      "rpc-lag-rate-limit",
+      "chain-success-local-failure",
+      "long-pending-transaction"
     ],
     "deliverySlugs": [
       "wallet-reliability-lab-v1"

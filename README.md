@@ -1,84 +1,73 @@
 # xiuqiu-site
 
-项目驱动的 Web3 钱包后端公开学习档案，使用 Vue、Vite 和 Vercel Serverless Functions 构建。
+[Live site](https://xiuqiu-site.vercel.app) · [Wallet Reliability Lab](https://wallet-reliability-lab.vercel.app) · [Wallet Domain Engine](https://github.com/qianqiu0404/web3-wallet-engineer-lab)
+
+项目驱动的 Web3 钱包后端公开工程档案。网站把项目、文章、异常恢复手册、测试证据和 AI 协作交付连接成一条可复核路径。
+
+## Three-repository portfolio
+
+```text
+xiuqiu-site                     个人技术品牌、文章与证据总入口
+        │
+        ├── wallet-reliability-lab      正式交互实验台
+        │
+        └── web3-wallet-engineer-lab    Go 领域引擎与资金不变量
+```
+
+公开仓库不包含四个私有钱包服务的源码、地址或配置。私有工程只展示脱敏后的边界、测试名称和当前限制。
 
 ## Architecture
 
-- `content/articles/*.md`: Markdown article source files with JSON frontmatter.
-- `src/data/generatedArticleKnowledge.ts`: generated lightweight article metadata for lists, search, AI context, and sitemap generation.
-- `src/data/generatedArticles.ts`: generated full article content for article detail pages.
-- `content/projects/*.md`: structured project records with stage, evidence, target outcome, and milestone.
-- `content/ai-cases/*.md`: AI collaboration case records.
-- `content/evidence/*.md`: engineering evidence linked to capabilities, projects, failures, and deliveries.
-- `content/deliveries/*.md`: public AI-assisted delivery records with human decisions, review findings, and real links.
-- `content/now/current.md`: manually curated current focus; recent public outputs are aggregated automatically.
-- `src/data/generatedProjects.ts` / `generatedAiCases.ts`: generated typed data; do not edit by hand.
-- `src/data/siteKnowledge.ts`: unified knowledge graph that connects projects, articles, tags, related reading, suggested questions, and the Engineering Map.
-- `src/components/AiChatWidget.vue`: site-level DeepSeek chat widget with page context and quick prompts.
-- `api/chat.ts`: Vercel Serverless proxy for DeepSeek. The browser never receives the API key.
-- `scripts/generate-articles.mjs`: generates typed article data from Markdown files.
-- `scripts/generate-sitemap.mjs`: generates `public/sitemap.xml` from article summaries.
-- `scripts/validate-knowledge.mjs`: checks article metadata, project relations, Engineering Map references, and sitemap URLs stay in sync.
+- `content/articles/*.md`: article sources and metadata
+- `content/projects/*.md`: project stage, evidence, target and boundaries
+- `content/failure-cases/*.md`: structured wallet failure recovery playbook
+- `content/evidence/*.md`: reproducible, public-safe engineering evidence
+- `content/deliveries/*.md`: AI-assisted delivery records and human decisions
+- `src/data/generated*.ts`: generated typed data; do not edit by hand
+- `src/data/siteKnowledge.ts`: unified project/article/evidence knowledge graph
+- `api/chat.ts`: Vercel serverless DeepSeek proxy; the browser never receives the API key
 
 ## Commands
 
 ```bash
+npm ci
 npm run dev
+npm run test:radar
 npm run build
-npm run preview
-npm run generate:articles
-npm run generate:projects
-npm run generate:ai
-npm run generate:evidence
-npm run generate:deliveries
-npm run generate:now
-npm run generate:sitemap
 npm run check:knowledge
-npm run typecheck:api
+npm run check:public
 ```
 
-`npm run build` generates article data, regenerates the sitemap, validates knowledge links, type-checks the API and Vue app, builds Vite, and generates static article meta pages.
+`npm run build` regenerates public content, validates knowledge links, type-checks the serverless API and Vue app, builds Vite, and generates static metadata pages.
 
 ## Environment
 
-Configure these in Vercel:
+Configure only in Vercel:
 
 ```env
 DEEPSEEK_API_KEY=
 DEEPSEEK_MODEL=deepseek-v4-flash
 ```
 
-`DEEPSEEK_MODEL` is optional. The default is `deepseek-v4-flash`.
+Never commit a real API key. `.env.example` contains names only.
 
-## Content Workflow
+## Content workflow
 
-When adding a new article:
+1. Edit the source file under `content/`.
+2. Mark public learning records explicitly with `publish: true` and `kind: learning-log`.
+3. Public projects must provide a verified, accessible `repositoryUrl`; private projects must not expose one.
+4. Run `npm run build` and commit the generated TypeScript and sitemap changes with the source content.
+5. Keep verified implementation, partial evidence, design targets, and known limits visibly separate.
 
-1. Create `content/articles/your-slug.md`.
-2. Add JSON frontmatter with `id`, `slug`, `title`, `date`, `summary`, `tags`, `difficulty`, `conceptTags`, `relatedProjectIds`, `recommendedSlugs`, and `suggestedQuestions`.
-3. Write the article body as Markdown below the frontmatter.
-4. Run `npm run build`.
+The local Obsidian sync command reads only explicitly marked public notes. Hosted builds consume committed repository content and never access a local vault.
 
-`readingTime` is optional. If omitted, it is generated from article length. `updatedAt` is optional and appears on the article detail page when present.
+## Public safety
 
-When adding a new project:
+- DeepSeek credentials exist only as Vercel environment variables.
+- CI scans the full Git history for secrets and checks generated public data.
+- Local absolute paths, credential-shaped values and private Git remote URLs fail `npm run check:public`.
+- Public evidence uses accessible HTTPS links or a `private-summary` without a URL.
 
-1. Create `content/projects/your-project.md`.
-2. Record `stage`, `sourceType`, `visibility`, verified evidence, target outcome, next milestone, limitations, engineering boundary, and related articles.
-3. Only set `visibility: public` together with a verified, accessible `repositoryUrl`; private projects must not include a repository URL.
-4. Reference the project from article frontmatter via `relatedProjectIds` when relevant.
-5. Run `npm run build`.
+## License
 
-Frontmatter may use JSON or YAML. Projects use stable slugs for canonical URLs; legacy numeric project URLs continue to resolve.
-
-When adding an AI collaboration case, create a Markdown record in `content/ai-cases` with a unique contiguous `displayOrder`, an explicit `ownershipNote`, its real workflow, human responsibility, evidence, failure handling, limits, target outcome, and next milestone.
-
-Evidence records use one of four kinds (`implementation`, `test`, `demo`, `writeup`) and must state `verified`, `partial`, or `design`. Public evidence requires an accessible HTTPS URL; private engineering may only use `private-summary` with a redacted command and no repository URL.
-
-Delivery records only use public PR, commit, Actions, Release, or demo links. A record cannot be marked `delivered` without at least one evidence reference and one public link. Update `content/now/current.md` when the current focus changes; the page shows a stale notice after 14 days without an update.
-
-## Public Learning Workflow
-
-- Public learning records live in `content/learning/*.md` and must set `"publish": true` plus `"kind": "learning-log"` in JSON frontmatter.
-- To curate records from Obsidian locally, run `npm run sync:learning -- "/absolute/path/to/vault"`.
-- The sync script ignores every note without the explicit public markers. Hosted builds read committed site content only and never access the local Obsidian vault.
+Source code is MIT licensed. Original writing and content under `content/` is licensed under CC BY-NC-SA 4.0 unless a file states otherwise. See [NOTICE.md](NOTICE.md) and [content/LICENSE.md](content/LICENSE.md).

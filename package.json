@@ -24,6 +24,7 @@
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
     "generate:meta-pages": "node scripts/generate-meta-pages.mjs",
     "check:knowledge": "node scripts/validate-knowledge.mjs",
+    "check:public": "node scripts/check-public.mjs",
     "typecheck:api": "tsc --noEmit --target ES2020 --module ESNext --moduleResolution bundler --allowImportingTsExtensions --skipLibCheck --strict api/chat.ts",
     "preview": "vite preview"
   },
