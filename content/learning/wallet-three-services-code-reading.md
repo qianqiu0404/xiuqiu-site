@@ -4,9 +4,9 @@
   "slug": "wallet-three-services-code-reading",
   "kind": "learning-log",
   "publish": true,
-  "title": "钱包三服务代码导读：从接口走到资金状态",
+  "title": "Exchange Wallet Infrastructure 代码导读",
   "date": "2026-07-10",
-  "summary": "沿 wallet service、wallet-api、wallet-sign 的真实调用路径，区分节点能力、业务状态与签名安全边界。",
+  "summary": "沿 wallet-service、risk-service、wallet-api、wallet-sign 的真实调用路径，区分资金编排、风险控制、节点能力与签名安全边界。",
   "projectIds": [1, 2],
   "achieved": [
     "定位 API 与 Sign 两套 IChainAdaptor 的职责差异",
@@ -14,7 +14,8 @@
     "追踪充值与提现中的 worker、状态持久化和通知路径"
   ],
   "evidence": [
-    "完成钱包三服务代码入口索引",
+    "完成钱包基础设施代码入口索引",
+    "验证 risk-service 的提现校验、审批哈希与幂等标记单测",
     "记录 context、channel、Bloom 与事务的当前代码边界",
     "为关键模块整理可复现的 go test 命令"
   ],

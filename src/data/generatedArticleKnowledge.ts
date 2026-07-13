@@ -362,7 +362,7 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "wallet-sign",
       "Security"
     ],
-    "readingTime": "6 min",
+    "readingTime": "7 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
     "conceptTags": [
@@ -1063,7 +1063,7 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "suggestedQuestions": [
       "为什么多链钱包不能把 nonce、UTXO、blockhash 和 objectRef 全部藏在 adaptor 里？",
       "资源过期后为什么需要重新构建和签名？",
-      "wallet-service、wallet-api、wallet-sign 三个钱包服务分别负责哪一层资源状态？"
+      "钱包编排、风险控制、链交互和签名四个服务分别负责哪一层资源状态？"
     ]
   },
   {
@@ -1323,7 +1323,7 @@ export const articleSummaries: ArticleSummary[] = [
       "wallet-sign",
       "Security"
     ],
-    "readingTime": "6 min",
+    "readingTime": "7 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note"
   },

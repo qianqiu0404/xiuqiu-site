@@ -253,20 +253,21 @@ signature = hsmGateway.SignDigest(hsmKeyId, messageHash)
 完整提现签名链路变成：
 
 ```text
-1. wallet-service 完成提现审批和风控
-2. wallet-api 构建待签 message hash
-3. wallet-service 调 wallet-sign.SignTransactionsMessage
-4. wallet-sign 校验 token、chain_id、wallet_key_hash、risk_key_hash
-5. wallet-sign 根据 public_key 查询 hsm_key_id
-6. wallet-sign 调 hsm-gateway.SignDigest
-7. hsm-gateway 调 PKCS#11 C_SignInit + C_Sign
-8. CloudHSM 使用内部私钥完成签名
-9. hsm-gateway 返回 signature
-10. wallet-sign 做本地 verify 和审计记录
-11. wallet-api 组装 signed transaction 并广播
+1. wallet-service 完成提现业务校验与状态编排
+2. risk-service 校验提现内容并产生风控放行结果
+3. wallet-api 构建待签 message hash
+4. wallet-service 调 wallet-sign.SignTransactionsMessage
+5. wallet-sign 校验 token、chain_id、wallet_key_hash、risk_key_hash
+6. wallet-sign 根据 public_key 查询 hsm_key_id
+7. wallet-sign 调 hsm-gateway.SignDigest
+8. hsm-gateway 调 PKCS#11 C_SignInit + C_Sign
+9. CloudHSM 使用内部私钥完成签名
+10. hsm-gateway 返回 signature
+11. wallet-sign 做本地 verify 和审计记录
+12. wallet-api 组装 signed transaction 并广播
 ```
 
-这条链路里，CloudHSM 只负责使用 HSM 内部私钥签名。它不决定提现是否成立，也不决定链上交易怎么构建。业务判断仍然在 `wallet-service`，链上交易表达仍然在 `wallet-api`，签名安全边界仍然由 `wallet-sign` 收口。
+这条链路里，CloudHSM 只负责使用 HSM 内部私钥签名。它不决定提现是否成立，也不决定链上交易怎么构建。资金状态由 `wallet-service` 编排，风险校验由 `risk-service` 承担，链上交易表达仍然在 `wallet-api`，签名安全边界仍然由 `wallet-sign` 收口。
 
 # 多链签名格式适配
 

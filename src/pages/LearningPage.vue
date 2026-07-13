@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { learningRecords } from '../data/generatedLearningRecords'
-import { siteArticlesByNewest, siteProjects } from '../data/siteKnowledge'
+import { projectStageLabels, siteArticlesByNewest, siteProjects } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
 
 const learningArticles = siteArticlesByNewest.filter(article => article.kind === 'learning-log')
@@ -85,11 +85,11 @@ onMounted(() => {
       <section class="learning-page-section">
         <div class="section-heading section-heading-left">
           <p class="section-label">项目进度</p>
-          <h2 class="section-title">每个公开项目下一步准备验证什么</h2>
+          <h2 class="section-title">每个进行中项目下一步准备验证什么</h2>
         </div>
         <div class="learning-project-grid">
-          <router-link v-for="project in activeProjects" :key="project.id" :to="`/projects/${project.id}`" class="learning-project-card">
-            <span>{{ project.learning?.stage }}</span>
+          <router-link v-for="project in activeProjects" :key="project.id" :to="`/projects/${project.slug}`" class="learning-project-card">
+            <span>{{ projectStageLabels[project.stage] }} · {{ project.updatedAt }}</span>
             <h3>{{ project.name }}</h3>
             <p>{{ project.learning?.nextSteps[0] }}</p>
           </router-link>

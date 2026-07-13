@@ -253,9 +253,9 @@ Paymaster 存在时，EntryPoint 还会调用 Paymaster 的验证逻辑。任何
 
 UserOperation 可以通过账户与 Paymaster 验证，但在调用 USDC 时因为余额不足、合约暂停或业务参数错误而 revert。此时不能把它当成“从未发送”，因为链上已经执行了验证并消耗 Gas。
 
-# 钱包三件套如何接入 ERC-4337
+# Exchange Wallet Infrastructure 如何接入 ERC-4337
 
-把这条链路映射回我的钱包三件套后，职责可以这样划分。
+把这条链路映射回钱包基础设施的四个服务边界后，职责可以这样划分。
 
 ## wallet-service：业务状态和恢复策略
 
@@ -276,6 +276,12 @@ execution_result
 ```
 
 它还要处理幂等、替换、超时、业务补偿和用户状态展示。
+
+## risk-service：业务意图与风险放行
+
+`risk-service` 不负责判断 UserOperation 的链上编码是否正确，而是校验这次操作是否符合平台的风险策略：目标地址、资产与金额、调用意图、额度、审批状态，以及当前签名请求是否仍然绑定同一份业务事实。
+
+它输出的放行结果需要绑定 `business_order_id`、`sender`、`nonce`、`callData` 摘要和有效期。只要这些关键字段发生变化，就不能复用旧的风险结果。
 
 ## wallet-api：账户抽象基础设施适配
 

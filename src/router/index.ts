@@ -24,12 +24,17 @@ const router = createRouter({
       component: () => import('../pages/LearningPage.vue'),
     },
     {
+      path: '/ai',
+      name: 'ai',
+      component: () => import('../pages/AiCollaborationPage.vue'),
+    },
+    {
       path: '/articles/:slug',
       name: 'article-detail',
       component: () => import('../pages/ArticleDetailPage.vue'),
     },
     {
-      path: '/projects/:id',
+      path: '/projects/:project',
       name: 'project-detail',
       component: () => import('../pages/ProjectDetailPage.vue'),
     },

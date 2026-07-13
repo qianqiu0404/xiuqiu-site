@@ -2,7 +2,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { articleSummaries } from '../src/data/generatedArticleKnowledge.ts'
-import { projects } from '../src/data/projects.ts'
+import { projects } from '../src/data/generatedProjects.ts'
 
 const SITE_URL = 'https://xiuqiu-site.vercel.app'
 const distIndexUrl = new URL('../dist/index.html', import.meta.url)
@@ -79,8 +79,17 @@ writePage(
   '/engineering',
   replaceMeta(baseHtml, {
     title: '工程档案｜xiuqiu Web3 钱包后端',
-    description: '面向技术面试官的交易所钱包工程档案：三服务架构、项目边界、失败场景和验证证据。',
+    description: '面向技术面试官的交易所钱包工程档案：资金编排、风险控制、链交互、签名边界、失败场景和验证证据。',
     path: '/engineering',
+  }),
+)
+
+writePage(
+  '/ai',
+  replaceMeta(baseHtml, {
+    title: 'AI 协作｜xiuqiu 工程工作流',
+    description: 'AI Coding 协作、Obsidian 知识系统与研究自动化三个可验证案例。',
+    path: '/ai',
   }),
 )
 
@@ -140,13 +149,25 @@ articleSummaries.forEach(article => {
 
 projects.forEach(project => {
   writePage(
-    `/projects/${project.id}`,
+    `/projects/${project.slug}`,
     replaceMeta(baseHtml, {
       title: `${project.name}｜xiuqiu 工程项目`,
       description: project.positioning,
-      path: `/projects/${project.id}`,
+      path: `/projects/${project.slug}`,
     }),
   )
+
+  ;[project.id, ...project.legacyIds].forEach(id => {
+    writePage(
+      `/projects/${id}`,
+      replaceMeta(baseHtml, {
+        title: `${project.name}｜xiuqiu 工程项目`,
+        description: project.positioning,
+        path: `/projects/${project.slug}`,
+      }),
+    )
+  })
 })
 
-console.log(`Generated static meta pages for ${articleSummaries.length + projects.length + 3} routes.`)
+const legacyProjectPages = projects.reduce((total, project) => total + 1 + project.legacyIds.length, 0)
+console.log(`Generated static meta pages for ${articleSummaries.length + projects.length + legacyProjectPages + 4} routes.`)

@@ -1,12 +1,13 @@
 import { readFileSync } from 'node:fs'
 import { articleKnowledge } from '../src/data/generatedArticleKnowledge.ts'
-import { projects } from '../src/data/projects.ts'
+import { projects } from '../src/data/generatedProjects.ts'
+import { aiCases } from '../src/data/generatedAiCases.ts'
 import { engineeringMap, siteProjects } from '../src/data/siteKnowledge.ts'
 import { learningRecords } from '../src/data/generatedLearningRecords.ts'
 
 const sitemapSource = readFileSync(new URL('../public/sitemap.xml', import.meta.url), 'utf8')
 const articleSlugs = new Set(articleKnowledge.map(article => article.slug))
-const projectIds = new Set(projects.map(project => project.id))
+const projectIds = new Set(projects.flatMap(project => [project.id, ...project.legacyIds]))
 const errors = []
 
 function addError(message) {
@@ -32,10 +33,22 @@ articleKnowledge.forEach(article => {
 })
 
 siteProjects.forEach(project => {
+  if (!sitemapSource.includes(`/projects/${project.slug}`)) {
+    addError(`Missing sitemap URL for project: ${project.slug}`)
+  }
+
   project.relatedArticleSlugs.forEach(slug => {
     if (!articleSlugs.has(slug)) {
       addError(`${project.name}: related article does not exist: ${slug}`)
     }
+  })
+})
+
+if (!sitemapSource.includes('/ai')) addError('Missing sitemap URL for AI collaboration page')
+
+aiCases.forEach(item => {
+  item.relatedArticleSlugs.forEach(slug => {
+    if (!articleSlugs.has(slug)) addError(`${item.title}: related article does not exist: ${slug}`)
   })
 })
 

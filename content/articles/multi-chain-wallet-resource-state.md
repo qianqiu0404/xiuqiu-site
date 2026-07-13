@@ -37,7 +37,7 @@
   "suggestedQuestions": [
     "为什么多链钱包不能把 nonce、UTXO、blockhash 和 objectRef 全部藏在 adaptor 里？",
     "资源过期后为什么需要重新构建和签名？",
-    "wallet-service、wallet-api、wallet-sign 三个钱包服务分别负责哪一层资源状态？"
+    "钱包编排、风险控制、链交互和签名四个服务分别负责哪一层资源状态？"
   ]
 }
 ---
@@ -208,17 +208,18 @@ initialSharedVersion
 gas resource
 ```
 
-# 三个服务如何共同管理资源
+# 四个服务边界如何共同管理资源
 
 资源状态不能全部塞进某一个 adaptor。它需要在业务、链适配和签名边界之间传递，同时保持职责清楚。
 
 | 服务 | 负责什么 | 不应该做什么 |
 | --- | --- | --- |
 | wallet-service | 订单状态、资源预占、并发控制、失败恢复和账务补偿 | 不直接拼装每条链的底层交易 |
+| risk-service | 校验提现内容、风控放行条件和审批凭证 | 不选择链资源，也不持有私钥或直接广播交易 |
 | wallet-api | 查询链上状态、解析资源、构建交易、广播和确认 | 不在签名后静默替换 nonce、UTXO、blockhash 或 objectRef |
 | wallet-sign | 校验策略并签署已经冻结的精确交易上下文 | 不重新选币、刷新资源或替业务层决定失败重试 |
 
-三者之间传递的不能只有一段不透明 raw transaction。至少还要有可审计的资源摘要：
+四者之间传递的不能只有一段不透明 raw transaction。至少还要有可审计的资源摘要：
 
 ```text
 chain_id

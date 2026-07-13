@@ -1,121 +1,104 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
-import { siteKnowledge, siteProjects, type SiteProject } from '../data/siteKnowledge'
+import { onMounted } from 'vue'
+import { learningRecords } from '../data/generatedLearningRecords'
+import { aiStageLabels, projectStageLabels, siteAiCases, siteArticlesByNewest, siteKnowledge, siteProjects } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
 
-const featuredProjects = computed(() =>
-  [1, 2, 7]
-    .map(id => siteProjects.find(project => project.id === id))
-    .filter((project): project is SiteProject => Boolean(project)),
-)
+const featuredProjects = siteProjects.filter(project => project.featured)
+const recentArticles = siteArticlesByNewest.slice(0, 3)
+const latestLearning = learningRecords.slice(0, 2)
 
-const proofPoints = [
-  { value: '3 层', label: '业务、节点与签名边界' },
-  { value: '5 个', label: '有公开证据的项目' },
-  { value: '30 篇', label: '工程笔记与研究' },
+const controlItems = [
+  { label: '现在', title: '建设 Exchange Wallet Infrastructure', text: '围绕资金编排、链交互、签名与风险控制四个边界持续实现和验证。' },
+  { label: '为什么', title: '资金系统需要可解释的边界', text: '多链差异可以被适配，但风控放行、nonce、UTXO、签名和账务状态不能被隐藏。' },
+  { label: '下一步', title: '跑通带风控与失败注入的提现链路', text: '固定四个服务的兼容基线，验证风控拒绝、广播结果未知、重启恢复和本地补偿。' },
 ]
 
-onMounted(() => {
-  setSeoMeta({
-    title: 'xiuqiu｜Web3 钱包后端工程档案',
-    description: siteKnowledge.owner.summary,
-    path: '/',
-  })
-})
+const capabilityTracks = [
+  { index: '01', title: 'Web3 钱包工程', text: 'Exchange Wallet Infrastructure、wallet-core、可运行实验，以及 TSS/MPC 与数据服务扩展。', to: '/engineering', link: '查看工程证据' },
+  { index: '02', title: 'AI Coding 协作', text: 'Planner、Worker、Reviewer 与人工验收组成可交接、可审查的工程闭环。', to: '/ai#ai-coding-collaboration', link: '查看协作方法' },
+  { index: '03', title: '知识与研究自动化', text: 'Obsidian 审核流、发布门禁、来源核验、去重和不会覆盖人工记录的自动化。', to: '/ai#obsidian-knowledge-system', link: '查看知识系统' },
+]
+
+onMounted(() => setSeoMeta({ title: 'xiuqiu｜Web3 钱包工程 × AI 协作', description: siteKnowledge.owner.summary, path: '/' }))
 </script>
 
 <template>
-  <section class="section hero portfolio-hero">
+  <section class="section hero portfolio-hero control-hero">
     <div class="container portfolio-hero-grid">
       <div>
-        <p class="hero-eyebrow">Web3 Wallet Backend · Go · TypeScript</p>
-        <h1 class="hero-title">围绕资金状态、多链适配与签名安全构建钱包后端</h1>
-        <p class="hero-desc hero-desc-primary">
-          我的工程主线是交易所钱包三服务：业务层管理充值提现和状态恢复，wallet-api 隔离多链节点能力，wallet-sign 隔离私钥和签名能力。
-        </p>
+        <p class="hero-eyebrow">Web3 Wallet Backend · AI-assisted Engineering</p>
+        <h1 class="hero-title">交易所钱包基础设施</h1>
+        <p class="hero-desc hero-desc-primary">我专注 Web3 钱包后端，用 Go 和 TypeScript 理解资金状态、多链资源与签名安全；同时用 AI 组织计划、实现、审查、知识沉淀和持续复盘。</p>
         <div class="hero-actions hero-actions-left">
           <router-link class="btn btn-primary" to="/engineering">查看工程档案</router-link>
-          <router-link class="btn btn-secondary" to="/engineering?mode=interview">3 分钟快速模式</router-link>
-          <router-link class="btn btn-ghost" to="/learning">查看学习复盘 &rarr;</router-link>
+          <router-link class="btn btn-secondary" to="/ai">查看 AI 协作</router-link>
+          <router-link class="btn btn-ghost" to="/learning">最近在学什么 &rarr;</router-link>
         </div>
       </div>
-      <aside class="hero-proof-panel">
-        <p class="project-abilities-title">最强工程证据</p>
-        <ul>
-          <li>ChainDispatcher + Chain Adaptor 多链路由</li>
-          <li>充值提现异步状态机与失败补偿</li>
-          <li>独立签名服务与 HSM/TSS 演进边界</li>
-          <li>TypeScript 多链离线交易构建与测试</li>
-        </ul>
-        <a href="https://github.com/qianqiu0404" target="_blank" rel="noopener">GitHub / qianqiu0404 &rarr;</a>
+      <aside class="hero-proof-panel control-status-panel">
+        <div class="control-status-top"><span class="status-dot"></span><span>当前主线</span><time>2026-07-13</time></div>
+        <h2>Exchange Wallet Infrastructure</h2>
+        <p>wallet-service → risk-service → wallet-api → wallet-sign</p>
+        <dl>
+          <div><dt>工程语言</dt><dd>Go · TypeScript</dd></div>
+          <div><dt>验证重点</dt><dd>状态机 · 多链资源 · 风控与签名边界</dd></div>
+          <div><dt>表达原则</dt><dd>事实 / 目标态 / 已知限制分开</dd></div>
+        </dl>
       </aside>
     </div>
   </section>
 
-  <section class="home-proof-strip">
-    <div class="container proof-strip-grid">
-      <div v-for="item in proofPoints" :key="item.label">
-        <strong>{{ item.value }}</strong>
-        <span>{{ item.label }}</span>
+  <section class="control-strip">
+    <div class="container control-strip-grid">
+      <article v-for="item in controlItems" :key="item.label"><span>{{ item.label }}</span><h2>{{ item.title }}</h2><p>{{ item.text }}</p></article>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-heading section-heading-left"><p class="section-label">Three Tracks</p><h2 class="section-title">三条持续建设的能力轨道</h2><p class="section-desc">朋友可以先看我在做什么；面试官可以继续进入代码边界、验证证据和失败场景。</p></div>
+      <div class="capability-track-grid">
+        <router-link v-for="track in capabilityTracks" :key="track.index" :to="track.to" class="capability-track-card"><span>{{ track.index }}</span><h3>{{ track.title }}</h3><p>{{ track.text }}</p><strong>{{ track.link }} &rarr;</strong></router-link>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects" class="section section-alt">
+    <div class="container">
+      <div class="section-heading section-heading-left"><p class="section-label">Core Engineering Work</p><h2 class="section-title">三个核心工程案例</h2><p class="section-desc">不是完成度排名。每个案例同时展示当前阶段、已经验证的事实和希望达到的目标形态。</p></div>
+      <div class="home-project-grid control-project-grid">
+        <article v-for="project in featuredProjects" :key="project.id" class="home-project-card control-project-card">
+          <div class="card-status-row"><span>{{ project.category }}</span><strong>{{ projectStageLabels[project.stage] }}</strong></div>
+          <h3>{{ project.name }}</h3><p>{{ project.positioning }}</p>
+          <div class="project-proof-preview"><span>已验证</span><p>{{ project.verifiedEvidence[0] }}</p></div>
+          <div class="project-proof-preview target"><span>目标态</span><p>{{ project.targetOutcome }}</p></div>
+          <router-link :to="`/projects/${project.slug}`" class="project-link">查看完整档案 &rarr;</router-link>
+        </article>
       </div>
     </div>
   </section>
 
   <section class="section">
     <div class="container">
-      <div class="section-heading section-heading-left">
-        <p class="section-label">Selected Engineering Work</p>
-        <h2 class="section-title">三项核心证据</h2>
-        <p class="section-desc">首页只展示最能解释工程方向的项目；完整调用链、失败场景和验证方式放在工程档案。</p>
-      </div>
-      <div class="home-project-grid">
-        <article v-for="project in featuredProjects" :key="project.id" class="home-project-card">
-          <p class="project-abilities-title">{{ project.engineering.role }}</p>
-          <h3>{{ project.name }}</h3>
-          <p>{{ project.engineering.interviewSummary }}</p>
-          <div class="project-tech">
-            <span v-for="tech in project.techStack.slice(0, 5)" :key="tech" class="tech-tag">{{ tech }}</span>
-          </div>
-          <div class="project-actions">
-            <router-link :to="`/projects/${project.id}`" class="project-link">查看证据 &rarr;</router-link>
-            <a :href="project.github" class="project-link" target="_blank" rel="noopener">GitHub &rarr;</a>
-          </div>
-        </article>
+      <div class="section-heading section-heading-left"><p class="section-label">AI Collaboration</p><h2 class="section-title">AI 能力用三个真实流程证明</h2></div>
+      <div class="ai-case-preview-grid">
+        <router-link v-for="item in siteAiCases" :key="item.id" :to="`/ai#${item.slug}`" class="ai-case-preview-card">
+          <div class="card-status-row"><span>0{{ item.id }}</span><strong>{{ aiStageLabels[item.stage] }}</strong></div><h3>{{ item.title }}</h3><p>{{ item.summary }}</p><small>{{ item.flow.slice(0, 3).join(' → ') }}</small>
+        </router-link>
       </div>
     </div>
   </section>
 
   <section class="section section-alt">
-    <div class="container dual-entry-grid">
-      <router-link to="/engineering" class="entry-panel engineering-entry">
-        <p class="section-label">For Interviewers & Peers</p>
-        <h2>工程档案</h2>
-        <p>看系统边界、调用链、状态机、异常恢复和可运行证据。</p>
-        <span>进入工程档案 &rarr;</span>
-      </router-link>
-      <router-link to="/learning" class="entry-panel learning-entry">
-        <p class="section-label">Curated Reflection</p>
-        <h2>学习复盘</h2>
-        <p>看当前目标、阶段进度、判断变化、失败记录和下一步。</p>
-        <span>进入学习复盘 &rarr;</span>
-      </router-link>
-    </div>
-  </section>
-
-  <section class="section home-about">
-    <div class="container home-about-grid">
+    <div class="container home-update-grid">
       <div>
-        <p class="section-label">About</p>
-        <h2 class="section-title">工程事实与学习过程分开表达</h2>
+        <div class="section-heading section-heading-left"><p class="section-label">Recent Verification</p><h2 class="section-title">最近验证与复盘</h2></div>
+        <div class="home-update-list"><router-link v-for="record in latestLearning" :key="record.id" to="/learning" class="home-update-item"><time>{{ record.date }}</time><div><h3>{{ record.title }}</h3><p>{{ record.summary }}</p></div></router-link></div>
       </div>
       <div>
-        <p>
-          我使用 AI 辅助检索、方案比较、测试生成和代码审查；由我负责目标拆解、运行调试、失败验证、工程取舍与最终验收。没有亲自验证的内容不会写成已经完成的能力。
-        </p>
-        <div class="contact-links contact-links-left">
-          <a href="mailto:qianqiuquq@gmail.com" class="contact-item"><span class="contact-label">Email</span><span class="contact-value">qianqiuquq@gmail.com</span></a>
-          <router-link to="/articles" class="contact-item"><span class="contact-label">Writing</span><span class="contact-value">全部工程笔记</span></router-link>
-        </div>
+        <div class="section-heading section-heading-left"><p class="section-label">Latest Writing</p><h2 class="section-title">最近工程笔记</h2></div>
+        <div class="home-update-list"><router-link v-for="article in recentArticles" :key="article.slug" :to="`/articles/${article.slug}`" class="home-update-item"><time>{{ article.date }}</time><div><h3>{{ article.title }}</h3><p>{{ article.summary }}</p></div></router-link></div>
       </div>
     </div>
   </section>

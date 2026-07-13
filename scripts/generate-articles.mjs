@@ -1,9 +1,9 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { parseMarkdownFrontmatter, requireFields } from './frontmatter.mjs'
 
 const CONTENT_DIR = new URL('../content/articles/', import.meta.url)
 const KNOWLEDGE_OUTPUT_URL = new URL('../src/data/generatedArticleKnowledge.ts', import.meta.url)
 const ARTICLES_OUTPUT_URL = new URL('../src/data/generatedArticles.ts', import.meta.url)
-const FRONTMATTER_RE = /^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/
 const REQUIRED_FIELDS = [
   'id',
   'slug',
@@ -59,24 +59,8 @@ function assertArray(meta, field) {
 function parseArticle(fileName) {
   const fileUrl = new URL(fileName, CONTENT_DIR)
   const raw = readFileSync(fileUrl, 'utf8')
-  const match = raw.match(FRONTMATTER_RE)
-
-  if (!match) {
-    throw new Error(`${fileName}: missing JSON frontmatter block.`)
-  }
-
-  let meta
-  try {
-    meta = JSON.parse(match[1])
-  } catch (error) {
-    throw new Error(`${fileName}: invalid JSON frontmatter. ${error instanceof Error ? error.message : String(error)}`)
-  }
-
-  REQUIRED_FIELDS.forEach(field => {
-    if (meta[field] === undefined || meta[field] === null || meta[field] === '') {
-      throw new Error(`${fileName}: missing required field ${field}.`)
-    }
-  })
+  const { meta, body } = parseMarkdownFrontmatter(raw, fileName)
+  requireFields(meta, REQUIRED_FIELDS, fileName)
 
   ;['tags', 'conceptTags', 'relatedProjectIds', 'recommendedSlugs', 'suggestedQuestions'].forEach(field => {
     assertArray(meta, field)
@@ -100,7 +84,7 @@ function parseArticle(fileName) {
     throw new Error(`${fileName}: updatedAt must use YYYY-MM-DD.`)
   }
 
-  const content = match[2].trim()
+  const content = body
   if (!content) {
     throw new Error(`${fileName}: article body is empty.`)
   }
