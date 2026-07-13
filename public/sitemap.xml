@@ -7,25 +7,31 @@
     <loc>https://xiuqiu-site.vercel.app/engineering</loc>
   </url>
   <url>
+    <loc>https://xiuqiu-site.vercel.app/ai</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/radar</loc>
+  </url>
+  <url>
     <loc>https://xiuqiu-site.vercel.app/learning</loc>
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/articles</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/projects/7</loc>
+    <loc>https://xiuqiu-site.vercel.app/projects/exchange-wallet-system</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/projects/1</loc>
+    <loc>https://xiuqiu-site.vercel.app/projects/s78-market-services</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/projects/2</loc>
+    <loc>https://xiuqiu-site.vercel.app/projects/tss-mpc</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/projects/3</loc>
+    <loc>https://xiuqiu-site.vercel.app/projects/wallet-core</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/projects/5</loc>
+    <loc>https://xiuqiu-site.vercel.app/projects/web3-wallet-engineer-lab</loc>
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/articles/api-system-calls</loc>
@@ -116,5 +122,8 @@
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/articles/minimal-multi-agent-coding-workflow</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-13</loc>
   </url>
 </urlset>

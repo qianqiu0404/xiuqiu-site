@@ -4,11 +4,18 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "npm run generate:articles && npm run generate:learning && vite",
-    "build": "npm run generate:articles && npm run generate:learning && npm run generate:sitemap && npm run check:knowledge && npm run typecheck:api && vue-tsc && vite build && npm run generate:meta-pages",
+    "dev": "npm run generate:content && vite",
+    "build": "npm run generate:content && npm run generate:sitemap && npm run check:knowledge && npm run typecheck:api && vue-tsc && vite build && npm run generate:meta-pages",
     "build:vite": "vue-tsc && vite build",
+    "generate:content": "npm run generate:articles && npm run generate:projects && npm run generate:ai && npm run generate:learning && npm run generate:radar",
     "generate:articles": "node scripts/generate-articles.mjs",
+    "generate:projects": "node scripts/generate-projects.mjs",
+    "generate:ai": "node scripts/generate-ai-cases.mjs",
     "generate:learning": "node scripts/generate-learning.mjs",
+    "generate:radar": "node scripts/generate-radars.mjs",
+    "extract:radar": "node scripts/extract-radar-source.mjs",
+    "test:radar": "node --test scripts/radar-pipeline.test.mjs",
+    "validate:radar": "node scripts/validate-radar-candidate.mjs",
     "sync:learning": "node scripts/sync-learning-from-obsidian.mjs",
     "generate:sitemap": "node scripts/generate-sitemap.mjs",
     "generate:meta-pages": "node scripts/generate-meta-pages.mjs",
@@ -24,6 +31,7 @@
     "@vitejs/plugin-vue": "^5.2.3",
     "typescript": "~5.7.3",
     "vite": "^6.3.2",
+    "yaml": "^2.9.0",
     "vue-tsc": "^2.2.8"
   }
 }

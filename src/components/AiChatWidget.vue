@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { getArticleBySlug, siteKnowledge } from '../data/siteKnowledge'
+import { getArticleBySlug, getProjectByKey, siteKnowledge } from '../data/siteKnowledge'
 
 type ChatRole = 'user' | 'assistant'
 
@@ -12,14 +12,14 @@ interface ChatMessage {
 }
 
 interface SiteReference {
-  type: 'article' | 'project' | 'capability'
+  type: 'article' | 'project' | 'capability' | 'ai' | 'radar'
   title: string
   href: string
   summary: string
 }
 
 interface PageContext {
-  type: 'home' | 'engineering' | 'learning' | 'articles' | 'article' | 'project'
+  type: 'home' | 'engineering' | 'ai' | 'learning' | 'articles' | 'article' | 'project' | 'radar' | 'radar-detail'
   title?: string
   slug?: string
   summary?: string
@@ -40,7 +40,7 @@ const explicitPageContext = ref<PageContext | null>(null)
 const messages = ref<ChatMessage[]>([
   {
     role: 'assistant',
-    content: '你好，我可以基于公开的项目证据，帮你了解 xiuqiu 当前学到了什么、如何验证，以及还有哪些边界。',
+    content: '你好，我可以基于网站中经过整理的工程证据，帮你了解 xiuqiu 正在做什么、已经验证了什么，以及目标完成形态是什么。',
   },
 ])
 
@@ -51,6 +51,14 @@ const promptGroups = [
       '介绍一下 xiuqiu 的 Web3 钱包项目',
       'wallet-api 和 wallet-sign 的边界是什么？',
       'wallet-core 展示了哪些 TypeScript 多链能力？',
+    ],
+  },
+  {
+    label: 'AI Collaboration',
+    prompts: [
+      'xiuqiu 如何使用 AI 协作完成工程任务？',
+      'Obsidian 知识系统如何避免公开私人内容？',
+      '研究自动化如何处理来源、去重和失败？',
     ],
   },
   {
@@ -98,7 +106,7 @@ const currentPageContext = computed<PageContext>(() => {
     return {
       type: 'engineering',
       title: '工程档案',
-      summary: '交易所钱包三服务、项目系统边界、调用链、失败场景和验证证据。',
+      summary: 'Exchange Wallet Infrastructure 的资金编排、风险控制、链交互、签名边界、失败场景和验证证据。',
     }
   }
 
@@ -107,6 +115,33 @@ const currentPageContext = computed<PageContext>(() => {
       type: 'learning',
       title: '学习复盘',
       summary: '精选公开的阶段目标、验证结果、复盘结论和下一步。',
+    }
+  }
+
+  if (route.name === 'ai') {
+    return {
+      type: 'ai',
+      title: 'AI 协作',
+      summary: 'AI Coding 协作、Obsidian 知识系统与研究自动化三个可验证案例。',
+    }
+  }
+
+  if (route.name === 'radar' || route.name === 'radar-detail') {
+    return {
+      type: route.name === 'radar-detail' ? 'radar-detail' : 'radar',
+      title: route.name === 'radar-detail' ? `每日研究雷达 ${String(route.params.date || '')}` : '每日研究雷达',
+      slug: route.name === 'radar-detail' ? String(route.params.date || '') : undefined,
+      summary: '从公开允许的 Obsidian 研究区块自动汇总，并保留来源、缺失状态、关联项目和后续行动。',
+    }
+  }
+
+  if (route.name === 'project-detail') {
+    const project = getProjectByKey(String(route.params.project || ''))
+    return {
+      type: 'project',
+      title: project?.name || '工程项目',
+      slug: project?.slug,
+      summary: project?.positioning,
     }
   }
 
@@ -189,7 +224,7 @@ async function sendMessage() {
     errorMessage.value = error instanceof Error ? error.message : '暂时无法连接 AI 服务，请稍后再试。'
     messages.value.push({
       role: 'assistant',
-      content: '抱歉，AI 服务暂时不可用。你可以稍后再试，或直接通过 GitHub / Email 联系 xiuqiu。',
+      content: '抱歉，AI 服务暂时不可用。你可以稍后再试，或直接通过 Email 联系 xiuqiu。',
     })
   } finally {
     explicitPageContext.value = null
@@ -206,7 +241,7 @@ function normalizeReferences(value: unknown): SiteReference[] {
       if (!item || typeof item !== 'object') return false
       const candidate = item as Record<string, unknown>
       return (
-        (candidate.type === 'article' || candidate.type === 'project' || candidate.type === 'capability') &&
+        (candidate.type === 'article' || candidate.type === 'project' || candidate.type === 'capability' || candidate.type === 'ai' || candidate.type === 'radar') &&
         typeof candidate.title === 'string' &&
         typeof candidate.href === 'string' &&
         typeof candidate.summary === 'string'

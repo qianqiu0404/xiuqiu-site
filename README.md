@@ -7,7 +7,9 @@
 - `content/articles/*.md`: Markdown article source files with JSON frontmatter.
 - `src/data/generatedArticleKnowledge.ts`: generated lightweight article metadata for lists, search, AI context, and sitemap generation.
 - `src/data/generatedArticles.ts`: generated full article content for article detail pages.
-- `src/data/projects.ts`: project source data.
+- `content/projects/*.md`: structured project records with stage, evidence, target outcome, and milestone.
+- `content/ai-cases/*.md`: AI collaboration case records.
+- `src/data/generatedProjects.ts` / `generatedAiCases.ts`: generated typed data; do not edit by hand.
 - `src/data/siteKnowledge.ts`: unified knowledge graph that connects projects, articles, tags, related reading, suggested questions, and the Engineering Map.
 - `src/components/AiChatWidget.vue`: site-level DeepSeek chat widget with page context and quick prompts.
 - `api/chat.ts`: Vercel Serverless proxy for DeepSeek. The browser never receives the API key.
@@ -22,6 +24,8 @@ npm run dev
 npm run build
 npm run preview
 npm run generate:articles
+npm run generate:projects
+npm run generate:ai
 npm run generate:sitemap
 npm run check:knowledge
 npm run typecheck:api
@@ -53,10 +57,15 @@ When adding a new article:
 
 When adding a new project:
 
-1. Add it to `src/data/projects.ts`.
-2. Add project metadata in `src/data/siteKnowledge.ts`.
-3. Reference the project from article frontmatter via `relatedProjectIds` when relevant.
-3. Run `npm run build`.
+1. Create `content/projects/your-project.md`.
+2. Record `stage`, `sourceType`, `visibility`, verified evidence, target outcome, next milestone, limitations, engineering boundary, and related articles.
+3. Only set `visibility: public` together with a verified, accessible `repositoryUrl`; private projects must not include a repository URL.
+4. Reference the project from article frontmatter via `relatedProjectIds` when relevant.
+5. Run `npm run build`.
+
+Frontmatter may use JSON or YAML. Projects use stable slugs for canonical URLs; legacy numeric project URLs continue to resolve.
+
+When adding an AI collaboration case, create a Markdown record in `content/ai-cases` with its real workflow, human responsibility, evidence, failure handling, limits, target outcome, and next milestone.
 
 ## Public Learning Workflow
 

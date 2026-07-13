@@ -1,8 +1,8 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { parseMarkdownFrontmatter, requireFields } from './frontmatter.mjs'
 
 const CONTENT_DIR = new URL('../content/learning/', import.meta.url)
 const OUTPUT_URL = new URL('../src/data/generatedLearningRecords.ts', import.meta.url)
-const FRONTMATTER_RE = /^---\s*\n([\s\S]*?)\n---\s*\n?([\s\S]*)$/
 const REQUIRED_FIELDS = [
   'id',
   'slug',
@@ -20,21 +20,8 @@ if (!existsSync(CONTENT_DIR)) throw new Error('content/learning does not exist.'
 
 function parseRecord(fileName) {
   const raw = readFileSync(new URL(fileName, CONTENT_DIR), 'utf8')
-  const match = raw.match(FRONTMATTER_RE)
-  if (!match) throw new Error(`${fileName}: missing JSON frontmatter block.`)
-
-  let meta
-  try {
-    meta = JSON.parse(match[1])
-  } catch (error) {
-    throw new Error(`${fileName}: invalid JSON frontmatter. ${error instanceof Error ? error.message : String(error)}`)
-  }
-
-  REQUIRED_FIELDS.forEach(field => {
-    if (meta[field] === undefined || meta[field] === null || meta[field] === '') {
-      throw new Error(`${fileName}: missing required field ${field}.`)
-    }
-  })
+  const { meta } = parseMarkdownFrontmatter(raw, fileName)
+  requireFields(meta, REQUIRED_FIELDS, fileName)
 
   if (meta.publish !== true) throw new Error(`${fileName}: public learning records must set publish to true.`)
   ;['achieved', 'evidence', 'reflection', 'nextSteps'].forEach(field => {

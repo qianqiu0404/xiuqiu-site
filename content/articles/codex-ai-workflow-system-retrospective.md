@@ -324,7 +324,7 @@ AI 负责理解、压缩和解释
 今日项目与一句话妙处
 核心机制
 为什么巧
-如何迁移到钱包三件套
+如何迁移到 Exchange Wallet Infrastructure
 风险或不能照搬的地方
 一道复习问题
 一手来源
@@ -336,6 +336,7 @@ AI 负责理解、压缩和解释
 
 ```text
 wallet-service：业务状态和资金状态机
+risk-service：交易校验、风险规则和放行凭证
 wallet-api：多链 RPC、交易构建、广播和查询
 wallet-sign：密钥隔离、签名和签名前校验
 ```

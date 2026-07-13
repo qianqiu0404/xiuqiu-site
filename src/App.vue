@@ -30,6 +30,8 @@ function goHome() {
       <div class="nav-links" :class="{ open: navOpen }">
         <router-link to="/" @click="navOpen = false">首页</router-link>
         <router-link to="/engineering" @click="navOpen = false">工程档案</router-link>
+        <router-link to="/ai" @click="navOpen = false">AI 协作</router-link>
+        <router-link to="/radar" @click="navOpen = false">每日雷达</router-link>
         <router-link to="/learning" @click="navOpen = false">学习复盘</router-link>
         <router-link to="/articles" @click="navOpen = false">工程笔记</router-link>
       </div>
