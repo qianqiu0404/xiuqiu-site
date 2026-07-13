@@ -2523,6 +2523,10 @@ img {
   padding: 30px 26px;
 }
 
+.control-strip-grid > a { color: inherit; }
+.control-strip-grid > a article { height: 100%; }
+.control-strip-grid > a:hover { background: rgba(0, 113, 227, 0.035); }
+
 .control-strip-grid article:first-child {
   border-left: 1px solid var(--border-light);
 }
@@ -2774,6 +2778,65 @@ img {
   padding: 12px;
 }
 
+.project-evidence-details summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.project-evidence-details summary::-webkit-details-marker { display: none; }
+.project-evidence-details summary span { display: grid; gap: 6px; font-size: 22px; font-weight: 650; }
+.project-evidence-details summary small { color: var(--accent); font: 700 11px/1.4 var(--mono); text-transform: uppercase; }
+.project-evidence-details summary::after { content: '+'; float: right; color: var(--accent); font-size: 24px; margin-top: -34px; }
+.project-evidence-details[open] summary::after { content: '−'; }
+.project-evidence-details > ol,
+.project-evidence-details > ul,
+.project-evidence-details > div,
+.project-evidence-details > p { margin-top: 22px; }
+
+.signer-backend-grid,
+.radar-home-grid,
+.radar-history { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.signer-backend-grid article,
+.radar-home-grid article,
+.radar-history-card { border: 1px solid var(--border-light); border-radius: var(--radius-md); background: var(--bg); padding: 24px; }
+.signer-backend-grid h3 { font-size: 16px; }
+.signer-backend-grid p,
+.radar-home-grid p { color: var(--text-secondary); font-size: 13px; line-height: 1.65; margin-top: 12px; }
+.radar-home-grid { grid-template-columns: repeat(4, 1fr); margin-bottom: 22px; }
+.radar-home-grid h3 { font-size: 16px; line-height: 1.4; }
+
+/* ========== Daily Radar ========== */
+.radar-hero { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: end; border-bottom: 1px solid var(--border-light); padding: 36px 0 54px; }
+.radar-hero h1,
+.radar-detail-header h1 { font-size: clamp(40px, 6vw, 62px); letter-spacing: -0.045em; line-height: 1.08; margin: 12px 0 18px; }
+.radar-hero > div > p:last-child,
+.radar-detail-header > p { max-width: 760px; color: var(--text-secondary); line-height: 1.75; }
+.radar-disclaimer { display: grid; gap: 5px; border: 1px solid rgba(0, 113, 227, .18); border-radius: 14px; background: #f6faff; padding: 16px; }
+.radar-disclaimer strong { color: var(--accent); font-size: 13px; }
+.radar-disclaimer span { color: var(--text-muted); font-size: 11px; }
+.radar-history { grid-template-columns: repeat(2, 1fr); margin-top: 42px; }
+.radar-history-card { color: inherit; transition: transform .2s, border-color .2s; }
+.radar-history-card:hover { border-color: rgba(0, 113, 227, .28); transform: translateY(-2px); }
+.radar-history-card h2 { font-size: 24px; margin: 24px 0 10px; }
+.radar-history-card > p { color: var(--text-secondary); line-height: 1.7; }
+.radar-card-tags { display: flex; flex-wrap: wrap; gap: 7px; margin: 20px 0; }
+.radar-card-tags span { border-radius: 999px; background: rgba(0, 113, 227, .08); color: var(--accent); font: 650 10px/1.4 var(--mono); padding: 5px 9px; }
+.radar-card-tags .missing { background: #f4f4f4; color: var(--text-muted); }
+.radar-detail-container { max-width: 900px; }
+.radar-detail-header { border-bottom: 1px solid var(--border-light); padding: 34px 0 48px; }
+.radar-detail-section { border-bottom: 1px solid var(--border-light); padding: 48px 0; }
+.radar-item + .radar-item { border-top: 1px dashed var(--border-light); margin-top: 28px; padding-top: 28px; }
+.radar-item h2 { font-size: 25px; margin: 10px 0; }
+.radar-item p { color: var(--text-secondary); line-height: 1.75; }
+.radar-item a,
+.radar-followup a { display: inline-block; color: var(--accent); font-size: 13px; font-weight: 650; margin-top: 14px; }
+.radar-followup { border: 1px solid rgba(0, 113, 227, .18); border-radius: var(--radius-md); background: #f6faff; margin: 42px 0 24px; padding: 24px; }
+.radar-followup > p:not(.project-abilities-title) { color: var(--text-secondary); line-height: 1.7; }
+.radar-followup a { display: block; }
+.radar-source-footer { color: var(--text-secondary); font-size: 12px; line-height: 1.7; padding: 24px 0 0; }
+.radar-source-footer strong { color: var(--text-primary); }
+.radar-source-footer small { display: block; color: var(--text-muted); margin-top: 8px; }
+
 /* ========== AI Collaboration Page ========== */
 .ai-page-hero {
   border-bottom: 1px solid var(--border-light);
@@ -2954,9 +3017,14 @@ img {
   .home-update-grid,
   .ai-case-nav,
   .evidence-detail-list,
-  .verification-command-grid {
+    .verification-command-grid {
     grid-template-columns: 1fr;
   }
+
+  .signer-backend-grid,
+  .radar-home-grid,
+  .radar-history { grid-template-columns: 1fr; }
+  .radar-hero { grid-template-columns: 1fr; align-items: start; }
 
   .control-strip-grid article,
   .control-strip-grid article:first-child {

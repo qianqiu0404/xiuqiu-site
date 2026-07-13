@@ -52,7 +52,8 @@ export const projects: Project[] = [
       "已定位充值扫链、提现构建、签名、广播与通知的核心代码入口",
       "已验证 ChainDispatcher 与多链 adaptor 的路由边界",
       "已记录 request_id 幂等、确认数推进和广播结果未知等异常场景",
-      "已验证 risk-service 的提现提交、离线交易一致性校验、审批哈希与幂等标记单测"
+      "已验证 risk-service 的提现提交、离线交易一致性校验、审批哈希与幂等标记单测",
+      "已在独立 TSS 项目完成三节点 Keygen / Sign 本地验证，wallet-sign 接入仍在进行"
     ],
     "targetOutcome": "形成一套本地可复现的充值与提现演示：能够启动四个服务、跑通风控校验到签名广播的核心流程、展示状态变化，并用测试复现风控拒绝、广播超时和链上成功但本地更新失败的恢复策略。",
     "nextMilestone": "固定四个服务的兼容基线，统一验证命令，并跑通一条包含 risk-service 放行与失败注入的提现端到端流程。",
@@ -60,6 +61,7 @@ export const projects: Project[] = [
       "当前仍是学习与工程验证项目，不代表生产环境部署经历",
       "risk-service 当前仍以本地规则和模拟 AML 能力为主，不代表完整生产风控系统",
       "部分 context 传播、余额事务和链级资源并发仍需继续补强",
+      "wallet-sign 当前以 Local Signer 为已验证基线；MPC/TSS 尚未完成端到端接入，HSM 属于下一阶段",
       "仓库暂按私有项目展示，不提供公开源码链接"
     ],
     "updatedAt": "2026-07-13",
@@ -92,7 +94,7 @@ export const projects: Project[] = [
     ],
     "engineering": {
       "role": "钱包基础设施代码理解、增量实现、运行验证与异常路径梳理",
-      "systemBoundary": "wallet-service 维护业务资金状态，risk-service 校验提现内容并产生风控放行结果，wallet-api 负责链节点查询与交易构建/广播，wallet-sign 负责地址生成和签名；四者协同完成资金流程，但分别守住业务、风险控制、链交互和密钥边界。",
+      "systemBoundary": "wallet-service 维护业务资金状态，risk-service 校验提现内容并产生风控放行结果，wallet-api 负责链节点查询与交易构建/广播，wallet-sign 负责地址生成和签名；Local Signer、MPC/TSS 与未来 HSM 都位于 wallet-sign 后方，不增加新的业务服务边界。",
       "callFlow": [
         "业务请求进入 wallet-service 并持久化 request_id 与状态",
         "risk-service 校验提现内容、幂等状态与风险放行条件",
@@ -114,7 +116,7 @@ export const projects: Project[] = [
       ],
       "knownLimits": [
         "尚未形成一条覆盖四服务的稳定一键端到端演示",
-        "HSM/MPC、严格账务模型与完整可观测性仍属于目标态"
+        "MPC/TSS 已完成独立三节点验证但未接入 wallet-sign；HSM、严格账务模型与完整可观测性仍属于目标态"
       ],
       "interviewSummary": "这是我的 Web3 钱包后端主线：用 Exchange Wallet Infrastructure 拆开资金状态、多链节点、私钥签名和风险控制，并围绕幂等、确认数、风控放行、结果未知和补偿恢复理解资金系统。"
     },
@@ -283,22 +285,24 @@ export const projects: Project[] = [
     "name": "TSS / MPC 签名研究",
     "category": "安全扩展",
     "featured": false,
-    "stage": "exploring",
+    "stage": "verified-local",
     "sourceType": "source-study",
     "visibility": "private",
     "positioning": "基于现有 TSS 项目进行源码学习与安全边界改造，理解 Manager、Node、Keygen、Sign、committee、threshold 和 key share。",
-    "currentFocus": "建立可复现的三节点运行证据，并明确 TSS 在 wallet-sign 后方的接入位置、可用性风险和不能替代的业务风控。",
+    "currentFocus": "把已本地验证的三节点 Keygen / Sign 收敛为 wallet-sign 可替换后端，并明确会话路由、超时、份额存储和降级边界。",
     "verifiedEvidence": [
       "已完成 Manager/Node 职责与 Keygen/Sign 流程导读",
       "已定位 CPK、committee、threshold 与本地 share 的元数据路径",
-      "已记录当前 Go/依赖版本兼容限制"
+      "已在本地运行三节点 Keygen 并产生不含密钥材料的验证记录",
+      "已在本地运行三节点 Sign 并验证标准签名结果"
     ],
-    "targetOutcome": "形成一个本地可重复的三节点 Keygen/Sign 演示，并能说明节点不足门限、请求路由、份额存储和钱包签名网关的失败边界。",
-    "nextMilestone": "在指定兼容工具链下运行三节点 Keygen/Sign，并保存不包含密钥材料的验证记录。",
+    "targetOutcome": "在 wallet-sign 保持统一策略与审计边界的前提下，将 TSS 作为可替换签名后端，完成请求路由、签名返回和节点不足门限的失败演示。",
+    "nextMilestone": "设计并实现 wallet-sign → TSS Manager 的最小接口，跑通一条不含真实资金的端到端签名请求。",
     "knownLimits": [
       "属于源码学习和改造，不是从零原创协议实现",
+      "三节点 Keygen / Sign 已独立验证，但尚未接入 wallet-sign",
       "尚未接入生产钱包或真实资金",
-      "完整测试受旧版依赖和 Go 工具链限制"
+      "完整回归仍受旧版依赖和 Go 工具链限制"
     ],
     "updatedAt": "2026-07-13",
     "coreAbilities": [
@@ -342,8 +346,8 @@ export const projects: Project[] = [
         "本地运行手册与兼容性记录"
       ],
       "knownLimits": [
-        "完整三节点证据待重新验证",
-        "未生产接入 wallet-sign"
+        "三节点证据来自独立 TSS 环境",
+        "尚未完成 wallet-sign 接入，也未用于生产资金"
       ],
       "interviewSummary": "这是一个源码学习与安全改造项目，用来理解 TSS 如何降低完整私钥单点风险，以及它在钱包系统里仍然依赖业务风控和高可用设计。"
     },
@@ -354,16 +358,19 @@ export const projects: Project[] = [
         "Node 本地 share 与协议轮次",
         "committee 和 threshold 元数据"
       ],
-      "verification": [],
-      "verificationNote": "当前证据以源码导读和局部改造为主，三节点完整运行仍是下一里程碑。",
+      "verification": [
+        "三节点 Keygen 本地运行记录",
+        "三节点 Sign 本地运行记录"
+      ],
+      "verificationNote": "网站只描述验证结论，不公开 key share、助记词、私钥或敏感运行配置；具体兼容命令保留在私有运行记录中。",
       "tradeoffs": [
         "明确标注源码学习来源",
         "安全理解与生产部署分开",
         "不公开任何密钥份额或敏感配置"
       ],
       "nextSteps": [
-        "验证三节点 Keygen/Sign",
         "设计 wallet-sign 到 Manager 的契约",
+        "跑通端到端签名请求",
         "增加节点掉线和请求超时场景"
       ]
     },

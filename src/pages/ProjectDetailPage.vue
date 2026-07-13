@@ -43,20 +43,20 @@ watchEffect(() => {
 
         <div class="learning-detail-grid">
           <section class="learning-section"><p class="section-label">系统边界</p><h2>这个项目负责什么</h2><p>{{ project.engineering.systemBoundary }}</p></section>
-          <section class="learning-section"><p class="section-label">关键调用链</p><h2>核心流程如何推进</h2><ol class="numbered-evidence"><li v-for="item in project.engineering.callFlow" :key="item">{{ item }}</li></ol></section>
+          <details class="learning-section project-evidence-details"><summary><span><small>关键调用链</small>核心流程如何推进</span></summary><ol class="numbered-evidence"><li v-for="item in project.engineering.callFlow" :key="item">{{ item }}</li></ol></details>
         </div>
 
         <div class="learning-detail-grid">
-          <section class="learning-section"><p class="section-label">失败场景</p><h2>不能只讲 happy path</h2><ul class="learning-list"><li v-for="item in project.engineering.failureScenarios" :key="item">{{ item }}</li></ul></section>
+          <details class="learning-section project-evidence-details"><summary><span><small>失败场景</small>不能只讲 happy path</span></summary><ul class="learning-list"><li v-for="item in project.engineering.failureScenarios" :key="item">{{ item }}</li></ul></details>
           <section class="learning-section"><p class="section-label">当前限制</p><h2>哪些还没有完成</h2><ul class="learning-list"><li v-for="item in project.knownLimits" :key="item">{{ item }}</li></ul></section>
         </div>
 
-        <section class="learning-section">
-          <p class="section-label">验证方式</p><h2>可复现命令与说明</h2>
+        <details class="learning-section project-evidence-details">
+          <summary><span><small>验证方式</small>可复现命令与说明</span></summary>
           <div v-if="project.learning.verification.length" class="verification-command-grid"><code v-for="command in project.learning.verification" :key="command">{{ command }}</code></div>
           <p v-else class="verification-note">当前还没有记录为稳定可复现的完整命令。</p>
           <p v-if="project.learning.verificationNote" class="verification-note">{{ project.learning.verificationNote }}</p>
-        </section>
+        </details>
 
         <section class="learning-section"><p class="section-label">相关工程笔记</p><h2>这些文章继续解释项目中的判断</h2><div class="followup-links"><router-link v-for="article in relatedArticles" :key="article.slug" :to="`/articles/${article.slug}`" class="followup-link"><span>{{ article.title }}</span><small>{{ article.difficulty }} · {{ article.readingTime }}</small></router-link></div></section>
       </article>

@@ -3,6 +3,7 @@ import { dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { articleSummaries } from '../src/data/generatedArticleKnowledge.ts'
 import { projects } from '../src/data/generatedProjects.ts'
+import { dailyRadars } from '../src/data/generatedRadars.ts'
 
 const SITE_URL = 'https://xiuqiu-site.vercel.app'
 const distIndexUrl = new URL('../dist/index.html', import.meta.url)
@@ -103,6 +104,19 @@ writePage(
 )
 
 writePage(
+  '/radar',
+  replaceMeta(baseHtml, {
+    title: '每日研究雷达｜xiuqiu',
+    description: '从 Obsidian 研究输入自动汇总的市场信号、AI 技巧、Web3 设计、Vibe 项目与精选阅读。',
+    path: '/radar',
+    structuredData: {
+      '@context': 'https://schema.org', '@type': 'CollectionPage', name: '每日研究雷达｜xiuqiu',
+      url: `${SITE_URL}/radar`, author: { '@type': 'Person', name: 'xiuqiu' },
+    },
+  }),
+)
+
+writePage(
   '/articles',
   replaceMeta(baseHtml, {
     title: '工程笔记｜xiuqiu Web3 钱包学习档案',
@@ -169,5 +183,19 @@ projects.forEach(project => {
   })
 })
 
+dailyRadars.forEach(radar => {
+  writePage(
+    `/radar/${radar.slug}`,
+    replaceMeta(baseHtml, {
+      title: `${radar.title}｜xiuqiu`, description: radar.summary, path: `/radar/${radar.slug}`, type: 'article',
+      structuredData: {
+        '@context': 'https://schema.org', '@type': 'Article', headline: radar.title, description: radar.summary,
+        datePublished: radar.date, author: { '@type': 'Person', name: 'xiuqiu' },
+        url: `${SITE_URL}/radar/${radar.slug}`, mainEntityOfPage: `${SITE_URL}/radar/${radar.slug}`,
+      },
+    }),
+  )
+})
+
 const legacyProjectPages = projects.reduce((total, project) => total + 1 + project.legacyIds.length, 0)
-console.log(`Generated static meta pages for ${articleSummaries.length + projects.length + legacyProjectPages + 4} routes.`)
+console.log(`Generated static meta pages for ${articleSummaries.length + projects.length + legacyProjectPages + dailyRadars.length + 5} routes.`)

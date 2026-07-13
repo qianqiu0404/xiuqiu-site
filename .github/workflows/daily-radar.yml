@@ -1,0 +1,52 @@
+name: Daily Radar Gate and Merge
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: daily-radar-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  gate-and-merge:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      startsWith(github.event.pull_request.head.ref, 'automation/daily-radar-') &&
+      github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Restrict changed files
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          git diff --name-only "$BASE_SHA" "$HEAD_SHA" > /tmp/radar-files.txt
+          if grep -Ev '^(content/radar/[0-9]{4}-[0-9]{2}-[0-9]{2}\.md|src/data/generatedRadars\.ts|public/sitemap\.xml)$' /tmp/radar-files.txt; then
+            echo "Daily radar PR changed files outside the allowlist."
+            exit 1
+          fi
+          test -s /tmp/radar-files.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run test:radar
+      - run: npm run build
+      - name: Ensure generated public data is committed
+        run: git diff --exit-code -- src/data/generatedRadars.ts public/sitemap.xml
+      - name: Squash merge verified daily radar
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+        run: gh pr merge "$PR_URL" --squash --delete-branch

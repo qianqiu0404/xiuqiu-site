@@ -20,6 +20,11 @@ const failureCases = [
   { title: '广播请求超时，但交易可能已经进入节点', handling: '把结果标记为未知，优先按 request_id、raw transaction 或 tx hash 查询，不直接重新构建并发送第二笔。' },
   { title: '链上已经成功，本地状态更新失败', handling: '补偿任务以链上 receipt 或确认数为事实来源，幂等推进提现、账本和通知状态。' },
 ]
+const signerBackends = [
+  { name: 'Local Signer', state: '已验证', detail: '当前 wallet-sign 的本地密钥与签名后端，作为接口和策略基线。' },
+  { name: 'MPC / TSS', state: '接入中', detail: '独立三节点 Keygen / Sign 已本地验证；正在收敛为 wallet-sign 后端，尚未完成端到端接入。' },
+  { name: 'HSM', state: '下一阶段', detail: '计划保持同一签名契约，接入硬件密钥边界与生产级策略能力。' },
+]
 
 function toggleInterviewMode() {
   void router.replace({ path: '/engineering', query: interviewMode.value ? {} : { mode: 'interview' } })
@@ -51,13 +56,18 @@ onMounted(() => setSeoMeta({ title: '工程档案｜xiuqiu Web3 钱包后端', d
         <div class="system-flow"><template v-for="(step, index) in systemFlow" :key="step.name"><article class="system-step"><span>0{{ index + 1 }}</span><h3>{{ step.name }}</h3><p>{{ step.detail }}</p></article><div v-if="index < systemFlow.length - 1" class="system-arrow">&rarr;</div></template></div>
       </section>
 
+      <section class="engineering-section signer-backend-section">
+        <div class="section-heading section-heading-left"><p class="section-label">02 · 签名后端</p><h2 class="section-title">wallet-sign 是稳定边界，后端可以演进</h2><p class="section-desc">Local、MPC/TSS 与 HSM 不是三个平级服务，而是 wallet-sign 后方的不同密钥与签名实现。</p></div>
+        <div class="signer-backend-grid"><article v-for="backend in signerBackends" :key="backend.name"><div class="card-status-row"><h3>{{ backend.name }}</h3><strong>{{ backend.state }}</strong></div><p>{{ backend.detail }}</p></article></div>
+      </section>
+
       <section class="engineering-section">
-        <div class="section-heading section-heading-left"><p class="section-label">02 · 异常恢复</p><h2 class="section-title">资金系统最值得讲的是结果未知之后怎么办</h2></div>
+        <div class="section-heading section-heading-left"><p class="section-label">03 · 异常恢复</p><h2 class="section-title">资金系统最值得讲的是结果未知之后怎么办</h2></div>
         <div class="failure-grid"><article v-for="item in failureCases" :key="item.title" class="failure-card"><p class="project-abilities-title">Failure case</p><h3>{{ item.title }}</h3><p>{{ item.handling }}</p></article></div>
       </section>
 
       <section class="engineering-section">
-        <div class="section-heading section-heading-left"><p class="section-label">03 · 核心案例</p><h2 class="section-title">阶段、证据和目标态放在一起</h2></div>
+        <div class="section-heading section-heading-left"><p class="section-label">04 · 核心案例</p><h2 class="section-title">阶段、证据和目标态放在一起</h2></div>
         <div class="engineering-projects">
           <article v-for="project in primaryProjects" :key="project.id" class="engineering-project evidence-state-card">
             <div class="engineering-project-heading"><div><p class="section-label">{{ project.category }}</p><h3>{{ project.name }}</h3></div><router-link :to="`/projects/${project.slug}`" class="project-link">完整档案 &rarr;</router-link></div>
@@ -73,12 +83,12 @@ onMounted(() => setSeoMeta({ title: '工程档案｜xiuqiu Web3 钱包后端', d
       </section>
 
       <section class="engineering-section">
-        <div class="section-heading section-heading-left"><p class="section-label">04 · 扩展探索</p><h2 class="section-title">安全与数据服务补充</h2><p class="section-desc">这些项目帮助扩展系统视野，但不会被包装成已经完成的生产能力。</p></div>
+        <div class="section-heading section-heading-left"><p class="section-label">05 · 扩展探索</p><h2 class="section-title">安全与数据服务补充</h2><p class="section-desc">这些项目帮助扩展系统视野，但不会被包装成已经完成的生产能力。</p></div>
         <div class="extension-project-grid"><router-link v-for="project in extensionProjects" :key="project.id" :to="`/projects/${project.slug}`" class="extension-project-card"><div class="card-status-row"><span>{{ project.category }}</span><strong>{{ projectStageLabels[project.stage] }}</strong></div><h3>{{ project.name }}</h3><p>{{ project.positioning }}</p><small>下一里程碑：{{ project.nextMilestone }}</small></router-link></div>
       </section>
 
       <section class="engineering-section">
-        <div class="section-heading section-heading-left"><p class="section-label">05 · 延伸阅读</p><h2 class="section-title">从文章继续复核工程判断</h2></div>
+        <div class="section-heading section-heading-left"><p class="section-label">06 · 延伸阅读</p><h2 class="section-title">从文章继续复核工程判断</h2></div>
         <div class="article-grid"><router-link v-for="article in engineeringArticles" :key="article.slug" :to="`/articles/${article.slug}`" class="article-card article-card-link"><time class="article-date">{{ article.date }}</time><h3 class="article-title">{{ article.title }}</h3><p class="article-summary">{{ article.summary }}</p></router-link></div>
       </section>
     </div>

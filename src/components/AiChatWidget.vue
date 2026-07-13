@@ -12,14 +12,14 @@ interface ChatMessage {
 }
 
 interface SiteReference {
-  type: 'article' | 'project' | 'capability' | 'ai'
+  type: 'article' | 'project' | 'capability' | 'ai' | 'radar'
   title: string
   href: string
   summary: string
 }
 
 interface PageContext {
-  type: 'home' | 'engineering' | 'ai' | 'learning' | 'articles' | 'article' | 'project'
+  type: 'home' | 'engineering' | 'ai' | 'learning' | 'articles' | 'article' | 'project' | 'radar' | 'radar-detail'
   title?: string
   slug?: string
   summary?: string
@@ -123,6 +123,15 @@ const currentPageContext = computed<PageContext>(() => {
       type: 'ai',
       title: 'AI 协作',
       summary: 'AI Coding 协作、Obsidian 知识系统与研究自动化三个可验证案例。',
+    }
+  }
+
+  if (route.name === 'radar' || route.name === 'radar-detail') {
+    return {
+      type: route.name === 'radar-detail' ? 'radar-detail' : 'radar',
+      title: route.name === 'radar-detail' ? `每日研究雷达 ${String(route.params.date || '')}` : '每日研究雷达',
+      slug: route.name === 'radar-detail' ? String(route.params.date || '') : undefined,
+      summary: '从公开允许的 Obsidian 研究区块自动汇总，并保留来源、缺失状态、关联项目和后续行动。',
     }
   }
 
@@ -232,7 +241,7 @@ function normalizeReferences(value: unknown): SiteReference[] {
       if (!item || typeof item !== 'object') return false
       const candidate = item as Record<string, unknown>
       return (
-        (candidate.type === 'article' || candidate.type === 'project' || candidate.type === 'capability' || candidate.type === 'ai') &&
+        (candidate.type === 'article' || candidate.type === 'project' || candidate.type === 'capability' || candidate.type === 'ai' || candidate.type === 'radar') &&
         typeof candidate.title === 'string' &&
         typeof candidate.href === 'string' &&
         typeof candidate.summary === 'string'

@@ -45,7 +45,7 @@ type ErrorCode =
   | 'upstream_network_error'
 
 interface PageContext {
-  type: 'home' | 'engineering' | 'ai' | 'learning' | 'articles' | 'article' | 'project'
+  type: 'home' | 'engineering' | 'ai' | 'learning' | 'articles' | 'article' | 'project' | 'radar' | 'radar-detail'
   title?: string
   slug?: string
   summary?: string
@@ -121,7 +121,9 @@ function normalizePageContext(value: unknown): PageContext | undefined {
     candidate.type !== 'learning' &&
     candidate.type !== 'articles' &&
     candidate.type !== 'article' &&
-    candidate.type !== 'project'
+    candidate.type !== 'project' &&
+    candidate.type !== 'radar' &&
+    candidate.type !== 'radar-detail'
   ) {
     return undefined
   }

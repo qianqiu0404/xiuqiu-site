@@ -1,23 +1,26 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { learningRecords } from '../data/generatedLearningRecords'
+import { dailyRadars } from '../data/generatedRadars'
 import { aiStageLabels, projectStageLabels, siteAiCases, siteArticlesByNewest, siteKnowledge, siteProjects } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
 
 const featuredProjects = siteProjects.filter(project => project.featured)
 const recentArticles = siteArticlesByNewest.slice(0, 3)
 const latestLearning = learningRecords.slice(0, 2)
+const latestRadar = dailyRadars[0]
+const latestOutput = recentArticles[0] || latestLearning[0]
 
 const controlItems = [
-  { label: '现在', title: '建设 Exchange Wallet Infrastructure', text: '围绕资金编排、链交互、签名与风险控制四个边界持续实现和验证。' },
-  { label: '为什么', title: '资金系统需要可解释的边界', text: '多链差异可以被适配，但风控放行、nonce、UTXO、签名和账务状态不能被隐藏。' },
-  { label: '下一步', title: '跑通带风控与失败注入的提现链路', text: '固定四个服务的兼容基线，验证风控拒绝、广播结果未知、重启恢复和本地补偿。' },
+  { label: '开发中', title: featuredProjects[0]?.name || '钱包基础设施', text: featuredProjects[0]?.currentFocus || '继续验证钱包工程边界。', to: '/engineering' },
+  { label: '研究中', title: latestRadar?.web3Design?.title || '多链钱包与签名安全', text: latestRadar?.summary || '从每日研究输入提炼可迁移的工程判断。', to: latestRadar ? `/radar/${latestRadar.slug}` : '/radar' },
+  { label: '最近产出', title: latestOutput?.title || '工程学习记录', text: latestOutput?.summary || '把验证结果沉淀为可复核内容。', to: recentArticles[0] ? `/articles/${recentArticles[0].slug}` : '/learning' },
 ]
 
 const capabilityTracks = [
   { index: '01', title: 'Web3 钱包工程', text: 'Exchange Wallet Infrastructure、wallet-core、可运行实验，以及 TSS/MPC 与数据服务扩展。', to: '/engineering', link: '查看工程证据' },
-  { index: '02', title: 'AI Coding 协作', text: 'Planner、Worker、Reviewer 与人工验收组成可交接、可审查的工程闭环。', to: '/ai#ai-coding-collaboration', link: '查看协作方法' },
-  { index: '03', title: '知识与研究自动化', text: 'Obsidian 审核流、发布门禁、来源核验、去重和不会覆盖人工记录的自动化。', to: '/ai#obsidian-knowledge-system', link: '查看知识系统' },
+  { index: '02', title: 'AI 工程协作', text: '用计划、交接、测试和人工验收完成可审查的工程闭环。', to: '/ai#ai-coding-collaboration', link: '查看协作方法' },
+  { index: '03', title: '每日研究雷达', text: 'Obsidian 输入经过来源、隐私和构建门禁后自动发布。', to: '/radar', link: '查看最新研究' },
 ]
 
 onMounted(() => setSeoMeta({ title: 'xiuqiu｜Web3 钱包工程 × AI 协作', description: siteKnowledge.owner.summary, path: '/' }))
@@ -29,17 +32,16 @@ onMounted(() => setSeoMeta({ title: 'xiuqiu｜Web3 钱包工程 × AI 协作', d
       <div>
         <p class="hero-eyebrow">Web3 Wallet Backend · AI-assisted Engineering</p>
         <h1 class="hero-title">交易所钱包基础设施</h1>
-        <p class="hero-desc hero-desc-primary">我专注 Web3 钱包后端，用 Go 和 TypeScript 理解资金状态、多链资源与签名安全；同时用 AI 组织计划、实现、审查、知识沉淀和持续复盘。</p>
+        <p class="hero-desc hero-desc-primary">我在开发交易所钱包基础设施，也在持续研究多链资源、签名安全与 AI 工程协作。</p>
         <div class="hero-actions hero-actions-left">
           <router-link class="btn btn-primary" to="/engineering">查看工程档案</router-link>
-          <router-link class="btn btn-secondary" to="/ai">查看 AI 协作</router-link>
-          <router-link class="btn btn-ghost" to="/learning">最近在学什么 &rarr;</router-link>
+          <router-link class="btn btn-secondary" to="/radar">最近在研究什么</router-link>
         </div>
       </div>
       <aside class="hero-proof-panel control-status-panel">
         <div class="control-status-top"><span class="status-dot"></span><span>当前主线</span><time>2026-07-13</time></div>
         <h2>Exchange Wallet Infrastructure</h2>
-        <p>wallet-service → risk-service → wallet-api → wallet-sign</p>
+        <p>资金编排 · 风险控制 · 多链交互 · 签名后端</p>
         <dl>
           <div><dt>工程语言</dt><dd>Go · TypeScript</dd></div>
           <div><dt>验证重点</dt><dd>状态机 · 多链资源 · 风控与签名边界</dd></div>
@@ -51,13 +53,13 @@ onMounted(() => setSeoMeta({ title: 'xiuqiu｜Web3 钱包工程 × AI 协作', d
 
   <section class="control-strip">
     <div class="container control-strip-grid">
-      <article v-for="item in controlItems" :key="item.label"><span>{{ item.label }}</span><h2>{{ item.title }}</h2><p>{{ item.text }}</p></article>
+      <router-link v-for="item in controlItems" :key="item.label" :to="item.to"><article><span>{{ item.label }}</span><h2>{{ item.title }}</h2><p>{{ item.text }}</p></article></router-link>
     </div>
   </section>
 
   <section class="section">
     <div class="container">
-      <div class="section-heading section-heading-left"><p class="section-label">Three Tracks</p><h2 class="section-title">三条持续建设的能力轨道</h2><p class="section-desc">朋友可以先看我在做什么；面试官可以继续进入代码边界、验证证据和失败场景。</p></div>
+      <div class="section-heading section-heading-left"><p class="section-label">Three Tracks</p><h2 class="section-title">我持续在做的三件事</h2><p class="section-desc">先看方向，再进入工程证据、研究来源和学习复盘。</p></div>
       <div class="capability-track-grid">
         <router-link v-for="track in capabilityTracks" :key="track.index" :to="track.to" class="capability-track-card"><span>{{ track.index }}</span><h3>{{ track.title }}</h3><p>{{ track.text }}</p><strong>{{ track.link }} &rarr;</strong></router-link>
       </div>
@@ -81,12 +83,22 @@ onMounted(() => setSeoMeta({ title: 'xiuqiu｜Web3 钱包工程 × AI 协作', d
 
   <section class="section">
     <div class="container">
-      <div class="section-heading section-heading-left"><p class="section-label">AI Collaboration</p><h2 class="section-title">AI 能力用三个真实流程证明</h2></div>
+      <div class="section-heading section-heading-left"><p class="section-label">Automation</p><h2 class="section-title">AI 如何进入实际工作流</h2></div>
       <div class="ai-case-preview-grid">
         <router-link v-for="item in siteAiCases" :key="item.id" :to="`/ai#${item.slug}`" class="ai-case-preview-card">
           <div class="card-status-row"><span>0{{ item.id }}</span><strong>{{ aiStageLabels[item.stage] }}</strong></div><h3>{{ item.title }}</h3><p>{{ item.summary }}</p><small>{{ item.flow.slice(0, 3).join(' → ') }}</small>
         </router-link>
       </div>
+    </div>
+  </section>
+
+  <section v-if="latestRadar" class="section section-alt">
+    <div class="container">
+      <div class="section-heading section-heading-left"><p class="section-label">Latest Radar · {{ latestRadar.date }}</p><h2 class="section-title">最近在研究什么</h2><p class="section-desc">{{ latestRadar.summary }}</p></div>
+      <div class="radar-home-grid">
+        <article v-for="item in [latestRadar.aiTip, latestRadar.web3Design, latestRadar.vibeProject, latestRadar.readingPick].filter(Boolean)" :key="item!.title"><h3>{{ item!.title }}</h3><p>{{ item!.summary }}</p></article>
+      </div>
+      <router-link :to="`/radar/${latestRadar.slug}`" class="project-link">查看本期来源与后续行动 &rarr;</router-link>
     </div>
   </section>
 

@@ -1,12 +1,14 @@
 import { aiCases, type AiCase } from './generatedAiCases.ts'
 import { articleKnowledge, type ArticleKnowledge } from './generatedArticleKnowledge.ts'
 import { learningRecords } from './generatedLearningRecords.ts'
+import { dailyRadars, type DailyRadar } from './generatedRadars.ts'
 import { projects, type Project, type ProjectSourceType, type ProjectStage, type ProjectVisibility } from './generatedProjects.ts'
 
 export type KnowledgeTag = ArticleKnowledge['conceptTags'][number] | 'wallet-core'
 export type SiteArticle = ArticleKnowledge
 export type SiteProject = Project
 export type SiteAiCase = AiCase
+export type SiteRadar = DailyRadar
 
 export const projectStageLabels: Record<ProjectStage, string> = {
   exploring: '探索中',
@@ -51,12 +53,13 @@ export interface SiteKnowledge {
   projects: SiteProject[]
   aiCases: SiteAiCase[]
   articles: SiteArticle[]
+  radars: SiteRadar[]
   tags: KnowledgeTag[]
   engineeringMap: EngineeringMapNode[]
 }
 
 export interface SiteReference {
-  type: 'article' | 'project' | 'capability' | 'ai'
+  type: 'article' | 'project' | 'capability' | 'ai' | 'radar'
   title: string
   href: string
   summary: string
@@ -71,6 +74,8 @@ export const siteArticlesByNewest: SiteArticle[] = [...siteArticles].sort((a, b)
 
 export const siteProjects: SiteProject[] = projects
 export const siteAiCases: SiteAiCase[] = aiCases
+export const siteRadars: SiteRadar[] = dailyRadars
+export const latestRadar: SiteRadar | undefined = siteRadars[0]
 
 export const engineeringMap: EngineeringMapNode[] = [
   {
@@ -151,6 +156,7 @@ export const siteKnowledge: SiteKnowledge = {
   projects: siteProjects,
   aiCases: siteAiCases,
   articles: siteArticles,
+  radars: siteRadars,
   tags: ['wallet-core', 'wallet-backend', 'signer-service', 'multi-chain', 'go-infra', 'evm', 'mpc-tss', 'api-design', 'ai-engineering'],
   engineeringMap,
 }
@@ -233,6 +239,11 @@ export function buildKnowledgeContext(): string {
     ...learningRecords.map(record =>
       `- ${record.title}: ${record.summary}; Achieved: ${record.achieved.join(', ')}; Next: ${record.nextSteps.join(', ')}`,
     ),
+    '',
+    'Recent daily research radar:',
+    ...siteRadars.slice(0, 7).map(radar =>
+      `- ${radar.date}: ${radar.summary}; Signals: ${[...radar.marketSignals, radar.aiTip, radar.web3Design, radar.vibeProject, radar.readingPick].filter(Boolean).map(item => item!.title).join(' | ')}; Follow-up: ${radar.followUp}`,
+    ),
   ].join('\n')
 }
 
@@ -263,12 +274,17 @@ export function findRelevantReferences(query: string, pageTitle?: string, max = 
     ref: { type: 'ai' as const, title: item.title, href: `/ai#${item.slug}`, summary: item.summary },
   }))
 
+  const radarRefs = siteRadars.map(item => ({
+    score: scoreText(queryTokens, [item.title, item.summary, item.followUp, ...item.marketSignals.map(signal => signal.title), item.aiTip?.title || '', item.web3Design?.title || '', item.vibeProject?.title || '', item.readingPick?.title || ''].join(' ')) + (pageTitle === item.title ? 10 : 0),
+    ref: { type: 'radar' as const, title: item.title, href: `/radar/${item.slug}`, summary: item.summary },
+  }))
+
   const capabilityRefs = engineeringMap.map(node => ({
     score: scoreText(queryTokens, [node.title, node.subtitle, node.id].join(' ')),
     ref: { type: 'capability' as const, title: node.title, href: '/engineering', summary: node.subtitle },
   }))
 
-  return [...articleRefs, ...projectRefs, ...aiRefs, ...capabilityRefs]
+  return [...articleRefs, ...projectRefs, ...aiRefs, ...radarRefs, ...capabilityRefs]
     .filter(item => item.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, max)

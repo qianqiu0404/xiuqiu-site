@@ -10,6 +10,9 @@
     <loc>https://xiuqiu-site.vercel.app/ai</loc>
   </url>
   <url>
+    <loc>https://xiuqiu-site.vercel.app/radar</loc>
+  </url>
+  <url>
     <loc>https://xiuqiu-site.vercel.app/learning</loc>
   </url>
   <url>
@@ -119,5 +122,8 @@
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/articles/minimal-multi-agent-coding-workflow</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-13</loc>
   </url>
 </urlset>

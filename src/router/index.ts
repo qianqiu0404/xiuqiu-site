@@ -29,6 +29,16 @@ const router = createRouter({
       component: () => import('../pages/AiCollaborationPage.vue'),
     },
     {
+      path: '/radar',
+      name: 'radar',
+      component: () => import('../pages/RadarPage.vue'),
+    },
+    {
+      path: '/radar/:date',
+      name: 'radar-detail',
+      component: () => import('../pages/RadarDetailPage.vue'),
+    },
+    {
       path: '/articles/:slug',
       name: 'article-detail',
       component: () => import('../pages/ArticleDetailPage.vue'),
