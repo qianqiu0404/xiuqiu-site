@@ -9,6 +9,9 @@
 - `src/data/generatedArticles.ts`: generated full article content for article detail pages.
 - `content/projects/*.md`: structured project records with stage, evidence, target outcome, and milestone.
 - `content/ai-cases/*.md`: AI collaboration case records.
+- `content/evidence/*.md`: engineering evidence linked to capabilities, projects, failures, and deliveries.
+- `content/deliveries/*.md`: public AI-assisted delivery records with human decisions, review findings, and real links.
+- `content/now/current.md`: manually curated current focus; recent public outputs are aggregated automatically.
 - `src/data/generatedProjects.ts` / `generatedAiCases.ts`: generated typed data; do not edit by hand.
 - `src/data/siteKnowledge.ts`: unified knowledge graph that connects projects, articles, tags, related reading, suggested questions, and the Engineering Map.
 - `src/components/AiChatWidget.vue`: site-level DeepSeek chat widget with page context and quick prompts.
@@ -26,6 +29,9 @@ npm run preview
 npm run generate:articles
 npm run generate:projects
 npm run generate:ai
+npm run generate:evidence
+npm run generate:deliveries
+npm run generate:now
 npm run generate:sitemap
 npm run check:knowledge
 npm run typecheck:api
@@ -66,6 +72,10 @@ When adding a new project:
 Frontmatter may use JSON or YAML. Projects use stable slugs for canonical URLs; legacy numeric project URLs continue to resolve.
 
 When adding an AI collaboration case, create a Markdown record in `content/ai-cases` with a unique contiguous `displayOrder`, an explicit `ownershipNote`, its real workflow, human responsibility, evidence, failure handling, limits, target outcome, and next milestone.
+
+Evidence records use one of four kinds (`implementation`, `test`, `demo`, `writeup`) and must state `verified`, `partial`, or `design`. Public evidence requires an accessible HTTPS URL; private engineering may only use `private-summary` with a redacted command and no repository URL.
+
+Delivery records only use public PR, commit, Actions, Release, or demo links. A record cannot be marked `delivered` without at least one evidence reference and one public link. Update `content/now/current.md` when the current focus changes; the page shows a stale notice after 14 days without an update.
 
 ## Public Learning Workflow
 

@@ -29,6 +29,7 @@ function goHome() {
 
       <div class="nav-links" :class="{ open: navOpen }">
         <router-link to="/" @click="navOpen = false">首页</router-link>
+        <router-link to="/now" @click="navOpen = false">当前动态</router-link>
         <router-link to="/engineering" @click="navOpen = false">工程档案</router-link>
         <router-link to="/ai" @click="navOpen = false">AI 协作</router-link>
         <router-link to="/radar" @click="navOpen = false">每日雷达</router-link>

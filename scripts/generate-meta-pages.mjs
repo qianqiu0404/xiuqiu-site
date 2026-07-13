@@ -4,6 +4,8 @@ import { fileURLToPath } from 'node:url'
 import { articleSummaries } from '../src/data/generatedArticleKnowledge.ts'
 import { projects } from '../src/data/generatedProjects.ts'
 import { dailyRadars } from '../src/data/generatedRadars.ts'
+import { deliveryRecords } from '../src/data/generatedDeliveries.ts'
+import { nowSnapshot } from '../src/data/generatedNow.ts'
 
 const SITE_URL = 'https://xiuqiu-site.vercel.app'
 const distIndexUrl = new URL('../dist/index.html', import.meta.url)
@@ -95,11 +97,38 @@ writePage(
 )
 
 writePage(
+  '/engineering/evidence',
+  replaceMeta(baseHtml, {
+    title: '工程证据覆盖｜xiuqiu',
+    description: '按工程实现、自动化测试、可运行演示和公开说明查看钱包工程证据与当前边界。',
+    path: '/engineering/evidence',
+  }),
+)
+
+writePage(
   '/ai',
   replaceMeta(baseHtml, {
     title: 'AI 工作流｜xiuqiu',
     description: 'AI Coding、跨设备 Skill 工具链、每日研究发布与 Obsidian 知识治理四个真实 Loop。',
     path: '/ai',
+  }),
+)
+
+writePage(
+  '/ai/deliveries',
+  replaceMeta(baseHtml, {
+    title: 'AI 协作交付记录｜xiuqiu',
+    description: '真实任务中的 AI 参与、人工判断、审查纠正、验证结果与公开交付。',
+    path: '/ai/deliveries',
+  }),
+)
+
+writePage(
+  '/now',
+  replaceMeta(baseHtml, {
+    title: '当前动态｜xiuqiu',
+    description: nowSnapshot.summary,
+    path: '/now',
   }),
 )
 
@@ -206,5 +235,22 @@ dailyRadars.forEach(radar => {
   )
 })
 
+deliveryRecords.forEach(record => {
+  writePage(
+    `/ai/deliveries/${record.slug}`,
+    replaceMeta(baseHtml, {
+      title: `${record.title}｜AI 交付记录`, description: record.summary,
+      path: `/ai/deliveries/${record.slug}`, type: 'article',
+      structuredData: {
+        '@context': 'https://schema.org', '@type': 'TechArticle', headline: record.title,
+        description: record.summary, datePublished: record.date,
+        author: { '@type': 'Person', name: 'xiuqiu' },
+        url: `${SITE_URL}/ai/deliveries/${record.slug}`,
+        mainEntityOfPage: `${SITE_URL}/ai/deliveries/${record.slug}`,
+      },
+    }),
+  )
+})
+
 const legacyProjectPages = projects.reduce((total, project) => total + 1 + project.legacyIds.length, 0)
-console.log(`Generated static meta pages for ${articleSummaries.length + projects.length + legacyProjectPages + dailyRadars.length + 6} routes.`)
+console.log(`Generated static meta pages for ${articleSummaries.length + projects.length + legacyProjectPages + dailyRadars.length + deliveryRecords.length + 9} routes.`)

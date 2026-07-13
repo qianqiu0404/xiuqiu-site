@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { getArticleBySlug, getProjectByKey, siteKnowledge } from '../data/siteKnowledge'
+import { getArticleBySlug, getProjectByKey, siteKnowledge, type SiteReference } from '../data/siteKnowledge'
 
 type ChatRole = 'user' | 'assistant'
 
@@ -11,15 +11,8 @@ interface ChatMessage {
   references?: SiteReference[]
 }
 
-interface SiteReference {
-  type: 'article' | 'project' | 'capability' | 'ai' | 'radar' | 'failure'
-  title: string
-  href: string
-  summary: string
-}
-
 interface PageContext {
-  type: 'home' | 'engineering' | 'engineering-failures' | 'ai' | 'learning' | 'articles' | 'article' | 'project' | 'radar' | 'radar-detail'
+  type: 'home' | 'now' | 'engineering' | 'engineering-failures' | 'engineering-evidence' | 'ai' | 'ai-deliveries' | 'ai-delivery' | 'learning' | 'articles' | 'article' | 'project' | 'radar' | 'radar-detail'
   title?: string
   slug?: string
   summary?: string
@@ -119,6 +112,22 @@ const currentPageContext = computed<PageContext>(() => {
     }
   }
 
+  if (route.name === 'engineering-evidence') {
+    return {
+      type: 'engineering-evidence',
+      title: '工程证据覆盖',
+      summary: '八个钱包工程能力维度分别关联工程实现、自动化测试、可运行演示和公开说明，并明确已验证、部分验证与工程设计。',
+    }
+  }
+
+  if (route.name === 'now') {
+    return {
+      type: 'now',
+      title: siteKnowledge.now.headline,
+      summary: `${siteKnowledge.now.summary} 下一步：${siteKnowledge.now.nextFocus.join('；')}`,
+    }
+  }
+
   if (route.name === 'learning') {
     return {
       type: 'learning',
@@ -132,6 +141,17 @@ const currentPageContext = computed<PageContext>(() => {
       type: 'ai',
       title: 'AI 工作流',
       summary: 'AI Coding、跨设备 Skill 工具链、每日研究发布与 Obsidian 知识治理四个真实 Loop。',
+    }
+  }
+
+  if (route.name === 'ai-deliveries' || route.name === 'ai-delivery-detail') {
+    const slug = route.name === 'ai-delivery-detail' ? String(route.params.slug || '') : undefined
+    const delivery = slug ? siteKnowledge.deliveryRecords.find(item => item.slug === slug) : undefined
+    return {
+      type: route.name === 'ai-delivery-detail' ? 'ai-delivery' : 'ai-deliveries',
+      title: delivery?.title || 'AI 协作真实交付记录',
+      slug,
+      summary: delivery?.summary || '真实工程任务中的 AI 参与、人工判断、审查发现、纠正动作与公开验证。',
     }
   }
 
@@ -250,7 +270,7 @@ function normalizeReferences(value: unknown): SiteReference[] {
       if (!item || typeof item !== 'object') return false
       const candidate = item as Record<string, unknown>
       return (
-        (candidate.type === 'article' || candidate.type === 'project' || candidate.type === 'capability' || candidate.type === 'ai' || candidate.type === 'radar') &&
+        (candidate.type === 'article' || candidate.type === 'project' || candidate.type === 'capability' || candidate.type === 'ai' || candidate.type === 'radar' || candidate.type === 'failure' || candidate.type === 'evidence' || candidate.type === 'delivery') &&
         typeof candidate.title === 'string' &&
         typeof candidate.href === 'string' &&
         typeof candidate.summary === 'string'

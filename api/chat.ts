@@ -45,7 +45,7 @@ type ErrorCode =
   | 'upstream_network_error'
 
 interface PageContext {
-  type: 'home' | 'engineering' | 'engineering-failures' | 'ai' | 'learning' | 'articles' | 'article' | 'project' | 'radar' | 'radar-detail'
+  type: 'home' | 'now' | 'engineering' | 'engineering-failures' | 'engineering-evidence' | 'ai' | 'ai-deliveries' | 'ai-delivery' | 'learning' | 'articles' | 'article' | 'project' | 'radar' | 'radar-detail'
   title?: string
   slug?: string
   summary?: string
@@ -116,9 +116,13 @@ function normalizePageContext(value: unknown): PageContext | undefined {
   const candidate = value as Record<string, unknown>
   if (
     candidate.type !== 'home' &&
+    candidate.type !== 'now' &&
     candidate.type !== 'engineering' &&
     candidate.type !== 'engineering-failures' &&
+    candidate.type !== 'engineering-evidence' &&
     candidate.type !== 'ai' &&
+    candidate.type !== 'ai-deliveries' &&
+    candidate.type !== 'ai-delivery' &&
     candidate.type !== 'learning' &&
     candidate.type !== 'articles' &&
     candidate.type !== 'article' &&
@@ -243,6 +247,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               'If the answer is not supported by the provided website context, say you are not sure instead of inventing experience or facts.',
               'Prefer Chinese. Use English technical terms only where they help clarity.',
               'Clearly distinguish implemented or verified facts, current limitations, and future learning plans.',
+              'Treat evidence status literally: verified means reproducible evidence for the stated fact, partial means incomplete coverage, and design means it is not implemented.',
+              'For delivery questions, distinguish AI contribution, human decisions, review findings, corrections, public evidence, and remaining limits.',
               'For wallet failure questions, always structure the answer around: chain/fund fact, stop-loss action, evidence to inspect, recovery/idempotency basis, and the current project boundary.',
               'Keep answers concise, practical, and grounded in the website context.',
               'When helpful, cite exact project names and article titles from the website context.',

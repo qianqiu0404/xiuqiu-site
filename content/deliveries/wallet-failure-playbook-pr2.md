@@ -1,0 +1,5 @@
+---
+{"slug":"wallet-failure-playbook-pr2","title":"钱包异常恢复手册","date":"2026-07-13","status":"delivered","kind":"content","summary":"将 30 个钱包异常整理为可筛选、可练习、可追溯到工程边界的公开恢复手册。","projectSlugs":["exchange-wallet-system","web3-wallet-engineer-lab"],"goal":"把零散异常判断收敛为一致的资金事实、止损、调查和恢复框架。","scope":["30 个结构化异常案例","工程页六个重要异常摘要","本地练习状态","文章证据等级与 MPC/HSM 边界"],"aiContribution":["协助拆解异常分类和统一字段","生成页面、校验器与响应式实现候选","执行构建、类型检查和浏览器验证"],"humanDecisions":["确定网站使用自然的工程叙事","决定实现、部分验证和生产设计必须分开","确认私有工程只展示去敏证据"],"reviewFindings":["早期文案过度强调展示目的","MPC、HSM 和生产事故边界需要收紧","异常数据必须能被项目、文章和助手共同引用"],"corrections":["将目的性标题改为重要异常","将快速模式改为工程概览","修正 MPC/HSM 的事实状态"],"evidenceSlugs":["failure-playbook-public"],"publicLinks":[{"label":"GitHub PR #2","url":"https://github.com/qianqiu0404/xiuqiu-site/pull/2"},{"label":"公开异常手册","url":"https://xiuqiu-site.vercel.app/engineering/failures"}],"knownLimits":["异常内容多数是工程设计和局部验证，不代表真实生产事故","练习自评只保存在当前浏览器"],"nextStep":"让六个核心异常与公开 Wallet Reliability Lab 的可运行实验建立一一对应。","publish":true}
+---
+
+记录公开交付过程，不公开完整对话和私人仓库内容。

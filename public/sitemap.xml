@@ -10,7 +10,16 @@
     <loc>https://xiuqiu-site.vercel.app/engineering/failures</loc>
   </url>
   <url>
+    <loc>https://xiuqiu-site.vercel.app/engineering/evidence</loc>
+  </url>
+  <url>
     <loc>https://xiuqiu-site.vercel.app/ai</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/ai/deliveries</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/now</loc>
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/radar</loc>
@@ -131,5 +140,14 @@
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/radar/2026-07-13</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/ai/deliveries/wallet-core-public-v1</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/ai/deliveries/wallet-failure-playbook-pr2</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/ai/deliveries/wallet-reliability-lab-v1</loc>
   </url>
 </urlset>
