@@ -23,6 +23,7 @@ jobs:
       - run: npm run test:radar
       - run: npm run build
       - run: npm run check:public
+      - run: npm run check:links
       - name: Ensure generated public data is committed
         run: >-
           git diff --exit-code --

@@ -25,6 +25,7 @@
     "generate:meta-pages": "node scripts/generate-meta-pages.mjs",
     "check:knowledge": "node scripts/validate-knowledge.mjs",
     "check:public": "node scripts/check-public.mjs",
+    "check:links": "node scripts/check-portfolio-links.mjs",
     "typecheck:api": "tsc --noEmit --target ES2020 --module ESNext --moduleResolution bundler --allowImportingTsExtensions --skipLibCheck --strict api/chat.ts",
     "preview": "vite preview"
   },
