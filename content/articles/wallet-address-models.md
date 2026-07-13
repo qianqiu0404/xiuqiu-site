@@ -3,6 +3,8 @@
   "id": 6,
   "slug": "wallet-address-models",
   "kind": "engineering-note",
+  "evidenceLevel": "local-verified",
+  "evidenceSummary": "wallet-core 的多链地址派生与网络参数测试提供本地证据。",
   "title": "BTC、ETH、Solana 地址生成与签名模型对比",
   "date": "2026-05-27",
   "summary": "对比 UTXO 模型、账户模型、HD 钱包路径、地址格式和不同链的签名逻辑差异，理解多链钱包为什么需要抽象。",

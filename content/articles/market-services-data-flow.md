@@ -3,6 +3,8 @@
   "id": 5,
   "slug": "market-services-data-flow",
   "kind": "engineering-note",
+  "evidenceLevel": "local-verified",
+  "evidenceSummary": "已梳理并局部运行采集、存储、API 与数据新鲜度链路。",
   "title": "market-services：Go 行情服务如何组织数据流",
   "date": "2026-05-24",
   "summary": "从 HTTP、gRPC、Redis、PostgreSQL、行情同步和 Dashboard API，拆解一个 Go 后端行情服务如何运行。",

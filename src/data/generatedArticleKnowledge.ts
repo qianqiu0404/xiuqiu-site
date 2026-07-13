@@ -3,6 +3,7 @@
 
 export type ArticleConceptTag = 'wallet-backend' | 'signer-service' | 'multi-chain' | 'go-infra' | 'evm' | 'mpc-tss' | 'api-design' | 'ai-engineering'
 export type ArticleKind = 'engineering-note' | 'research' | 'learning-log'
+export type ArticleEvidenceLevel = 'design' | 'source-reviewed' | 'local-verified' | 'integrated' | 'public-demo'
 
 export interface ArticleSummary {
   id: number
@@ -15,6 +16,8 @@ export interface ArticleSummary {
   readingTime: string
   difficulty: string
   kind: ArticleKind
+  evidenceLevel?: ArticleEvidenceLevel
+  evidenceSummary?: string
 }
 
 export interface ArticleKnowledge extends ArticleSummary {
@@ -40,6 +43,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "readingTime": "8 min",
     "difficulty": "基础",
     "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "来自项目调用链与代码入口整理，未声明生产流量验证。",
     "conceptTags": [
       "api-design",
       "wallet-backend"
@@ -73,6 +78,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "readingTime": "10 min",
     "difficulty": "进阶",
     "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "结合本地后端项目接口边界整理的协议选型笔记。",
     "conceptTags": [
       "api-design",
       "go-infra"
@@ -107,6 +114,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "readingTime": "12 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "已定位 wallet-api 的 dispatcher、adaptor 与 RPC service 边界；全链路基线仍在整理。",
     "conceptTags": [
       "wallet-backend",
       "api-design",
@@ -141,6 +150,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "readingTime": "12 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "Local Signer 与签名服务加固分支已验证；MPC/HSM 后端不计入已完成能力。",
     "conceptTags": [
       "signer-service",
       "wallet-backend",
@@ -176,6 +187,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "readingTime": "12 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "已梳理并局部运行采集、存储、API 与数据新鲜度链路。",
     "conceptTags": [
       "go-infra",
       "api-design"
@@ -207,6 +220,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "readingTime": "12 min",
     "difficulty": "进阶",
     "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "wallet-core 的多链地址派生与网络参数测试提供本地证据。",
     "conceptTags": [
       "multi-chain",
       "signer-service",
@@ -240,6 +255,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "readingTime": "14 min",
     "difficulty": "进阶",
     "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "基于 EVM 调用与代理模式的代码阅读和实验整理。",
     "conceptTags": [
       "evm"
     ],
@@ -268,6 +285,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "readingTime": "14 min",
     "difficulty": "进阶",
     "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "基于 CREATE2 与 assembly 生命周期的代码阅读和本地推演。",
     "conceptTags": [
       "evm"
     ],
@@ -326,6 +345,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "readingTime": "6 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
+    "evidenceLevel": "design",
+    "evidenceSummary": "结合现有代码入口整理的异常恢复设计；不是生产事故复盘。",
     "conceptTags": [
       "wallet-backend",
       "api-design",
@@ -351,9 +372,10 @@ export const articleKnowledge: ArticleKnowledge[] = [
   {
     "id": 11,
     "slug": "mpc-wallet-sign-integration",
-    "title": "wallet-sign 接入 MPC：一次签名安全边界升级的工程复盘",
+    "title": "wallet-sign × MPC/TSS：已验证能力与接入设计",
     "date": "2026-06-19",
-    "summary": "这次改造里，我把 wallet-sign 从本地私钥签名机收敛成 SignerBackend 调度层，并将 MPC 作为生产级签名后端接入，让完整私钥不再落在单点服务里。",
+    "updatedAt": "2026-07-13",
+    "summary": "独立三节点 TSS Keygen/Sign 已在本地验证；本文设计它如何作为 wallet-sign 后端接入，并明确当前尚未完成端到端整合。",
     "tags": [
       "Web3",
       "Wallet",
@@ -362,9 +384,11 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "wallet-sign",
       "Security"
     ],
-    "readingTime": "7 min",
-    "difficulty": "项目拆解",
+    "readingTime": "2 min",
+    "difficulty": "架构设计",
     "kind": "engineering-note",
+    "evidenceLevel": "design",
+    "evidenceSummary": "独立三节点 TSS Keygen/Sign 已本地验证；MPC 作为 wallet-sign 后端的接入尚未完成。",
     "conceptTags": [
       "mpc-tss",
       "signer-service",
@@ -372,7 +396,7 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "multi-chain"
     ],
     "relatedProjectIds": [
-      2,
+      1,
       5
     ],
     "recommendedSlugs": [
@@ -382,29 +406,31 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "withdrawal-error-handling"
     ],
     "suggestedQuestions": [
-      "这次 wallet-sign 接入 MPC 后，签名边界发生了什么变化？",
-      "为什么我没有让 wallet-api 或 wallet-service 直接感知 MPC？",
-      "MPC 接入后，SignerBackend 抽象解决了什么问题？"
+      "MPC/TSS 目前真正验证到了哪一步？",
+      "为什么 MPC 应位于 wallet-sign 后方？",
+      "接入完成前还缺哪些验收证据？"
     ]
   },
   {
     "id": 12,
     "slug": "aws-cloudhsm-wallet-sign-integration",
-    "title": "wallet-sign 接入 AWS CloudHSM：一次生产级 HSM 签名架构复盘",
+    "title": "wallet-sign × AWS CloudHSM：签名后端架构设计",
     "date": "2026-06-19",
-    "summary": "这次改造里，我把 wallet-sign 从本地私钥签名升级为 AWS CloudHSM 支撑的生产级签名架构，让私钥在 HSM 内生成、不可导出，并通过 hsm-gateway 收敛 PKCS#11 复杂性。",
+    "updatedAt": "2026-07-13",
+    "summary": "这是尚未实现的 HSM 目标架构：让 wallet-sign 保持稳定契约，由 hsm-gateway 收敛 PKCS#11、会话、审计和不可导出密钥边界。",
     "tags": [
       "Web3",
       "Wallet",
       "AWS",
       "CloudHSM",
       "HSM",
-      "wallet-sign",
       "Security"
     ],
-    "readingTime": "8 min",
-    "difficulty": "项目拆解",
+    "readingTime": "2 min",
+    "difficulty": "架构设计",
     "kind": "engineering-note",
+    "evidenceLevel": "design",
+    "evidenceSummary": "HSM 尚未接入 wallet-sign；本文只记录目标架构、安全边界和失败策略。",
     "conceptTags": [
       "signer-service",
       "wallet-backend",
@@ -412,7 +438,7 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "mpc-tss"
     ],
     "relatedProjectIds": [
-      2,
+      1,
       5
     ],
     "recommendedSlugs": [
@@ -422,9 +448,9 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "withdrawal-error-handling"
     ],
     "suggestedQuestions": [
-      "这次 wallet-sign 接入 AWS CloudHSM 后，签名安全边界发生了什么变化？",
-      "为什么要在 wallet-sign 和 CloudHSM 之间加 hsm-gateway？",
-      "CloudHSM 签名失败时，为什么不能 fallback 到本地私钥？"
+      "HSM 如果接入 wallet-sign，安全边界会如何变化？",
+      "为什么需要 hsm-gateway 收敛 PKCS#11？",
+      "HSM 不可用时为什么不能降级到本地私钥？"
     ]
   },
   {
@@ -568,6 +594,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "readingTime": "8 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
+    "evidenceLevel": "design",
+    "evidenceSummary": "多链接入检查表与生产边界设计，不代表所有清单项已经实现。",
     "conceptTags": [
       "wallet-backend",
       "multi-chain",
@@ -683,6 +711,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "readingTime": "5 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
+    "evidenceLevel": "design",
+    "evidenceSummary": "内部转账识别与索引策略设计，尚未形成生产级 trace indexer。",
     "conceptTags": [
       "wallet-backend",
       "multi-chain",
@@ -721,6 +751,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "readingTime": "8 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "已定位私有项目充值、提现与确认路径；完整四服务失败注入仍在建设。",
     "conceptTags": [
       "wallet-backend",
       "multi-chain",
@@ -1042,6 +1074,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "readingTime": "6 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "wallet-core 的 TypeScript 多链构建与测试已验证显式资源输入。",
     "conceptTags": [
       "wallet-backend",
       "multi-chain",
@@ -1083,6 +1117,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "readingTime": "8 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "协议与实现路径学习笔记，不代表线上 ERC-4337 生产接入。",
     "conceptTags": [
       "wallet-backend",
       "signer-service",
@@ -1162,7 +1198,9 @@ export const articleSummaries: ArticleSummary[] = [
     ],
     "readingTime": "8 min",
     "difficulty": "基础",
-    "kind": "engineering-note"
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "来自项目调用链与代码入口整理，未声明生产流量验证。"
   },
   {
     "id": 2,
@@ -1178,7 +1216,9 @@ export const articleSummaries: ArticleSummary[] = [
     ],
     "readingTime": "10 min",
     "difficulty": "进阶",
-    "kind": "engineering-note"
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "结合本地后端项目接口边界整理的协议选型笔记。"
   },
   {
     "id": 3,
@@ -1194,7 +1234,9 @@ export const articleSummaries: ArticleSummary[] = [
     ],
     "readingTime": "12 min",
     "difficulty": "项目拆解",
-    "kind": "engineering-note"
+    "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "已定位 wallet-api 的 dispatcher、adaptor 与 RPC service 边界；全链路基线仍在整理。"
   },
   {
     "id": 4,
@@ -1210,7 +1252,9 @@ export const articleSummaries: ArticleSummary[] = [
     ],
     "readingTime": "12 min",
     "difficulty": "项目拆解",
-    "kind": "engineering-note"
+    "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "Local Signer 与签名服务加固分支已验证；MPC/HSM 后端不计入已完成能力。"
   },
   {
     "id": 5,
@@ -1226,7 +1270,9 @@ export const articleSummaries: ArticleSummary[] = [
     ],
     "readingTime": "12 min",
     "difficulty": "项目拆解",
-    "kind": "engineering-note"
+    "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "已梳理并局部运行采集、存储、API 与数据新鲜度链路。"
   },
   {
     "id": 6,
@@ -1242,7 +1288,9 @@ export const articleSummaries: ArticleSummary[] = [
     ],
     "readingTime": "12 min",
     "difficulty": "进阶",
-    "kind": "engineering-note"
+    "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "wallet-core 的多链地址派生与网络参数测试提供本地证据。"
   },
   {
     "id": 7,
@@ -1258,7 +1306,9 @@ export const articleSummaries: ArticleSummary[] = [
     ],
     "readingTime": "14 min",
     "difficulty": "进阶",
-    "kind": "engineering-note"
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "基于 EVM 调用与代理模式的代码阅读和实验整理。"
   },
   {
     "id": 8,
@@ -1274,7 +1324,9 @@ export const articleSummaries: ArticleSummary[] = [
     ],
     "readingTime": "14 min",
     "difficulty": "进阶",
-    "kind": "engineering-note"
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "基于 CREATE2 与 assembly 生命周期的代码阅读和本地推演。"
   },
   {
     "id": 9,
@@ -1307,14 +1359,17 @@ export const articleSummaries: ArticleSummary[] = [
     ],
     "readingTime": "6 min",
     "difficulty": "项目拆解",
-    "kind": "engineering-note"
+    "kind": "engineering-note",
+    "evidenceLevel": "design",
+    "evidenceSummary": "结合现有代码入口整理的异常恢复设计；不是生产事故复盘。"
   },
   {
     "id": 11,
     "slug": "mpc-wallet-sign-integration",
-    "title": "wallet-sign 接入 MPC：一次签名安全边界升级的工程复盘",
+    "title": "wallet-sign × MPC/TSS：已验证能力与接入设计",
     "date": "2026-06-19",
-    "summary": "这次改造里，我把 wallet-sign 从本地私钥签名机收敛成 SignerBackend 调度层，并将 MPC 作为生产级签名后端接入，让完整私钥不再落在单点服务里。",
+    "updatedAt": "2026-07-13",
+    "summary": "独立三节点 TSS Keygen/Sign 已在本地验证；本文设计它如何作为 wallet-sign 后端接入，并明确当前尚未完成端到端整合。",
     "tags": [
       "Web3",
       "Wallet",
@@ -1323,28 +1378,32 @@ export const articleSummaries: ArticleSummary[] = [
       "wallet-sign",
       "Security"
     ],
-    "readingTime": "7 min",
-    "difficulty": "项目拆解",
-    "kind": "engineering-note"
+    "readingTime": "2 min",
+    "difficulty": "架构设计",
+    "kind": "engineering-note",
+    "evidenceLevel": "design",
+    "evidenceSummary": "独立三节点 TSS Keygen/Sign 已本地验证；MPC 作为 wallet-sign 后端的接入尚未完成。"
   },
   {
     "id": 12,
     "slug": "aws-cloudhsm-wallet-sign-integration",
-    "title": "wallet-sign 接入 AWS CloudHSM：一次生产级 HSM 签名架构复盘",
+    "title": "wallet-sign × AWS CloudHSM：签名后端架构设计",
     "date": "2026-06-19",
-    "summary": "这次改造里，我把 wallet-sign 从本地私钥签名升级为 AWS CloudHSM 支撑的生产级签名架构，让私钥在 HSM 内生成、不可导出，并通过 hsm-gateway 收敛 PKCS#11 复杂性。",
+    "updatedAt": "2026-07-13",
+    "summary": "这是尚未实现的 HSM 目标架构：让 wallet-sign 保持稳定契约，由 hsm-gateway 收敛 PKCS#11、会话、审计和不可导出密钥边界。",
     "tags": [
       "Web3",
       "Wallet",
       "AWS",
       "CloudHSM",
       "HSM",
-      "wallet-sign",
       "Security"
     ],
-    "readingTime": "8 min",
-    "difficulty": "项目拆解",
-    "kind": "engineering-note"
+    "readingTime": "2 min",
+    "difficulty": "架构设计",
+    "kind": "engineering-note",
+    "evidenceLevel": "design",
+    "evidenceSummary": "HSM 尚未接入 wallet-sign；本文只记录目标架构、安全边界和失败策略。"
   },
   {
     "id": 13,
@@ -1415,7 +1474,9 @@ export const articleSummaries: ArticleSummary[] = [
     ],
     "readingTime": "8 min",
     "difficulty": "项目拆解",
-    "kind": "engineering-note"
+    "kind": "engineering-note",
+    "evidenceLevel": "design",
+    "evidenceSummary": "多链接入检查表与生产边界设计，不代表所有清单项已经实现。"
   },
   {
     "id": 17,
@@ -1468,7 +1529,9 @@ export const articleSummaries: ArticleSummary[] = [
     ],
     "readingTime": "5 min",
     "difficulty": "项目拆解",
-    "kind": "engineering-note"
+    "kind": "engineering-note",
+    "evidenceLevel": "design",
+    "evidenceSummary": "内部转账识别与索引策略设计，尚未形成生产级 trace indexer。"
   },
   {
     "id": 20,
@@ -1485,7 +1548,9 @@ export const articleSummaries: ArticleSummary[] = [
     ],
     "readingTime": "8 min",
     "difficulty": "项目拆解",
-    "kind": "engineering-note"
+    "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "已定位私有项目充值、提现与确认路径；完整四服务失败注入仍在建设。"
   },
   {
     "id": 21,
@@ -1630,7 +1695,9 @@ export const articleSummaries: ArticleSummary[] = [
     ],
     "readingTime": "6 min",
     "difficulty": "项目拆解",
-    "kind": "engineering-note"
+    "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "wallet-core 的 TypeScript 多链构建与测试已验证显式资源输入。"
   },
   {
     "id": 29,
@@ -1648,7 +1715,9 @@ export const articleSummaries: ArticleSummary[] = [
     ],
     "readingTime": "8 min",
     "difficulty": "项目拆解",
-    "kind": "engineering-note"
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "协议与实现路径学习笔记，不代表线上 ERC-4337 生产接入。"
   },
   {
     "id": 30,

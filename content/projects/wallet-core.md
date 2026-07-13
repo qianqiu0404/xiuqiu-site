@@ -33,7 +33,7 @@
     "failureScenarios": ["链资源过期后旧签名不可继续使用", "浮点金额或错误单位可能造成资产精度错误"],
     "evidence": ["TypeScript typecheck", "链相关 Jest 套件", "Sui dry-run 充值模拟"],
     "knownLimits": ["Cosmos 依赖解析待修复", "不包含在线 RPC、资源预占和广播服务"],
-    "interviewSummary": "wallet-core 用 TypeScript 收敛多链钱包入口，但保留每条链影响资产安全的资源状态，而不是假装所有链都只有 from、to、amount。"
+    "overviewSummary": "wallet-core 用 TypeScript 收敛多链钱包入口，但保留每条链影响资产安全的资源状态，而不是假装所有链都只有 from、to、amount。"
   },
   "learning": {
     "goal": "把不同链的密钥、交易和签名差异收敛成可测试的离线核心，同时保留不可抹平的链级约束。",

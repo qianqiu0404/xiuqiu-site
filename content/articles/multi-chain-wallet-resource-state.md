@@ -3,6 +3,8 @@
   "id": 28,
   "slug": "multi-chain-wallet-resource-state",
   "kind": "engineering-note",
+  "evidenceLevel": "local-verified",
+  "evidenceSummary": "wallet-core 的 TypeScript 多链构建与测试已验证显式资源输入。",
   "title": "钱包后端不能隐藏的资源状态：Nonce、UTXO、Blockhash 与 Object Version",
   "date": "2026-07-03",
   "summary": "多链钱包可以统一转账、签名和广播的业务语义，但不能隐藏决定交易唯一性、时效性和可执行性的资源状态。这篇文章用 EVM nonce、ERC-4337 nonce key、BTC UTXO、Solana blockhash 和 Sui object version，复盘资源如何解析、预占和冻结，以及资源过期后为什么需要重新构建和签名。",

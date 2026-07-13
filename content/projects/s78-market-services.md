@@ -25,7 +25,7 @@
     "failureScenarios": ["外部 API 失败时不能伪造行情", "数据存在但过期时必须明确标记 stale"],
     "evidence": ["Crawler/Worker 分层", "last_updated 与 data_delay_seconds", "Dashboard Error 状态"],
     "knownLimits": ["一键本地验收仍需固定", "完整数据质量与容灾策略未完成"],
-    "interviewSummary": "S78 是钱包主线之外的数据服务补充，证明我能处理外部数据源、异步处理、缓存、数据库、API 和前端之间的完整链路。"
+    "overviewSummary": "S78 是钱包主线之外的数据服务补充，串联外部数据源、异步处理、缓存、数据库、API 和前端之间的完整链路。"
   },
   "learning": {
     "goal": "理解交易所数据服务的采集、处理、存储和查询边界，并用时间和错误状态表达数据可信度。",

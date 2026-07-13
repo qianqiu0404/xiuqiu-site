@@ -26,7 +26,7 @@ export interface Project {
   coreAbilities: string[]
   talkingPoints: string[]
   techStack: string[]
-  engineering: { role: string; systemBoundary: string; callFlow: string[]; failureScenarios: string[]; evidence: string[]; knownLimits: string[]; interviewSummary: string }
+  engineering: { role: string; systemBoundary: string; callFlow: string[]; failureScenarios: string[]; evidence: string[]; knownLimits: string[]; overviewSummary: string }
   learning: { goal: string; verified: string[]; verification: string[]; verificationNote?: string; tradeoffs: string[]; nextSteps: string[] }
   conceptTags: string[]
   relatedArticleSlugs: string[]
@@ -118,7 +118,7 @@ export const projects: Project[] = [
         "尚未形成一条覆盖四服务的稳定一键端到端演示",
         "MPC/TSS 已完成独立三节点验证但未接入 wallet-sign；HSM、严格账务模型与完整可观测性仍属于目标态"
       ],
-      "interviewSummary": "这是我的 Web3 钱包后端主线：用 Exchange Wallet Infrastructure 拆开资金状态、多链节点、私钥签名和风险控制，并围绕幂等、确认数、风控放行、结果未知和补偿恢复理解资金系统。"
+      "overviewSummary": "这是我的 Web3 钱包后端主线：用 Exchange Wallet Infrastructure 拆开资金状态、多链节点、私钥签名和风险控制，并围绕幂等、确认数、风控放行、结果未知和补偿恢复理解资金系统。"
     },
     "learning": {
       "goal": "能够不依赖背稿讲清四个服务的职责、充值提现状态机和关键异常恢复案例，并能回到代码和测试证明判断。",
@@ -143,7 +143,7 @@ export const projects: Project[] = [
       "nextSteps": [
         "固定四个服务的兼容版本和启动顺序",
         "补齐风控拒绝、提现失败注入与重启恢复测试",
-        "整理一份三分钟与十五分钟两档项目讲稿"
+        "整理简版与完整两档工程说明"
       ]
     },
     "conceptTags": [
@@ -237,7 +237,7 @@ export const projects: Project[] = [
         "一键本地验收仍需固定",
         "完整数据质量与容灾策略未完成"
       ],
-      "interviewSummary": "S78 是钱包主线之外的数据服务补充，证明我能处理外部数据源、异步处理、缓存、数据库、API 和前端之间的完整链路。"
+      "overviewSummary": "S78 是钱包主线之外的数据服务补充，串联外部数据源、异步处理、缓存、数据库、API 和前端之间的完整链路。"
     },
     "learning": {
       "goal": "理解交易所数据服务的采集、处理、存储和查询边界，并用时间和错误状态表达数据可信度。",
@@ -276,6 +276,125 @@ export const projects: Project[] = [
     "suggestedQuestions": [
       "行情服务如何表达数据新鲜度？",
       "为什么失败时不应该展示 mock 行情？"
+    ]
+  },
+  {
+    "id": 9,
+    "legacyIds": [],
+    "slug": "stableflow",
+    "name": "StableFlow",
+    "category": "当前开发副线",
+    "featured": false,
+    "stage": "verified-local",
+    "sourceType": "original",
+    "visibility": "private",
+    "positioning": "面向 B2B 稳定币发票结算的非托管工程沙盒，围绕 invoice 状态机、合规审批、EIP-712 授权、签名边界、链上支付与 outbox 交付组织完整链路。",
+    "currentFocus": "在不改变钱包后端核心定位的前提下，验证稳定币业务如何复用资金状态、幂等、风控授权、独立签名和链上索引能力。",
+    "verifiedEvidence": [
+      "12 个 workspace 包的 TypeScript 类型检查通过",
+      "Vitest、Foundry 测试通过，包含授权防重放、金额篡改、错误链和合约不托管资金不变量",
+      "API、worker、indexer、signer、contracts 与 Next.js web 完整构建通过"
+    ],
+    "targetOutcome": "形成一条可重复的本地 B2B 稳定币结算演示：创建 invoice、风险审核、签发 EIP-712 授权、付款、索引确认、退款和 outbox 交付均有可观察状态。",
+    "nextMilestone": "跑通无缓存的一键本地 demo 与浏览器 E2E，并记录失败注入、数据新鲜度和链上/本地状态恢复证据。",
+    "knownLimits": [
+      "当前验证以本地测试与构建为主，一键 demo 和浏览器 E2E 尚未计入已完成证据",
+      "Base Sepolia 部署和合约验证不作为当前已完成能力",
+      "仓库暂时私有，不提供公开源码按钮"
+    ],
+    "updatedAt": "2026-07-13",
+    "coreAbilities": [
+      "Invoice 状态机",
+      "EIP-712 授权",
+      "非托管合约结算",
+      "风控审核",
+      "Signer 服务",
+      "Indexer 与 Outbox",
+      "TypeScript Monorepo"
+    ],
+    "talkingPoints": [
+      "为什么合约直接 payer 到 merchant 而不托管 USDC",
+      "审批授权如何绑定 invoice、金额、链和 deadline",
+      "链上事件、内部状态和通知失败如何最终一致"
+    ],
+    "techStack": [
+      "TypeScript",
+      "pnpm",
+      "Turborepo",
+      "Next.js",
+      "Node.js",
+      "PostgreSQL",
+      "gRPC",
+      "Solidity",
+      "Foundry",
+      "EIP-712"
+    ],
+    "engineering": {
+      "role": "稳定币结算沙盒的架构实现、测试验证与状态边界梳理",
+      "systemBoundary": "StableFlow 是钱包工程能力的业务应用副线：它不替代 Exchange Wallet Infrastructure，也不声称提供生产支付服务。",
+      "callFlow": [
+        "创建并审核 invoice",
+        "生成与 invoice 内容绑定的 EIP-712 授权",
+        "独立 signer 验证授权并签名",
+        "payer 通过非托管合约直接向 merchant 支付",
+        "indexer 更新链上事实，worker 通过 outbox 交付事件"
+      ],
+      "failureScenarios": [
+        "重复授权、金额篡改、错误 chainId 或错误 signer 必须拒绝",
+        "链上已支付但本地 invoice 或下游通知未推进时需要幂等恢复"
+      ],
+      "evidence": [
+        "pnpm typecheck",
+        "pnpm test",
+        "pnpm build",
+        "Foundry invariantContractNeverCustodiesUSDC"
+      ],
+      "knownLimits": [
+        "集成测试中仍有依赖外部服务而跳过的用例",
+        "完整本地 demo、E2E 和测试网部署需要单独验收"
+      ],
+      "overviewSummary": "StableFlow 是当前开发副线，用稳定币发票结算验证状态机、风控授权、签名边界、链上事实和 outbox，而钱包后端仍是我的主工程身份。"
+    },
+    "learning": {
+      "goal": "把钱包基础设施中的资金状态与签名安全判断迁移到非托管稳定币结算场景。",
+      "verified": [
+        "状态机与金额值对象",
+        "EIP-712 防重放和内容绑定",
+        "合约不托管资金不变量",
+        "服务与前端构建"
+      ],
+      "verification": [
+        "pnpm typecheck",
+        "pnpm test",
+        "pnpm build"
+      ],
+      "verificationNote": "2026-07-13 在本地仓库执行通过；部分外部依赖集成测试按项目配置跳过。",
+      "tradeoffs": [
+        "保持非托管结算，不把网站文案扩大为支付生产经验",
+        "将测试、构建与端到端部署分开标注",
+        "作为当前副线展示，不稀释 Web3 钱包后端主线"
+      ],
+      "nextSteps": [
+        "无缓存重跑关键测试",
+        "跑通 demo:local 与浏览器 E2E",
+        "补链上成功本地失败的恢复演示"
+      ]
+    },
+    "conceptTags": [
+      "wallet-backend",
+      "signer-service",
+      "api-design",
+      "ai-engineering"
+    ],
+    "relatedArticleSlugs": [
+      "withdrawal-error-handling",
+      "wallet-sign-signer",
+      "api-system-calls"
+    ],
+    "suggestedQuestions": [
+      "StableFlow 与钱包基础设施共享哪些工程问题？",
+      "为什么它被标为当前开发副线？",
+      "目前通过了哪些验证，还有什么没完成？"
     ]
   },
   {
@@ -349,7 +468,7 @@ export const projects: Project[] = [
         "三节点证据来自独立 TSS 环境",
         "尚未完成 wallet-sign 接入，也未用于生产资金"
       ],
-      "interviewSummary": "这是一个源码学习与安全改造项目，用来理解 TSS 如何降低完整私钥单点风险，以及它在钱包系统里仍然依赖业务风控和高可用设计。"
+      "overviewSummary": "这是一个源码学习与安全改造项目，用来理解 TSS 如何降低完整私钥单点风险，以及它在钱包系统里仍然依赖业务风控和高可用设计。"
     },
     "learning": {
       "goal": "能够从代码和运行结果解释门限签名的控制面、协议面、份额边界和可用性风险。",
@@ -458,7 +577,7 @@ export const projects: Project[] = [
         "Cosmos 依赖解析待修复",
         "不包含在线 RPC、资源预占和广播服务"
       ],
-      "interviewSummary": "wallet-core 用 TypeScript 收敛多链钱包入口，但保留每条链影响资产安全的资源状态，而不是假装所有链都只有 from、to、amount。"
+      "overviewSummary": "wallet-core 用 TypeScript 收敛多链钱包入口，但保留每条链影响资产安全的资源状态，而不是假装所有链都只有 from、to、amount。"
     },
     "learning": {
       "goal": "把不同链的密钥、交易和签名差异收敛成可测试的离线核心，同时保留不可抹平的链级约束。",
@@ -511,22 +630,23 @@ export const projects: Project[] = [
     "name": "Web3 Wallet Engineer Lab",
     "category": "可运行实验",
     "featured": true,
-    "stage": "verified-local",
+    "stage": "showcase-ready",
     "sourceType": "original",
-    "visibility": "none",
+    "visibility": "public",
+    "repositoryUrl": "https://github.com/qianqiu0404/web3-wallet-engineer-lab",
     "positioning": "用 Go 标准库和内存仓储实现的最小钱包后端闭环，用于练习地址、充值、提现、审核、风控、nonce、归集、审计和指标。",
     "currentFocus": "让钱包领域模型和状态转换可以在一个轻量环境中运行、测试和演示，为 Exchange Wallet Infrastructure 提供更容易复现的证据。",
     "verifiedEvidence": [
-      "项目包含可启动 HTTP API",
-      "充值与提现流程具有单元测试和接口流程测试",
-      "提供健康检查、Prometheus 文本指标和审计日志"
+      "公开仓库包含可启动 HTTP API，go test ./... 已通过",
+      "同一 chain + tx_hash 与相同参数重复充值返回原记录，冲突参数被稳定拒绝",
+      "充值与提现流程具有单元测试和接口流程测试，并提供健康检查、Prometheus 文本指标和审计日志"
     ],
     "targetOutcome": "成为一个五分钟可启动、十五分钟可讲完的钱包后端最小实验：完整演示充值入账、提现审核、风控拒绝、nonce 分配和链上确认。",
-    "nextMilestone": "把实验代码与站点内容源分离，整理一条无需私人笔记路径的公开演示说明。",
+    "nextMilestone": "增加广播结果未知与链上成功本地失败的可运行故障注入，并让异常手册直接引用对应测试。",
     "knownLimits": [
       "当前使用内存仓储，不等同于生产数据库与分布式状态",
-      "链上交互使用模拟接口",
-      "当前没有独立公开仓库链接"
+      "链上交互使用模拟接口，不使用真实资产或私钥",
+      "当前幂等证据覆盖充值 txHash，提现 request_id、reorg 和账务补偿仍待实现"
     ],
     "updatedAt": "2026-07-13",
     "coreAbilities": [
@@ -560,7 +680,7 @@ export const projects: Project[] = [
       ],
       "failureScenarios": [
         "黑名单或额度触发风控拒绝",
-        "重复业务请求不得重复推进资金状态"
+        "重复充值事件返回同一记录，同 txHash 不同参数返回幂等冲突"
       ],
       "evidence": [
         "go test ./...",
@@ -572,10 +692,10 @@ export const projects: Project[] = [
         "内存状态不支持多实例",
         "没有真实链和签名机接入"
       ],
-      "interviewSummary": "这个实验把钱包业务闭环压缩到可运行的最小代码，用来证明我理解状态机、风控、nonce、审计和可观测性，而不只是背架构图。"
+      "overviewSummary": "这个实验把钱包业务闭环压缩到可运行的最小代码，用于观察状态机、风控、nonce、审计和可观测性如何协作。"
     },
     "learning": {
-      "goal": "用最小代码重复验证钱包领域判断，并把每个面试概念对应到可运行接口和测试。",
+      "goal": "用最小代码重复验证钱包领域判断，并把每个核心概念对应到可运行接口和测试。",
       "verified": [
         "充值与提现状态流程",
         "黑名单和额度规则",
@@ -585,15 +705,15 @@ export const projects: Project[] = [
         "go test ./...",
         "go run ./cmd/api"
       ],
-      "verificationNote": "当前验证发生在本地实验目录，网站不会暴露私人 Obsidian 路径。",
+      "verificationNote": "2026-07-13 本地测试通过，源码与 CI 配置已发布到公开仓库。",
       "tradeoffs": [
         "以可运行和可解释优先",
         "内存仓储只用于边界验证",
         "生产化差距必须明确展示"
       ],
       "nextSteps": [
-        "整理独立演示说明",
-        "增加幂等冲突与重启恢复场景",
+        "增加广播结果未知故障注入",
+        "增加链上成功本地失败的补偿测试",
         "明确与钱包基础设施四个服务边界的概念映射"
       ]
     },

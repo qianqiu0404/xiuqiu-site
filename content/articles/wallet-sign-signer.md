@@ -3,6 +3,8 @@
   "id": 4,
   "slug": "wallet-sign-signer",
   "kind": "engineering-note",
+  "evidenceLevel": "local-verified",
+  "evidenceSummary": "Local Signer 与签名服务加固分支已验证；MPC/HSM 后端不计入已完成能力。",
   "title": "wallet-sign：多链签名机为什么要独立设计",
   "date": "2026-05-21",
   "summary": "从安全边界、私钥管理、离线签名、批量签名和多链差异角度，拆解签名机在钱包系统中的位置。",

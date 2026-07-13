@@ -13,6 +13,7 @@ import { setSeoMeta } from '../utils/seo'
 const route = useRoute()
 const router = useRouter()
 const slug = computed(() => route.params.slug as string)
+const evidenceLabels = { design: '架构设计', 'source-reviewed': '资料与代码复核', 'local-verified': '本地已验证', integrated: '已集成验证', 'public-demo': '公开可运行' } as const
 
 const article = computed(() => {
   const summary = getArticleBySlug(slug.value)
@@ -252,10 +253,12 @@ watchEffect(() => {
             <time class="meta-tag">{{ article.date }}</time>
             <span v-if="article.updatedAt" class="meta-tag">Updated {{ article.updatedAt }}</span>
             <span class="meta-tag">{{ article.difficulty }}</span>
+            <span v-if="article.evidenceLevel" class="meta-tag evidence-meta">{{ evidenceLabels[article.evidenceLevel] }}</span>
             <span class="meta-reading">{{ article.readingTime }}</span>
           </div>
           <h1 class="article-detail-title">{{ article.title }}</h1>
           <p class="article-detail-summary">{{ article.summary }}</p>
+          <aside v-if="article.evidenceSummary" class="article-evidence-note"><strong>证据边界</strong><p>{{ article.evidenceSummary }}</p></aside>
           <div class="article-tags">
             <span v-for="tag in article.tags" :key="tag" class="tag">{{ tag }}</span>
           </div>
@@ -306,7 +309,7 @@ watchEffect(() => {
         </div>
 
         <div class="followup-block">
-          <p class="section-label">继续追问</p>
+          <p class="section-label">延伸问题</p>
           <div class="suggested-question-list">
             <button
               v-for="question in article.suggestedQuestions"

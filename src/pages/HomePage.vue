@@ -6,6 +6,7 @@ import { aiStageLabels, projectStageLabels, siteAiCases, siteArticlesByNewest, s
 import { setSeoMeta } from '../utils/seo'
 
 const featuredProjects = siteProjects.filter(project => project.featured)
+const stableFlow = siteProjects.find(project => project.slug === 'stableflow')
 const recentArticles = siteArticlesByNewest.slice(0, 3)
 const latestLearning = learningRecords.slice(0, 2)
 const latestRadar = dailyRadars[0]
@@ -57,6 +58,13 @@ onMounted(() => setSeoMeta({ title: 'xiuqiu｜Web3 钱包工程 × AI 协作', d
     </div>
   </section>
 
+  <section v-if="stableFlow" class="section current-side-project">
+    <div class="container side-project-row">
+      <div><p class="section-label">Current Side Project</p><h2>StableFlow · 稳定币结算工程副线</h2><p>{{ stableFlow.positioning }}</p></div>
+      <div class="side-project-proof"><span>{{ projectStageLabels[stableFlow.stage] }}</span><strong>本次验证</strong><p>{{ stableFlow.verifiedEvidence[1] }}</p><router-link :to="`/projects/${stableFlow.slug}`">查看边界与下一步 &rarr;</router-link></div>
+    </div>
+  </section>
+
   <section class="section">
     <div class="container">
       <div class="section-heading section-heading-left"><p class="section-label">Three Tracks</p><h2 class="section-title">我持续在做的三件事</h2><p class="section-desc">先看方向，再进入工程证据、研究来源和学习复盘。</p></div>
@@ -83,10 +91,10 @@ onMounted(() => setSeoMeta({ title: 'xiuqiu｜Web3 钱包工程 × AI 协作', d
 
   <section class="section">
     <div class="container">
-      <div class="section-heading section-heading-left"><p class="section-label">Automation</p><h2 class="section-title">AI 如何进入实际工作流</h2></div>
+      <div class="section-heading section-heading-left"><p class="section-label">Four Loops</p><h2 class="section-title">AI 如何进入实际工作流</h2><p class="section-desc">工程协作、Skill 复用、研究发布和知识治理都用真实流程与边界说明。</p></div>
       <div class="ai-case-preview-grid">
         <router-link v-for="item in siteAiCases" :key="item.id" :to="`/ai#${item.slug}`" class="ai-case-preview-card">
-          <div class="card-status-row"><span>0{{ item.id }}</span><strong>{{ aiStageLabels[item.stage] }}</strong></div><h3>{{ item.title }}</h3><p>{{ item.summary }}</p><small>{{ item.flow.slice(0, 3).join(' → ') }}</small>
+          <div class="card-status-row"><span>{{ String(item.displayOrder).padStart(2, '0') }}</span><strong>{{ aiStageLabels[item.stage] }}</strong></div><h3>{{ item.title }}</h3><p>{{ item.summary }}</p><small>{{ item.flow.slice(0, 3).join(' → ') }}</small>
         </router-link>
       </div>
     </div>

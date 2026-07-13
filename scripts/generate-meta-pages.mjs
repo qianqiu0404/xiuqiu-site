@@ -80,16 +80,25 @@ writePage(
   '/engineering',
   replaceMeta(baseHtml, {
     title: '工程档案｜xiuqiu Web3 钱包后端',
-    description: '面向技术面试官的交易所钱包工程档案：资金编排、风险控制、链交互、签名边界、失败场景和验证证据。',
+    description: '交易所钱包工程档案：资金编排、风险控制、链交互、签名边界、失败场景和验证证据。',
     path: '/engineering',
+  }),
+)
+
+writePage(
+  '/engineering/failures',
+  replaceMeta(baseHtml, {
+    title: '钱包异常恢复手册｜xiuqiu',
+    description: '30 个钱包后端核心异常，按资金事实、止损动作、排查证据、恢复步骤和当前证据边界组织。',
+    path: '/engineering/failures',
   }),
 )
 
 writePage(
   '/ai',
   replaceMeta(baseHtml, {
-    title: 'AI 协作｜xiuqiu 工程工作流',
-    description: 'AI Coding 协作、Obsidian 知识系统与研究自动化三个可验证案例。',
+    title: 'AI 工作流｜xiuqiu',
+    description: 'AI Coding、跨设备 Skill 工具链、每日研究发布与 Obsidian 知识治理四个真实 Loop。',
     path: '/ai',
   }),
 )
@@ -198,4 +207,4 @@ dailyRadars.forEach(radar => {
 })
 
 const legacyProjectPages = projects.reduce((total, project) => total + 1 + project.legacyIds.length, 0)
-console.log(`Generated static meta pages for ${articleSummaries.length + projects.length + legacyProjectPages + dailyRadars.length + 5} routes.`)
+console.log(`Generated static meta pages for ${articleSummaries.length + projects.length + legacyProjectPages + dailyRadars.length + 6} routes.`)

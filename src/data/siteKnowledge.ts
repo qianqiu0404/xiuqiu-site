@@ -3,12 +3,14 @@ import { articleKnowledge, type ArticleKnowledge } from './generatedArticleKnowl
 import { learningRecords } from './generatedLearningRecords.ts'
 import { dailyRadars, type DailyRadar } from './generatedRadars.ts'
 import { projects, type Project, type ProjectSourceType, type ProjectStage, type ProjectVisibility } from './generatedProjects.ts'
+import { failureCases, type FailureCase } from './generatedFailureCases.ts'
 
 export type KnowledgeTag = ArticleKnowledge['conceptTags'][number] | 'wallet-core'
 export type SiteArticle = ArticleKnowledge
 export type SiteProject = Project
 export type SiteAiCase = AiCase
 export type SiteRadar = DailyRadar
+export type SiteFailureCase = FailureCase
 
 export const projectStageLabels: Record<ProjectStage, string> = {
   exploring: '探索中',
@@ -54,12 +56,13 @@ export interface SiteKnowledge {
   aiCases: SiteAiCase[]
   articles: SiteArticle[]
   radars: SiteRadar[]
+  failureCases: SiteFailureCase[]
   tags: KnowledgeTag[]
   engineeringMap: EngineeringMapNode[]
 }
 
 export interface SiteReference {
-  type: 'article' | 'project' | 'capability' | 'ai' | 'radar'
+  type: 'article' | 'project' | 'capability' | 'ai' | 'radar' | 'failure'
   title: string
   href: string
   summary: string
@@ -75,6 +78,7 @@ export const siteArticlesByNewest: SiteArticle[] = [...siteArticles].sort((a, b)
 export const siteProjects: SiteProject[] = projects
 export const siteAiCases: SiteAiCase[] = aiCases
 export const siteRadars: SiteRadar[] = dailyRadars
+export const siteFailureCases: SiteFailureCase[] = failureCases
 export const latestRadar: SiteRadar | undefined = siteRadars[0]
 
 export const engineeringMap: EngineeringMapNode[] = [
@@ -150,6 +154,7 @@ export const siteKnowledge: SiteKnowledge = {
       '独立签名与 TSS/MPC',
       'Go 与 TypeScript',
       'AI Coding 协作',
+      '跨设备 Skill 工具链与来源治理',
       'Obsidian 知识与自动化工作流',
     ],
   },
@@ -157,6 +162,7 @@ export const siteKnowledge: SiteKnowledge = {
   aiCases: siteAiCases,
   articles: siteArticles,
   radars: siteRadars,
+  failureCases: siteFailureCases,
   tags: ['wallet-core', 'wallet-backend', 'signer-service', 'multi-chain', 'go-infra', 'evm', 'mpc-tss', 'api-design', 'ai-engineering'],
   engineeringMap,
 }
@@ -221,6 +227,7 @@ export function buildKnowledgeContext(): string {
       [
         `- ${item.title}: ${item.summary}`,
         `  Status: ${aiStageLabels[item.stage]}`,
+        `  Ownership: ${item.ownershipNote}`,
         `  Flow: ${item.flow.join(' -> ')}`,
         `  Human responsibility: ${item.responsibilities.join(' | ')}`,
         `  Evidence: ${item.evidence.join(' | ')}`,
@@ -234,6 +241,16 @@ export function buildKnowledgeContext(): string {
     ...siteArticles.map(article =>
       `- ${article.title}: ${article.summary}; Kind: ${article.kind}; Tags: ${article.conceptTags.join(', ')}`,
     ),
+    '',
+    'Wallet failure playbook (these are engineering cases, not claimed production incidents):',
+    ...siteFailureCases.map(item => [
+      `- ${item.title}: ${item.symptom}`,
+      `  Evidence status: ${item.evidenceStatus}; Fund risk: ${item.fundRisk}`,
+      `  Stop-loss first: ${item.stopLoss}`,
+      `  Recovery: ${item.recovery.join(' | ')}`,
+      `  Idempotency: ${item.idempotencyBasis}`,
+      `  Current project boundary: ${item.currentBoundary}`,
+    ].join('\n')),
     '',
     'Curated learning records:',
     ...learningRecords.map(record =>
@@ -270,7 +287,7 @@ export function findRelevantReferences(query: string, pageTitle?: string, max = 
   }))
 
   const aiRefs = siteAiCases.map(item => ({
-    score: scoreText(queryTokens, [item.title, item.summary, item.currentFocus, item.flow.join(' '), item.evidence.join(' ')].join(' ')) + (pageTitle === item.title ? 10 : 0),
+    score: scoreText(queryTokens, [item.title, item.summary, item.ownershipNote, item.currentFocus, item.flow.join(' '), item.evidence.join(' ')].join(' ')) + (pageTitle === item.title ? 10 : 0),
     ref: { type: 'ai' as const, title: item.title, href: `/ai#${item.slug}`, summary: item.summary },
   }))
 
@@ -284,7 +301,12 @@ export function findRelevantReferences(query: string, pageTitle?: string, max = 
     ref: { type: 'capability' as const, title: node.title, href: '/engineering', summary: node.subtitle },
   }))
 
-  return [...articleRefs, ...projectRefs, ...aiRefs, ...radarRefs, ...capabilityRefs]
+  const failureRefs = siteFailureCases.map(item => ({
+    score: scoreText(queryTokens, [item.title, item.symptom, item.fundRisk, item.stopLoss, item.services.join(' '), item.chains.join(' ')].join(' ')) + (pageTitle === item.title ? 10 : 0),
+    ref: { type: 'failure' as const, title: item.title, href: `/engineering/failures#${item.slug}`, summary: `${item.stopLoss} 当前边界：${item.currentBoundary}` },
+  }))
+
+  return [...articleRefs, ...projectRefs, ...aiRefs, ...radarRefs, ...capabilityRefs, ...failureRefs]
     .filter(item => item.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, max)

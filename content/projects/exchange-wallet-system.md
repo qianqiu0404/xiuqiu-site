@@ -69,7 +69,7 @@
       "尚未形成一条覆盖四服务的稳定一键端到端演示",
       "MPC/TSS 已完成独立三节点验证但未接入 wallet-sign；HSM、严格账务模型与完整可观测性仍属于目标态"
     ],
-    "interviewSummary": "这是我的 Web3 钱包后端主线：用 Exchange Wallet Infrastructure 拆开资金状态、多链节点、私钥签名和风险控制，并围绕幂等、确认数、风控放行、结果未知和补偿恢复理解资金系统。"
+    "overviewSummary": "这是我的 Web3 钱包后端主线：用 Exchange Wallet Infrastructure 拆开资金状态、多链节点、私钥签名和风险控制，并围绕幂等、确认数、风控放行、结果未知和补偿恢复理解资金系统。"
   },
   "learning": {
     "goal": "能够不依赖背稿讲清四个服务的职责、充值提现状态机和关键异常恢复案例，并能回到代码和测试证明判断。",
@@ -94,7 +94,7 @@
     "nextSteps": [
       "固定四个服务的兼容版本和启动顺序",
       "补齐风控拒绝、提现失败注入与重启恢复测试",
-      "整理一份三分钟与十五分钟两档项目讲稿"
+      "整理简版与完整两档工程说明"
     ]
   },
   "conceptTags": ["wallet-backend", "api-design", "multi-chain", "signer-service", "risk-control", "go-infra"],

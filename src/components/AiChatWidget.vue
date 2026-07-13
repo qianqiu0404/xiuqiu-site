@@ -12,14 +12,14 @@ interface ChatMessage {
 }
 
 interface SiteReference {
-  type: 'article' | 'project' | 'capability' | 'ai' | 'radar'
+  type: 'article' | 'project' | 'capability' | 'ai' | 'radar' | 'failure'
   title: string
   href: string
   summary: string
 }
 
 interface PageContext {
-  type: 'home' | 'engineering' | 'ai' | 'learning' | 'articles' | 'article' | 'project' | 'radar' | 'radar-detail'
+  type: 'home' | 'engineering' | 'engineering-failures' | 'ai' | 'learning' | 'articles' | 'article' | 'project' | 'radar' | 'radar-detail'
   title?: string
   slug?: string
   summary?: string
@@ -57,6 +57,7 @@ const promptGroups = [
     label: 'AI Collaboration',
     prompts: [
       'xiuqiu 如何使用 AI 协作完成工程任务？',
+      '跨设备 Skill 工具链如何区分个人与第三方能力？',
       'Obsidian 知识系统如何避免公开私人内容？',
       '研究自动化如何处理来源、去重和失败？',
     ],
@@ -72,9 +73,9 @@ const promptGroups = [
   {
     label: 'Learning Path',
     prompts: [
-      '如果我是招聘方，应该如何理解 xiuqiu 的技术优势？',
+      '如何快速了解 xiuqiu 当前在做的工程？',
       '从钱包架构到签名服务应该按什么顺序学习？',
-      '请用 3 分钟解释这个网站的工程主线',
+      '请概括这个网站的工程主线',
     ],
   },
 ]
@@ -110,6 +111,14 @@ const currentPageContext = computed<PageContext>(() => {
     }
   }
 
+  if (route.name === 'engineering-failures') {
+    return {
+      type: 'engineering-failures',
+      title: '钱包异常恢复手册',
+      summary: '30 个钱包后端核心异常；回答必须包含资金事实、先止损动作、排查与恢复依据，以及当前项目证据边界。',
+    }
+  }
+
   if (route.name === 'learning') {
     return {
       type: 'learning',
@@ -121,8 +130,8 @@ const currentPageContext = computed<PageContext>(() => {
   if (route.name === 'ai') {
     return {
       type: 'ai',
-      title: 'AI 协作',
-      summary: 'AI Coding 协作、Obsidian 知识系统与研究自动化三个可验证案例。',
+      title: 'AI 工作流',
+      summary: 'AI Coding、跨设备 Skill 工具链、每日研究发布与 Obsidian 知识治理四个真实 Loop。',
     }
   }
 

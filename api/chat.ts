@@ -45,7 +45,7 @@ type ErrorCode =
   | 'upstream_network_error'
 
 interface PageContext {
-  type: 'home' | 'engineering' | 'ai' | 'learning' | 'articles' | 'article' | 'project' | 'radar' | 'radar-detail'
+  type: 'home' | 'engineering' | 'engineering-failures' | 'ai' | 'learning' | 'articles' | 'article' | 'project' | 'radar' | 'radar-detail'
   title?: string
   slug?: string
   summary?: string
@@ -117,6 +117,7 @@ function normalizePageContext(value: unknown): PageContext | undefined {
   if (
     candidate.type !== 'home' &&
     candidate.type !== 'engineering' &&
+    candidate.type !== 'engineering-failures' &&
     candidate.type !== 'ai' &&
     candidate.type !== 'learning' &&
     candidate.type !== 'articles' &&
@@ -242,6 +243,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
               'If the answer is not supported by the provided website context, say you are not sure instead of inventing experience or facts.',
               'Prefer Chinese. Use English technical terms only where they help clarity.',
               'Clearly distinguish implemented or verified facts, current limitations, and future learning plans.',
+              'For wallet failure questions, always structure the answer around: chain/fund fact, stop-loss action, evidence to inspect, recovery/idempotency basis, and the current project boundary.',
               'Keep answers concise, practical, and grounded in the website context.',
               'When helpful, cite exact project names and article titles from the website context.',
               '',
