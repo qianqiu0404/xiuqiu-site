@@ -80,7 +80,7 @@ writePage(
   '/engineering',
   replaceMeta(baseHtml, {
     title: '工程档案｜xiuqiu Web3 钱包后端',
-    description: '面向技术面试官的交易所钱包工程档案：资金编排、风险控制、链交互、签名边界、失败场景和验证证据。',
+    description: '交易所钱包工程档案：资金编排、风险控制、链交互、签名边界、失败场景和验证证据。',
     path: '/engineering',
   }),
 )

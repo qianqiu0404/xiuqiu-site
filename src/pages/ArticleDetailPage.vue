@@ -309,7 +309,7 @@ watchEffect(() => {
         </div>
 
         <div class="followup-block">
-          <p class="section-label">继续追问</p>
+          <p class="section-label">延伸问题</p>
           <div class="suggested-question-list">
             <button
               v-for="question in article.suggestedQuestions"

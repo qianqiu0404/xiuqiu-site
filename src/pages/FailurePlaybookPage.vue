@@ -5,6 +5,8 @@ import { failureCases, type FailureAction, type FailureCase, type FailureCategor
 import { getArticleBySlug, getProjectByKey } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
 
+type PracticeRating = '待学习' | '不确定' | '已理解'
+
 const route = useRoute()
 const router = useRouter()
 const practiceMode = computed(() => route.query.mode === 'practice')
@@ -17,11 +19,11 @@ const priority = ref('')
 const evidence = ref('')
 const revealed = ref(false)
 const practiceIndex = ref(0)
-const ratings = ref<Record<string, '不会' | '模糊' | '能讲'>>({})
+const ratings = ref<Record<string, PracticeRating>>({})
 const STORAGE_KEY = 'xiuqiu.failure-practice.v1'
 
 const categoryLabels: Record<FailureCategory, string> = { 'request-state': '请求与状态机', 'node-scanning': '节点与扫链', deposit: '充值识别', 'withdrawal-finality': '提现广播与最终性', 'multi-chain': '多链资源', 'risk-signing': '风控与签名', 'funds-operations': '资金与运维' }
-const priorityLabels: Record<FailurePriority, string> = { 'must-answer': '必须会讲', common: '高频', advanced: '进阶' }
+const priorityLabels: Record<FailurePriority, string> = { key: '重点', common: '高频', advanced: '进阶' }
 const evidenceLabels: Record<FailureEvidenceStatus, string> = { implemented: '当前已实现', partial: '部分验证', design: '生产设计' }
 const actionLabels: Record<FailureAction, string> = { retry: 'retry', compensate: 'compensate', pause: 'pause', 'manual-review': 'manual-review' }
 const allServices = [...new Set(failureCases.flatMap(item => item.services))].sort()
@@ -36,7 +38,7 @@ function setMode(mode?: 'practice') {
   void router.replace({ path: '/engineering/failures', query: mode ? { mode } : {} })
 }
 function resetFilters() { query.value = ''; category.value = ''; service.value = ''; chain.value = ''; action.value = ''; priority.value = ''; evidence.value = '' }
-function rate(value: '不会' | '模糊' | '能讲') {
+function rate(value: PracticeRating) {
   if (!practiceCase.value) return
   ratings.value = { ...ratings.value, [practiceCase.value.slug]: value }
   localStorage.setItem(STORAGE_KEY, JSON.stringify(ratings.value))
@@ -51,7 +53,11 @@ function relatedProjects(item: FailureCase) { return item.relatedProjectSlugs.ma
 
 watch(filteredCases, () => { practiceIndex.value = 0; revealed.value = false })
 onMounted(() => {
-  try { ratings.value = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') } catch { ratings.value = {} }
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}') as Record<string, string>
+    ratings.value = Object.fromEntries(Object.entries(saved).map(([slug, value]) => [slug, value === '不会' ? '待学习' : value === '模糊' ? '不确定' : value === '能讲' ? '已理解' : value]).filter((entry): entry is [string, PracticeRating] => ['待学习', '不确定', '已理解'].includes(entry[1])))
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(ratings.value))
+  } catch { ratings.value = {} }
   setSeoMeta({ title: '钱包异常恢复手册｜xiuqiu', description: '30 个钱包后端核心异常，按资金事实、止损动作、排查证据和恢复依据组织。', path: '/engineering/failures' })
 })
 </script>
@@ -65,7 +71,7 @@ onMounted(() => {
       </header>
 
       <section class="failure-framework">
-        <div class="failure-stats"><div><strong>{{ failureCases.length }}</strong><span>核心场景</span></div><div><strong>7</strong><span>异常分组</span></div><div><strong>6</strong><span>必须会讲</span></div></div>
+        <div class="failure-stats"><div><strong>{{ failureCases.length }}</strong><span>核心场景</span></div><div><strong>7</strong><span>异常分组</span></div><div><strong>6</strong><span>重点场景</span></div></div>
         <div><p class="section-label">五个判断问题</p><ol><li>链上事实是否已经发生？</li><li>订单、冻结、账务和通知分别到哪一步？</li><li>下一动作是否可逆？</li><li>重试依靠什么幂等标识？</li><li>最终以 canonical 链、账务分录还是业务确认恢复？</li></ol></div>
         <div><p class="section-label">四种处理动作</p><dl class="action-definitions"><div><dt>retry</dt><dd>没有产生新资金事实</dd></div><div><dt>compensate</dt><dd>链上事实明确，本地状态落后</dd></div><div><dt>pause</dt><dd>结果不确定，继续可能重复出金</dd></div><div><dt>manual-review</dt><dd>多哈希、账务不平或授权异常</dd></div></dl></div>
       </section>
@@ -92,7 +98,7 @@ onMounted(() => {
           <div v-else class="practice-answer">
             <div><strong>资金风险</strong><p>{{ practiceCase.fundRisk }}</p></div><div><strong>先止损</strong><p>{{ practiceCase.stopLoss }}</p></div>
             <div><strong>排查</strong><ol><li v-for="value in practiceCase.investigate" :key="value">{{ value }}</li></ol></div><div><strong>恢复</strong><ol><li v-for="value in practiceCase.recovery" :key="value">{{ value }}</li></ol></div>
-            <div class="practice-rating"><span>我现在：</span><button v-for="value in ['不会','模糊','能讲'] as const" :key="value" :class="{ active: ratings[practiceCase.slug] === value }" @click="rate(value)">{{ value }}</button><button class="next" @click="nextPractice">下一题 &rarr;</button></div>
+            <div class="practice-rating"><span>当前状态：</span><button v-for="value in ['待学习','不确定','已理解'] as const" :key="value" :class="{ active: ratings[practiceCase.slug] === value }" @click="rate(value)">{{ value }}</button><button class="next" @click="nextPractice">下一题 &rarr;</button></div>
           </div>
         </article>
       </section>

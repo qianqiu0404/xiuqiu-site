@@ -26,10 +26,10 @@
     "failureScenarios": ["黑名单或额度触发风控拒绝", "重复充值事件返回同一记录，同 txHash 不同参数返回幂等冲突"],
     "evidence": ["go test ./...", "go run ./cmd/api", "/healthz 与 /metrics", "接口流程测试"],
     "knownLimits": ["内存状态不支持多实例", "没有真实链和签名机接入"],
-    "interviewSummary": "这个实验把钱包业务闭环压缩到可运行的最小代码，用来证明我理解状态机、风控、nonce、审计和可观测性，而不只是背架构图。"
+    "overviewSummary": "这个实验把钱包业务闭环压缩到可运行的最小代码，用于观察状态机、风控、nonce、审计和可观测性如何协作。"
   },
   "learning": {
-    "goal": "用最小代码重复验证钱包领域判断，并把每个面试概念对应到可运行接口和测试。",
+    "goal": "用最小代码重复验证钱包领域判断，并把每个核心概念对应到可运行接口和测试。",
     "verified": ["充值与提现状态流程", "黑名单和额度规则", "nonce、归集、审计与指标接口"],
     "verification": ["go test ./...", "go run ./cmd/api"],
     "verificationNote": "2026-07-13 本地测试通过，源码与 CI 配置已发布到公开仓库。",

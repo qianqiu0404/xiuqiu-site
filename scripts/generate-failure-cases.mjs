@@ -4,7 +4,7 @@ import { parseMarkdownFrontmatter, requireFields, requireStringArray } from './f
 const CONTENT_DIR = new URL('../content/failure-cases/', import.meta.url)
 const OUTPUT_URL = new URL('../src/data/generatedFailureCases.ts', import.meta.url)
 const CATEGORIES = ['request-state', 'node-scanning', 'deposit', 'withdrawal-finality', 'multi-chain', 'risk-signing', 'funds-operations']
-const PRIORITIES = ['must-answer', 'common', 'advanced']
+const PRIORITIES = ['key', 'common', 'advanced']
 const EVIDENCE_STATUSES = ['implemented', 'partial', 'design']
 const ACTIONS = ['retry', 'compensate', 'pause', 'manual-review']
 const REQUIRED = ['slug', 'title', 'category', 'priority', 'services', 'chains', 'actions', 'evidenceStatus', 'symptom', 'fundRisk', 'stopLoss', 'investigate', 'recovery', 'idempotencyBasis', 'currentBoundary', 'verificationEvidence', 'relatedArticleSlugs', 'relatedProjectSlugs']

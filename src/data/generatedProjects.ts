@@ -26,7 +26,7 @@ export interface Project {
   coreAbilities: string[]
   talkingPoints: string[]
   techStack: string[]
-  engineering: { role: string; systemBoundary: string; callFlow: string[]; failureScenarios: string[]; evidence: string[]; knownLimits: string[]; interviewSummary: string }
+  engineering: { role: string; systemBoundary: string; callFlow: string[]; failureScenarios: string[]; evidence: string[]; knownLimits: string[]; overviewSummary: string }
   learning: { goal: string; verified: string[]; verification: string[]; verificationNote?: string; tradeoffs: string[]; nextSteps: string[] }
   conceptTags: string[]
   relatedArticleSlugs: string[]
@@ -118,7 +118,7 @@ export const projects: Project[] = [
         "尚未形成一条覆盖四服务的稳定一键端到端演示",
         "MPC/TSS 已完成独立三节点验证但未接入 wallet-sign；HSM、严格账务模型与完整可观测性仍属于目标态"
       ],
-      "interviewSummary": "这是我的 Web3 钱包后端主线：用 Exchange Wallet Infrastructure 拆开资金状态、多链节点、私钥签名和风险控制，并围绕幂等、确认数、风控放行、结果未知和补偿恢复理解资金系统。"
+      "overviewSummary": "这是我的 Web3 钱包后端主线：用 Exchange Wallet Infrastructure 拆开资金状态、多链节点、私钥签名和风险控制，并围绕幂等、确认数、风控放行、结果未知和补偿恢复理解资金系统。"
     },
     "learning": {
       "goal": "能够不依赖背稿讲清四个服务的职责、充值提现状态机和关键异常恢复案例，并能回到代码和测试证明判断。",
@@ -143,7 +143,7 @@ export const projects: Project[] = [
       "nextSteps": [
         "固定四个服务的兼容版本和启动顺序",
         "补齐风控拒绝、提现失败注入与重启恢复测试",
-        "整理一份三分钟与十五分钟两档项目讲稿"
+        "整理简版与完整两档工程说明"
       ]
     },
     "conceptTags": [
@@ -237,7 +237,7 @@ export const projects: Project[] = [
         "一键本地验收仍需固定",
         "完整数据质量与容灾策略未完成"
       ],
-      "interviewSummary": "S78 是钱包主线之外的数据服务补充，证明我能处理外部数据源、异步处理、缓存、数据库、API 和前端之间的完整链路。"
+      "overviewSummary": "S78 是钱包主线之外的数据服务补充，串联外部数据源、异步处理、缓存、数据库、API 和前端之间的完整链路。"
     },
     "learning": {
       "goal": "理解交易所数据服务的采集、处理、存储和查询边界，并用时间和错误状态表达数据可信度。",
@@ -353,7 +353,7 @@ export const projects: Project[] = [
         "集成测试中仍有依赖外部服务而跳过的用例",
         "完整本地 demo、E2E 和测试网部署需要单独验收"
       ],
-      "interviewSummary": "StableFlow 是当前开发副线，用稳定币发票结算验证状态机、风控授权、签名边界、链上事实和 outbox，而钱包后端仍是我的主工程身份。"
+      "overviewSummary": "StableFlow 是当前开发副线，用稳定币发票结算验证状态机、风控授权、签名边界、链上事实和 outbox，而钱包后端仍是我的主工程身份。"
     },
     "learning": {
       "goal": "把钱包基础设施中的资金状态与签名安全判断迁移到非托管稳定币结算场景。",
@@ -468,7 +468,7 @@ export const projects: Project[] = [
         "三节点证据来自独立 TSS 环境",
         "尚未完成 wallet-sign 接入，也未用于生产资金"
       ],
-      "interviewSummary": "这是一个源码学习与安全改造项目，用来理解 TSS 如何降低完整私钥单点风险，以及它在钱包系统里仍然依赖业务风控和高可用设计。"
+      "overviewSummary": "这是一个源码学习与安全改造项目，用来理解 TSS 如何降低完整私钥单点风险，以及它在钱包系统里仍然依赖业务风控和高可用设计。"
     },
     "learning": {
       "goal": "能够从代码和运行结果解释门限签名的控制面、协议面、份额边界和可用性风险。",
@@ -577,7 +577,7 @@ export const projects: Project[] = [
         "Cosmos 依赖解析待修复",
         "不包含在线 RPC、资源预占和广播服务"
       ],
-      "interviewSummary": "wallet-core 用 TypeScript 收敛多链钱包入口，但保留每条链影响资产安全的资源状态，而不是假装所有链都只有 from、to、amount。"
+      "overviewSummary": "wallet-core 用 TypeScript 收敛多链钱包入口，但保留每条链影响资产安全的资源状态，而不是假装所有链都只有 from、to、amount。"
     },
     "learning": {
       "goal": "把不同链的密钥、交易和签名差异收敛成可测试的离线核心，同时保留不可抹平的链级约束。",
@@ -692,10 +692,10 @@ export const projects: Project[] = [
         "内存状态不支持多实例",
         "没有真实链和签名机接入"
       ],
-      "interviewSummary": "这个实验把钱包业务闭环压缩到可运行的最小代码，用来证明我理解状态机、风控、nonce、审计和可观测性，而不只是背架构图。"
+      "overviewSummary": "这个实验把钱包业务闭环压缩到可运行的最小代码，用于观察状态机、风控、nonce、审计和可观测性如何协作。"
     },
     "learning": {
-      "goal": "用最小代码重复验证钱包领域判断，并把每个面试概念对应到可运行接口和测试。",
+      "goal": "用最小代码重复验证钱包领域判断，并把每个核心概念对应到可运行接口和测试。",
       "verified": [
         "充值与提现状态流程",
         "黑名单和额度规则",

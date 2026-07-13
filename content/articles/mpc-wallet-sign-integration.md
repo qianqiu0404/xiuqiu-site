@@ -8,7 +8,7 @@
 
 # 已经验证的部分
 
-独立三节点环境能够完成分布式 Keygen，并在满足门限时共同产生可验证签名。这证明我已经运行和理解 committee、threshold、key share 与多轮协议的基本流程。
+独立三节点环境能够完成分布式 Keygen，并在满足门限时共同产生可验证签名。这部分运行结果覆盖了 committee、threshold、key share 与多轮协议的基本流程。
 
 它没有证明以下事情已经完成：
 
