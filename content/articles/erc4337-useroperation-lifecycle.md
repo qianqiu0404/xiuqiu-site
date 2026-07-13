@@ -3,6 +3,8 @@
   "id": 29,
   "slug": "erc4337-useroperation-lifecycle",
   "kind": "engineering-note",
+  "evidenceLevel": "source-reviewed",
+  "evidenceSummary": "协议与实现路径学习笔记，不代表线上 ERC-4337 生产接入。",
   "title": "ERC-4337 工程拆解：一笔 UserOperation 如何验证、支付 Gas 并进入链上",
   "date": "2026-07-07",
   "summary": "从钱包后端视角拆解一笔 UserOperation 如何经过 nonce 分配、账户签名、Bundler 模拟、Paymaster 验证、EntryPoint 执行和 Gas 结算，并说明账户抽象为什么没有消除状态机。",

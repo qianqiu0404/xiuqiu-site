@@ -11,7 +11,7 @@ onMounted(() => setSeoMeta({ title: '每日研究雷达｜xiuqiu', description: 
     <div class="container">
       <header class="radar-hero">
         <div><p class="section-label">Daily Research Radar</p><h1>每日研究雷达</h1><p>从允许公开的 Obsidian 区块汇总。AI 负责筛选与结构化，来源、发布范围和构建门禁保持可复核。</p></div>
-        <div class="radar-disclaimer"><strong>AI 自动汇总</strong><span>研究与教育用途 · 非投资建议</span></div>
+        <div class="radar-disclaimer"><strong>试运行 · AI 自动汇总</strong><span>连续七天自动合并验收后再升级状态 · 非投资建议</span></div>
       </header>
 
       <div v-if="dailyRadars.length" class="radar-history">

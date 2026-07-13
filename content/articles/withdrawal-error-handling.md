@@ -3,6 +3,8 @@
   "id": 10,
   "slug": "withdrawal-error-handling",
   "kind": "engineering-note",
+  "evidenceLevel": "design",
+  "evidenceSummary": "结合现有代码入口整理的异常恢复设计；不是生产事故复盘。",
   "title": "提现错误处理机制：自动重试、补偿任务与人工复核",
   "date": "2026-06-18",
   "summary": "提现错误不能简单按失败重发处理，而要按链上事实是否确定分层：网络和节点问题自动重试，系统状态落后自动补偿，链上事实不确定或账务有风险时人工复核。",

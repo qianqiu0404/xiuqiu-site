@@ -12,14 +12,14 @@ interface ChatMessage {
 }
 
 interface SiteReference {
-  type: 'article' | 'project' | 'capability' | 'ai' | 'radar'
+  type: 'article' | 'project' | 'capability' | 'ai' | 'radar' | 'failure'
   title: string
   href: string
   summary: string
 }
 
 interface PageContext {
-  type: 'home' | 'engineering' | 'ai' | 'learning' | 'articles' | 'article' | 'project' | 'radar' | 'radar-detail'
+  type: 'home' | 'engineering' | 'engineering-failures' | 'ai' | 'learning' | 'articles' | 'article' | 'project' | 'radar' | 'radar-detail'
   title?: string
   slug?: string
   summary?: string
@@ -108,6 +108,14 @@ const currentPageContext = computed<PageContext>(() => {
       type: 'engineering',
       title: '工程档案',
       summary: 'Exchange Wallet Infrastructure 的资金编排、风险控制、链交互、签名边界、失败场景和验证证据。',
+    }
+  }
+
+  if (route.name === 'engineering-failures') {
+    return {
+      type: 'engineering-failures',
+      title: '钱包异常恢复手册',
+      summary: '30 个钱包后端核心异常；回答必须包含资金事实、先止损动作、排查与恢复依据，以及当前项目证据边界。',
     }
   }
 

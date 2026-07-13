@@ -23,6 +23,8 @@ export const articles: Article[] = [
     "readingTime": "8 min",
     "difficulty": "基础",
     "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "来自项目调用链与代码入口整理，未声明生产流量验证。",
     "conceptTags": [
       "api-design",
       "wallet-backend"
@@ -57,6 +59,8 @@ export const articles: Article[] = [
     "readingTime": "10 min",
     "difficulty": "进阶",
     "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "结合本地后端项目接口边界整理的协议选型笔记。",
     "conceptTags": [
       "api-design",
       "go-infra"
@@ -92,6 +96,8 @@ export const articles: Article[] = [
     "readingTime": "12 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "已定位 wallet-api 的 dispatcher、adaptor 与 RPC service 边界；全链路基线仍在整理。",
     "conceptTags": [
       "wallet-backend",
       "api-design",
@@ -127,6 +133,8 @@ export const articles: Article[] = [
     "readingTime": "12 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "Local Signer 与签名服务加固分支已验证；MPC/HSM 后端不计入已完成能力。",
     "conceptTags": [
       "signer-service",
       "wallet-backend",
@@ -163,6 +171,8 @@ export const articles: Article[] = [
     "readingTime": "12 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "已梳理并局部运行采集、存储、API 与数据新鲜度链路。",
     "conceptTags": [
       "go-infra",
       "api-design"
@@ -195,6 +205,8 @@ export const articles: Article[] = [
     "readingTime": "12 min",
     "difficulty": "进阶",
     "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "wallet-core 的多链地址派生与网络参数测试提供本地证据。",
     "conceptTags": [
       "multi-chain",
       "signer-service",
@@ -229,6 +241,8 @@ export const articles: Article[] = [
     "readingTime": "14 min",
     "difficulty": "进阶",
     "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "基于 EVM 调用与代理模式的代码阅读和实验整理。",
     "conceptTags": [
       "evm"
     ],
@@ -258,6 +272,8 @@ export const articles: Article[] = [
     "readingTime": "14 min",
     "difficulty": "进阶",
     "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "基于 CREATE2 与 assembly 生命周期的代码阅读和本地推演。",
     "conceptTags": [
       "evm"
     ],
@@ -318,6 +334,8 @@ export const articles: Article[] = [
     "readingTime": "6 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
+    "evidenceLevel": "design",
+    "evidenceSummary": "结合现有代码入口整理的异常恢复设计；不是生产事故复盘。",
     "conceptTags": [
       "wallet-backend",
       "api-design",
@@ -344,9 +362,10 @@ export const articles: Article[] = [
   {
     "id": 11,
     "slug": "mpc-wallet-sign-integration",
-    "title": "wallet-sign 接入 MPC：一次签名安全边界升级的工程复盘",
+    "title": "wallet-sign × MPC/TSS：已验证能力与接入设计",
     "date": "2026-06-19",
-    "summary": "这次改造里，我把 wallet-sign 从本地私钥签名机收敛成 SignerBackend 调度层，并将 MPC 作为生产级签名后端接入，让完整私钥不再落在单点服务里。",
+    "updatedAt": "2026-07-13",
+    "summary": "独立三节点 TSS Keygen/Sign 已在本地验证；本文设计它如何作为 wallet-sign 后端接入，并明确当前尚未完成端到端整合。",
     "tags": [
       "Web3",
       "Wallet",
@@ -355,9 +374,11 @@ export const articles: Article[] = [
       "wallet-sign",
       "Security"
     ],
-    "readingTime": "7 min",
-    "difficulty": "项目拆解",
+    "readingTime": "2 min",
+    "difficulty": "架构设计",
     "kind": "engineering-note",
+    "evidenceLevel": "design",
+    "evidenceSummary": "独立三节点 TSS Keygen/Sign 已本地验证；MPC 作为 wallet-sign 后端的接入尚未完成。",
     "conceptTags": [
       "mpc-tss",
       "signer-service",
@@ -365,7 +386,7 @@ export const articles: Article[] = [
       "multi-chain"
     ],
     "relatedProjectIds": [
-      2,
+      1,
       5
     ],
     "recommendedSlugs": [
@@ -375,30 +396,32 @@ export const articles: Article[] = [
       "withdrawal-error-handling"
     ],
     "suggestedQuestions": [
-      "这次 wallet-sign 接入 MPC 后，签名边界发生了什么变化？",
-      "为什么我没有让 wallet-api 或 wallet-service 直接感知 MPC？",
-      "MPC 接入后，SignerBackend 抽象解决了什么问题？"
+      "MPC/TSS 目前真正验证到了哪一步？",
+      "为什么 MPC 应位于 wallet-sign 后方？",
+      "接入完成前还缺哪些验收证据？"
     ],
-    "content": "# wallet-sign 接入 MPC：一次签名安全边界升级的工程复盘\n\n在这次 wallet-sign 的演进里，我没有把 MPC 当成一个外挂 SDK 接进去，而是把它当成一次签名安全边界升级来处理。\n\n改造前，wallet-sign 更像一台本地私钥签名机：根据 public_key 找到本地 private_key，完成 ECDSA 或 Ed25519 签名，再把 signature 返回给上游。这个模型能跑通多链签名，但安全边界很清楚：只要签名机、密钥存储或运维权限被攻破，完整私钥就可能暴露。\n\n改造后，我把 wallet-sign 收敛成一个签名能力调度层。它不再把签名理解成固定的本地私钥操作，而是通过 `SignerBackend` 在 local、HSM、MPC 之间切换。MPC 作为生产级签名后端接入后，wallet-sign 只保存 key metadata，完整私钥不再落在单点服务里。\n\n# 改造前的问题\n\n原来的本地签名流程很直接：\n\n```text\nwallet-sign\n  -> 根据 public_key 读取 private_key\n  -> 使用 ECDSA / Ed25519 本地签名\n  -> 返回 signature\n```\n\n这个流程的问题不是不能用，而是安全假设太集中。\n\n在本地私钥模型里，签名机既负责密钥索引，也负责持有完整私钥，还负责生成签名。一旦攻击者拿到机器权限、数据库权限或密钥解密材料，就可能绕过上游业务流程直接构造签名请求。\n\n所以这次改造的核心目标不是让系统看起来更高级，而是把私钥持有方式从单点完整私钥，升级为多方协作签名。\n\n# 我为什么把 MPC 放在 wallet-sign\n\n这套钱包基础设施按四个服务边界组织：\n\n```text\nwallet-service -> 业务编排\nrisk-service   -> 风险校验与放行凭证\nwallet-api     -> 链交互\nwallet-sign    -> 密钥和签名\n```\n\nMPC 接入后，我没有让 `wallet-service`、`risk-service` 或 `wallet-api` 直接感知 MPC。原因是 MPC 解决的是私钥安全和签名生成问题，不是提现审批、风险判断或链 RPC 问题。\n\n`wallet-service` 负责资金状态和流程编排。它关心余额、审批、提现状态机、失败重试和人工复核。\n\n`risk-service` 负责提现内容校验、风险规则结果与放行凭证，使业务审批和签名授权之间存在独立的风险控制边界。\n\n`wallet-api` 负责判断这笔交易在链上怎么表达。它关心 nonce、gas、UTXO、unsigned transaction、signed transaction、广播和链上确认。\n\n`wallet-sign` 才是签名安全边界。它负责校验签名请求、索引密钥、调用签名后端、返回标准 signature，并留下可审计记录。\n\n所以我最后把 MPC 接在 wallet-sign 内部，让它成为签名后端的一种实现，而不是让整个钱包系统到处出现 MPC provider 的调用代码。\n\n# 接入后重新确认的四个服务边界\n\n这次改造完成后，我重新把四个服务的职责压得更清楚。\n\n`wallet-service` 决定该不该签：\n\n```text\n余额是否足够\n提现地址是否合规\n风控放行结果是否绑定当前请求\n是否需要人工审批\n提现状态是否允许进入签名阶段\n失败后进入自动重试、补偿任务还是人工复核\n```\n\n`risk-service` 决定是否产生可验证的风控放行结果：\n\n```text\n提现内容与已提交记录是否一致\nrequest_id 是否已经处理\n地址与交易规则是否通过\n审批哈希如何生成和校验\n拒绝或重复请求如何返回稳定结果\n```\n\n`wallet-api` 决定签什么链上数据：\n\n```text\nEVM nonce / gas / calldata\nBTC UTXO 选择和 sighash\nSolana message\nCosmos SignDoc\nunsigned transaction 构建\nsigned transaction 组装\n交易广播和 receipt 查询\n```\n\n`wallet-sign` 决定如何安全地产生 signature：\n\n```text\n请求来源是否可信\nchain_id 是否支持\npublic_key 是否属于平台管理地址\n审批凭证和风控凭证是否有效\n这把 key 应该走 local、HSM 还是 MPC\n签名结果如何审计\n签名失败如何返回给上游状态机\n```\n\n这个边界确定以后，MPC 的位置就很自然：它只替换 wallet-sign 内部的私钥持有和签名方式。\n\n# 接入后的提现签名链路\n\n改造后，一笔提现的签名链路变成这样：\n\n```text\n1. 用户发起提现\n2. wallet-service 创建提现单\n3. wallet-service 完成余额与业务状态校验\n4. risk-service 校验提现内容并返回风控放行结果\n5. 大额或高风险提现进入人工审批\n6. 审批通过后，wallet-api 构建待签交易或 message hash\n7. wallet-service 调用 wallet-sign.SignTransactionsMessage\n8. wallet-sign 校验 request_id、chain_id、from_address、审批凭证和风控凭证\n9. wallet-sign 根据 public_key 找到 mpc_key_id\n10. wallet-sign 调用 MPC 服务完成协作签名\n11. MPC 多节点生成 signature\n12. wallet-sign 返回标准 signature\n13. wallet-api 组装 signed transaction 并广播\n14. wallet-service 监听链上确认并更新提现状态\n```\n\n这个链路里最重要的一点是：MPC 不决定交易该不该发生。\n\n该不该签，仍然由业务、审批和风控决定。MPC 只负责在已经被授权的签名请求上，用更安全的方式产生签名。\n\n# Keygen 改造后的数据流\n\n创建地址时，原来的 wallet-sign 会在本地生成私钥：\n\n```text\nwallet-sign 生成 private_key / public_key\n-> private_key 存入本地密钥存储\n-> public_key 推导 address\n-> 返回 address\n```\n\nMPC 接入后，我把地址创建改成协作 keygen：\n\n```text\nwallet-sign 请求 MPC Keygen\n-> 多个 MPC 节点分别生成 key share\n-> 没有任何单点拥有完整私钥\n-> MPC 返回 public_key 和 key_id\n-> wallet-sign 保存 public_key -> mpc_key_id 映射\n-> wallet-sign 根据 public_key 推导 address\n-> 返回 address 给 wallet-service\n```\n\n业务侧拿到的仍然是普通链上地址。链上也不会知道这个地址背后是本地私钥、HSM 还是 MPC。变化发生在钱包系统内部的密钥安全边界。\n\nwallet-sign 里保存的数据从完整私钥，变成了 key metadata：\n\n```text\npublic_key\naddress\nchain_id\nmpc_key_id\nkey_status\ncreated_at\n```\n\n这一步是整个改造里最关键的结构变化：wallet-sign 仍然能索引和管理地址，但不再持有完整私钥。\n\n# Sign 改造后的调用流\n\n签名时，原来的实现类似：\n\n```text\nprivateKey = GetPrivateKey(publicKey)\nsignature = SignMessage(privateKey, messageHash)\n```\n\nMPC 接入后，调用流变成：\n\n```text\nkeyId = GetMpcKeyId(publicKey)\nsignature = mpcClient.Sign(keyId, messageHash)\n```\n\nwallet-sign 拿到 signature 后，再返回给上游。上游继续组装交易、广播交易和监听确认。\n\n这里有一个容易被低估的点：MPC 签出来的 signature 必须和普通签名格式保持一致。\n\n不同链的签名差异不能被“接了 MPC”这件事抹平：\n\n```text\nETH / TRON: secp256k1 ECDSA，关注 r/s/v 和 recovery id\nBTC: 关注脚本类型、sighash、签名序列化和 UTXO 上下文\nSolana: Ed25519 message signature\nCosmos: SignDoc、account number、sequence 和签名模式\n```\n\n所以这次改造里，MPC provider 不是只要能签 ECDSA 就够了，还要能满足具体链的 hash 规则、序列化格式和签名校验方式。\n\n# 最终沉淀出的 SignerBackend 抽象\n\n为了不让链适配器直接依赖某一种签名实现，我在 wallet-sign 内部沉淀了 `SignerBackend` 抽象：\n\n```text\nSignerBackend\n  - CreateKey(ctx, chainId, network)\n  - SignHash(ctx, chainId, publicKey, messageHash)\n```\n\n然后再拆成不同实现：\n\n```text\nLocalSignerBackend\n  -> 本地生成 private key\n  -> 本地保存密钥材料\n  -> 本地完成签名\n\nMPCSignerBackend\n  -> 调用 MPC Keygen\n  -> 调用 MPC Sign\n  -> wallet-sign 只保存 key metadata\n```\n\n这样拆完以后，本地开发仍然可以用 local 模式，生产环境的高价值钱包可以切到 MPC。更重要的是，`wallet-service` 和 `wallet-api` 不需要因为签名后端变化而重新理解密钥系统。\n\n配置上也能按链或钱包等级做切换：\n\n```yaml\nsign_backend:\n  ethereum: mpc\n  bitcoin: mpc\n  solana: local\n```\n\n这个抽象的价值不只是接 MPC。以后如果要接 HSM、换 MPC 厂商、把部分链从 local 迁移到 MPC，也都可以集中在 wallet-sign 内部完成。\n\n# 这次接入后我踩出来的边界问题\n\nMPC 接入以后，系统看起来只是换了签名后端，但真正需要守住的是几条边界。\n\n第一，MPC 不能绕过风控。\n\nwallet-sign 在调用 MPC 前仍然要校验：\n\n```text\nrequest_id\nchain_id\nfrom_address\nto_address\namount\ntoken\n审批状态\n风控状态\n提现单状态\n```\n\n否则 MPC 会变成一台更安全但同样危险的盲签机器。\n\n第二，MPC 不可用时不能自动降级到本地私钥。\n\n如果 MPC 服务挂了，系统不能为了可用性自动 fallback 到本地私钥。否则攻击者只要制造 MPC 不可用，就可能诱导系统走弱安全路径。\n\n这类故障在提现链路里应该变成：\n\n```text\nMPC 不可用\n-> wallet-sign 返回签名失败\n-> wallet-service 标记提现为待重试或人工处理\n-> 触发告警\n-> 不广播交易\n```\n\n第三，MPC 节点不能落在同一个权限域。\n\n如果多个 share 都部署在同一台机器、同一个云账号、同一套运维权限下，系统只是形式上用了 MPC，实际信任假设仍然高度集中。\n\n第四，日志不能泄漏敏感材料。\n\n签名日志里只能记录用于审计和排障的信息：\n\n```text\nrequest_id\nchain_id\npublic_key 摘要\nmpc_key_id 摘要\n签名结果\n耗时\n错误码\n```\n\n不能记录 private key、MPC share、审批密钥、完整敏感交易体或可重放的签名凭证。\n\n# 复盘后的理解\n\n这次 wallet-sign 接入 MPC 后，我对“钱包签名安全”的理解更具体了。\n\nMPC 的价值不在于项目里多了一个密码学组件，而在于它让完整私钥不再落在单点服务里。真正的工程价值，是把业务编排、风险判断、链上交易构建和密钥签名拆开，并且让每个服务只承担自己的责任。\n\n最终这套架构可以概括成：\n\n```text\nwallet-service 决定该不该签\nrisk-service 决定风险条件是否允许签\nwallet-api 决定签什么链上数据\nwallet-sign 决定如何安全地产生签名\nMPC 负责让完整私钥不在单点出现\n```\n\n对交易所钱包来说，真正重要的不是“用了 MPC”这四个字，而是这些边界是否被守住：\n\n- 完整私钥不落单点。\n- 签名前有业务、审批和风控校验。\n- 签名请求和结果可审计。\n- 失败不会绕过安全边界。\n- 多链签名格式和链上验签结果可验证。\n\n如果这些边界没有建立起来，MPC 只是一个更复杂的签名 SDK。只有当它被接入到清晰的 wallet-sign 边界里，才真正变成钱包系统里的安全能力升级。"
+    "content": "# wallet-sign × MPC/TSS：已验证能力与接入设计\n\n> 证据边界：我已经在独立 TSS 项目完成三节点 Keygen / Sign 的本地验证，但它尚未成为 `wallet-sign` 可用的端到端后端。本文将已验证事实与接入目标分开。\n\n# 已经验证的部分\n\n独立三节点环境能够完成分布式 Keygen，并在满足门限时共同产生可验证签名。这证明我已经运行和理解 committee、threshold、key share 与多轮协议的基本流程。\n\n它没有证明以下事情已经完成：\n\n- `wallet-sign` 已稳定调度 TSS 节点；\n- 审批凭证已经与 TSS sign session 绑定；\n- 节点离线、消息重复、超时和中断恢复已经通过故障测试；\n- key share 备份、轮换、灾备和生产审计已经实现。\n\n# 为什么放在 wallet-sign 后方\n\n```text\nwallet-service -> 资金状态与业务编排\nrisk-service   -> 风险校验与审批凭证\nwallet-api     -> 链级资源、交易构建和广播\nwallet-sign    -> 签名请求校验与后端选择\n  -> Local Signer（当前基线）\n  -> MPC/TSS（接入中）\n  -> HSM（下一阶段设计）\n```\n\nMPC 改变的是密钥持有与签名生成方式，不应让 wallet-service 或 wallet-api 感知 committee、round message 和 key share。稳定的 `SignerBackend` 契约可以阻止协议细节扩散到业务层。\n\n# 接入时必须绑定的事实\n\n一个 TSS sign session 不能只接收任意 hash。它需要绑定：\n\n- `sign_request_id` 与提现 attempt；\n- 审批凭证和 canonical payload hash；\n- key id、key version、committee 与 threshold；\n- 算法、链类型和预期公钥；\n- 每轮会话状态、参与节点和最终签名结果。\n\n重复请求必须返回原结果或稳定冲突。结果未知时应暂停并查询原 session，不能创建另一个可能同时完成的签名会话。\n\n# 不可用时的边界\n\n节点不足、key share 异常或门限无法满足时，提现应 fail-closed。不能降低 threshold，也不能临时拼回完整私钥。Local Signer 只能作为明确隔离的开发基线，不能作为生产故障降级路径。\n\n# 接入完成的验收条件\n\n- `wallet-sign` 能通过统一接口选择 TSS backend；\n- 三节点 Keygen/Sign 在服务调用链内完成，而不是只在独立 demo；\n- 重复 request、节点离线、轮次超时和恢复测试通过；\n- 签名与预期公钥、unsigned payload、审批哈希一致；\n- 审计记录可追踪但不暴露 key share；\n- Local 与 TSS 的能力状态在配置和页面上不会被混淆。\n\n# 当前结论\n\n现阶段准确说法是：“独立三节点 TSS 已验证，wallet-sign 接入中”。等统一接口、失败恢复和端到端测试完成后，网站再把证据等级从架构设计升级为集成验证。"
   },
   {
     "id": 12,
     "slug": "aws-cloudhsm-wallet-sign-integration",
-    "title": "wallet-sign 接入 AWS CloudHSM：一次生产级 HSM 签名架构复盘",
+    "title": "wallet-sign × AWS CloudHSM：签名后端架构设计",
     "date": "2026-06-19",
-    "summary": "这次改造里，我把 wallet-sign 从本地私钥签名升级为 AWS CloudHSM 支撑的生产级签名架构，让私钥在 HSM 内生成、不可导出，并通过 hsm-gateway 收敛 PKCS#11 复杂性。",
+    "updatedAt": "2026-07-13",
+    "summary": "这是尚未实现的 HSM 目标架构：让 wallet-sign 保持稳定契约，由 hsm-gateway 收敛 PKCS#11、会话、审计和不可导出密钥边界。",
     "tags": [
       "Web3",
       "Wallet",
       "AWS",
       "CloudHSM",
       "HSM",
-      "wallet-sign",
       "Security"
     ],
-    "readingTime": "8 min",
-    "difficulty": "项目拆解",
+    "readingTime": "2 min",
+    "difficulty": "架构设计",
     "kind": "engineering-note",
+    "evidenceLevel": "design",
+    "evidenceSummary": "HSM 尚未接入 wallet-sign；本文只记录目标架构、安全边界和失败策略。",
     "conceptTags": [
       "signer-service",
       "wallet-backend",
@@ -406,7 +429,7 @@ export const articles: Article[] = [
       "mpc-tss"
     ],
     "relatedProjectIds": [
-      2,
+      1,
       5
     ],
     "recommendedSlugs": [
@@ -416,11 +439,11 @@ export const articles: Article[] = [
       "withdrawal-error-handling"
     ],
     "suggestedQuestions": [
-      "这次 wallet-sign 接入 AWS CloudHSM 后，签名安全边界发生了什么变化？",
-      "为什么要在 wallet-sign 和 CloudHSM 之间加 hsm-gateway？",
-      "CloudHSM 签名失败时，为什么不能 fallback 到本地私钥？"
+      "HSM 如果接入 wallet-sign，安全边界会如何变化？",
+      "为什么需要 hsm-gateway 收敛 PKCS#11？",
+      "HSM 不可用时为什么不能降级到本地私钥？"
     ],
-    "content": "# wallet-sign 接入 AWS CloudHSM：一次生产级 HSM 签名架构复盘\n\n这次改造里，我把 `wallet-sign` 从本地私钥签名升级成了 AWS CloudHSM 支撑的生产级签名架构。\n\n改造前，`wallet-sign` 的核心模型是 `LevelDB 保存完整私钥 + 本地 signer 签名`。这套模型适合学习版签名机，也能把多链签名流程跑通，但它的安全边界不够高：私钥、签名逻辑、机器权限和运维权限都集中在同一个系统域里。\n\n改造后，我把 `wallet-sign` 收敛成签名编排层，把 AWS CloudHSM 放在真正持有和使用私钥的位置。私钥在 CloudHSM 内生成，设置为 sensitive / non-exportable；`wallet-sign` 只保存 `public_key -> hsm_key_id` 这类 key metadata；PKCS#11、session 池、Crypto User 登录和错误码转换则放到内部 `hsm-gateway` 里处理。\n\n这篇记录不是一篇 HSM 接入教程，而是我对一次生产级签名安全边界升级的复盘。\n\n# 改造前的问题\n\n原来的本地签名流程很直接：\n\n```text\nwallet-sign\n  -> 根据 public_key 从 LevelDB 找到 private_key\n  -> 使用本地 signer 完成 ECDSA / Ed25519 签名\n  -> 返回 signature\n```\n\n这个结构的问题不是功能不完整，而是信任假设过于集中。\n\n在本地私钥模型里，`wallet-sign` 同时负责密钥存储、密钥解密、签名执行和签名结果返回。一旦签名机、LevelDB、配置文件或运维权限被攻破，攻击者就可能拿到完整私钥，或者绕过上游业务流程构造签名请求。\n\n所以这次改造的目标不是简单把 `hsm_enable` 改成 true，而是把完整私钥从应用层移走，让签名机只负责编排和审计，不再直接持有可导出的私钥材料。\n\n# 为什么选择 AWS CloudHSM\n\nAWS 里有几个容易混在一起的概念：\n\n```text\nAWS CloudHSM\n  -> 客户可控的云 HSM 集群\n  -> 通过 PKCS#11、JCE、CNG/KSP 等方式接入\n\nAWS KMS\n  -> 托管密钥服务\n  -> API 更简单，运维负担更低，但抽象层更高\n\nAWS KMS Custom Key Store backed by CloudHSM\n  -> 使用 KMS API\n  -> key material 放在 CloudHSM 集群里\n```\n\n这次我记录的是 `AWS CloudHSM + PKCS#11 Client SDK` 这条路径。原因是它更贴近生产级签名机的安全目标：应用可以通过标准 PKCS#11 接口让 CloudHSM 生成和使用私钥，同时把私钥设置为不可导出。\n\nCloudHSM 不是打开一个 HTTP API 就能用的托管服务。它是一套独立 HSM 集群，需要完成 VPC、subnet、security group、cluster 初始化、证书信任、mTLS、Crypto User 和 Client SDK 配置。这个复杂度本身也是我引入 `hsm-gateway` 的原因。\n\n# 我最终落下来的生产架构\n\n最终架构没有让所有链 adaptor 直接碰 PKCS#11，也没有让 `wallet-service` 或 `wallet-api` 直接连接 CloudHSM。\n\n我把链路收敛成这样：\n\n```text\nwallet-service\n  -> wallet-sign\n    -> hsm-gateway\n      -> CloudHSM Client SDK 5 / PKCS#11\n        -> AWS CloudHSM cluster\n```\n\n各层职责重新确认了一遍：\n\n```text\nwallet-service\n  -> 提现单、审批、风控、状态机、失败重试和人工复核\n\nwallet-api\n  -> 链上交易构建、签名后组装、广播、链上确认查询\n\nwallet-sign\n  -> 签名前校验、key metadata 查询、签名编排、审计记录\n\nhsm-gateway\n  -> PKCS#11 session 池、CloudHSM 登录、签名调用、错误码转换、限流\n\nCloudHSM\n  -> 私钥生成、私钥保存、硬件内签名\n```\n\n这样拆完以后，`wallet-sign` 仍然是业务系统眼里的签名服务，但 PKCS#11 的复杂性不会扩散到多链 adaptor 里。后续如果更换 HSM 厂商、调整 session 策略、升级 Client SDK，也可以集中在 `hsm-gateway` 内部处理。\n\n# CloudHSM 基础设施接入\n\nCloudHSM 的第一步不是写代码，而是把基础设施信任链建立起来。\n\n生产环境里，我把它拆成几个基础对象：\n\n```text\nVPC\n-> private subnet\n-> security group\n-> CloudHSM cluster\n-> 至少 2 个 HSM，分布在不同 AZ\n-> 运行 wallet-sign / hsm-gateway 的 EC2、ECS 或 EKS\n```\n\n安全组的边界也很明确：\n\n```text\n只有 hsm-gateway 能访问 CloudHSM\nwallet-service 不直连 CloudHSM\nwallet-api 不直连 CloudHSM\nHSM 管理入口只允许跳板机或管理网络访问\n生产签名链路不暴露到公网\n```\n\n初始化 CloudHSM cluster 时，还要处理 cluster CSR、CA 签名、HSM certificate、client mTLS 和 cluster 激活。这里的根信任不是普通业务配置，Root CA 私钥必须离线保存，初始化和激活流程也需要有 runbook、审批和操作审计。\n\n应用侧运行前还要完成 Client SDK 5 和 PKCS#11 library 配置。AWS CloudHSM Client SDK 5 的 PKCS#11 library 兼容 PKCS#11 2.40，这意味着 Go 服务可以通过 PKCS#11 library 访问 CloudHSM，但也要自己管理 session、登录、超时、错误码和并发。\n\n# Crypto User 和权限边界\n\n应用通常以 Crypto User 登录 CloudHSM。PKCS#11 的 pin 格式类似：\n\n```text\n<CU_user_name>:<password>\n```\n\n这类凭证不能写进 `config.yml`，也不能进入代码仓库。我把它交给 Secrets Manager、SSM Parameter Store 或 Kubernetes Secret 管理，并且在应用启动时注入给 `hsm-gateway`。\n\n这里我刻意区分了几个角色：\n\n```text\nkey admin\n  -> 负责 key 管理和权限配置\n\nsigning user\n  -> 负责生产签名调用\n\nauditor\n  -> 负责审计和操作追踪\n```\n\n`wallet-sign` 使用的 signing user 不需要拥有过大的 key 管理权限。CU 密码轮换也要按灰度流程处理，支持双 CU 过渡，避免一次性轮换导致生产签名不可用。\n\n# Keygen 改造后的数据流\n\n改造前，地址创建依赖本地生成私钥：\n\n```text\nwallet-sign 生成 private_key / public_key\n-> private_key 写入 LevelDB\n-> public_key 推导 address\n-> 返回 address 给 wallet-service\n```\n\n接入 CloudHSM 后，我把 keygen 改成 HSM 内生成：\n\n```text\nhsm-gateway 调 PKCS#11 C_GenerateKeyPair\n-> curve 选择 secp256k1\n-> private key 设置为 sensitive / non-exportable\n-> CloudHSM 返回 public key 和 private key handle\n-> wallet-sign 保存 public_key -> hsm_key_id\n-> wallet-sign 根据 public key 推导链上 address\n-> 返回 address 给 wallet-service\n```\n\n对 ETH、BTC、TRON、Cosmos 这类 secp256k1 链，我重点校验了几个点：\n\n```text\n曲线是 secp256k1，不是 P-256\nprivate key 不可导出\npublic key 可导出，用来推导地址\nkey label / key id 能稳定映射到业务 metadata\nkey_status 能表达 active、disabled、pending、orphan 等状态\n```\n\nLevelDB 在这个阶段不再是私钥存储，而只是 metadata store。更生产化的形态会把 metadata 放到数据库表里，并且加上备份、审计、权限控制和补偿任务。\n\nmetadata 的核心字段是：\n\n```text\npublic_key\ncompressed_public_key\naddress\nchain_id\nnetwork\nhsm_key_id\nhsm_key_label\ncurve\nalgorithm\nkey_status\ncreated_at\nupdated_at\n```\n\n这一层变化很关键：业务侧仍然拿到普通链上地址，但完整私钥从来没有离开 CloudHSM。\n\n# SignDigest 改造后的调用流\n\n签名链路也从本地 private key 签名，改成了 key id 签名。\n\n改造前：\n\n```text\nprivateKey = GetPrivateKey(publicKey)\nsignature = LocalSigner.Sign(privateKey, messageHash)\n```\n\n改造后：\n\n```text\nhsmKeyId = GetHsmKeyId(publicKey)\nsignature = hsmGateway.SignDigest(hsmKeyId, messageHash)\n```\n\n完整提现签名链路变成：\n\n```text\n1. wallet-service 完成提现业务校验与状态编排\n2. risk-service 校验提现内容并产生风控放行结果\n3. wallet-api 构建待签 message hash\n4. wallet-service 调 wallet-sign.SignTransactionsMessage\n5. wallet-sign 校验 token、chain_id、wallet_key_hash、risk_key_hash\n6. wallet-sign 根据 public_key 查询 hsm_key_id\n7. wallet-sign 调 hsm-gateway.SignDigest\n8. hsm-gateway 调 PKCS#11 C_SignInit + C_Sign\n9. CloudHSM 使用内部私钥完成签名\n10. hsm-gateway 返回 signature\n11. wallet-sign 做本地 verify 和审计记录\n12. wallet-api 组装 signed transaction 并广播\n```\n\n这条链路里，CloudHSM 只负责使用 HSM 内部私钥签名。它不决定提现是否成立，也不决定链上交易怎么构建。资金状态由 `wallet-service` 编排，风险校验由 `risk-service` 承担，链上交易表达仍然在 `wallet-api`，签名安全边界仍然由 `wallet-sign` 收口。\n\n# 多链签名格式适配\n\nCloudHSM 能完成签名，不代表签名结果天然满足所有链的交易格式。\n\n这次改造里，我把签名格式适配单独作为一层处理。\n\n对 EVM / TRON 这类链，CloudHSM 可以用 secp256k1 做 ECDSA 签名，但 AWS CloudHSM Client SDK 5 的 PKCS#11 library 不支持 Sign Recover。也就是说，ETH 交易需要的 `v` / recovery id 不能直接指望 HSM 返回，需要应用侧根据 message hash、signature 和 public key 推导或适配。\n\n对 BTC，除了 secp256k1 签名，还要处理脚本类型、sighash type、UTXO 上下文和签名序列化。签名本身只是其中一环，最终能否广播成功取决于完整交易格式。\n\n对 Cosmos，要确认 SignDoc、account number、sequence、chain id、sign mode 和 hash 规则一致。\n\n对 Solana，我没有直接承诺走 AWS CloudHSM。Solana 使用 Ed25519，而 CloudHSM PKCS#11 key types 文档主要覆盖 NIST EC curves 和 secp256k1。Solana 是否走 CloudHSM，需要单独验证 Ed25519 支持或切到其他签名后端。\n\n因此，签名返回后我加了一步本地 verify：\n\n```text\nCloudHSM signature\n-> DER / r,s 格式转换\n-> recovery id 推导或链级适配\n-> 本地 verify\n-> 通过后再返回上游\n```\n\n签名不能只看 HSM 有没有返回成功，还要看链级验签是否通过。\n\n# 生产失败处理复盘\n\n生产级接入和 demo 最大的区别，是不能只设计 happy path。\n\nCloudHSM 连接失败时，`hsm-gateway` 的健康检查会失败，对应实例要从服务发现中摘除，`wallet-sign` 不再把签名请求路由过去。提现单进入待重试或人工处理，并触发告警。\n\n```text\nhsm-gateway 健康检查失败\n-> 从服务发现摘除实例\n-> wallet-sign 停止路由签名请求\n-> wallet-service 标记提现待重试或人工处理\n-> 触发告警\n```\n\nCrypto User 登录失败时，服务要 fail fast。不能让 `hsm-gateway` 在没有 HSM 登录能力的状态下继续承接生产签名。认证失败、Secret 注入失败、CU 被禁用和 HSM 短暂不可用也要区分错误码，避免排障时混在一起。\n\nKeygen 失败时，系统不能创建地址：\n\n```text\nCreateKey 失败\n-> 不创建地址\n-> 不写入可用 address 表\n-> 不返回给业务可用地址\n-> 记录 request_id / chain_id / error_code\n```\n\n如果 keygen 成功但 metadata 写库失败，这把 key 不能直接丢掉。我会把它标记为 orphan / pending，并由补偿任务修复或禁用。最危险的状态是“地址已经返回给用户，但 key metadata 没有落库”，这会让后续签名无法闭环。\n\nmetadata 查询失败时，`wallet-sign` 直接拒签，不调用 HSM：\n\n```text\nKEY_NOT_FOUND\nKEY_DISABLED\nCHAIN_KEY_MISMATCH\nMETADATA_STORE_UNAVAILABLE\n```\n\n找不到 key 或 key 状态不对，不能尝试猜 key，也不能走备用私钥。\n\nSignDigest 超时或失败时，`wallet-sign` 返回单笔签名失败，`wallet-service` 把提现单放到待重试或人工处理，不广播交易。只有明确可重试错误才做有限重试，并且使用指数退避和 jitter。\n\n这里最重要的一条边界是：CloudHSM 失败不能自动 fallback 到本地私钥。\n\n如果 HSM 不可用就自动降级到 LevelDB 私钥，攻击者只要制造 HSM 故障，就可能诱导系统走弱安全路径。生产上宁愿拒签、告警、人工处理，也不能让失败变成绕过安全边界的入口。\n\n# 审计和灰度\n\n签名审计不是额外日志，而是生产签名链路的一部分。\n\n我在审计里只记录可排障、可追踪但不可滥用的信息：\n\n```text\nrequest_id\nchain_id\npublic_key 摘要\nhsm_key_id 摘要\n签名后端\n签名结果\n耗时\n错误码\n```\n\n日志里不能出现 private key、CU pin、HSM 凭证、完整敏感交易体或可重放的签名凭证。\n\n灰度切换也不能按“大开关”处理。我会按链、按钱包、按金额逐步切：\n\n```text\n测试链\n-> 小额钱包\n-> 部分热钱包\n-> 高价值钱包\n```\n\n灰度期间重点观察：\n\n```text\n本地 verify 通过率\n链上广播成功率\n签名耗时\nHSM session 池压力\n错误码分布\n提现状态机是否正确处理 HSM 错误\n```\n\n回滚也不能是自动绕过 HSM。回滚可以是配置级回滚、暂停某条链、暂停某类钱包签名，或者让提现进入人工处理，但不能静默切回本地私钥签名。\n\n# 复盘后的理解\n\n这次 wallet-sign 接入 AWS CloudHSM 后，我更明确地意识到：生产级 HSM 接入不是把一个 SDK 塞进项目，也不是把 `hsm_enable` 从 false 改成 true。\n\n它至少包含两层改造。\n\n第一层是基础设施信任：\n\n```text\nCloudHSM cluster\ncluster 初始化\nmTLS\nCrypto User\nClient SDK\nPKCS#11 library\n多 AZ 可用性\n审计和权限边界\n```\n\n第二层是钱包业务系统改造：\n\n```text\nwallet-sign 不保存明文私钥\nLevelDB 从私钥存储降级为 metadata 存储\nKeygen 在 HSM 内完成\nSignDigest 通过 hsm_key_id 调用 HSM\n签名前必须完成业务、审批和风控校验\n签名后必须做链级格式适配和 verify\n失败不能绕过安全边界\n```\n\n最终沉淀下来的边界是：\n\n```text\nwallet-service 决定该不该签\nwallet-api 决定签什么链上数据\nwallet-sign 决定如何安全地产生签名\nhsm-gateway 收敛 PKCS#11 和 CloudHSM 复杂性\nCloudHSM 保证完整私钥不离开 HSM\n```\n\n对交易所钱包来说，真正的生产级不是“用了 CloudHSM”这几个字，而是私钥不可导出、签名前有业务和风控校验、签名行为可审计、失败不会降级绕过安全边界、多链签名结果能被真实验证。\n\n这些边界同时成立，HSM 才从一个基础设施组件变成钱包系统里的签名安全能力。"
+    "content": "# wallet-sign × AWS CloudHSM：签名后端架构设计\n\n> 证据边界：HSM 当前没有接入 `wallet-sign`。这里描述的是我为下一阶段整理的目标架构与验收条件，不是生产接入复盘。\n\n# 要解决的问题\n\n当前可验证基线是 Local Signer。它适合学习接口、签名格式和策略校验，但完整私钥仍处在应用可访问边界内。HSM 目标不是增加一个产品名，而是改变密钥的信任假设：私钥在硬件边界内生成和使用，应用只持有 key metadata，不能导出私钥。\n\n# 目标调用链\n\n```text\nwallet-service / risk-service\n  -> wallet-api 构建 unsigned transaction\n  -> wallet-sign 校验审批与待签内容\n  -> hsm-gateway 管理 PKCS#11 session 与错误语义\n  -> CloudHSM 内部完成签名\n```\n\n`wallet-sign` 仍然是唯一签名服务边界。`hsm-gateway` 只负责把 PKCS#11、登录、session pool、key handle 和厂商错误码隔离起来，不承担提现审批或链上交易构建。\n\n# 接口需要保持稳定\n\n签名后端至少需要统一这些输入：`sign_request_id`、`key_id/key_version`、算法、待签摘要、审批哈希和调用方身份。输出包含签名、可审计的后端标识和错误类别，不返回任何私钥材料。\n\n这样 Local、MPC/TSS 和 HSM 可以位于同一个 `SignerBackend` 契约之后，但“可切换”不等于“发生故障时可以降低安全等级”。\n\n# 必须 fail-closed 的异常\n\n- HSM 集群或 Crypto User 登录不可用；\n- key handle、key version 或算法不匹配；\n- 审批内容与待签交易不一致；\n- session pool 耗尽或请求结果未知；\n- 审计记录不能可靠落地。\n\n这些场景下应暂停签名。不能为了可用性把同一密钥导出到本地，也不能静默切回 Local Signer。恢复应基于原 `sign_request_id`、相同 `key_version` 和相同 payload hash，并先确认旧请求是否已经产生签名。\n\n# 实现前的验收清单\n\n- 在隔离环境验证密钥生成、不可导出属性和签名校验；\n- 对 session 断开、集群不可用和超时进行故障注入；\n- 验证重复 `sign_request_id` 返回相同结果或稳定冲突；\n- 验证审批哈希与 unsigned payload 不一致时拒签；\n- 记录 key version、调用方、算法、payload hash 和结果，但不记录敏感明文；\n- 明确备份、轮换、灾备和人工恢复流程。\n\n# 当前结论\n\nHSM 是 `wallet-sign` 的后端演进方向，不是新的业务服务。当前网站只把它标为生产设计；只有真实代码接入、故障测试和端到端验收完成后，证据等级才会升级。"
   },
   {
     "id": 13,
@@ -566,6 +589,8 @@ export const articles: Article[] = [
     "readingTime": "8 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
+    "evidenceLevel": "design",
+    "evidenceSummary": "多链接入检查表与生产边界设计，不代表所有清单项已经实现。",
     "conceptTags": [
       "wallet-backend",
       "multi-chain",
@@ -684,6 +709,8 @@ export const articles: Article[] = [
     "readingTime": "5 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
+    "evidenceLevel": "design",
+    "evidenceSummary": "内部转账识别与索引策略设计，尚未形成生产级 trace indexer。",
     "conceptTags": [
       "wallet-backend",
       "multi-chain",
@@ -723,6 +750,8 @@ export const articles: Article[] = [
     "readingTime": "8 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "已定位私有项目充值、提现与确认路径；完整四服务失败注入仍在建设。",
     "conceptTags": [
       "wallet-backend",
       "multi-chain",
@@ -1052,6 +1081,8 @@ export const articles: Article[] = [
     "readingTime": "6 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "wallet-core 的 TypeScript 多链构建与测试已验证显式资源输入。",
     "conceptTags": [
       "wallet-backend",
       "multi-chain",
@@ -1094,6 +1125,8 @@ export const articles: Article[] = [
     "readingTime": "8 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "协议与实现路径学习笔记，不代表线上 ERC-4337 生产接入。",
     "conceptTags": [
       "wallet-backend",
       "signer-service",

@@ -19,6 +19,11 @@ const router = createRouter({
       component: () => import('../pages/EngineeringPage.vue'),
     },
     {
+      path: '/engineering/failures',
+      name: 'engineering-failures',
+      component: () => import('../pages/FailurePlaybookPage.vue'),
+    },
+    {
       path: '/learning',
       name: 'learning',
       component: () => import('../pages/LearningPage.vue'),

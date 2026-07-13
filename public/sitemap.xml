@@ -7,6 +7,9 @@
     <loc>https://xiuqiu-site.vercel.app/engineering</loc>
   </url>
   <url>
+    <loc>https://xiuqiu-site.vercel.app/engineering/failures</loc>
+  </url>
+  <url>
     <loc>https://xiuqiu-site.vercel.app/ai</loc>
   </url>
   <url>
@@ -23,6 +26,9 @@
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/projects/s78-market-services</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/projects/stableflow</loc>
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/projects/tss-mpc</loc>

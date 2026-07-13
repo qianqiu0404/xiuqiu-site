@@ -6,6 +6,7 @@ import { aiStageLabels, projectStageLabels, siteAiCases, siteArticlesByNewest, s
 import { setSeoMeta } from '../utils/seo'
 
 const featuredProjects = siteProjects.filter(project => project.featured)
+const stableFlow = siteProjects.find(project => project.slug === 'stableflow')
 const recentArticles = siteArticlesByNewest.slice(0, 3)
 const latestLearning = learningRecords.slice(0, 2)
 const latestRadar = dailyRadars[0]
@@ -54,6 +55,13 @@ onMounted(() => setSeoMeta({ title: 'xiuqiu｜Web3 钱包工程 × AI 协作', d
   <section class="control-strip">
     <div class="container control-strip-grid">
       <router-link v-for="item in controlItems" :key="item.label" :to="item.to"><article><span>{{ item.label }}</span><h2>{{ item.title }}</h2><p>{{ item.text }}</p></article></router-link>
+    </div>
+  </section>
+
+  <section v-if="stableFlow" class="section current-side-project">
+    <div class="container side-project-row">
+      <div><p class="section-label">Current Side Project</p><h2>StableFlow · 稳定币结算工程副线</h2><p>{{ stableFlow.positioning }}</p></div>
+      <div class="side-project-proof"><span>{{ projectStageLabels[stableFlow.stage] }}</span><strong>本次验证</strong><p>{{ stableFlow.verifiedEvidence[1] }}</p><router-link :to="`/projects/${stableFlow.slug}`">查看边界与下一步 &rarr;</router-link></div>
     </div>
   </section>
 

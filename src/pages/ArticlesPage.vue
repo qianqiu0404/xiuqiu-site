@@ -21,6 +21,7 @@ const kindOptions = [
   { id: 'research', title: '技术研究' },
   { id: 'learning-log', title: '学习复盘' },
 ] as const
+const evidenceLabels = { design: '架构设计', 'source-reviewed': '资料与代码复核', 'local-verified': '本地已验证', integrated: '已集成验证', 'public-demo': '公开可运行' } as const
 
 const filteredArticles = computed(() => {
   const keyword = query.value.trim().toLowerCase()
@@ -206,6 +207,7 @@ onMounted(() => {
           <p class="article-summary">{{ a.summary }}</p>
           <div class="article-meta">
             <span class="meta-tag">{{ kindOptions.find(kind => kind.id === a.kind)?.title }}</span>
+            <span v-if="a.evidenceLevel" class="meta-tag evidence-meta">{{ evidenceLabels[a.evidenceLevel] }}</span>
             <span class="meta-tag">{{ a.difficulty }}</span>
             <span class="meta-reading">{{ a.readingTime }}</span>
           </div>

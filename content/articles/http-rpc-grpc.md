@@ -3,6 +3,8 @@
   "id": 2,
   "slug": "http-rpc-grpc",
   "kind": "engineering-note",
+  "evidenceLevel": "source-reviewed",
+  "evidenceSummary": "结合本地后端项目接口边界整理的协议选型笔记。",
   "title": "HTTP、RPC、gRPC 的区别与项目使用场景",
   "date": "2026-05-16",
   "summary": "作为基础补充，解释 HTTP、RPC、gRPC 的边界；在钱包工程里重点落到 wallet-api 对外 HTTP、wallet-sign 内部 gRPC。",

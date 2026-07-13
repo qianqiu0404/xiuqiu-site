@@ -1,0 +1,3 @@
+---
+{"slug":"concurrent-state-transition","title":"并发状态推进与 CAS 冲突","category":"request-state","priority":"common","services":["wallet-service"],"chains":["all"],"actions":["retry","pause"],"evidenceStatus":"design","symptom":"多个 worker 同时消费同一订单，或旧版本任务试图覆盖较新的状态。","fundRisk":"重复冻结、重复广播或终态被回退，导致账务与链上事实分叉。","stopLoss":"状态更新必须带版本或前置状态条件；CAS 失败后停止当前动作并重新读取。","investigate":["检查订单 version、updated_at、worker lease 和消息投递次数","确认是否已有签名结果或广播事实"],"recovery":["无资金事实时重新加载最新状态后安全重试","已有签名或广播事实时转入结果查询，不重新构建交易"],"idempotencyBasis":"order_id + expected_state/version","currentBoundary":"这是生产状态机设计；当前项目尚未形成完整并发失败注入证据。","verificationEvidence":["已有状态机与 worker 入口梳理，CAS 冲突测试待补"],"relatedArticleSlugs":["withdrawal-error-handling"],"relatedProjectSlugs":["exchange-wallet-system"]}
+---

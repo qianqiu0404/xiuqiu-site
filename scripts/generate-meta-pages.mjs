@@ -86,6 +86,15 @@ writePage(
 )
 
 writePage(
+  '/engineering/failures',
+  replaceMeta(baseHtml, {
+    title: '钱包异常恢复手册｜xiuqiu',
+    description: '30 个钱包后端核心异常，按资金事实、止损动作、排查证据、恢复步骤和当前证据边界组织。',
+    path: '/engineering/failures',
+  }),
+)
+
+writePage(
   '/ai',
   replaceMeta(baseHtml, {
     title: 'AI 工作流｜xiuqiu',
@@ -198,4 +207,4 @@ dailyRadars.forEach(radar => {
 })
 
 const legacyProjectPages = projects.reduce((total, project) => total + 1 + project.legacyIds.length, 0)
-console.log(`Generated static meta pages for ${articleSummaries.length + projects.length + legacyProjectPages + dailyRadars.length + 5} routes.`)
+console.log(`Generated static meta pages for ${articleSummaries.length + projects.length + legacyProjectPages + dailyRadars.length + 6} routes.`)

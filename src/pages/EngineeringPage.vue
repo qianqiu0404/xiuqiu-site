@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { failureCases as allFailureCases, type FailureEvidenceStatus } from '../data/generatedFailureCases'
 import { projectSourceLabels, projectStageLabels, projectVisibilityLabels, siteArticlesByNewest, siteKnowledge, siteProjects } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
 
@@ -16,10 +17,8 @@ const systemFlow = [
   { name: 'wallet-api', detail: '多链节点查询、链级资源、交易构建与广播' },
   { name: 'wallet-sign', detail: '地址生成、密钥隔离、策略校验与交易签名' },
 ]
-const failureCases = [
-  { title: '广播请求超时，但交易可能已经进入节点', handling: '把结果标记为未知，优先按 request_id、raw transaction 或 tx hash 查询，不直接重新构建并发送第二笔。' },
-  { title: '链上已经成功，本地状态更新失败', handling: '补偿任务以链上 receipt 或确认数为事实来源，幂等推进提现、账本和通知状态。' },
-]
+const failureCases = allFailureCases.filter(item => item.priority === 'must-answer')
+const evidenceLabels: Record<FailureEvidenceStatus, string> = { implemented: '当前已实现', partial: '部分验证', design: '生产设计' }
 const signerBackends = [
   { name: 'Local Signer', state: '已验证', detail: '当前 wallet-sign 的本地密钥与签名后端，作为接口和策略基线。' },
   { name: 'MPC / TSS', state: '接入中', detail: '独立三节点 Keygen / Sign 已本地验证；正在收敛为 wallet-sign 后端，尚未完成端到端接入。' },
@@ -67,8 +66,9 @@ onMounted(() => setSeoMeta({ title: '工程档案｜xiuqiu Web3 钱包后端', d
       </section>
 
       <section class="engineering-section">
-        <div class="section-heading section-heading-left"><p class="section-label">03 · 异常恢复</p><h2 class="section-title">资金系统最值得讲的是结果未知之后怎么办</h2></div>
-        <div class="failure-grid"><article v-for="item in failureCases" :key="item.title" class="failure-card"><p class="project-abilities-title">Failure case</p><h3>{{ item.title }}</h3><p>{{ item.handling }}</p></article></div>
+        <div class="section-heading section-heading-left"><p class="section-label">03 · 异常恢复</p><h2 class="section-title">六个必须会讲的钱包异常</h2><p class="section-desc">先判断资金事实，再选择暂停、重试、补偿或人工复核；证据状态不等同于生产事故经验。</p></div>
+        <div class="failure-grid"><article v-for="item in failureCases" :key="item.slug" class="failure-card"><div class="failure-card-meta"><span>Failure case</span><strong>{{ evidenceLabels[item.evidenceStatus] }}</strong></div><h3>{{ item.title }}</h3><p><b>风险：</b>{{ item.fundRisk }}</p><p><b>先做：</b>{{ item.stopLoss }}</p><router-link :to="`/engineering/failures#${item.slug}`">查看完整恢复过程 &rarr;</router-link></article></div>
+        <div class="failure-section-actions"><router-link class="btn btn-primary" to="/engineering/failures">查看 30 个异常</router-link><router-link class="btn btn-secondary" to="/engineering/failures?mode=practice">进入异常自测</router-link></div>
       </section>
 
       <section v-if="interviewMode" class="engineering-section interview-evidence-section">

@@ -3,6 +3,8 @@
   "id": 1,
   "slug": "api-system-calls",
   "kind": "engineering-note",
+  "evidenceLevel": "source-reviewed",
+  "evidenceSummary": "来自项目调用链与代码入口整理，未声明生产流量验证。",
   "title": "API 到底是什么？从钱包后端项目理解系统调用",
   "date": "2026-05-14",
   "summary": "作为基础补充，解释 API 为什么是系统能力边界；核心工程用法已在 wallet-api 职责边界文章中展开。",
