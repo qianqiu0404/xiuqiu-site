@@ -514,22 +514,23 @@ export const projects: Project[] = [
     "name": "wallet-core",
     "category": "TypeScript 多链",
     "featured": true,
-    "stage": "verified-local",
+    "stage": "showcase-ready",
     "sourceType": "original",
-    "visibility": "private",
+    "visibility": "public",
+    "repositoryUrl": "https://github.com/qianqiu0404/wallet-core",
     "positioning": "TypeScript 多链离线钱包核心：统一密钥派生、交易构建与签名入口，同时保留 nonce、UTXO、blockhash、TAPOS 和 object version 等链级资源差异。",
     "currentFocus": "稳定不同链的输入契约、异常参数校验和可复现测试，让离线边界比支持链数量更可信。",
     "verifiedEvidence": [
-      "TypeScript 类型检查与构建可以运行",
-      "已覆盖 EVM、BTC、Solana、TRON、Cosmos 与 Sui 的交易模型",
-      "已完成 Sui 原生充值交易 dry-run 流程"
+      "Node 20/22 CI 已完成类型检查、九套 Jest、45 个测试、构建和 dist 导入验证",
+      "已覆盖 EVM、BTC、Solana、TRON、Cosmos 与 Sui 的交易模型，并修正 Solana 私钥 Base58 编码",
+      "v1.0.0 GitHub Release 已公开；Sui 示例默认 dry-run，广播必须显式启用"
     ],
     "targetOutcome": "形成一个有清晰 API、链级输入文档、示例和稳定测试矩阵的 TypeScript 离线钱包库，调用方可以安全地准备链上资源、离线签名并自行广播。",
-    "nextMilestone": "修复 Cosmos 依赖解析并恢复全量测试，再补齐链资源过期和异常金额输入用例。",
+    "nextMilestone": "补齐链资源过期、错误最小单位和无效对象引用的统一负向测试，再评估是否稳定 npm API。",
     "knownLimits": [
       "不查询 RPC、不广播交易，调用方必须提供新鲜链状态",
-      "Cosmos 全量测试仍受依赖解析问题影响",
-      "仓库暂按私有项目展示"
+      "未经独立安全审计，不应直接用于生产资金",
+      "V1 只发布 GitHub Release，package 继续保持 private，尚未发布 npm"
     ],
     "updatedAt": "2026-07-13",
     "coreAbilities": [
@@ -569,13 +570,16 @@ export const projects: Project[] = [
         "浮点金额或错误单位可能造成资产精度错误"
       ],
       "evidence": [
-        "TypeScript typecheck",
-        "链相关 Jest 套件",
-        "Sui dry-run 充值模拟"
+        "Node 20/22 CI",
+        "九套链 Jest 与 45 个测试",
+        "dist import smoke test",
+        "Sui dry-run 充值模拟",
+        "v1.0.0 Release"
       ],
       "knownLimits": [
-        "Cosmos 依赖解析待修复",
-        "不包含在线 RPC、资源预占和广播服务"
+        "未经独立安全审计",
+        "不包含在线 RPC、资源预占、广播和账务服务",
+        "暂未发布 npm"
       ],
       "overviewSummary": "wallet-core 用 TypeScript 收敛多链钱包入口，但保留每条链影响资产安全的资源状态，而不是假装所有链都只有 from、to、amount。"
     },
@@ -593,16 +597,16 @@ export const projects: Project[] = [
         "npm run build",
         "npm run sui:deposit"
       ],
-      "verificationNote": "类型检查、构建和主要链套件已有本地验证记录；Cosmos 依赖问题明确列为限制。",
+      "verificationNote": "2026-07-13 在干净 npm ci 环境通过类型检查、九套链 Jest、45 个测试、构建、dist 导入与敏感信息扫描。",
       "tradeoffs": [
         "离线核心不负责网络状态",
         "金额只接受最小单位整数",
         "示例不保存真实密钥"
       ],
       "nextSteps": [
-        "修复 Cosmos 测试依赖",
-        "补充异常交易参数校验",
-        "整理链适配器输入契约"
+        "补充链资源过期用例",
+        "补充错误单位和无效对象引用校验",
+        "稳定链适配器输入契约"
       ]
     },
     "conceptTags": [
@@ -627,94 +631,101 @@ export const projects: Project[] = [
     "id": 8,
     "legacyIds": [],
     "slug": "web3-wallet-engineer-lab",
-    "name": "Web3 Wallet Engineer Lab",
+    "name": "Wallet Reliability Lab",
     "category": "可运行实验",
     "featured": true,
     "stage": "showcase-ready",
     "sourceType": "original",
     "visibility": "public",
     "repositoryUrl": "https://github.com/qianqiu0404/web3-wallet-engineer-lab",
-    "positioning": "用 Go 标准库和内存仓储实现的最小钱包后端闭环，用于练习地址、充值、提现、审核、风控、nonce、归集、审计和指标。",
-    "currentFocus": "让钱包领域模型和状态转换可以在一个轻量环境中运行、测试和演示，为 Exchange Wallet Infrastructure 提供更容易复现的证据。",
+    "positioning": "以正常提现为基线，用共享场景数据、Go 资金不变量断言和 Vue 状态时间线实现六个钱包异常恢复实验。",
+    "currentFocus": "让异常手册中的核心判断能够被确定性故障注入、状态迁移和恢复断言直接复核。",
     "verifiedEvidence": [
-      "公开仓库包含可启动 HTTP API，go test ./... 已通过",
-      "同一 chain + tx_hash 与相同参数重复充值返回原记录，冲突参数被稳定拒绝",
-      "充值与提现流程具有单元测试和接口流程测试，并提供健康检查、Prometheus 文本指标和审计日志"
+      "Go 测试已覆盖重复提现、广播结果未知、链上成功本地失败、充值 reorg、nonce replacement 与关键依赖 fail-closed",
+      "共享 JSON 同时被 Go 与 Vue 校验，避免页面叙事与测试事实漂移",
+      "GitHub Actions 已通过 Go、Vue、静态构建和敏感信息扫描；GitHub Pages 提供交互实验台"
     ],
-    "targetOutcome": "成为一个五分钟可启动、十五分钟可讲完的钱包后端最小实验：完整演示充值入账、提现审核、风控拒绝、nonce 分配和链上确认。",
-    "nextMilestone": "增加广播结果未知与链上成功本地失败的可运行故障注入，并让异常手册直接引用对应测试。",
+    "targetOutcome": "成为钱包可靠性判断的公开实验场：每个场景都有独立故障注入、资金不变量、第一处止损、状态时间线和恢复依据。",
+    "nextMilestone": "增加 RPC 多节点结果仲裁与账务 outbox 故障注入，同时保持场景事实源和资金不变量唯一。",
     "knownLimits": [
-      "当前使用内存仓储，不等同于生产数据库与分布式状态",
-      "链上交互使用模拟接口，不使用真实资产或私钥",
-      "当前幂等证据覆盖充值 txHash，提现 request_id、reorg 和账务补偿仍待实现"
+      "使用内存与确定性模拟，不等同于生产数据库和真实链节点",
+      "不使用真实资产或私钥，Go Runner 只允许本地 loopback",
+      "MPC/TSS 与 HSM 只作为签名可用性边界，不在实验中实现真实密钥后端"
     ],
     "updatedAt": "2026-07-13",
     "coreAbilities": [
-      "钱包领域模型",
-      "充值提现闭环",
-      "风控与审核",
-      "nonce 与审计",
-      "Go HTTP 与测试"
+      "钱包资金不变量",
+      "异常状态机",
+      "幂等与补偿",
+      "Go 断言测试",
+      "Vue 状态时间线"
     ],
     "talkingPoints": [
-      "为什么先用内存仓储验证领域边界",
-      "哪些接口可以替换为 PostgreSQL、Redis 和链 adaptor",
-      "如何从最小实验演进到钱包基础设施"
+      "结果未知时为什么必须暂停",
+      "canonical 事实如何驱动本地补偿",
+      "为什么 reorg 使用反向分录而不是删除历史"
     ],
     "techStack": [
       "Go",
-      "net/http",
-      "In-memory Store",
-      "Prometheus Text",
-      "Unit Test"
+      "Vue 3",
+      "TypeScript",
+      "Vite",
+      "Shared JSON Catalog",
+      "GitHub Actions",
+      "GitHub Pages"
     ],
     "engineering": {
-      "role": "最小钱包后台领域模型与可运行证据的设计实现",
+      "role": "钱包可靠性实验、资金不变量和可运行证据的设计实现",
       "systemBoundary": "只验证业务流程和接口边界，不声称包含真实链节点、生产密钥或分布式基础设施。",
       "callFlow": [
-        "创建用户并分配地址",
-        "模拟充值并确认入账",
-        "创建提现并通过风控/审核",
-        "分配 nonce 并模拟广播",
-        "确认链上交易并写审计"
+        "选择基线或异常场景",
+        "注入确定性故障",
+        "观察资金不变量与止损动作",
+        "推进状态迁移",
+        "按 canonical 事实恢复并断言终态"
       ],
       "failureScenarios": [
-        "黑名单或额度触发风控拒绝",
-        "重复充值事件返回同一记录，同 txHash 不同参数返回幂等冲突"
+        "重复提现",
+        "广播结果未知",
+        "链上成功本地失败",
+        "充值区块 reorg",
+        "nonce gap 与 replacement",
+        "风控或签名服务不可用"
       ],
       "evidence": [
         "go test ./...",
-        "go run ./cmd/api",
-        "/healthz 与 /metrics",
-        "接口流程测试"
+        "npm --prefix web test",
+        "npm --prefix web run build",
+        "GitHub Pages 交互实验台"
       ],
       "knownLimits": [
         "内存状态不支持多实例",
         "没有真实链和签名机接入"
       ],
-      "overviewSummary": "这个实验把钱包业务闭环压缩到可运行的最小代码，用于观察状态机、风控、nonce、审计和可观测性如何协作。"
+      "overviewSummary": "这个实验把六类高资金风险异常压缩为可运行的状态模型，让止损、幂等、canonical 事实与补偿判断可以被测试复核。"
     },
     "learning": {
-      "goal": "用最小代码重复验证钱包领域判断，并把每个核心概念对应到可运行接口和测试。",
+      "goal": "把异常恢复判断转成可重复运行的资金不变量、状态迁移和恢复断言。",
       "verified": [
-        "充值与提现状态流程",
-        "黑名单和额度规则",
-        "nonce、归集、审计与指标接口"
+        "六个异常恢复模型",
+        "Go 与 Vue 共享场景事实",
+        "静态实验台和 CI 门禁"
       ],
       "verification": [
         "go test ./...",
-        "go run ./cmd/api"
+        "npm --prefix web test",
+        "npm --prefix web run build"
       ],
-      "verificationNote": "2026-07-13 本地测试通过，源码与 CI 配置已发布到公开仓库。",
+      "verificationNote": "2026-07-13 本地与 GitHub Actions 均通过，静态实验台由 GitHub Pages 发布。",
       "tradeoffs": [
         "以可运行和可解释优先",
         "内存仓储只用于边界验证",
         "生产化差距必须明确展示"
       ],
       "nextSteps": [
-        "增加广播结果未知故障注入",
-        "增加链上成功本地失败的补偿测试",
-        "明确与钱包基础设施四个服务边界的概念映射"
+        "增加 RPC 多节点仲裁",
+        "增加 outbox 与账务部分失败注入",
+        "继续与 30 个异常手册建立双向关联"
       ]
     },
     "conceptTags": [

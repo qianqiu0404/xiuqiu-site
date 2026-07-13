@@ -2,12 +2,13 @@
 import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { failureCases as allFailureCases, type FailureEvidenceStatus } from '../data/generatedFailureCases'
+import { evidenceRecords } from '../data/generatedEvidence'
 import { projectSourceLabels, projectStageLabels, projectVisibilityLabels, siteArticlesByNewest, siteKnowledge, siteProjects } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
 
 const route = useRoute()
 const router = useRouter()
-const overviewMode = computed(() => route.query.mode === 'overview' || route.query.mode === 'interview')
+const overviewMode = computed(() => route.query.mode === 'overview')
 const primaryProjects = siteProjects.filter(project => project.featured)
 const extensionProjects = siteProjects.filter(project => !project.featured)
 const engineeringArticles = siteArticlesByNewest.filter(article => article.kind === 'engineering-note').slice(0, 6)
@@ -18,6 +19,7 @@ const systemFlow = [
   { name: 'wallet-sign', detail: '地址生成、密钥隔离、策略校验与交易签名' },
 ]
 const failureCases = allFailureCases.filter(item => item.priority === 'key')
+const verifiedEvidenceCount = evidenceRecords.filter(item => item.status === 'verified').length
 const evidenceLabels: Record<FailureEvidenceStatus, string> = { implemented: '当前已实现', partial: '部分验证', design: '生产设计' }
 const signerBackends = [
   { name: 'Local Signer', state: '已验证', detail: '当前 wallet-sign 的本地密钥与签名后端，作为接口和策略基线。' },
@@ -26,7 +28,7 @@ const signerBackends = [
 ]
 const overviewProofs = [
   { label: '系统主线', title: 'Exchange Wallet Infrastructure', evidence: '四个服务的代码入口、risk-service 核心单测和关键异常路径已经完成定位与记录。', slug: 'exchange-wallet-system' },
-  { label: 'TypeScript 多链', title: 'wallet-core', evidence: '类型检查、构建和多链 Jest 测试可以运行，链级资源输入保持显式。', slug: 'wallet-core' },
+  { label: 'TypeScript 多链', title: 'wallet-core', evidence: '干净安装下九套链测试、构建和 dist import smoke test 已通过，链级资源输入保持显式。', slug: 'wallet-core' },
   { label: '签名安全', title: 'TSS / MPC', evidence: '独立三节点 Keygen / Sign 已本地验证；wallet-sign 后端接入仍在进行。', slug: 'tss-mpc' },
 ]
 
@@ -49,10 +51,10 @@ onMounted(() => setSeoMeta({ title: '工程档案｜xiuqiu Web3 钱包后端', d
         <div class="engineering-header-actions"><button class="btn btn-primary" type="button" @click="toggleOverviewMode">{{ overviewMode ? '返回完整档案' : '查看工程速览' }}</button><button class="btn btn-secondary" type="button" @click="askEngineering">请 AI 概括</button></div>
       </header>
 
-      <section class="interview-summary" :class="{ active: overviewMode }">
-        <div class="interview-summary-top"><div><p class="section-label">工程概览</p><h2>以 Exchange Wallet Infrastructure 为主线，用可运行实验和多链库补足验证证据</h2></div><span class="mode-badge">{{ overviewMode ? 'FOCUS VIEW' : 'QUICK OVERVIEW' }}</span></div>
-        <p>wallet-service、risk-service、wallet-api、wallet-sign 分别守住资金编排、风险控制、链交互和签名边界；wallet-core 用 TypeScript 验证多链离线交易；Wallet Engineer Lab 提供轻量可运行闭环。</p>
-        <div class="interview-proof-grid"><div><strong>{{ systemFlow.length }} 个</strong><span>服务边界</span></div><div><strong>{{ signerBackends.length }} 种</strong><span>签名后端</span></div><div><strong>{{ failureCases.length }} 个</strong><span>重点异常恢复案例</span></div></div>
+      <section class="overview-summary" :class="{ active: overviewMode }">
+        <div class="overview-summary-top"><div><p class="section-label">工程概览</p><h2>以 Exchange Wallet Infrastructure 为主线，用可运行实验和多链库补足验证证据</h2></div><span class="mode-badge">{{ overviewMode ? 'FOCUS VIEW' : 'QUICK OVERVIEW' }}</span></div>
+        <p>wallet-service、risk-service、wallet-api、wallet-sign 分别守住资金编排、风险控制、链交互和签名边界；wallet-core 用 TypeScript 验证多链离线交易；Wallet Reliability Lab 提供六个可运行异常实验。</p>
+        <div class="overview-proof-grid"><div><strong>{{ systemFlow.length }} 个</strong><span>服务边界</span></div><div><strong>{{ signerBackends.length }} 种</strong><span>签名后端</span></div><div><strong>{{ failureCases.length }} 个</strong><span>重点异常恢复案例</span></div></div>
       </section>
 
       <section class="engineering-section">
@@ -71,9 +73,14 @@ onMounted(() => setSeoMeta({ title: '工程档案｜xiuqiu Web3 钱包后端', d
         <div class="failure-section-actions"><router-link class="btn btn-primary" to="/engineering/failures">查看 30 个异常</router-link><router-link class="btn btn-secondary" to="/engineering/failures?mode=practice">进入异常自测</router-link></div>
       </section>
 
-      <section v-if="overviewMode" class="engineering-section interview-evidence-section">
+      <section class="engineering-evidence-preview">
+        <div><p class="section-label">工程证据覆盖</p><h2>实现、测试、演示与公开说明分别看</h2><p>当前收录 {{ evidenceRecords.length }} 条结构化证据，其中 {{ verifiedEvidenceCount }} 条标记为已验证。私有工程只显示去敏摘要，公开工程可以直接打开复核。</p></div>
+        <router-link class="btn btn-primary" to="/engineering/evidence">查看证据矩阵</router-link>
+      </section>
+
+      <section v-if="overviewMode" class="engineering-section overview-evidence-section">
         <div class="section-heading section-heading-left"><p class="section-label">04 · 核心证据</p><h2 class="section-title">三项可继续展开的工程证据</h2><p class="section-desc">速览到这里结束。每项证据都可以继续查看项目边界、验证方式和当前限制。</p></div>
-        <div class="interview-evidence-grid"><router-link v-for="proof in overviewProofs" :key="proof.slug" :to="`/projects/${proof.slug}`"><span>{{ proof.label }}</span><h3>{{ proof.title }}</h3><p>{{ proof.evidence }}</p><strong>查看完整档案 &rarr;</strong></router-link></div>
+        <div class="overview-evidence-grid"><router-link v-for="proof in overviewProofs" :key="proof.slug" :to="`/projects/${proof.slug}`"><span>{{ proof.label }}</span><h3>{{ proof.title }}</h3><p>{{ proof.evidence }}</p><strong>查看完整档案 &rarr;</strong></router-link></div>
       </section>
 
       <section v-if="!overviewMode" class="engineering-section">

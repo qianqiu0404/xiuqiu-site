@@ -4,6 +4,9 @@ import { learningRecords } from './generatedLearningRecords.ts'
 import { dailyRadars, type DailyRadar } from './generatedRadars.ts'
 import { projects, type Project, type ProjectSourceType, type ProjectStage, type ProjectVisibility } from './generatedProjects.ts'
 import { failureCases, type FailureCase } from './generatedFailureCases.ts'
+import { evidenceRecords, type EvidenceRecord } from './generatedEvidence.ts'
+import { deliveryRecords, type DeliveryRecord } from './generatedDeliveries.ts'
+import { nowSnapshot, type NowSnapshot } from './generatedNow.ts'
 
 export type KnowledgeTag = ArticleKnowledge['conceptTags'][number] | 'wallet-core'
 export type SiteArticle = ArticleKnowledge
@@ -11,6 +14,8 @@ export type SiteProject = Project
 export type SiteAiCase = AiCase
 export type SiteRadar = DailyRadar
 export type SiteFailureCase = FailureCase
+export type SiteEvidenceRecord = EvidenceRecord
+export type SiteDeliveryRecord = DeliveryRecord
 
 export const projectStageLabels: Record<ProjectStage, string> = {
   exploring: '探索中',
@@ -57,12 +62,15 @@ export interface SiteKnowledge {
   articles: SiteArticle[]
   radars: SiteRadar[]
   failureCases: SiteFailureCase[]
+  evidenceRecords: SiteEvidenceRecord[]
+  deliveryRecords: SiteDeliveryRecord[]
+  now: NowSnapshot
   tags: KnowledgeTag[]
   engineeringMap: EngineeringMapNode[]
 }
 
 export interface SiteReference {
-  type: 'article' | 'project' | 'capability' | 'ai' | 'radar' | 'failure'
+  type: 'article' | 'project' | 'capability' | 'ai' | 'radar' | 'failure' | 'evidence' | 'delivery'
   title: string
   href: string
   summary: string
@@ -79,6 +87,8 @@ export const siteProjects: SiteProject[] = projects
 export const siteAiCases: SiteAiCase[] = aiCases
 export const siteRadars: SiteRadar[] = dailyRadars
 export const siteFailureCases: SiteFailureCase[] = failureCases
+export const siteEvidenceRecords: SiteEvidenceRecord[] = evidenceRecords
+export const siteDeliveryRecords: SiteDeliveryRecord[] = deliveryRecords
 export const latestRadar: SiteRadar | undefined = siteRadars[0]
 
 export const engineeringMap: EngineeringMapNode[] = [
@@ -163,6 +173,9 @@ export const siteKnowledge: SiteKnowledge = {
   articles: siteArticles,
   radars: siteRadars,
   failureCases: siteFailureCases,
+  evidenceRecords: siteEvidenceRecords,
+  deliveryRecords: siteDeliveryRecords,
+  now: nowSnapshot,
   tags: ['wallet-core', 'wallet-backend', 'signer-service', 'multi-chain', 'go-infra', 'evm', 'mpc-tss', 'api-design', 'ai-engineering'],
   engineeringMap,
 }
@@ -205,6 +218,8 @@ export function buildKnowledgeContext(): string {
   return [
     `${siteKnowledge.owner.name}: ${siteKnowledge.owner.title}.`,
     siteKnowledge.owner.summary,
+    `Current snapshot (${nowSnapshot.updatedAt}): ${nowSnapshot.headline}. ${nowSnapshot.summary}`,
+    `Next focus: ${nowSnapshot.nextFocus.join(' | ')}`,
     '',
     'Engineering projects:',
     ...siteProjects.map(project =>
@@ -250,6 +265,26 @@ export function buildKnowledgeContext(): string {
       `  Recovery: ${item.recovery.join(' | ')}`,
       `  Idempotency: ${item.idempotencyBasis}`,
       `  Current project boundary: ${item.currentBoundary}`,
+    ].join('\n')),
+    '',
+    'Engineering evidence (verified means reproducible evidence, not production readiness):',
+    ...siteEvidenceRecords.map(item => [
+      `- ${item.title}: ${item.summary}`,
+      `  Kind: ${item.kind}; Status: ${item.status}; Visibility: ${item.visibility}; Verified at: ${item.verifiedAt}`,
+      `  Capabilities: ${item.capabilityIds.join(' | ')}`,
+      item.command ? `  Verification command: ${item.command}` : '',
+    ].filter(Boolean).join('\n')),
+    '',
+    'AI-assisted public deliveries:',
+    ...siteDeliveryRecords.map(item => [
+      `- ${item.title}: ${item.summary}`,
+      `  Status: ${item.status}; Goal: ${item.goal}`,
+      `  AI contribution: ${item.aiContribution.join(' | ')}`,
+      `  Human decisions: ${item.humanDecisions.join(' | ')}`,
+      `  Review findings: ${item.reviewFindings.join(' | ')}`,
+      `  Corrections: ${item.corrections.join(' | ')}`,
+      `  Known limits: ${item.knownLimits.join(' | ')}`,
+      `  Next step: ${item.nextStep}`,
     ].join('\n')),
     '',
     'Curated learning records:',
@@ -306,7 +341,17 @@ export function findRelevantReferences(query: string, pageTitle?: string, max = 
     ref: { type: 'failure' as const, title: item.title, href: `/engineering/failures#${item.slug}`, summary: `${item.stopLoss} 当前边界：${item.currentBoundary}` },
   }))
 
-  return [...articleRefs, ...projectRefs, ...aiRefs, ...radarRefs, ...capabilityRefs, ...failureRefs]
+  const evidenceRefs = siteEvidenceRecords.map(item => ({
+    score: scoreText(queryTokens, [item.title, item.summary, item.kind, item.status, item.capabilityIds.join(' '), item.failureSlugs.join(' ')].join(' ')),
+    ref: { type: 'evidence' as const, title: item.title, href: '/engineering/evidence', summary: `${item.summary} 当前状态：${item.status}。` },
+  }))
+
+  const deliveryRefs = siteDeliveryRecords.map(item => ({
+    score: scoreText(queryTokens, [item.title, item.summary, item.goal, item.aiContribution.join(' '), item.humanDecisions.join(' '), item.reviewFindings.join(' '), item.corrections.join(' ')].join(' ')) + (pageTitle === item.title ? 10 : 0),
+    ref: { type: 'delivery' as const, title: item.title, href: `/ai/deliveries/${item.slug}`, summary: item.summary },
+  }))
+
+  return [...articleRefs, ...projectRefs, ...aiRefs, ...radarRefs, ...capabilityRefs, ...failureRefs, ...evidenceRefs, ...deliveryRefs]
     .filter(item => item.score > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, max)

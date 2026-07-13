@@ -44,7 +44,14 @@ jobs:
       - run: npm run test:radar
       - run: npm run build
       - name: Ensure generated public data is committed
-        run: git diff --exit-code -- src/data/generatedRadars.ts public/sitemap.xml
+        run: >-
+          git diff --exit-code --
+          src/data/generatedProjects.ts
+          src/data/generatedRadars.ts
+          src/data/generatedEvidence.ts
+          src/data/generatedDeliveries.ts
+          src/data/generatedNow.ts
+          public/sitemap.xml
       - name: Squash merge verified daily radar
         env:
           GH_TOKEN: ${{ github.token }}

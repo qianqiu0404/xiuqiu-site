@@ -14,6 +14,11 @@ const router = createRouter({
       component: () => import('../pages/ArticlesPage.vue'),
     },
     {
+      path: '/now',
+      name: 'now',
+      component: () => import('../pages/NowPage.vue'),
+    },
+    {
       path: '/engineering',
       name: 'engineering',
       component: () => import('../pages/EngineeringPage.vue'),
@@ -24,6 +29,11 @@ const router = createRouter({
       component: () => import('../pages/FailurePlaybookPage.vue'),
     },
     {
+      path: '/engineering/evidence',
+      name: 'engineering-evidence',
+      component: () => import('../pages/EngineeringEvidencePage.vue'),
+    },
+    {
       path: '/learning',
       name: 'learning',
       component: () => import('../pages/LearningPage.vue'),
@@ -32,6 +42,16 @@ const router = createRouter({
       path: '/ai',
       name: 'ai',
       component: () => import('../pages/AiCollaborationPage.vue'),
+    },
+    {
+      path: '/ai/deliveries',
+      name: 'ai-deliveries',
+      component: () => import('../pages/DeliveryListPage.vue'),
+    },
+    {
+      path: '/ai/deliveries/:slug',
+      name: 'ai-delivery-detail',
+      component: () => import('../pages/DeliveryDetailPage.vue'),
     },
     {
       path: '/radar',

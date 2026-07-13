@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { aiStageLabels, getArticlesBySlugs, siteAiCases } from '../data/siteKnowledge'
+import { deliveryRecords } from '../data/generatedDeliveries'
 import { setSeoMeta } from '../utils/seo'
 
 function askAiCase(title: string, summary: string) {
@@ -35,6 +36,11 @@ onMounted(() => setSeoMeta({ title: 'AI 工作流｜xiuqiu', description: 'AI Co
       <nav class="ai-case-nav" aria-label="AI workflow loops">
         <a v-for="item in siteAiCases" :key="item.id" :href="`#${item.slug}`"><span>{{ loopNumber(item.displayOrder) }}</span><strong>{{ item.title }}</strong></a>
       </nav>
+
+      <section class="ai-delivery-preview">
+        <header><div><p class="section-label">Real Deliveries</p><h2>协作方法最终要回到真实交付</h2><p>记录 AI 参与、人工判断、审查发现、纠正动作和公开证据，不展示抽象等级。</p></div><router-link to="/ai/deliveries">查看全部交付 &rarr;</router-link></header>
+        <div><router-link v-for="item in deliveryRecords.slice(0, 3)" :key="item.slug" :to="`/ai/deliveries/${item.slug}`"><div class="card-status-row"><time>{{ item.date }}</time><strong>{{ item.status === 'delivered' ? '已交付' : item.status === 'partial' ? '部分完成' : '进行中' }}</strong></div><h3>{{ item.title }}</h3><p>{{ item.summary }}</p><small>{{ item.evidenceSlugs.length }} 项证据 · {{ item.publicLinks.length }} 个公开链接</small></router-link></div>
+      </section>
 
       <article v-for="item in siteAiCases" :id="item.slug" :key="item.id" class="ai-case-detail">
         <header><div><p class="section-label">Loop {{ loopNumber(item.displayOrder) }} · {{ aiStageLabels[item.stage] }}</p><h2>{{ item.title }}<small v-if="item.slug === 'cross-device-skill-toolchain'">SkillOps Loop</small></h2><p>{{ item.summary }}</p></div><button class="btn btn-secondary" type="button" @click="askAiCase(item.title, item.summary)">请 AI 解释</button></header>

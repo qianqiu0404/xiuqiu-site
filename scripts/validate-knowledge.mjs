@@ -6,6 +6,10 @@ import { engineeringMap, siteProjects } from '../src/data/siteKnowledge.ts'
 import { learningRecords } from '../src/data/generatedLearningRecords.ts'
 import { dailyRadars } from '../src/data/generatedRadars.ts'
 import { failureCases } from '../src/data/generatedFailureCases.ts'
+import { evidenceRecords } from '../src/data/generatedEvidence.ts'
+import { deliveryRecords } from '../src/data/generatedDeliveries.ts'
+import { nowSnapshot } from '../src/data/generatedNow.ts'
+import { evidenceCapabilities, evidenceKinds } from '../src/data/evidence.ts'
 
 const sitemapSource = readFileSync(new URL('../public/sitemap.xml', import.meta.url), 'utf8')
 const articleSlugs = new Set(articleKnowledge.map(article => article.slug))
@@ -49,6 +53,9 @@ siteProjects.forEach(project => {
 if (!sitemapSource.includes('/ai')) addError('Missing sitemap URL for AI collaboration page')
 if (!sitemapSource.includes('/radar')) addError('Missing sitemap URL for daily radar page')
 if (!sitemapSource.includes('/engineering/failures')) addError('Missing sitemap URL for failure playbook')
+if (!sitemapSource.includes('/engineering/evidence')) addError('Missing sitemap URL for engineering evidence')
+if (!sitemapSource.includes('/ai/deliveries')) addError('Missing sitemap URL for AI deliveries')
+if (!sitemapSource.includes('/now')) addError('Missing sitemap URL for current activity')
 
 aiCases.forEach(item => {
   item.relatedArticleSlugs.forEach(slug => {
@@ -95,10 +102,62 @@ failureCases.forEach(item => {
   })
 })
 
+const failureSlugs = new Set(failureCases.map(item => item.slug))
+const evidenceSlugs = new Set(evidenceRecords.map(item => item.slug))
+const deliverySlugs = new Set(deliveryRecords.map(item => item.slug))
+const capabilityIds = new Set(evidenceCapabilities.map(item => item.id))
+
+evidenceRecords.forEach(record => {
+  record.projectSlugs.forEach(slug => {
+    if (!projectSlugs.has(slug)) addError(`${record.slug}: evidence project does not exist: ${slug}`)
+  })
+  record.failureSlugs.forEach(slug => {
+    if (!failureSlugs.has(slug)) addError(`${record.slug}: evidence failure does not exist: ${slug}`)
+  })
+  record.deliverySlugs.forEach(slug => {
+    if (!deliverySlugs.has(slug)) addError(`${record.slug}: evidence delivery does not exist: ${slug}`)
+  })
+  record.capabilityIds.forEach(id => {
+    if (!capabilityIds.has(id)) addError(`${record.slug}: evidence capability does not exist: ${id}`)
+  })
+})
+
+deliveryRecords.forEach(record => {
+  if (!sitemapSource.includes(`/ai/deliveries/${record.slug}`)) addError(`Missing sitemap URL for delivery: ${record.slug}`)
+  record.projectSlugs.forEach(slug => {
+    if (!projectSlugs.has(slug)) addError(`${record.slug}: delivery project does not exist: ${slug}`)
+  })
+  record.evidenceSlugs.forEach(slug => {
+    if (!evidenceSlugs.has(slug)) addError(`${record.slug}: delivery evidence does not exist: ${slug}`)
+  })
+  if (record.status === 'delivered' && record.publicLinks.length === 0) {
+    addError(`${record.slug}: delivered record must contain a public link`)
+  }
+})
+
+evidenceCapabilities.forEach(capability => {
+  evidenceKinds.forEach(kind => {
+    if (!evidenceRecords.some(record => record.capabilityIds.includes(capability.id) && record.kind === kind.id)) {
+      addError(`${capability.id}: no evidence record for ${kind.id}`)
+    }
+  })
+})
+
+nowSnapshot.developmentProjectSlugs.forEach(slug => {
+  if (!projectSlugs.has(slug)) addError(`now: development project does not exist: ${slug}`)
+})
+nowSnapshot.featuredDeliverySlugs.forEach(slug => {
+  if (!deliverySlugs.has(slug)) addError(`now: featured delivery does not exist: ${slug}`)
+})
+nowSnapshot.researchRefs.forEach(ref => {
+  if (ref.type === 'article' && !articleSlugs.has(ref.slug)) addError(`now: article does not exist: ${ref.slug}`)
+  if (ref.type === 'radar' && !dailyRadars.some(item => item.slug === ref.slug)) addError(`now: radar does not exist: ${ref.slug}`)
+})
+
 if (errors.length) {
   console.error('Knowledge validation failed.')
   errors.forEach(error => console.error(`- ${error}`))
   process.exit(1)
 }
 
-console.log(`Knowledge validation passed for ${articleKnowledge.length} Markdown articles.`)
+console.log(`Knowledge validation passed for ${articleKnowledge.length} articles, ${evidenceRecords.length} evidence records and ${deliveryRecords.length} deliveries.`)

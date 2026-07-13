@@ -2,6 +2,8 @@
 import { onMounted } from 'vue'
 import { learningRecords } from '../data/generatedLearningRecords'
 import { dailyRadars } from '../data/generatedRadars'
+import { deliveryRecords } from '../data/generatedDeliveries'
+import { nowSnapshot } from '../data/generatedNow'
 import { aiStageLabels, projectStageLabels, siteAiCases, siteArticlesByNewest, siteKnowledge, siteProjects } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
 
@@ -10,12 +12,12 @@ const stableFlow = siteProjects.find(project => project.slug === 'stableflow')
 const recentArticles = siteArticlesByNewest.slice(0, 3)
 const latestLearning = learningRecords.slice(0, 2)
 const latestRadar = dailyRadars[0]
-const latestOutput = recentArticles[0] || latestLearning[0]
+const latestOutput = deliveryRecords[0] || recentArticles[0] || latestLearning[0]
 
 const controlItems = [
-  { label: '开发中', title: featuredProjects[0]?.name || '钱包基础设施', text: featuredProjects[0]?.currentFocus || '继续验证钱包工程边界。', to: '/engineering' },
+  { label: '当前动态', title: nowSnapshot.headline, text: nowSnapshot.summary, to: '/now' },
   { label: '研究中', title: latestRadar?.web3Design?.title || '多链钱包与签名安全', text: latestRadar?.summary || '从每日研究输入提炼可迁移的工程判断。', to: latestRadar ? `/radar/${latestRadar.slug}` : '/radar' },
-  { label: '最近产出', title: latestOutput?.title || '工程学习记录', text: latestOutput?.summary || '把验证结果沉淀为可复核内容。', to: recentArticles[0] ? `/articles/${recentArticles[0].slug}` : '/learning' },
+  { label: '最近产出', title: latestOutput?.title || '工程学习记录', text: latestOutput?.summary || '把验证结果沉淀为可复核内容。', to: deliveryRecords[0] ? `/ai/deliveries/${deliveryRecords[0].slug}` : recentArticles[0] ? `/articles/${recentArticles[0].slug}` : '/learning' },
 ]
 
 const capabilityTracks = [
@@ -36,11 +38,11 @@ onMounted(() => setSeoMeta({ title: 'xiuqiu｜Web3 钱包工程 × AI 协作', d
         <p class="hero-desc hero-desc-primary">我在开发交易所钱包基础设施，也在持续研究多链资源、签名安全与 AI 工程协作。</p>
         <div class="hero-actions hero-actions-left">
           <router-link class="btn btn-primary" to="/engineering">查看工程档案</router-link>
-          <router-link class="btn btn-secondary" to="/radar">最近在研究什么</router-link>
+          <router-link class="btn btn-secondary" to="/now">查看当前动态</router-link>
         </div>
       </div>
       <aside class="hero-proof-panel control-status-panel">
-        <div class="control-status-top"><span class="status-dot"></span><span>当前主线</span><time>2026-07-13</time></div>
+        <div class="control-status-top"><span class="status-dot"></span><span>当前主线</span><time>{{ nowSnapshot.updatedAt }}</time></div>
         <h2>Exchange Wallet Infrastructure</h2>
         <p>资金编排 · 风险控制 · 多链交互 · 签名后端</p>
         <dl>
