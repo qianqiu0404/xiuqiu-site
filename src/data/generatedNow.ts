@@ -3,9 +3,9 @@
 export interface NowResearchRef { type: 'radar' | 'article'; slug: string }
 export interface NowSnapshot { updatedAt: string; headline: string; summary: string; developmentProjectSlugs: string[]; researchRefs: NowResearchRef[]; featuredDeliverySlugs: string[]; nextFocus: string[] }
 export const nowSnapshot: NowSnapshot = {
-  "updatedAt": "2026-07-13",
-  "headline": "正在把钱包工程判断变成可运行、可复核的公开证据",
-  "summary": "当前主线是 Exchange Wallet Infrastructure；公开侧由 Wallet Reliability Lab 提供交互体验，Web3 Wallet Domain Engine 提供领域事实与测试，研究继续通过每日雷达沉淀。",
+  "updatedAt": "2026-07-14",
+  "headline": "钱包工程，持续验证",
+  "summary": "正在推进钱包基础设施、可靠性实验与多链工具，并持续公开验证结果。",
   "developmentProjectSlugs": [
     "exchange-wallet-system",
     "wallet-reliability-lab",
@@ -15,7 +15,7 @@ export const nowSnapshot: NowSnapshot = {
   "researchRefs": [
     {
       "type": "radar",
-      "slug": "2026-07-13"
+      "slug": "2026-07-14"
     },
     {
       "type": "article",

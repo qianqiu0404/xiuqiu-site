@@ -11,7 +11,7 @@ export const dailyRadars: DailyRadar[] = [
     "title": "每日研究雷达 · 2026-07-14",
     "summary": "修正并交叉核验 BTC/ETH 价格快照，同时关注 CPI 波动、AI 上下文交接、Sui Object Reference 与本地编码记忆。",
     "reviewStatus": "automated",
-    "generatedAt": "2026-07-14T13:41:03+08:00",
+    "generatedAt": "2026-07-14T16:24:48+08:00",
     "sourceSections": [
       "crypto",
       "radar",
@@ -23,12 +23,12 @@ export const dailyRadars: DailyRadar[] = [
       {
         "title": "BTC 交易所 K 线快照为 62,153.89 美元",
         "summary": "Coinbase 现货分钟收盘显示，北京时间 05:00 BTC 报 62,153.89 美元，24 小时约跌 3.14%，区间为 61,750.90–64,388.01 美元。",
-        "sourceUrl": "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=300&start=2026-07-12T21:00:00Z&end=2026-07-13T21:00:00Z"
+        "sourceUrl": "https://coinmarketcap.com/zh/"
       },
       {
         "title": "ETH 价格已更正为约 1,765 美元",
         "summary": "原快照曾将 ETH 误读为 1,624.95 美元；Coinbase 同时点收盘为 1,765.21 美元，Kraken 为 1,765.50 美元，两家交易所均确认 ETH 未跌破 1,700 美元。",
-        "sourceUrl": "https://api.exchange.coinbase.com/products/ETH-USD/candles?granularity=300&start=2026-07-12T21:00:00Z&end=2026-07-13T21:00:00Z"
+        "sourceUrl": "https://coinmarketcap.com/zh/"
       },
       {
         "title": "CPI 是确定的波动事件，不是方向信号",
@@ -56,6 +56,7 @@ export const dailyRadars: DailyRadar[] = [
       "sourceUrl": "https://a16zcrypto.com/posts/article/finance-digital-transformation-finally/"
     },
     "sourceUrls": [
+      "https://coinmarketcap.com/zh/",
       "https://api.exchange.coinbase.com/products/BTC-USD/candles?granularity=300&start=2026-07-12T21:00:00Z&end=2026-07-13T21:00:00Z",
       "https://api.exchange.coinbase.com/products/ETH-USD/candles?granularity=300&start=2026-07-12T21:00:00Z&end=2026-07-13T21:00:00Z",
       "https://api.kraken.com/0/public/OHLC?pair=ETHUSD&interval=1&since=1783976340",

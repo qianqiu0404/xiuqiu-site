@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import AiChatWidget from './components/AiChatWidget.vue'
 
 const navOpen = ref(false)
 const router = useRouter()
@@ -49,6 +48,4 @@ function goHome() {
       <span>持续记录，持续验证</span>
     </div>
   </footer>
-
-  <AiChatWidget />
 </template>

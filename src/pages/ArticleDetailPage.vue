@@ -205,24 +205,6 @@ function goHome() {
   router.push('/')
 }
 
-function askQuestion(question: string) {
-  if (!article.value) return
-
-  window.dispatchEvent(
-    new CustomEvent('ai-chat:ask', {
-      detail: {
-        prompt: question,
-        context: {
-          type: 'article',
-          title: article.value.title,
-          slug: article.value.slug,
-          summary: article.value.summary,
-        },
-      },
-    }),
-  )
-}
-
 watchEffect(() => {
   if (!article.value) {
     setSeoMeta({
@@ -282,13 +264,9 @@ watchEffect(() => {
             <article v-for="project in relatedProjects" :key="project.id" class="followup-card">
               <h3>{{ project.name }}</h3>
               <p>{{ project.positioning }}</p>
-              <button
-                class="project-link project-link-button"
-                type="button"
-                @click="askQuestion(`请结合《${article.title}》解释 ${project.name} 项目的工程价值。`)"
-              >
-                请 AI 结合文章解释 &rarr;
-              </button>
+              <router-link class="project-link" :to="`/projects/${project.slug}`">
+                查看项目档案 &rarr;
+              </router-link>
             </article>
           </div>
         </div>
@@ -311,15 +289,13 @@ watchEffect(() => {
         <div class="followup-block">
           <p class="section-label">延伸问题</p>
           <div class="suggested-question-list">
-            <button
+            <p
               v-for="question in article.suggestedQuestions"
               :key="question"
               class="suggested-question"
-              type="button"
-              @click="askQuestion(question)"
             >
               {{ question }}
-            </button>
+            </p>
           </div>
         </div>
 

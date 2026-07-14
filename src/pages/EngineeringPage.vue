@@ -3,7 +3,7 @@ import { computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { failureCases as allFailureCases, type FailureEvidenceStatus } from '../data/generatedFailureCases'
 import { evidenceRecords } from '../data/generatedEvidence'
-import { projectSourceLabels, projectStageLabels, projectVisibilityLabels, siteArticlesByNewest, siteKnowledge, siteProjects } from '../data/siteKnowledge'
+import { projectSourceLabels, projectStageLabels, projectVisibilityLabels, siteArticlesByNewest, siteProjects } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
 
 const route = useRoute()
@@ -36,10 +36,6 @@ function toggleOverviewMode() {
   void router.replace({ path: '/engineering', query: overviewMode.value ? {} : { mode: 'overview' } })
 }
 
-function askEngineering() {
-  window.dispatchEvent(new CustomEvent('ai-chat:ask', { detail: { prompt: '请概括 xiuqiu 的 Exchange Wallet Infrastructure，并严格区分四个服务边界、已验证事实、当前限制和目标完成形态。', context: { type: 'engineering', title: '工程档案', summary: siteKnowledge.owner.summary } } }))
-}
-
 onMounted(() => setSeoMeta({ title: '工程档案｜xiuqiu Web3 钱包后端', description: 'Exchange Wallet Infrastructure、wallet-core、可运行实验以及 TSS/MPC 与数据服务扩展的阶段、证据和目标态。', path: '/engineering' }))
 </script>
 
@@ -48,7 +44,7 @@ onMounted(() => setSeoMeta({ title: '工程档案｜xiuqiu Web3 钱包后端', d
     <div class="container">
       <header class="engineering-header">
         <div><p class="section-label">Engineering Archive</p><h1>Web3 钱包后端工程档案</h1><p>这里按系统问题整理工程进度：资金状态如何推进、多链差异如何隔离、签名边界如何保护、失败之后如何恢复。</p></div>
-        <div class="engineering-header-actions"><button class="btn btn-primary" type="button" @click="toggleOverviewMode">{{ overviewMode ? '返回完整档案' : '查看工程速览' }}</button><button class="btn btn-secondary" type="button" @click="askEngineering">请 AI 概括</button></div>
+        <div class="engineering-header-actions"><button class="btn btn-primary" type="button" @click="toggleOverviewMode">{{ overviewMode ? '返回完整档案' : '查看工程速览' }}</button></div>
       </header>
 
       <section class="overview-summary" :class="{ active: overviewMode }">

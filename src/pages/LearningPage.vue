@@ -7,21 +7,6 @@ import { setSeoMeta } from '../utils/seo'
 const learningArticles = siteArticlesByNewest.filter(article => article.kind === 'learning-log')
 const activeProjects = siteProjects.filter(project => project.learning)
 
-function askLearningPath() {
-  window.dispatchEvent(
-    new CustomEvent('ai-chat:ask', {
-      detail: {
-        prompt: '请总结 xiuqiu 当前的学习主线、已经验证的内容、最近发生的认知变化和下一步。',
-        context: {
-          type: 'learning',
-          title: '学习复盘',
-          summary: '精选公开的项目进度、验证证据、复盘结论和下一步。',
-        },
-      },
-    }),
-  )
-}
-
 onMounted(() => {
   setSeoMeta({
     title: '学习复盘｜xiuqiu',
@@ -40,7 +25,6 @@ onMounted(() => {
           <h1>学习复盘</h1>
           <p>这里只公开经过整理的阶段目标、验证结果与复盘结论。原始日记、私人计划和未经核验的内容继续留在本地 Obsidian。</p>
         </div>
-        <button class="btn btn-secondary" type="button" @click="askLearningPath">请 AI 总结当前进度</button>
       </header>
 
       <section v-if="learningRecords[0]" class="current-quest">
