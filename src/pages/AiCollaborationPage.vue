@@ -4,10 +4,6 @@ import { aiStageLabels, getArticlesBySlugs, siteAiCases } from '../data/siteKnow
 import { deliveryRecords } from '../data/generatedDeliveries'
 import { setSeoMeta } from '../utils/seo'
 
-function askAiCase(title: string, summary: string) {
-  window.dispatchEvent(new CustomEvent('ai-chat:ask', { detail: { prompt: `请解释 ${title} 的真实流程、xiuqiu 本人的职责、已有证据、当前限制和下一里程碑。`, context: { type: 'ai', title, summary } } }))
-}
-
 function loopNumber(order: number) {
   return String(order).padStart(2, '0')
 }
@@ -43,7 +39,7 @@ onMounted(() => setSeoMeta({ title: 'AI 工作流｜xiuqiu', description: 'AI Co
       </section>
 
       <article v-for="item in siteAiCases" :id="item.slug" :key="item.id" class="ai-case-detail">
-        <header><div><p class="section-label">Loop {{ loopNumber(item.displayOrder) }} · {{ aiStageLabels[item.stage] }}</p><h2>{{ item.title }}<small v-if="item.slug === 'cross-device-skill-toolchain'">SkillOps Loop</small></h2><p>{{ item.summary }}</p></div><button class="btn btn-secondary" type="button" @click="askAiCase(item.title, item.summary)">请 AI 解释</button></header>
+        <header><div><p class="section-label">Loop {{ loopNumber(item.displayOrder) }} · {{ aiStageLabels[item.stage] }}</p><h2>{{ item.title }}<small v-if="item.slug === 'cross-device-skill-toolchain'">SkillOps Loop</small></h2><p>{{ item.summary }}</p></div></header>
         <div class="ai-ownership-note"><span>来源与归属</span><p>{{ item.ownershipNote }}</p></div>
         <div class="ai-case-current"><span>当前重点</span><p>{{ item.currentFocus }}</p></div>
         <div class="ai-flow" aria-label="Workflow"><template v-for="(step, index) in item.flow" :key="step"><div><span>{{ index + 1 }}</span><p>{{ step }}</p></div><b v-if="index < item.flow.length - 1">&rarr;</b></template></div>

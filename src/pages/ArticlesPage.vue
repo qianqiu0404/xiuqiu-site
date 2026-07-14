@@ -81,29 +81,6 @@ const readingPaths: {
   },
 ]
 
-function getReadingPathArticleTitles(slugs: string[]) {
-  return slugs
-    .map(slug => siteArticles.find(article => article.slug === slug)?.title)
-    .filter((title): title is string => Boolean(title))
-}
-
-function askAboutReadingPath(path: (typeof readingPaths)[number]) {
-  const articleTitles = getReadingPathArticleTitles(path.slugs)
-
-  window.dispatchEvent(
-    new CustomEvent('ai-chat:ask', {
-      detail: {
-        prompt: `请基于「${path.title}」给我一条学习路径，并说明这些文章分别解决什么问题：${articleTitles.join('、')}。`,
-        context: {
-          type: 'articles',
-          title: path.title,
-          summary: `${path.desc} Related articles: ${articleTitles.join(' | ')}`,
-        },
-      },
-    }),
-  )
-}
-
 function resetFilters() {
   query.value = ''
   selectedCapability.value = 'All'
@@ -189,9 +166,6 @@ onMounted(() => {
               {{ siteArticles.find(article => article.slug === slug)?.title }}
             </router-link>
           </div>
-          <button class="path-ai-button" type="button" @click="askAboutReadingPath(path)">
-            请 AI 解释这条路径 &rarr;
-          </button>
         </article>
       </div>
 
