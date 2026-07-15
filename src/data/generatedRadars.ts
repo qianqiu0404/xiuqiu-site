@@ -6,6 +6,73 @@ export interface DailyRadar { date: string; slug: string; title: string; summary
 
 export const dailyRadars: DailyRadar[] = [
   {
+    "date": "2026-07-15",
+    "slug": "2026-07-15",
+    "title": "每日研究雷达 · 2026-07-15",
+    "summary": "关注美英稳定币监管协作、AI 判别性实验、Bitcoin PSBT 签名边界，以及给 AI 生成 SQL 增加确定性检查。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-07-15T10:30:00+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "实时币价统一使用可读行情入口",
+        "summary": "BTC 与 ETH 的实时价格继续通过 CoinMarketCap 中文站查看；日报不使用单个交易所的原始 JSON 作为读者入口，也不依据单一时点价格判断方向。",
+        "sourceUrl": "https://coinmarketcap.com/zh/"
+      },
+      {
+        "title": "美英发布数字资产市场合作建议",
+        "summary": "美国财政部与英国财政部公布跨大西洋市场工作组建议，涉及跨境资本市场、代币化活动与数字资产监管协作。",
+        "sourceUrl": "https://home.treasury.gov/news/press-releases/sb0560"
+      },
+      {
+        "title": "美英继续推进稳定币监管协调",
+        "summary": "联合声明支持合规稳定币服务的风险分级市场准入和跨境监管协作；这是政策方向，不代表具体产品已经获批。",
+        "sourceUrl": "https://www.gov.uk/government/publications/recommendations-of-the-transatlantic-taskforce-for-markets-of-the-future/uk-us-joint-statement-on-stablecoins"
+      }
+    ],
+    "aiTip": {
+      "title": "假设账本与判别性实验",
+      "summary": "调试时先列出互斥假设，再只运行一个信息增益最高、可逆且能排除候选的最小实验；把预期、实际结果和被排除的假设继续沉淀为回归测试。"
+    },
+    "web3Design": {
+      "title": "Bitcoin PSBT 把签名上下文变成可校验的数据契约",
+      "summary": "PSBT 将构建、UTXO 证据、离线签名、组合和广播分开；wallet-sign 可以复核 prevout、输出、找零、费用与 sighash，而不需要联网选币或广播。",
+      "sourceUrl": "https://bips.dev/174/"
+    },
+    "vibeProject": {
+      "title": "sqlsure · AI 生成 SQL 的确定性语义闸门",
+      "summary": "sqlsure 在执行前检查 join 扇出、不可加指标、错误 join key 与策略违规，让 Agent 形成生成、检查、修复、再检查的闭环。",
+      "sourceUrl": "https://github.com/sqlsure/sqlsure"
+    },
+    "readingPick": {
+      "title": "Fragments · July 6",
+      "summary": "Martin Fowler 用短札记连接软件设计、specification-driven development 与工程观察；适合练习把即时灵感整理为有来源、有反证条件和下一次验证动作的判断。",
+      "sourceUrl": "https://www.martinfowler.com/fragments/"
+    },
+    "sourceUrls": [
+      "https://coinmarketcap.com/zh/",
+      "https://home.treasury.gov/news/press-releases/sb0560",
+      "https://www.gov.uk/government/publications/recommendations-of-the-transatlantic-taskforce-for-markets-of-the-future/uk-us-joint-statement-on-stablecoins",
+      "https://bips.dev/174/",
+      "https://bips.dev/370/",
+      "https://doxygen.bitcoincore.org/wallet_2rpc_2coins_8cpp_source.html",
+      "https://github.com/sqlsure/sqlsure",
+      "https://www.martinfowler.com/fragments/"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ],
+    "followUp": "为 Wallet Domain Engine 补一组 PSBT 输入、找零与费用策略断言，并用“假设账本”记录 UTXO 冲突、节点视图滞后和手续费拒绝的判别性查询顺序。"
+  },
+  {
     "date": "2026-07-14",
     "slug": "2026-07-14",
     "title": "每日研究雷达 · 2026-07-14",
