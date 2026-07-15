@@ -9,14 +9,18 @@ import { setSeoMeta } from '../utils/seo'
 
 const currentProjects = nowSnapshot.developmentProjectSlugs.map(getProjectByKey).filter(Boolean)
 const featuredDeliveries = nowSnapshot.featuredDeliverySlugs.map(slug => deliveryRecords.find(item => item.slug === slug)).filter(Boolean)
-const researchItems = nowSnapshot.researchRefs.map(ref => {
-  if (ref.type === 'radar') {
-    const item = dailyRadars.find(radar => radar.slug === ref.slug)
-    return item ? { type: '每日雷达', title: item.title, summary: item.summary, date: item.date, to: `/radar/${item.slug}` } : undefined
-  }
-  const item = getArticleBySlug(ref.slug)
-  return item ? { type: '工程文章', title: item.title, summary: item.summary, date: item.date, to: `/articles/${item.slug}` } : undefined
-}).filter(Boolean)
+const latestRadar = dailyRadars[0]
+const researchItems = [
+  latestRadar
+    ? { type: '每日雷达', title: latestRadar.title, summary: latestRadar.summary, date: latestRadar.date, to: `/radar/${latestRadar.slug}` }
+    : undefined,
+  ...nowSnapshot.researchRefs
+    .filter(ref => ref.type === 'article')
+    .map(ref => {
+      const item = getArticleBySlug(ref.slug)
+      return item ? { type: '工程文章', title: item.title, summary: item.summary, date: item.date, to: `/articles/${item.slug}` } : undefined
+    }),
+].filter(Boolean)
 
 const recentOutputs = computed(() => [
   ...deliveryRecords.map(item => ({ date: item.date, type: '工程交付', title: item.title, summary: item.summary, to: `/ai/deliveries/${item.slug}` })),
