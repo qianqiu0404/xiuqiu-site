@@ -30,7 +30,7 @@ watchEffect(() => setSeoMeta(radar.value ? { title: `${radar.value.title}｜xiuq
 
       <section v-for="group in sections" :key="group.label" class="radar-detail-section"><p class="section-label">{{ group.label }}</p><article v-for="item in group.items" :key="item.title" class="radar-item"><h2>{{ item.title }}</h2><p>{{ item.summary }}</p><a v-if="item.sourceUrl" :href="item.sourceUrl" target="_blank" rel="noopener">{{ item.sourceUrl.includes('coinmarketcap.com') ? '查看实时币价' : '查看原始来源' }} &rarr;</a></article></section>
 
-      <section class="radar-followup"><p class="project-abilities-title">后续行动</p><p>{{ radar.followUp }}</p><router-link v-for="project in relatedProjects" :key="project!.slug" :to="`/projects/${project!.slug}`">关联项目：{{ project!.name }} &rarr;</router-link></section>
+      <section v-if="relatedProjects.length" class="radar-related-projects"><p class="project-abilities-title">关联工程</p><router-link v-for="project in relatedProjects" :key="project!.slug" :to="`/projects/${project!.slug}`">{{ project!.name }} &rarr;</router-link></section>
       <footer class="radar-source-footer"><strong>发布说明</strong><p>当前为试运行。本期由 AI 从允许公开的 Obsidian 研究区块自动汇总；少于三类来源、隐私校验失败或构建门禁不通过时停止发布。连续七天真实自动合并验收后再升级状态。内容仅供研究与教育，不构成投资建议。</p><small>生成时间：{{ radar.generatedAt }}</small></footer>
     </div>
     <div v-else class="container not-found"><p class="not-found-title">这期雷达不存在或未通过发布门禁</p><router-link to="/radar" class="btn btn-primary">返回雷达</router-link></div>

@@ -119,7 +119,7 @@ onMounted(() => setSeoMeta({ title: 'xiuqiu｜Web3 钱包工程 × AI 协作', d
       <div class="radar-home-grid">
         <article v-for="item in [latestRadar.aiTip, latestRadar.web3Design, latestRadar.vibeProject, latestRadar.readingPick].filter(Boolean)" :key="item!.title"><h3>{{ item!.title }}</h3><p>{{ item!.summary }}</p></article>
       </div>
-      <router-link :to="`/radar/${latestRadar.slug}`" class="project-link">查看本期来源与后续行动 &rarr;</router-link>
+      <router-link :to="`/radar/${latestRadar.slug}`" class="project-link">查看本期来源与关联工程 &rarr;</router-link>
     </div>
   </section>
 

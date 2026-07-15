@@ -294,7 +294,7 @@ export function buildKnowledgeContext(): string {
     '',
     'Recent daily research radar:',
     ...siteRadars.slice(0, 7).map(radar =>
-      `- ${radar.date}: ${radar.summary}; Signals: ${[...radar.marketSignals, radar.aiTip, radar.web3Design, radar.vibeProject, radar.readingPick].filter(Boolean).map(item => item!.title).join(' | ')}; Follow-up: ${radar.followUp}`,
+      `- ${radar.date}: ${radar.summary}; Signals: ${[...radar.marketSignals, radar.aiTip, radar.web3Design, radar.vibeProject, radar.readingPick].filter(Boolean).map(item => item!.title).join(' | ')}`,
     ),
   ].join('\n')
 }
@@ -327,7 +327,7 @@ export function findRelevantReferences(query: string, pageTitle?: string, max = 
   }))
 
   const radarRefs = siteRadars.map(item => ({
-    score: scoreText(queryTokens, [item.title, item.summary, item.followUp, ...item.marketSignals.map(signal => signal.title), item.aiTip?.title || '', item.web3Design?.title || '', item.vibeProject?.title || '', item.readingPick?.title || ''].join(' ')) + (pageTitle === item.title ? 10 : 0),
+    score: scoreText(queryTokens, [item.title, item.summary, ...item.marketSignals.map(signal => signal.title), item.aiTip?.title || '', item.web3Design?.title || '', item.vibeProject?.title || '', item.readingPick?.title || ''].join(' ')) + (pageTitle === item.title ? 10 : 0),
     ref: { type: 'radar' as const, title: item.title, href: `/radar/${item.slug}`, summary: item.summary },
   }))
 
