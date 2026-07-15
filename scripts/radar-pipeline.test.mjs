@@ -24,8 +24,8 @@ test('fewer than three blocks stop publishing', () => {
 
 test('invented URLs and private data stop publishing', () => {
   assert.throws(() => validateRadarCandidate({ ...base, sourceUrls: ['https://invented.example/x'] }, source), /does not exist/)
-  assert.throws(() => validateRadarCandidate({ ...base, followUp: '/Users/name/private' }, source), /absolute path/)
-  assert.throws(() => validateRadarCandidate({ ...base, followUp: '求职计划' }, source), /private term/)
+  assert.throws(() => validateRadarCandidate({ ...base, unsafeText: '/Users/name/private' }, source), /absolute path/)
+  assert.throws(() => validateRadarCandidate({ ...base, unsafeText: '求职计划' }, source), /private term/)
 })
 
 test('date slug makes same-day publishing idempotent', () => {

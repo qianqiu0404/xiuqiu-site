@@ -3234,10 +3234,8 @@ img {
 .radar-item h2 { font-size: 25px; margin: 10px 0; }
 .radar-item p { color: var(--text-secondary); line-height: 1.75; }
 .radar-item a,
-.radar-followup a { display: inline-block; color: var(--accent); font-size: 13px; font-weight: 650; margin-top: 14px; }
-.radar-followup { border: 1px solid rgba(0, 113, 227, .18); border-radius: var(--radius-md); background: #f6faff; margin: 42px 0 24px; padding: 24px; }
-.radar-followup > p:not(.project-abilities-title) { color: var(--text-secondary); line-height: 1.7; }
-.radar-followup a { display: block; }
+.radar-related-projects { border-top: 1px solid var(--border); margin: 42px 0 24px; padding-top: 24px; }
+.radar-related-projects a { display: inline-block; color: var(--accent); font-size: 13px; font-weight: 650; margin: 10px 20px 0 0; }
 .radar-source-footer { color: var(--text-secondary); font-size: 12px; line-height: 1.7; padding: 24px 0 0; }
 .radar-source-footer strong { color: var(--text-primary); }
 .radar-source-footer small { display: block; color: var(--text-muted); margin-top: 8px; }

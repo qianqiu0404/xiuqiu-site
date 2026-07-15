@@ -160,7 +160,7 @@ const currentPageContext = computed<PageContext>(() => {
       type: route.name === 'radar-detail' ? 'radar-detail' : 'radar',
       title: route.name === 'radar-detail' ? `每日研究雷达 ${String(route.params.date || '')}` : '每日研究雷达',
       slug: route.name === 'radar-detail' ? String(route.params.date || '') : undefined,
-      summary: '从公开允许的 Obsidian 研究区块自动汇总，并保留来源、缺失状态、关联项目和后续行动。',
+      summary: '从公开允许的 Obsidian 研究区块自动汇总，并保留来源、缺失状态和关联工程。',
     }
   }
 
