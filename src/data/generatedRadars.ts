@@ -6,6 +6,72 @@ export interface DailyRadar { date: string; slug: string; title: string; summary
 
 export const dailyRadars: DailyRadar[] = [
   {
+    "date": "2026-07-16",
+    "slug": "2026-07-16",
+    "title": "每日研究雷达 · 2026-07-16",
+    "summary": "关注美英稳定币协作与美国加密资产分类解释，把 AI 评测变成可复跑实验，并用多钱包发现机制明确签名边界。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-07-16T17:22:02+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "美英将跨境稳定币活动纳入联合工作项",
+        "summary": "两国财政部门发布未来市场工作组建议及稳定币联合声明，显示跨境稳定币服务的合规接口与运营边界正成为产品基础设施议题；这属于政策方向，并非对具体业务的批准。",
+        "sourceUrl": "https://home.treasury.gov/news/press-releases/sb0560"
+      },
+      {
+        "title": "SEC 与 CFTC 的加密资产分类解释已生效",
+        "summary": "面向美国市场的资产展示、发行与交易流程，应分别记录资产特性、发行方承诺和交易活动，不能只按代币名称判断合规属性；具体业务仍需专业法律意见。",
+        "sourceUrl": "https://www.cftc.gov/LawRegulation/FederalRegister/finalrules/2026-05635.html"
+      },
+      {
+        "title": "节点软件分发是钱包基础设施的供应链风险面",
+        "summary": "自建或可切换链节点的服务应把发行物签名与校验和验证、版本记录和升级前检查纳入部署验收；这是通用完整性建议，不代表存在特定漏洞。",
+        "sourceUrl": "https://ethereum.org/developers/docs/nodes-and-clients/run-a-node/"
+      }
+    ],
+    "aiTip": {
+      "title": "用五次固定条件运行检查评测稳定性",
+      "summary": "对小型代码任务固定输入、工具版本和超时，连续运行五次并记录通过情况、耗时、工具调用数及失败类型；先辨别结果是否稳定，再调整提示词或模型。",
+      "sourceUrl": "https://openai.com/news/research/separating-signal-from-noise-in-coding-evaluations/"
+    },
+    "web3Design": {
+      "title": "EIP-6963 用事件循环处理多钱包发现",
+      "summary": "将连接器发现结果建模为短生命周期、可验证的能力清单，按内部 connector ID 去重；签名前绑定已选连接器、账户和链 ID，在重连或发现变化后重新确认。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-6963"
+    },
+    "vibeProject": {
+      "title": "Trust Wallet Core · 可嵌入的多链钱包底层库",
+      "summary": "该开源跨平台库可帮助团队避免逐链重复实现地址、序列化与签名细节；可从单链的 ParseUnsignedTx、BuildSigningPayload、Sign、Verify/Encode 窄接口和固定测试向量起步。",
+      "sourceUrl": "https://github.com/trustwallet/wallet-core"
+    },
+    "readingPick": {
+      "title": "U.S.-UK Transatlantic Taskforce for the Markets of the Future",
+      "summary": "阅读美国财政部关于跨境资本市场、代币化活动与数字资产监管协作的公开建议。行动问题：产品在跨境稳定币流程中保存或传递的每类数据，属于协议事实、产品政策还是潜在合规证据？",
+      "sourceUrl": "https://home.treasury.gov/news/press-releases/sb0560"
+    },
+    "sourceUrls": [
+      "https://home.treasury.gov/news/press-releases/sb0560",
+      "https://www.cftc.gov/LawRegulation/FederalRegister/finalrules/2026-05635.html",
+      "https://ethereum.org/developers/docs/nodes-and-clients/run-a-node/",
+      "https://coinmarketcap.com/zh/",
+      "https://openai.com/news/research/separating-signal-from-noise-in-coding-evaluations/",
+      "https://eips.ethereum.org/EIPS/eip-6963",
+      "https://github.com/trustwallet/wallet-core"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
     "date": "2026-07-15",
     "slug": "2026-07-15",
     "title": "每日研究雷达 · 2026-07-15",
