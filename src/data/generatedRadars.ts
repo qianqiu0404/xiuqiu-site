@@ -6,6 +6,74 @@ export interface DailyRadar { date: string; slug: string; title: string; summary
 
 export const dailyRadars: DailyRadar[] = [
   {
+    "date": "2026-07-17",
+    "slug": "2026-07-17",
+    "title": "每日研究雷达 · 2026-07-17",
+    "summary": "聚焦 AI 安全分诊与提示注入回归测试、钱包批量调用和隐私模块化，以及链上基础设施的可复核安全边界。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-07-17T09:25:53+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "AI 安全研究强调可复核的漏洞分诊",
+        "summary": "Ethereum Foundation Protocol Security 披露其协调运行的 AI 代理在真实协议代码中发现漏洞，并将可复现、分诊与披露视为交付的一部分；这反映链上基础设施采用 AI 时，修复流程与告警数量同样重要。",
+        "sourceUrl": "https://blog.ethereum.org/2026/07/09/triage-is-the-product"
+      },
+      {
+        "title": "Clear Signing 正走向共享安全基础设施",
+        "summary": "钱包开发者、安全机构与基金会共同推出开放的 Clear Signing 标准和注册表，目标是减少盲签；标准本身不能替代对合约、授权额度和钓鱼风险的独立检查。",
+        "sourceUrl": "https://blog.ethereum.org/2026/05/12/clear-signing"
+      },
+      {
+        "title": "libp2p 公开漏洞应进入节点依赖门禁",
+        "summary": "NVD 记录的 CVE-2026-34219 与 libp2p gossipsub 远程触发 panic 有关；实际受影响范围仍需按具体实现、版本和补丁状态核验。",
+        "sourceUrl": "https://nvd.nist.gov/vuln/detail/CVE-2026-34219"
+      }
+    ],
+    "aiTip": {
+      "title": "将提示注入防护变成可回归的攻击用例集",
+      "summary": "为会调用工具的任务维护固定恶意输入和可判定预期，在提示词、工具权限或模型版本变化后重跑；这能把安全改动从主观试玩转成可比较的工程信号。",
+      "sourceUrl": "https://openai.com/index/unlocking-self-improvement-gpt-red/"
+    },
+    "web3Design": {
+      "title": "EIP-5792 以能力协商分离应用意图与钱包实现",
+      "summary": "`wallet_sendCalls` 将多笔调用作为一个请求交给钱包，并可通过能力协商决定是否支持批量、原子执行或 paymaster；服务端仍应校验链、地址、calldata、幂等键和签名绑定，不能把能力声明当作用户授权。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-5792"
+    },
+    "vibeProject": {
+      "title": "Kohaku · 模块化的钱包隐私能力试验场",
+      "summary": "Kohaku 将私密读写、隐私池、轻客户端和后量子账户等能力拆成可替换模块；适合先从可替换的读取 adapter 验证隐私收益与可用性，但未完成部分不应视为生产审计或匿名性证明。",
+      "sourceUrl": "https://github.com/ethereum/kohaku"
+    },
+    "readingPick": {
+      "title": "The next great wallet will be private",
+      "summary": "文章将钱包隐私拆成启动网络请求、RPC 认知、DApp 地址关联和支付关系等可观察层。行动问题：一次钱包操作的五个阶段中，哪一处能以最小可用性代价减少地址关联？",
+      "sourceUrl": "https://ethereum.org/latest/next-great-wallet-private"
+    },
+    "sourceUrls": [
+      "https://blog.ethereum.org/2026/07/09/triage-is-the-product",
+      "https://blog.ethereum.org/2026/05/12/clear-signing",
+      "https://nvd.nist.gov/vuln/detail/CVE-2026-34219",
+      "https://coinmarketcap.com/zh/",
+      "https://openai.com/index/unlocking-self-improvement-gpt-red/",
+      "https://eips.ethereum.org/EIPS/eip-5792",
+      "https://github.com/ethereum/kohaku",
+      "https://ethereum.github.io/kohaku/getting-started/",
+      "https://ethereum.org/latest/next-great-wallet-private"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
     "date": "2026-07-16",
     "slug": "2026-07-16",
     "title": "每日研究雷达 · 2026-07-16",
