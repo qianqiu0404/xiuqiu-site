@@ -358,6 +358,7 @@ export const articleKnowledge: ArticleKnowledge[] = [
       2
     ],
     "recommendedSlugs": [
+      "wallet-ledger-transaction-mq-consistency",
       "wallet-api-boundary",
       "wallet-sign-signer",
       "wallet-address-models",
@@ -1180,6 +1181,47 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "Multi-Agent Coding 和普通 AI 写代码有什么区别？",
       "什么时候应该使用 Multi-Agent，什么时候不应该？"
     ]
+  },
+  {
+    "id": 31,
+    "slug": "wallet-ledger-transaction-mq-consistency",
+    "title": "资金系统一致性：从余额冻结、数据库事务到 MQ 幂等",
+    "date": "2026-07-20",
+    "summary": "以一笔提现为主线，区分链上资产与业务负债，解释本地事务、条件更新、request_id 幂等、Transactional Outbox、结果未知重试和可审计补偿如何共同守住资金一致性。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Ledger",
+      "Transaction",
+      "MQ",
+      "Backend"
+    ],
+    "readingTime": "8 min",
+    "difficulty": "架构设计",
+    "kind": "engineering-note",
+    "evidenceLevel": "design",
+    "evidenceSummary": "基于钱包后端资金状态、幂等和异常恢复问题整理的架构设计说明；不代表生产事故复盘，也不表示数据库、MQ 与补偿链路已经完成端到端集成验证。",
+    "conceptTags": [
+      "wallet-backend",
+      "go-infra",
+      "api-design"
+    ],
+    "relatedProjectIds": [
+      1,
+      8,
+      10
+    ],
+    "recommendedSlugs": [
+      "withdrawal-error-handling",
+      "cex-evm-wallet-deposit-withdrawal-loop",
+      "wallet-api-boundary",
+      "market-services-data-flow"
+    ],
+    "suggestedQuestions": [
+      "数据库事务能保证哪些资金一致性，又不能跨过哪些服务边界？",
+      "为什么同一个 request_id 的金额变化必须拒绝，而不是覆盖或重新执行？",
+      "Transactional Outbox 如何处理数据库提交与 MQ 投递之间的失败窗口？"
+    ]
   }
 ]
 
@@ -1735,5 +1777,25 @@ export const articleSummaries: ArticleSummary[] = [
     "readingTime": "6 min",
     "difficulty": "项目拆解",
     "kind": "learning-log"
+  },
+  {
+    "id": 31,
+    "slug": "wallet-ledger-transaction-mq-consistency",
+    "title": "资金系统一致性：从余额冻结、数据库事务到 MQ 幂等",
+    "date": "2026-07-20",
+    "summary": "以一笔提现为主线，区分链上资产与业务负债，解释本地事务、条件更新、request_id 幂等、Transactional Outbox、结果未知重试和可审计补偿如何共同守住资金一致性。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Ledger",
+      "Transaction",
+      "MQ",
+      "Backend"
+    ],
+    "readingTime": "8 min",
+    "difficulty": "架构设计",
+    "kind": "engineering-note",
+    "evidenceLevel": "design",
+    "evidenceSummary": "基于钱包后端资金状态、幂等和异常恢复问题整理的架构设计说明；不代表生产事故复盘，也不表示数据库、MQ 与补偿链路已经完成端到端集成验证。"
   }
 ]

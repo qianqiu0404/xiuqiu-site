@@ -97,7 +97,7 @@ export const engineeringMap: EngineeringMapNode[] = [
     title: 'Exchange Wallet Infrastructure',
     subtitle: '资金编排、风险控制、多链交互、签名边界和异常恢复。',
     projectIds: [1, 8],
-    articleSlugs: ['cex-evm-wallet-deposit-withdrawal-loop', 'withdrawal-error-handling', 'wallet-api-boundary'],
+    articleSlugs: ['cex-evm-wallet-deposit-withdrawal-loop', 'withdrawal-error-handling', 'wallet-ledger-transaction-mq-consistency', 'wallet-api-boundary'],
   },
   {
     id: 'wallet-core',

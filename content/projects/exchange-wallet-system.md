@@ -98,7 +98,7 @@
     ]
   },
   "conceptTags": ["wallet-backend", "api-design", "multi-chain", "signer-service", "risk-control", "go-infra"],
-  "relatedArticleSlugs": ["cex-evm-wallet-deposit-withdrawal-loop", "withdrawal-error-handling", "wallet-api-boundary", "wallet-sign-signer", "new-chain-integration-checklist"],
+  "relatedArticleSlugs": ["cex-evm-wallet-deposit-withdrawal-loop", "withdrawal-error-handling", "wallet-ledger-transaction-mq-consistency", "wallet-api-boundary", "wallet-sign-signer", "new-chain-integration-checklist"],
   "suggestedQuestions": [
     "Exchange Wallet Infrastructure 为什么要拆成四个服务边界？",
     "提现广播超时后应该如何恢复？",

@@ -27,6 +27,7 @@
     2
   ],
   "recommendedSlugs": [
+    "wallet-ledger-transaction-mq-consistency",
     "wallet-api-boundary",
     "wallet-sign-signer",
     "wallet-address-models",

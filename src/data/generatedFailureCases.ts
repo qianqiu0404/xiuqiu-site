@@ -62,7 +62,8 @@ export const failureCases: FailureCase[] = [
       "risk-service 幂等标记与审批哈希相关单测已本地验证"
     ],
     "relatedArticleSlugs": [
-      "withdrawal-error-handling"
+      "withdrawal-error-handling",
+      "wallet-ledger-transaction-mq-consistency"
     ],
     "relatedProjectSlugs": [
       "exchange-wallet-system",
@@ -102,7 +103,8 @@ export const failureCases: FailureCase[] = [
       "已有状态机与 worker 入口梳理，CAS 冲突测试待补"
     ],
     "relatedArticleSlugs": [
-      "withdrawal-error-handling"
+      "withdrawal-error-handling",
+      "wallet-ledger-transaction-mq-consistency"
     ],
     "relatedProjectSlugs": [
       "exchange-wallet-system"
@@ -1182,7 +1184,8 @@ export const failureCases: FailureCase[] = [
       "已定位提现状态、冻结与通知路径"
     ],
     "relatedArticleSlugs": [
-      "withdrawal-error-handling"
+      "withdrawal-error-handling",
+      "wallet-ledger-transaction-mq-consistency"
     ],
     "relatedProjectSlugs": [
       "exchange-wallet-system",
@@ -1224,7 +1227,8 @@ export const failureCases: FailureCase[] = [
       "已明确链上事实、账务分录与业务确认的不同恢复来源"
     ],
     "relatedArticleSlugs": [
-      "withdrawal-error-handling"
+      "withdrawal-error-handling",
+      "wallet-ledger-transaction-mq-consistency"
     ],
     "relatedProjectSlugs": [
       "exchange-wallet-system"

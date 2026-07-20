@@ -37,7 +37,7 @@
     "nextSteps": ["完成独立 Vercel 生产部署", "发布 Catalog checksum 锁定", "补浏览器 E2E 自动化"]
   },
   "conceptTags": ["wallet-backend", "go-infra", "api-design"],
-  "relatedArticleSlugs": ["withdrawal-error-handling", "cex-evm-wallet-deposit-withdrawal-loop", "http-rpc-grpc"],
+  "relatedArticleSlugs": ["withdrawal-error-handling", "wallet-ledger-transaction-mq-consistency", "cex-evm-wallet-deposit-withdrawal-loop", "http-rpc-grpc"],
   "suggestedQuestions": ["三个提现场景分别证明什么？", "Runner 如何保证 SSE 顺序和重连？", "公开模拟与生产钱包的边界在哪里？"]
 }
 ---

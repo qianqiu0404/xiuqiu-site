@@ -157,6 +157,7 @@ export const projects: Project[] = [
     "relatedArticleSlugs": [
       "cex-evm-wallet-deposit-withdrawal-loop",
       "withdrawal-error-handling",
+      "wallet-ledger-transaction-mq-consistency",
       "wallet-api-boundary",
       "wallet-sign-signer",
       "new-chain-integration-checklist"
@@ -734,6 +735,7 @@ export const projects: Project[] = [
     ],
     "relatedArticleSlugs": [
       "withdrawal-error-handling",
+      "wallet-ledger-transaction-mq-consistency",
       "cex-evm-wallet-deposit-withdrawal-loop",
       "http-rpc-grpc"
     ],
@@ -848,6 +850,7 @@ export const projects: Project[] = [
     "relatedArticleSlugs": [
       "cex-evm-wallet-deposit-withdrawal-loop",
       "withdrawal-error-handling",
+      "wallet-ledger-transaction-mq-consistency",
       "http-rpc-grpc"
     ],
     "suggestedQuestions": [

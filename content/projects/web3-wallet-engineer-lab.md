@@ -37,7 +37,7 @@
     "nextSteps": ["发布 Catalog v1 release", "增加 RPC 多节点仲裁模型", "增加账务 outbox 部分失败注入"]
   },
   "conceptTags": ["wallet-backend", "go-infra", "api-design"],
-  "relatedArticleSlugs": ["cex-evm-wallet-deposit-withdrawal-loop", "withdrawal-error-handling", "http-rpc-grpc"],
+  "relatedArticleSlugs": ["cex-evm-wallet-deposit-withdrawal-loop", "withdrawal-error-handling", "wallet-ledger-transaction-mq-consistency", "http-rpc-grpc"],
   "suggestedQuestions": ["领域引擎与正式实验台如何分工？", "资金不变量由哪些测试证明？", "Scenario Catalog v1 解决了什么漂移问题？"]
 }
 ---

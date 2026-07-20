@@ -63,9 +63,9 @@ const readingPaths: {
 }[] = [
   {
     title: '钱包后端学习路径',
-    desc: '从 API 职责边界开始，再进入签名服务与多链模型。',
+    desc: '从 API 职责边界进入资金事务与异步一致性，再延伸到签名服务和多链模型。',
     capabilityId: 'wallet-backend',
-    slugs: ['api-system-calls', 'wallet-api-boundary', 'wallet-sign-signer', 'wallet-address-models'],
+    slugs: ['api-system-calls', 'wallet-api-boundary', 'wallet-ledger-transaction-mq-consistency', 'wallet-sign-signer', 'wallet-address-models'],
   },
   {
     title: 'Go 后端工程路径',
