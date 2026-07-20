@@ -1180,6 +1180,50 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "Multi-Agent Coding 和普通 AI 写代码有什么区别？",
       "什么时候应该使用 Multi-Agent，什么时候不应该？"
     ]
+  },
+  {
+    "id": 31,
+    "slug": "multi-chain-wallet-acceptance-loop",
+    "title": "从适配一条链到验收一条链：多链钱包的统一工程 Loop",
+    "date": "2026-07-20",
+    "summary": "多链钱包不只是增加 RPC 适配器。本文复盘如何用统一资金状态机串起地址、充值、归集、提现、确认、对账与幂等重扫，同时显式处理 EVM nonce、BTC UTXO、TRON 资源和 Sui Object。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Backend",
+      "Multi-chain",
+      "Bitcoin",
+      "Sui"
+    ],
+    "readingTime": "8 min",
+    "difficulty": "工程复盘",
+    "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "Base、Solana、BNB 以及 BTC Testnet4、Sui Testnet 的对应链路已完成本地或测试网验证；本文记录验收方法与当前边界，不代表生产环境运行结论。",
+    "conceptTags": [
+      "wallet-backend",
+      "multi-chain",
+      "signer-service",
+      "go-infra",
+      "api-design"
+    ],
+    "relatedProjectIds": [
+      1
+    ],
+    "recommendedSlugs": [
+      "multi-chain-wallet-resource-state",
+      "cex-evm-wallet-deposit-withdrawal-loop",
+      "new-chain-integration-checklist",
+      "wallet-api-boundary",
+      "wallet-sign-signer",
+      "withdrawal-error-handling"
+    ],
+    "suggestedQuestions": [
+      "适配一条链和真正验收一条链有什么区别？",
+      "为什么多链钱包应该统一业务状态机，但不能隐藏链资源？",
+      "BTC、EVM、TRON 和 Sui 的验收依据分别是什么？",
+      "怎样证明扫链、余额和通知在重跑后仍然幂等？"
+    ]
   }
 ]
 
@@ -1735,5 +1779,25 @@ export const articleSummaries: ArticleSummary[] = [
     "readingTime": "6 min",
     "difficulty": "项目拆解",
     "kind": "learning-log"
+  },
+  {
+    "id": 31,
+    "slug": "multi-chain-wallet-acceptance-loop",
+    "title": "从适配一条链到验收一条链：多链钱包的统一工程 Loop",
+    "date": "2026-07-20",
+    "summary": "多链钱包不只是增加 RPC 适配器。本文复盘如何用统一资金状态机串起地址、充值、归集、提现、确认、对账与幂等重扫，同时显式处理 EVM nonce、BTC UTXO、TRON 资源和 Sui Object。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Backend",
+      "Multi-chain",
+      "Bitcoin",
+      "Sui"
+    ],
+    "readingTime": "8 min",
+    "difficulty": "工程复盘",
+    "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "Base、Solana、BNB 以及 BTC Testnet4、Sui Testnet 的对应链路已完成本地或测试网验证；本文记录验收方法与当前边界，不代表生产环境运行结论。"
   }
 ]
