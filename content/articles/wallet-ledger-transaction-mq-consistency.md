@@ -1,6 +1,6 @@
 ---
 {
-  "id": 31,
+  "id": 32,
   "slug": "wallet-ledger-transaction-mq-consistency",
   "kind": "engineering-note",
   "evidenceLevel": "design",

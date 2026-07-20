@@ -13,6 +13,7 @@ const routes = [
   '/engineering/failures',
   '/engineering/evidence',
   '/ai',
+  '/ai/social-research',
   '/ai/deliveries',
   '/now',
   '/radar',

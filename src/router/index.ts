@@ -49,6 +49,11 @@ const router = createRouter({
       component: () => import('../pages/DeliveryListPage.vue'),
     },
     {
+      path: '/ai/social-research',
+      name: 'social-research',
+      component: () => import('../pages/SocialResearchPage.vue'),
+    },
+    {
       path: '/ai/deliveries/:slug',
       name: 'ai-delivery-detail',
       component: () => import('../pages/DeliveryDetailPage.vue'),
