@@ -109,8 +109,17 @@ writePage(
   '/ai',
   replaceMeta(baseHtml, {
     title: 'AI 工作流｜xiuqiu',
-    description: 'AI Coding、跨设备 Skill 工具链、每日研究发布与 Obsidian 知识治理四个真实 Loop。',
+    description: 'AI Coding、跨设备 Skill、社交研究、每日发布与 Obsidian 知识治理五个真实 Loop。',
     path: '/ai',
+  }),
+)
+
+writePage(
+  '/ai/social-research',
+  replaceMeta(baseHtml, {
+    title: 'Social Media Research Skill｜xiuqiu',
+    description: 'MediaCrawler 本地采集与 TikHub 付费确认回退组成的双后端社交媒体研究工作流。',
+    path: '/ai/social-research',
   }),
 )
 
@@ -253,4 +262,4 @@ deliveryRecords.forEach(record => {
 })
 
 const legacyProjectPages = projects.reduce((total, project) => total + 1 + project.legacyIds.length, 0)
-console.log(`Generated static meta pages for ${articleSummaries.length + projects.length + legacyProjectPages + dailyRadars.length + deliveryRecords.length + 9} routes.`)
+console.log(`Generated static meta pages for ${articleSummaries.length + projects.length + legacyProjectPages + dailyRadars.length + deliveryRecords.length + 10} routes.`)

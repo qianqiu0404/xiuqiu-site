@@ -16,7 +16,7 @@ function toggleDetailsFromKeyboard(event: KeyboardEvent) {
   if (details instanceof HTMLDetailsElement) details.open = !details.open
 }
 
-onMounted(() => setSeoMeta({ title: 'AI 工作流｜xiuqiu', description: 'AI Coding、跨设备 Skill 工具链、每日研究发布与 Obsidian 知识治理四个真实 Loop。', path: '/ai' }))
+onMounted(() => setSeoMeta({ title: 'AI 工作流｜xiuqiu', description: 'AI Coding、跨设备 Skill、社交研究、每日发布与 Obsidian 知识治理五个真实 Loop。', path: '/ai' }))
 </script>
 
 <template>
@@ -25,7 +25,7 @@ onMounted(() => setSeoMeta({ title: 'AI 工作流｜xiuqiu', description: 'AI Co
       <header class="ai-page-hero">
         <p class="section-label">AI Workflows</p>
         <h1>AI 如何进入我的工作流</h1>
-        <p>四个真实 Loop 连接工程协作、Skill 复用、研究发布与知识治理。我负责目标、来源边界和最终验收，外部模型、工具与第三方 Skill 保留各自归属。</p>
+        <p>五个真实 Loop 连接工程协作、Skill 复用、社交研究、研究发布与知识治理。我负责目标、来源边界和最终验收，外部模型、工具与第三方 Skill 保留各自归属。</p>
         <div class="ai-principle-strip"><span>目标由我定义</span><span>来源明确</span><span>证据可复核</span><span>失败可回流</span></div>
       </header>
 
@@ -39,7 +39,7 @@ onMounted(() => setSeoMeta({ title: 'AI 工作流｜xiuqiu', description: 'AI Co
       </section>
 
       <article v-for="item in siteAiCases" :id="item.slug" :key="item.id" class="ai-case-detail">
-        <header><div><p class="section-label">Loop {{ loopNumber(item.displayOrder) }} · {{ aiStageLabels[item.stage] }}</p><h2>{{ item.title }}<small v-if="item.slug === 'cross-device-skill-toolchain'">SkillOps Loop</small></h2><p>{{ item.summary }}</p></div></header>
+        <header><div><p class="section-label">Loop {{ loopNumber(item.displayOrder) }} · {{ aiStageLabels[item.stage] }}</p><h2>{{ item.title }}<small v-if="item.slug === 'cross-device-skill-toolchain'">SkillOps Loop</small></h2><p>{{ item.summary }}</p></div><router-link v-if="item.slug === 'social-media-research'" class="btn btn-secondary" to="/ai/social-research">查看交互展示</router-link></header>
         <div class="ai-ownership-note"><span>来源与归属</span><p>{{ item.ownershipNote }}</p></div>
         <div class="ai-case-current"><span>当前重点</span><p>{{ item.currentFocus }}</p></div>
         <div class="ai-flow" aria-label="Workflow"><template v-for="(step, index) in item.flow" :key="step"><div><span>{{ index + 1 }}</span><p>{{ step }}</p></div><b v-if="index < item.flow.length - 1">&rarr;</b></template></div>

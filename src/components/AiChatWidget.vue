@@ -12,7 +12,7 @@ interface ChatMessage {
 }
 
 interface PageContext {
-  type: 'home' | 'now' | 'engineering' | 'engineering-failures' | 'engineering-evidence' | 'ai' | 'ai-deliveries' | 'ai-delivery' | 'learning' | 'articles' | 'article' | 'project' | 'radar' | 'radar-detail'
+  type: 'home' | 'now' | 'engineering' | 'engineering-failures' | 'engineering-evidence' | 'ai' | 'social-research' | 'ai-deliveries' | 'ai-delivery' | 'learning' | 'articles' | 'article' | 'project' | 'radar' | 'radar-detail'
   title?: string
   slug?: string
   summary?: string
@@ -140,7 +140,15 @@ const currentPageContext = computed<PageContext>(() => {
     return {
       type: 'ai',
       title: 'AI 工作流',
-      summary: 'AI Coding、跨设备 Skill 工具链、每日研究发布与 Obsidian 知识治理四个真实 Loop。',
+      summary: 'AI Coding、跨设备 Skill、社交研究、每日发布与 Obsidian 知识治理五个真实 Loop。',
+    }
+  }
+
+  if (route.name === 'social-research') {
+    return {
+      type: 'social-research',
+      title: 'Social Media Research Skill',
+      summary: 'MediaCrawler 本地优先、TikHub 付费确认回退、统一 JSONL 与 Codex 分析组成的双后端公开研究工作流。',
     }
   }
 

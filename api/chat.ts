@@ -45,7 +45,7 @@ type ErrorCode =
   | 'upstream_network_error'
 
 interface PageContext {
-  type: 'home' | 'now' | 'engineering' | 'engineering-failures' | 'engineering-evidence' | 'ai' | 'ai-deliveries' | 'ai-delivery' | 'learning' | 'articles' | 'article' | 'project' | 'radar' | 'radar-detail'
+  type: 'home' | 'now' | 'engineering' | 'engineering-failures' | 'engineering-evidence' | 'ai' | 'social-research' | 'ai-deliveries' | 'ai-delivery' | 'learning' | 'articles' | 'article' | 'project' | 'radar' | 'radar-detail'
   title?: string
   slug?: string
   summary?: string
@@ -121,6 +121,7 @@ function normalizePageContext(value: unknown): PageContext | undefined {
     candidate.type !== 'engineering-failures' &&
     candidate.type !== 'engineering-evidence' &&
     candidate.type !== 'ai' &&
+    candidate.type !== 'social-research' &&
     candidate.type !== 'ai-deliveries' &&
     candidate.type !== 'ai-delivery' &&
     candidate.type !== 'learning' &&
