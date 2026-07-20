@@ -16,6 +16,9 @@
     <loc>https://xiuqiu-site.vercel.app/ai</loc>
   </url>
   <url>
+    <loc>https://xiuqiu-site.vercel.app/ai/social-research</loc>
+  </url>
+  <url>
     <loc>https://xiuqiu-site.vercel.app/ai/deliveries</loc>
   </url>
   <url>
@@ -142,7 +145,13 @@
     <loc>https://xiuqiu-site.vercel.app/articles/minimal-multi-agent-coding-workflow</loc>
   </url>
   <url>
+    <loc>https://xiuqiu-site.vercel.app/articles/multi-chain-wallet-acceptance-loop</loc>
+  </url>
+  <url>
     <loc>https://xiuqiu-site.vercel.app/articles/wallet-ledger-transaction-mq-consistency</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-21</loc>
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/radar/2026-07-20</loc>
