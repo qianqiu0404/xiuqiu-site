@@ -6,6 +6,77 @@ export interface DailyRadar { date: string; slug: string; title: string; summary
 
 export const dailyRadars: DailyRadar[] = [
   {
+    "date": "2026-07-21",
+    "slug": "2026-07-21",
+    "title": "每日研究雷达 · 2026-07-21",
+    "summary": "聚焦协议升级与监管核验、Agent 凭证绑定的出网代理、钱包调用准备协议，以及可验证的 AI 工具用量治理。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-07-21T07:03:40+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "NEAR 协议版本 86 进入升级投票窗口",
+        "summary": "NEAR Core 2.13.1 要求希望继续参与共识的节点在投票窗口前升级，并给出投票成功后的预计激活安排；这不代表协议版本 86 已在主网完成激活，仍需以链上状态和官方后续通告为准。",
+        "sourceUrl": "https://github.com/near/nearcore/releases/tag/2.13.1"
+      },
+      {
+        "title": "Sui devnet 为有网络认证结果的分叉增加自动恢复",
+        "summary": "Sui devnet v1.76.0 允许验证者在重启并部署新二进制后，对已有网络认证规范结果的 checkpoint 或交易分叉自动恢复；没有认证结果或错误仍存在于当前二进制时，节点仍会停机等待处理，且该能力不能据此视为已部署到主网。",
+        "sourceUrl": "https://github.com/MystenLabs/sui/releases/tag/devnet-v1.76.0"
+      },
+      {
+        "title": "MiCA 过渡期结束后中央登记成为公开核验入口",
+        "summary": "ESMA 按周汇总白皮书、ART 与 EMT 发行人、获授权 CASP 和不合规实体，为欧盟加密资产服务商状态提供统一公开入口；登记存在报送时间差，白皮书入册也不等于获得监管批准。",
+        "sourceUrl": "https://www.esma.europa.eu/esmas-activities/digital-finance-and-innovation/markets-crypto-assets-regulation-mica"
+      }
+    ],
+    "aiTip": {
+      "title": "把 Agent 出网白名单改造成凭证绑定的能力代理",
+      "summary": "长期凭证不进入 Agent 沙箱，只下发单次运行、最小权限且可撤销的会话令牌；代理同时校验域名、方法、路径、令牌来源与账户，并默认拒绝未声明能力。这项环境层收口仍需配合文件系统隔离、工具最小权限和注入检测。",
+      "sourceUrl": "https://www.anthropic.com/engineering/how-we-contain-claude"
+    },
+    "web3Design": {
+      "title": "用 prepare → sign → submit 隔离账户编码与签名执行",
+      "summary": "ERC-7836 草案让钱包先把调用转换为带上下文、链与版本信息的待签摘要，再接收签名执行。wallet-api 可提供短时幂等的 prepare/submit 接口，wallet-service 负责链相关编码、策略校验与提交前重算，wallet-sign 只处理域分离摘要和归一化策略元数据；草案字段与 EVM 语义不能直接套用到其他链。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-7836"
+    },
+    "vibeProject": {
+      "title": "OpenUsage · 多种 AI 编码工具的本地用量仪表盘",
+      "summary": "OpenUsage 用 Go 汇总 Claude Code、Codex、Cursor、Copilot、Gemini CLI 与 OpenRouter 等工具的配额、费用和重置时间，并支持 TUI、无头报告与本地历史。项目可在固定版本构建运行，但会接触本地日志、数据库和凭证环境，且测试存在环境隔离不足，不能把可启动等同于全面可靠。",
+      "sourceUrl": "https://github.com/janekbaraniewski/openusage"
+    },
+    "readingPick": {
+      "title": "AI Mania Is Eviscerating Global Decision-Making",
+      "summary": "文章从组织激励与反馈回路审视 AI 项目，提醒团队不要把 token、调用量或许可证数误当业务成果，并建议用基线、停止条件和无惩罚坏消息通道恢复真实反馈。行动问题：你熟悉的一个 AI 项目，哪项结果指标最不容易被工具使用量替代？",
+      "sourceUrl": "https://ludic.mataroa.blog/blog/ai-mania-is-eviscerating-global-decision-making/"
+    },
+    "sourceUrls": [
+      "https://github.com/near/nearcore/releases/tag/2.13.1",
+      "https://github.com/MystenLabs/sui/releases/tag/devnet-v1.76.0",
+      "https://www.esma.europa.eu/esmas-activities/digital-finance-and-innovation/markets-crypto-assets-regulation-mica",
+      "https://www.anthropic.com/engineering/how-we-contain-claude",
+      "https://eips.ethereum.org/EIPS/eip-7836",
+      "https://github.com/janekbaraniewski/openusage",
+      "https://github.com/janekbaraniewski/openusage/releases/tag/v0.24.0",
+      "https://api.github.com/repos/janekbaraniewski/openusage/releases?per_page=100",
+      "https://github.com/janekbaraniewski/openusage/issues/216",
+      "https://github.com/janekbaraniewski/openusage/issues/268",
+      "https://github.com/janekbaraniewski/openusage/blob/v0.24.0/internal/providers/hermes/hermes_test.go",
+      "https://ludic.mataroa.blog/blog/ai-mania-is-eviscerating-global-decision-making/"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
     "date": "2026-07-20",
     "slug": "2026-07-20",
     "title": "每日研究雷达 · 2026-07-20",
