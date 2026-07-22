@@ -6,6 +6,76 @@ export interface DailyRadar { date: string; slug: string; title: string; summary
 
 export const dailyRadars: DailyRadar[] = [
   {
+    "date": "2026-07-23",
+    "slug": "2026-07-23",
+    "title": "每日研究雷达 · 2026-07-23",
+    "summary": "聚焦共识客户端安全升级、故障证明进程治理、测试网协议变更、Agent PR 风险路由、不可逆密钥迁移，以及本地任务规格管理。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-07-23T07:02:51+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "Lighthouse v8.2.1 将主网信标节点升级列为高优先级安全事项",
+        "summary": "Sigma Prime 称该版本修复多项安全漏洞，并修正 EIP-8136 partial data columns 的缓存与 gossip 行为，要求主网 beacon node 用户尽快升级。漏洞细节暂未公开，不能判断可利用条件、影响范围或是否已被利用；data-column backfill 的 OOM 风险也仍待后续版本修复。",
+        "sourceUrl": "https://github.com/sigp/lighthouse/releases/tag/v8.2.1"
+      },
+      {
+        "title": "op-challenger v1.9.4 收束超时后的 VM 进程残留",
+        "summary": "OP Labs 的补丁版会在 --vm-timeout 触发时终止整个 VM 进程组，并用包含工具链 CVE 修复的 Go 版本重建镜像，改善 fault-proof 挑战器的故障恢复与运行环境安全。官方将升级标为可选但推荐，相关 ZK 与 super dispute games 尚未在生产启用。",
+        "sourceUrl": "https://github.com/ethereum-optimism/optimism/releases/tag/op-challenger/v1.9.4"
+      },
+      {
+        "title": "Avalanche Helicon 在 Fuji 排定六项协议变更",
+        "summary": "AvalancheGo v1.15.0-fuji 为 7 月 28 日的 Fuji 激活安排执行、验证者、质押与费用规则变更，并要求测试网节点提前升级。该二进制明确拒绝主网配置，且激活后暂不支持 C-Chain state sync，不能视为主网版本已经就绪。",
+        "sourceUrl": "https://github.com/ava-labs/avalanchego/releases/tag/v1.15.0-fuji"
+      }
+    ],
+    "aiTip": {
+      "title": "用多信号置信度路由 Agent PR",
+      "summary": "不要依赖模型自报信心；把阻断性工程规范、远程沙箱测试与流量回放、Agent 版本评测趋势，以及 agent × repo × change-class 的历史回滚率组合成可审计路由。先从低风险变更校准阈值，只有各项同时过线才自动合并，否则附上失败信号转人工。",
+      "sourceUrl": "https://aws.amazon.com/blogs/machine-learning/ai-teammates-how-monday-com-runs-production-ai-agents-on-amazon-bedrock/"
+    },
+    "web3Design": {
+      "title": "把不可逆签名算法迁移建模为独立密钥状态机",
+      "summary": "EIP-8164 草案把 EOA 从 ECDSA 迁移到 ML-DSA-44 后的认证切换设计为不可回退状态。钱包系统可借鉴版本化 migration/rotation envelope、链上状态重验、同账户串行化和激活后禁用旧算法，但该草案仍未定稿且缺少恢复机制，不能在链未采纳时模拟协议级失效。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-8164"
+    },
+    "vibeProject": {
+      "title": "Backlog.md · 仓库内的 Agent 任务规格与审阅工作流",
+      "summary": "Backlog.md 将任务、验收条件、里程碑、依赖和决策保存为可版本化 Markdown，并提供 CLI、终端与本地 Web 看板。固定 v1.48.0 的无 Git 流程已可复现；多人或多 Agent 共用工作树时，autoCommit 可能把未审阅草稿和其他脏改动卷入提交，应保持关闭并使用隔离 worktree。",
+      "sourceUrl": "https://github.com/MrLesk/Backlog.md"
+    },
+    "readingPick": {
+      "title": "Towards demystifying the creativity of diffusion models",
+      "summary": "文章以 score smoothing 解释扩散模型如何在靠近数据流形的同时减少向有限训练样本坍缩，把所谓创造力拆成可实验的函数近似与正则化机制。行动问题：能否为一个熟悉的生成任务同时设计真实性、训练样本距离和任务有效性指标，并明确它们仍无法证明什么？",
+      "sourceUrl": "https://www.research.google/blog/towards-demystifying-the-creativity-of-diffusion-models/"
+    },
+    "sourceUrls": [
+      "https://github.com/sigp/lighthouse/releases/tag/v8.2.1",
+      "https://github.com/ethereum-optimism/optimism/releases/tag/op-challenger/v1.9.4",
+      "https://github.com/ava-labs/avalanchego/releases/tag/v1.15.0-fuji",
+      "https://aws.amazon.com/blogs/machine-learning/ai-teammates-how-monday-com-runs-production-ai-agents-on-amazon-bedrock/",
+      "https://eips.ethereum.org/EIPS/eip-8164",
+      "https://github.com/MrLesk/Backlog.md",
+      "https://github.com/MrLesk/Backlog.md/releases/tag/v1.48.0",
+      "https://raw.githubusercontent.com/MrLesk/Backlog.md/v1.48.0/README.md",
+      "https://api.npmjs.org/downloads/point/2026-06-22:2026-07-21/backlog.md",
+      "https://github.com/MrLesk/Backlog.md/issues/795",
+      "https://www.research.google/blog/towards-demystifying-the-creativity-of-diffusion-models/"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
     "date": "2026-07-22",
     "slug": "2026-07-22",
     "title": "每日研究雷达 · 2026-07-22",
