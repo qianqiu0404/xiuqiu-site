@@ -4,22 +4,24 @@ import { deliveryRecords } from '../data/generatedDeliveries'
 import { learningRecords } from '../data/generatedLearningRecords'
 import { nowSnapshot } from '../data/generatedNow'
 import { dailyRadars } from '../data/generatedRadars'
-import { getArticleBySlug, getProjectByKey, projectStageLabels, siteArticlesByNewest } from '../data/siteKnowledge'
+import { getProjectByKey, projectStageLabels, siteArticlesByNewest } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
 
 const currentProjects = nowSnapshot.developmentProjectSlugs.map(getProjectByKey).filter(Boolean)
-const featuredDeliveries = nowSnapshot.featuredDeliverySlugs.map(slug => deliveryRecords.find(item => item.slug === slug)).filter(Boolean)
+const featuredDeliveries = [...deliveryRecords].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 3)
 const latestRadar = dailyRadars[0]
+const latestEngineeringNotes = siteArticlesByNewest.filter(item => item.kind === 'engineering-note').slice(0, 2)
 const researchItems = [
   latestRadar
     ? { type: '每日雷达', title: latestRadar.title, summary: latestRadar.summary, date: latestRadar.date, to: `/radar/${latestRadar.slug}` }
     : undefined,
-  ...nowSnapshot.researchRefs
-    .filter(ref => ref.type === 'article')
-    .map(ref => {
-      const item = getArticleBySlug(ref.slug)
-      return item ? { type: '工程文章', title: item.title, summary: item.summary, date: item.date, to: `/articles/${item.slug}` } : undefined
-    }),
+  ...latestEngineeringNotes.map(item => ({
+    type: '工程文章',
+    title: item.title,
+    summary: item.summary,
+    date: item.date,
+    to: `/articles/${item.slug}`,
+  })),
 ].filter(Boolean)
 
 const recentOutputs = computed(() => [

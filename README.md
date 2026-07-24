@@ -27,7 +27,7 @@ xiuqiu-site                     个人技术品牌、文章与证据总入口
 - `content/deliveries/*.md`: AI-assisted delivery records and human decisions
 - `src/data/generated*.ts`: generated typed data; do not edit by hand
 - `src/data/siteKnowledge.ts`: unified project/article/evidence knowledge graph
-- `api/chat.ts`: Vercel serverless DeepSeek proxy; the browser never receives the API key
+- `api/chat.ts`: retained serverless chat proxy; the public widget stays off unless an explicit build flag enables it
 
 ## Commands
 
@@ -48,11 +48,12 @@ npm run check:public
 Configure only in Vercel:
 
 ```env
+VITE_AI_ASSISTANT_ENABLED=false
 DEEPSEEK_API_KEY=
 DEEPSEEK_MODEL=deepseek-v4-flash
 ```
 
-Never commit a real API key. `.env.example` contains names only.
+The assistant is disabled by default while the next provider integration is being designed. Set the public flag to `true` only after the provider, rate limiting, privacy copy and failure handling have been verified. Never commit a real API key. `.env.example` contains names and safe defaults only.
 
 ## Content workflow
 
@@ -67,7 +68,7 @@ The local Obsidian sync command reads only explicitly marked public notes. Hoste
 
 ## Public safety
 
-- DeepSeek credentials exist only as Vercel environment variables.
+- AI provider credentials exist only as Vercel environment variables, and the public assistant is disabled by default.
 - CI scans the full Git history for secrets and checks generated public data.
 - Local absolute paths, credential-shaped values and private Git remote URLs fail `npm run check:public`.
 - Public evidence uses accessible HTTPS links or a `private-summary` without a URL.
