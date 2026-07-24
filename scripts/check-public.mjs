@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process'
-import { readFileSync } from 'node:fs'
+import { existsSync, lstatSync, readFileSync } from 'node:fs'
 
 const files = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard'], { encoding: 'utf8' })
   .trim()
@@ -7,6 +7,7 @@ const files = execFileSync('git', ['ls-files', '--cached', '--others', '--exclud
   .filter(Boolean)
   .filter(file => !file.endsWith('package-lock.json'))
   .filter(file => !file.endsWith('.test.mjs'))
+  .filter(file => existsSync(file) && lstatSync(file).isFile())
 
 const rules = [
   { label: 'absolute local path', pattern: /\/(?:Users|home)\/[^/\s]+\// },

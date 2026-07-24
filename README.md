@@ -25,7 +25,7 @@ xiuqiu-site                     个人技术品牌、文章与证据总入口
 - `content/failure-cases/*.md`: structured wallet failure recovery playbook
 - `content/evidence/*.md`: reproducible, public-safe engineering evidence
 - `content/deliveries/*.md`: AI-assisted delivery records and human decisions
-- `src/data/generated*.ts`: generated typed data; do not edit by hand
+- `src/data/generated*.ts`: generated typed metadata; article bodies are loaded from Markdown only when their route opens
 - `src/data/siteKnowledge.ts`: unified project/article/evidence knowledge graph
 - `api/chat.ts`: retained serverless chat proxy; the public widget stays off unless an explicit build flag enables it
 

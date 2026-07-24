@@ -1,13 +1,19 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { engineeringMap, siteArticles, siteArticlesByNewest, siteKnowledge, type KnowledgeTag } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
 
+const route = useRoute()
+const router = useRouter()
 const query = ref('')
 const selectedCapability = ref<KnowledgeTag | 'All'>('All')
 const selectedTag = ref('All')
 const selectedDifficulty = ref('All')
 const selectedKind = ref<'All' | (typeof siteArticles)[number]['kind']>('All')
+const allSeries = ['All', ...Array.from(new Set(siteArticles.map(article => article.series).filter((series): series is string => Boolean(series))))]
+const requestedSeries = typeof route.query.series === 'string' ? route.query.series : 'All'
+const selectedSeries = ref(allSeries.includes(requestedSeries) ? requestedSeries : 'All')
 
 const capabilityOptions = computed(() => [
   { id: 'All' as const, title: '全部学习主题' },
@@ -50,8 +56,9 @@ const filteredArticles = computed(() => {
     const matchesTag = selectedTag.value === 'All' || article.tags.includes(selectedTag.value)
     const matchesDifficulty = selectedDifficulty.value === 'All' || article.difficulty === selectedDifficulty.value
     const matchesKind = selectedKind.value === 'All' || article.kind === selectedKind.value
+    const matchesSeries = selectedSeries.value === 'All' || article.series === selectedSeries.value
 
-    return matchesKeyword && matchesCapability && matchesTag && matchesDifficulty && matchesKind
+    return matchesKeyword && matchesCapability && matchesTag && matchesDifficulty && matchesKind && matchesSeries
   })
 })
 
@@ -61,6 +68,19 @@ const readingPaths: {
   capabilityId: KnowledgeTag
   slugs: string[]
 }[] = [
+  {
+    title: '钱包签名与基础设施安全',
+    desc: '从业务意图、密码学实现与密钥后端，延伸到供应链和 RPC 信任边界。',
+    capabilityId: 'signer-service',
+    slugs: [
+      'wallet-signing-intent-abuse',
+      'cryptographic-nonce-key-leak',
+      'mpc-tss-security-boundaries',
+      'hsm-key-extractability-boundaries',
+      'wallet-software-supply-chain',
+      'wallet-rpc-trust-boundary',
+    ],
+  },
   {
     title: '钱包后端学习路径',
     desc: '从 API 职责边界进入资金事务与异步一致性，再延伸到签名服务和多链模型。',
@@ -87,7 +107,15 @@ function resetFilters() {
   selectedTag.value = 'All'
   selectedDifficulty.value = 'All'
   selectedKind.value = 'All'
+  selectedSeries.value = 'All'
 }
+
+watch(selectedSeries, series => {
+  const query = { ...route.query }
+  if (series === 'All') delete query.series
+  else query.series = series
+  router.replace({ query })
+})
 
 onMounted(() => {
   setSeoMeta({
@@ -129,6 +157,13 @@ onMounted(() => {
             <option v-for="capability in capabilityOptions" :key="capability.id" :value="capability.id">
               {{ capability.title }}
             </option>
+          </select>
+        </label>
+
+        <label class="filter-box">
+          <span>文章系列</span>
+          <select v-model="selectedSeries">
+            <option v-for="series in allSeries" :key="series" :value="series">{{ series === 'All' ? '全部系列' : series }}</option>
           </select>
         </label>
 
@@ -181,6 +216,7 @@ onMounted(() => {
           <p class="article-summary">{{ a.summary }}</p>
           <div class="article-meta">
             <span class="meta-tag">{{ kindOptions.find(kind => kind.id === a.kind)?.title }}</span>
+            <span v-if="a.series" class="meta-tag">{{ a.series }} · {{ a.seriesOrder }}</span>
             <span v-if="a.evidenceLevel" class="meta-tag evidence-meta">{{ evidenceLabels[a.evidenceLevel] }}</span>
             <span class="meta-tag">{{ a.difficulty }}</span>
             <span class="meta-reading">{{ a.readingTime }}</span>

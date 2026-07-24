@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, watchEffect } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { articles } from '../data/articles'
+import { loadArticleContent } from '../data/articles'
 import {
   getArticleBySlug,
   getArticlesBySlugs,
@@ -15,22 +15,51 @@ const router = useRouter()
 const slug = computed(() => route.params.slug as string)
 const evidenceLabels = { design: '架构设计', 'source-reviewed': '资料与代码复核', 'local-verified': '本地已验证', integrated: '已集成验证', 'public-demo': '公开可运行' } as const
 
-const article = computed(() => {
-  const summary = getArticleBySlug(slug.value)
-  const fullArticle = articles.find(item => item.slug === slug.value)
+const articleSummary = computed(() => getArticleBySlug(slug.value))
+const articleContent = ref<string>()
+const loadingArticle = ref(false)
+const articleLoadFailed = ref(false)
+let loadVersion = 0
 
-  if (!summary || !fullArticle) return undefined
-  return {
-    ...fullArticle,
-    ...summary,
+watch(slug, async currentSlug => {
+  const version = ++loadVersion
+  articleContent.value = undefined
+  articleLoadFailed.value = false
+
+  if (!getArticleBySlug(currentSlug)) {
+    loadingArticle.value = false
+    return
   }
-})
-const relatedProjects = computed(() => (article.value ? getProjectsByIds(article.value.relatedProjectIds) : []))
-const recommendedArticles = computed(() => (article.value ? getArticlesBySlugs(article.value.recommendedSlugs) : []))
-const nextArticle = computed(() => {
-  if (!article.value) return undefined
 
-  const index = siteArticles.findIndex(a => a.slug === article.value?.slug)
+  loadingArticle.value = true
+  try {
+    const content = await loadArticleContent(currentSlug)
+    if (version !== loadVersion) return
+    if (content === undefined) articleLoadFailed.value = true
+    else articleContent.value = content
+  } catch {
+    if (version === loadVersion) articleLoadFailed.value = true
+  } finally {
+    if (version === loadVersion) loadingArticle.value = false
+  }
+}, { immediate: true })
+
+const article = computed(() => {
+  if (!articleSummary.value || articleContent.value === undefined) return undefined
+  return { ...articleSummary.value, content: articleContent.value }
+})
+const relatedProjects = computed(() => (articleSummary.value ? getProjectsByIds(articleSummary.value.relatedProjectIds) : []))
+const recommendedArticles = computed(() => (articleSummary.value ? getArticlesBySlugs(articleSummary.value.recommendedSlugs) : []))
+const seriesArticles = computed(() => {
+  if (!articleSummary.value?.series) return []
+  return siteArticles
+    .filter(item => item.series === articleSummary.value?.series)
+    .sort((a, b) => (a.seriesOrder || 0) - (b.seriesOrder || 0))
+})
+const nextArticle = computed(() => {
+  if (!articleSummary.value) return undefined
+
+  const index = siteArticles.findIndex(a => a.slug === articleSummary.value?.slug)
   return siteArticles[(index + 1) % siteArticles.length]
 })
 
@@ -78,7 +107,7 @@ function isTableSeparator(line: string): boolean {
 
 function renderTableRow(cells: string[], tag: 'th' | 'td', columnCount: number): string {
   const normalizedCells = Array.from({ length: columnCount }, (_, index) => cells[index] || '')
-  return `<tr>${normalizedCells.map(cell => `<${tag}>${escapeHtml(cell)}</${tag}>`).join('')}</tr>`
+  return `<tr>${normalizedCells.map(cell => `<${tag}>${renderInlineMarkdown(cell)}</${tag}>`).join('')}</tr>`
 }
 
 function renderContent(text: string): string {
@@ -141,24 +170,24 @@ function renderContent(text: string): string {
     // Headers
     if (line.startsWith('### ')) {
       if (inList) { result.push('</ul>'); inList = false }
-      result.push('<h4>' + line.slice(4) + '</h4>')
+      result.push('<h4>' + renderInlineMarkdown(line.slice(4)) + '</h4>')
       continue
     }
     if (line.startsWith('## ')) {
       if (inList) { result.push('</ul>'); inList = false }
-      result.push('<h3>' + line.slice(3) + '</h3>')
+      result.push('<h3>' + renderInlineMarkdown(line.slice(3)) + '</h3>')
       continue
     }
     if (line.startsWith('# ')) {
       if (inList) { result.push('</ul>'); inList = false }
-      result.push('<h2>' + line.slice(2) + '</h2>')
+      result.push('<h2>' + renderInlineMarkdown(line.slice(2)) + '</h2>')
       continue
     }
 
     // Blockquote
     if (line.startsWith('> ')) {
       if (inList) { result.push('</ul>'); inList = false }
-      result.push('<blockquote>' + line.slice(2) + '</blockquote>')
+      result.push('<blockquote>' + renderInlineMarkdown(line.slice(2)) + '</blockquote>')
       continue
     }
 
@@ -168,7 +197,7 @@ function renderContent(text: string): string {
         result.push('<ul class="article-list">')
         inList = true
       }
-      result.push('<li>' + line.slice(2) + '</li>')
+      result.push('<li>' + renderInlineMarkdown(line.slice(2)) + '</li>')
       continue
     } else if (inList) {
       result.push('</ul>')
@@ -184,7 +213,7 @@ function renderContent(text: string): string {
 
     // Regular paragraph
     if (inList) { result.push('</ul>'); inList = false }
-    result.push('<p>' + line + '</p>')
+    result.push('<p>' + renderInlineMarkdown(line) + '</p>')
   }
 
   // Close any open tags
@@ -201,12 +230,22 @@ function escapeHtml(text: string): string {
     .replace(/>/g, '&gt;')
 }
 
+function renderInlineMarkdown(text: string): string {
+  return escapeHtml(text)
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+|\/[^)\s]+)\)/g, (_, label: string, url: string) => {
+      const external = url.startsWith('http')
+      return `<a href="${url}"${external ? ' target="_blank" rel="noopener noreferrer"' : ''}>${label}</a>`
+    })
+}
+
 function goHome() {
   router.push('/')
 }
 
 watchEffect(() => {
-  if (!article.value) {
+  if (!articleSummary.value) {
     setSeoMeta({
       title: 'Article not found | xiuqiu',
       description: 'The requested xiuqiu writing page was not found.',
@@ -216,9 +255,9 @@ watchEffect(() => {
   }
 
   setSeoMeta({
-    title: `${article.value.title}｜xiuqiu 工程笔记`,
-    description: article.value.summary,
-    path: `/articles/${article.value.slug}`,
+    title: `${articleSummary.value.title}｜xiuqiu 工程笔记`,
+    description: articleSummary.value.summary,
+    path: `/articles/${articleSummary.value.slug}`,
     type: 'article',
   })
 })
@@ -236,6 +275,7 @@ watchEffect(() => {
             <span v-if="article.updatedAt" class="meta-tag">Updated {{ article.updatedAt }}</span>
             <span class="meta-tag">{{ article.difficulty }}</span>
             <span v-if="article.evidenceLevel" class="meta-tag evidence-meta">{{ evidenceLabels[article.evidenceLevel] }}</span>
+            <span v-if="article.series" class="meta-tag">{{ article.series }} · {{ article.seriesOrder }}/{{ seriesArticles.length }}</span>
             <span class="meta-reading">{{ article.readingTime }}</span>
           </div>
           <h1 class="article-detail-title">{{ article.title }}</h1>
@@ -258,6 +298,27 @@ watchEffect(() => {
       </article>
 
       <section class="article-followup">
+        <div v-if="article.series" class="followup-block article-series-block">
+          <div class="article-series-heading">
+            <div>
+              <p class="section-label">系列阅读</p>
+              <h2>{{ article.series }}</h2>
+            </div>
+            <span>{{ article.seriesOrder }} / {{ seriesArticles.length }}</span>
+          </div>
+          <div class="article-series-links">
+            <router-link
+              v-for="item in seriesArticles"
+              :key="item.slug"
+              :to="`/articles/${item.slug}`"
+              :class="{ current: item.slug === article.slug }"
+            >
+              <span>{{ String(item.seriesOrder).padStart(2, '0') }}</span>
+              <strong>{{ item.title }}</strong>
+            </router-link>
+          </div>
+        </div>
+
         <div class="followup-block">
           <p class="section-label">相关项目</p>
           <div class="followup-grid">
@@ -306,10 +367,15 @@ watchEffect(() => {
       </section>
     </div>
 
+    <div v-else-if="loadingArticle" class="container article-loading" role="status">
+      <p class="section-label">工程笔记</p>
+      <p>正在加载正文…</p>
+    </div>
+
     <div class="container" v-else>
       <div class="not-found">
-        <p class="not-found-title">文章不存在</p>
-        <p class="not-found-desc">请检查链接，或返回浏览全部工程笔记。</p>
+        <p class="not-found-title">{{ articleLoadFailed ? '正文加载失败' : '文章不存在' }}</p>
+        <p class="not-found-desc">{{ articleLoadFailed ? '文章元数据存在，但正文暂时无法加载，请稍后重试。' : '请检查链接，或返回浏览全部工程笔记。' }}</p>
         <router-link to="/articles" class="btn btn-primary">查看全部工程笔记</router-link>
       </div>
     </div>
