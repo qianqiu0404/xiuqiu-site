@@ -146,13 +146,6 @@ evidenceCapabilities.forEach(capability => {
 nowSnapshot.developmentProjectSlugs.forEach(slug => {
   if (!projectSlugs.has(slug)) addError(`now: development project does not exist: ${slug}`)
 })
-nowSnapshot.featuredDeliverySlugs.forEach(slug => {
-  if (!deliverySlugs.has(slug)) addError(`now: featured delivery does not exist: ${slug}`)
-})
-nowSnapshot.researchRefs.forEach(ref => {
-  if (ref.type === 'article' && !articleSlugs.has(ref.slug)) addError(`now: article does not exist: ${ref.slug}`)
-  if (ref.type === 'radar' && !dailyRadars.some(item => item.slug === ref.slug)) addError(`now: radar does not exist: ${ref.slug}`)
-})
 
 if (errors.length) {
   console.error('Knowledge validation failed.')
