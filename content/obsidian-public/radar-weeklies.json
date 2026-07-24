@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-07-24T05:53:42.334Z",
+  "radarWeeklies": [
+    {
+      "week": "2026-W29",
+      "slug": "2026-W29",
+      "title": "研究收敛 · 2026-W29",
+      "summary": "钱包可靠性开始形成可运行证据；Agent 权限与评测仍处于研究阶段；稳定币支付应继续围绕资金生命周期和付款凭证验证。",
+      "judgments": [
+        "钱包可靠性应以可重放状态机、异常路径和可执行不变量作为公开工程证据。",
+        "Agent 权限、外发与评测需要绑定账户、链、策略、环境和运行证据，不能只依赖一次性声明。",
+        "稳定币与机器支付的工程价值在请求、授权、结算、确认和退出状态，而不是供应商叙事。"
+      ],
+      "shipped": [
+        "Wallet Reliability Lab 已提供三条可交互提现路径和确定性恢复演示。",
+        "Web3 Wallet Domain Engine 已提供 Scenario Catalog、资金不变量和 Go race 验证。"
+      ],
+      "watch": [
+        "受限钱包权限与批量调用仍需最小可测试模型。",
+        "Agent 评测需要加入主张、环境与证据的可复跑记录。"
+      ],
+      "stopped": [
+        "单日行情和稳定币市值不再直接作为工程选题。",
+        "没有本地复现的供应商采用规模叙事不进入项目能力。"
+      ],
+      "nextFocus": [
+        "固定 Wallet Domain Engine Catalog 的版本引用与校验失败用例。",
+        "为公开雷达运行记录补充可校验的主张、环境与证据。"
+      ],
+      "relatedProjectSlugs": [
+        "wallet-reliability-lab",
+        "web3-wallet-engineer-lab"
+      ],
+      "sourceUrls": [
+        "https://github.com/qianqiu0404/wallet-reliability-lab",
+        "https://github.com/qianqiu0404/web3-wallet-engineer-lab"
+      ],
+      "publish": true,
+      "reviewedAt": "2026-07-24"
+    }
+  ]
+}

@@ -2,7 +2,16 @@ import { aiCases, type AiCase } from './generatedAiCases.ts'
 import { articleKnowledge, type ArticleKnowledge } from './generatedArticleKnowledge.ts'
 import { learningRecords } from './generatedLearningRecords.ts'
 import { dailyRadars, type DailyRadar } from './generatedRadars.ts'
-import { projects, type Project, type ProjectSourceType, type ProjectStage, type ProjectVisibility } from './generatedProjects.ts'
+import { radarWeeklies, type RadarWeekly } from './generatedRadarWeeklies.ts'
+import {
+  projects,
+  type Project,
+  type ProjectActivityStatus,
+  type ProjectPortfolioTier,
+  type ProjectSourceType,
+  type ProjectStage,
+  type ProjectVisibility,
+} from './generatedProjects.ts'
 import { failureCases, type FailureCase } from './generatedFailureCases.ts'
 import { evidenceRecords, type EvidenceRecord } from './generatedEvidence.ts'
 import { deliveryRecords, type DeliveryRecord } from './generatedDeliveries.ts'
@@ -13,6 +22,7 @@ export type SiteArticle = ArticleKnowledge
 export type SiteProject = Project
 export type SiteAiCase = AiCase
 export type SiteRadar = DailyRadar
+export type SiteRadarWeekly = RadarWeekly
 export type SiteFailureCase = FailureCase
 export type SiteEvidenceRecord = EvidenceRecord
 export type SiteDeliveryRecord = DeliveryRecord
@@ -34,6 +44,19 @@ export const projectVisibilityLabels: Record<ProjectVisibility, string> = {
   private: '私有仓库',
   public: '公开仓库',
   none: '暂无独立仓库',
+}
+
+export const projectPortfolioTierLabels: Record<ProjectPortfolioTier, string> = {
+  flagship: '旗舰系统',
+  verified: '可验证作品',
+  exploration: '工程探索',
+  paused: '暂停保留',
+}
+
+export const projectActivityLabels: Record<ProjectActivityStatus, string> = {
+  active: '进行中',
+  paused: '已暂停',
+  completed: '已完成',
 }
 
 export const aiStageLabels: Record<AiCase['stage'], string> = {
@@ -86,6 +109,7 @@ export const siteArticlesByNewest: SiteArticle[] = [...siteArticles].sort((a, b)
 export const siteProjects: SiteProject[] = projects
 export const siteAiCases: SiteAiCase[] = aiCases
 export const siteRadars: SiteRadar[] = dailyRadars
+export const siteRadarWeeklies: SiteRadarWeekly[] = radarWeeklies
 export const siteFailureCases: SiteFailureCase[] = failureCases
 export const siteEvidenceRecords: SiteEvidenceRecord[] = evidenceRecords
 export const siteDeliveryRecords: SiteDeliveryRecord[] = deliveryRecords
