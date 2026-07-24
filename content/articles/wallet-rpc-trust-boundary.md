@@ -3,6 +3,8 @@
   "id": 38,
   "slug": "wallet-rpc-trust-boundary",
   "kind": "engineering-note",
+  "series": "钱包签名与基础设施安全",
+  "seriesOrder": 6,
   "evidenceLevel": "source-reviewed",
   "evidenceSummary": "依据 Ethereum、Bitcoin Core、Solana 与 Sui 官方协议/RPC 文档，以及当前多链验收代码整理；多节点分歧和错误 RPC 故障注入尚待完整实现。",
   "title": "RPC 节点说谎时，充值、提现和对账会发生什么",

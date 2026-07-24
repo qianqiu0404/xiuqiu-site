@@ -3,6 +3,8 @@
   "id": 37,
   "slug": "wallet-software-supply-chain",
   "kind": "engineering-note",
+  "series": "钱包签名与基础设施安全",
+  "seriesOrder": 5,
   "evidenceLevel": "source-reviewed",
   "evidenceSummary": "依据 CISA 软件供应链指南、GitHub Actions 安全指南、npm Lockfile 文档与 Bybit 官方事件时间线整理；当前项目已执行依赖锁定与 Secret Scan，但未完成签名制品和部署 Provenance。",
   "title": "从恶意依赖到错误交易：钱包软件供应链攻击路径",

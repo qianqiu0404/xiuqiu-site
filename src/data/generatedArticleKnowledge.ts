@@ -18,6 +18,8 @@ export interface ArticleSummary {
   kind: ArticleKind
   evidenceLevel?: ArticleEvidenceLevel
   evidenceSummary?: string
+  series?: string
+  seriesOrder?: number
 }
 
 export interface ArticleKnowledge extends ArticleSummary {
@@ -1287,6 +1289,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "kind": "engineering-note",
     "evidenceLevel": "source-reviewed",
     "evidenceSummary": "基于当前四服务边界、Bybit 官方事件时间线、EIP-712 与 OWASP API 安全模型整理；签名意图篡改与重放实验仍待接入四服务基线。",
+    "series": "钱包签名与基础设施安全",
+    "seriesOrder": 1,
     "conceptTags": [
       "wallet-backend",
       "signer-service",
@@ -1329,6 +1333,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "kind": "engineering-note",
     "evidenceLevel": "source-reviewed",
     "evidenceSummary": "依据 RFC 6979、RFC 8032 与当前 BTC/Sui 签名测试整理；未在项目中实现自定义密码学算法，也不把规范阅读视为生产安全审计。",
+    "series": "钱包签名与基础设施安全",
+    "seriesOrder": 2,
     "conceptTags": [
       "signer-service",
       "wallet-backend",
@@ -1370,6 +1376,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "kind": "engineering-note",
     "evidenceLevel": "source-reviewed",
     "evidenceSummary": "独立三节点 TSS Keygen/Sign 已本地验证；本文依据 NIST MPTC 与 bnb-chain/tss-lib 的协议边界整理，wallet-sign 端到端接入和攻击实验尚未完成。",
+    "series": "钱包签名与基础设施安全",
+    "seriesOrder": 3,
     "conceptTags": [
       "mpc-tss",
       "signer-service",
@@ -1412,6 +1420,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "kind": "engineering-note",
     "evidenceLevel": "source-reviewed",
     "evidenceSummary": "依据 AWS CloudHSM 官方 Key Attribute 与 Key Management 文档整理；当前项目尚未接入 HSM，本文是接入前安全设计与验收门禁。",
+    "series": "钱包签名与基础设施安全",
+    "seriesOrder": 4,
     "conceptTags": [
       "signer-service",
       "wallet-backend",
@@ -1454,6 +1464,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "kind": "engineering-note",
     "evidenceLevel": "source-reviewed",
     "evidenceSummary": "依据 CISA 软件供应链指南、GitHub Actions 安全指南、npm Lockfile 文档与 Bybit 官方事件时间线整理；当前项目已执行依赖锁定与 Secret Scan，但未完成签名制品和部署 Provenance。",
+    "series": "钱包签名与基础设施安全",
+    "seriesOrder": 5,
     "conceptTags": [
       "wallet-backend",
       "signer-service",
@@ -1495,6 +1507,8 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "kind": "engineering-note",
     "evidenceLevel": "source-reviewed",
     "evidenceSummary": "依据 Ethereum、Bitcoin Core、Solana 与 Sui 官方协议/RPC 文档，以及当前多链验收代码整理；多节点分歧和错误 RPC 故障注入尚待完整实现。",
+    "series": "钱包签名与基础设施安全",
+    "seriesOrder": 6,
     "conceptTags": [
       "wallet-backend",
       "multi-chain",
@@ -2131,7 +2145,9 @@ export const articleSummaries: ArticleSummary[] = [
     "difficulty": "安全工程",
     "kind": "engineering-note",
     "evidenceLevel": "source-reviewed",
-    "evidenceSummary": "基于当前四服务边界、Bybit 官方事件时间线、EIP-712 与 OWASP API 安全模型整理；签名意图篡改与重放实验仍待接入四服务基线。"
+    "evidenceSummary": "基于当前四服务边界、Bybit 官方事件时间线、EIP-712 与 OWASP API 安全模型整理；签名意图篡改与重放实验仍待接入四服务基线。",
+    "series": "钱包签名与基础设施安全",
+    "seriesOrder": 1
   },
   {
     "id": 34,
@@ -2150,7 +2166,9 @@ export const articleSummaries: ArticleSummary[] = [
     "difficulty": "安全工程",
     "kind": "engineering-note",
     "evidenceLevel": "source-reviewed",
-    "evidenceSummary": "依据 RFC 6979、RFC 8032 与当前 BTC/Sui 签名测试整理；未在项目中实现自定义密码学算法，也不把规范阅读视为生产安全审计。"
+    "evidenceSummary": "依据 RFC 6979、RFC 8032 与当前 BTC/Sui 签名测试整理；未在项目中实现自定义密码学算法，也不把规范阅读视为生产安全审计。",
+    "series": "钱包签名与基础设施安全",
+    "seriesOrder": 2
   },
   {
     "id": 35,
@@ -2169,7 +2187,9 @@ export const articleSummaries: ArticleSummary[] = [
     "difficulty": "安全工程",
     "kind": "engineering-note",
     "evidenceLevel": "source-reviewed",
-    "evidenceSummary": "独立三节点 TSS Keygen/Sign 已本地验证；本文依据 NIST MPTC 与 bnb-chain/tss-lib 的协议边界整理，wallet-sign 端到端接入和攻击实验尚未完成。"
+    "evidenceSummary": "独立三节点 TSS Keygen/Sign 已本地验证；本文依据 NIST MPTC 与 bnb-chain/tss-lib 的协议边界整理，wallet-sign 端到端接入和攻击实验尚未完成。",
+    "series": "钱包签名与基础设施安全",
+    "seriesOrder": 3
   },
   {
     "id": 36,
@@ -2188,7 +2208,9 @@ export const articleSummaries: ArticleSummary[] = [
     "difficulty": "架构设计",
     "kind": "engineering-note",
     "evidenceLevel": "source-reviewed",
-    "evidenceSummary": "依据 AWS CloudHSM 官方 Key Attribute 与 Key Management 文档整理；当前项目尚未接入 HSM，本文是接入前安全设计与验收门禁。"
+    "evidenceSummary": "依据 AWS CloudHSM 官方 Key Attribute 与 Key Management 文档整理；当前项目尚未接入 HSM，本文是接入前安全设计与验收门禁。",
+    "series": "钱包签名与基础设施安全",
+    "seriesOrder": 4
   },
   {
     "id": 37,
@@ -2207,7 +2229,9 @@ export const articleSummaries: ArticleSummary[] = [
     "difficulty": "安全工程",
     "kind": "engineering-note",
     "evidenceLevel": "source-reviewed",
-    "evidenceSummary": "依据 CISA 软件供应链指南、GitHub Actions 安全指南、npm Lockfile 文档与 Bybit 官方事件时间线整理；当前项目已执行依赖锁定与 Secret Scan，但未完成签名制品和部署 Provenance。"
+    "evidenceSummary": "依据 CISA 软件供应链指南、GitHub Actions 安全指南、npm Lockfile 文档与 Bybit 官方事件时间线整理；当前项目已执行依赖锁定与 Secret Scan，但未完成签名制品和部署 Provenance。",
+    "series": "钱包签名与基础设施安全",
+    "seriesOrder": 5
   },
   {
     "id": 38,
@@ -2226,6 +2250,8 @@ export const articleSummaries: ArticleSummary[] = [
     "difficulty": "安全工程",
     "kind": "engineering-note",
     "evidenceLevel": "source-reviewed",
-    "evidenceSummary": "依据 Ethereum、Bitcoin Core、Solana 与 Sui 官方协议/RPC 文档，以及当前多链验收代码整理；多节点分歧和错误 RPC 故障注入尚待完整实现。"
+    "evidenceSummary": "依据 Ethereum、Bitcoin Core、Solana 与 Sui 官方协议/RPC 文档，以及当前多链验收代码整理；多节点分歧和错误 RPC 故障注入尚待完整实现。",
+    "series": "钱包签名与基础设施安全",
+    "seriesOrder": 6
   }
 ]

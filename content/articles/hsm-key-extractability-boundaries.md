@@ -3,6 +3,8 @@
   "id": 36,
   "slug": "hsm-key-extractability-boundaries",
   "kind": "engineering-note",
+  "series": "钱包签名与基础设施安全",
+  "seriesOrder": 4,
   "evidenceLevel": "source-reviewed",
   "evidenceSummary": "依据 AWS CloudHSM 官方 Key Attribute 与 Key Management 文档整理；当前项目尚未接入 HSM，本文是接入前安全设计与验收门禁。",
   "title": "HSM 接入以后，密钥就一定不可导出吗",

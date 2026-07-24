@@ -3,6 +3,8 @@
   "id": 35,
   "slug": "mpc-tss-security-boundaries",
   "kind": "engineering-note",
+  "series": "钱包签名与基础设施安全",
+  "seriesOrder": 3,
   "evidenceLevel": "source-reviewed",
   "evidenceSummary": "独立三节点 TSS Keygen/Sign 已本地验证；本文依据 NIST MPTC 与 bnb-chain/tss-lib 的协议边界整理，wallet-sign 端到端接入和攻击实验尚未完成。",
   "title": "MPC/TSS 不是万能保险：Share、Session 与盲签边界",

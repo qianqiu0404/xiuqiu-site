@@ -3,6 +3,8 @@
   "id": 33,
   "slug": "wallet-signing-intent-abuse",
   "kind": "engineering-note",
+  "series": "钱包签名与基础设施安全",
+  "seriesOrder": 1,
   "evidenceLevel": "source-reviewed",
   "evidenceSummary": "基于当前四服务边界、Bybit 官方事件时间线、EIP-712 与 OWASP API 安全模型整理；签名意图篡改与重放实验仍待接入四服务基线。",
   "title": "私钥没有离开签名机，资金为什么仍会被转走",

@@ -3,6 +3,8 @@
   "id": 34,
   "slug": "cryptographic-nonce-key-leak",
   "kind": "engineering-note",
+  "series": "钱包签名与基础设施安全",
+  "seriesOrder": 2,
   "evidenceLevel": "source-reviewed",
   "evidenceSummary": "依据 RFC 6979、RFC 8032 与当前 BTC/Sui 签名测试整理；未在项目中实现自定义密码学算法，也不把规范阅读视为生产安全审计。",
   "title": "一笔签名如何暴露长期密钥：随机数、Nonce 与实现边界",
