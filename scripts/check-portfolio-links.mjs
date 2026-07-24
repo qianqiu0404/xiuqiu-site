@@ -5,6 +5,8 @@ const execFileAsync = promisify(execFile)
 
 const links = [
   'https://xiuqiu-site.vercel.app/',
+  'https://xiuqiu-site.vercel.app/projects',
+  'https://xiuqiu-site.vercel.app/radar',
   'https://xiuqiu-site.vercel.app/projects/wallet-reliability-lab',
   'https://xiuqiu-site.vercel.app/projects/web3-wallet-engineer-lab',
   'https://xiuqiu-site.vercel.app/engineering/evidence',

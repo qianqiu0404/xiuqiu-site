@@ -29,10 +29,10 @@ function goHome() {
       </button>
 
       <div id="primary-navigation" class="nav-links" :class="{ open: navOpen }">
-        <router-link to="/engineering" @click="navOpen = false">工程档案</router-link>
-        <a href="https://wallet-reliability-lab.vercel.app" target="_blank" rel="noopener" @click="navOpen = false">项目实验</a>
+        <router-link to="/projects" @click="navOpen = false">项目图谱</router-link>
+        <router-link to="/engineering" @click="navOpen = false">工程证据</router-link>
+        <router-link to="/radar" @click="navOpen = false">行业雷达</router-link>
         <router-link to="/ai" @click="navOpen = false">AI 协作</router-link>
-        <router-link to="/radar" @click="navOpen = false">每日雷达</router-link>
         <router-link to="/articles" @click="navOpen = false">工程笔记</router-link>
       </div>
     </nav>

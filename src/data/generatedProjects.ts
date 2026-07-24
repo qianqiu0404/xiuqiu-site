@@ -4,6 +4,8 @@
 export type ProjectStage = 'exploring' | 'building' | 'verified-local' | 'showcase-ready'
 export type ProjectSourceType = 'original' | 'adapted' | 'source-study'
 export type ProjectVisibility = 'private' | 'public' | 'none'
+export type ProjectPortfolioTier = 'flagship' | 'verified' | 'exploration' | 'paused'
+export type ProjectActivityStatus = 'active' | 'paused' | 'completed'
 
 export interface Project {
   id: number
@@ -12,6 +14,9 @@ export interface Project {
   name: string
   category: string
   featured: boolean
+  publish: true
+  portfolioTier: ProjectPortfolioTier
+  activityStatus: ProjectActivityStatus
   stage: ProjectStage
   sourceType: ProjectSourceType
   visibility: ProjectVisibility
@@ -43,20 +48,21 @@ export const projects: Project[] = [
     "name": "Exchange Wallet Infrastructure",
     "category": "钱包基础设施",
     "featured": true,
+    "publish": true,
+    "portfolioTier": "flagship",
+    "activityStatus": "active",
     "stage": "building",
     "sourceType": "adapted",
     "visibility": "private",
-    "positioning": "围绕交易所充值、提现与资金安全组织的 Go 钱包基础设施：wallet-service 编排资金状态，risk-service 承担交易校验与风控放行，wallet-api 隔离多链节点能力，wallet-sign 收敛密钥与签名能力。",
+    "positioning": "围绕交易所充值、提现与资金安全组织的 Go 钱包基础设施，由 wallet-service、risk-service、wallet-api 与 wallet-sign 分别守住资金编排、风险控制、多链节点和签名边界。",
     "currentFocus": "把资金编排、风险控制、链交互和签名四个服务的调用链、状态机与失败恢复整理成可以运行、可以讲解、可以复核的统一工程案例。",
     "verifiedEvidence": [
       "已定位充值扫链、提现构建、签名、广播与通知的核心代码入口",
-      "已验证 ChainDispatcher 与多链 adaptor 的路由边界",
-      "已记录 request_id 幂等、确认数推进和广播结果未知等异常场景",
-      "已验证 risk-service 的提现提交、离线交易一致性校验、审批哈希与幂等标记单测",
-      "已在独立 TSS 项目完成三节点 Keygen / Sign 本地验证，wallet-sign 接入仍在进行"
+      "已验证 risk-service 提现一致性校验、审批哈希与幂等标记",
+      "已在独立 TSS 环境完成三节点 Keygen 与 Sign 本地验证"
     ],
     "targetOutcome": "形成一套本地可复现的充值与提现演示：能够启动四个服务、跑通风控校验到签名广播的核心流程、展示状态变化，并用测试复现风控拒绝、广播超时和链上成功但本地更新失败的恢复策略。",
-    "nextMilestone": "固定四个服务的兼容基线，统一验证命令，并跑通一条包含 risk-service 放行与失败注入的提现端到端流程。",
+    "nextMilestone": "固定四个服务的兼容基线，统一验证命令，并跑通一条包含风控放行与失败注入的提现端到端流程。",
     "knownLimits": [
       "当前仍是学习与工程验证项目，不代表生产环境部署经历",
       "risk-service 当前仍以本地规则和模拟 AML 能力为主，不代表完整生产风控系统",
@@ -64,7 +70,7 @@ export const projects: Project[] = [
       "wallet-sign 当前以 Local Signer 为已验证基线；MPC/TSS 尚未完成端到端接入，HSM 属于下一阶段",
       "仓库暂按私有项目展示，不提供公开源码链接"
     ],
-    "updatedAt": "2026-07-13",
+    "updatedAt": "2026-07-24",
     "coreAbilities": [
       "充值提现异步状态机",
       "多链 RPC 与 Chain Adaptor",
@@ -169,30 +175,143 @@ export const projects: Project[] = [
     ]
   },
   {
+    "id": 11,
+    "legacyIds": [],
+    "slug": "risk-server",
+    "name": "risk-server",
+    "category": "风控源码研究",
+    "featured": false,
+    "publish": true,
+    "portfolioTier": "exploration",
+    "activityStatus": "active",
+    "stage": "verified-local",
+    "sourceType": "source-study",
+    "visibility": "public",
+    "positioning": "基于 DappLink mock 风控 gRPC 服务的源码研究与本地验证，聚焦提现内容一致性、幂等标记、链上查询和资金流水判断的真实边界。",
+    "currentFocus": "把六个 RPC、LevelDB 状态和 Wallet API Gateway 依赖整理成可讲解的风控边界，并明确 mock AML、固定全局流水键和静态 token 的生产化缺口。",
+    "verifiedEvidence": [
+      "go test ./... 与 go vet ./... 已在本地通过",
+      "make risk-server 构建成功，服务使用本地配置成功监听",
+      "已定位提现 canonical hash、成功后幂等标记和六个 RPC 的数据依赖"
+    ],
+    "targetOutcome": "形成一个不夸大生产能力的风控源码案例，能够从请求、状态、外部依赖和失败路径解释当前实现与生产风控平台之间的差距。",
+    "nextMilestone": "为主要 RPC 补充可复现测试，并把按用户隔离的资金流水、真实 AML、鉴权和可观测性整理为明确演进路线。",
+    "knownLimits": [
+      "属于第三方项目源码研究，不是从零原创实现",
+      "AML 当前固定放行，不能代表真实制裁或地址风险检查",
+      "资金流水校验读取固定全局 key，不是按用户隔离的生产方案",
+      "当前不提供个人公开仓库入口"
+    ],
+    "updatedAt": "2026-07-12",
+    "coreAbilities": [
+      "gRPC 服务导读",
+      "提现一致性校验",
+      "幂等状态",
+      "LevelDB",
+      "风控边界"
+    ],
+    "talkingPoints": [
+      "六个 RPC 的职责如何划分",
+      "成功校验后为什么需要幂等标记",
+      "当前实现为什么不能直接作为生产风控"
+    ],
+    "techStack": [
+      "Go",
+      "gRPC",
+      "LevelDB",
+      "Wallet API Gateway"
+    ],
+    "engineering": {
+      "role": "源码阅读、本地运行验证和生产边界分析",
+      "systemBoundary": "risk-server 校验提现内容、查询部分链上事实并保存本地状态；它不实现完整 AML、账户隔离、细粒度权限和生产审计。",
+      "callFlow": [
+        "调用方提交提现",
+        "服务保存 canonical 请求",
+        "离线校验比较摘要并写幂等状态",
+        "链上查询通过 Wallet API Gateway 获取交易与确认数"
+      ],
+      "failureScenarios": [
+        "固定流水 key 造成跨用户状态混淆",
+        "外部 Gateway 返回空数组或异常高度时缺少充分保护"
+      ],
+      "evidence": [
+        "本地测试与 vet",
+        "构建与启动记录",
+        "六个 RPC 与 LevelDB key 导读"
+      ],
+      "knownLimits": [
+        "没有真实 AML 供应商联调",
+        "没有生产级 TLS、权限、限流与指标"
+      ],
+      "overviewSummary": "risk-server 用于理解提现风控接口与状态边界；当前证据证明源码已分析并能在本地运行，不代表生产风控平台经验。"
+    },
+    "learning": {
+      "goal": "能够从代码说明提现提交、离线一致性、链上查询和资金流水校验各自依赖什么状态。",
+      "verified": [
+        "六个 RPC 分类",
+        "canonical hash 与幂等键",
+        "LevelDB 与外部 Gateway 边界"
+      ],
+      "verification": [
+        "go test ./...",
+        "go vet ./...",
+        "make risk-server"
+      ],
+      "verificationNote": "验证来自本地源码研究环境；没有接入真实资金或生产风控供应商。",
+      "tradeoffs": [
+        "明确标记源码学习来源",
+        "本地可运行与生产可用分开",
+        "不公开敏感配置"
+      ],
+      "nextSteps": [
+        "补主要 RPC 测试",
+        "设计按用户隔离的数据模型",
+        "补鉴权、审计和指标路线"
+      ]
+    },
+    "conceptTags": [
+      "wallet-backend",
+      "go-infra",
+      "api-design"
+    ],
+    "relatedArticleSlugs": [
+      "withdrawal-error-handling",
+      "wallet-api-boundary",
+      "wallet-ledger-transaction-mq-consistency"
+    ],
+    "suggestedQuestions": [
+      "risk-server 当前真正实现了什么？",
+      "为什么固定全局流水键不是生产方案？"
+    ]
+  },
+  {
     "id": 3,
     "legacyIds": [],
     "slug": "s78-market-services",
     "name": "S78 Market Services",
     "category": "数据服务扩展",
     "featured": false,
-    "stage": "building",
+    "publish": true,
+    "portfolioTier": "verified",
+    "activityStatus": "active",
+    "stage": "verified-local",
     "sourceType": "adapted",
     "visibility": "private",
-    "positioning": "交易所行情数据服务学习项目：串联外部数据源、Crawler、Worker、Redis/PostgreSQL、HTTP/gRPC API 与 Vue Dashboard。",
-    "currentFocus": "把数据新鲜度、真实错误状态和本地运行链路整理为可复现证据，而不是用 mock 行情掩盖数据源故障。",
+    "positioning": "交易所行情数据服务学习项目，串联 CEX 与 DEX 数据源、Crawler、Redis、PostgreSQL、HTTP/gRPC、Doris 与 Vue Dashboard。",
+    "currentFocus": "收口 CEX/DEX 采集、Redis 热点、PostgreSQL 业务数据、gRPC 查询和 Doris 分析旁路，并继续完成 Doris 真实容器联调。",
     "verifiedEvidence": [
-      "已拆分 Crawler、Worker、存储和查询职责",
-      "Dashboard 展示更新时间与数据延迟",
-      "API 失败时明确显示 Error，不使用 mock 数据兜底"
+      "Redis ZSET 涨跌榜、Hyperliquid DEX、八个 gRPC RPC 与前端构建已完成",
+      "go build、go vet、go test 和前端生产构建已重新通过",
+      "Doris 分析旁路代码已完成，但真实容器数据链路仍待验收"
     ],
     "targetOutcome": "形成一条可重复的本地行情链路：采集真实数据、写入 Redis/PostgreSQL、通过 API 查询并在前端展示更新时间、延迟和错误状态。",
-    "nextMilestone": "固定本地依赖和 seed 流程，运行后端测试、前端构建与一条端到端行情查询。",
+    "nextMilestone": "启动真实 Doris 容器并核对 PostgreSQL 增量同步、聚合结果、失败重试与水位恢复。",
     "knownLimits": [
       "多数据源容灾、K 线缺口补偿和价格异常检测仍未完成",
       "当前不包含撮合或钱包资金状态",
       "仓库暂按私有项目展示"
     ],
-    "updatedAt": "2026-07-13",
+    "updatedAt": "2026-07-22",
     "coreAbilities": [
       "行情采集与 Worker",
       "Redis/PostgreSQL",
@@ -286,18 +405,21 @@ export const projects: Project[] = [
     "name": "StableFlow",
     "category": "当前开发副线",
     "featured": false,
+    "publish": true,
+    "portfolioTier": "exploration",
+    "activityStatus": "active",
     "stage": "verified-local",
     "sourceType": "original",
     "visibility": "private",
-    "positioning": "面向 B2B 稳定币发票结算的非托管工程沙盒，围绕 invoice 状态机、合规审批、EIP-712 授权、签名边界、链上支付与 outbox 交付组织完整链路。",
+    "positioning": "面向 B2B 稳定币发票结算的非托管工程沙盒，围绕 invoice 状态机、EIP-712 授权、签名边界、链上支付与 outbox 交付组织完整链路。",
     "currentFocus": "在不改变钱包后端核心定位的前提下，验证稳定币业务如何复用资金状态、幂等、风控授权、独立签名和链上索引能力。",
     "verifiedEvidence": [
       "12 个 workspace 包的 TypeScript 类型检查通过",
-      "Vitest、Foundry 测试通过，包含授权防重放、金额篡改、错误链和合约不托管资金不变量",
+      "Vitest 与 Foundry 测试覆盖防重放、金额篡改、错误链和不托管资金不变量",
       "API、worker、indexer、signer、contracts 与 Next.js web 完整构建通过"
     ],
     "targetOutcome": "形成一条可重复的本地 B2B 稳定币结算演示：创建 invoice、风险审核、签发 EIP-712 授权、付款、索引确认、退款和 outbox 交付均有可观察状态。",
-    "nextMilestone": "跑通无缓存的一键本地 demo 与浏览器 E2E，并记录失败注入、数据新鲜度和链上/本地状态恢复证据。",
+    "nextMilestone": "跑通无缓存的一键本地 demo 与浏览器 E2E，并记录失败注入、数据新鲜度和链上与本地状态恢复证据。",
     "knownLimits": [
       "当前验证以本地测试与构建为主，一键 demo 和浏览器 E2E 尚未计入已完成证据",
       "Base Sepolia 部署和合约验证不作为当前已完成能力",
@@ -405,26 +527,28 @@ export const projects: Project[] = [
     "name": "TSS / MPC 签名研究",
     "category": "安全扩展",
     "featured": false,
-    "stage": "verified-local",
+    "publish": true,
+    "portfolioTier": "exploration",
+    "activityStatus": "active",
+    "stage": "building",
     "sourceType": "source-study",
     "visibility": "private",
     "positioning": "基于现有 TSS 项目进行源码学习与安全边界改造，理解 Manager、Node、Keygen、Sign、committee、threshold 和 key share。",
     "currentFocus": "把已本地验证的三节点 Keygen / Sign 收敛为 wallet-sign 可替换后端，并明确会话路由、超时、份额存储和降级边界。",
     "verifiedEvidence": [
-      "已完成 Manager/Node 职责与 Keygen/Sign 流程导读",
-      "已定位 CPK、committee、threshold 与本地 share 的元数据路径",
-      "已在本地运行三节点 Keygen 并产生不含密钥材料的验证记录",
+      "已完成 Manager 与 Node 职责、Keygen 与 Sign 流程导读",
+      "已在本地运行三节点 Keygen 并保留不含密钥材料的验证记录",
       "已在本地运行三节点 Sign 并验证标准签名结果"
     ],
     "targetOutcome": "在 wallet-sign 保持统一策略与审计边界的前提下，将 TSS 作为可替换签名后端，完成请求路由、签名返回和节点不足门限的失败演示。",
-    "nextMilestone": "设计并实现 wallet-sign → TSS Manager 的最小接口，跑通一条不含真实资金的端到端签名请求。",
+    "nextMilestone": "设计并实现 wallet-sign 到 TSS Manager 的最小接口，跑通不含真实资金的端到端签名请求。",
     "knownLimits": [
       "属于源码学习和改造，不是从零原创协议实现",
       "三节点 Keygen / Sign 已独立验证，但尚未接入 wallet-sign",
       "尚未接入生产钱包或真实资金",
       "完整回归仍受旧版依赖和 Go 工具链限制"
     ],
-    "updatedAt": "2026-07-13",
+    "updatedAt": "2026-07-24",
     "coreAbilities": [
       "TSS Keygen/Sign",
       "Manager/Node 边界",
@@ -515,25 +639,28 @@ export const projects: Project[] = [
     "name": "wallet-core",
     "category": "TypeScript 多链",
     "featured": true,
+    "publish": true,
+    "portfolioTier": "verified",
+    "activityStatus": "active",
     "stage": "showcase-ready",
     "sourceType": "original",
     "visibility": "public",
     "repositoryUrl": "https://github.com/qianqiu0404/wallet-core",
-    "positioning": "TypeScript 多链离线钱包核心：统一密钥派生、交易构建与签名入口，同时保留 nonce、UTXO、blockhash、TAPOS 和 object version 等链级资源差异。",
+    "positioning": "TypeScript 多链离线钱包核心，统一密钥派生、交易构建与签名入口，同时保留 nonce、UTXO、blockhash、TAPOS 和 object version 等链级资源差异。",
     "currentFocus": "稳定不同链的输入契约、异常参数校验和可复现测试，让离线边界比支持链数量更可信。",
     "verifiedEvidence": [
-      "Node 20/22 CI 已完成类型检查、九套 Jest、45 个测试、构建和 dist 导入验证",
-      "已覆盖 EVM、BTC、Solana、TRON、Cosmos 与 Sui 的交易模型，并修正 Solana 私钥 Base58 编码",
-      "v1.0.0 GitHub Release 已公开；Sui 示例默认 dry-run，广播必须显式启用"
+      "Node 20 与 22 CI 已通过类型检查、九套 Jest、45 个测试、构建和 dist 导入验证",
+      "已覆盖 EVM、BTC、Solana、TRON、Cosmos 与 Sui 的交易模型",
+      "v1.0.0 GitHub Release 已公开，Sui 示例默认 dry-run"
     ],
     "targetOutcome": "形成一个有清晰 API、链级输入文档、示例和稳定测试矩阵的 TypeScript 离线钱包库，调用方可以安全地准备链上资源、离线签名并自行广播。",
-    "nextMilestone": "补齐链资源过期、错误最小单位和无效对象引用的统一负向测试，再评估是否稳定 npm API。",
+    "nextMilestone": "补齐链资源过期、错误最小单位和无效对象引用的统一负向测试，再评估稳定 npm API。",
     "knownLimits": [
       "不查询 RPC、不广播交易，调用方必须提供新鲜链状态",
       "未经独立安全审计，不应直接用于生产资金",
       "V1 只发布 GitHub Release，package 继续保持 private，尚未发布 npm"
     ],
-    "updatedAt": "2026-07-13",
+    "updatedAt": "2026-07-24",
     "coreAbilities": [
       "TypeScript SDK 集成",
       "多链离线交易构建",
@@ -635,25 +762,28 @@ export const projects: Project[] = [
     "name": "Wallet Reliability Lab",
     "category": "可交互可靠性实验",
     "featured": true,
+    "publish": true,
+    "portfolioTier": "verified",
+    "activityStatus": "active",
     "stage": "showcase-ready",
     "sourceType": "original",
     "visibility": "public",
     "repositoryUrl": "https://github.com/qianqiu0404/wallet-reliability-lab",
-    "positioning": "面向钱包开发者与技术交流的交互实验台，通过三种提现路径展示状态机、可重试广播和链上事实补偿，并把每个判断连接到脱敏测试证据。",
+    "positioning": "面向钱包开发者与技术交流的交互实验台，通过三种提现路径展示状态机、可重试广播和链上事实补偿，并连接到脱敏测试证据。",
     "currentFocus": "把 Runner API、顺序 SSE、浏览器安全模拟和工程证据统一为可暂停、单步和确定性重放的体验。",
     "verifiedEvidence": [
       "正常提现、可重试广播失败和广播后补偿恢复三个场景可确定性运行",
-      "Vue 工作台支持开始、暂停、单步、重置、速度、服务过滤与开发者证据模式",
-      "Go Runner 通过 race 测试，覆盖单播放器、暂停/重置代次、SSE 续传和地址脱敏"
+      "Vue 工作台支持暂停、单步、重置、速度与开发者证据模式",
+      "Go Runner 已通过 race 测试并覆盖 SSE 续传与地址脱敏"
     ],
     "targetOutcome": "让访问者三分钟内说清系统边界和一个恢复判断，并能继续定位到状态、事件和测试证据。",
-    "nextMilestone": "固定引用 Wallet Domain Engine 的 Scenario Catalog v1，并把本地连接模式收敛为明确的开发沙箱适配器。",
+    "nextMilestone": "固定 Wallet Domain Engine Scenario Catalog 的版本与 checksum，并补齐浏览器端到端验收。",
     "knownLimits": [
       "公开 Vercel 版本只运行确定性模拟，不连接真实服务",
       "首版只覆盖提现，不包含充值 reorg、TSS/HSM 或主网广播",
       "本地 connected adapter 不代表生产集成"
     ],
-    "updatedAt": "2026-07-13",
+    "updatedAt": "2026-07-24",
     "coreAbilities": [
       "提现状态机",
       "故障恢复",
@@ -752,15 +882,18 @@ export const projects: Project[] = [
     "name": "Web3 Wallet Domain Engine",
     "category": "钱包领域引擎",
     "featured": false,
+    "publish": true,
+    "portfolioTier": "verified",
+    "activityStatus": "active",
     "stage": "showcase-ready",
     "sourceType": "original",
     "visibility": "public",
     "repositoryUrl": "https://github.com/qianqiu0404/web3-wallet-engineer-lab",
-    "positioning": "公开的 Go 钱包领域引擎，负责状态机、幂等、资金不变量、故障注入和版本化 Scenario Catalog；精致交互体验由独立 Wallet Reliability Lab 提供。",
+    "positioning": "公开的 Go 钱包领域引擎，负责状态机、幂等、资金不变量、故障注入和版本化 Scenario Catalog；正式交互体验由 Wallet Reliability Lab 提供。",
     "currentFocus": "把共享 Catalog、Go 断言和 HTTP 领域 API 收敛为稳定的底层事实与证据层。",
     "verifiedEvidence": [
-      "Go 测试覆盖重复提现、广播结果未知、canonical 补偿、充值 reorg、nonce replacement 和关键依赖 fail-closed",
-      "Scenario Catalog v1 同时被 Go 模型和技术检查页消费，并发布 JSON Schema",
+      "Go 测试覆盖重复提现、广播结果未知、canonical 补偿、充值 reorg 和 nonce replacement",
+      "Scenario Catalog v1 同时被 Go 模型和技术检查页消费",
       "GitHub Actions 执行 Go race、Vue Catalog 测试、构建和敏感信息扫描"
     ],
     "targetOutcome": "成为公开 Wallet Reliability Lab 的底层领域与证据引擎，让每个资金判断都有版本化场景和可执行断言。",
@@ -770,7 +903,7 @@ export const projects: Project[] = [
       "GitHub Pages 只部署 Catalog Inspector，不部署 Go API",
       "不依赖或公开四个私有钱包服务"
     ],
-    "updatedAt": "2026-07-13",
+    "updatedAt": "2026-07-03",
     "coreAbilities": [
       "钱包领域建模",
       "资金不变量",

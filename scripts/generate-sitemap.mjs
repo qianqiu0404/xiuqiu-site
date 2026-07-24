@@ -2,6 +2,7 @@ import { writeFileSync } from 'node:fs'
 import { articleSummaries } from '../src/data/generatedArticleKnowledge.ts'
 import { projects } from '../src/data/generatedProjects.ts'
 import { dailyRadars } from '../src/data/generatedRadars.ts'
+import { radarWeeklies } from '../src/data/generatedRadarWeeklies.ts'
 import { deliveryRecords } from '../src/data/generatedDeliveries.ts'
 
 const SITE_URL = 'https://xiuqiu-site.vercel.app'
@@ -12,6 +13,7 @@ const routes = [
   '/engineering',
   '/engineering/failures',
   '/engineering/evidence',
+  '/projects',
   '/ai',
   '/ai/social-research',
   '/ai/deliveries',
@@ -22,6 +24,7 @@ const routes = [
   ...projects.map(project => `/projects/${project.slug}`),
   ...articleSlugs.map(slug => `/articles/${slug}`),
   ...dailyRadars.map(radar => `/radar/${radar.slug}`),
+  ...radarWeeklies.map(weekly => `/radar/week/${weekly.slug}`),
   ...deliveryRecords.map(record => `/ai/deliveries/${record.slug}`),
 ]
 const urls = routes

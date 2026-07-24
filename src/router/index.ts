@@ -24,6 +24,11 @@ const router = createRouter({
       component: () => import('../pages/EngineeringPage.vue'),
     },
     {
+      path: '/projects',
+      name: 'projects',
+      component: () => import('../pages/ProjectAtlasPage.vue'),
+    },
+    {
       path: '/engineering/failures',
       name: 'engineering-failures',
       component: () => import('../pages/FailurePlaybookPage.vue'),
@@ -62,6 +67,11 @@ const router = createRouter({
       path: '/radar',
       name: 'radar',
       component: () => import('../pages/RadarPage.vue'),
+    },
+    {
+      path: '/radar/week/:week',
+      name: 'radar-weekly-detail',
+      component: () => import('../pages/RadarWeeklyPage.vue'),
     },
     {
       path: '/radar/:date',

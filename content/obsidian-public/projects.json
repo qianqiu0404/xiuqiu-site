@@ -1,0 +1,141 @@
+{
+  "generatedAt": "2026-07-24T05:53:42.334Z",
+  "projects": [
+    {
+      "projectId": "exchange-wallet-infrastructure",
+      "siteSlug": "exchange-wallet-system",
+      "stage": "building",
+      "portfolioTier": "flagship",
+      "activityStatus": "active",
+      "visibility": "private",
+      "updatedAt": "2026-07-24",
+      "nextAction": "固定四个服务兼容基线并跑通含风控放行与失败注入的提现链路",
+      "publicSummary": "围绕交易所充值、提现与资金安全组织的 Go 钱包基础设施，由 wallet-service、risk-service、wallet-api 与 wallet-sign 分别守住资金编排、风险控制、多链节点和签名边界。",
+      "publicEvidence": [
+        "已定位充值扫链、提现构建、签名、广播与通知的核心代码入口",
+        "已验证 risk-service 提现一致性校验、审批哈希与幂等标记",
+        "已在独立 TSS 环境完成三节点 Keygen 与 Sign 本地验证"
+      ],
+      "publicNextMilestone": "固定四个服务的兼容基线，统一验证命令，并跑通一条包含风控放行与失败注入的提现端到端流程。"
+    },
+    {
+      "projectId": "risk-server",
+      "siteSlug": "risk-server",
+      "stage": "verified-local",
+      "portfolioTier": "exploration",
+      "activityStatus": "active",
+      "visibility": "public",
+      "updatedAt": "2026-07-12",
+      "nextAction": "为主要 RPC 补充可复现测试并设计按用户隔离的资金流水",
+      "publicSummary": "基于 DappLink mock 风控 gRPC 服务的源码研究与本地验证，聚焦提现内容一致性、幂等标记、链上查询和资金流水判断的真实边界。",
+      "publicEvidence": [
+        "go test ./... 与 go vet ./... 已在本地通过",
+        "make risk-server 构建成功，服务使用本地配置成功监听",
+        "已定位提现 canonical hash、成功后幂等标记和六个 RPC 的数据依赖"
+      ],
+      "publicNextMilestone": "为主要 RPC 补充可复现测试，并把按用户隔离的资金流水、真实 AML、鉴权和可观测性整理为明确演进路线。"
+    },
+    {
+      "projectId": "s78-market-services",
+      "siteSlug": "s78-market-services",
+      "stage": "verified-local",
+      "portfolioTier": "verified",
+      "activityStatus": "active",
+      "visibility": "private",
+      "updatedAt": "2026-07-22",
+      "nextAction": "启动真实 Doris 容器并核对增量同步、聚合结果和失败恢复",
+      "publicSummary": "交易所行情数据服务学习项目，串联 CEX 与 DEX 数据源、Crawler、Redis、PostgreSQL、HTTP/gRPC、Doris 与 Vue Dashboard。",
+      "publicEvidence": [
+        "Redis ZSET 涨跌榜、Hyperliquid DEX、八个 gRPC RPC 与前端构建已完成",
+        "go build、go vet、go test 和前端生产构建已重新通过",
+        "Doris 分析旁路代码已完成，但真实容器数据链路仍待验收"
+      ],
+      "publicNextMilestone": "启动真实 Doris 容器并核对 PostgreSQL 增量同步、聚合结果、失败重试与水位恢复。"
+    },
+    {
+      "projectId": "stableflow",
+      "siteSlug": "stableflow",
+      "stage": "verified-local",
+      "portfolioTier": "exploration",
+      "activityStatus": "active",
+      "visibility": "private",
+      "updatedAt": "2026-07-13",
+      "nextAction": "跑通无缓存本地演示与浏览器 E2E",
+      "publicSummary": "面向 B2B 稳定币发票结算的非托管工程沙盒，围绕 invoice 状态机、EIP-712 授权、签名边界、链上支付与 outbox 交付组织完整链路。",
+      "publicEvidence": [
+        "12 个 workspace 包的 TypeScript 类型检查通过",
+        "Vitest 与 Foundry 测试覆盖防重放、金额篡改、错误链和不托管资金不变量",
+        "API、worker、indexer、signer、contracts 与 Next.js web 完整构建通过"
+      ],
+      "publicNextMilestone": "跑通无缓存的一键本地 demo 与浏览器 E2E，并记录失败注入、数据新鲜度和链上与本地状态恢复证据。"
+    },
+    {
+      "projectId": "tss-mpc",
+      "siteSlug": "tss-mpc",
+      "stage": "building",
+      "portfolioTier": "exploration",
+      "activityStatus": "active",
+      "visibility": "private",
+      "updatedAt": "2026-07-24",
+      "nextAction": "实现 wallet-sign 到 TSS Manager 的最小接口与节点不足门限演示",
+      "publicSummary": "基于现有 TSS 项目进行源码学习与安全边界改造，理解 Manager、Node、Keygen、Sign、committee、threshold 和 key share。",
+      "publicEvidence": [
+        "已完成 Manager 与 Node 职责、Keygen 与 Sign 流程导读",
+        "已在本地运行三节点 Keygen 并保留不含密钥材料的验证记录",
+        "已在本地运行三节点 Sign 并验证标准签名结果"
+      ],
+      "publicNextMilestone": "设计并实现 wallet-sign 到 TSS Manager 的最小接口，跑通不含真实资金的端到端签名请求。"
+    },
+    {
+      "projectId": "wallet-core",
+      "siteSlug": "wallet-core",
+      "stage": "showcase-ready",
+      "portfolioTier": "verified",
+      "activityStatus": "active",
+      "visibility": "public",
+      "updatedAt": "2026-07-24",
+      "nextAction": "补齐链资源过期、错误最小单位和无效对象引用负向测试",
+      "publicSummary": "TypeScript 多链离线钱包核心，统一密钥派生、交易构建与签名入口，同时保留 nonce、UTXO、blockhash、TAPOS 和 object version 等链级资源差异。",
+      "publicEvidence": [
+        "Node 20 与 22 CI 已通过类型检查、九套 Jest、45 个测试、构建和 dist 导入验证",
+        "已覆盖 EVM、BTC、Solana、TRON、Cosmos 与 Sui 的交易模型",
+        "v1.0.0 GitHub Release 已公开，Sui 示例默认 dry-run"
+      ],
+      "publicNextMilestone": "补齐链资源过期、错误最小单位和无效对象引用的统一负向测试，再评估稳定 npm API。"
+    },
+    {
+      "projectId": "wallet-reliability-lab",
+      "siteSlug": "wallet-reliability-lab",
+      "stage": "showcase-ready",
+      "portfolioTier": "verified",
+      "activityStatus": "active",
+      "visibility": "public",
+      "updatedAt": "2026-07-24",
+      "nextAction": "固定 Scenario Catalog 版本与 checksum 并补浏览器 E2E",
+      "publicSummary": "面向钱包开发者与技术交流的交互实验台，通过三种提现路径展示状态机、可重试广播和链上事实补偿，并连接到脱敏测试证据。",
+      "publicEvidence": [
+        "正常提现、可重试广播失败和广播后补偿恢复三个场景可确定性运行",
+        "Vue 工作台支持暂停、单步、重置、速度与开发者证据模式",
+        "Go Runner 已通过 race 测试并覆盖 SSE 续传与地址脱敏"
+      ],
+      "publicNextMilestone": "固定 Wallet Domain Engine Scenario Catalog 的版本与 checksum，并补齐浏览器端到端验收。"
+    },
+    {
+      "projectId": "web3-wallet-engineer-lab",
+      "siteSlug": "web3-wallet-engineer-lab",
+      "stage": "showcase-ready",
+      "portfolioTier": "verified",
+      "activityStatus": "active",
+      "visibility": "public",
+      "updatedAt": "2026-07-03",
+      "nextAction": "发布 Scenario Catalog v1 release 并固定跨仓库 checksum",
+      "publicSummary": "公开的 Go 钱包领域引擎，负责状态机、幂等、资金不变量、故障注入和版本化 Scenario Catalog；正式交互体验由 Wallet Reliability Lab 提供。",
+      "publicEvidence": [
+        "Go 测试覆盖重复提现、广播结果未知、canonical 补偿、充值 reorg 和 nonce replacement",
+        "Scenario Catalog v1 同时被 Go 模型和技术检查页消费",
+        "GitHub Actions 执行 Go race、Vue Catalog 测试、构建和敏感信息扫描"
+      ],
+      "publicNextMilestone": "发布 Scenario Catalog v1 release，并让交互实验台固定校验来源版本与 checksum。"
+    }
+  ]
+}

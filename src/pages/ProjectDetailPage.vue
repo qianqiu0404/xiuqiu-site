@@ -23,7 +23,7 @@ watchEffect(() => {
 <template>
   <section class="section page-top">
     <div v-if="project" class="container project-detail-container">
-      <router-link to="/engineering" class="back-link">&larr; 返回工程档案</router-link>
+      <router-link to="/projects" class="back-link">&larr; 返回项目图谱</router-link>
       <article class="project-detail">
         <header class="project-detail-header">
           <p class="section-label">{{ project.category }}</p>
@@ -61,6 +61,6 @@ watchEffect(() => {
         <section class="learning-section"><p class="section-label">相关工程笔记</p><h2>这些文章继续解释项目中的判断</h2><div class="followup-links"><router-link v-for="article in relatedArticles" :key="article.slug" :to="`/articles/${article.slug}`" class="followup-link"><span>{{ article.title }}</span><small>{{ article.difficulty }} · {{ article.readingTime }}</small></router-link></div></section>
       </article>
     </div>
-    <div v-else class="container not-found"><p class="not-found-title">项目未公开或不存在</p><router-link to="/engineering" class="btn btn-primary">返回工程档案</router-link></div>
+    <div v-else class="container not-found"><p class="not-found-title">项目未公开或不存在</p><router-link to="/projects" class="btn btn-primary">返回项目图谱</router-link></div>
   </section>
 </template>
