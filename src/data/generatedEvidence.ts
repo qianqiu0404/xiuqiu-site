@@ -19,6 +19,7 @@ export interface EvidenceRecord {
   url?: string
   failureSlugs: string[]
   deliverySlugs: string[]
+  articleSlugs: string[]
 }
 
 export const evidenceRecords: EvidenceRecord[] = [
@@ -41,7 +42,8 @@ export const evidenceRecords: EvidenceRecord[] = [
     "failureSlugs": [],
     "deliverySlugs": [
       "wallet-domain-engine-v1"
-    ]
+    ],
+    "articleSlugs": []
   },
   {
     "slug": "exchange-wallet-implementation",
@@ -72,7 +74,8 @@ export const evidenceRecords: EvidenceRecord[] = [
       "evm-nonce-gap",
       "risk-signer-unavailable"
     ],
-    "deliverySlugs": []
+    "deliverySlugs": [],
+    "articleSlugs": []
   },
   {
     "slug": "exchange-wallet-tests",
@@ -102,7 +105,8 @@ export const evidenceRecords: EvidenceRecord[] = [
       "chain-success-local-failure",
       "risk-signer-unavailable"
     ],
-    "deliverySlugs": []
+    "deliverySlugs": [],
+    "articleSlugs": []
   },
   {
     "slug": "failure-playbook-public",
@@ -138,6 +142,32 @@ export const evidenceRecords: EvidenceRecord[] = [
     ],
     "deliverySlugs": [
       "wallet-failure-playbook-pr2"
+    ],
+    "articleSlugs": []
+  },
+  {
+    "slug": "signing-intent-failure-experiment",
+    "title": "签名意图不一致失败实验",
+    "capabilityIds": [
+      "risk-authorization",
+      "signer-boundary"
+    ],
+    "projectSlugs": [
+      "exchange-wallet-system",
+      "wallet-reliability-lab"
+    ],
+    "kind": "demo",
+    "status": "design",
+    "visibility": "private-summary",
+    "summary": "下一项实验将修改已审批交易的地址、金额、链或资产，验证 wallet-sign 必须拒签，并保持订单未签名、未广播且可审计。",
+    "verifiedAt": "2026-07-24",
+    "failureSlugs": [
+      "authorization-replay-mismatch",
+      "risk-signer-unavailable"
+    ],
+    "deliverySlugs": [],
+    "articleSlugs": [
+      "wallet-signing-intent-abuse"
     ]
   },
   {
@@ -161,7 +191,8 @@ export const evidenceRecords: EvidenceRecord[] = [
     ],
     "deliverySlugs": [
       "wallet-core-public-v1"
-    ]
+    ],
+    "articleSlugs": []
   },
   {
     "slug": "wallet-core-sui-demo",
@@ -184,7 +215,8 @@ export const evidenceRecords: EvidenceRecord[] = [
     "failureSlugs": [],
     "deliverySlugs": [
       "wallet-core-public-v1"
-    ]
+    ],
+    "articleSlugs": []
   },
   {
     "slug": "wallet-core-tests",
@@ -208,7 +240,8 @@ export const evidenceRecords: EvidenceRecord[] = [
     ],
     "deliverySlugs": [
       "wallet-core-public-v1"
-    ]
+    ],
+    "articleSlugs": []
   },
   {
     "slug": "wallet-engine-catalog",
@@ -240,7 +273,8 @@ export const evidenceRecords: EvidenceRecord[] = [
     ],
     "deliverySlugs": [
       "wallet-domain-engine-v1"
-    ]
+    ],
+    "articleSlugs": []
   },
   {
     "slug": "wallet-engine-invariants",
@@ -273,7 +307,8 @@ export const evidenceRecords: EvidenceRecord[] = [
     ],
     "deliverySlugs": [
       "wallet-domain-engine-v1"
-    ]
+    ],
+    "articleSlugs": []
   },
   {
     "slug": "wallet-lab-demo",
@@ -302,7 +337,8 @@ export const evidenceRecords: EvidenceRecord[] = [
     ],
     "deliverySlugs": [
       "wallet-reliability-lab-v1"
-    ]
+    ],
+    "articleSlugs": []
   },
   {
     "slug": "wallet-lab-implementation",
@@ -331,7 +367,8 @@ export const evidenceRecords: EvidenceRecord[] = [
     ],
     "deliverySlugs": [
       "wallet-reliability-lab-v1"
-    ]
+    ],
+    "articleSlugs": []
   },
   {
     "slug": "wallet-lab-tests",
@@ -359,6 +396,43 @@ export const evidenceRecords: EvidenceRecord[] = [
     ],
     "deliverySlugs": [
       "wallet-reliability-lab-v1"
+    ],
+    "articleSlugs": []
+  },
+  {
+    "slug": "wallet-security-series-public",
+    "title": "钱包签名与基础设施安全系列",
+    "capabilityIds": [
+      "risk-authorization",
+      "chain-resources",
+      "signer-boundary",
+      "broadcast-finality",
+      "observability"
+    ],
+    "projectSlugs": [
+      "exchange-wallet-system",
+      "wallet-core",
+      "tss-mpc"
+    ],
+    "kind": "writeup",
+    "status": "verified",
+    "visibility": "public",
+    "summary": "六篇公开笔记分别整理业务授权、签名算法、MPC/TSS、HSM、软件供应链与 RPC 信任边界，并明确资料复核、局部验证和待实现实验之间的区别。",
+    "verifiedAt": "2026-07-24",
+    "url": "https://xiuqiu-site.vercel.app/articles/wallet-signing-intent-abuse",
+    "failureSlugs": [
+      "rpc-consensus-conflict",
+      "authorization-replay-mismatch",
+      "signing-backend-threshold"
+    ],
+    "deliverySlugs": [],
+    "articleSlugs": [
+      "wallet-signing-intent-abuse",
+      "cryptographic-nonce-key-leak",
+      "mpc-tss-security-boundaries",
+      "hsm-key-extractability-boundaries",
+      "wallet-software-supply-chain",
+      "wallet-rpc-trust-boundary"
     ]
   }
 ]

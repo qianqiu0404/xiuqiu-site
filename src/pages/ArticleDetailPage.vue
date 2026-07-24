@@ -2,6 +2,8 @@
 import { computed, ref, watch, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { loadArticleContent } from '../data/articles'
+import { evidenceStatusLabels } from '../data/evidence'
+import { evidenceRecords } from '../data/generatedEvidence'
 import {
   getArticleBySlug,
   getArticlesBySlugs,
@@ -14,6 +16,7 @@ const route = useRoute()
 const router = useRouter()
 const slug = computed(() => route.params.slug as string)
 const evidenceLabels = { design: '架构设计', 'source-reviewed': '资料与代码复核', 'local-verified': '本地已验证', integrated: '已集成验证', 'public-demo': '公开可运行' } as const
+const evidenceKindLabels = { implementation: '工程实现', test: '自动化测试', demo: '可运行演示', writeup: '公开说明' } as const
 
 const articleSummary = computed(() => getArticleBySlug(slug.value))
 const articleContent = ref<string>()
@@ -56,6 +59,9 @@ const seriesArticles = computed(() => {
     .filter(item => item.series === articleSummary.value?.series)
     .sort((a, b) => (a.seriesOrder || 0) - (b.seriesOrder || 0))
 })
+const linkedEvidence = computed(() => evidenceRecords
+  .filter(record => record.articleSlugs?.includes(slug.value))
+  .sort((a, b) => b.verifiedAt.localeCompare(a.verifiedAt)))
 const nextArticle = computed(() => {
   if (!articleSummary.value) return undefined
 
@@ -316,6 +322,22 @@ watchEffect(() => {
               <span>{{ String(item.seriesOrder).padStart(2, '0') }}</span>
               <strong>{{ item.title }}</strong>
             </router-link>
+          </div>
+        </div>
+
+        <div v-if="linkedEvidence.length" class="followup-block">
+          <p class="section-label">工程证据</p>
+          <div class="article-evidence-links">
+            <article v-for="record in linkedEvidence" :key="record.slug">
+              <div>
+                <span>{{ evidenceKindLabels[record.kind] }}</span>
+                <strong :data-status="record.status">{{ evidenceStatusLabels[record.status] }}</strong>
+              </div>
+              <h3>{{ record.title }}</h3>
+              <p>{{ record.summary }}</p>
+              <a v-if="record.visibility === 'public' && record.url" :href="record.url" target="_blank" rel="noopener">查看公开证据 &rarr;</a>
+              <small v-else>当前为去敏摘要，不提供私有仓库链接。</small>
+            </article>
           </div>
         </div>
 

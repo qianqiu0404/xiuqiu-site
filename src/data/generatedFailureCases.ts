@@ -187,7 +187,8 @@ export const failureCases: FailureCase[] = [
     ],
     "relatedArticleSlugs": [
       "withdrawal-error-handling",
-      "new-chain-integration-checklist"
+      "new-chain-integration-checklist",
+      "wallet-rpc-trust-boundary"
     ],
     "relatedProjectSlugs": [
       "exchange-wallet-system"
@@ -226,7 +227,8 @@ export const failureCases: FailureCase[] = [
       "已整理确认数与链上事实优先原则"
     ],
     "relatedArticleSlugs": [
-      "new-chain-integration-checklist"
+      "new-chain-integration-checklist",
+      "wallet-rpc-trust-boundary"
     ],
     "relatedProjectSlugs": [
       "exchange-wallet-system"
@@ -1017,7 +1019,8 @@ export const failureCases: FailureCase[] = [
     ],
     "relatedArticleSlugs": [
       "wallet-sign-signer",
-      "wallet-api-boundary"
+      "wallet-api-boundary",
+      "wallet-signing-intent-abuse"
     ],
     "relatedProjectSlugs": [
       "exchange-wallet-system"
@@ -1057,7 +1060,9 @@ export const failureCases: FailureCase[] = [
     ],
     "relatedArticleSlugs": [
       "mpc-wallet-sign-integration",
-      "aws-cloudhsm-wallet-sign-integration"
+      "aws-cloudhsm-wallet-sign-integration",
+      "mpc-tss-security-boundaries",
+      "hsm-key-extractability-boundaries"
     ],
     "relatedProjectSlugs": [
       "tss-mpc",

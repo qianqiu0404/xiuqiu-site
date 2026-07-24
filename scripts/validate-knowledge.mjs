@@ -117,6 +117,9 @@ evidenceRecords.forEach(record => {
   record.deliverySlugs.forEach(slug => {
     if (!deliverySlugs.has(slug)) addError(`${record.slug}: evidence delivery does not exist: ${slug}`)
   })
+  record.articleSlugs.forEach(slug => {
+    if (!articleSlugs.has(slug)) addError(`${record.slug}: evidence article does not exist: ${slug}`)
+  })
   record.capabilityIds.forEach(id => {
     if (!capabilityIds.has(id)) addError(`${record.slug}: evidence capability does not exist: ${id}`)
   })
