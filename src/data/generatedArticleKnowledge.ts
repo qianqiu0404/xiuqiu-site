@@ -1184,6 +1184,52 @@ export const articleKnowledge: ArticleKnowledge[] = [
   },
   {
     "id": 31,
+    "slug": "multi-chain-wallet-acceptance-loop",
+    "title": "从适配一条链到验收一条链：多链钱包的统一工程 Loop",
+    "date": "2026-07-20",
+    "summary": "多链钱包不只是增加 RPC 适配器。本文复盘如何用统一资金状态机串起地址、充值、归集、提现、确认、对账与幂等重扫，同时显式处理 EVM nonce、BTC UTXO、TRON 资源和 Sui Object。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Backend",
+      "Multi-chain",
+      "Bitcoin",
+      "Sui"
+    ],
+    "readingTime": "8 min",
+    "difficulty": "工程复盘",
+    "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "Base、Solana、BNB 以及 BTC Testnet4、Sui Testnet 的对应链路已完成本地或测试网验证；本文记录验收方法与当前边界，不代表生产环境运行结论。",
+    "conceptTags": [
+      "wallet-backend",
+      "multi-chain",
+      "signer-service",
+      "go-infra",
+      "api-design"
+    ],
+    "relatedProjectIds": [
+      1
+    ],
+    "recommendedSlugs": [
+      "multi-chain-wallet-resource-state",
+      "cex-evm-wallet-deposit-withdrawal-loop",
+      "new-chain-integration-checklist",
+      "wallet-api-boundary",
+      "wallet-sign-signer",
+      "withdrawal-error-handling",
+      "wallet-signing-intent-abuse",
+      "wallet-rpc-trust-boundary"
+    ],
+    "suggestedQuestions": [
+      "适配一条链和真正验收一条链有什么区别？",
+      "为什么多链钱包应该统一业务状态机，但不能隐藏链资源？",
+      "BTC、EVM、TRON 和 Sui 的验收依据分别是什么？",
+      "怎样证明扫链、余额和通知在重跑后仍然幂等？"
+    ]
+  },
+  {
+    "id": 32,
     "slug": "wallet-ledger-transaction-mq-consistency",
     "title": "资金系统一致性：从余额冻结、数据库事务到 MQ 幂等",
     "date": "2026-07-20",
@@ -1221,6 +1267,256 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "数据库事务能保证哪些资金一致性，又不能跨过哪些服务边界？",
       "为什么同一个 request_id 的金额变化必须拒绝，而不是覆盖或重新执行？",
       "Transactional Outbox 如何处理数据库提交与 MQ 投递之间的失败窗口？"
+    ]
+  },
+  {
+    "id": 33,
+    "slug": "wallet-signing-intent-abuse",
+    "title": "私钥没有离开签名机，资金为什么仍会被转走",
+    "date": "2026-07-20",
+    "summary": "交易所钱包真正要保护的不只是私钥字节，还包括签名能力、审批意图与恢复权限。本文沿 wallet-service、risk-service、wallet-api、wallet-sign 拆解外部攻击者如何把一笔未授权交易变成链上合法签名。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Security",
+      "Signer",
+      "Risk Control"
+    ],
+    "readingTime": "4 min",
+    "difficulty": "安全工程",
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "基于当前四服务边界、Bybit 官方事件时间线、EIP-712 与 OWASP API 安全模型整理；签名意图篡改与重放实验仍待接入四服务基线。",
+    "conceptTags": [
+      "wallet-backend",
+      "signer-service",
+      "api-design",
+      "go-infra"
+    ],
+    "relatedProjectIds": [
+      1,
+      5
+    ],
+    "recommendedSlugs": [
+      "wallet-sign-signer",
+      "withdrawal-error-handling",
+      "multi-chain-wallet-acceptance-loop",
+      "cryptographic-nonce-key-leak",
+      "mpc-tss-security-boundaries",
+      "wallet-software-supply-chain"
+    ],
+    "suggestedQuestions": [
+      "为什么私钥不泄露也可能发生未授权出金？",
+      "风险审批怎样绑定到最终签名交易？",
+      "wallet-sign 为什么不能只验证内部 Token 和 Digest？"
+    ]
+  },
+  {
+    "id": 34,
+    "slug": "cryptographic-nonce-key-leak",
+    "title": "一笔签名如何暴露长期密钥：随机数、Nonce 与实现边界",
+    "date": "2026-07-20",
+    "summary": "ECDSA 和 EdDSA 的安全不仅依赖私钥存储，还依赖每次签名的临时量、Digest、序列化和实现正确性。本文结合 BTC/EVM 与 Sui/Solana，解释为什么签名库不能自行拼装，以及应如何用测试守住密码学边界。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Cryptography",
+      "ECDSA",
+      "Ed25519"
+    ],
+    "readingTime": "4 min",
+    "difficulty": "安全工程",
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "依据 RFC 6979、RFC 8032 与当前 BTC/Sui 签名测试整理；未在项目中实现自定义密码学算法，也不把规范阅读视为生产安全审计。",
+    "conceptTags": [
+      "signer-service",
+      "wallet-backend",
+      "multi-chain"
+    ],
+    "relatedProjectIds": [
+      1,
+      7
+    ],
+    "recommendedSlugs": [
+      "wallet-signing-intent-abuse",
+      "wallet-sign-signer",
+      "wallet-address-models",
+      "multi-chain-wallet-resource-state",
+      "mpc-tss-security-boundaries",
+      "hsm-key-extractability-boundaries"
+    ],
+    "suggestedQuestions": [
+      "为什么 ECDSA 的签名 Nonce 不能重复？",
+      "Ed25519 不依赖外部随机数是否等于实现不会泄露密钥？",
+      "钱包项目应该自己实现签名算法吗？"
+    ]
+  },
+  {
+    "id": 35,
+    "slug": "mpc-tss-security-boundaries",
+    "title": "MPC/TSS 不是万能保险：Share、Session 与盲签边界",
+    "date": "2026-07-20",
+    "summary": "门限签名让完整私钥不必出现在单机上，但不会自动解决节点身份、会话重放、Coordinator 越权、审批欺骗、重分享和不安全降级。本文把密码学门限与钱包业务授权分开讨论。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "MPC",
+      "TSS",
+      "Security"
+    ],
+    "readingTime": "4 min",
+    "difficulty": "安全工程",
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "独立三节点 TSS Keygen/Sign 已本地验证；本文依据 NIST MPTC 与 bnb-chain/tss-lib 的协议边界整理，wallet-sign 端到端接入和攻击实验尚未完成。",
+    "conceptTags": [
+      "mpc-tss",
+      "signer-service",
+      "wallet-backend",
+      "go-infra"
+    ],
+    "relatedProjectIds": [
+      1,
+      5
+    ],
+    "recommendedSlugs": [
+      "mpc-wallet-sign-integration",
+      "wallet-signing-intent-abuse",
+      "cryptographic-nonce-key-leak",
+      "thorchain-tss-attack-analysis",
+      "hsm-key-extractability-boundaries",
+      "wallet-sign-signer"
+    ],
+    "suggestedQuestions": [
+      "MPC/TSS 解决了什么，又没有解决什么？",
+      "为什么 Coordinator 不能成为任意签名入口？",
+      "TSS Session、成员集合和重分享为什么需要持久化状态？"
+    ]
+  },
+  {
+    "id": 36,
+    "slug": "hsm-key-extractability-boundaries",
+    "title": "HSM 接入以后，密钥就一定不可导出吗",
+    "date": "2026-07-20",
+    "summary": "HSM 能把签名运算和密钥材料隔离在硬件边界中，但 Key Attribute、Crypto User、Wrapping、应用权限和任意签名策略仍会决定真实安全性。本文给出 wallet-sign 接入 HSM 前需要验证的工程门禁。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "HSM",
+      "CloudHSM",
+      "Security"
+    ],
+    "readingTime": "3 min",
+    "difficulty": "架构设计",
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "依据 AWS CloudHSM 官方 Key Attribute 与 Key Management 文档整理；当前项目尚未接入 HSM，本文是接入前安全设计与验收门禁。",
+    "conceptTags": [
+      "signer-service",
+      "wallet-backend",
+      "mpc-tss",
+      "api-design"
+    ],
+    "relatedProjectIds": [
+      1,
+      5
+    ],
+    "recommendedSlugs": [
+      "aws-cloudhsm-wallet-sign-integration",
+      "wallet-signing-intent-abuse",
+      "cryptographic-nonce-key-leak",
+      "mpc-tss-security-boundaries",
+      "wallet-sign-signer",
+      "wallet-software-supply-chain"
+    ],
+    "suggestedQuestions": [
+      "HSM 中的 Key 为什么仍要检查 extractable 属性？",
+      "密钥不可导出为什么仍不能阻止任意签名？",
+      "wallet-sign 接入 HSM 时应该保留哪些业务边界？"
+    ]
+  },
+  {
+    "id": 37,
+    "slug": "wallet-software-supply-chain",
+    "title": "从恶意依赖到错误交易：钱包软件供应链攻击路径",
+    "date": "2026-07-20",
+    "summary": "攻击者不一定攻击链或签名算法，也可以从开发机、依赖、CI、Artifact、容器和签名界面进入。本文沿源码到生产运行的交付链，分析钱包项目如何防止可信流程交付恶意代码。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Supply Chain",
+      "CI/CD",
+      "Security"
+    ],
+    "readingTime": "4 min",
+    "difficulty": "安全工程",
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "依据 CISA 软件供应链指南、GitHub Actions 安全指南、npm Lockfile 文档与 Bybit 官方事件时间线整理；当前项目已执行依赖锁定与 Secret Scan，但未完成签名制品和部署 Provenance。",
+    "conceptTags": [
+      "wallet-backend",
+      "signer-service",
+      "go-infra",
+      "api-design"
+    ],
+    "relatedProjectIds": [
+      1
+    ],
+    "recommendedSlugs": [
+      "wallet-signing-intent-abuse",
+      "cryptographic-nonce-key-leak",
+      "hsm-key-extractability-boundaries",
+      "wallet-sign-signer",
+      "codex-ai-workflow-system-retrospective",
+      "wallet-rpc-trust-boundary"
+    ],
+    "suggestedQuestions": [
+      "为什么私钥隔离仍然挡不住供应链攻击？",
+      "钱包项目从源码到部署应建立哪些完整性证据？",
+      "签名界面和交易构建代码为什么属于同一安全边界？"
+    ]
+  },
+  {
+    "id": 38,
+    "slug": "wallet-rpc-trust-boundary",
+    "title": "RPC 节点说谎时，充值、提现和对账会发生什么",
+    "date": "2026-07-20",
+    "summary": "钱包后端依赖 RPC 获取区块、余额、Nonce、UTXO、Checkpoint 与交易结果，但 RPC 只是证据来源，不是业务真相。本文拆解节点落后、分叉、错误网络和响应不一致如何影响资金状态。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "RPC",
+      "Indexer",
+      "Security"
+    ],
+    "readingTime": "4 min",
+    "difficulty": "安全工程",
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "依据 Ethereum、Bitcoin Core、Solana 与 Sui 官方协议/RPC 文档，以及当前多链验收代码整理；多节点分歧和错误 RPC 故障注入尚待完整实现。",
+    "conceptTags": [
+      "wallet-backend",
+      "multi-chain",
+      "api-design",
+      "go-infra"
+    ],
+    "relatedProjectIds": [
+      1,
+      7
+    ],
+    "recommendedSlugs": [
+      "multi-chain-wallet-acceptance-loop",
+      "multi-chain-wallet-resource-state",
+      "evm-internal-transfer-deposit-indexer",
+      "withdrawal-error-handling",
+      "new-chain-integration-checklist",
+      "wallet-software-supply-chain"
+    ],
+    "suggestedQuestions": [
+      "为什么 RPC 返回成功不等于链上事实已经成立？",
+      "多节点返回不同区块或交易状态时钱包应该怎么做？",
+      "EVM、BTC、Solana 与 Sui 应分别记录什么最终性证据？"
     ]
   }
 ]
@@ -1780,6 +2076,26 @@ export const articleSummaries: ArticleSummary[] = [
   },
   {
     "id": 31,
+    "slug": "multi-chain-wallet-acceptance-loop",
+    "title": "从适配一条链到验收一条链：多链钱包的统一工程 Loop",
+    "date": "2026-07-20",
+    "summary": "多链钱包不只是增加 RPC 适配器。本文复盘如何用统一资金状态机串起地址、充值、归集、提现、确认、对账与幂等重扫，同时显式处理 EVM nonce、BTC UTXO、TRON 资源和 Sui Object。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Backend",
+      "Multi-chain",
+      "Bitcoin",
+      "Sui"
+    ],
+    "readingTime": "8 min",
+    "difficulty": "工程复盘",
+    "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "Base、Solana、BNB 以及 BTC Testnet4、Sui Testnet 的对应链路已完成本地或测试网验证；本文记录验收方法与当前边界，不代表生产环境运行结论。"
+  },
+  {
+    "id": 32,
     "slug": "wallet-ledger-transaction-mq-consistency",
     "title": "资金系统一致性：从余额冻结、数据库事务到 MQ 幂等",
     "date": "2026-07-20",
@@ -1797,5 +2113,119 @@ export const articleSummaries: ArticleSummary[] = [
     "kind": "engineering-note",
     "evidenceLevel": "design",
     "evidenceSummary": "基于钱包后端资金状态、幂等和异常恢复问题整理的架构设计说明；不代表生产事故复盘，也不表示数据库、MQ 与补偿链路已经完成端到端集成验证。"
+  },
+  {
+    "id": 33,
+    "slug": "wallet-signing-intent-abuse",
+    "title": "私钥没有离开签名机，资金为什么仍会被转走",
+    "date": "2026-07-20",
+    "summary": "交易所钱包真正要保护的不只是私钥字节，还包括签名能力、审批意图与恢复权限。本文沿 wallet-service、risk-service、wallet-api、wallet-sign 拆解外部攻击者如何把一笔未授权交易变成链上合法签名。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Security",
+      "Signer",
+      "Risk Control"
+    ],
+    "readingTime": "4 min",
+    "difficulty": "安全工程",
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "基于当前四服务边界、Bybit 官方事件时间线、EIP-712 与 OWASP API 安全模型整理；签名意图篡改与重放实验仍待接入四服务基线。"
+  },
+  {
+    "id": 34,
+    "slug": "cryptographic-nonce-key-leak",
+    "title": "一笔签名如何暴露长期密钥：随机数、Nonce 与实现边界",
+    "date": "2026-07-20",
+    "summary": "ECDSA 和 EdDSA 的安全不仅依赖私钥存储，还依赖每次签名的临时量、Digest、序列化和实现正确性。本文结合 BTC/EVM 与 Sui/Solana，解释为什么签名库不能自行拼装，以及应如何用测试守住密码学边界。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Cryptography",
+      "ECDSA",
+      "Ed25519"
+    ],
+    "readingTime": "4 min",
+    "difficulty": "安全工程",
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "依据 RFC 6979、RFC 8032 与当前 BTC/Sui 签名测试整理；未在项目中实现自定义密码学算法，也不把规范阅读视为生产安全审计。"
+  },
+  {
+    "id": 35,
+    "slug": "mpc-tss-security-boundaries",
+    "title": "MPC/TSS 不是万能保险：Share、Session 与盲签边界",
+    "date": "2026-07-20",
+    "summary": "门限签名让完整私钥不必出现在单机上，但不会自动解决节点身份、会话重放、Coordinator 越权、审批欺骗、重分享和不安全降级。本文把密码学门限与钱包业务授权分开讨论。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "MPC",
+      "TSS",
+      "Security"
+    ],
+    "readingTime": "4 min",
+    "difficulty": "安全工程",
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "独立三节点 TSS Keygen/Sign 已本地验证；本文依据 NIST MPTC 与 bnb-chain/tss-lib 的协议边界整理，wallet-sign 端到端接入和攻击实验尚未完成。"
+  },
+  {
+    "id": 36,
+    "slug": "hsm-key-extractability-boundaries",
+    "title": "HSM 接入以后，密钥就一定不可导出吗",
+    "date": "2026-07-20",
+    "summary": "HSM 能把签名运算和密钥材料隔离在硬件边界中，但 Key Attribute、Crypto User、Wrapping、应用权限和任意签名策略仍会决定真实安全性。本文给出 wallet-sign 接入 HSM 前需要验证的工程门禁。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "HSM",
+      "CloudHSM",
+      "Security"
+    ],
+    "readingTime": "3 min",
+    "difficulty": "架构设计",
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "依据 AWS CloudHSM 官方 Key Attribute 与 Key Management 文档整理；当前项目尚未接入 HSM，本文是接入前安全设计与验收门禁。"
+  },
+  {
+    "id": 37,
+    "slug": "wallet-software-supply-chain",
+    "title": "从恶意依赖到错误交易：钱包软件供应链攻击路径",
+    "date": "2026-07-20",
+    "summary": "攻击者不一定攻击链或签名算法，也可以从开发机、依赖、CI、Artifact、容器和签名界面进入。本文沿源码到生产运行的交付链，分析钱包项目如何防止可信流程交付恶意代码。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Supply Chain",
+      "CI/CD",
+      "Security"
+    ],
+    "readingTime": "4 min",
+    "difficulty": "安全工程",
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "依据 CISA 软件供应链指南、GitHub Actions 安全指南、npm Lockfile 文档与 Bybit 官方事件时间线整理；当前项目已执行依赖锁定与 Secret Scan，但未完成签名制品和部署 Provenance。"
+  },
+  {
+    "id": 38,
+    "slug": "wallet-rpc-trust-boundary",
+    "title": "RPC 节点说谎时，充值、提现和对账会发生什么",
+    "date": "2026-07-20",
+    "summary": "钱包后端依赖 RPC 获取区块、余额、Nonce、UTXO、Checkpoint 与交易结果，但 RPC 只是证据来源，不是业务真相。本文拆解节点落后、分叉、错误网络和响应不一致如何影响资金状态。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "RPC",
+      "Indexer",
+      "Security"
+    ],
+    "readingTime": "4 min",
+    "difficulty": "安全工程",
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "依据 Ethereum、Bitcoin Core、Solana 与 Sui 官方协议/RPC 文档，以及当前多链验收代码整理；多节点分歧和错误 RPC 故障注入尚待完整实现。"
   }
 ]

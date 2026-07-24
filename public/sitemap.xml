@@ -157,6 +157,24 @@
     <loc>https://xiuqiu-site.vercel.app/articles/wallet-ledger-transaction-mq-consistency</loc>
   </url>
   <url>
+    <loc>https://xiuqiu-site.vercel.app/articles/wallet-signing-intent-abuse</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/articles/cryptographic-nonce-key-leak</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/articles/mpc-tss-security-boundaries</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/articles/hsm-key-extractability-boundaries</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/articles/wallet-software-supply-chain</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/articles/wallet-rpc-trust-boundary</loc>
+  </url>
+  <url>
     <loc>https://xiuqiu-site.vercel.app/radar/2026-07-24</loc>
   </url>
   <url>

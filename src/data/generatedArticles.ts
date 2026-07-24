@@ -1194,6 +1194,53 @@ export const articles: Article[] = [
   },
   {
     "id": 31,
+    "slug": "multi-chain-wallet-acceptance-loop",
+    "title": "从适配一条链到验收一条链：多链钱包的统一工程 Loop",
+    "date": "2026-07-20",
+    "summary": "多链钱包不只是增加 RPC 适配器。本文复盘如何用统一资金状态机串起地址、充值、归集、提现、确认、对账与幂等重扫，同时显式处理 EVM nonce、BTC UTXO、TRON 资源和 Sui Object。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Backend",
+      "Multi-chain",
+      "Bitcoin",
+      "Sui"
+    ],
+    "readingTime": "8 min",
+    "difficulty": "工程复盘",
+    "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "Base、Solana、BNB 以及 BTC Testnet4、Sui Testnet 的对应链路已完成本地或测试网验证；本文记录验收方法与当前边界，不代表生产环境运行结论。",
+    "conceptTags": [
+      "wallet-backend",
+      "multi-chain",
+      "signer-service",
+      "go-infra",
+      "api-design"
+    ],
+    "relatedProjectIds": [
+      1
+    ],
+    "recommendedSlugs": [
+      "multi-chain-wallet-resource-state",
+      "cex-evm-wallet-deposit-withdrawal-loop",
+      "new-chain-integration-checklist",
+      "wallet-api-boundary",
+      "wallet-sign-signer",
+      "withdrawal-error-handling",
+      "wallet-signing-intent-abuse",
+      "wallet-rpc-trust-boundary"
+    ],
+    "suggestedQuestions": [
+      "适配一条链和真正验收一条链有什么区别？",
+      "为什么多链钱包应该统一业务状态机，但不能隐藏链资源？",
+      "BTC、EVM、TRON 和 Sui 的验收依据分别是什么？",
+      "怎样证明扫链、余额和通知在重跑后仍然幂等？"
+    ],
+    "content": "# 从适配一条链到验收一条链：多链钱包的统一工程 Loop\n\n最开始做多链钱包时，我很容易把“支持一条链”理解成：能生成地址、能查询余额、能构建交易、能签名、能广播。\n\n随着充值、提现、扫链和签名服务逐渐连起来，我发现这些能力只能说明链适配器可以工作，还不能说明钱包系统真正支持了这条链。\n\n对交易所钱包后端来说，更完整的问题应该是：\n\n```text\n地址是否正确登记\n充值能否被稳定识别\n确认数是否正确推进\n余额是否只更新一次\n提现是否先冻结资金\n签名内容是否与审批内容一致\n广播以后如何判断最终结果\n服务重启和重复扫链会不会重复入账\n失败以后资金状态能否恢复\n```\n\n因此，我现在更愿意把一条链的接入过程分成三个层次：\n\n```text\n链适配\n→ 业务闭环\n→ 可重复验收\n```\n\n链适配解决“如何与这条链交互”，业务闭环解决“如何让链上事实进入钱包状态机”，可重复验收则回答“如何证明这套流程能够再次运行，并且不会破坏资金不变量”。\n\n# 业务状态机应该统一，链上资源不能被隐藏\n\nEVM、BTC、TRON 和 Sui 的交易模型差异很大，但交易所钱包面对的业务过程基本一致：\n\n```text\nPreflight\n→ 生成并登记地址\n→ 充值与扫链\n→ 归集\n→ 提现\n→ 链上确认\n→ 账务更新\n→ 业务通知\n→ Audit 与幂等重扫\n```\n\n多链钱包不应该为每条链重新设计一套业务状态机，但必须让每条链特有的资源状态显式进入构建、恢复和验收流程。\n\n统一的部分包括请求幂等、风控审批、余额冻结、签名边界、广播状态、最终性、账务更新、失败补偿和业务通知。\n\n不能强行隐藏的部分包括：\n\n- EVM 的 nonce 和 Gas；\n- BTC 的 UTXO、找零和费率；\n- TRON 的 TAPOS、Energy 和 Bandwidth；\n- Sui 的 Coin Object、Gas Object 和 Object Version。\n\n如果为了统一接口而把这些资源全部藏在 adaptor 里面，异常发生以后，系统就很难判断应该重试、暂停、补偿，还是重新构建交易。\n\n# 第一步不是发交易，而是 Preflight\n\n一条完整的钱包链路至少依赖 wallet-service、wallet-api、wallet-sign、risk-service、scanner、notifier、PostgreSQL、Redis 和链节点。\n\n如果关键依赖不可用，继续运行可能产生误导性的结果：\n\n- risk-service 不可用时，不应绕过风控继续签名；\n- wallet-sign 不可用时，不应生成虚假的签名成功状态；\n- 节点落后时，不应把“查询不到交易”直接判断为交易失败；\n- notifier 不可用时，业务可以停在 `wallet_done`，但不能假装已经通知成功。\n\nPreflight 的意义不是简单检查端口，而是确认本次验收依赖的环境、Chain ID、网络和服务边界一致。同一个业务 Chain ID 也不应该在运行中随意切换主网和测试网，否则地址、交易和账务记录会失去明确的网络归属。\n\n# 地址生成需要保持私钥边界\n\n生成充值地址时，验收工具不应该直接接触私钥。\n\n我目前采用的边界是：\n\n```text\nwallet-sign 生成或管理密钥\n→ 返回公钥或地址所需材料\n→ wallet-service 登记业务地址\n→ 创建按业务和链隔离的余额记录\n```\n\n验收工具只处理公钥、地址、Chain ID、地址类型、业务标识和测试标识。私钥仍然留在签名服务的本地密钥存储、MPC/TSS 或未来的 HSM 后端中。\n\n这也意味着签名服务不应该理解提现订单和用户余额。它只负责验证审批内容、签名请求和密钥引用是否匹配，然后对明确的数据执行签名。\n\n# 充值完成需要同时验证三类事实\n\n一笔链上转账被扫描到，不等于充值已经完成。我现在会把充值结果拆成三类事实。\n\n链上事实：\n\n- 交易是否存在并执行成功；\n- 是否达到要求的确认数；\n- 是否仍在 canonical chain 上。\n\n业务事实：\n\n- 是否生成唯一的 deposit 记录；\n- 是否关联正确的业务和充值地址；\n- 状态是否按照预期推进；\n- 重复扫描是否不会重复创建记录。\n\n账务事实：\n\n- 余额是否只增加一次；\n- available 与 lock 是否满足约束；\n- 是否生成对应交易流水；\n- 从相同区块重新扫描后，余额和记录数量是否保持不变。\n\n因此，充值验收不能只检查 txHash。更接近完成的判断应该是：\n\n```text\n链上交易成立\n+ deposit 唯一\n+ transaction 唯一\n+ 余额变化正确\n+ 达到确认数\n+ 通知只执行一次\n```\n\n# 提现需要从资金冻结开始\n\n提现不是从构建交易开始，而是从请求幂等、风控和余额冻结开始：\n\n```text\n接收提现请求\n→ 校验 request_id\n→ 检查余额和链资源\n→ 风控审批\n→ 冻结金额与预计网络费\n→ 构建待签名交易\n→ 请求 wallet-sign\n→ 广播 raw transaction\n→ 等待链上结果\n→ 更新账务终态\n→ 通知业务方\n```\n\n这里最重要的边界之一是：`broadcasted` 只能表示交易已经尝试提交给节点，不能直接表示资金已经在链上成功转出。\n\n```text\ncreate_unsign\n→ signed\n→ broadcasted\n→ wallet_done\n→ notified\n```\n\n如果节点明确拒绝交易，并且能够确认没有产生链上资金事实，系统可以进入失败状态并释放冻结。\n\n如果广播发生超时，无法确认节点是否收到交易，就不能直接重新构建第二笔交易。此时应先根据交易哈希、sender/nonce、raw transaction 指纹、BTC UTXO 或 Sui Object Version 对账。结果仍然不确定时，宁愿暂停，也不能重复出金。\n\n# 同一条业务 Loop 下，不同链的验收重点不同\n\n| 链族 | 构建时必须显式处理 | 链上成功依据 | 主要资源风险 |\n| --- | --- | --- | --- |\n| EVM | chain ID、nonce、Gas、legacy/EIP-1559 | receipt `status=1` 和确认数 | nonce 冲突、replacement、Gas 不足 |\n| BTC | UTXO、sat/vB、dust、找零、DER 签名 | 交易进入区块并达到确认数 | UTXO 重复选择、费用不足、找零错误 |\n| TRON | Base58/hex、TAPOS、expiration、TRC20 calldata | receipt 执行成功和确认数 | Energy、Bandwidth、Fee Limit、交易过期 |\n| Sui | Coin Object、Gas Object、Object Version、交易 Digest | Effects 成功和 Checkpoint 最终结果 | Object 被占用、版本变化、交易字节过期 |\n\n这些差异不应该泄漏成四套完全不同的业务流程，但应该作为链适配器和验收 Profile 的明确输入。\n\nEVM 提现通常要控制 nonce，BTC 提现要预占具体 UTXO，Sui 提现需要避免并发选择同一个 Gas Object。它们解决的其实是同一个业务问题：如何确保同一份链上可消费资源不会被两笔提现同时使用。\n\n# Audit 和幂等重扫才是闭环的最后一步\n\n链路第一次跑通并不能证明扫链和账务具有幂等性。更可靠的验收方式是：\n\n1. 保存交易前后的区块或 Checkpoint；\n2. 完成一次充值或提现；\n3. 记录 deposit、withdraw、internal、sendout、transaction 和余额快照；\n4. 重启 scanner；\n5. 从交易前的位置重新扫描；\n6. 再次执行 Audit；\n7. 比较记录数量、余额和通知次数。\n\n重扫以后应该满足：\n\n```text\n充值记录不增加\n交易流水不重复\n余额不重复变化\n提现状态不回退\n通知不重复发送\n```\n\n如果重扫一次就多出一条充值记录，说明系统只是“第一次运行成功”，并没有形成可恢复的钱包链路。\n\n# 当前已经验证到哪里\n\n目前完成的本地与测试网验证包括：\n\n- Base 原生资产充值、提现与状态推进闭环；\n- Solana 原生资产充值、提现、余额更新与通知流程；\n- BNB 原生资产提现闭环；\n- BTC Testnet4 真实链路验证；\n- Sui Testnet 原生 SUI 链路验证；\n- BTC 的 UTXO 选择、Sweep、余额不足和规范 DER 签名测试；\n- Sui 的地址派生、Checkpoint 余额变化解析和 Build → Sign → Execute 测试；\n- EVM ERC20 Log、Internal Transfer、ERC721 和 ERC1155 解析测试；\n- chain-e2e 默认 dry-run、Profile 加载和参数边界测试。\n\n这些结果说明统一验收框架和对应链路已经在本地或测试网得到验证，但它们不是生产环境的规模、稳定性或安全性结论。\n\n当前仍然存在的边界包括：\n\n- BTC 还需要扩展多输入选币、UTXO 并发锁定、RBF/CPFP、粉尘整理与 Reorg 恢复；\n- Sui 当前以原生 SUI 为主，Coin、NFT、Move Call、赞助交易和多签尚未纳入；\n- Sui 待签名交易缓存过期或 wallet-api 重启后，需要安全地重新构建；\n- BSC Internal Transfer 充值依赖支持 Trace 的节点；\n- TRON 的完整真实网络闭环还需要继续验证；\n- 故障注入和重扫恢复需要在更多链族上持续运行。\n\n# 从“能运行”继续追问“怎样会 Rekt”\n\n验收成功证明的是预期路径能够闭环，但资金系统还必须从真实事故反推边界。\n\n后续我会把 [Rekt](https://rekt.news/) 作为事故线索索引，再结合项目官方复盘、链上交易和可复现测试，继续拆解与钱包基础设施直接相关的问题：\n\n- **[签名内容被替换或界面欺骗](/articles/wallet-signing-intent-abuse)：** 多签和硬件设备存在，并不自动代表签署人看到了真实交易；审批摘要、交易 Digest 和独立展示通道应该如何绑定；\n- **[签名算法实现错误](/articles/cryptographic-nonce-key-leak)：** 随机数、nonce、digest、DER 或序列化实现错误，为什么可能从一笔公开签名反推出长期密钥风险；\n- **[MPC/TSS 的 Share、Session 与盲签边界](/articles/mpc-tss-security-boundaries)：** 完整私钥不出现，为什么仍可能产生未授权签名；\n- **[HSM 的密钥属性与签名权限](/articles/hsm-key-extractability-boundaries)：** Key 进入硬件以后，哪些配置和调用权限仍可能扩大风险；\n- **[软件供应链与错误交易](/articles/wallet-software-supply-chain)：** 开发机、依赖、CI、Artifact 和签名界面怎样影响最终交易；\n- **链资源被重复消费：** nonce、UTXO、recent blockhash 和 Object Version 的并发控制失败，如何演变成重复出金、卡单或错误替换；\n- **[扫链与最终性误判](/articles/wallet-rpc-trust-boundary)：** RPC 返回不一致、确认数不足、Reorg 或解析遗漏，如何导致重复入账与账务不平；\n- **恢复路径本身成为风险：** 紧急降级、人工补账、密钥迁移和合约升级为什么需要和正常路径一样接受审批、审计与演练。\n\n这里的目标不是复述损失金额，而是把每次事故转成一个可运行的失败实验：它破坏了哪个不变量，第一处止损动作是什么，现有架构能否发现，以及怎样用测试证明修复有效。\n\n# 这次学习带来的变化\n\n以前我更关注接口有没有返回、交易能不能发出去。现在我更关注：\n\n```text\n资金事实是否明确\n状态是否能够推进\n失败是否能够恢复\n重试依据是否幂等\n链上和账务是否一致\n验证过程能否再次运行\n```\n\n多链钱包真正困难的地方，不是支持更多 RPC 方法，而是在不同的交易模型和资源约束下，仍然保持同一组资金安全原则：\n\n```text\n请求不能重复执行\n余额不能重复使用\n签名不能脱离审批\n广播不能代表成功\n重扫不能重复入账\n结果不确定时不能重复出金\n```\n\n当这些原则能够被状态机、测试、Audit 和失败路径共同证明时，一条链才算从“已经适配”走向“可以验收”。\n\n# 下一步\n\n接下来我准备继续补齐四部分证据：\n\n1. 为 BTC 增加多输入选币、UTXO 锁定、RBF 和 Reorg 故障实验；\n2. 为 Sui 增加 Coin Object 并发、缓存过期重建和 Checkpoint 重扫实验；\n3. 继续完成 TRON 的真实链闭环；\n4. 从真实 Rekt 事件中选择与签名、密钥和链资源相关的案例，转成可复现的失败测试。\n\n最终目标不是让网站显示“支持了多少条链”，而是让每一条被列出的链，都能回答：\n\n```text\n如何构建\n如何签名\n如何确认\n如何恢复\n如何复现验证\n```"
+  },
+  {
+    "id": 32,
     "slug": "wallet-ledger-transaction-mq-consistency",
     "title": "资金系统一致性：从余额冻结、数据库事务到 MQ 幂等",
     "date": "2026-07-20",
@@ -1233,5 +1280,261 @@ export const articles: Article[] = [
       "Transactional Outbox 如何处理数据库提交与 MQ 投递之间的失败窗口？"
     ],
     "content": "# 一笔提现背后的三个事实世界\n\n余额冻结、数据库事务、MQ、幂等键和人工调账看起来是不同问题，实际上都在处理同一个目标：一笔资金业务只能产生一份可解释、可恢复、可审计的最终事实。\n\n钱包后端同时面对三个事实世界：\n\n| 事实层 | 记录什么 | 典型标识 | 回答的问题 |\n| --- | --- | --- | --- |\n| 链上资产 | 地址、交易和区块确认 | address、txHash、block height | 平台控制的资产在链上发生了什么 |\n| 业务账本 | 用户负债、冻结和资金分录 | account、ledger entry、business id | 平台欠谁多少钱，资金为什么变化 |\n| 服务事件 | 跨服务需要继续处理的业务事实 | event_id、request_id | 哪个已提交事实需要被下游处理 |\n\n这三层有关联，但不能相互替代。地址余额不能直接当成用户余额，MQ 消息不能代替已提交的数据库记录，一次接口 timeout 也不能证明对方没有执行。\n\n# 链上余额不等于用户余额\n\n充值地址只是链上入金入口，不是用户业务账户本身。地址可能被归集、共享或轮换，资金进入平台后也可能转移到热钱包或冷钱包。\n\n例如，用户向地址 A 充值 100 USDT，平台确认入账后把币归集到热钱包 H：\n\n```text\n地址 A 链上余额 = 0\n用户业务余额     = 100\n```\n\n这并不矛盾。用户业务余额表示平台对用户的负债；地址余额表示某个链上地址当前控制的资产。平台应该在资产负债层面对账，而不是把某个用户历史充值地址的余额简单相加。\n\n```text\n链上托管资产 + 其他清算资产\n    对照\n用户负债汇总 + 手续费负债 + 运营调整\n```\n\n因此，用户余额必须从受控的 ledger 和账户聚合得出，充值地址只提供链上事实与入账证据。\n\n# 提现冻结没有减少用户总负债\n\n账户通常至少区分可用余额和冻结余额：\n\n```text\ntotal = available + locked\n```\n\n用户申请提现 300 前后可以表示为：\n\n| 阶段 | available | locked | total | 业务含义 |\n| --- | ---: | ---: | ---: | --- |\n| 提现前 | 1000 | 0 | 1000 | 全部可用 |\n| 冻结后 | 700 | 300 | 1000 | 300 不可重复使用，但平台仍欠用户 |\n| 提现完成 | 700 | 0 | 700 | 出金事实确定，平台负债减少 |\n| 提现失败并解冻 | 1000 | 0 | 1000 | 资金重新可用 |\n\n所以“提现申请后 balance 为什么不变”首先是口径问题。如果 balance 表示 total，它就不应在冻结时下降；如果表示 available，它应当下降。字段名不能代替业务定义，接口和报表必须明确返回的是 available、locked 还是 total。\n\n# 本地数据库事务守住最小原子边界\n\n一笔提现冻结通常至少涉及四类写入：\n\n- 创建或确认提现订单。\n- 把账户资金从 available 转入 locked。\n- 写入不可变的资金流水。\n- 写入待发布的 outbox 事件。\n\n这些写入应进入同一个本地数据库事务：\n\n```sql\nBEGIN;\n\nINSERT INTO withdrawal_order (\n  request_id, user_id, asset, amount, payload_hash, status\n) VALUES (\n  :request_id, :user_id, :asset, :amount, :payload_hash, 'FROZEN'\n);\n\nUPDATE account_balance\nSET available = available - :amount,\n    locked = locked + :amount,\n    version = version + 1\nWHERE user_id = :user_id\n  AND asset = :asset\n  AND available >= :amount;\n\n-- 必须断言上面的 UPDATE 恰好影响一行\n\nINSERT INTO ledger_entry (\n  entry_id, business_id, user_id, asset, entry_type, amount\n) VALUES (\n  :entry_id, :request_id, :user_id, :asset, 'WITHDRAW_FREEZE', :amount\n);\n\nINSERT INTO outbox_event (\n  event_id, aggregate_id, event_type, payload, publish_status\n) VALUES (\n  :event_id, :request_id, 'WITHDRAWAL_FROZEN', :event_payload, 'PENDING'\n);\n\nCOMMIT;\n```\n\n任何一步失败都回滚，避免出现“有订单没冻结”“冻结了没流水”或“数据库没有事实但下游已经开始执行”。这里的事务边界只覆盖同一个数据库中的操作，不会自动覆盖 MQ broker、远程风控服务或链节点。\n\n# 把 ACID 翻译成资金语义\n\nACID 不是背诵题，它对应四种直接的资金风险控制。\n\n| 特性 | 在提现冻结中的含义 | 仍需业务层补充什么 |\n| --- | --- | --- |\n| Atomicity | 订单、余额、流水和 outbox 同时提交或同时回滚 | 正确划定同一业务事实的写入集合 |\n| Consistency | 提交后仍满足余额非负、流水唯一、状态合法等约束 | 唯一索引、检查约束、状态机和会计不变量 |\n| Isolation | 并发请求不能重复消费同一份 available | 条件更新、行锁、CAS 和冲突后的重新读取 |\n| Durability | COMMIT 成功后，服务重启仍能恢复事实 | 备份、复制、恢复演练和持久化配置 |\n\n数据库不会自动理解“同一个 request_id 不得改变金额”，也不会自动判断某个终态是否符合链上事实。事务提供机制，业务约束决定机制要守护什么。\n\n# 并发冻结应依赖原子条件，而不是先查后改\n\n危险做法是先查询 available，在应用内判断余额充足，再执行更新。两个并发事务可能同时读到 500，并分别尝试冻结 400。\n\n更稳妥的做法是让余额条件成为同一条 UPDATE 的一部分：\n\n```sql\nUPDATE account_balance\nSET available = available - :amount,\n    locked = locked + :amount,\n    version = version + 1\nWHERE user_id = :user_id\n  AND asset = :asset\n  AND available >= :amount;\n```\n\n第一个事务更新并锁定目标行后，第二个事务必须基于最新值重新判断条件。最终只能有一个请求影响一行，另一个请求得到零行。\n\n订单状态推进也应使用 CAS 风格的条件：\n\n```sql\nUPDATE withdrawal_order\nSET status = 'PAID',\n    version = version + 1\nWHERE request_id = :request_id\n  AND status = 'FROZEN'\n  AND version = :expected_version;\n```\n\n这种写法避免旧 worker 把新状态覆盖掉，也让并发冲突表现为明确的零行结果。\n\n# UPDATE 返回零行不是“自动成功”\n\n零行只表示当前没有记录满足更新条件，必须重新读取并分类。\n\n| 重新读取结果 | 可能含义 | 处理方式 |\n| --- | --- | --- |\n| 已是目标状态 | 重复消费或前一次执行已成功 | 按幂等成功返回原结果 |\n| 合法的其他终态 | 业务已取消、拒绝或失败 | 返回真实终态，不继续推进 |\n| 仍在其他中间态 | 并发竞争、旧 version 或前置状态改变 | 停止当前动作，按最新状态重新决策 |\n| 记录不存在 | 请求未创建、路由条件错误或数据缺失 | 报错并调查，不能伪装成成功 |\n| 状态组合非法 | 数据损坏或代码违反状态机 | 暂停自动处理并告警 |\n\n对零行结果一概返回成功，会隐藏请求丢失和状态异常；一概返回失败，又会破坏安全重试。正确动作来自当前事实，而不是影响行数本身。\n\n# request_id 绑定的是业务意图\n\nrequest_id 不是一个可随意复用的重试编号，它应该稳定地标识一次业务意图。服务应把关键请求字段规范化后计算 payload hash，例如：\n\n```text\ncanonical payload = user_id + asset + amount + destination + operation_type\nidempotency key   = request_id + hash(canonical payload)\n```\n\n处理规则应固定为：\n\n| request_id 状态 | payload 是否一致 | 处理结果 |\n| --- | --- | --- |\n| 不存在 | 不适用 | 创建业务并执行 |\n| 已存在 | 一致 | 返回原订单和原结果，不再次产生资金效果 |\n| 已存在 | 不一致 | 拒绝、告警并保留冲突证据 |\n\n相同 request_id、不同 amount 说明幂等键被错误复用，也可能表示请求在链路中被篡改。覆盖旧金额会改写历史，按新请求执行会重复冻结，直接返回旧成功又会掩盖参数冲突。因此唯一安全的默认行为是拒绝并告警。\n\n数据库层应使用 request_id 唯一约束收敛并发创建，再读取已有记录比较 payload hash。不能只依赖“先 SELECT 看是否存在”，因为两个请求仍可能同时通过查询。\n\n# 数据库事务和 MQ 不共享提交边界\n\n直接在数据库事务中先发送 MQ，再提交数据库，会产生幽灵事件：\n\n```text\nService          Database            MQ             Consumer\n   | BEGIN           |                |                 |\n   | write freeze -->|                |                 |\n   | send event --------------------->| deliver ------->|\n   | COMMIT -------->| fails          |                 | starts payout\n   | ROLLBACK        |                |                 |\n```\n\nMQ 已经被消费，但本地冻结回滚，下游可能处理一笔没有本地资金事实的订单。\n\n反过来，先提交数据库再发送 MQ 也有窗口：数据库已提交，服务却在发送前崩溃，导致冻结长期没有进入下游。\n\n| 顺序 | 故障点 | 不一致结果 |\n| --- | --- | --- |\n| 先 MQ，后 COMMIT | MQ 成功后数据库回滚 | 下游收到不存在或未冻结的业务事件 |\n| 先 COMMIT，后 MQ | 数据库成功后服务崩溃 | 本地已冻结但下游永远收不到事件 |\n\n本地事务无法凭空把外部 broker 变成同一个原子资源。要么引入明确的分布式事务协议及其成本，要么把跨边界问题改造成可重试、可去重的最终一致性流程。\n\n# Transactional Outbox 把“待发送”变成本地事实\n\nOutbox 的核心不是多一张表，而是让业务事实和“应该发布的事件”在同一数据库事务中共同提交。\n\n```text\n请求线程\n  BEGIN\n    创建订单\n    冻结余额\n    写资金流水\n    写 outbox(PENDING)\n  COMMIT\n\nOutbox Relay\n  读取 PENDING\n  -> 发布 MQ\n  -> 标记 SENT\n\nConsumer\n  检查 event_id / business_id\n  -> 未处理：在本地事务中记录 inbox 并执行业务\n  -> 已处理：返回原结果，不重复产生资金效果\n```\n\nRelay 在“发布成功、标记 SENT 前”崩溃时会重复发布。因此 Outbox 通常把消息语义变成至少一次，而不是自动实现传输层的恰好一次。\n\n系统真正需要的是“业务效果恰好一次”：消息可以重复到达，但冻结、扣款、状态推进和通知记录不能重复产生。消费者应使用 event_id 或稳定 business_id 建立唯一约束，并在同一个本地事务中写 inbox/消费记录和业务结果。\n\n# 跨服务 timeout 表示结果未知\n\n服务 A 调用服务 B 冻结资金时发生 timeout，只能说明 A 没有及时收到响应：\n\n```text\nA 发送 request_id=REQ-001\n-> B 成功冻结并提交\n-> 响应在网络中丢失\n-> A 观察到 timeout\n```\n\n此时如果 A 换成 REQ-002，B 会把它当成新的业务意图，可能第二次冻结。正确恢复路径是：\n\n- 使用 REQ-001 查询处理状态。\n- 或携带完全相同的参数，用 REQ-001 幂等重试。\n- 如果参数与原记录不一致，拒绝并告警。\n- 在确认原请求未产生资金事实前，不创建新的业务 ID。\n\n这条规则不仅适用于冻结，也适用于签名、广播、扣款和人工补偿。通信失败与业务失败必须使用不同的状态和错误码表达。\n\n# 人工调账必须新增补偿事实\n\n直接修改余额会让系统失去解释能力：无法知道在修正哪一笔事件、是否已经修过、为什么修、由谁批准，也无法从流水重算账户。\n\n正确方式是保留原流水，并新增引用原事件的补偿分录：\n\n```text\n原流水\n  entry_id       = L001\n  business_id    = REQ-001\n  entry_type     = WITHDRAW_DEBIT\n  amount         = -100\n\n补偿流水\n  entry_id       = L002\n  business_id    = ADJ-001\n  reference_id   = L001\n  entry_type     = MANUAL_COMPENSATION\n  amount         = +100\n  reason_code    = DUPLICATE_DEBIT_RECOVERY\n```\n\n补偿动作还应记录审批人、操作者、时间、理由和证据引用，并通过唯一约束防止同一原流水、同一补偿类型被执行两次。资金历史不应被悄悄覆盖，而应通过新的相反事实进行纠正。\n\n# 七类问题的统一处置矩阵\n\n| 观察到的现象 | 不能直接假设 | 正确判断与动作 |\n| --- | --- | --- |\n| 用户充值地址余额之和变化 | 用户业务余额同步变化 | 以 ledger 负债为用户余额，链上资产单独对账 |\n| 提现申请后 total 不变 | 冻结失败 | 检查 available 是否转入 locked |\n| 同 request_id、不同 amount | 可以作为重试覆盖 | 拒绝、告警并保留 payload 冲突证据 |\n| 状态 UPDATE 返回零行 | 一定成功或一定失败 | 重读订单，按当前状态分类 |\n| MQ 已发送 | 数据库一定提交 | 用本地事务写 outbox，提交后异步投递 |\n| 跨服务调用 timeout | 对方一定没执行 | 查询或使用原 ID 幂等重试 |\n| 余额需要人工修正 | 可以直接 UPDATE | 新增引用原流水的补偿分录 |\n\n# 架构评审时应守住的资金不变量\n\n- 用户余额来自业务 ledger，不来自历史充值地址余额相加。\n- available 与 locked 的迁移不改变 total，最终扣款或解冻必须与订单终态一致。\n- 一个 request_id 只对应一组规范化关键参数。\n- 订单、余额、流水和 outbox 在同一个本地事务中共同提交。\n- 条件 UPDATE 影响零行后必须重读事实，不能猜测结果。\n- MQ、RPC 和链节点调用都可能重复、延迟或结果未知，所有资金动作必须幂等。\n- 重试复用原业务 ID；新 ID 表示新的业务意图。\n- 账务修正追加补偿分录并引用原事件，不覆盖资金历史。\n- 对账无法解释的差异必须暂停自动处理并进入人工复核。\n\n数据库事务解决的是单个数据库里的原子性；Outbox 和消费者幂等解决的是跨系统的可恢复交付；ledger 与补偿分录解决的是资金事实的解释和重算。只有把三者连成一条链路，提现系统才不仅能在正常路径上工作，也能在超时、重试、并发和部分失败之后恢复到唯一、可审计的结果。"
+  },
+  {
+    "id": 33,
+    "slug": "wallet-signing-intent-abuse",
+    "title": "私钥没有离开签名机，资金为什么仍会被转走",
+    "date": "2026-07-20",
+    "summary": "交易所钱包真正要保护的不只是私钥字节，还包括签名能力、审批意图与恢复权限。本文沿 wallet-service、risk-service、wallet-api、wallet-sign 拆解外部攻击者如何把一笔未授权交易变成链上合法签名。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Security",
+      "Signer",
+      "Risk Control"
+    ],
+    "readingTime": "4 min",
+    "difficulty": "安全工程",
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "基于当前四服务边界、Bybit 官方事件时间线、EIP-712 与 OWASP API 安全模型整理；签名意图篡改与重放实验仍待接入四服务基线。",
+    "conceptTags": [
+      "wallet-backend",
+      "signer-service",
+      "api-design",
+      "go-infra"
+    ],
+    "relatedProjectIds": [
+      1,
+      5
+    ],
+    "recommendedSlugs": [
+      "wallet-sign-signer",
+      "withdrawal-error-handling",
+      "multi-chain-wallet-acceptance-loop",
+      "cryptographic-nonce-key-leak",
+      "mpc-tss-security-boundaries",
+      "wallet-software-supply-chain"
+    ],
+    "suggestedQuestions": [
+      "为什么私钥不泄露也可能发生未授权出金？",
+      "风险审批怎样绑定到最终签名交易？",
+      "wallet-sign 为什么不能只验证内部 Token 和 Digest？"
+    ],
+    "content": "# 私钥没有离开签名机，资金为什么仍会被转走\n\n保护私钥当然重要，但交易所钱包如果只保护私钥文件，仍然可能被攻击。\n\n攻击者不一定要导出私钥。他只需要让签名系统对一笔恶意交易产生有效签名，链上就会把它视为正常授权。\n\n2025 年 Bybit 公布的事件时间线显示，签署人看到的界面与实际交易内容发生了偏离，恶意交易改变了冷钱包的合约逻辑。这个案例提醒我：多签、硬件设备和冷钱包都不能替代对“最终到底签了什么”的独立验证。[Bybit 官方事件时间线](https://www.bybit.com/en/learn/this-week-in-bybit/bybit-security-incident-timeline)\n\n# 钱包真正保护的是四种资产\n\n```text\n私钥材料：能否复制或重建 Key\n签名能力：谁能请求 Sign\n审批意图：这次签名被批准用于什么\n恢复权限：谁能轮换、升级、降级或迁移 Key\n```\n\n只保护第一项是不够的。\n\n如果攻击者拿不到 Key，却拿到了 Sign API 的长期 Token，他可能直接请求签名。如果 Signer 只验证“调用者来自内网”，不验证订单、审批和交易内容，它就会成为远程盲签服务。\n\n如果审批内容与交易内容没有绑定，risk-service 批准的可能是“向地址 A 提现 1 ETH”，wallet-sign 实际签署的却是“向地址 B 转出全部资产”。每个服务单独看都返回成功，但组合起来已经越过了原始业务意图。\n\n# 四服务中的授权链\n\n我希望四个服务形成的不是普通调用链，而是一条不能静默改写的授权链：\n\n```text\nwallet-service\n  产生订单事实与 request_id\n        ↓\nrisk-service\n  审批 chain、asset、amount、to、有效期与策略版本\n        ↓\nwallet-api\n  获取链资源并确定性构建 unsigned transaction\n        ↓\nwallet-sign\n  复核审批摘要与交易 Digest 后签名\n        ↓\nwallet-api\n  验证签名、组装并广播同一笔交易\n```\n\n这条链路至少需要绑定：\n\n```text\nbusiness_id\nrequest_id\nchain_id / network\nasset / token\nfrom / to\namount\nfee policy\nnonce / UTXO / object reference\nunsigned transaction hash\napproval version\nexpires_at\nsign backend / key reference\n```\n\nEVM 可以借鉴 [EIP-712](https://eips.ethereum.org/EIPS/eip-712) 的结构化签名思想：Domain 和 Message 一起进入确定性 Hash。协议本身不会自动解决重放，所以业务还必须让 request_id、版本和有效期具备幂等语义。\n\n# 外部攻击者可能从哪里进入\n\n## 公网 API\n\n攻击者首先看到的是公网入口，常见目标不是直接取 Key，而是：\n\n- 冒充合法用户或业务方；\n- 修改不属于自己的订单；\n- 重复提交提现；\n- 利用批量接口放大请求；\n- 探测未下线的旧接口和调试接口。\n\n这些问题对应 OWASP API Security Top 10 中的身份认证、对象级权限、敏感业务流和资源消耗风险。[OWASP API Security Top 10](https://owasp.org/API-Security/editions/2023/en/0x11-t10/)\n\n## 内部服务凭证\n\n公网 API 被挡住后，攻击者可能转向内部 Token、CI Secret、服务账号或云 IAM。拿到一个内部身份后，他会尝试横向调用 risk、api 或 sign。\n\n因此，内部网络不是授权依据。内部请求仍需要短期身份、明确 audience、服务权限、超时、限流和审计；签名请求还必须携带可复核的业务与审批证据。\n\n## 交易构建与展示层\n\n即使审批系统本身没有被绕过，攻击者也可能替换：\n\n- 收款地址；\n- Token 合约；\n- Chain ID；\n- 合约调用 Data；\n- Safe implementation 或代理升级目标；\n- BTC Output；\n- Sui Move Call 与 Object。\n\n因此，管理台展示的内容不能成为唯一确认通道。对于大额或高权限交易，应从另一条独立路径展示规范化交易摘要，让签署人确认最终 Digest 对应的真实语义。\n\n# wallet-sign 不能只做三件事\n\n下面三种检查仍然不够：\n\n```text\nToken 正确\nkeyRef 存在\nDigest 长度正确\n```\n\n更完整的 Sign Policy 应该回答：\n\n- 这个调用方是否可以使用该 Key；\n- Key 是否允许这条链和这种操作；\n- Digest 是否来自经过批准的 Canonical Payload；\n- 审批是否仍有效、未使用且版本匹配；\n- 金额、地址和合约调用是否触发额外审批；\n- 当前 Signer Backend 是否符合策略；\n- 相同 request_id 是否已经产生签名或链上结果。\n\n签名机不需要维护用户余额，但它必须拒绝脱离授权上下文的任意签名。\n\n# 先做六个失败实验\n\n1. risk-service 批准后修改 `to`、`amount`、`chainId` 或 Token，签名必须失败；\n2. 重放同一审批，只能返回幂等结果，不能产生第二次独立出金能力；\n3. 只携带内部 Token 和任意 Digest 请求签名，必须拒绝；\n4. wallet-api 组装 Raw Transaction 后重新计算 Digest，任何字段变化都必须失败；\n5. risk-service、MPC 或 HSM 不可用时必须 Fail-closed，禁止自动降级到更弱后端；\n6. 批量签名部分失败时，成功项与失败项的订单、审批和签名结果不能串位。\n\n每个实验都应记录：订单事实、审批摘要、Unsigned Hash、签名请求、签名结果和最终广播 Hash。这样才能证明“签名正确”与“签名被正确授权”同时成立。\n\n# 当前项目边界\n\n当前项目已经验证 risk-service 的提现提交、离线交易一致性、审批 Hash 和幂等标记，也完成了 Local Signer 基线与独立三节点 TSS Keygen/Sign。\n\n仍需要继续补齐的是：\n\n- 四服务端到端的审批内容绑定实验；\n- 内部身份的短期化和最小权限；\n- 管理台与签名设备的独立交易展示；\n- MPC/HSM 接入后的相同策略校验；\n- 紧急轮换、暂停和恢复演练。\n\n最终要保护的不是一个私钥文件，而是从业务意图到链上结果的整条授权链。"
+  },
+  {
+    "id": 34,
+    "slug": "cryptographic-nonce-key-leak",
+    "title": "一笔签名如何暴露长期密钥：随机数、Nonce 与实现边界",
+    "date": "2026-07-20",
+    "summary": "ECDSA 和 EdDSA 的安全不仅依赖私钥存储，还依赖每次签名的临时量、Digest、序列化和实现正确性。本文结合 BTC/EVM 与 Sui/Solana，解释为什么签名库不能自行拼装，以及应如何用测试守住密码学边界。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Cryptography",
+      "ECDSA",
+      "Ed25519"
+    ],
+    "readingTime": "4 min",
+    "difficulty": "安全工程",
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "依据 RFC 6979、RFC 8032 与当前 BTC/Sui 签名测试整理；未在项目中实现自定义密码学算法，也不把规范阅读视为生产安全审计。",
+    "conceptTags": [
+      "signer-service",
+      "wallet-backend",
+      "multi-chain"
+    ],
+    "relatedProjectIds": [
+      1,
+      7
+    ],
+    "recommendedSlugs": [
+      "wallet-signing-intent-abuse",
+      "wallet-sign-signer",
+      "wallet-address-models",
+      "multi-chain-wallet-resource-state",
+      "mpc-tss-security-boundaries",
+      "hsm-key-extractability-boundaries"
+    ],
+    "suggestedQuestions": [
+      "为什么 ECDSA 的签名 Nonce 不能重复？",
+      "Ed25519 不依赖外部随机数是否等于实现不会泄露密钥？",
+      "钱包项目应该自己实现签名算法吗？"
+    ],
+    "content": "# 一笔签名如何暴露长期密钥：随机数、Nonce 与实现边界\n\n钱包工程里有两种容易混淆的 nonce。\n\n```text\n链上资源 Nonce：EVM 账户交易序号，用于排序和防重放\n签名算法 Nonce：签名过程中使用的临时秘密量\n```\n\n前者冲突通常导致交易替换、Pending 或拒绝；后者如果生成或使用错误，可能直接破坏长期私钥安全。\n\n# ECDSA 为什么依赖每次签名的临时量\n\nBTC、EVM 和 TRON 常使用 secp256k1/ECDSA。ECDSA 每次签名都会使用一个临时秘密量，通常记作 `k`。\n\n这个值必须满足两个条件：\n\n- 对外不可预测；\n- 不得在不同消息之间重复使用。\n\n如果同一私钥对不同消息重复使用相同的 `k`，两份公开签名会共享关键关系，攻击者可能由此恢复临时量并进一步推导长期私钥。\n\n如果 `k` 虽然没有完全重复，但随机源存在偏差、熵不足或泄露部分信息，也可能逐渐削弱密钥安全。\n\n[RFC 6979](https://www.rfc-editor.org/rfc/rfc6979) 给出了确定性 DSA/ECDSA：从私钥和消息 Hash 确定性地产生临时量，减少外部随机数生成失败带来的风险。它的重点不是“固定使用同一个 nonce”，而是同一密钥对不同消息得到不同、不可由外部预测的结果。\n\n# Ed25519 不需要外部随机数，但仍有实现边界\n\nSui 和 Solana 常使用 Ed25519。按照 [RFC 8032](https://www.rfc-editor.org/rfc/rfc8032)，EdDSA 的签名临时量由私钥派生材料和消息共同计算，不要求每次调用系统随机数。\n\n这降低了传统随机数生成器失效的风险，但不代表任何 Ed25519 实现都天然安全。实现仍可能在以下位置出错：\n\n- 私钥派生材料被错误截断或复用；\n- 消息、Prehash 或 Context 处理不一致；\n- 自行修改标准算法；\n- 依赖库或构建产物被替换；\n- 侧信道暴露中间值；\n- 把 Seed、Expanded Key 和普通私钥格式混用；\n- 日志打印签名输入之外的敏感材料。\n\n因此，“Ed25519 是确定性的”不能成为跳过实现审计和测试向量的理由。\n\n# Digest 错了，正确签名也没有意义\n\n签名算法只保证“这个 Key 对这些 Bytes 产生了有效 Signature”。它不知道 Bytes 是否代表正确业务。\n\n多链钱包必须明确每条链的签名对象：\n\n| 链 | 典型签名对象 | 容易混淆的边界 |\n| --- | --- | --- |\n| EVM | RLP 或 Typed Transaction Hash | chainId、Typed Tx Prefix、合约 calldata |\n| BTC | 对应 Input 的 SIGHASH | Script 类型、Prevout 金额、SIGHASH Flag |\n| Solana | Serialized Message | recent blockhash、账户列表、Instruction |\n| Sui | Intent Message / Transaction Digest | Intent Scope、BCS Bytes、Object Reference |\n\n如果 wallet-api 和 wallet-sign 对 Digest 的定义不同，可能出现签名永远无法验证，也可能出现更危险的情况：系统验证了某个 Hash，却没有验证它对应的业务交易。\n\n# 为什么不要自己实现密码学\n\n钱包项目可以自己实现业务编排和链适配，但不应该为了方便自行重写 ECDSA、Ed25519 或底层大数运算。\n\n更稳妥的边界是：\n\n```text\n业务代码：定义交易与授权语义\n链适配器：按协议生成 Canonical Bytes / Digest\n成熟密码学库：执行 Sign / Verify\n测试向量：证明序列化与签名结果符合规范\n```\n\n即使使用成熟库，也要固定版本、检查依赖来源，并用官方或公开标准测试向量验证升级前后的行为。\n\n# 项目中应该建立哪些验证\n\n## 标准测试向量\n\n对固定私钥与固定消息，验证公钥、Digest 和 Signature 与规范向量一致。升级密码学依赖时必须重跑。\n\n## 交叉实现验证\n\n由 wallet-sign 产生签名，再使用另一套可信实现或链 SDK 验证。这样可以发现“自己签、自己验，所以错误保持一致”的问题。\n\n## Digest 边界测试\n\n- 只改变 Chain ID，Digest 必须变化；\n- 只改变金额或地址，Digest 必须变化；\n- BTC 改变 Prevout Amount 或 SIGHASH 类型，验证必须失败；\n- Sui 改变 Intent Scope 或 Transaction Bytes，验证必须失败；\n- 非预期长度、空消息和非法编码必须拒绝。\n\n## 敏感输出扫描\n\n测试日志、panic、CI Artifact、Coverage 和 Benchmark 输出都不应包含：\n\n```text\n助记词\nSeed\nPrivate Key\nExpanded Secret\nTSS Share\nHSM 导出材料\n```\n\n## 失败后不重用中间状态\n\n签名失败、超时或服务重启后，不应复用来源不明的临时量、MPC Round 状态或部分签名。恢复必须由明确的 Session 和协议规则驱动。\n\n# 当前验证与边界\n\n当前 BTC 路径已经验证规范 DER 签名，Sui 路径已经验证 Ed25519 Digest 签名与非法非 Digest 消息拒绝。这些测试说明链适配和格式边界开始清晰，但不等于完成了密码学实现审计。\n\n下一步可以增加：\n\n1. RFC 与链官方测试向量；\n2. 两套独立实现之间的签名交叉验证；\n3. 依赖升级前后的 Golden Fixture；\n4. 日志、Core Dump 和构建 Artifact 的敏感材料扫描；\n5. MPC Session 中间状态与失败恢复测试。\n\n密钥安全不只是“私钥放在哪里”，还包括每一笔签名如何生成临时量、如何定义 Digest，以及实现是否始终符合协议。"
+  },
+  {
+    "id": 35,
+    "slug": "mpc-tss-security-boundaries",
+    "title": "MPC/TSS 不是万能保险：Share、Session 与盲签边界",
+    "date": "2026-07-20",
+    "summary": "门限签名让完整私钥不必出现在单机上，但不会自动解决节点身份、会话重放、Coordinator 越权、审批欺骗、重分享和不安全降级。本文把密码学门限与钱包业务授权分开讨论。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "MPC",
+      "TSS",
+      "Security"
+    ],
+    "readingTime": "4 min",
+    "difficulty": "安全工程",
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "独立三节点 TSS Keygen/Sign 已本地验证；本文依据 NIST MPTC 与 bnb-chain/tss-lib 的协议边界整理，wallet-sign 端到端接入和攻击实验尚未完成。",
+    "conceptTags": [
+      "mpc-tss",
+      "signer-service",
+      "wallet-backend",
+      "go-infra"
+    ],
+    "relatedProjectIds": [
+      1,
+      5
+    ],
+    "recommendedSlugs": [
+      "mpc-wallet-sign-integration",
+      "wallet-signing-intent-abuse",
+      "cryptographic-nonce-key-leak",
+      "thorchain-tss-attack-analysis",
+      "hsm-key-extractability-boundaries",
+      "wallet-sign-signer"
+    ],
+    "suggestedQuestions": [
+      "MPC/TSS 解决了什么，又没有解决什么？",
+      "为什么 Coordinator 不能成为任意签名入口？",
+      "TSS Session、成员集合和重分享为什么需要持久化状态？"
+    ],
+    "content": "# MPC/TSS 不是万能保险：Share、Session 与盲签边界\n\nMPC/TSS 最重要的价值，是让多个参与方协同完成 KeyGen 和 Sign，同时不在任何单台机器上重建完整私钥。\n\n[NIST Multi-Party Threshold Cryptography](https://csrc.nist.gov/projects/threshold-cryptography) 对门限模型的描述很清楚：Secret 被分布到多个 Party，在允许的部分参与方失陷范围内仍保持机密，密码学操作通过 MPC 完成，最终签名仍可被普通验证算法验证。\n\n但这只解决“密码学信任如何分散”，没有自动解决“这笔交易是否应该签”。\n\n# 三种安全问题必须分开\n\n```text\nKey Secrecy：攻击者能否恢复完整私钥\nSigning Authorization：攻击者能否凑够节点签恶意消息\nProtocol Liveness：节点故障后系统能否继续安全运行\n```\n\nMPC 可以提高第一项的安全性，却可能因为错误的调度、节点身份、Session 或降级设计，在第二项和第三项出现问题。\n\n例如，2-of-3 门限不代表“需要两个人批准”。如果三个节点都接受同一个 Coordinator 的请求，而 Coordinator 被攻破，攻击者可能让任意两个节点对恶意 Digest 完成协议。完整私钥仍未出现，但资金已经被有效签名转走。\n\n# Share 不等于普通私钥，但仍是高价值 Secret\n\n每个 TSS 节点保存的 Share 单独看不能直接签名，但仍需要像生产私钥一样保护：\n\n- Share 不能进入日志、CI 或调试输出；\n- 多个节点的备份不能集中存放在同一个账号或磁盘；\n- 节点镜像、快照和灾备不能让门限失去地域与权限隔离；\n- Share 轮换和销毁要有版本与审计；\n- 旧成员退出后不能继续参与新 Session；\n- 恢复流程不能把多个 Share 汇总到一台运维机。\n\n如果三个节点部署在同一个云账号、同一个 Kubernetes 集群，并由同一个管理员控制，密码学上的 2-of-3 可能仍然是运维权限上的 1-of-1。\n\n# Session 是门限签名的业务状态机\n\nTSS Sign 不是一次普通 RPC，而是多轮消息协议。一个 Session 至少需要绑定：\n\n```text\nsession_id\nkey_id / public_key\nalgorithm / curve\nmessage_digest\nparticipant_set\nthreshold\nmember_set_version\nround\nexpires_at\napproval_hash\n```\n\n所有节点必须对“参与者是谁、签什么、当前在哪一轮”形成一致视图。\n\n[bnb-chain/tss-lib](https://github.com/bnb-chain/tss-lib) 的使用说明也强调：签名需要 `t+1` 个参与者，并且各节点应对参与者集合持有相同视图；Re-sharing 过程中不能在协议最终完成前覆盖持久化 Key Data。\n\n如果 Session 没有严格绑定 Digest 和成员版本，可能出现：\n\n- 旧消息进入新 Session；\n- 同一 Round 消息被重复处理；\n- 节点对不同参与者集合进行计算；\n- Re-sharing 失败后旧 Share 和新 Share 状态混用；\n- 超时重试创建第二个并行签名 Session；\n- 部分签名被错误复用。\n\n# Coordinator 不能成为超级签名机\n\nCoordinator 的合理职责是发现节点、创建 Session、路由协议消息和汇总状态。它不应该拥有以下能力：\n\n- 单方面决定任意 Digest 可以签名；\n- 替节点解释审批是否有效；\n- 修改 participant set 而不提高版本；\n- 在节点不足时降低 threshold；\n- 绕过 wallet-sign 的 Sign Policy；\n- 把失败自动降级为 Local Signer。\n\n每个 TSS 节点都应独立验证最小策略：\n\n```text\n请求来自合法 Coordinator\nSession 未过期且未完成\n成员集合和版本匹配\nDigest 与审批摘要匹配\n该 Key 允许当前链和操作类型\n本节点尚未对冲突 Session 参与签名\n```\n\n# MPC 仍然可能盲签\n\n即使门限协议完全正确，节点看到的通常仍是一个 Digest。\n\n如果 wallet-api 构建的交易被篡改，或 risk-service 审批没有绑定最终 Unsigned Hash，三个诚实节点也可能共同签下一笔恶意交易。\n\n因此，MPC 接入 wallet-sign 后，必须复用和 Local Signer 相同的业务授权链：\n\n```text\n订单事实\n→ 风险审批\n→ Canonical Transaction\n→ Unsigned Hash\n→ TSS Session\n→ Signature\n→ 广播前再次验证\n```\n\nMPC Backend 应该替换“如何产生 Signature”，而不是替换钱包业务的风险、状态机和审计边界。\n\n# 可用性故障不能用不安全降级解决\n\nTSS 常见运行问题包括节点离线、网络分区、Round 超时、消息乱序和 Re-sharing 失败。\n\n资金系统应优先选择暂停和恢复，而不是自动降低安全门槛：\n\n- 2-of-3 不足时暂停签名；\n- 不自动切换到 Local Private Key；\n- 不临时把 threshold 改成 1；\n- 不复用超时 Session 的中间消息；\n- 不在状态不明时创建第二个冲突 Session；\n- 运维恢复也要经过审批与审计。\n\nLiveness 下降会影响提现速度，不安全降级则可能直接改变资金控制权。\n\n# 应该补的失败实验\n\n1. Coordinator 重放已完成 Session，所有节点拒绝；\n2. 相同 session_id 携带不同 Digest，立即报警并暂停；\n3. 一个节点使用旧 member_set_version，协议不得继续；\n4. Round 中途节点重启，必须从明确的持久化状态恢复或整体废弃；\n5. 两个并行 Session 争用同一订单，只允许一个进入有效签名；\n6. 节点不足时验证系统 Fail-closed，不切换 Local Signer；\n7. 审批过期或被撤销后，即使 Session 已创建也不能继续；\n8. Re-sharing 失败时，旧 Key Data 不被中间状态覆盖。\n\n# 当前项目边界\n\n当前独立 TSS 项目已完成三节点 Keygen/Sign 本地验证，说明基础协议可以运行。尚未完成的是把它作为 wallet-sign 后端接入订单、审批、Session、广播和恢复全链路。\n\n因此当前可以表达：\n\n```text\n独立三节点协议已验证\nwallet-sign Backend 接入中\n生产级节点隔离、审计和灾备尚未验证\n```\n\nMPC/TSS 的正确定位不是“更高级的私钥存储”，而是一个需要密码学协议、分布式状态机和业务授权共同成立的签名后端。"
+  },
+  {
+    "id": 36,
+    "slug": "hsm-key-extractability-boundaries",
+    "title": "HSM 接入以后，密钥就一定不可导出吗",
+    "date": "2026-07-20",
+    "summary": "HSM 能把签名运算和密钥材料隔离在硬件边界中，但 Key Attribute、Crypto User、Wrapping、应用权限和任意签名策略仍会决定真实安全性。本文给出 wallet-sign 接入 HSM 前需要验证的工程门禁。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "HSM",
+      "CloudHSM",
+      "Security"
+    ],
+    "readingTime": "3 min",
+    "difficulty": "架构设计",
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "依据 AWS CloudHSM 官方 Key Attribute 与 Key Management 文档整理；当前项目尚未接入 HSM，本文是接入前安全设计与验收门禁。",
+    "conceptTags": [
+      "signer-service",
+      "wallet-backend",
+      "mpc-tss",
+      "api-design"
+    ],
+    "relatedProjectIds": [
+      1,
+      5
+    ],
+    "recommendedSlugs": [
+      "aws-cloudhsm-wallet-sign-integration",
+      "wallet-signing-intent-abuse",
+      "cryptographic-nonce-key-leak",
+      "mpc-tss-security-boundaries",
+      "wallet-sign-signer",
+      "wallet-software-supply-chain"
+    ],
+    "suggestedQuestions": [
+      "HSM 中的 Key 为什么仍要检查 extractable 属性？",
+      "密钥不可导出为什么仍不能阻止任意签名？",
+      "wallet-sign 接入 HSM 时应该保留哪些业务边界？"
+    ],
+    "content": "# HSM 接入以后，密钥就一定不可导出吗\n\nHSM 的核心价值，是让密钥生成、保存和密码学运算发生在受保护的硬件边界中。应用把 Digest 交给 HSM，HSM 返回 Signature，私钥字节不需要进入普通应用内存。\n\n但“使用了 HSM”不等于“密钥一定不可导出”，也不等于“资金一定不会被签走”。\n\n真实安全性还取决于：\n\n```text\nKey Attribute\nHSM 用户与权限\nWrap / Unwrap 策略\n应用主机和客户端凭证\nSign Policy\n审计、限流与恢复流程\n```\n\n# 先理解 Key Attribute\n\n以 AWS CloudHSM 为例，官方文档区分了多种属性：\n\n- `extractable`：Key 是否允许被导出；\n- `never-extractable`：Key 是否从未处于可导出状态；\n- `sensitive`：是否按敏感 Key 处理；\n- `sign`：是否允许执行签名；\n- `wrap / unwrap`：是否允许包装或解包其他 Key；\n- `trusted / wrap-with-trusted`：是否限制可信包装路径；\n- `local`：Key 是否在 HSM 内生成。\n\nAWS 的 [CloudHSM Key Management Best Practices](https://docs.aws.amazon.com/cloudhsm/latest/userguide/bp-hsm-key-management.html) 明确说明，Key 可以被标记为 extractable 或 non-extractable；可导出 Key 可以通过 Wrapping 导出，而 non-extractable Key 不能导出。\n\n更需要注意的是，[CloudHSM CLI Key Attributes](https://docs.aws.amazon.com/cloudhsm/latest/userguide/cloudhsm_cli-key-attributes-table.html) 当前文档显示 `extractable` 默认值可能为 True。这说明“创建成功”不能作为验收结果，系统必须读取并记录实际属性。\n\n# 不可导出不等于不可滥用\n\n即使 Key 是严格 non-extractable，攻击者如果控制了一个有 `SIGN` 权限的 HSM Client，仍可能不断请求 HSM 对恶意 Digest 签名。\n\n这种情况下：\n\n```text\n私钥没有离开 HSM\n密码学运算完全正确\n链上签名也完全有效\n但业务授权已经失效\n```\n\n因此 HSM 只能替换 wallet-sign 内部的 Key Backend，不能替代 risk-service、审批 Hash、Sign Policy 和业务状态机。\n\n# hsm-gateway 应该收敛什么\n\n直接让 wallet-sign 的每个业务分支调用 PKCS#11，会让 HSM 会话、错误码和权限散落在代码中。我更倾向于在 wallet-sign 内部增加稳定的 HSM Backend 或 hsm-gateway：\n\n```text\nwallet-sign Sign Policy\n→ hsm-gateway\n  → 身份与 Key Alias\n  → Session Pool\n  → PKCS#11 Sign\n  → Signature 格式转换\n  → 审计与指标\n```\n\n它需要收敛：\n\n- 业务 `keyRef` 到 HSM Key Handle 的映射；\n- Chain、Curve、Algorithm 与 Key Attribute 校验；\n- HSM Session 生命周期和连接池；\n- 限流、超时和重试分类；\n- DER、Recovery ID、Ed25519 等签名格式；\n- HSM Audit 与钱包 request_id 的关联。\n\n它不应该决定提现是否合理，也不应该拥有绕过 wallet-sign Policy 的独立公网接口。\n\n# HSM 还存在哪些攻击面\n\n## HSM Client 主机\n\n攻击者可能控制 wallet-sign 或 hsm-gateway 主机，窃取 Client 配置、Crypto User 凭证或当前 Session。Key 可能仍不可导出，但签名能力已经暴露。\n\n## 管理员与 Crypto User\n\n管理员负责集群和用户，Crypto User 负责 Key 操作。角色分离如果只存在于账号名称、实际由同一个人或同一凭证控制，安全边界仍是单点。\n\n## Wrapping 与迁移\n\n为了备份或跨集群迁移，系统可能启用 Key Wrapping。Wrapping Key 的权限、可信属性和保管方式会成为新的高价值边界。\n\n## Session 与资源耗尽\n\n攻击者不一定追求出金，也可能耗尽 HSM Session、连接或签名吞吐，让全部提现停摆。限流和容量保护应位于 wallet-sign 与 HSM Client 两侧。\n\n## 审计缺口\n\n只记录“HSM Sign 成功”不够。还需要知道是哪个业务请求、哪份审批、哪个 Key、哪个算法和哪个 Digest 触发了这次签名。\n\n# 接入前的验收门禁\n\n1. Key 必须在 HSM 内生成，并验证 `local`；\n2. 生产签名 Key 明确设为 non-extractable，并验证 `never-extractable`；\n3. 禁止不必要的 decrypt、derive、wrap 和 unwrap 权限；\n4. wallet-sign 只能使用允许的 Key Alias，不能枚举或任意选择 Key；\n5. 签名前仍要验证订单、审批和 Canonical Digest；\n6. HSM 不可用时 Fail-closed，不降级到 Local Key；\n7. Session、超时、限流和错误分类有自动化测试；\n8. Key 创建、属性变更、Sign、Wrap、用户变更全部进入独立审计；\n9. 灾备集群和备份恢复保持相同 Key Policy；\n10. 定期运行“尝试导出必须失败”的负向验收。\n\n# 当前项目边界\n\nHSM 目前尚未接入 wallet-sign，所以本文不能标记为已实现能力。当前可以确定的是目标边界：\n\n```text\nwallet-service / risk-service：业务与审批\nwallet-api：交易构建与广播\nwallet-sign：统一 Sign Policy\nHSM Backend：不可导出 Key 与密码学运算\n```\n\n接入完成的标准不应该是“成功调用一次 Sign”，而应该同时证明 Key 属性、业务授权、错误恢复、不安全降级禁止和完整审计。"
+  },
+  {
+    "id": 37,
+    "slug": "wallet-software-supply-chain",
+    "title": "从恶意依赖到错误交易：钱包软件供应链攻击路径",
+    "date": "2026-07-20",
+    "summary": "攻击者不一定攻击链或签名算法，也可以从开发机、依赖、CI、Artifact、容器和签名界面进入。本文沿源码到生产运行的交付链，分析钱包项目如何防止可信流程交付恶意代码。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Supply Chain",
+      "CI/CD",
+      "Security"
+    ],
+    "readingTime": "4 min",
+    "difficulty": "安全工程",
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "依据 CISA 软件供应链指南、GitHub Actions 安全指南、npm Lockfile 文档与 Bybit 官方事件时间线整理；当前项目已执行依赖锁定与 Secret Scan，但未完成签名制品和部署 Provenance。",
+    "conceptTags": [
+      "wallet-backend",
+      "signer-service",
+      "go-infra",
+      "api-design"
+    ],
+    "relatedProjectIds": [
+      1
+    ],
+    "recommendedSlugs": [
+      "wallet-signing-intent-abuse",
+      "cryptographic-nonce-key-leak",
+      "hsm-key-extractability-boundaries",
+      "wallet-sign-signer",
+      "codex-ai-workflow-system-retrospective",
+      "wallet-rpc-trust-boundary"
+    ],
+    "suggestedQuestions": [
+      "为什么私钥隔离仍然挡不住供应链攻击？",
+      "钱包项目从源码到部署应建立哪些完整性证据？",
+      "签名界面和交易构建代码为什么属于同一安全边界？"
+    ],
+    "content": "# 从恶意依赖到错误交易：钱包软件供应链攻击路径\n\n钱包系统通常把主要注意力放在私钥、合约和链节点上，但攻击者也可以选择一条成本更低的路径：不破解密码学，而是让团队自己部署恶意代码。\n\n软件供应链不是单独的“依赖安全”问题，而是一整条交付链：\n\n```text\n开发者设备\n→ Git 仓库\n→ 第三方依赖\n→ CI Runner\n→ 构建 Artifact / 镜像\n→ 部署平台\n→ 管理台与签名界面\n→ wallet-api / wallet-sign\n```\n\n只要其中一个环节可以静默修改交易构建、审批展示或签名请求，私钥即使从未离开签名机，资金仍可能被有效签名转走。\n\n# 为什么供应链攻击特别适合钱包系统\n\n普通应用被植入恶意代码，常见影响是数据泄露或服务中断。钱包系统的构建产物还可能直接影响：\n\n- 提现地址和金额；\n- 合约 calldata；\n- Chain ID 与 Token；\n- BTC Outputs；\n- Sui Move Call；\n- 审批页面显示内容；\n- 实际发送给 wallet-sign 的 Digest。\n\n2025 年 Bybit 官方事件时间线记录了一起签名界面与实际交易内容偏离的事故。这说明“签名设备是安全的”并不能证明上游生成和展示的交易可信。[Bybit 官方事件时间线](https://www.bybit.com/en/learn/this-week-in-bybit/bybit-security-incident-timeline)\n\n# 攻击者可能进入的六个位置\n\n## 开发者设备\n\n攻击者通过钓鱼、恶意项目、浏览器扩展、远程控制或被替换的开发工具取得开发环境权限，然后窃取 Git、云平台、npm、CI 或部署凭证。\n\n开发机不应同时承担日常浏览、生产签名和高权限部署。高风险仓库与生产控制面需要独立身份、硬件认证和最小权限。\n\n## Git 与代码审查\n\n攻击者可能利用被盗账号、未保护分支、隐藏生成文件或超大自动化 Diff 混入改动。\n\n钱包安全相关代码至少要关注：\n\n```text\n交易序列化\nDigest 计算\n审批 Hash\n地址规范化\n依赖与生成代码\nCI Workflow\n部署脚本\n```\n\n这些文件的变更不应该仅凭“测试通过”自动获得生产权限。\n\n## 第三方依赖\n\n风险来源包括维护者账号失陷、恶意新版本、名称相似包、Install Script、Transitive Dependency 和被修改的下载源。\n\n`package-lock.json` 的价值是记录确定的依赖树与 Integrity 信息，让安装更可重复；它不能证明依赖本身没有恶意行为。[npm package-lock.json](https://docs.npmjs.com/cli/v11/configuring-npm/package-lock-json/)\n\nGo、npm 和容器都应锁定版本，升级时查看真实 Diff、维护者变化、发布来源和构建结果。\n\n## CI Runner 与 Workflow\n\nCI 常同时接触源码、Secret、Artifact 和部署权限，因此是高价值目标。\n\n[GitHub Actions Secure Use](https://docs.github.com/en/actions/reference/security/secure-use) 建议限制 Workflow 权限、谨慎处理不可信输入，并将第三方 Action 固定到完整 Commit SHA。\n\n更稳妥的方向包括：\n\n- `GITHUB_TOKEN` 默认只读；\n- 部署使用短期 OIDC，而不是长期云密钥；\n- Fork/PR 不接触生产 Secret；\n- Self-hosted Runner 与日常开发环境隔离；\n- Artifact 生成后记录 Digest 与 Provenance；\n- 发布和部署需要独立环境审批。\n\n## Artifact、镜像和部署\n\n源码审查通过，不代表生产运行的就是该源码构建的产物。\n\n需要建立：\n\n```text\nCommit SHA\n→ 可复现 Build\n→ Artifact Digest\n→ 镜像 Digest\n→ 部署版本\n→ 运行时 Attestation\n```\n\nCISA 的软件供应链指南强调开发、构建与交付过程的完整性，以及对下游合法分发恶意代码的防范。[CISA 软件供应链开发者指南](https://www.cisa.gov/sites/default/files/2023-12/ESF_SECURING_THE_SOFTWARE_SUPPLY_CHAIN_DEVELOPERS.pdf)\n\n## 管理台和签名界面\n\n前端经常被当作低风险展示层，但如果签署人根据页面决定是否批准交易，它就是授权链的一部分。\n\n大额交易应使用独立通道展示规范化内容：\n\n- Chain 与网络；\n- From / To；\n- Asset 与 Amount；\n- 合约方法与关键参数；\n- Nonce、有效期与策略版本；\n- 最终 Digest。\n\n展示通道与交易构建通道不能完全依赖同一份前端代码和同一台设备。\n\n# 你的四服务应该怎样抵抗供应链篡改\n\n## wallet-service\n\n保存原始订单事实，不接受下游静默修改金额、地址和资产。状态推进需要数据库约束与审计事件。\n\n## risk-service\n\n审批完整 Canonical Payload，而不是批准一句“允许提现”。审批输出包含版本、有效期和 Hash。\n\n## wallet-api\n\n确定性构建 Unsigned Transaction，并产生可由其他组件重新计算的 Digest。依赖升级不能改变同一 Fixture 的结果，除非经过显式迁移。\n\n## wallet-sign\n\n不信任调用方给出的说明文字，只验证 Canonical Digest、审批证据、Key Policy 和请求身份。签名后返回 Signature 与审计引用。\n\n# 应该补的供应链实验\n\n1. 修改 Lockfile 之外的依赖版本，CI 必须失败；\n2. 第三方 Action 未固定完整 SHA，Workflow Lint 失败；\n3. 构建 Artifact Digest 与部署 Digest 不一致，阻断部署；\n4. PR 尝试读取生产 Secret，必须没有权限；\n5. 修改交易构建 Fixture，Golden Hash 变化并要求安全审查；\n6. 管理台显示内容与 Canonical Payload 不一致，独立验证器报警；\n7. Secret 出现在源码、Git 历史、日志或 Artifact，发布门禁失败；\n8. 回滚到旧版本时，旧的审批格式和 Key Policy不能被重新启用。\n\n# 当前项目边界\n\n当前多个仓库已经使用锁定依赖、构建测试和敏感信息扫描，wallet-core 公开前也执行过完整历史 Secret Scan。这些是基础证据，但还没有形成生产级软件供应链闭环。\n\n后续值得继续补齐：签名 Artifact、部署 Provenance、第三方 Action 固定、短期云身份、交易 Fixture Golden Hash，以及独立的签名内容展示。\n\n供应链安全最终要回答的不是“源码有没有后门”，而是“线上运行的每一个字节，能否追溯到经过批准的源码与构建过程”。"
+  },
+  {
+    "id": 38,
+    "slug": "wallet-rpc-trust-boundary",
+    "title": "RPC 节点说谎时，充值、提现和对账会发生什么",
+    "date": "2026-07-20",
+    "summary": "钱包后端依赖 RPC 获取区块、余额、Nonce、UTXO、Checkpoint 与交易结果，但 RPC 只是证据来源，不是业务真相。本文拆解节点落后、分叉、错误网络和响应不一致如何影响资金状态。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "RPC",
+      "Indexer",
+      "Security"
+    ],
+    "readingTime": "4 min",
+    "difficulty": "安全工程",
+    "kind": "engineering-note",
+    "evidenceLevel": "source-reviewed",
+    "evidenceSummary": "依据 Ethereum、Bitcoin Core、Solana 与 Sui 官方协议/RPC 文档，以及当前多链验收代码整理；多节点分歧和错误 RPC 故障注入尚待完整实现。",
+    "conceptTags": [
+      "wallet-backend",
+      "multi-chain",
+      "api-design",
+      "go-infra"
+    ],
+    "relatedProjectIds": [
+      1,
+      7
+    ],
+    "recommendedSlugs": [
+      "multi-chain-wallet-acceptance-loop",
+      "multi-chain-wallet-resource-state",
+      "evm-internal-transfer-deposit-indexer",
+      "withdrawal-error-handling",
+      "new-chain-integration-checklist",
+      "wallet-software-supply-chain"
+    ],
+    "suggestedQuestions": [
+      "为什么 RPC 返回成功不等于链上事实已经成立？",
+      "多节点返回不同区块或交易状态时钱包应该怎么做？",
+      "EVM、BTC、Solana 与 Sui 应分别记录什么最终性证据？"
+    ],
+    "content": "# RPC 节点说谎时，充值、提现和对账会发生什么\n\n钱包后端几乎所有链上判断都来自节点：区块、交易、余额、Nonce、UTXO、Receipt、Checkpoint 和 Object。\n\n这很容易形成一个危险的默认假设：\n\n> RPC 返回的数据就是链上真相。\n\n实际上，RPC 只是一个节点在某个时间点提供的视图。节点可能落后、处于分叉、配置错误、被限流、缺少历史索引，也可能由第三方运营并返回不完整或错误数据。\n\n钱包系统不应该先问“RPC 成功了吗”，而应该问：\n\n```text\n这是哪条链\n节点同步到哪里\n返回结果属于哪个区块或 Checkpoint\n这个结果是否达到业务要求的最终性\n另一个独立来源是否能复核\n```\n\n# RPC 错误会影响哪些资金事实\n\n## 假充值或漏充值\n\n节点可能返回一笔尚未达到确认数、随后被 Reorg 的交易；也可能因为 Trace、Event、历史索引不完整而漏掉充值。\n\n如果钱包看到一次返回就增加可用余额，用户可能在 Reorg 前把临时到账的资产提现走。\n\n## 错误链与跨网混淆\n\n配置把 Mainnet Chain ID 对应到 Testnet 或另一条兼容链时，地址格式看起来仍然正确，RPC 也可能正常返回，但签名、余额和交易全部属于错误网络。\n\nEIP-695 明确引入 `eth_chainId` 帮助调用方识别当前链，并指出 Chain ID 对重放保护和链识别的重要性。[EIP-695](https://eips.ethereum.org/EIPS/eip-695)\n\n## 资源选择错误\n\n- EVM 节点落后，返回过期 nonce；\n- BTC 节点或 Indexer 漏掉已消费 UTXO；\n- Solana 节点返回即将过期的 recent blockhash；\n- Sui 节点返回旧 Object Version 或错误 Gas Object 状态。\n\n这些错误不一定立刻造成盗币，但可能导致替换、双花尝试、卡单、重复构建和错误恢复。\n\n## 广播结果未知\n\n`sendRawTransaction` 超时不能说明节点没收到交易。直接构建第二笔交易，可能让同一订单关联多个交易 Hash，甚至产生重复出金风险。\n\n正确做法是保留相同 Raw Transaction，并根据 txHash、sender/nonce、UTXO 或 Object 查询链上事实。未确认前暂停新资金动作。\n\n# 不同链应记录不同最终性证据\n\n## EVM\n\n[Ethereum JSON-RPC](https://ethereum.org/developers/docs/apis/json-rpc/) 区分 `latest`、`safe` 和 `finalized` 等 Block Tag。钱包不应把 `latest` 返回的 Receipt 直接等同最终完成。\n\n至少记录：\n\n```text\nchain_id\nblock_number\nblock_hash\nparent_hash\ntx_hash\nreceipt.status\nconfirmations / finality tag\n```\n\n如果相同高度的 blockHash 变化，就需要识别 Reorg，并回滚或反向处理尚未最终确认的账务。\n\n## BTC\n\nBTC 需要验证交易是否进入当前最佳链、达到确认数，以及输入 UTXO 是否仍属于预期状态。只依赖 Mempool API 不足以判断长期最终性。\n\n关键证据包括：\n\n```text\ntxid\nblock_hash / height\nconfirmations\nvin: prev_txid + vout\n输出与找零\n是否存在 replacement / conflict\n```\n\n钱包自己的 UTXO Lock 与节点的 UTXO Set 是两层状态，任何一层发生冲突都不能继续选币。\n\n## Solana\n\nSolana RPC 使用 `processed`、`confirmed` 和 `finalized` 等 Commitment。官方确认指南说明 recent blockhash 有有效窗口，RPC 节点也可能相对集群落后。[Solana Transaction Confirmation](https://solana.com/developers/guides/advanced/confirmation)\n\n充值和提现需要明确使用的 Commitment，并记录 Slot、Blockhash、Signature 和交易 Meta。过期交易应重新构建和签名，不能只替换 Blockhash 后复用旧签名。\n\n## Sui\n\nSui 需要围绕 Transaction Digest、Effects、Checkpoint Sequence 和 Object Version 建立证据。Sui 的 Checkpoint 用于收敛最终交易和 Effects，而不是硬套 EVM Block Number。[Sui 协议文档](https://docs.sui.io/paper/sui-lutris.pdf)\n\n如果交易构建以后 Object Version 变化，需要重新选择对象、模拟、构建并签名。\n\n# 多节点不是简单多数投票\n\n接入两个或三个 RPC 不能自动解决信任问题。\n\n如果它们来自同一家 Provider、同一上游节点或同一错误配置，看起来是多节点，实际仍然是单一故障域。\n\n多节点策略应该先区分用途：\n\n```text\n快速读：允许单节点，但有高度和延迟门禁\n资金确认：要求独立来源复核区块 Hash 与交易结果\n交易构建：资源读取必须绑定节点高度和有效期\n广播：可以向多个节点提交同一个 Raw Transaction\n恢复：以 Canonical Chain 与账务规则决定补偿\n```\n\n不能为了“多数一致”而忽略协议事实。例如三个落后节点一致，也不代表它们比一个已同步节点更接近 Canonical Head。\n\n# wallet-api 应该承担的信任边界\n\nwallet-api 不只是 RPC 转发器，它需要把不稳定节点响应转换成可审计证据：\n\n- 启动时验证 Chain ID、Network 和必要的 Genesis/Checkpoint 标识；\n- 记录 Provider、请求时间、节点高度和响应区块；\n- 监控 Head Lag、错误率、限流和分歧；\n- 对资金确认使用独立来源；\n- 构建交易时返回资源版本和 Unsigned Hash；\n- 广播相同 Raw Transaction，而不是在超时后静默重建；\n- 将节点错误、业务失败和结果未知分开分类。\n\nwallet-service 则根据这些证据推进资金状态，而不是直接解析第三方 RPC 的任意 JSON。\n\n# 应该补的错误 RPC 实验\n\n1. 节点返回错误 Chain ID，Preflight 阻止启动；\n2. 两个节点在同一高度返回不同 blockHash，充值暂停确认；\n3. Receipt 先成功后因 Reorg 消失，待确认账务回滚或反向分录；\n4. 广播超时但另一节点能查到交易，不创建第二笔交易；\n5. BTC Indexer 返回已消费 UTXO，选币前交叉验证并拒绝；\n6. Solana RPC 返回过期 Blockhash，重建而不是复用签名；\n7. Sui Object Version 冲突，重新模拟、构建和审批；\n8. 通知和数据库恢复后重扫相同区块，余额与记录数量保持不变。\n\n# 当前项目边界\n\n当前多链项目已经验证 EVM、BTC、Solana、Sui 等链的部分真实链路和适配测试，也记录了确认数、UTXO、Checkpoint 与广播结果未知等边界。\n\n下一阶段应该把多节点分歧、错误网络、落后节点和 Reorg 变成可重复故障实验，而不是只写成生产建议。\n\nRPC 可以提供链上证据，但钱包系统必须保存证据来源、最终性和恢复依据，才能把节点响应转成可信资金事实。"
   }
 ]

@@ -33,7 +33,9 @@
     "new-chain-integration-checklist",
     "wallet-api-boundary",
     "wallet-sign-signer",
-    "withdrawal-error-handling"
+    "withdrawal-error-handling",
+    "wallet-signing-intent-abuse",
+    "wallet-rpc-trust-boundary"
   ],
   "suggestedQuestions": [
     "适配一条链和真正验收一条链有什么区别？",
@@ -268,11 +270,13 @@ EVM 提现通常要控制 nonce，BTC 提现要预占具体 UTXO，Sui 提现需
 
 后续我会把 [Rekt](https://rekt.news/) 作为事故线索索引，再结合项目官方复盘、链上交易和可复现测试，继续拆解与钱包基础设施直接相关的问题：
 
-- **签名内容被替换或界面欺骗：** 多签和硬件设备存在，并不自动代表签署人看到了真实交易；审批摘要、交易 Digest 和独立展示通道应该如何绑定；
-- **私钥或管理员权限泄露：** Local Signer、MPC/TSS 和 HSM 分别能解决什么，哪些权限即使使用硬件密钥仍然过大；
-- **签名算法实现错误：** 随机数、nonce、digest、DER 或序列化实现错误，为什么可能从一笔公开签名反推出长期密钥风险；
+- **[签名内容被替换或界面欺骗](/articles/wallet-signing-intent-abuse)：** 多签和硬件设备存在，并不自动代表签署人看到了真实交易；审批摘要、交易 Digest 和独立展示通道应该如何绑定；
+- **[签名算法实现错误](/articles/cryptographic-nonce-key-leak)：** 随机数、nonce、digest、DER 或序列化实现错误，为什么可能从一笔公开签名反推出长期密钥风险；
+- **[MPC/TSS 的 Share、Session 与盲签边界](/articles/mpc-tss-security-boundaries)：** 完整私钥不出现，为什么仍可能产生未授权签名；
+- **[HSM 的密钥属性与签名权限](/articles/hsm-key-extractability-boundaries)：** Key 进入硬件以后，哪些配置和调用权限仍可能扩大风险；
+- **[软件供应链与错误交易](/articles/wallet-software-supply-chain)：** 开发机、依赖、CI、Artifact 和签名界面怎样影响最终交易；
 - **链资源被重复消费：** nonce、UTXO、recent blockhash 和 Object Version 的并发控制失败，如何演变成重复出金、卡单或错误替换；
-- **扫链与最终性误判：** RPC 返回不一致、确认数不足、Reorg 或解析遗漏，如何导致重复入账与账务不平；
+- **[扫链与最终性误判](/articles/wallet-rpc-trust-boundary)：** RPC 返回不一致、确认数不足、Reorg 或解析遗漏，如何导致重复入账与账务不平；
 - **恢复路径本身成为风险：** 紧急降级、人工补账、密钥迁移和合约升级为什么需要和正常路径一样接受审批、审计与演练。
 
 这里的目标不是复述损失金额，而是把每次事故转成一个可运行的失败实验：它破坏了哪个不变量，第一处止损动作是什么，现有架构能否发现，以及怎样用测试证明修复有效。
