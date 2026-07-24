@@ -1,7 +1,12 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { evidenceCapabilities, evidenceCellStatus, evidenceForCell, evidenceKinds, evidenceStatusLabels } from '../data/evidence'
+import { getArticlesBySlugs } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
+
+function articlesForEvidence(articleSlugs: string[]) {
+  return getArticlesBySlugs(articleSlugs)
+}
 
 onMounted(() => setSeoMeta({
   title: '工程证据覆盖｜xiuqiu',
@@ -33,6 +38,7 @@ onMounted(() => setSeoMeta({
                 <article v-for="record in evidenceForCell(capability.id, kind.id)" :key="record.slug">
                   <strong>{{ record.title }}</strong><p>{{ record.summary }}</p><code v-if="record.command">{{ record.command }}</code>
                   <a v-if="record.visibility === 'public' && record.url" :href="record.url" target="_blank" rel="noopener">查看公开证据 &rarr;</a><small v-else>私有工程去敏摘要</small>
+                  <div v-if="record.articleSlugs?.length" class="evidence-note-links"><span>相关笔记</span><router-link v-for="article in articlesForEvidence(record.articleSlugs)" :key="article.slug" :to="`/articles/${article.slug}`">{{ article.title }}</router-link></div>
                 </article>
               </div>
               <p v-else class="empty-evidence">当前没有足够事实支撑这一格。</p>
@@ -46,7 +52,7 @@ onMounted(() => setSeoMeta({
           <header><h2>{{ capability.title }}</h2><p>{{ capability.summary }}</p></header>
           <details v-for="kind in evidenceKinds" :key="kind.id">
             <summary><span>{{ kind.title }}</span><strong :data-status="evidenceCellStatus(evidenceForCell(capability.id, kind.id))">{{ evidenceStatusLabels[evidenceCellStatus(evidenceForCell(capability.id, kind.id))] }}</strong></summary>
-            <div v-if="evidenceForCell(capability.id, kind.id).length" class="mobile-evidence-records"><article v-for="record in evidenceForCell(capability.id, kind.id)" :key="record.slug"><h3>{{ record.title }}</h3><p>{{ record.summary }}</p><code v-if="record.command">{{ record.command }}</code><a v-if="record.visibility === 'public' && record.url" :href="record.url" target="_blank" rel="noopener">查看公开证据 &rarr;</a><small v-else>私有工程去敏摘要</small></article></div>
+            <div v-if="evidenceForCell(capability.id, kind.id).length" class="mobile-evidence-records"><article v-for="record in evidenceForCell(capability.id, kind.id)" :key="record.slug"><h3>{{ record.title }}</h3><p>{{ record.summary }}</p><code v-if="record.command">{{ record.command }}</code><a v-if="record.visibility === 'public' && record.url" :href="record.url" target="_blank" rel="noopener">查看公开证据 &rarr;</a><small v-else>私有工程去敏摘要</small><div v-if="record.articleSlugs?.length" class="evidence-note-links"><span>相关笔记</span><router-link v-for="article in articlesForEvidence(record.articleSlugs)" :key="article.slug" :to="`/articles/${article.slug}`">{{ article.title }}</router-link></div></article></div>
             <p v-else class="empty-evidence">当前没有足够事实支撑这一项。</p>
           </details>
         </article>
