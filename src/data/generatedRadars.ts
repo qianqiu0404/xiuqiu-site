@@ -6,6 +6,78 @@ export interface DailyRadar { date: string; slug: string; title: string; summary
 
 export const dailyRadars: DailyRadar[] = [
   {
+    "date": "2026-07-25",
+    "slug": "2026-07-25",
+    "title": "每日研究雷达 · 2026-07-25",
+    "summary": "聚焦 Cardano Wallet 密钥存储升级、Stacks 主网升级窗口、Elastos 主链恢复、可执行架构约束、不可信解码器隔离、GitHub Agentic Workflows，以及 Dependabot 依赖冷却期。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-07-25T07:04:00+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "Cardano Wallet 升级根密钥存储并收紧随机源",
+        "summary": "Cardano Foundation 发布 cardano-wallet v2026-07-23，根密钥存储 v2 使用 Argon2id 做口令认证、PBKDF2 加密根密钥，并建议恢复词、会话密钥和 Byron RndState 采用系统 CSPRNG。该发布不代表链上协议或所有 Cardano 钱包同步升级，且仍列出 Byron/Icarus 不迁移等已知限制。",
+        "sourceUrl": "https://github.com/cardano-foundation/cardano-wallet/releases/tag/v2026-07-23"
+      },
+      {
+        "title": "Stacks 的 Bitcoin Staking 投票通过并进入主网激活窗口",
+        "summary": "Stacks 确认 Bitcoin Staking 社区投票通过、测试网已运行，主网硬分叉时间指向约 7 月 29 日。公告未给出最终激活区块，也不证明主网已经完成升级，实际状态仍需以后续节点公告和链上结果核验。",
+        "sourceUrl": "https://www.stacks.co/blog/bitcoin-staking-vote-passes-hard-fork-set-for-july-29"
+      },
+      {
+        "title": "Elastos 主链因共识级价值溢出问题暂停并准备协调回滚",
+        "summary": "Elastos 通报主链因共识层货币校验漏洞停在区块 2,260,595，团队正在开发补丁、核对受影响交易并测试协调回滚与重启。最终回滚高度、恢复时间和生产流程尚未公布，官方关于密钥未受损的说法也不是独立审计结论。",
+        "sourceUrl": "https://blog.elastos.net/announcement/july20-security-update/"
+      }
+    ],
+    "aiTip": {
+      "title": "把架构评审意见升级为带修复指令的可执行约束",
+      "summary": "先把高共识、低误判的结构不变量写成自定义 lint 或结构测试，让错误直接指出违规依赖、允许方向与建议修法，再保留真实违规作为回归夹具并在本地和 CI 同步执行。此类约束能缩短 Agent 的反馈回路，但只能验证可观察结构，不能替代业务语义验证。",
+      "sourceUrl": "https://openai.com/index/harness-engineering/"
+    },
+    "web3Design": {
+      "title": "把不可信载荷解码与可信身份验证拆成两个故障域",
+      "summary": "ERC-8180 草案允许 decoder 解析批次，但要求客户端在插件外重算包含 chainId 的规范摘要，再交给可信 registry 验签。钱包服务可迁移为资源受限的解析插件、外部 canonical hash 与 nonce 校验、带 verified 状态的 envelope，以及只签规范摘要的签名服务；草案依赖 Ethereum blob、合约注册表与特定密码学接口，不能直接照搬到其他链。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-8180"
+    },
+    "vibeProject": {
+      "title": "GitHub Agentic Workflows · 可版本化的 Agent 工作流编译与安全边界",
+      "summary": "gh-aw 用 Markdown 描述任务，再编译为 GitHub Actions lock 工作流，把只读默认权限、sandbox、网络隔离、工具 allowlist、依赖 SHA 固定和 safe-outputs 纳入生成流程。固定 v0.83.1 的本地编译入口已可复现，但项目仍处技术预览，动态分支回归也说明编译成功不等于远端写操作可靠。",
+      "sourceUrl": "https://github.com/github/gh-aw"
+    },
+    "readingPick": {
+      "title": "The case for a cooldown: Why Dependabot now waits before issuing version updates",
+      "summary": "GitHub 为普通 Dependabot 版本更新默认增加至少三天冷却期，用时间换取恶意新版本被社区发现和撤回的信号，同时让已公开漏洞的安全更新继续立即创建。行动问题：为一个仓库分别定义安全修复、普通公共依赖和内部依赖的等待时间、绕过证据、最低检查与令牌权限；若后门潜伏 30 天，哪一层能在冷却期之外发现或限制损害？",
+      "sourceUrl": "https://github.blog/security/supply-chain-security/the-case-for-a-cooldown-why-dependabot-now-waits-before-issuing-version-updates/"
+    },
+    "sourceUrls": [
+      "https://github.com/cardano-foundation/cardano-wallet/releases/tag/v2026-07-23",
+      "https://www.stacks.co/blog/bitcoin-staking-vote-passes-hard-fork-set-for-july-29",
+      "https://blog.elastos.net/announcement/july20-security-update/",
+      "https://openai.com/index/harness-engineering/",
+      "https://eips.ethereum.org/EIPS/eip-8180",
+      "https://github.com/github/gh-aw",
+      "https://github.com/github/gh-aw/releases/tag/v0.83.1",
+      "https://github.github.com/gh-aw/setup/quick-start/",
+      "https://api.github.com/repos/github/gh-aw/releases/tags/v0.83.1",
+      "https://github.com/github/gh-aw/issues/47795",
+      "https://github.com/github/gh-aw/blob/v0.83.1/LICENSE",
+      "https://github.com/githubnext/gh-aw-workshop/tree/1cf94055e9bc6ae127bec3d85b6a7ffb455ef738",
+      "https://github.blog/security/supply-chain-security/the-case-for-a-cooldown-why-dependabot-now-waits-before-issuing-version-updates/"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
     "date": "2026-07-24",
     "slug": "2026-07-24",
     "title": "每日研究雷达 · 2026-07-24",
