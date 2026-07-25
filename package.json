@@ -19,7 +19,7 @@
     "generate:deliveries": "node scripts/generate-deliveries.mjs",
     "generate:now": "node scripts/generate-now.mjs",
     "extract:radar": "node scripts/extract-radar-source.mjs",
-    "test:radar": "node --test scripts/radar-pipeline.test.mjs",
+    "test:radar": "node --test scripts/radar-pipeline.test.mjs scripts/radar-presentation.test.mjs",
     "validate:radar": "node scripts/validate-radar-candidate.mjs",
     "sync:learning": "node scripts/sync-learning-from-obsidian.mjs",
     "sync:obsidian-public": "node scripts/export-public-obsidian.mjs",
