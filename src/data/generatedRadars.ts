@@ -6,6 +6,79 @@ export interface DailyRadar { date: string; slug: string; title: string; summary
 
 export const dailyRadars: DailyRadar[] = [
   {
+    "date": "2026-07-26",
+    "slug": "2026-07-26",
+    "title": "每日研究雷达 · 2026-07-26",
+    "summary": "聚焦 Triple-A 多链热钱包异常流出、欧盟对俄制裁中的加密服务限制、Core Lightning 通道校验、新鲜度探针、可组合交易、Coder 远程开发环境，以及量子纠错的在线学习闭环。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-07-26T07:02:22+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "Triple-A 多链热钱包出现约 970 万美元疑似异常流出",
+        "summary": "PeckShield 转引链上分析者告警称，Triple-A 关联钱包在多条网络被转出超过 970 万美元资产，相关资金随后桥接至 Ethereum 并集中为约 5,227 ETH。公开告警只能确认观察到的地址流向与当时估值，不能单独证明入侵路径、攻击者身份、最终损失或客户资金影响。",
+        "sourceUrl": "https://x.com/PeckShieldAlert/status/2080833993633866106"
+      },
+      {
+        "title": "欧盟扩展对俄制裁中的加密服务限制",
+        "summary": "欧盟理事会第 21 轮对俄制裁将交易禁令扩展到六个司法辖区的 14 个加密相关服务平台，并引入对协助规避制裁的第三国加密服务实施全面禁令的工具。具体义务、名单与生效条件仍应以欧盟官方公报及后续指定为准。",
+        "sourceUrl": "https://www.consilium.europa.eu/en/press/press-releases/2026/07/23/21st-package-of-sanctions-eu-hits-russian-energy-financial-services-and-crypto-hard/"
+      },
+      {
+        "title": "Core Lightning 拒绝复用既有资金输出点的通道",
+        "summary": "Core Lightning v26.06.6 在接收通道时拒绝复用已有 funding outpoint，收紧通道建立时的身份一致性边界。发布说明没有披露已知资金损失、可利用路径或受影响部署范围，也不能外推为所有 Lightning 实现均存在或已修复同一问题。",
+        "sourceUrl": "https://github.com/ElementsProject/lightning/releases/tag/v26.06.6"
+      }
+    ],
+    "aiTip": {
+      "title": "给检索上下文设置新鲜度门槛与只读实时探针",
+      "summary": "为上下文保存来源版本、生成时间和适用范围；任务依赖易变状态且证据过期时，触发有预算、无副作用的实时探针读取当前 schema、配置摘要、仓库提交或 API 能力，再校正判断并记录缓存命中、实时刷新或无法验证而停止。实时查询不证明数据完整，也不能把未经确认的推断写回共享记忆。",
+      "sourceUrl": "https://openai.com/index/inside-our-in-house-data-agent/"
+    },
+    "web3Design": {
+      "title": "把交易操作、签名角色与费用赞助拆成独立可签组件",
+      "summary": "EIP-8175 草案将费用头、操作列表、角色签名和可选 fee_auth 分离，并让签名摘要绑定完整交易、算法与 SENDER/PAYER 角色。钱包 API 可使用版本化 envelope，服务层保留 nonce 与费用策略并逐字节重算哈希，签名服务只签规范摘要；草案的 Ethereum 交易类型、RLP、EIP-1559、账户 nonce 和回滚语义不能直接移植到其他链。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-8175"
+    },
+    "vibeProject": {
+      "title": "Coder · 自托管远程开发环境与编码 Agent 基础设施",
+      "summary": "Coder 通过 Terraform 模板、Web UI、CLI 和 API 供应统一可回收的远程开发环境，并把原生 Agent loop 放在自有基础设施控制面。固定 v2.35.2 的 macOS arm64 包已完成校验、版本检查、本地服务启动和 HTTP 探测，但尚未验证 Terraform 工作区、模型连接或端到端 Agent 任务；接入真实仓库前仍需隔离验证认证、权限、网络出口、费用与销毁流程。",
+      "sourceUrl": "https://github.com/coder/coder"
+    },
+    "readingPick": {
+      "title": "Towards a quantum computer that learns from its errors",
+      "summary": "Google Quantum AI 使用量子纠错检测事件作为强化学习反馈，在计算持续运行时调整控制参数；Willow 实验在人工漂移下报告逻辑稳定性提高 3.5 倍，专家校准后微调又降低 20% 逻辑错误率。行动问题：为一个长期运行系统设计纠错—学习闭环时，哪项约束能防止代理通过掩盖告警而不是修复漂移来优化指标？",
+      "sourceUrl": "https://research.google/blog/towards-a-quantum-computer-that-learns-from-its-errors/"
+    },
+    "sourceUrls": [
+      "https://x.com/PeckShieldAlert/status/2080833993633866106",
+      "https://www.consilium.europa.eu/en/press/press-releases/2026/07/23/21st-package-of-sanctions-eu-hits-russian-energy-financial-services-and-crypto-hard/",
+      "https://github.com/ElementsProject/lightning/releases/tag/v26.06.6",
+      "https://openai.com/index/inside-our-in-house-data-agent/",
+      "https://eips.ethereum.org/EIPS/eip-8175",
+      "https://github.com/coder/coder",
+      "https://github.com/coder/coder/releases/tag/v2.35.2",
+      "https://api.github.com/repos/coder/coder/releases/tags/v2.35.2",
+      "https://coder.com/docs/install",
+      "https://coder.com/docs/ai-coder",
+      "https://github.com/coder/coder/issues/27492",
+      "https://coder.com/pricing",
+      "https://github.com/coder/coder/blob/v2.35.2/LICENSE",
+      "https://research.google/blog/towards-a-quantum-computer-that-learns-from-its-errors/"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
     "date": "2026-07-25",
     "slug": "2026-07-25",
     "title": "每日研究雷达 · 2026-07-25",
