@@ -153,11 +153,11 @@ writePage(
 writePage(
   '/radar',
   replaceMeta(baseHtml, {
-    title: '每日研究雷达｜xiuqiu',
-    description: '从 Obsidian 研究输入自动汇总的市场信号、AI 技巧、Web3 设计、Vibe 项目与精选阅读。',
+    title: '行业情报雷达｜xiuqiu',
+    description: '面向 Web3 钱包与 AI 工程的每日行业简报、人工复核周度收敛和可追溯历史档案。',
     path: '/radar',
     structuredData: {
-      '@context': 'https://schema.org', '@type': 'CollectionPage', name: '每日研究雷达｜xiuqiu',
+      '@context': 'https://schema.org', '@type': 'CollectionPage', name: '行业情报雷达｜xiuqiu',
       url: `${SITE_URL}/radar`, author: { '@type': 'Person', name: 'xiuqiu' },
     },
   }),
