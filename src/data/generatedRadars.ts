@@ -6,6 +6,80 @@ export interface DailyRadar { date: string; slug: string; title: string; summary
 
 export const dailyRadars: DailyRadar[] = [
   {
+    "date": "2026-07-27",
+    "slug": "2026-07-27",
+    "title": "每日研究雷达 · 2026-07-27",
+    "summary": "聚焦 Zilliqa 链特定硬件签名泄露、Zebra 日志与 reorg 一致性修复、Solana 资源费提案、编码评测质检、Agent 隔离子钱包、VibeTunnel 远程终端，以及症状评估代理的证据链。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-07-27T07:04:00+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "Zilliqa 暂停旧版非 EVM 网络交易以处置 Ledger 应用签名泄露",
+        "summary": "Zilliqa 官方确认旧版非 EVM 网络所用 Ledger 应用会在签名中累积泄露密钥相关信息，并已暂停该网络全部交易。影响不包括 Zilliqa 2、其他链资产和恢复词；地址检查器、恢复日期与最终损失统计仍未公布。",
+        "sourceUrl": "https://www.zilliqa.com/ledger-incident/"
+      },
+      {
+        "title": "Zebra 6.2.2 修补日志安全与 reorg 期间的 RPC 读一致性",
+        "summary": "Zebra 6.2.2 停止把 Elasticsearch 密码写入日志，避免 zebrad-log-filter 把日志文本作为 shell 输入执行，并让多个 RPC 后续读取绑定首次解析出的区块哈希。相关升级优先级与影响范围取决于部署功能，官方未声称缺陷已被利用。",
+        "sourceUrl": "https://github.com/ZcashFoundation/zebra/releases/tag/v6.2.2"
+      },
+      {
+        "title": "Solana 接受资源费提案但尚无主网激活 epoch",
+        "summary": "SIMD-0553 拟把静态费用拆为支付给 leader 的基础纳入费和按调度成本计算、全部销毁的资源费，并分阶段启用费率。提案获接受不等于功能门已在主网激活，客户端仍需按具体 bank 与 epoch 状态判断。",
+        "sourceUrl": "https://solana.com/news/solana-changelog-july-23-2026"
+      }
+    ],
+    "aiTip": {
+      "title": "先质检评测任务的一致性，再比较 Agent 分数",
+      "summary": "发布 benchmark 结果前，对照任务说明、评分测试、参考补丁与多次失败轨迹，隔离测试过度约束、隐藏要求、覆盖不足和说明冲突的数据点；报表同时保留原始通过率、有效任务通过率与待裁决清单。调查 Agent 可扩大检查规模，但不能替代独立人工判断。",
+      "sourceUrl": "https://openai.com/index/separating-signal-from-noise-coding-evaluations/"
+    },
+    "web3Design": {
+      "title": "用单向所有权的隔离子钱包限制自动化 Agent 的资产爆炸半径",
+      "summary": "ERC-8199 草案让 owner 只向独立子钱包注入有限资产，并把 Agent 执行绑定验签、防重放、有效期与 checker 约束。钱包系统可迁移账户隔离、余额上限、策略哈希和紧急撤资原则；草案仍缺少完整签名摘要、nonce、升级与救援规则，非 EVM 系统必须重建语义。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-8199"
+    },
+    "vibeProject": {
+      "title": "VibeTunnel · 在浏览器中观察和接管真实终端会话",
+      "summary": "VibeTunnel 组合原生 macOS 应用、PTY 管理、WebSocket 与浏览器终端，可让开发者从另一设备继续观察构建或编码 Agent。本次固定 beta.18 完成包校验、CLI、仅本机服务与健康探测；未验证公网、实际终端会话或远程端到端工作流，部署时必须限制监听、启用认证并固定版本。",
+      "sourceUrl": "https://github.com/amantus-ai/vibetunnel"
+    },
+    "readingPick": {
+      "title": "SymptomAI 如何评估日常症状对话中的追问策略",
+      "summary": "Google Research 以 13,917 名参与者、五种对话策略、两周后自报诊断、临床医生盲评和 Fitbit 相关性构成证据链，结果支持主动追问可改善信息获取。行动问题：若要把研究原型推进到临床使用，哪项前瞻性设计最能减少自报标签、不可追问盲评与选择偏差？",
+      "sourceUrl": "https://research.google/blog/symptomai-towards-a-conversational-ai-agent-for-everyday-symptom-assessment/"
+    },
+    "sourceUrls": [
+      "https://www.zilliqa.com/ledger-incident/",
+      "https://github.com/ZcashFoundation/zebra/releases/tag/v6.2.2",
+      "https://solana.com/news/solana-changelog-july-23-2026",
+      "https://github.com/solana-foundation/solana-improvement-documents/pull/553",
+      "https://openai.com/index/separating-signal-from-noise-coding-evaluations/",
+      "https://eips.ethereum.org/EIPS/eip-8199",
+      "http://127.0.0.1:43127/api/health`。本次在",
+      "https://github.com/amantus-ai/vibetunnel",
+      "https://github.com/amantus-ai/vibetunnel/releases/tag/v1.0.0-beta.18",
+      "https://registry.npmjs.org/vibetunnel",
+      "https://api.npmjs.org/downloads/point/2026-06-27:2026-07-26/vibetunnel",
+      "https://formulae.brew.sh/api/cask/vibetunnel.json",
+      "https://github.com/amantus-ai/vibetunnel/blob/v1.0.0-beta.18/docs/ARCHITECTURE.md",
+      "https://github.com/amantus-ai/vibetunnel/blob/v1.0.0-beta.18/docs/security.md",
+      "https://research.google/blog/symptomai-towards-a-conversational-ai-agent-for-everyday-symptom-assessment/"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
     "date": "2026-07-26",
     "slug": "2026-07-26",
     "title": "每日研究雷达 · 2026-07-26",
