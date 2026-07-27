@@ -31,11 +31,11 @@ function goHome() {
       </button>
 
       <div id="primary-navigation" class="nav-links" :class="{ open: navOpen }">
-        <router-link to="/projects" @click="navOpen = false">项目图谱</router-link>
-        <router-link to="/engineering" @click="navOpen = false">工程证据</router-link>
-        <router-link to="/radar" @click="navOpen = false">行业雷达</router-link>
-        <router-link to="/ai" @click="navOpen = false">AI 协作</router-link>
-        <router-link to="/articles" @click="navOpen = false">工程笔记</router-link>
+        <router-link to="/#capabilities" @click="navOpen = false">能力</router-link>
+        <router-link to="/projects" @click="navOpen = false">项目</router-link>
+        <router-link to="/engineering" @click="navOpen = false">验证证据</router-link>
+        <router-link to="/radar" @click="navOpen = false">工程判断</router-link>
+        <router-link to="/now" @click="navOpen = false">关于我</router-link>
       </div>
     </nav>
   </header>
