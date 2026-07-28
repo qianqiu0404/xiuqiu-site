@@ -1,4 +1,5 @@
 import { readFileSync } from 'node:fs'
+import { assertPublicHttpUrl } from './public-data-contracts.mjs'
 
 export const PUBLIC_RADAR_SECTIONS = ['crypto', 'radar', 'vibe', 'reading']
 export const MIN_RADAR_SECTIONS = 3
@@ -26,7 +27,9 @@ export function parseDailyResearchSource(source) {
 }
 
 export function extractUrls(value) {
-  return [...new Set((value.match(URL_RE) || []).map(url => url.replace(/[.,;，。；]+$/, '')))]
+  const urls = [...new Set((value.match(URL_RE) || []).map(url => url.replace(/[.,;，。；]+$/, '')))]
+  urls.forEach((url, index) => assertPublicHttpUrl(url, `source URL ${index + 1}`))
+  return urls
 }
 
 export function assertSafeSource(source) {
@@ -60,6 +63,36 @@ export function assertPublicRadarContent(candidate) {
   if (ABSOLUTE_PATH_RE.test(serialized)) errors.push('Output contains a local absolute path.')
   if (SECRET_RE.test(serialized)) errors.push('Output may contain credentials or secret material.')
   PRIVATE_TERMS.forEach(term => { if (serialized.toLowerCase().includes(term.toLowerCase())) errors.push(`Output contains private term: ${term}`) })
+  if (!Array.isArray(candidate.sourceUrls)) {
+    errors.push('sourceUrls must be an array.')
+  } else {
+    candidate.sourceUrls.forEach((url, index) => {
+      try {
+        assertPublicHttpUrl(url, `sourceUrls[${index}]`)
+      } catch (error) {
+        errors.push(error instanceof Error ? error.message : String(error))
+      }
+    })
+  }
+
+  const itemGroups = [
+    ['marketSignals', candidate.marketSignals],
+    ['aiTip', candidate.aiTip ? [candidate.aiTip] : []],
+    ['web3Design', candidate.web3Design ? [candidate.web3Design] : []],
+    ['vibeProject', candidate.vibeProject ? [candidate.vibeProject] : []],
+    ['readingPick', candidate.readingPick ? [candidate.readingPick] : []],
+  ]
+  itemGroups.forEach(([field, items]) => {
+    if (!Array.isArray(items)) return
+    items.forEach((item, index) => {
+      if (item?.sourceUrl == null) return
+      try {
+        assertPublicHttpUrl(item.sourceUrl, `${field}[${index}].sourceUrl`)
+      } catch (error) {
+        errors.push(error instanceof Error ? error.message : String(error))
+      }
+    })
+  })
   if (errors.length) throw new Error(errors.join('\n'))
 }
 

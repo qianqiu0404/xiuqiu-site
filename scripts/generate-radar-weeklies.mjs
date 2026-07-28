@@ -1,4 +1,5 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { isPublishable } from './public-data-contracts.mjs'
 
 const SNAPSHOT_URL = new URL('../content/obsidian-public/radar-weeklies.json', import.meta.url)
 const OUTPUT_URL = new URL('../src/data/generatedRadarWeeklies.ts', import.meta.url)
@@ -12,12 +13,12 @@ if (!snapshot || !Array.isArray(snapshot.radarWeeklies)) {
   throw new Error('Invalid Obsidian weekly radar snapshot.')
 }
 
-const weeklies = snapshot.radarWeeklies
+const weeklies = snapshot.radarWeeklies.filter(isPublishable)
 for (const weekly of weeklies) {
   if (!/^\d{4}-W\d{2}$/.test(weekly.week) || weekly.slug !== weekly.week) {
     throw new Error(`Invalid weekly radar identity: ${weekly.slug}`)
   }
-  if (weekly.publish !== true || !weekly.judgments?.length) {
+  if (!weekly.judgments?.length) {
     throw new Error(`${weekly.slug}: reviewed public judgment is required.`)
   }
   if (!weekly.nextFocus?.length || weekly.nextFocus.length > 2) {

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-24T05:53:42.334Z",
+  "generatedAt": "2026-07-28T02:13:27.000Z",
   "projects": [
     {
       "projectId": "exchange-wallet-infrastructure",
@@ -8,15 +8,15 @@
       "portfolioTier": "flagship",
       "activityStatus": "active",
       "visibility": "private",
-      "updatedAt": "2026-07-24",
-      "nextAction": "固定四个服务兼容基线并跑通含风控放行与失败注入的提现链路",
-      "publicSummary": "围绕交易所充值、提现与资金安全组织的 Go 钱包基础设施，由 wallet-service、risk-service、wallet-api 与 wallet-sign 分别守住资金编排、风险控制、多链节点和签名边界。",
+      "updatedAt": "2026-07-28",
+      "nextAction": "冻结 V4 跨仓库兼容基线并完成一条非 Sepolia 测试网闭环",
+      "publicSummary": "围绕交易所充值、提现与资金安全组织的 Go 钱包基础设施：wallet-service 编排资金状态，risk-service 承担交易校验与风控放行，wallet-api 隔离多链节点能力，wallet-sign 收敛密钥与签名能力。",
       "publicEvidence": [
-        "已定位充值扫链、提现构建、签名、广播与通知的核心代码入口",
-        "已验证 risk-service 提现一致性校验、审批哈希与幂等标记",
-        "已在独立 TSS 环境完成三节点 Keygen 与 Sign 本地验证"
+        "一键本地栈已串联 wallet-service、risk-server、wallet-api、wallet-sign、TSS 节点与 Wallet Launchpad，并执行仓库 test / build / vet、HTTP 冒烟和双租户隔离门禁",
+        "Sepolia ETH 已完成测试网充值、手动归集、2-of-3 MPC 提现、广播、两个确认、账本结算与通知，最终账实差额为零",
+        "wallet-sign 已收敛 local、HSM、TSS 与 FROST 后端；TSS 2-of-3 fail-closed / 恢复已通过本地栈验证，Solana FROST 链上 E2E 仍待验收"
       ],
-      "publicNextMilestone": "固定四个服务的兼容基线，统一验证命令，并跑通一条包含风控放行与失败注入的提现端到端流程。"
+      "publicNextMilestone": "冻结 V4 跨仓库兼容基线，完成至少一条非 Sepolia 测试网的充提归集闭环，并对广播结果未知和签名节点不足执行可复现故障注入。"
     },
     {
       "projectId": "risk-server",
@@ -25,15 +25,16 @@
       "portfolioTier": "exploration",
       "activityStatus": "active",
       "visibility": "public",
-      "updatedAt": "2026-07-12",
-      "nextAction": "为主要 RPC 补充可复现测试并设计按用户隔离的资金流水",
-      "publicSummary": "基于 DappLink mock 风控 gRPC 服务的源码研究与本地验证，聚焦提现内容一致性、幂等标记、链上查询和资金流水判断的真实边界。",
+      "updatedAt": "2026-07-28",
+      "nextAction": "定义外部 AML / 制裁检查 provider 合同与超时语义",
+      "publicSummary": "面向钱包开发与集成环境的风险审批服务：校验交易请求与 V3 / V4 approval envelope 的字段一致性，使用确定性序列化生成 Ed25519 risk proof，并在外部风险能力缺失时失败关闭。",
       "publicEvidence": [
-        "go test ./... 与 go vet ./... 已在本地通过",
-        "make risk-server 构建成功，服务使用本地配置成功监听",
-        "已定位提现 canonical hash、成功后幂等标记和六个 RPC 的数据依赖"
+        "V3 / V4 测试覆盖 business、request、chain、asset、backend、key ref、election、地址、金额、链资源、message hash 与 unsigned payload 的精确绑定",
+        "确定性 protobuf 与 Ed25519 risk proof 已通过与 wallet-sign / TSS 验证边界兼容的测试",
+        "无效 token、重复 request ID、审批版本不足、字段篡改与缺少 AML provider 均会 fail closed",
+        "非 loopback gRPC 要求 TLS 1.3 双向认证；本地 test、build、vet 与服务生命周期验证已通过"
       ],
-      "publicNextMilestone": "为主要 RPC 补充可复现测试，并把按用户隔离的资金流水、真实 AML、鉴权和可观测性整理为明确演进路线。"
+      "publicNextMilestone": "定义外部 AML / 制裁检查的稳定 provider 合同与超时语义，并补齐密钥轮换、审计指标和按租户策略隔离的演进路线。"
     },
     {
       "projectId": "s78-market-services",
@@ -42,15 +43,15 @@
       "portfolioTier": "verified",
       "activityStatus": "active",
       "visibility": "private",
-      "updatedAt": "2026-07-22",
-      "nextAction": "启动真实 Doris 容器并核对增量同步、聚合结果和失败恢复",
-      "publicSummary": "交易所行情数据服务学习项目，串联 CEX 与 DEX 数据源、Crawler、Redis、PostgreSQL、HTTP/gRPC、Doris 与 Vue Dashboard。",
+      "updatedAt": "2026-07-28",
+      "nextAction": "合并 reviewed artifact 后完成 production migration、Preview 与七天滚动证据",
+      "publicSummary": "多场所可信行情与虚拟现货交易学习产品：聚合 CEX、Perp 与 AMM 行情，以 PostgreSQL / Redis / Doris 组织数据事实，并通过仅使用虚拟资金的 BTC/USDT 撮合、账本和恢复链路学习交易系统。",
       "publicEvidence": [
-        "Redis ZSET 涨跌榜、Hyperliquid DEX、八个 gRPC RPC 与前端构建已完成",
-        "go build、go vet、go test 和前端生产构建已重新通过",
-        "Doris 分析旁路代码已完成，但真实容器数据链路仍待验收"
+        "当前本地分支已实现四家 CEX WebSocket / REST 对账、Hyperliquid、Uniswap / PancakeSwap、可信新鲜度和 16 个只读 gRPC RPC",
+        "BTC/USDT 虚拟交易已覆盖定点数撮合、available / held 双重记账、PostgreSQL 事件/快照/outbox、幂等、WebSocket cursor 与重启 state hash 恢复",
+        "HEAD 7df9001 的 review 修复已通过 Go test/race/vet、前端 25 个测试与构建、隔离 PostgreSQL publisher/feed/cleanup 集成和当前二进制恢复演练"
       ],
-      "publicNextMilestone": "启动真实 Doris 容器并核对 PostgreSQL 增量同步、聚合结果、失败重试与水位恢复。"
+      "publicNextMilestone": "先把当前 reviewed artifact 推送并合并到共享基线，再完成生产 migration、受保护 Preview 验收与完整七天滚动证据；任何门未通过都不晋级生产状态。"
     },
     {
       "projectId": "stableflow",
@@ -104,21 +105,40 @@
       "publicNextMilestone": "补齐链资源过期、错误最小单位和无效对象引用的统一负向测试，再评估稳定 npm API。"
     },
     {
+      "projectId": "wallet-launchpad",
+      "siteSlug": "wallet-launchpad",
+      "stage": "verified-local",
+      "portfolioTier": "verified",
+      "activityStatus": "active",
+      "visibility": "private",
+      "updatedAt": "2026-07-28",
+      "nextAction": "完成一条非 Sepolia 测试网完整验收并固定 reviewed artifact",
+      "publicSummary": "面向交易所与支付业务方的多租户钱包控制台学习版，把地址、扫链、资金对账、风险审批、门限签名和交易状态组织成可演示、可复核的 B 端测试网工作台。",
+      "publicEvidence": [
+        "Go BFF 与 React / Next.js 控制台支持两个隔离租户、Demo / Live 边界、资金总览、地址、充值提现、归集、签名健康、多链矩阵与状态时间线",
+        "一键本地栈可启动钱包服务、风险服务、链 API、统一签名入口、TSS / FROST 节点、数据库与控制台，并执行仓库门禁、HTTP 冒烟和双租户隔离检查",
+        "Sepolia ETH 已完成测试网充值、local 地址归集、2-of-3 MPC 提现、广播确认、账本结算与通知，最终账实差额为零",
+        "受保护的 Vercel Preview 通过同源 BFF 与短期 OIDC 访问隔离的 Mac mini staging，数据库、gRPC 和签名节点不直接暴露公网"
+      ],
+      "publicNextMilestone": "冻结当前跨仓库兼容基线，完成至少一条非 Sepolia 测试网的充值、归集、提现与对账验收，并让私有 Preview 使用同一 reviewed artifact 复核。"
+    },
+    {
       "projectId": "wallet-reliability-lab",
       "siteSlug": "wallet-reliability-lab",
       "stage": "showcase-ready",
       "portfolioTier": "verified",
       "activityStatus": "active",
       "visibility": "public",
-      "updatedAt": "2026-07-24",
-      "nextAction": "固定 Scenario Catalog 版本与 checksum 并补浏览器 E2E",
-      "publicSummary": "面向钱包开发者与技术交流的交互实验台，通过三种提现路径展示状态机、可重试广播和链上事实补偿，并连接到脱敏测试证据。",
+      "updatedAt": "2026-07-28",
+      "nextAction": "补桌面与移动端浏览器 E2E 并增加一个新 Catalog 场景",
+      "publicSummary": "面向钱包开发者与技术交流的交互实验台，通过三种提现路径展示状态机、可重试广播和链上事实补偿，并把每个判断连接到脱敏测试证据。",
       "publicEvidence": [
         "正常提现、可重试广播失败和广播后补偿恢复三个场景可确定性运行",
-        "Vue 工作台支持暂停、单步、重置、速度与开发者证据模式",
-        "Go Runner 已通过 race 测试并覆盖 SSE 续传与地址脱敏"
+        "公开 Vercel Lab 已上线，Vue 工作台支持暂停、单步、重置、速度、服务过滤与开发者证据模式",
+        "项目已按 release、commit 与 SHA-256 checksum 固定 Wallet Domain Engine 的 Scenario Catalog v1.0.0",
+        "CI 与本地门禁覆盖前端测试/构建、公开内容检查、Catalog 契约、Go vet 和 Runner race 测试"
       ],
-      "publicNextMilestone": "固定 Wallet Domain Engine Scenario Catalog 的版本与 checksum，并补齐浏览器端到端验收。"
+      "publicNextMilestone": "补齐桌面与移动端浏览器 E2E，并从 Catalog 增加充值 reorg 或依赖仲裁场景，同时保持公开版 simulation-only 与本地 Runner 的隔离边界。"
     },
     {
       "projectId": "web3-wallet-engineer-lab",
@@ -127,15 +147,16 @@
       "portfolioTier": "verified",
       "activityStatus": "active",
       "visibility": "public",
-      "updatedAt": "2026-07-03",
-      "nextAction": "发布 Scenario Catalog v1 release 并固定跨仓库 checksum",
-      "publicSummary": "公开的 Go 钱包领域引擎，负责状态机、幂等、资金不变量、故障注入和版本化 Scenario Catalog；正式交互体验由 Wallet Reliability Lab 提供。",
+      "updatedAt": "2026-07-28",
+      "nextAction": "增加 RPC 多节点仲裁与账务 outbox 部分失败模型",
+      "publicSummary": "公开的 Go 钱包领域引擎，负责状态机、幂等、资金不变量、故障注入和版本化 Scenario Catalog；精致交互体验由独立 Wallet Reliability Lab 提供。",
       "publicEvidence": [
-        "Go 测试覆盖重复提现、广播结果未知、canonical 补偿、充值 reorg 和 nonce replacement",
-        "Scenario Catalog v1 同时被 Go 模型和技术检查页消费",
-        "GitHub Actions 执行 Go race、Vue Catalog 测试、构建和敏感信息扫描"
+        "Go 测试覆盖重复提现、广播结果未知、canonical 补偿、充值 reorg、nonce replacement 和关键依赖 fail-closed",
+        "Scenario Catalog v1.0.0 Release 已发布，JSON Schema、release tag 与 Catalog Inspector 可公开复核",
+        "Wallet Reliability Lab 已按 release、commit 与 checksum 固定 Catalog v1",
+        "GitHub Actions 已通过 Go race、Vue Catalog 测试、构建和敏感信息扫描，GitHub Pages Catalog Inspector 已上线"
       ],
-      "publicNextMilestone": "发布 Scenario Catalog v1 release，并让交互实验台固定校验来源版本与 checksum。"
+      "publicNextMilestone": "增加 RPC 多节点仲裁与账务 outbox 部分失败模型，并为 Catalog 次版本升级补兼容性、来源版本和 checksum 回归。"
     }
   ]
 }
