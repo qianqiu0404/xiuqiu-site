@@ -12,7 +12,7 @@ const relatedArticles = computed(() => project.value ? getArticlesBySlugs(projec
 
 watchEffect(() => {
   if (!project.value) {
-    setSeoMeta({ title: 'Project not found | xiuqiu', path: route.fullPath })
+    setSeoMeta({ title: 'Project not found | xiuqiu', path: route.fullPath, indexable: false })
     return
   }
   setSeoMeta({ title: `${project.value.name}｜xiuqiu 工程档案`, description: project.value.positioning, path: `/projects/${project.value.slug}` })

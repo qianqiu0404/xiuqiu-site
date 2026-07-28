@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import { radarWeeklies } from '../data/generatedRadarWeeklies'
 import { getProjectByKey } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
+import '../styles/radar.css'
 
 const route = useRoute()
 const weekly = computed(() => radarWeeklies.find(item => item.slug === String(route.params.week || '')))
@@ -64,8 +65,9 @@ watchEffect(() =>
           title: `${weekly.value.title}｜xiuqiu`,
           description: weekly.value.summary,
           path: `/radar/week/${weekly.value.slug}`,
+          type: 'article',
         }
-      : { title: 'Weekly radar not found｜xiuqiu', path: route.fullPath },
+      : { title: 'Weekly radar not found｜xiuqiu', path: route.fullPath, indexable: false },
   ),
 )
 </script>

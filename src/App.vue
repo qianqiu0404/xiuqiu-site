@@ -12,11 +12,6 @@ function closeNav() {
   navOpen.value = false
 }
 
-function goHome() {
-  closeNav()
-  router.push('/')
-}
-
 function handleEscape(event: KeyboardEvent) {
   if (event.key !== 'Escape' || !navOpen.value) return
   closeNav()
@@ -29,9 +24,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
 </script>
 
 <template>
+  <a class="skip-link" href="#main-content">跳到主要内容</a>
+
   <header class="site-header">
     <nav class="nav container">
-      <a class="brand" href="#" @click.prevent="goHome">xiuqiu</a>
+      <router-link class="brand" to="/">xiuqiu</router-link>
 
       <button
         ref="navToggle"
@@ -56,7 +53,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
     </nav>
   </header>
 
-  <main>
+  <main id="main-content">
     <router-view />
   </main>
 

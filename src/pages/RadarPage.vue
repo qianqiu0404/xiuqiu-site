@@ -4,6 +4,7 @@ import { dailyRadars, type DailyRadar } from '../data/generatedRadars'
 import { radarWeeklies } from '../data/generatedRadarWeeklies'
 import { getSupportingRadarItems, radarSourceStatus } from '../data/radarPresentation'
 import { setSeoMeta } from '../utils/seo'
+import '../styles/radar.css'
 
 const latestRadar = dailyRadars[0]
 const latestWeekly = radarWeeklies[0]

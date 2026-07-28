@@ -1,6 +1,6 @@
-const DEFAULT_TITLE = 'xiuqiu｜Web3 钱包后端学习档案'
+const DEFAULT_TITLE = 'xiuqiu｜Web3 钱包后端与多链基础设施工程'
 const DEFAULT_DESCRIPTION =
-  '记录交易所钱包后端、多链 RPC、独立签名、TypeScript 离线钱包与 Go 数据服务的代码实践、验证证据和工程边界。'
+  '专注交易所钱包充值、提现、资金状态、多链交易、签名安全与异常恢复，通过可运行项目、源码、测试和工程证据展示 Web3 钱包后端能力。'
 const SITE_URL = 'https://xiuqiu-site.vercel.app'
 
 interface SeoOptions {
@@ -8,6 +8,7 @@ interface SeoOptions {
   description?: string
   path?: string
   type?: 'website' | 'article'
+  indexable?: boolean
 }
 
 function upsertMeta(selector: string, attrs: Record<string, string>) {
@@ -38,10 +39,12 @@ export function setSeoMeta(options: SeoOptions = {}) {
   const description = options.description || DEFAULT_DESCRIPTION
   const url = SITE_URL + (options.path || window.location.pathname)
   const type = options.type || 'website'
+  const robots = options.indexable === false ? 'noindex, nofollow' : 'index, follow'
 
   document.title = title
 
   upsertMeta('meta[name="description"]', { name: 'description', content: description })
+  upsertMeta('meta[name="robots"]', { name: 'robots', content: robots })
   upsertMeta('meta[property="og:title"]', { property: 'og:title', content: title })
   upsertMeta('meta[property="og:description"]', { property: 'og:description', content: description })
   upsertMeta('meta[property="og:type"]', { property: 'og:type', content: type })

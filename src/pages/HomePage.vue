@@ -15,36 +15,47 @@ import {
   type HomeDestination,
 } from '../data/homePresentation'
 import {
-  latestRadar,
-  projectPortfolioTierLabels,
-  projectStageLabels,
-  siteAiCases,
-  siteArticlesByNewest,
-  siteDeliveryRecords,
-  siteEvidenceRecords,
-  siteProjects,
-  type SiteEvidenceRecord,
-  type SiteProject,
-} from '../data/siteKnowledge'
+  projects,
+  type Project,
+  type ProjectPortfolioTier,
+  type ProjectStage,
+} from '../data/generatedProjects'
+import { evidenceRecords, type EvidenceRecord } from '../data/generatedEvidence'
+import { aiCases } from '../data/generatedAiCases'
+import { deliveryRecords } from '../data/generatedDeliveries'
+import { articleKnowledge } from '../data/generatedArticleKnowledge'
+import { dailyRadars } from '../data/generatedRadars'
 import { setSeoMeta } from '../utils/seo'
 
 type HomeAction = HomeDestination & { label: string }
 
 interface HomeProjectCard {
-  project: SiteProject
+  project: Project
   action: HomeAction
 }
 
 interface HomeEvidenceCard {
-  record: SiteEvidenceRecord
+  record: EvidenceRecord
   label: string
   action: HomeAction
 }
 
-const projectsBySlug = new Map(siteProjects.map(project => [project.slug, project]))
-const evidenceBySlug = new Map(siteEvidenceRecords.map(record => [record.slug, record]))
+const projectStageLabels: Record<ProjectStage, string> = {
+  exploring: '探索中',
+  building: '实现中',
+  'verified-local': '本地已验证',
+  'showcase-ready': '可展示',
+}
+const projectPortfolioTierLabels: Record<ProjectPortfolioTier, string> = {
+  flagship: '旗舰系统',
+  verified: '可验证作品',
+  exploration: '工程探索',
+  paused: '暂停保留',
+}
+const projectsBySlug = new Map(projects.map(project => [project.slug, project]))
+const evidenceBySlug = new Map(evidenceRecords.map(record => [record.slug, record]))
 
-function requireProject(slug: string): SiteProject {
+function requireProject(slug: string): Project {
   const project = projectsBySlug.get(slug)
   if (!project) {
     throw new Error(`Homepage project configuration references missing slug: ${slug}`)
@@ -52,7 +63,7 @@ function requireProject(slug: string): SiteProject {
   return project
 }
 
-function requireEvidence(slug: string): SiteEvidenceRecord {
+function requireEvidence(slug: string): EvidenceRecord {
   const record = evidenceBySlug.get(slug)
   if (!record) {
     throw new Error(`Homepage evidence configuration references missing slug: ${slug}`)
@@ -60,7 +71,7 @@ function requireEvidence(slug: string): SiteEvidenceRecord {
   return record
 }
 
-function buildProjectAction(project: SiteProject): HomeAction {
+function buildProjectAction(project: Project): HomeAction {
   if (project.slug === 'wallet-reliability-lab') {
     return { kind: 'external', label: '运行在线实验', href: walletLabUrl }
   }
@@ -77,15 +88,20 @@ const evidenceCards: HomeEvidenceCard[] = homeEvidenceHighlights.map(item => ({
   label: item.label,
   action: { ...item.destination, label: item.linkLabel },
 }))
-const primaryAiCase = siteAiCases.find(aiCase => aiCase.slug === 'ai-coding-collaboration')
-const latestDelivery = [...siteDeliveryRecords].sort((a, b) => b.date.localeCompare(a.date))[0]
+const primaryAiCase = aiCases.find(aiCase => aiCase.slug === 'ai-coding-collaboration')
+const latestDelivery = [...deliveryRecords].sort((a, b) => b.date.localeCompare(a.date))[0]
+const articlesByNewest = [...articleKnowledge].sort((a, b) => {
+  const dateOrder = b.date.localeCompare(a.date)
+  return dateOrder || b.id - a.id
+})
 const latestEngineeringArticle =
-  siteArticlesByNewest.find(
+  articlesByNewest.find(
     article =>
       article.kind === 'engineering-note'
       && article.relatedProjectIds.includes(flagshipProject.id),
   )
-  || siteArticlesByNewest.find(article => article.kind === 'engineering-note')
+  || articlesByNewest.find(article => article.kind === 'engineering-note')
+const latestRadar = dailyRadars[0]
 
 onMounted(() =>
   setSeoMeta({
