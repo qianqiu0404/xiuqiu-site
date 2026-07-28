@@ -79,7 +79,13 @@ const evidenceCards: HomeEvidenceCard[] = homeEvidenceHighlights.map(item => ({
 }))
 const primaryAiCase = siteAiCases.find(aiCase => aiCase.slug === 'ai-coding-collaboration')
 const latestDelivery = [...siteDeliveryRecords].sort((a, b) => b.date.localeCompare(a.date))[0]
-const latestEngineeringArticle = siteArticlesByNewest.find(article => article.kind === 'engineering-note')
+const latestEngineeringArticle =
+  siteArticlesByNewest.find(
+    article =>
+      article.kind === 'engineering-note'
+      && article.relatedProjectIds.includes(flagshipProject.id),
+  )
+  || siteArticlesByNewest.find(article => article.kind === 'engineering-note')
 
 onMounted(() =>
   setSeoMeta({

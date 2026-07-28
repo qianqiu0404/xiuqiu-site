@@ -166,6 +166,7 @@ export const projects: Project[] = [
       "go-infra"
     ],
     "relatedArticleSlugs": [
+      "evm-broadcast-unknown-canonical-recovery",
       "cex-evm-wallet-deposit-withdrawal-loop",
       "withdrawal-error-handling",
       "wallet-ledger-transaction-mq-consistency",
@@ -424,6 +425,7 @@ export const projects: Project[] = [
       "api-design"
     ],
     "relatedArticleSlugs": [
+      "qiu-market-virtual-funds-recovery",
       "market-services-data-flow",
       "http-rpc-grpc",
       "api-system-calls",

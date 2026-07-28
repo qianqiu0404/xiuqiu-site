@@ -39,7 +39,7 @@
     "nextSteps": ["推送并合并 reviewed artifact", "执行生产 migration 与受保护 Preview 验收", "积累完整七天滚动证据后再评估生产状态"]
   },
   "conceptTags": ["go-infra", "api-design"],
-  "relatedArticleSlugs": ["market-services-data-flow", "http-rpc-grpc", "api-system-calls", "wallet-ledger-transaction-mq-consistency"],
+  "relatedArticleSlugs": ["qiu-market-virtual-funds-recovery", "market-services-data-flow", "http-rpc-grpc", "api-system-calls", "wallet-ledger-transaction-mq-consistency"],
   "suggestedQuestions": ["Qiu Market 如何区分综合现货价、Perp 和 DEX 路线价？", "虚拟交易如何保证撮合与账本一致？", "结果未知时如何恢复而不重复执行？", "为什么当前仍是 verified-local？"]
 }
 ---
