@@ -22,6 +22,13 @@ export interface HomeProofMethod {
   destination: HomeDestination
 }
 
+export interface HomeEvidenceHighlight {
+  evidenceSlug: string
+  label: string
+  linkLabel: string
+  destination: HomeDestination
+}
+
 export const walletLabUrl = 'https://wallet-reliability-lab.vercel.app'
 export const githubProfileUrl = 'https://github.com/qianqiu0404'
 export const githubRepositoriesUrl = 'https://github.com/qianqiu0404?tab=repositories'
@@ -38,7 +45,6 @@ export const representativeProjectSlugs = [
   'wallet-core',
   's78-market-services',
 ] as const
-export const explorationProjectSlugs = ['tss-mpc', 'stableflow', 'risk-server'] as const
 
 export const homeCapabilities: HomeCapability[] = [
   {
@@ -125,6 +131,27 @@ export const homeProofMethods: HomeProofMethod[] = [
     description: '明确哪些能力已经验证，哪些仍处于研究、集成或生产化设计阶段。',
     linkLabel: '查看项目边界',
     destination: { kind: 'internal', to: '/projects' },
+  },
+]
+
+export const homeEvidenceHighlights: HomeEvidenceHighlight[] = [
+  {
+    evidenceSlug: 'multichain-wallet-acceptance',
+    label: '测试网 / 多链验收',
+    linkLabel: '查看验收证据',
+    destination: { kind: 'internal', to: '/engineering/evidence' },
+  },
+  {
+    evidenceSlug: 'failure-playbook-public',
+    label: 'Failure Playbook',
+    linkLabel: '查看异常手册',
+    destination: { kind: 'internal', to: '/engineering/failures' },
+  },
+  {
+    evidenceSlug: 'wallet-lab-demo',
+    label: '公开可靠性实验',
+    linkLabel: '运行在线实验',
+    destination: { kind: 'external', href: walletLabUrl },
   },
 ]
 

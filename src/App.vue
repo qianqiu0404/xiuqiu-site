@@ -49,9 +49,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
       <div id="primary-navigation" class="nav-links" :class="{ open: navOpen }">
         <router-link to="/#capabilities" @click="navOpen = false">能力</router-link>
         <router-link to="/projects" @click="navOpen = false">项目</router-link>
-        <router-link to="/engineering" @click="navOpen = false">验证证据</router-link>
-        <router-link to="/radar" @click="navOpen = false">工程判断</router-link>
-        <router-link to="/now" @click="navOpen = false">关于我</router-link>
+        <router-link to="/engineering/evidence" @click="navOpen = false">证据</router-link>
+        <router-link to="/radar" @click="navOpen = false">研究</router-link>
+        <router-link to="/now" @click="navOpen = false">关于</router-link>
       </div>
     </nav>
   </header>
@@ -64,7 +64,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
     <div class="container footer-inner">
       <span>© {{ new Date().getFullYear() }} xiuqiu</span>
       <nav class="footer-links" aria-label="页尾导航">
-        <router-link to="/now">当前动态</router-link>
+        <router-link to="/ai">AI 工程</router-link>
+        <router-link to="/articles">工程笔记</router-link>
         <router-link to="/learning">学习复盘</router-link>
         <a href="https://github.com/qianqiu0404" target="_blank" rel="noopener">GitHub</a>
       </nav>

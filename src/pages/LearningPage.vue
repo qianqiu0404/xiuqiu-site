@@ -5,7 +5,9 @@ import { projectStageLabels, siteArticlesByNewest, siteProjects } from '../data/
 import { setSeoMeta } from '../utils/seo'
 
 const learningArticles = siteArticlesByNewest.filter(article => article.kind === 'learning-log')
-const activeProjects = siteProjects.filter(project => project.learning)
+const activeProjects = siteProjects.filter(
+  project => project.activityStatus === 'active' && project.learning,
+)
 
 onMounted(() => {
   setSeoMeta({
