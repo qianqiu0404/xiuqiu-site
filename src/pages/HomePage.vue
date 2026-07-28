@@ -2,12 +2,17 @@
 import { onMounted } from 'vue'
 import {
   aiEngineeringOutcomes,
+  explorationProjectSlugs,
+  flagshipProjectSlug,
   githubProfileUrl,
   githubRepositoriesUrl,
   homeCapabilities,
   homeProofMethods,
+  homeSeo,
   homeServiceFlow,
+  representativeProjectSlugs,
   walletLabUrl,
+  type HomeDestination,
 } from '../data/homePresentation'
 import {
   latestRadar,
@@ -21,39 +26,43 @@ import {
 } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
 
-const representativeOrder = [
-  'exchange-wallet-system',
-  'wallet-reliability-lab',
-  'wallet-core',
-  's78-market-services',
-]
-const explorationOrder = ['tss-mpc', 'stableflow', 'risk-server']
+type HomeProjectAction = HomeDestination & { label: string }
 
-function projectsInOrder(slugs: string[]): SiteProject[] {
-  return siteProjects
-    .filter(project => slugs.includes(project.slug))
-    .sort((a, b) => slugs.indexOf(a.slug) - slugs.indexOf(b.slug))
+interface HomeProjectCard {
+  project: SiteProject
+  action: HomeProjectAction
 }
 
-const flagshipProject = siteProjects.find(project => project.portfolioTier === 'flagship')!
-const representativeProjects = projectsInOrder(representativeOrder)
-const explorationProjects = projectsInOrder(explorationOrder)
+const projectsBySlug = new Map(siteProjects.map(project => [project.slug, project]))
+
+function requireProject(slug: string): SiteProject {
+  const project = projectsBySlug.get(slug)
+  if (!project) {
+    throw new Error(`Homepage project configuration references missing slug: ${slug}`)
+  }
+  return project
+}
+
+function buildProjectAction(project: SiteProject): HomeProjectAction {
+  if (project.slug === 'wallet-reliability-lab') {
+    return { kind: 'external', label: '运行在线实验', href: walletLabUrl }
+  }
+  return { kind: 'internal', label: '查看项目详情', to: `/projects/${project.slug}` }
+}
+
+const flagshipProject = requireProject(flagshipProjectSlug)
+const representativeProjectCards: HomeProjectCard[] = representativeProjectSlugs.map(slug => {
+  const project = requireProject(slug)
+  return { project, action: buildProjectAction(project) }
+})
+const explorationProjects = explorationProjectSlugs.map(requireProject)
 const primaryAiCase = siteAiCases.find(aiCase => aiCase.slug === 'ai-coding-collaboration')
 const latestDelivery = siteDeliveryRecords[0]
 const latestEngineeringArticle = siteArticlesByNewest.find(article => article.kind === 'engineering-note')
 
-function projectAction(project: SiteProject) {
-  if (project.slug === 'wallet-reliability-lab') {
-    return { label: '运行在线实验', href: walletLabUrl }
-  }
-  return { label: '查看项目详情', to: `/projects/${project.slug}` }
-}
-
 onMounted(() =>
   setSeoMeta({
-    title: 'xiuqiu｜Web3 钱包后端与多链基础设施工程',
-    description:
-      '专注交易所钱包充值、提现、资金状态、多链交易、签名安全与异常恢复，通过可运行项目、源码、测试和工程证据展示 Web3 钱包后端能力。',
+    ...homeSeo,
     path: '/',
   }),
 )
@@ -171,15 +180,15 @@ onMounted(() =>
             <h3>{{ proof.title }}</h3>
             <p>{{ proof.description }}</p>
             <a
-              v-if="proof.href"
-              :href="proof.href"
+              v-if="proof.destination.kind === 'external'"
+              :href="proof.destination.href"
               target="_blank"
               rel="noopener"
               class="value-home-inline-link"
             >
               {{ proof.linkLabel }} ↗
             </a>
-            <router-link v-else class="value-home-inline-link" :to="proof.to!">
+            <router-link v-else class="value-home-inline-link" :to="proof.destination.to">
               {{ proof.linkLabel }} →
             </router-link>
           </article>
@@ -204,7 +213,11 @@ onMounted(() =>
         </div>
 
         <div class="value-home-project-grid">
-          <article v-for="(project, index) in representativeProjects" :key="project.id" class="value-home-project">
+          <article
+            v-for="({ project, action }, index) in representativeProjectCards"
+            :key="project.id"
+            class="value-home-project"
+          >
             <header>
               <span>{{ String(index + 1).padStart(2, '0') }} · {{ projectPortfolioTierLabels[project.portfolioTier] }}</span>
               <strong>{{ projectStageLabels[project.stage] }}</strong>
@@ -233,16 +246,16 @@ onMounted(() =>
               </div>
             </dl>
             <a
-              v-if="projectAction(project).href"
+              v-if="action.kind === 'external'"
               class="value-home-inline-link"
-              :href="projectAction(project).href"
+              :href="action.href"
               target="_blank"
               rel="noopener"
             >
-              {{ projectAction(project).label }} ↗
+              {{ action.label }} ↗
             </a>
-            <router-link v-else class="value-home-inline-link" :to="projectAction(project).to!">
-              {{ projectAction(project).label }} →
+            <router-link v-else class="value-home-inline-link" :to="action.to">
+              {{ action.label }} →
             </router-link>
           </article>
         </div>

@@ -1,5 +1,4 @@
 .value-home {
-  overflow-x: clip;
   color: var(--text);
 }
 
@@ -193,19 +192,6 @@
   border-top: 2px solid var(--accent);
   background: var(--bg);
   padding: 25px 24px 27px;
-}
-
-.value-home-service-flow li:not(:last-child)::after {
-  position: absolute;
-  top: 50%;
-  right: -14px;
-  z-index: 1;
-  width: 28px;
-  color: var(--text-muted);
-  content: '→';
-  font-size: 16px;
-  text-align: center;
-  transform: translateY(-50%);
 }
 
 .value-home-service-flow li > span,
@@ -598,10 +584,6 @@
 
   .value-home-service-flow {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .value-home-service-flow li::after {
-    display: none;
   }
 
   .value-home-ai-grid {

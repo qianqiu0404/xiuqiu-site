@@ -1,16 +1,31 @@
 <script setup lang="ts">
-import { defineAsyncComponent, ref } from 'vue'
+import { defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const navOpen = ref(false)
+const navToggle = ref<HTMLButtonElement | null>(null)
 const router = useRouter()
 const aiAssistantEnabled = import.meta.env.VITE_AI_ASSISTANT_ENABLED === 'true'
 const AiChatWidget = defineAsyncComponent(() => import('./components/AiChatWidget.vue'))
 
-function goHome() {
+function closeNav() {
   navOpen.value = false
+}
+
+function goHome() {
+  closeNav()
   router.push('/')
 }
+
+function handleEscape(event: KeyboardEvent) {
+  if (event.key !== 'Escape' || !navOpen.value) return
+  closeNav()
+  navToggle.value?.focus()
+}
+
+watch(() => router.currentRoute.value.fullPath, closeNav)
+onMounted(() => window.addEventListener('keydown', handleEscape))
+onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
 </script>
 
 <template>
@@ -19,6 +34,7 @@ function goHome() {
       <a class="brand" href="#" @click.prevent="goHome">xiuqiu</a>
 
       <button
+        ref="navToggle"
         class="nav-toggle"
         :class="{ open: navOpen }"
         type="button"
