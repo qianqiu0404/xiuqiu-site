@@ -6,6 +6,79 @@ export interface DailyRadar { date: string; slug: string; title: string; summary
 
 export const dailyRadars: DailyRadar[] = [
   {
+    "date": "2026-08-02",
+    "slug": "2026-08-02",
+    "title": "每日研究雷达 · 2026-08-02",
+    "summary": "聚焦以太坊客户端安全升级与 RPC 边界、Avalanche Helicon 测试网窗口、低成本原型比较、无地址签名者表示、Agent 会话审计，以及 Spotify 队列事故复盘。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-08-02T07:04:00+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "Lighthouse v8.2.1 要求主网节点优先升级",
+        "summary": "Sigma Prime 将 v8.2.1 标为高优先级安全升级，并修正 partial data columns 的缓存与 gossip 行为；安全漏洞细节尚未披露，数据列回填仍可能 OOM，因此补丁升级与资源风险验证必须分开处理。",
+        "sourceUrl": "https://github.com/sigp/lighthouse/releases/tag/v8.2.1"
+      },
+      {
+        "title": "Nethermind 1.39.2 同时改变安全与日志查询边界",
+        "summary": "Nethermind 1.39.2 纳入 .NET 10.0.10 安全修复，并一致执行 eth_getLogs 默认 10,000 区块扫描上限。节点升级需要同步回归客户端分页与兼容性；发布信息不证明所有依赖漏洞都可经节点路径利用。",
+        "sourceUrl": "https://github.com/NethermindEth/nethermind/releases/tag/1.39.2"
+      },
+      {
+        "title": "Avalanche Helicon 仅在 Fuji 提供升级验证窗口",
+        "summary": "AvalancheGo v1.15.0-fuji 已在 Fuji 激活连续执行、自动续期质押等 Helicon 变更，为节点和钱包集成提供测试窗口；该二进制拒绝主网配置，且激活后暂不支持 C-Chain state sync，不能视为主网上线证据。",
+        "sourceUrl": "https://github.com/ava-labs/avalanchego/releases/tag/v1.15.0-fuji"
+      }
+    ],
+    "aiTip": {
+      "title": "实现前并排比较多个低成本原型",
+      "summary": "让 agent 在同一目标、约束和输入下生成 3–5 个刻意不同的低保真方案，把成功、校验失败、超时和重试放进同一工件审阅，并记录采用与拒绝理由。原型用于澄清契约，正式实现仍需类型、测试、真实依赖和人工评审验证。",
+      "sourceUrl": "https://github.blog/ai-and-ml/github-copilot/the-harness-is-all-you-need-mostly/"
+    },
+    "web3Design": {
+      "title": "用验证器与公钥材料表示没有链上地址的签名者",
+      "summary": "ERC-7913 用 verifier 与 key 组合表示 P-256、RSA 等无 Ethereum 地址的签名者。钱包系统可借鉴算法、验证器、公钥材料、链域和用途的版本化描述，但必须独立完成验证器信任、签名者授权、撤销恢复与防降级控制，不能把密码学验证等同于业务批准。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-7913"
+    },
+    "vibeProject": {
+      "title": "Entire CLI · 把 Agent 会话检查点纳入 Git 审阅",
+      "summary": "Entire CLI 通过 agent 与 Git hooks 捕获会话并把检查点存入独立 refs，提供状态、解释、恢复和诊断入口。公开长会话超时报告说明它已进入真实工作流，也暴露锁竞争与隐私风险；试点应使用私有临时仓库、禁止推送会话并先审阅 refs。",
+      "sourceUrl": "https://github.com/entireio/cli/blob/v0.9.0/README.md"
+    },
+    "readingPick": {
+      "title": "Spotify 视频播客摄取事故复盘",
+      "summary": "Spotify 将队列故障拆为需求突发、后台争用、单项转码成本上升、调度损耗与响应延迟的叠加。可用 15 分钟为一个异步流程画队列压力卡：标出实时与后台任务、成本和余量，再为接收确认、等待时间与端到端完成设置阈值和责任人。",
+      "sourceUrl": "https://engineering.atspotify.com/2026/7/content-ingestion-and-podcast-video-incident-report"
+    },
+    "sourceUrls": [
+      "https://github.com/sigp/lighthouse/releases/tag/v8.2.1",
+      "https://github.com/NethermindEth/nethermind/releases/tag/1.39.2",
+      "https://github.com/ava-labs/avalanchego/releases/tag/v1.15.0-fuji",
+      "https://github.blog/ai-and-ml/github-copilot/the-harness-is-all-you-need-mostly/",
+      "https://eips.ethereum.org/EIPS/eip-7913",
+      "https://github.com/entireio/cli/blob/v0.9.0/README.md",
+      "https://github.com/entireio/cli/releases/tag/v0.9.0",
+      "https://api.github.com/repos/entireio/cli/releases/tags/v0.9.0",
+      "https://github.com/entireio/cli/blob/v0.9.0/docs/security-and-privacy.md",
+      "https://github.com/entireio/cli/issues/1887",
+      "https://github.com/entireio/cli/pull/1880",
+      "https://github.com/entireio/cli/issues/1697",
+      "https://github.com/entireio/cli/blob/v0.9.0/LICENSE",
+      "https://engineering.atspotify.com/2026/7/content-ingestion-and-podcast-video-incident-report"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
     "date": "2026-07-31",
     "slug": "2026-07-31",
     "title": "每日研究雷达 · 2026-07-31",
