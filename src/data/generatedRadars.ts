@@ -6,6 +6,76 @@ export interface DailyRadar { date: string; slug: string; title: string; summary
 
 export const dailyRadars: DailyRadar[] = [
   {
+    "date": "2026-08-03",
+    "slug": "2026-08-03",
+    "title": "每日研究雷达 · 2026-08-03",
+    "summary": "聚焦 Coinbase 资金工作流事故、以太坊 agent 安全分诊、SEC 加密监管议程、stacked PR 迁移、模块化智能账户、Cline，以及依赖更新信噪比分流。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-08-03T10:14:03+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "Coinbase 共享入口故障暂停多类资金工作流",
+        "summary": "资源名称冲突使共享 Istio ingress gateway 不可用，充提、卡、链上和结算工作流同时受影响，标准回滚又依赖故障入口。公司称资金未受风险，但改进项仍需后续运行证据验证。",
+        "sourceUrl": "https://www.coinbase.com/fr-fr/blog/a-postmortem-of-our-july-14-2026-incident"
+      },
+      {
+        "title": "以太坊协议安全 agent 的瓶颈是可复现分诊",
+        "summary": "Ethereum Foundation 将 agent 视为安全搜索工具，要求候选用真实代码 PoC、调用链、影响边界和维护者复核转成有效漏洞；已确认一项公开 CVE，但未披露完整误报率。",
+        "sourceUrl": "https://blog.ethereum.org/2026/07/09/triage-is-the-product"
+      },
+      {
+        "title": "SEC 议程覆盖加密融资、托管与链上代币化证券",
+        "summary": "SEC 主席声明拟为加密资产融资、托管和链上代币化证券提供更清晰路径，同时保留投资者保护和执法；这是政策议程，不是已生效规则或产品豁免。",
+        "sourceUrl": "https://www.sec.gov/newsroom/speeches-statements/atkins-statement-2026-regulatory-agenda-070726"
+      }
+    ],
+    "aiTip": {
+      "title": "把大型迁移拆成有依赖关系的短会话与小 PR 栈",
+      "summary": "先提交可独立测试的基础层，后续会话从前一分支派生并只承担一个目标；每层记录前置提交、局部测试和回滚。stacked PR 缩小审阅面，但最终仍需在合并基线做完整回归。",
+      "sourceUrl": "https://github.blog/ai-and-ml/github-copilot/stacked-sessions-and-pull-requests-in-the-github-copilot-app/"
+    },
+    "web3Design": {
+      "title": "把账户验证、执行与约束拆成可清点模块",
+      "summary": "ERC-6900 用 validation、execution 和 hook 模块描述智能账户能力。钱包系统可迁移 manifest、selector、hook 顺序和安装审计，但恶意模块仍可拒绝服务或转走资金，卸载残留也必须显式清理。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-6900"
+    },
+    "vibeProject": {
+      "title": "Cline · 多客户端开源 coding agent",
+      "summary": "Cline 在编辑器、CLI 与 SDK 中提供项目编辑、命令、checkpoint 和扩展能力。公开发布与 issue 显示活跃维护；试用应固定 CLI 版本、使用无凭据示例仓库，并保留命令审批与独立测试。",
+      "sourceUrl": "https://github.com/cline/cline"
+    },
+    "readingPick": {
+      "title": "分组普通依赖更新，同时保留安全修复快车道",
+      "summary": "文章建议按生态分组普通版本更新、降低 cadence，并确认安全更新独立即时触发。可用 15 分钟画出普通升级与安全修复两条路径，验证冷却不会拖延已有修复的高危漏洞。",
+      "sourceUrl": "https://github.blog/security/supply-chain-security/tame-dependabot-group-your-updates-slow-the-cadence-keep-security-fast/"
+    },
+    "sourceUrls": [
+      "https://www.coinbase.com/fr-fr/blog/a-postmortem-of-our-july-14-2026-incident",
+      "https://blog.ethereum.org/2026/07/09/triage-is-the-product",
+      "https://www.sec.gov/newsroom/speeches-statements/atkins-statement-2026-regulatory-agenda-070726",
+      "https://github.blog/ai-and-ml/github-copilot/stacked-sessions-and-pull-requests-in-the-github-copilot-app/",
+      "https://eips.ethereum.org/EIPS/eip-6900",
+      "https://github.com/cline/cline",
+      "https://github.com/cline/cline/releases/tag/cli-v3.0.49",
+      "https://www.npmjs.com/package/cline/v/3.0.49",
+      "https://docs.cline.bot/",
+      "https://github.com/cline/cline/blob/main/LICENSE",
+      "https://github.blog/security/supply-chain-security/tame-dependabot-group-your-updates-slow-the-cadence-keep-security-fast/"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
     "date": "2026-08-02",
     "slug": "2026-08-02",
     "title": "每日研究雷达 · 2026-08-02",
