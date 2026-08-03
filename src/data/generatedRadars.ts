@@ -79,6 +79,75 @@ export const dailyRadars: DailyRadar[] = [
     ]
   },
   {
+    "date": "2026-08-01",
+    "slug": "2026-08-01",
+    "title": "每日研究雷达 · 2026-08-01",
+    "summary": "聚焦 OP Stack 交易入口与证明迁移、Cosmos 密钥升级、俄罗斯加密流通框架、agent 结果成本、可衰减钱包权限、Codex CLI，以及代码搜索热路径优化。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-08-03T10:08:54+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "op-reth 2.4.1 改变交易池入口与历史证明迁移边界",
+        "summary": "转发交易进入 txpool 现在需要显式启用，历史证明 v1 数据库将在 8 月 31 日弃用；节点升级必须分别验证交易入口、资源校验和 v2 证明库重建，不能只替换二进制。",
+        "sourceUrl": "https://github.com/ethereum-optimism/optimism/releases/tag/op-reth/v2.4.1"
+      },
+      {
+        "title": "Cosmos SDK 0.55 把共识密钥轮换变成链级升级事项",
+        "summary": "v0.55.0 新增共识密钥轮换与后量子密钥类型，从 v0.54.x 升级需要协调链升级；框架能力不代表采用链或历史账户已具备后量子安全性。",
+        "sourceUrl": "https://github.com/cosmos/cosmos-sdk/releases/tag/v0.55.0"
+      },
+      {
+        "title": "俄罗斯加密流通框架保留境内支付禁令",
+        "summary": "俄罗斯央行称相关法律计划 9 月 1 日生效，允许受监管中介和部分跨境用途，同时继续禁止境内支付；最终法律文本、许可与过渡实施仍需独立确认。",
+        "sourceUrl": "https://www.cbr.ru/eng/press/event/?id=32724"
+      }
+    ],
+    "aiTip": {
+      "title": "用可验收结果衡量 agent 单位成本",
+      "summary": "为重复工作流记录被接受的完成物、模型成本、耗时、人工复核与重试，只在质量达到同一门槛后比较单位结果成本。不同任务难度和失败样本必须保留，不能用 token 单价代替业务验收。",
+      "sourceUrl": "https://openai.com/index/managing-ai-investments-in-agentic-era/"
+    },
+    "web3Design": {
+      "title": "把自动执行权限做成可衰减、可过期的类型化授权",
+      "summary": "ERC-7715 让应用请求带链、session 账户、权限类型和规则的执行权限。钱包系统可迁移最小授权、衰减、过期和撤销机制，但必须为不透明 permissionsContext 增加 schema、完整性和生命周期校验。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-7715"
+    },
+    "vibeProject": {
+      "title": "OpenAI Codex CLI · 本地开源 coding agent",
+      "summary": "Codex CLI 把仓库读取、修改、命令与验证收敛到终端客户端。公开仓库和稳定发布显示活跃维护，但首次验证应固定版本、使用无凭据样例仓库，并以 diff、测试和权限记录验收。",
+      "sourceUrl": "https://github.com/openai/codex"
+    },
+    "readingPick": {
+      "title": "GitHub 代码搜索的无分支大小写折叠优化",
+      "summary": "文章用基准与汇编说明提前退出会阻止向量化，完整无分支扫描反而达到内存带宽。可用 15 分钟为一个热循环记录输入分布、数据相关分支、向量化和分配，再用两个最小变体验证直觉。",
+      "sourceUrl": "https://github.blog/engineering/architecture-optimization/dont-stop-early-case-folding-source-code-at-memory-speed/"
+    },
+    "sourceUrls": [
+      "https://github.com/ethereum-optimism/optimism/releases/tag/op-reth/v2.4.1",
+      "https://github.com/cosmos/cosmos-sdk/releases/tag/v0.55.0",
+      "https://www.cbr.ru/eng/press/event/?id=32724",
+      "https://openai.com/index/managing-ai-investments-in-agentic-era/",
+      "https://eips.ethereum.org/EIPS/eip-7715",
+      "https://github.com/openai/codex",
+      "https://github.com/openai/codex/releases/tag/rust-v0.146.0",
+      "https://github.com/openai/codex/blob/rust-v0.146.0/README.md",
+      "https://github.com/openai/codex/blob/rust-v0.146.0/LICENSE",
+      "https://github.blog/engineering/architecture-optimization/dont-stop-early-case-folding-source-code-at-memory-speed/"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
     "date": "2026-07-31",
     "slug": "2026-07-31",
     "title": "每日研究雷达 · 2026-07-31",
