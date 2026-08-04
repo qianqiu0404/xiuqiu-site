@@ -3,7 +3,7 @@
   "trailingSlash": false,
   "functions": {
     "api/chat.ts": {
-      "includeFiles": ["src/data/**"]
+      "includeFiles": "src/data/**"
     }
   }
 }
