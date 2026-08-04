@@ -239,6 +239,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       },
       body: JSON.stringify({
         model: process.env.DEEPSEEK_MODEL || DEFAULT_MODEL,
+        thinking: { type: 'disabled' },
         messages: [
           {
             role: 'system',
