@@ -863,6 +863,7 @@
 .cinematic-proof-sticky {
   position: sticky;
   top: 84px;
+  height: calc(100dvh - 140px);
   margin-top: 138px;
 }
 

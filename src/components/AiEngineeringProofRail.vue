@@ -114,6 +114,9 @@ function askAi(event: MouseEvent) {
   --proof-muted: rgba(242, 246, 255, 0.66);
   --proof-soft: rgba(242, 246, 255, 0.82);
   position: relative;
+  display: flex;
+  max-height: 100%;
+  flex-direction: column;
   overflow: hidden;
   width: 100%;
   border: 1px solid var(--proof-border);
@@ -180,10 +183,24 @@ function askAi(event: MouseEvent) {
 
 .ai-proof-steps {
   display: grid;
+  min-height: 0;
+  flex: 1 1 auto;
   gap: 0;
   margin-top: 24px;
-  padding: 0;
+  overflow-y: auto;
+  padding: 0 4px 0 0;
+  scrollbar-color: rgba(207, 226, 250, 0.28) transparent;
+  scrollbar-width: thin;
   list-style: none;
+}
+
+.ai-proof-steps::-webkit-scrollbar {
+  width: 4px;
+}
+
+.ai-proof-steps::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(207, 226, 250, 0.28);
 }
 
 .ai-proof-steps li {
@@ -358,6 +375,36 @@ function askAi(event: MouseEvent) {
   .ai-proof-evidence:hover,
   .ai-proof-ask:hover {
     transform: none;
+  }
+}
+
+@media (min-width: 1025px) and (max-height: 780px) {
+  .ai-proof-rail:not(.ai-proof-rail--compact) {
+    padding: 20px;
+  }
+
+  .ai-proof-rail:not(.ai-proof-rail--compact) .ai-proof-context-label {
+    margin-top: 14px;
+  }
+
+  .ai-proof-rail:not(.ai-proof-rail--compact) .ai-proof-header h2 {
+    font-size: 21px;
+  }
+
+  .ai-proof-rail:not(.ai-proof-rail--compact) .ai-proof-summary {
+    font-size: 11px;
+  }
+
+  .ai-proof-rail:not(.ai-proof-rail--compact) .ai-proof-steps {
+    margin-top: 16px;
+  }
+
+  .ai-proof-rail:not(.ai-proof-rail--compact) .ai-proof-steps li {
+    padding: 10px 0;
+  }
+
+  .ai-proof-rail:not(.ai-proof-rail--compact) .ai-proof-steps li::after {
+    top: 16px;
   }
 }
 </style>
