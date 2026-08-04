@@ -27,7 +27,7 @@ xiuqiu-site                     个人技术品牌、文章与证据总入口
 - `content/deliveries/*.md`: AI-assisted delivery records and human decisions
 - `src/data/generated*.ts`: generated typed metadata; article bodies are loaded from Markdown only when their route opens
 - `src/data/siteKnowledge.ts`: unified project/article/evidence knowledge graph
-- `api/chat.ts`: serverless chat proxy for the right-side public AI guide
+- `api/chat.ts`: serverless chat proxy for the right-side public engineering guide
 
 ## Commands
 
@@ -52,7 +52,7 @@ DEEPSEEK_API_KEY=
 DEEPSEEK_MODEL=deepseek-v4-flash
 ```
 
-The right-side assistant is part of the public site. It only answers from public site context, shows a privacy warning before submission, and fails closed when the provider key is unavailable. Never commit a real API key. `.env.example` contains names and safe defaults only.
+The right-side assistant is part of the public site. It uses the reviewed public knowledge graph, sends visitor questions to the DeepSeek API, and fails closed when the provider key is unavailable. The in-memory limiter is a best-effort per-instance guard, not a persistent production quota. Never commit a real API key. `.env.example` contains names and safe defaults only.
 
 ## Content workflow
 

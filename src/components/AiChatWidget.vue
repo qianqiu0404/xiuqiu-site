@@ -29,6 +29,8 @@ const input = ref('')
 const isLoading = ref(false)
 const errorMessage = ref('')
 const messageList = ref<HTMLElement | null>(null)
+const chatInput = ref<HTMLTextAreaElement | null>(null)
+const chatToggle = ref<HTMLButtonElement | null>(null)
 const explicitPageContext = ref<PageContext | null>(null)
 const messages = ref<ChatMessage[]>([
   {
@@ -36,42 +38,6 @@ const messages = ref<ChatMessage[]>([
     content: '你好，我可以基于网站中经过整理的工程证据，帮你了解 xiuqiu 正在做什么、已经验证了什么，以及目标完成形态是什么。',
   },
 ])
-
-const promptGroups = [
-  {
-    label: 'Projects',
-    prompts: [
-      '介绍一下 xiuqiu 的 Web3 钱包项目',
-      'wallet-api 和 wallet-sign 的边界是什么？',
-      'wallet-core 展示了哪些 TypeScript 多链能力？',
-    ],
-  },
-  {
-    label: 'AI Collaboration',
-    prompts: [
-      'xiuqiu 如何使用 AI 协作完成工程任务？',
-      '跨设备 Skill 工具链如何区分个人与第三方能力？',
-      'Obsidian 知识系统如何避免公开私人内容？',
-      '研究自动化如何处理来源、去重和失败？',
-    ],
-  },
-  {
-    label: 'Writing',
-    prompts: [
-      '哪些文章适合了解后端 API 和 gRPC？',
-      '给我一条学习多链钱包后端的阅读路径',
-      '推荐几篇理解 EVM 工程的文章',
-    ],
-  },
-  {
-    label: 'Learning Path',
-    prompts: [
-      '如何快速了解 xiuqiu 当前在做的工程？',
-      '从钱包架构到签名服务应该按什么顺序学习？',
-      '请概括这个网站的工程主线',
-    ],
-  },
-]
 
 const canSend = computed(() => input.value.trim().length > 0 && !isLoading.value)
 const currentPageContext = computed<PageContext>(() => {
@@ -189,13 +155,75 @@ const currentPageContext = computed<PageContext>(() => {
   }
 })
 
-function toggleChat() {
-  isOpen.value = !isOpen.value
-  errorMessage.value = ''
-
-  if (isOpen.value) {
-    void scrollToBottom()
+const contextualPrompts = computed(() => {
+  switch (currentPageContext.value.type) {
+    case 'project':
+      return [
+        '这个项目解决什么问题，当前证据和限制是什么？',
+        '这个项目完成后的产品形态是什么？',
+        '推荐相关工程证据和文章',
+      ]
+    case 'engineering-failures':
+      return [
+        '广播结果未知时为什么不能直接重发？',
+        '链上成功但本地失败应该如何恢复？',
+        '先止损、查事实和幂等恢复分别做什么？',
+      ]
+    case 'engineering-evidence':
+    case 'engineering':
+      return [
+        '哪些钱包能力已经有可复现证据？',
+        '本地验证、测试网验证和生产经验有什么区别？',
+        'wallet-api、wallet-sign 和 risk-service 的边界是什么？',
+      ]
+    case 'article':
+    case 'articles':
+      return [
+        '概括这篇内容的核心工程判断',
+        '推荐一条多链钱包后端阅读路径',
+        '哪些文章适合理解签名与异常恢复？',
+      ]
+    case 'ai':
+    case 'ai-deliveries':
+    case 'ai-delivery':
+      return [
+        'AI 在工程任务中负责什么，人负责什么？',
+        '哪些 AI 协作结果有公开验证？',
+        '知识治理如何避免公开私人内容？',
+      ]
+    case 'radar':
+    case 'radar-detail':
+      return [
+        '这条研究信号与哪些工程项目相关？',
+        '哪些是事实，哪些仍是推断？',
+        '最近研究正在收敛到什么主题？',
+      ]
+    default:
+      return [
+        'xiuqiu 的 Wallet Platform 包含哪些项目？',
+        'Market Server 完成后是什么产品？',
+        '哪些能力已经有可复现证据？',
+      ]
   }
+})
+
+async function toggleChat() {
+  if (isOpen.value) {
+    closeChat()
+    return
+  }
+
+  isOpen.value = true
+  errorMessage.value = ''
+  await nextTick()
+  chatInput.value?.focus()
+  await scrollToBottom()
+}
+
+function closeChat() {
+  isOpen.value = false
+  errorMessage.value = ''
+  void nextTick(() => chatToggle.value?.focus())
 }
 
 async function sendQuickPrompt(prompt: string) {
@@ -300,27 +328,41 @@ function handleAskAi(event: Event) {
   void askWithContext(detail)
 }
 
+function handleEscape(event: KeyboardEvent) {
+  if (event.key === 'Escape' && isOpen.value) closeChat()
+}
+
 onMounted(() => {
   window.addEventListener('ai-chat:ask', handleAskAi)
+  window.addEventListener('keydown', handleEscape)
 })
 
 onUnmounted(() => {
   window.removeEventListener('ai-chat:ask', handleAskAi)
+  window.removeEventListener('keydown', handleEscape)
 })
 </script>
 
 <template>
   <div class="ai-chat">
-    <section v-if="isOpen" class="ai-chat-panel" aria-label="xiuqiu AI 客服">
+    <section
+      v-if="isOpen"
+      id="ai-chat-panel"
+      class="ai-chat-panel"
+      role="dialog"
+      aria-label="xiuqiu AI 工程内容助手"
+    >
       <header class="ai-chat-header">
         <div>
-          <p class="ai-chat-kicker">xiuqiu AI</p>
+          <p class="ai-chat-kicker">xiuqiu AI · DeepSeek</p>
           <h2 class="ai-chat-title">工程内容助手</h2>
         </div>
-        <button class="ai-icon-button" type="button" aria-label="关闭 AI 客服" @click="toggleChat">
+        <button class="ai-icon-button" type="button" aria-label="关闭 AI 助手" @click="closeChat">
           ×
         </button>
       </header>
+
+      <p class="ai-chat-context">当前页面 · {{ currentPageContext.title }}</p>
 
       <div ref="messageList" class="ai-chat-messages" aria-live="polite">
         <article
@@ -331,7 +373,7 @@ onUnmounted(() => {
         >
           {{ message.content }}
           <div v-if="message.references?.length" class="ai-references">
-            <p class="ai-references-title">Related on this site</p>
+            <p class="ai-references-title">站内相关证据</p>
             <a
               v-for="reference in message.references"
               :key="reference.type + reference.href + reference.title"
@@ -343,39 +385,39 @@ onUnmounted(() => {
             </a>
           </div>
         </article>
-        <article v-if="isLoading" class="ai-message ai-message-assistant ai-message-loading">
-          Thinking...
+        <article v-if="isLoading" class="ai-message ai-message-assistant ai-message-loading" role="status">
+          正在整理公开证据…
         </article>
       </div>
 
-      <div class="ai-chat-prompts" aria-label="Suggested questions">
-        <div v-for="group in promptGroups" :key="group.label" class="ai-prompt-group">
-          <p class="ai-prompt-label">{{ group.label }}</p>
-          <button
-            v-for="prompt in group.prompts"
-            :key="prompt"
-            class="ai-prompt"
-            type="button"
-            :disabled="isLoading"
-            @click="sendQuickPrompt(prompt)"
-          >
-            {{ prompt }}
-          </button>
-        </div>
+      <div class="ai-chat-prompts" aria-label="当前页面建议问题">
+        <button
+          v-for="prompt in contextualPrompts"
+          :key="prompt"
+          class="ai-prompt"
+          type="button"
+          :disabled="isLoading"
+          @click="sendQuickPrompt(prompt)"
+        >
+          {{ prompt }}
+        </button>
       </div>
 
-      <p v-if="errorMessage" class="ai-chat-error">{{ errorMessage }}</p>
+      <p v-if="errorMessage" class="ai-chat-error" role="alert">{{ errorMessage }}</p>
 
-      <p class="ai-chat-privacy">只使用本站公开内容回答。请勿输入密钥、账户、地址、交易或其他隐私信息。</p>
+      <p class="ai-chat-privacy">
+        回答只使用本站公开内容；你的问题会发送至 DeepSeek API。请勿输入密钥、账户、地址、交易或其他隐私信息。
+      </p>
 
       <form class="ai-chat-form" @submit.prevent="sendMessage">
         <textarea
+          ref="chatInput"
           v-model="input"
           class="ai-chat-input"
           rows="2"
           maxlength="1000"
           placeholder="询问项目、工程证据或钱包后端..."
-          aria-label="向 xiuqiu AI 客服提问"
+          aria-label="向 xiuqiu AI 助手提问"
           @keydown.enter.exact.prevent="sendMessage"
         ></textarea>
         <button class="ai-send-button" type="submit" :disabled="!canSend">
@@ -385,10 +427,12 @@ onUnmounted(() => {
     </section>
 
     <button
+      ref="chatToggle"
       class="ai-chat-toggle"
       type="button"
       :aria-expanded="isOpen"
-      aria-label="打开 xiuqiu AI 客服"
+      aria-controls="ai-chat-panel"
+      aria-label="打开 xiuqiu AI 工程内容助手"
       @click="toggleChat"
     >
       AI
@@ -403,6 +447,11 @@ onUnmounted(() => {
   bottom: 24px;
   z-index: 140;
   font-family: var(--font);
+}
+
+.ai-chat :where(button, textarea, a):focus-visible {
+  outline: 3px solid rgba(0, 113, 227, 0.28);
+  outline-offset: 2px;
 }
 
 .ai-chat-toggle {
@@ -464,6 +513,17 @@ onUnmounted(() => {
   font-weight: 700;
   letter-spacing: 0;
   line-height: 1.25;
+}
+
+.ai-chat-context {
+  overflow: hidden;
+  border-bottom: 1px solid var(--border-light);
+  padding: 9px 18px;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .ai-icon-button {
@@ -564,21 +624,6 @@ onUnmounted(() => {
   padding: 12px 18px 0;
 }
 
-.ai-prompt-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-}
-
-.ai-prompt-label {
-  width: 100%;
-  color: var(--text-muted);
-  font-family: var(--mono);
-  font-size: 10px;
-  line-height: 1.2;
-  text-transform: uppercase;
-}
-
 .ai-prompt {
   border: 1px solid var(--border-light);
   border-radius: 999px;
@@ -611,9 +656,9 @@ onUnmounted(() => {
 
 .ai-chat-privacy {
   margin: 0;
-  padding: 0 18px 10px;
-  color: var(--text-light);
-  font-size: 11px;
+  padding: 10px 18px 0;
+  color: var(--text-muted);
+  font-size: 10px;
   line-height: 1.5;
 }
 
