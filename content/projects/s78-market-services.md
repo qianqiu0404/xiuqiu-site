@@ -2,8 +2,8 @@
 {
   "id": 3,
   "slug": "s78-market-services",
-  "name": "S78 Market Services",
-  "category": "数据服务扩展",
+  "name": "Qiu Market Server",
+  "category": "可信行情与交易基础设施",
   "featured": false,
   "publish": true,
   "portfolioTier": "verified",
@@ -11,37 +11,37 @@
   "stage": "verified-local",
   "sourceType": "adapted",
   "visibility": "private",
-  "positioning": "交易所行情数据服务学习项目：串联外部数据源、Crawler、Worker、Redis/PostgreSQL、HTTP/gRPC API 与 Vue Dashboard。",
-  "currentFocus": "收口 CEX/DEX 采集、Redis 热点、PostgreSQL 业务数据、gRPC 查询和 Doris 分析旁路，并继续完成 Doris 真实容器联调。",
-  "verifiedEvidence": ["Redis ZSET 涨跌榜、Hyperliquid DEX、八个 gRPC RPC 与前端构建已完成", "go build、go vet、go test 和前端生产构建已重新通过", "Doris 分析旁路代码已完成，但真实容器数据链路仍待验收"],
-  "targetOutcome": "形成一条可重复的本地行情链路：采集真实数据、写入 Redis/PostgreSQL、通过 API 查询并在前端展示更新时间、延迟和错误状态。",
-  "nextMilestone": "启动真实 Doris 容器并核对 PostgreSQL 增量同步、聚合结果、失败重试与水位恢复。",
-  "knownLimits": ["多数据源容灾、K 线缺口补偿和价格异常检测仍未完成", "当前不包含撮合或钱包资金状态", "仓库暂按私有项目展示"],
-  "updatedAt": "2026-07-22",
-  "coreAbilities": ["行情采集与 Worker", "Redis/PostgreSQL", "HTTP/gRPC", "Vue Dashboard", "数据新鲜度与错误状态"],
-  "talkingPoints": ["为什么采集和查询要分层", "行情可用与行情新鲜有什么区别", "为什么不能使用 mock 兜底真实故障"],
-  "techStack": ["Go", "HTTP", "gRPC", "Redis", "PostgreSQL", "GORM", "Vue", "Vite"],
+  "positioning": "面向行情产品与交易系统的统一 Market Server：接入 CEX、Perp 与 AMM 来源，输出带来源、新鲜度和降级状态的可信市场事实，并为虚拟现货交易提供撮合、账本、事件和确定性恢复。",
+  "currentFocus": "以统一市场身份、行情新鲜度、虚拟资金账本和结果未知恢复为核心，收敛可重复发布的 Market Server；真实交易所下单、充值提现和衍生品执行不进入产品边界。",
+  "verifiedEvidence": ["release artifact 72343ba 已实现四家 CEX WebSocket / REST 对账、Hyperliquid、Uniswap / PancakeSwap、可信新鲜度和 16 个只读 gRPC RPC", "HTTP / gRPC / PostgreSQL / Redis、外部行情来源与 Doris 分析链路已有本地集成记录，动态资产和市场数量只作为现场快照", "BTC/USDT 虚拟交易已覆盖定点数撮合、available / held 双重记账、PostgreSQL 事件/快照/outbox、幂等、WebSocket cursor 与重启 state hash 恢复", "2026-08-04 在 release artifact 上重新通过完整 Go test；已有记录还覆盖 race / vet、前端测试与构建、隔离 PostgreSQL publisher/feed/cleanup 集成和二进制恢复演练"],
+  "targetOutcome": "完成后的 Qiu Market Server 是一套可独立部署的行情与虚拟交易后端：上游异常不会制造假价格，下游可以按统一市场身份读取报价、来源和健康状态；订单、余额、成交、事件和 WebSocket cursor 能在重启或提交结果未知后从 PostgreSQL 确定性恢复。",
+  "nextMilestone": "完成标准是固定同一 release artifact，通过生产迁移、受保护 Preview、OAuth、备份恢复、容量与连续七天稳定性门，并让浏览器展示的行情、订单、余额和系统状态都能追溯到同一后端事实。",
+  "knownLimits": ["当前 `verified-local` 证据不等于生产 migration、公开 Preview、容量或连续七天可用性验收", "交易只使用虚拟资金，不接充值、提现、私钥、真实交易所下单或实盘资产", "多场所资产数量、延迟和可用率都是时间点快照，不作为固定规模或 SLA 声明", "仓库暂按私有项目展示"],
+  "updatedAt": "2026-08-04",
+  "coreAbilities": ["多场所行情采集与身份治理", "数据新鲜度与故障隔离", "Redis/PostgreSQL/Doris", "HTTP/gRPC", "虚拟现货撮合与双重记账", "事件流、快照与恢复", "Vue 交易终端"],
+  "talkingPoints": ["为什么 Perp/DEX 不能直接混入综合现货价", "行情可用与行情新鲜有什么区别", "虚拟交易为什么仍需要双重记账与结果未知恢复", "本地集成通过为什么不等于生产验收"],
+  "techStack": ["Go", "HTTP", "gRPC", "Redis", "PostgreSQL", "Doris", "WebSocket", "Vue", "TypeScript", "Vite"],
   "engineering": {
-    "role": "行情采集、处理、存储和展示链路的运行梳理与可信数据表达",
-    "systemBoundary": "负责交易所后台行情数据流，不承担撮合、订单或钱包资金状态。",
-    "callFlow": ["Crawler 拉取外部行情", "Worker 处理热点价格", "Redis/PostgreSQL 持久化", "HTTP/gRPC 查询", "Dashboard 展示新鲜度"],
-    "failureScenarios": ["外部 API 失败时不能伪造行情", "数据存在但过期时必须明确标记 stale"],
-    "evidence": ["Crawler/Worker 分层", "last_updated 与 data_delay_seconds", "Dashboard Error 状态"],
-    "knownLimits": ["一键本地验收仍需固定", "完整数据质量与容灾策略未完成"],
-    "overviewSummary": "S78 是钱包主线之外的数据服务补充，串联外部数据源、异步处理、缓存、数据库、API 和前端之间的完整链路。"
+    "role": "多场所行情、虚拟撮合、账本、恢复和浏览器产品链路的实现与验证",
+    "systemBoundary": "Qiu Market 只处理行情与单用户虚拟资金交易；它不接交易所真实下单、充值提现、私钥或实盘资产，行情参考异常也不能伪造可成交价格。",
+    "callFlow": ["Crawler / DEX adapter 获取并核对外部行情", "统一 Snapshot Writer 写 PostgreSQL 并派生 Redis / Doris", "HTTP / gRPC 向前端提供来源和新鲜度", "虚拟交易 gateway 把命令送入单市场 runner", "撮合、账本、事件、outbox 与快照在 PostgreSQL 恢复", "Vue 展示行情、订单、余额和错误状态"],
+    "failureScenarios": ["外部来源失败时保留最后成功值并降级，不能生成 mock 行情", "交易存储提交结果未知时停止接单并从事件流恢复", "参考行情过期时 demo-maker 撤单停机但不破坏撮合恢复", "生产 migration 或恢复证据不完整时禁止晋级"],
+    "evidence": ["Go test/race/vet 与交易 fuzz/benchmark", "前端单测、生产构建与浏览器回归", "真实 PostgreSQL restart/state-hash 集成", "Doris 与多场所来源本地交换数据记录", "release artifact 72343ba 与恢复演练"],
+    "knownLimits": ["生产 migration、Preview、OAuth、容量和七天滚动证据仍待验收", "虚拟资金边界不能包装成商业交易所或实盘经验"],
+    "overviewSummary": "Qiu Market Server 的产品形态是可信行情平面加可恢复的虚拟交易纵切片：它向上游治理来源与新鲜度，向下游提供一致的市场、订单、账本和事件事实。"
   },
   "learning": {
-    "goal": "理解交易所数据服务的采集、处理、存储和查询边界，并用时间和错误状态表达数据可信度。",
-    "verified": ["服务分层", "数据更新时间与延迟", "前端真实错误态"],
-    "verification": ["go test ./...", "go build ./cmd/market-services", "make verify-local", "npm run build"],
-    "verificationNote": "命令已经整理，完整稳定基线将在下一里程碑重新执行。",
-    "tradeoffs": ["不使用假数据兜底", "延迟与错误作为 API 语义的一部分", "未完成能力继续保持目标态标签"],
-    "nextSteps": ["跑通本地依赖和行情查询", "补齐 K 线缺口验证", "设计多数据源容灾和告警"]
+    "goal": "理解多场所行情、撮合、双重记账、事件持久化和故障恢复如何组成一个完整但只使用虚拟资金的交易系统。",
+    "verified": ["多场所行情身份、新鲜度和 rollout 边界", "BTC/USDT 定点数撮合与订单语义", "available / held 账本与费用分录", "PostgreSQL 事件/快照/outbox 与重启 state hash", "浏览器虚拟入金、挂单、成交、撤单和恢复链路"],
+    "verification": ["go test ./...", "go test -race ./trading/...", "go vet ./...", "npm --prefix frontend test -- --run", "npm --prefix frontend run build", "git diff --check"],
+    "verificationNote": "2026-08-04 在 release artifact 72343ba 上重新通过完整 Go test；PostgreSQL 集成、race / vet、前端构建与恢复演练来自已有去敏记录。生产迁移、Preview、容量和七天 soak 不计入已完成证据。",
+    "tradeoffs": ["不使用假数据兜底", "真实行情与可执行路线价格分开", "教学可审计性优先于低延迟优化", "虚拟资金与真实交易严格隔离", "未完成生产门继续保持 pending"],
+    "nextSteps": ["固定前后端和迁移使用同一 release artifact", "执行生产 migration、受保护 Preview、OAuth 与备份恢复验收", "积累完整七天滚动证据并补容量边界"]
   },
   "conceptTags": ["go-infra", "api-design"],
-  "relatedArticleSlugs": ["market-services-data-flow", "http-rpc-grpc", "api-system-calls"],
-  "suggestedQuestions": ["行情服务如何表达数据新鲜度？", "为什么失败时不应该展示 mock 行情？"]
+  "relatedArticleSlugs": ["qiu-market-virtual-funds-recovery", "market-services-data-flow", "http-rpc-grpc", "api-system-calls", "wallet-ledger-transaction-mq-consistency"],
+  "suggestedQuestions": ["Qiu Market 如何区分综合现货价、Perp 和 DEX 路线价？", "虚拟交易如何保证撮合与账本一致？", "结果未知时如何恢复而不重复执行？", "为什么当前仍是 verified-local？"]
 }
 ---
 
-该项目在工程页作为交易所数据服务补充，不抢占钱包主线。
+页面先表达 Market Server 完成后的产品边界，再用当前 `verified-local` 证据说明已经走到哪里；虚拟资金、私有仓库和未完成的生产门保持明确。

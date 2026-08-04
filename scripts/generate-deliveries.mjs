@@ -1,5 +1,6 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { parseMarkdownFrontmatter, requireDate, requireFields, requireStringArray } from './frontmatter.mjs'
+import { isPublishable } from './public-data-contracts.mjs'
 
 const CONTENT_DIR = new URL('../content/deliveries/', import.meta.url)
 const OUTPUT_URL = new URL('../src/data/generatedDeliveries.ts', import.meta.url)
@@ -12,10 +13,10 @@ if (!existsSync(CONTENT_DIR)) throw new Error('content/deliveries does not exist
 
 function parseDelivery(fileName) {
   const { meta } = parseMarkdownFrontmatter(readFileSync(new URL(fileName, CONTENT_DIR), 'utf8'), fileName)
+  if (!isPublishable(meta)) return undefined
   requireFields(meta, REQUIRED, fileName)
   ARRAYS.forEach(field => requireStringArray(meta, field, fileName))
   requireDate(meta.date, 'date', fileName)
-  if (meta.publish !== true) throw new Error(`${fileName}: public delivery records must set publish to true.`)
   if (!STATUSES.includes(meta.status)) throw new Error(`${fileName}: unknown status ${meta.status}.`)
   if (!KINDS.includes(meta.kind)) throw new Error(`${fileName}: unknown kind ${meta.kind}.`)
   if (!Array.isArray(meta.publicLinks)) throw new Error(`${fileName}: publicLinks must be an array.`)
@@ -41,7 +42,12 @@ function parseDelivery(fileName) {
   }
 }
 
-const deliveries = readdirSync(CONTENT_DIR).filter(file => file.endsWith('.md')).sort().map(parseDelivery).sort((a, b) => b.date.localeCompare(a.date))
+const deliveries = readdirSync(CONTENT_DIR)
+  .filter(file => file.endsWith('.md'))
+  .sort()
+  .map(parseDelivery)
+  .filter(Boolean)
+  .sort((a, b) => b.date.localeCompare(a.date))
 const slugs = new Set()
 deliveries.forEach(item => {
   if (slugs.has(item.slug)) throw new Error(`Duplicate delivery slug: ${item.slug}`)

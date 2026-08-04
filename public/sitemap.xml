@@ -55,6 +55,9 @@
     <loc>https://xiuqiu-site.vercel.app/projects/wallet-core</loc>
   </url>
   <url>
+    <loc>https://xiuqiu-site.vercel.app/projects/wallet-launchpad</loc>
+  </url>
+  <url>
     <loc>https://xiuqiu-site.vercel.app/projects/wallet-reliability-lab</loc>
   </url>
   <url>
@@ -173,6 +176,12 @@
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/articles/wallet-rpc-trust-boundary</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/articles/evm-broadcast-unknown-canonical-recovery</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/articles/qiu-market-virtual-funds-recovery</loc>
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/radar/2026-08-04</loc>

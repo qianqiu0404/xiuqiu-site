@@ -5,13 +5,14 @@ import { dailyRadars } from '../data/generatedRadars'
 import { getRadarDetailSections, radarSourceStatus } from '../data/radarPresentation'
 import { getProjectByKey } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
+import '../styles/radar.css'
 
 const route = useRoute()
 const radar = computed(() => dailyRadars.find(item => item.slug === String(route.params.date || '')))
 const sections = computed(() => radar.value ? getRadarDetailSections(radar.value) : [])
 const relatedProjects = computed(() => radar.value?.relatedProjectSlugs.map(getProjectByKey).filter(Boolean) || [])
 
-watchEffect(() => setSeoMeta(radar.value ? { title: `${radar.value.title}｜xiuqiu`, description: radar.value.summary, path: `/radar/${radar.value.slug}` } : { title: 'Radar not found｜xiuqiu', path: route.fullPath }))
+watchEffect(() => setSeoMeta(radar.value ? { title: `${radar.value.title}｜xiuqiu`, description: radar.value.summary, path: `/radar/${radar.value.slug}`, type: 'article' } : { title: 'Radar not found｜xiuqiu', path: route.fullPath, indexable: false }))
 </script>
 
 <template>

@@ -49,7 +49,7 @@ onMounted(() =>
       <header class="project-atlas-hero">
         <p class="section-label">Project Atlas</p>
         <h1>项目不是数量列表，而是一张证据地图</h1>
-        <p>每个项目都标明当前阶段、已验证事实和下一里程碑。公开演示、本地验证、源码研究与计划不会混在同一个完成状态里。</p>
+        <p>每个项目先说明完成后的产品形态，再标明当前阶段与已验证事实。愿景负责方向，证据负责可信，二者不会混成同一个完成状态。</p>
       </header>
 
       <nav class="project-atlas-summary" aria-label="项目层级">
@@ -85,12 +85,16 @@ onMounted(() =>
               <span>{{ projectStageLabels[project.stage] }}</span>
               <span>{{ projectActivityLabels[project.activityStatus] }}</span>
             </div>
+            <div class="project-atlas-next">
+              <small>产品完成形态</small>
+              <p>{{ project.targetOutcome }}</p>
+            </div>
             <div class="project-atlas-proof">
-              <small>当前证据</small>
+              <small>已验证到哪里</small>
               <p>{{ project.verifiedEvidence[0] }}</p>
             </div>
             <div class="project-atlas-next">
-              <small>下一里程碑</small>
+              <small>完成标准</small>
               <p>{{ project.nextMilestone }}</p>
             </div>
             <a

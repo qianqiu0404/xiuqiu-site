@@ -90,7 +90,8 @@ const router = createRouter({
     },
     {
       path: '/:pathMatch(.*)*',
-      redirect: '/',
+      name: 'not-found',
+      component: () => import('../pages/NotFoundPage.vue'),
     },
   ],
   scrollBehavior(to) {

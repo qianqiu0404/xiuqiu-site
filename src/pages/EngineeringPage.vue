@@ -1,109 +1,506 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { failureCases as allFailureCases, type FailureEvidenceStatus } from '../data/generatedFailureCases'
-import { evidenceRecords } from '../data/generatedEvidence'
-import { projectSourceLabels, projectStageLabels, projectVisibilityLabels, siteArticlesByNewest, siteProjects } from '../data/siteKnowledge'
+import { onMounted } from 'vue'
+import { failureCases } from '../data/generatedFailureCases'
+import { evidenceRecords, type EvidenceKind, type EvidenceStatus } from '../data/generatedEvidence'
+import { siteProjects } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
 
-const route = useRoute()
-const router = useRouter()
-const overviewMode = computed(() => route.query.mode === 'overview')
-const primaryProjects = siteProjects.filter(project => project.featured)
-const extensionProjects = siteProjects.filter(project => !project.featured)
-const engineeringArticles = siteArticlesByNewest.filter(article => article.kind === 'engineering-note').slice(0, 6)
-const systemFlow = [
-  { name: 'wallet-service', detail: '业务状态、充值提现、余额、幂等、worker 与通知' },
-  { name: 'risk-service', detail: '提现内容校验、风控放行、审批哈希与重复请求识别' },
-  { name: 'wallet-api', detail: '多链节点查询、链级资源、交易构建与广播' },
-  { name: 'wallet-sign', detail: '地址生成、密钥隔离、策略校验与交易签名' },
-]
-const failureCases = allFailureCases.filter(item => item.priority === 'key')
-const verifiedEvidenceCount = evidenceRecords.filter(item => item.status === 'verified').length
-const evidenceLabels: Record<FailureEvidenceStatus, string> = { implemented: '当前已实现', partial: '部分验证', design: '生产设计' }
-const signerBackends = [
-  { name: 'Local Signer', state: '已验证', detail: '当前 wallet-sign 的本地密钥与签名后端，作为接口和策略基线。' },
-  { name: 'MPC / TSS', state: '接入中', detail: '独立三节点 Keygen / Sign 已本地验证；正在收敛为 wallet-sign 后端，尚未完成端到端接入。' },
-  { name: 'HSM', state: '下一阶段', detail: '计划保持同一签名契约，接入硬件密钥边界与生产级策略能力。' },
-]
-const overviewProofs = [
-  { label: '系统主线', title: 'Exchange Wallet Infrastructure', evidence: '四个服务的代码入口、risk-service 核心单测和关键异常路径已经完成定位与记录。', slug: 'exchange-wallet-system' },
-  { label: 'TypeScript 多链', title: 'wallet-core', evidence: '干净安装下九套链测试、构建和 dist import smoke test 已通过，链级资源输入保持显式。', slug: 'wallet-core' },
-  { label: '签名安全', title: 'TSS / MPC', evidence: '独立三节点 Keygen / Sign 已本地验证；wallet-sign 后端接入仍在进行。', slug: 'tss-mpc' },
+const serviceBoundaries = [
+  {
+    index: '01',
+    name: 'wallet-service',
+    responsibility: '资金状态与业务编排',
+    boundary: '维护充值、提现、余额、幂等和 worker 状态，不直接持有链节点或密钥能力。',
+  },
+  {
+    index: '02',
+    name: 'risk-service',
+    responsibility: '交易校验与风险放行',
+    boundary: '绑定审批内容与交易事实；外部风险能力不可用时失败关闭，不能绕过审批。',
+  },
+  {
+    index: '03',
+    name: 'wallet-api',
+    responsibility: '多链节点与交易构建',
+    boundary: '封装链资源、查询、构建和广播差异，不承担资金账本或签名密钥职责。',
+  },
+  {
+    index: '04',
+    name: 'wallet-sign',
+    responsibility: '密钥与签名边界',
+    boundary: '统一 local、HSM、TSS 与 FROST 后端契约；后端故障不能静默切换托管身份。',
+  },
 ]
 
-function toggleOverviewMode() {
-  void router.replace({ path: '/engineering', query: overviewMode.value ? {} : { mode: 'overview' } })
+const evidenceStatusLabels: Record<EvidenceStatus, string> = {
+  verified: '已验证',
+  partial: '部分验证',
+  design: '工程设计',
 }
 
-onMounted(() => setSeoMeta({ title: '工程档案｜xiuqiu Web3 钱包后端', description: 'Exchange Wallet Infrastructure、wallet-core、可运行实验以及 TSS/MPC 与数据服务扩展的阶段、证据和目标态。', path: '/engineering' }))
+const evidenceKindLabels: Record<EvidenceKind, string> = {
+  implementation: '工程实现',
+  test: '自动化测试',
+  demo: '可运行演示',
+  writeup: '公开说明',
+}
+
+const latestEvidence = [...evidenceRecords]
+  .sort((a, b) => b.verifiedAt.localeCompare(a.verifiedAt) || a.title.localeCompare(b.title))
+  .slice(0, 3)
+
+const hubEntries = [
+  {
+    index: '01',
+    title: '能力边界',
+    description: '先理解资金编排、风险、链交互和签名分别由谁负责。',
+    meta: `${serviceBoundaries.length} 个服务边界`,
+    to: '/engineering#capability-boundaries',
+  },
+  {
+    index: '02',
+    title: '证据矩阵',
+    description: '按实现、测试、演示和公开说明查看证据，不使用完成百分比。',
+    meta: `${evidenceRecords.length} 条结构化证据`,
+    to: '/engineering/evidence',
+  },
+  {
+    index: '03',
+    title: '失败恢复',
+    description: '从资金事实出发，判断暂停、重试、补偿和人工复核。',
+    meta: `${failureCases.length} 个异常场景`,
+    to: '/engineering/failures',
+  },
+  {
+    index: '04',
+    title: '项目档案',
+    description: '查看每个项目的真实阶段、已验证事实、限制和下一里程碑。',
+    meta: `${siteProjects.length} 个公开项目档案`,
+    to: '/projects',
+  },
+]
+
+const verifiedEvidenceCount = evidenceRecords.filter(item => item.status === 'verified').length
+const publicEvidenceCount = evidenceRecords.filter(item => item.visibility === 'public' && item.url).length
+const activeProjectCount = siteProjects.filter(project => project.activityStatus === 'active').length
+
+onMounted(() => setSeoMeta({
+  title: '工程证据枢纽｜xiuqiu Web3 钱包后端',
+  description: '从服务能力边界进入工程证据矩阵、钱包异常恢复和项目档案，区分实现、测试、演示与生产边界。',
+  path: '/engineering',
+}))
 </script>
 
 <template>
-  <section class="section page-top engineering-page">
+  <section class="section page-top engineering-hub">
     <div class="container">
-      <header class="engineering-header">
-        <div><p class="section-label">Engineering Archive</p><h1>Web3 钱包后端工程档案</h1><p>这里按系统问题整理工程进度：资金状态如何推进、多链差异如何隔离、签名边界如何保护、失败之后如何恢复。</p></div>
-        <div class="engineering-header-actions"><button class="btn btn-primary" type="button" @click="toggleOverviewMode">{{ overviewMode ? '返回完整档案' : '查看工程速览' }}</button></div>
+      <header class="hub-hero">
+        <div>
+          <p class="section-label">Engineering Evidence Hub</p>
+          <h1>从工程判断进入可复核证据</h1>
+          <p class="hub-intro">
+            这里不再重复项目图谱。先确认系统边界，再分别查看结构化证据、失败恢复手册和项目当前事实。
+          </p>
+        </div>
+        <div class="hub-hero-actions">
+          <router-link class="btn btn-primary" to="/engineering/evidence">查看证据矩阵</router-link>
+          <router-link class="hub-text-link" to="/engineering/failures">进入失败恢复 →</router-link>
+        </div>
       </header>
 
-      <section class="overview-summary" :class="{ active: overviewMode }">
-        <div class="overview-summary-top"><div><p class="section-label">工程概览</p><h2>以 Exchange Wallet Infrastructure 为主线，用可运行实验和多链库补足验证证据</h2></div><span class="mode-badge">{{ overviewMode ? 'FOCUS VIEW' : 'QUICK OVERVIEW' }}</span></div>
-        <p>wallet-service、risk-service、wallet-api、wallet-sign 分别守住资金编排、风险控制、链交互和签名边界；Wallet Domain Engine 提供领域不变量，Wallet Reliability Lab 提供三个成熟的提现可靠性交互实验。</p>
-        <div class="overview-proof-grid"><div><strong>{{ systemFlow.length }} 个</strong><span>服务边界</span></div><div><strong>{{ signerBackends.length }} 种</strong><span>签名后端</span></div><div><strong>{{ failureCases.length }} 个</strong><span>重点异常恢复案例</span></div></div>
+      <div class="hub-metrics" aria-label="工程证据概览">
+        <div><strong>{{ verifiedEvidenceCount }}</strong><span>条已验证证据</span></div>
+        <div><strong>{{ publicEvidenceCount }}</strong><span>条可直接打开</span></div>
+        <div><strong>{{ activeProjectCount }}</strong><span>个活跃项目</span></div>
+      </div>
+
+      <section class="hub-section" aria-labelledby="hub-entry-title">
+        <div class="hub-heading">
+          <p class="section-label">Choose a path</p>
+          <h2 id="hub-entry-title">四个入口，各自回答一个问题</h2>
+        </div>
+        <div class="hub-entry-grid">
+          <router-link v-for="entry in hubEntries" :key="entry.index" :to="entry.to" class="hub-entry">
+            <span>{{ entry.index }}</span>
+            <h3>{{ entry.title }}</h3>
+            <p>{{ entry.description }}</p>
+            <small>{{ entry.meta }}</small>
+            <strong>继续查看 →</strong>
+          </router-link>
+        </div>
       </section>
 
-      <section class="engineering-section">
-        <div class="section-heading section-heading-left"><p class="section-label">01 · 系统边界</p><h2 class="section-title">四个服务分别守住一类工程边界</h2></div>
-        <div class="system-flow"><template v-for="(step, index) in systemFlow" :key="step.name"><article class="system-step"><span>0{{ index + 1 }}</span><h3>{{ step.name }}</h3><p>{{ step.detail }}</p></article><div v-if="index < systemFlow.length - 1" class="system-arrow">&rarr;</div></template></div>
-      </section>
-
-      <section class="engineering-section signer-backend-section">
-        <div class="section-heading section-heading-left"><p class="section-label">02 · 签名后端</p><h2 class="section-title">wallet-sign 是稳定边界，后端可以演进</h2><p class="section-desc">Local、MPC/TSS 与 HSM 不是三个平级服务，而是 wallet-sign 后方的不同密钥与签名实现。</p></div>
-        <div class="signer-backend-grid"><article v-for="backend in signerBackends" :key="backend.name"><div class="card-status-row"><h3>{{ backend.name }}</h3><strong>{{ backend.state }}</strong></div><p>{{ backend.detail }}</p></article></div>
-      </section>
-
-      <section class="engineering-section">
-        <div class="section-heading section-heading-left"><p class="section-label">03 · 异常恢复</p><h2 class="section-title">六个重要的钱包异常</h2><p class="section-desc">先判断资金事实，再选择暂停、重试、补偿或人工复核；这些场景用于梳理工程判断，不代表真实生产事故。</p></div>
-        <div class="failure-grid"><article v-for="item in failureCases" :key="item.slug" class="failure-card"><div class="failure-card-meta"><span>Failure case</span><strong>{{ evidenceLabels[item.evidenceStatus] }}</strong></div><h3>{{ item.title }}</h3><p><b>风险：</b>{{ item.fundRisk }}</p><p><b>先做：</b>{{ item.stopLoss }}</p><router-link :to="`/engineering/failures#${item.slug}`">查看完整恢复过程 &rarr;</router-link></article></div>
-        <div class="failure-section-actions"><router-link class="btn btn-primary" to="/engineering/failures">查看 30 个异常</router-link><router-link class="btn btn-secondary" to="/engineering/failures?mode=practice">进入异常自测</router-link></div>
-      </section>
-
-      <section class="engineering-evidence-preview">
-        <div><p class="section-label">工程证据覆盖</p><h2>实现、测试、演示与公开说明分别看</h2><p>当前收录 {{ evidenceRecords.length }} 条结构化证据，其中 {{ verifiedEvidenceCount }} 条标记为已验证。私有工程只显示去敏摘要，公开工程可以直接打开复核。</p></div>
-        <router-link class="btn btn-primary" to="/engineering/evidence">查看证据矩阵</router-link>
-      </section>
-
-      <section v-if="overviewMode" class="engineering-section overview-evidence-section">
-        <div class="section-heading section-heading-left"><p class="section-label">04 · 核心证据</p><h2 class="section-title">三项可继续展开的工程证据</h2><p class="section-desc">速览到这里结束。每项证据都可以继续查看项目边界、验证方式和当前限制。</p></div>
-        <div class="overview-evidence-grid"><router-link v-for="proof in overviewProofs" :key="proof.slug" :to="`/projects/${proof.slug}`"><span>{{ proof.label }}</span><h3>{{ proof.title }}</h3><p>{{ proof.evidence }}</p><strong>查看完整档案 &rarr;</strong></router-link></div>
-      </section>
-
-      <section v-if="!overviewMode" class="engineering-section">
-        <div class="section-heading section-heading-left"><p class="section-label">04 · 核心案例</p><h2 class="section-title">阶段、证据和目标态放在一起</h2></div>
-        <div class="engineering-projects">
-          <article v-for="project in primaryProjects" :key="project.id" class="engineering-project evidence-state-card">
-            <div class="engineering-project-heading"><div><p class="section-label">{{ project.category }}</p><h3>{{ project.name }}</h3></div><router-link :to="`/projects/${project.slug}`" class="project-link">完整档案 &rarr;</router-link></div>
-            <div class="project-state-tags"><span>{{ projectStageLabels[project.stage] }}</span><span>{{ projectSourceLabels[project.sourceType] }}</span><span>{{ projectVisibilityLabels[project.visibility] }}</span></div>
-            <p class="engineering-boundary">{{ project.positioning }}</p>
-            <div class="engineering-project-columns">
-              <div><p class="project-abilities-title">当前重点</p><p>{{ project.currentFocus }}</p></div>
-              <div><p class="project-abilities-title">已验证证据</p><ul class="learning-list"><li v-for="item in project.verifiedEvidence" :key="item">{{ item }}</li></ul></div>
-              <div><p class="project-abilities-title">目标完成形态</p><p>{{ project.targetOutcome }}</p><p class="next-milestone"><strong>下一里程碑：</strong>{{ project.nextMilestone }}</p></div>
+      <section id="capability-boundaries" class="hub-section boundary-section" aria-labelledby="boundary-title">
+        <div class="hub-heading">
+          <p class="section-label">Capability boundaries</p>
+          <h2 id="boundary-title">四个服务，各守一类信任边界</h2>
+          <p>能力通过责任边界表达；后端接入、局部测试或测试网通过，都不会自动升级为生产能力。</p>
+        </div>
+        <div class="boundary-list">
+          <article v-for="item in serviceBoundaries" :key="item.name">
+            <span>{{ item.index }}</span>
+            <div>
+              <h3>{{ item.name }}</h3>
+              <strong>{{ item.responsibility }}</strong>
             </div>
+            <p>{{ item.boundary }}</p>
           </article>
         </div>
       </section>
 
-      <section v-if="!overviewMode" class="engineering-section">
-        <div class="section-heading section-heading-left"><p class="section-label">05 · 扩展探索</p><h2 class="section-title">安全与数据服务补充</h2><p class="section-desc">这些项目帮助扩展系统视野，但不会被包装成已经完成的生产能力。</p></div>
-        <div class="extension-project-grid"><router-link v-for="project in extensionProjects" :key="project.id" :to="`/projects/${project.slug}`" class="extension-project-card"><div class="card-status-row"><span>{{ project.category }}</span><strong>{{ projectStageLabels[project.stage] }}</strong></div><h3>{{ project.name }}</h3><p>{{ project.positioning }}</p><small>下一里程碑：{{ project.nextMilestone }}</small></router-link></div>
+      <section v-if="latestEvidence.length" class="hub-section latest-section" aria-labelledby="latest-evidence-title">
+        <div class="hub-heading-row">
+          <div class="hub-heading">
+            <p class="section-label">Latest evidence</p>
+            <h2 id="latest-evidence-title">最近更新的证据</h2>
+          </div>
+          <router-link class="hub-text-link" to="/engineering/evidence">查看完整矩阵 →</router-link>
+        </div>
+        <div class="latest-evidence-list">
+          <article v-for="item in latestEvidence" :key="item.slug">
+            <div>
+              <span>{{ evidenceKindLabels[item.kind] }}</span>
+              <time :datetime="item.verifiedAt">{{ item.verifiedAt }}</time>
+            </div>
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.summary }}</p>
+            <small>{{ evidenceStatusLabels[item.status] }} · {{ item.visibility === 'public' ? '公开可复核' : '私有工程去敏摘要' }}</small>
+          </article>
+        </div>
       </section>
 
-      <section v-if="!overviewMode" class="engineering-section">
-        <div class="section-heading section-heading-left"><p class="section-label">06 · 延伸阅读</p><h2 class="section-title">从文章继续复核工程判断</h2></div>
-        <div class="article-grid"><router-link v-for="article in engineeringArticles" :key="article.slug" :to="`/articles/${article.slug}`" class="article-card article-card-link"><time class="article-date">{{ article.date }}</time><h3 class="article-title">{{ article.title }}</h3><p class="article-summary">{{ article.summary }}</p></router-link></div>
-      </section>
+      <footer class="hub-footer">
+        <p>需要按项目查看阶段和限制？进入项目图谱；需要验证具体失败判断？进入异常恢复手册。</p>
+        <div>
+          <router-link to="/projects">项目图谱 →</router-link>
+          <router-link to="/engineering/failures">异常恢复 →</router-link>
+        </div>
+      </footer>
     </div>
   </section>
 </template>
+
+<style scoped>
+.engineering-hub {
+  color: #14213d;
+}
+
+.hub-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.45fr) minmax(14rem, 0.55fr);
+  gap: clamp(2rem, 7vw, 7rem);
+  align-items: end;
+  padding-bottom: clamp(2rem, 5vw, 4rem);
+  border-bottom: 1px solid #dfe5ee;
+}
+
+.hub-hero h1 {
+  max-width: 14ch;
+  margin: 0.6rem 0 1rem;
+  font-size: clamp(2.25rem, 5vw, 4.6rem);
+  line-height: 1.04;
+  letter-spacing: -0.055em;
+}
+
+.hub-intro {
+  max-width: 42rem;
+  margin: 0;
+  color: #526075;
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  line-height: 1.8;
+}
+
+.hub-hero-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.hub-text-link {
+  color: #1459d9;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.hub-text-link:hover {
+  text-decoration: underline;
+}
+
+.hub-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border-bottom: 1px solid #dfe5ee;
+}
+
+.hub-metrics div {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  min-width: 0;
+  padding: 1.35rem 0;
+}
+
+.hub-metrics div + div {
+  padding-left: 1.5rem;
+  border-left: 1px solid #dfe5ee;
+}
+
+.hub-metrics strong {
+  font-size: 1.55rem;
+}
+
+.hub-metrics span {
+  color: #657187;
+  font-size: 0.86rem;
+}
+
+.hub-section {
+  padding: clamp(3.25rem, 7vw, 6.5rem) 0;
+  border-bottom: 1px solid #dfe5ee;
+}
+
+.hub-heading {
+  max-width: 44rem;
+}
+
+.hub-heading h2 {
+  margin: 0.5rem 0 0;
+  font-size: clamp(1.75rem, 3vw, 2.7rem);
+  line-height: 1.18;
+  letter-spacing: -0.035em;
+}
+
+.hub-heading > p:last-child {
+  margin: 0.9rem 0 0;
+  color: #657187;
+  line-height: 1.75;
+}
+
+.hub-entry-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 2.3rem;
+  border-top: 1px solid #aeb9ca;
+}
+
+.hub-entry {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: 1rem;
+  min-width: 0;
+  padding: 1.75rem 1.5rem 1.75rem 0;
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid #dfe5ee;
+}
+
+.hub-entry:nth-child(even) {
+  padding-left: 1.5rem;
+  border-left: 1px solid #dfe5ee;
+}
+
+.hub-entry > span {
+  grid-row: 1 / span 4;
+  color: #1459d9;
+  font: 700 0.75rem/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.hub-entry h3 {
+  margin: 0 0 0.65rem;
+  font-size: 1.25rem;
+}
+
+.hub-entry p {
+  margin: 0;
+  color: #59667b;
+  line-height: 1.65;
+}
+
+.hub-entry small {
+  margin-top: 1rem;
+  color: #788398;
+}
+
+.hub-entry > strong {
+  margin-top: 0.75rem;
+  color: #1459d9;
+  font-size: 0.9rem;
+}
+
+.hub-entry:hover h3 {
+  color: #1459d9;
+}
+
+.boundary-list {
+  margin-top: 2.3rem;
+  border-top: 1px solid #aeb9ca;
+}
+
+.boundary-list article {
+  display: grid;
+  grid-template-columns: 2.5rem minmax(12rem, 0.7fr) minmax(0, 1.3fr);
+  gap: 1.25rem;
+  align-items: start;
+  padding: 1.45rem 0;
+  border-bottom: 1px solid #dfe5ee;
+}
+
+.boundary-list article > span {
+  color: #1459d9;
+  font: 700 0.75rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.boundary-list h3 {
+  margin: 0 0 0.35rem;
+  font-size: 1.05rem;
+}
+
+.boundary-list strong {
+  color: #526075;
+  font-size: 0.86rem;
+}
+
+.boundary-list p {
+  margin: 0;
+  color: #59667b;
+  line-height: 1.7;
+}
+
+.hub-heading-row {
+  display: flex;
+  gap: 2rem;
+  align-items: end;
+  justify-content: space-between;
+}
+
+.latest-evidence-list {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin-top: 2.3rem;
+}
+
+.latest-evidence-list article {
+  min-width: 0;
+  padding-top: 1.25rem;
+  border-top: 2px solid #14213d;
+}
+
+.latest-evidence-list article > div {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  color: #6c788c;
+  font-size: 0.75rem;
+}
+
+.latest-evidence-list h3 {
+  margin: 0.9rem 0 0.65rem;
+  font-size: 1.08rem;
+  line-height: 1.4;
+}
+
+.latest-evidence-list p {
+  margin: 0 0 1rem;
+  color: #59667b;
+  font-size: 0.9rem;
+  line-height: 1.7;
+}
+
+.latest-evidence-list small {
+  color: #1459d9;
+  font-weight: 700;
+}
+
+.hub-footer {
+  display: flex;
+  gap: 2rem;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: clamp(2rem, 5vw, 3.5rem);
+}
+
+.hub-footer p {
+  max-width: 40rem;
+  margin: 0;
+  color: #59667b;
+  line-height: 1.7;
+}
+
+.hub-footer div {
+  display: flex;
+  gap: 1.4rem;
+}
+
+.hub-footer a {
+  color: #1459d9;
+  font-weight: 700;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.hub-entry:focus-visible,
+.hub-text-link:focus-visible,
+.hub-footer a:focus-visible {
+  outline: 3px solid rgba(20, 89, 217, 0.32);
+  outline-offset: 4px;
+}
+
+@media (max-width: 768px) {
+  .hub-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.75rem;
+  }
+
+  .hub-hero-actions,
+  .hub-hero-actions .btn {
+    width: 100%;
+  }
+
+  .hub-metrics {
+    grid-template-columns: minmax(0, 1fr);
+    padding: 0.45rem 0;
+  }
+
+  .hub-metrics div,
+  .hub-metrics div + div {
+    justify-content: space-between;
+    padding: 0.85rem 0;
+    border-left: 0;
+  }
+
+  .hub-metrics div + div {
+    border-top: 1px solid #e7ebf2;
+  }
+
+  .hub-entry-grid,
+  .latest-evidence-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hub-entry,
+  .hub-entry:nth-child(even) {
+    padding: 1.4rem 0;
+    border-left: 0;
+  }
+
+  .boundary-list article {
+    grid-template-columns: 2rem minmax(0, 1fr);
+  }
+
+  .boundary-list article > p {
+    grid-column: 2;
+  }
+
+  .hub-heading-row,
+  .hub-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .hub-footer div {
+    flex-wrap: wrap;
+  }
+}
+</style>

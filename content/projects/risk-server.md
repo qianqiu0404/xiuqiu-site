@@ -3,7 +3,7 @@
   "id": 11,
   "slug": "risk-server",
   "name": "risk-server",
-  "category": "风控源码研究",
+  "category": "风险审批与边界验证",
   "featured": false,
   "publish": true,
   "portfolioTier": "exploration",
@@ -11,46 +11,48 @@
   "stage": "verified-local",
   "sourceType": "source-study",
   "visibility": "none",
-  "positioning": "基于 DappLink mock 风控 gRPC 服务的源码研究与本地验证，聚焦提现内容一致性、幂等标记、链上查询和资金流水判断的真实边界。",
-  "currentFocus": "把六个 RPC、LevelDB 状态和 Wallet API Gateway 依赖整理成可讲解的风控边界，并明确 mock AML、固定全局流水键和静态 token 的生产化缺口。",
+  "positioning": "面向钱包开发与集成环境的风险审批服务：校验交易请求与 V3 / V4 approval envelope 的字段一致性，使用确定性序列化生成 Ed25519 risk proof，并在外部风险能力缺失时失败关闭。",
+  "currentFocus": "收敛交易字段绑定、审批版本、访问控制、mTLS 与错误分类，让 risk proof 的含义可被 wallet-service、wallet-sign 和 TSS 逐层复核，同时明确它不是生产 AML 或规则平台。",
   "verifiedEvidence": [
-    "go test ./... 与 go vet ./... 已在本地通过",
-    "make risk-server 构建成功，服务使用本地配置成功监听",
-    "已定位提现 canonical hash、成功后幂等标记和六个 RPC 的数据依赖"
+    "V3 / V4 测试覆盖 business、request、chain、asset、backend、key ref、election、地址、金额、链资源、message hash 与 unsigned payload 的精确绑定",
+    "确定性 protobuf 与 Ed25519 risk proof 已通过与 wallet-sign / TSS 验证边界兼容的测试",
+    "无效 token、重复 request ID、审批版本不足、字段篡改与缺少 AML provider 均会 fail closed",
+    "非 loopback gRPC 要求 TLS 1.3 双向认证；本地 test、build、vet 与服务生命周期验证已通过"
   ],
-  "targetOutcome": "形成一个不夸大生产能力的风控源码案例，能够从请求、状态、外部依赖和失败路径解释当前实现与生产风控平台之间的差距。",
-  "nextMilestone": "为主要 RPC 补充可复现测试，并把按用户隔离的资金流水、真实 AML、鉴权和可观测性整理为明确演进路线。",
+  "targetOutcome": "形成一个不夸大生产能力的风险审批案例，能够从请求身份、字段绑定、证明生成、失败语义和下游复核解释当前实现与生产 AML / 风控平台之间的差距。",
+  "nextMilestone": "定义外部 AML / 制裁检查的稳定 provider 合同与超时语义，并补齐密钥轮换、审计指标和按租户策略隔离的演进路线。",
   "knownLimits": [
     "属于第三方项目源码研究，不是从零原创实现",
-    "AML 当前固定放行，不能代表真实制裁或地址风险检查",
-    "资金流水校验读取固定全局 key，不是按用户隔离的生产方案",
+    "没有接入真实 AML、制裁名单、设备指纹、账户画像或生产规则平台",
+    "risk proof 只证明当前集成服务审批了精确 envelope，不表示交易天然安全，也不替代 wallet-sign / TSS 的再次验证",
+    "没有证明生产密钥托管、证书轮换、容量、可用性或人工审批运营流程",
     "当前不提供个人公开仓库入口"
   ],
-  "updatedAt": "2026-07-12",
-  "coreAbilities": ["gRPC 服务导读", "提现一致性校验", "幂等状态", "LevelDB", "风控边界"],
-  "talkingPoints": ["六个 RPC 的职责如何划分", "成功校验后为什么需要幂等标记", "当前实现为什么不能直接作为生产风控"],
-  "techStack": ["Go", "gRPC", "LevelDB", "Wallet API Gateway"],
+  "updatedAt": "2026-07-28",
+  "coreAbilities": ["gRPC 风险审批", "V3 / V4 字段绑定", "Ed25519 Approval Proof", "mTLS", "fail-closed 边界"],
+  "talkingPoints": ["risk proof 具体绑定哪些交易事实", "为什么没有 AML provider 时必须失败关闭", "risk-server、wallet-sign 与 TSS 为什么要逐层复核", "当前实现为什么不能包装成生产风控"],
+  "techStack": ["Go", "gRPC", "protobuf", "Ed25519", "TLS 1.3", "LevelDB"],
   "engineering": {
-    "role": "源码阅读、本地运行验证和生产边界分析",
-    "systemBoundary": "risk-server 校验提现内容、查询部分链上事实并保存本地状态；它不实现完整 AML、账户隔离、细粒度权限和生产审计。",
-    "callFlow": ["调用方提交提现", "服务保存 canonical 请求", "离线校验比较摘要并写幂等状态", "链上查询通过 Wallet API Gateway 获取交易与确认数"],
-    "failureScenarios": ["固定流水 key 造成跨用户状态混淆", "外部 Gateway 返回空数组或异常高度时缺少充分保护"],
-    "evidence": ["本地测试与 vet", "构建与启动记录", "六个 RPC 与 LevelDB key 导读"],
-    "knownLimits": ["没有真实 AML 供应商联调", "没有生产级 TLS、权限、限流与指标"],
-    "overviewSummary": "risk-server 用于理解提现风控接口与状态边界；当前证据证明源码已分析并能在本地运行，不代表生产风控平台经验。"
+    "role": "源码研究、审批证明集成、本地运行验证和生产边界分析",
+    "systemBoundary": "risk-server 校验精确交易 envelope 并生成 risk proof；wallet-service 拥有资金流程，wallet-sign / TSS 仍需独立验签，外部 AML、规则运营和用户账本不属于本服务当前能力。",
+    "callFlow": ["wallet-service 提交交易与 approval envelope", "risk-server 校验访问身份、审批版本和逐字段一致性", "确定性序列化并生成 Ed25519 risk proof", "wallet-sign / TSS 对同一 envelope 和 proof 再次验证"],
+    "failureScenarios": ["字段、摘要、链资源或 request ID 冲突必须永久拒绝", "没有 AML provider、密钥配置无效或 mTLS 不完整时必须失败关闭", "gRPC timeout 不能允许 wallet-service 绕过审批继续签名"],
+    "evidence": ["V3 / V4 golden vector 与字段篡改测试", "invalid token、duplicate request 与 AML fail-closed 测试", "非 loopback mTLS 与服务启停测试", "本地 test / build / vet 记录"],
+    "knownLimits": ["没有真实 AML 供应商、规则平台和人工审批联调", "没有生产密钥轮换、容量、审计留存或高可用验收"],
+    "overviewSummary": "risk-server 用于证明钱包交易审批边界可以被精确绑定和重复验证；当前证据只支持集成环境风险证明，不代表生产 AML 或完整风控平台经验。"
   },
   "learning": {
-    "goal": "能够从代码说明提现提交、离线一致性、链上查询和资金流水校验各自依赖什么状态。",
-    "verified": ["六个 RPC 分类", "canonical hash 与幂等键", "LevelDB 与外部 Gateway 边界"],
-    "verification": ["go test ./...", "go vet ./...", "make risk-server"],
-    "verificationNote": "验证来自本地源码研究环境；没有接入真实资金或生产风控供应商。",
-    "tradeoffs": ["明确标记源码学习来源", "本地可运行与生产可用分开", "不公开敏感配置"],
-    "nextSteps": ["补主要 RPC 测试", "设计按用户隔离的数据模型", "补鉴权、审计和指标路线"]
+    "goal": "能够从代码说明审批 envelope、risk proof、访问身份和下游验签如何共同约束一笔钱包交易。",
+    "verified": ["V3 / V4 字段绑定", "确定性序列化与 Ed25519 proof", "mTLS 与 token 边界", "缺少外部能力时的 fail-closed 行为"],
+    "verification": ["go test ./...", "go build ./...", "go vet ./...", "git diff --check"],
+    "verificationNote": "验证来自本地源码研究与钱包集成环境；没有接入真实 AML 供应商，也不证明生产风控运营能力。",
+    "tradeoffs": ["明确标记源码学习和改造来源", "审批证明与风险结论分开", "本地可运行与生产可用分开", "不公开敏感配置"],
+    "nextSteps": ["定义外部风险 provider 合同", "补密钥轮换与审计指标", "设计按租户隔离的策略和运营边界"]
   },
   "conceptTags": ["wallet-backend", "go-infra", "api-design"],
   "relatedArticleSlugs": ["withdrawal-error-handling", "wallet-api-boundary", "wallet-ledger-transaction-mq-consistency"],
-  "suggestedQuestions": ["risk-server 当前真正实现了什么？", "为什么固定全局流水键不是生产方案？"]
+  "suggestedQuestions": ["risk-server 当前真正实现了什么？", "risk proof 为什么不能替代真实 AML 与下游验签？", "字段篡改或外部风险能力不可用时如何失败关闭？"]
 }
 ---
 
-该页面只公开源码研究和本地验证事实，不把 mock 风控能力包装成生产平台。
+该页面只公开源码研究、集成改造和本地验证事实，不把风险审批证明包装成真实 AML 或生产风控平台。
