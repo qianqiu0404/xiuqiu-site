@@ -5,7 +5,6 @@ import { useRouter } from 'vue-router'
 const navOpen = ref(false)
 const navToggle = ref<HTMLButtonElement | null>(null)
 const router = useRouter()
-const aiAssistantEnabled = import.meta.env.VITE_AI_ASSISTANT_ENABLED === 'true'
 const AiChatWidget = defineAsyncComponent(() => import('./components/AiChatWidget.vue'))
 
 function closeNav() {
@@ -69,5 +68,5 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
     </div>
   </footer>
 
-  <AiChatWidget v-if="aiAssistantEnabled" />
+  <AiChatWidget />
 </template>
