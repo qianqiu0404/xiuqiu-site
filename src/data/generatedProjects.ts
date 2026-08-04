@@ -54,23 +54,24 @@ export const projects: Project[] = [
     "stage": "building",
     "sourceType": "adapted",
     "visibility": "private",
-    "positioning": "围绕交易所充值、提现与资金安全组织的 Go 钱包基础设施：wallet-service 编排资金状态，risk-service 承担交易校验与风控放行，wallet-api 隔离多链节点能力，wallet-sign 收敛密钥与签名能力。",
-    "currentFocus": "以已验收的 Sepolia 测试网链路为基线，继续收口 V4 intent / attempt / resource、链级资源租约、多资产费用预留和结果未知恢复，并按链分别记录本地门禁与真实测试网证据。",
+    "positioning": "面向交易所与稳定币支付的多链钱包基础设施：用统一资金状态承载充值、归集与提现，用独立风控、链适配和签名边界把业务权限、链上资源与资产控制权分开。",
+    "currentFocus": "以 Sepolia 测试网闭环为基线，把 Base、BNB、Bitcoin 的本地无资金门禁、V4 intent / attempt / resource、多资产费用预留和 exact-raw 结果未知恢复收敛到统一 release candidate；同时推进 Agent Payment 的依赖组合，但保持 profile 不上线。",
     "verifiedEvidence": [
       "一键本地栈已串联 wallet-service、risk-server、wallet-api、wallet-sign、TSS 节点与 Wallet Launchpad，并执行仓库 test / build / vet、HTTP 冒烟和双租户隔离门禁",
       "Sepolia ETH 已完成测试网充值、手动归集、2-of-3 MPC 提现、广播、两个确认、账本结算与通知，最终账实差额为零",
+      "Base Sepolia 原生 ETH、Base / BNB WLT 与 Bitcoin Testnet4 已完成独立 clean 本地无资金 Gate，覆盖链身份、资产元数据、原生手续费、nonce / UTXO 资源、scanner finality 与幂等恢复",
       "wallet-sign 已收敛 local、HSM、TSS 与 FROST 后端；TSS 2-of-3 fail-closed / 恢复已通过本地栈验证，Solana FROST 链上 E2E 仍待验收"
     ],
-    "targetOutcome": "形成一套按证据等级表达的钱包测试网工程基线：能够复现充值、归集、提现、风险审批、门限签名、广播确认与账本恢复，并清楚区分仓库测试、本地集成、测试网验收和生产缺口。",
-    "nextMilestone": "冻结 V4 跨仓库兼容基线，完成至少一条非 Sepolia 测试网的充提归集闭环，并对广播结果未知和签名节点不足执行可复现故障注入。",
+    "targetOutcome": "形成一套可配置、可恢复、可审计的多链钱包后端：新链和新资产通过 profile 接入，充值、归集、提现、风控、门限签名、广播确认、账本与通知共享统一状态语义，任何结果未知都能沿原交易身份恢复。",
+    "nextMilestone": "冻结统一多链 release candidate，完成一条非 Sepolia funded 测试网闭环，并完成 Agent Stablecoin Wallet 与 Wallet Launchpad 的版本化 risk / signer / delivery 依赖组合。",
     "knownLimits": [
       "当前仍是学习、工程验证和测试网验收项目，不代表生产钱包部署、真实业务规模或主网资金经历",
-      "只有 Sepolia ETH 已形成完整测试网证据；Base Sepolia、BNB Testnet、Bitcoin Testnet4、Tron Nile、Cosmos Provider 与 Solana Devnet 仍处于本地链路或待注资验收状态",
+      "只有 Sepolia ETH 已形成完整测试网证据；Base Sepolia、BNB Testnet 与 Bitcoin Testnet4 已完成本地无资金门禁，Tron、Cosmos 与 Solana 仍处于本地链路或待注资验收状态",
       "risk-server 没有接入真实 AML、制裁名单、设备指纹或生产规则平台",
       "真实 PKCS#11 设备、生产 TSS 集群、Solana Devnet FROST 链上 E2E 和数据库迁移回滚演练仍未验收",
       "仓库暂按私有项目展示，不提供公开源码链接"
     ],
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-04",
     "coreAbilities": [
       "充值提现异步状态机",
       "多链 RPC 与 Chain Adaptor",
@@ -118,13 +119,13 @@ export const projects: Project[] = [
         "服务重启后需要从持久化状态继续推进而不是重复出金"
       ],
       "evidence": [
-        "Wallet Launchpad 一键栈门禁与 Sepolia 测试网充提验收记录",
+        "Wallet Launchpad 一键栈、Sepolia 测试网充提记录，以及 Base、BNB、Bitcoin 的独立无资金验收 Gate",
         "dispatcher、adaptor、RPC service、资金状态与链资源相关测试",
         "risk-server envelope / proof 与 fail-closed 测试",
         "TSS / FROST 阈值不足、恢复与后端身份绑定验证"
       ],
       "knownLimits": [
-        "Sepolia 之外的链尚未形成同等级真实测试网验收证据",
+        "Sepolia 之外的链尚未形成同等级真实测试网验收证据；无资金 Gate 不等于 funded E2E",
         "生产 HSM/TSS、主网写入、完整外部风控、长期可用性与容量仍属于外部验收或目标态"
       ],
       "overviewSummary": "这是我的 Web3 钱包后端主线：用 Exchange Wallet Infrastructure 拆开资金状态、多链节点、私钥签名和风险控制，并围绕幂等、确认数、风控放行、结果未知和补偿恢复理解资金系统。"
@@ -136,6 +137,7 @@ export const projects: Project[] = [
         "risk-server 的审批字段绑定、Ed25519 proof 与缺少 AML provider 时的失败关闭",
         "充值与提现 worker、数据库状态和通知路径",
         "Sepolia 测试网充值、归集、MPC 提现、确认、结算与通知链路",
+        "Base 原生 ETH、Base / BNB WLT 与 Bitcoin Testnet4 的本地无资金验收边界",
         "广播超时与链上/本地状态不一致的处理原则"
       ],
       "verification": [
@@ -145,16 +147,16 @@ export const projects: Project[] = [
         "go test ./services ./common/bigint ./leveldb",
         "./scripts/dev-stack.sh test"
       ],
-      "verificationNote": "命令与 Sepolia 结果来自私有仓库的去敏验证记录；它们证明当前测试网基线，不证明生产部署或所有链均已验收。",
+      "verificationNote": "2026-08-04 在整合多链 Gate 的 clean release candidate 上重新通过完整 Go test / vet / build；Sepolia 与各链 Gate 结果来自私有仓库的去敏记录。它们证明当前本地或测试网范围，不证明生产部署或所有链均已 funded 验收。",
       "tradeoffs": [
         "当前代码事实、设计理解和生产化建议分开表达",
         "不使用线上规模、真实资金量或生产事故包装项目",
         "优先完成可复现失败路径，而不是继续堆叠支持链数量"
       ],
       "nextSteps": [
-        "固定 V4 跨仓库兼容版本、启动顺序和验收矩阵",
+        "固定统一多链 release candidate、启动顺序和验收矩阵",
         "完成一条非 Sepolia 测试网充提归集链路",
-        "补广播结果未知、节点不足和重启恢复故障注入"
+        "完成 Agent Payment 版本化依赖组合与跨进程本地门禁"
       ]
     },
     "conceptTags": [
@@ -305,8 +307,8 @@ export const projects: Project[] = [
     "id": 3,
     "legacyIds": [],
     "slug": "s78-market-services",
-    "name": "Qiu Market",
-    "category": "可信行情与虚拟交易",
+    "name": "Qiu Market Server",
+    "category": "可信行情与交易基础设施",
     "featured": false,
     "publish": true,
     "portfolioTier": "verified",
@@ -314,23 +316,22 @@ export const projects: Project[] = [
     "stage": "verified-local",
     "sourceType": "adapted",
     "visibility": "private",
-    "positioning": "多场所可信行情与虚拟现货交易学习产品：聚合 CEX、Perp 与 AMM 行情，以 PostgreSQL / Redis / Doris 组织数据事实，并通过仅使用虚拟资金的 BTC/USDT 撮合、账本和恢复链路学习交易系统。",
-    "currentFocus": "冻结功能扩张，先把当前本地分支的迁移、恢复、未知结果、公开缓存与 outbox 修复推进到 Preview 和滚动证据门；真实交易、衍生品和新策略不在当前目标内。",
+    "positioning": "面向行情产品与交易系统的统一 Market Server：接入 CEX、Perp 与 AMM 来源，输出带来源、新鲜度和降级状态的可信市场事实，并为虚拟现货交易提供撮合、账本、事件和确定性恢复。",
+    "currentFocus": "以统一市场身份、行情新鲜度、虚拟资金账本和结果未知恢复为核心，收敛可重复发布的 Market Server；真实交易所下单、充值提现和衍生品执行不进入产品边界。",
     "verifiedEvidence": [
-      "当前本地分支已实现四家 CEX WebSocket / REST 对账、Hyperliquid、Uniswap / PancakeSwap、可信新鲜度和 16 个只读 gRPC RPC",
+      "release artifact 72343ba 已实现四家 CEX WebSocket / REST 对账、Hyperliquid、Uniswap / PancakeSwap、可信新鲜度和 16 个只读 gRPC RPC",
       "BTC/USDT 虚拟交易已覆盖定点数撮合、available / held 双重记账、PostgreSQL 事件/快照/outbox、幂等、WebSocket cursor 与重启 state hash 恢复",
-      "HEAD 7df9001 的 review 修复已通过 Go test/race/vet、前端 25 个测试与构建、隔离 PostgreSQL publisher/feed/cleanup 集成和当前二进制恢复演练"
+      "2026-08-04 在 release artifact 上重新通过完整 Go test；已有记录还覆盖 race / vet、前端测试与构建、隔离 PostgreSQL publisher/feed/cleanup 集成和二进制恢复演练"
     ],
-    "targetOutcome": "形成一个可重复、可解释的单用户虚拟资金交易学习产品：行情来源、新鲜度、撮合、账本、事件、恢复和失败降级都有明确事实边界，并能从浏览器结果追到代码和验证证据。",
-    "nextMilestone": "先把当前 reviewed artifact 推送并合并到共享基线，再完成生产 migration、受保护 Preview 验收与完整七天滚动证据；任何门未通过都不晋级生产状态。",
+    "targetOutcome": "完成后的 Qiu Market Server 是一套可独立部署的行情与虚拟交易后端：上游异常不会制造假价格，下游可以按统一市场身份读取报价、来源和健康状态；订单、余额、成交、事件和 WebSocket cursor 能在重启或提交结果未知后从 PostgreSQL 确定性恢复。",
+    "nextMilestone": "完成标准是固定同一 release artifact，通过生产迁移、受保护 Preview、OAuth、备份恢复、容量与连续七天稳定性门，并让浏览器展示的行情、订单、余额和系统状态都能追溯到同一后端事实。",
     "knownLimits": [
-      "当前证据来自本地 clean 分支 codex/trading-core-lab，仍领先 origin/main 26 个提交，尚未 push 或 merge",
-      "生产 migration、受保护 Preview、OAuth 回调、容量与完整七天 soak 尚未验收",
+      "当前 `verified-local` 证据不等于生产 migration、公开 Preview、容量或连续七天可用性验收",
       "交易只使用虚拟资金，不接充值、提现、私钥、真实交易所下单或实盘资产",
       "多场所资产数量、延迟和可用率都是时间点快照，不作为固定规模或 SLA 声明",
       "仓库暂按私有项目展示"
     ],
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-04",
     "coreAbilities": [
       "多场所行情采集与身份治理",
       "数据新鲜度与故障隔离",
@@ -380,14 +381,13 @@ export const projects: Project[] = [
         "前端单测、生产构建与浏览器回归",
         "真实 PostgreSQL restart/state-hash 集成",
         "Doris 与多场所来源本地交换数据记录",
-        "HEAD 7df9001 review 修复与恢复演练"
+        "release artifact 72343ba 与恢复演练"
       ],
       "knownLimits": [
-        "当前 reviewed artifact 尚未进入 origin/main",
         "生产 migration、Preview、OAuth、容量和七天滚动证据仍待验收",
         "虚拟资金边界不能包装成商业交易所或实盘经验"
       ],
-      "overviewSummary": "Qiu Market 是钱包主线之外的交易系统学习产品，用可信行情、虚拟撮合、双重记账和恢复证据串起数据与交易控制流，同时把本地集成与生产验收严格分开。"
+      "overviewSummary": "Qiu Market Server 的产品形态是可信行情平面加可恢复的虚拟交易纵切片：它向上游治理来源与新鲜度，向下游提供一致的市场、订单、账本和事件事实。"
     },
     "learning": {
       "goal": "理解多场所行情、撮合、双重记账、事件持久化和故障恢复如何组成一个完整但只使用虚拟资金的交易系统。",
@@ -406,7 +406,7 @@ export const projects: Project[] = [
         "npm --prefix frontend run build",
         "git diff --check"
       ],
-      "verificationNote": "2026-07-28 当前本地分支验证通过；PostgreSQL 集成与恢复演练有独立记录，但分支尚未推送合并，生产迁移、Preview 和七天 soak 不计入已完成证据。",
+      "verificationNote": "2026-08-04 在 release artifact 72343ba 上重新通过完整 Go test；PostgreSQL 集成、race / vet、前端构建与恢复演练来自已有去敏记录。生产迁移、Preview、容量和七天 soak 不计入已完成证据。",
       "tradeoffs": [
         "不使用假数据兜底",
         "真实行情与可执行路线价格分开",
@@ -415,9 +415,9 @@ export const projects: Project[] = [
         "未完成生产门继续保持 pending"
       ],
       "nextSteps": [
-        "推送并合并 reviewed artifact",
-        "执行生产 migration 与受保护 Preview 验收",
-        "积累完整七天滚动证据后再评估生产状态"
+        "固定前后端和迁移使用同一 release artifact",
+        "执行生产 migration、受保护 Preview、OAuth 与备份恢复验收",
+        "积累完整七天滚动证据并补容量边界"
       ]
     },
     "conceptTags": [
@@ -808,24 +808,26 @@ export const projects: Project[] = [
     "stage": "verified-local",
     "sourceType": "adapted",
     "visibility": "private",
-    "positioning": "面向交易所与支付业务方的多租户钱包控制台学习版，把地址、扫链、资金对账、风险审批、门限签名和交易状态组织成可演示、可复核的 B 端测试网工作台。",
-    "currentFocus": "以 Sepolia 已验收链路为可信基线，继续统一测试网 profile、资产级 readiness、V4 资源与费用预留、签名后端健康和验收证据，同时保持普通浏览器写入与主网能力失败关闭。",
+    "positioning": "面向交易所与支付团队的钱包控制平面：在一个多租户工作台中管理链与资产 readiness、充值地址、归集、提现、资金对账、风险审批、签名健康和异常恢复。",
+    "currentFocus": "把 Sepolia 已验收链路和 Base、BNB、Bitcoin 的本地无资金门禁收敛到同一 reviewed artifact，继续统一 profile、资产元数据、链资源、费用预留、签名健康和结果未知恢复，同时保持未注资链路与生产能力失败关闭。",
     "verifiedEvidence": [
       "Go BFF 与 React / Next.js 控制台支持两个隔离租户、Demo / Live 边界、资金总览、地址、充值提现、归集、签名健康、多链矩阵与状态时间线",
       "一键本地栈可启动钱包服务、风险服务、链 API、统一签名入口、TSS / FROST 节点、数据库与控制台，并执行仓库门禁、HTTP 冒烟和双租户隔离检查",
       "Sepolia ETH 已完成测试网充值、local 地址归集、2-of-3 MPC 提现、广播确认、账本结算与通知，最终账实差额为零",
+      "Base Sepolia 原生 ETH 已通过地址、nonce、L1+L2 fee quote、资源预留、签名与广播前置条件的本地无资金验收门",
+      "Base / BNB WLT 已验证资产元数据、独立本金与原生手续费预留、scanner finalized head 和幂等 Transfer 日志；Bitcoin Testnet4 已验证 UTXO 选择、reservation replay 与恢复门",
       "受保护的 Vercel Preview 通过同源 BFF 与短期 OIDC 访问隔离的 Mac mini staging，数据库、gRPC 和签名节点不直接暴露公网"
     ],
-    "targetOutcome": "形成一个五分钟内可讲清的钱包后端产品演示：从租户和链上下文进入充值、归集、提现和恢复路径，并能从每个界面状态继续追到服务边界、失败条件和去敏证据。",
-    "nextMilestone": "冻结当前跨仓库兼容基线，完成至少一条非 Sepolia 测试网的充值、归集、提现与对账验收，并让私有 Preview 使用同一 reviewed artifact 复核。",
+    "targetOutcome": "完成后的 Wallet Launchpad 是可操作的钱包验收与运维入口：团队可以选择租户、环境、链和资产，运行充值—归集—提现闭环，查看资金与链上托管差额，并从每个阻断状态追到服务、签名节点、链资源和恢复证据。",
+    "nextMilestone": "冻结包含 Base、BNB、Bitcoin 无资金门禁的统一 reviewed artifact，选择一条已获明确授权的非 Sepolia 测试网完成注资、充值、归集、提现与对账验收，并让私有 Preview 复核同一版本。",
     "knownLimits": [
       "这是私有学习与测试网工程演示，不是生产钱包运营后台，也不代表真实业务规模或主网托管经验",
-      "只有 Sepolia ETH 已形成完整测试网验收；其他链和代币仍有注资、资产配置或链级 E2E 缺口",
+      "只有 Sepolia ETH 已形成完整测试网验收；Base、BNB 和 Bitcoin 新证据属于本地无资金门禁，不证明链上广播、真实 signer 或 funded E2E",
       "Vercel Preview 受身份保护且依赖隔离 staging，不是公开可用产品或生产部署",
       "真实 HSM、生产 TSS 集群、Solana Devnet FROST 链上 E2E、主网写入和长期可用性仍未验收",
       "仓库保持私有，不提供公开源码链接"
     ],
-    "updatedAt": "2026-07-28",
+    "updatedAt": "2026-08-04",
     "coreAbilities": [
       "多租户 BFF 与数据隔离",
       "测试网充值、归集与提现体验",
@@ -870,14 +872,14 @@ export const projects: Project[] = [
         "切换租户、链或资产时取消旧请求并清空旧上下文，避免跨租户或跨链串数据"
       ],
       "evidence": [
-        "Wallet Launchpad README、架构与测试网验收手册",
+        "Wallet Launchpad README、架构、测试网验收手册与多链无资金 Gate",
         "一键栈 repository / HTTP / TSS / FROST 门禁记录",
         "Sepolia 充值、归集、MPC 提现、确认、结算与通知去敏证据",
         "受保护 Vercel Preview、OIDC BFF 与隔离 staging 验证"
       ],
       "knownLimits": [
         "私有 Preview 与本地测试网验收不等于生产部署",
-        "其他链、真实 HSM、生产 TSS、主网写入和长期 soak 仍待独立验收"
+        "Base、BNB、Bitcoin 当前只完成本地无资金门禁；其他链、真实 HSM、生产 TSS、主网写入和长期 soak 仍待独立验收"
       ],
       "overviewSummary": "Wallet Launchpad 是 Exchange Wallet Infrastructure 的产品化解释层：它不新增资金真值，而是把后端状态、边界、失败门禁和测试网证据组织成可操作的 B 端工作台。"
     },
@@ -885,13 +887,16 @@ export const projects: Project[] = [
       "goal": "能够从控制台的一条测试网用户旅程解释后端服务、资金状态、链资源、签名托管和失败恢复，而不是只展示静态页面。",
       "verified": [
         "双租户 Demo / Live 隔离",
-        "Sepolia 充值、归集与 MPC 提现闭环",
+        "Sepolia 充值、归集与 MPC 提现闭环，以及 Base、BNB、Bitcoin 的链级本地无资金门禁",
         "资金账本、链上托管与实际费用对账",
         "TSS / FROST 阈值不足时的 fail-closed / 恢复",
         "受保护 Preview 与同源 BFF 边界"
       ],
       "verification": [
         "./scripts/dev-stack.sh test",
+        "./script/base-sepolia-native-eth-no-funds-e2e.sh",
+        "./script/evm-base-bnb-no-funds-e2e.sh",
+        "./script/bitcoin-testnet4-no-funds-e2e.sh",
         "go test ./...",
         "go build ./...",
         "go vet ./...",
@@ -899,7 +904,7 @@ export const projects: Project[] = [
         "npm --prefix web run lint",
         "npm --prefix web run build"
       ],
-      "verificationNote": "命令与测试网结果来自私有仓库的去敏验证记录；本轮网站更新没有重新广播交易，也不把 Preview 或测试网证据表述为生产验收。",
+      "verificationNote": "2026-08-04 在 clean release candidate 上重新通过完整 Go test / vet / build；链级无资金脚本的结论来自对应 clean gate 记录。本轮没有注资、签名或广播交易，也不把 Preview、本地门禁或测试网证据表述为生产验收。",
       "tradeoffs": [
         "BFF 统一真实系统边界，不让浏览器持有服务凭据",
         "Demo 可演示性与 Live 事实严格分开",
@@ -907,7 +912,7 @@ export const projects: Project[] = [
         "优先失败关闭和可解释阻断，不使用 mock 数据掩盖 Live 故障"
       ],
       "nextSteps": [
-        "完成一条非 Sepolia 测试网完整验收",
+        "冻结统一 release candidate 并完成一条非 Sepolia 测试网完整验收",
         "固定跨仓库 reviewed artifact 与私有 Preview",
         "补多链结果未知、资源过期和重启恢复演示"
       ]
@@ -921,6 +926,7 @@ export const projects: Project[] = [
       "api-design"
     ],
     "relatedArticleSlugs": [
+      "evm-broadcast-unknown-canonical-recovery",
       "cex-evm-wallet-deposit-withdrawal-loop",
       "withdrawal-error-handling",
       "wallet-ledger-transaction-mq-consistency",

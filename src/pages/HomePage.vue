@@ -207,9 +207,9 @@ onMounted(() =>
         <div class="value-home-heading">
           <div>
             <p class="section-label">Representative Work</p>
-            <h2 id="projects-title">一个旗舰系统，三个可验证作品</h2>
+            <h2 id="projects-title">一套钱包平台，一个可信 Market Server</h2>
           </div>
-          <p>首页只保留结果、最强证据和更新时间；完整目标、限制与下一里程碑放在项目详情页。</p>
+          <p>先展示项目完成后的产品形态，再用当前最强证据说明实现基础；完整边界与验收门放在项目详情页。</p>
         </div>
 
         <div class="value-home-project-grid">

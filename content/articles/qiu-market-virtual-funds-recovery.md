@@ -7,6 +7,7 @@
   "evidenceSummary": "基于 Qiu Market 已审核的本地提交与测试记录：BTC/USDT 虚拟撮合、available/held 双重记账、PostgreSQL 事件/快照/outbox、幂等重试与 state hash 恢复已验证；不代表真实资金、实盘交易或生产部署。",
   "title": "虚拟资金也要守账：Qiu Market 的撮合、双重记账与确定性恢复",
   "date": "2026-07-28",
+  "updatedAt": "2026-08-04",
   "summary": "Qiu Market 不连接真实资金，但仍用资金系统的标准约束一个 BTC/USDT 虚拟交易纵切片：整数金额、available/held、借贷平衡、串行撮合、事务事件流、结果未知停机和 state hash 恢复。",
   "tags": [
     "Go",
@@ -39,7 +40,7 @@
 
 # 虚拟资金也要守账：Qiu Market 的撮合、双重记账与确定性恢复
 
-> 证据边界：本文基于 Qiu Market 已审核本地基线 `7df9001` 及其中的测试与验收记录。项目只使用虚拟资金，当前分支没有合并到共享 `origin/main`。本文不代表真实充值提现、私钥托管、真实交易所下单、实盘资产、生产 HFT、公开 Preview、容量或长期稳定性验收。
+> 证据边界：本文基于 Qiu Market Server release artifact `72343ba` 及其测试与验收记录；2026-08-04 已重新通过完整 Go test。项目只使用虚拟资金。本文不代表真实充值提现、私钥托管、真实交易所下单、实盘资产、生产 HFT、公开 Preview、容量或长期稳定性验收。
 
 # 为什么虚拟交易仍要按资金系统设计
 
@@ -187,7 +188,7 @@ market_id + account_id + operation + request_id
 
 - 系统处理过真实资金或真实用户资产；
 - 已接入充值、提现、私钥或真实交易所下单；
-- 当前分支已经 push、merge 或成为共享生产基线；
+- release artifact 已经完成生产迁移、公开 Preview 或成为长期运行基线；
 - 已完成公开 Preview、真实 OAuth 回调和生产迁移；
 - 已通过容量、低延迟、备份恢复、监控告警或长期 soak；
 - 这是生产级 CEX 或 HFT 撮合引擎。

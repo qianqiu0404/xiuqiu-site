@@ -47,18 +47,19 @@ test('every homepage action has one type-safe destination', () => {
   })
 })
 
-test('configured homepage projects are one flagship and three verified works', () => {
+test('configured homepage projects foreground the two finished-product directions', () => {
   const projectsBySlug = new Map(projects.map(project => [project.slug, project]))
 
   assert.equal(representativeProjectSlugs.length, 4)
   assert.deepEqual([...representativeProjectSlugs], [
     'exchange-wallet-system',
-    'wallet-reliability-lab',
-    'wallet-core',
+    'wallet-launchpad',
     's78-market-services',
+    'wallet-reliability-lab',
   ])
   assertUnique([...representativeProjectSlugs], 'homepage project slugs')
-  assert.ok(!representativeProjectSlugs.includes('wallet-launchpad'))
+  assert.ok(representativeProjectSlugs.includes('wallet-launchpad'))
+  assert.ok(representativeProjectSlugs.includes('s78-market-services'))
 
   representativeProjectSlugs.forEach(slug =>
     assert.ok(projectsBySlug.has(slug), `Missing generated project: ${slug}`),
@@ -73,7 +74,7 @@ test('homepage evidence highlights resolve to dated site evidence', () => {
   const evidenceBySlug = new Map(evidenceRecords.map(record => [record.slug, record]))
 
   assert.deepEqual(homeEvidenceHighlights.map(item => item.evidenceSlug), [
-    'multichain-wallet-acceptance',
+    'wallet-launchpad-no-funds-acceptance',
     'failure-playbook-public',
     'wallet-lab-demo',
   ])

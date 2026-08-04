@@ -41,9 +41,9 @@ export const homeSeo = {
 export const flagshipProjectSlug = 'exchange-wallet-system'
 export const representativeProjectSlugs = [
   flagshipProjectSlug,
-  'wallet-reliability-lab',
-  'wallet-core',
+  'wallet-launchpad',
   's78-market-services',
+  'wallet-reliability-lab',
 ] as const
 
 export const homeCapabilities: HomeCapability[] = [
@@ -136,9 +136,9 @@ export const homeProofMethods: HomeProofMethod[] = [
 
 export const homeEvidenceHighlights: HomeEvidenceHighlight[] = [
   {
-    evidenceSlug: 'multichain-wallet-acceptance',
-    label: '测试网 / 多链验收',
-    linkLabel: '查看验收证据',
+    evidenceSlug: 'wallet-launchpad-no-funds-acceptance',
+    label: '多链无资金验收门',
+    linkLabel: '查看最新验收证据',
     destination: { kind: 'internal', to: '/engineering/evidence' },
   },
   {

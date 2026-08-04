@@ -12,25 +12,26 @@
   "stage": "building",
   "sourceType": "adapted",
   "visibility": "private",
-  "positioning": "围绕交易所充值、提现与资金安全组织的 Go 钱包基础设施：wallet-service 编排资金状态，risk-service 承担交易校验与风控放行，wallet-api 隔离多链节点能力，wallet-sign 收敛密钥与签名能力。",
-  "currentFocus": "以已验收的 Sepolia 测试网链路为基线，继续收口 V4 intent / attempt / resource、链级资源租约、多资产费用预留和结果未知恢复，并按链分别记录本地门禁与真实测试网证据。",
+  "positioning": "面向交易所与稳定币支付的多链钱包基础设施：用统一资金状态承载充值、归集与提现，用独立风控、链适配和签名边界把业务权限、链上资源与资产控制权分开。",
+  "currentFocus": "以 Sepolia 测试网闭环为基线，把 Base、BNB、Bitcoin 的本地无资金门禁、V4 intent / attempt / resource、多资产费用预留和 exact-raw 结果未知恢复收敛到统一 release candidate；同时推进 Agent Payment 的依赖组合，但保持 profile 不上线。",
   "verifiedEvidence": [
     "一键本地栈已串联 wallet-service、risk-server、wallet-api、wallet-sign、TSS 节点与 Wallet Launchpad，并执行仓库 test / build / vet、HTTP 冒烟和双租户隔离门禁",
     "Sepolia ETH 已完成测试网充值、手动归集、2-of-3 MPC 提现、广播、两个确认、账本结算与通知，最终账实差额为零",
     "wallet-sign 已收敛 local、HSM、TSS 与 FROST 后端；TSS 2-of-3 fail-closed / 恢复已通过本地栈验证，Solana FROST 链上 E2E 仍待验收",
+    "Base Sepolia 原生 ETH、Base / BNB WLT 与 Bitcoin Testnet4 已完成独立 clean 本地无资金 Gate，覆盖链身份、资产元数据、原生手续费、nonce / UTXO 资源、scanner finality 与幂等恢复",
     "wallet-api 已验证 EVM、Bitcoin、Tron、Cosmos 与 Solana 的链级资源边界；当前没有 Sui adaptor",
     "risk-server 会绑定审批 envelope 与交易字段、生成 Ed25519 risk proof，并在没有 AML provider 时明确 fail closed"
   ],
-  "targetOutcome": "形成一套按证据等级表达的钱包测试网工程基线：能够复现充值、归集、提现、风险审批、门限签名、广播确认与账本恢复，并清楚区分仓库测试、本地集成、测试网验收和生产缺口。",
-  "nextMilestone": "冻结 V4 跨仓库兼容基线，完成至少一条非 Sepolia 测试网的充提归集闭环，并对广播结果未知和签名节点不足执行可复现故障注入。",
+  "targetOutcome": "形成一套可配置、可恢复、可审计的多链钱包后端：新链和新资产通过 profile 接入，充值、归集、提现、风控、门限签名、广播确认、账本与通知共享统一状态语义，任何结果未知都能沿原交易身份恢复。",
+  "nextMilestone": "冻结统一多链 release candidate，完成一条非 Sepolia funded 测试网闭环，并完成 Agent Stablecoin Wallet 与 Wallet Launchpad 的版本化 risk / signer / delivery 依赖组合。",
   "knownLimits": [
     "当前仍是学习、工程验证和测试网验收项目，不代表生产钱包部署、真实业务规模或主网资金经历",
-    "只有 Sepolia ETH 已形成完整测试网证据；Base Sepolia、BNB Testnet、Bitcoin Testnet4、Tron Nile、Cosmos Provider 与 Solana Devnet 仍处于本地链路或待注资验收状态",
+    "只有 Sepolia ETH 已形成完整测试网证据；Base Sepolia、BNB Testnet 与 Bitcoin Testnet4 已完成本地无资金门禁，Tron、Cosmos 与 Solana 仍处于本地链路或待注资验收状态",
     "risk-server 没有接入真实 AML、制裁名单、设备指纹或生产规则平台",
     "真实 PKCS#11 设备、生产 TSS 集群、Solana Devnet FROST 链上 E2E 和数据库迁移回滚演练仍未验收",
     "仓库暂按私有项目展示，不提供公开源码链接"
   ],
-  "updatedAt": "2026-07-28",
+  "updatedAt": "2026-08-04",
   "coreAbilities": [
     "充值提现异步状态机",
     "多链 RPC 与 Chain Adaptor",
@@ -63,13 +64,13 @@
       "服务重启后需要从持久化状态继续推进而不是重复出金"
     ],
     "evidence": [
-      "Wallet Launchpad 一键栈门禁与 Sepolia 测试网充提验收记录",
+      "Wallet Launchpad 一键栈、Sepolia 测试网充提记录，以及 Base、BNB、Bitcoin 的独立无资金验收 Gate",
       "dispatcher、adaptor、RPC service、资金状态与链资源相关测试",
       "risk-server envelope / proof 与 fail-closed 测试",
       "TSS / FROST 阈值不足、恢复与后端身份绑定验证"
     ],
     "knownLimits": [
-      "Sepolia 之外的链尚未形成同等级真实测试网验收证据",
+      "Sepolia 之外的链尚未形成同等级真实测试网验收证据；无资金 Gate 不等于 funded E2E",
       "生产 HSM/TSS、主网写入、完整外部风控、长期可用性与容量仍属于外部验收或目标态"
     ],
     "overviewSummary": "这是我的 Web3 钱包后端主线：用 Exchange Wallet Infrastructure 拆开资金状态、多链节点、私钥签名和风险控制，并围绕幂等、确认数、风控放行、结果未知和补偿恢复理解资金系统。"
@@ -81,6 +82,7 @@
       "risk-server 的审批字段绑定、Ed25519 proof 与缺少 AML provider 时的失败关闭",
       "充值与提现 worker、数据库状态和通知路径",
       "Sepolia 测试网充值、归集、MPC 提现、确认、结算与通知链路",
+      "Base 原生 ETH、Base / BNB WLT 与 Bitcoin Testnet4 的本地无资金验收边界",
       "广播超时与链上/本地状态不一致的处理原则"
     ],
     "verification": [
@@ -90,16 +92,16 @@
       "go test ./services ./common/bigint ./leveldb",
       "./scripts/dev-stack.sh test"
     ],
-    "verificationNote": "命令与 Sepolia 结果来自私有仓库的去敏验证记录；它们证明当前测试网基线，不证明生产部署或所有链均已验收。",
+    "verificationNote": "2026-08-04 在整合多链 Gate 的 clean release candidate 上重新通过完整 Go test / vet / build；Sepolia 与各链 Gate 结果来自私有仓库的去敏记录。它们证明当前本地或测试网范围，不证明生产部署或所有链均已 funded 验收。",
     "tradeoffs": [
       "当前代码事实、设计理解和生产化建议分开表达",
       "不使用线上规模、真实资金量或生产事故包装项目",
       "优先完成可复现失败路径，而不是继续堆叠支持链数量"
     ],
     "nextSteps": [
-      "固定 V4 跨仓库兼容版本、启动顺序和验收矩阵",
+      "固定统一多链 release candidate、启动顺序和验收矩阵",
       "完成一条非 Sepolia 测试网充提归集链路",
-      "补广播结果未知、节点不足和重启恢复故障注入"
+      "完成 Agent Payment 版本化依赖组合与跨进程本地门禁"
     ]
   },
   "conceptTags": ["wallet-backend", "api-design", "multi-chain", "signer-service", "risk-control", "go-infra"],

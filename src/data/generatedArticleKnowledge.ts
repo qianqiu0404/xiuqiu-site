@@ -1577,6 +1577,7 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "slug": "qiu-market-virtual-funds-recovery",
     "title": "虚拟资金也要守账：Qiu Market 的撮合、双重记账与确定性恢复",
     "date": "2026-07-28",
+    "updatedAt": "2026-08-04",
     "summary": "Qiu Market 不连接真实资金，但仍用资金系统的标准约束一个 BTC/USDT 虚拟交易纵切片：整数金额、available/held、借贷平衡、串行撮合、事务事件流、结果未知停机和 state hash 恢复。",
     "tags": [
       "Go",
@@ -2354,6 +2355,7 @@ export const articleSummaries: ArticleSummary[] = [
     "slug": "qiu-market-virtual-funds-recovery",
     "title": "虚拟资金也要守账：Qiu Market 的撮合、双重记账与确定性恢复",
     "date": "2026-07-28",
+    "updatedAt": "2026-08-04",
     "summary": "Qiu Market 不连接真实资金，但仍用资金系统的标准约束一个 BTC/USDT 虚拟交易纵切片：整数金额、available/held、借贷平衡、串行撮合、事务事件流、结果未知停机和 state hash 恢复。",
     "tags": [
       "Go",

@@ -34,9 +34,9 @@ watchEffect(() => {
         </header>
 
         <div class="project-state-overview">
-          <section><p class="project-abilities-title">当前重点</p><p>{{ project.currentFocus }}</p></section>
-          <section><p class="project-abilities-title">目标完成形态</p><p>{{ project.targetOutcome }}</p></section>
-          <section class="milestone-card"><p class="project-abilities-title">下一里程碑</p><p>{{ project.nextMilestone }}</p></section>
+          <section><p class="project-abilities-title">产品完成形态</p><p>{{ project.targetOutcome }}</p></section>
+          <section><p class="project-abilities-title">实现主线</p><p>{{ project.currentFocus }}</p></section>
+          <section class="milestone-card"><p class="project-abilities-title">完成标准</p><p>{{ project.nextMilestone }}</p></section>
         </div>
 
         <section class="learning-section"><p class="section-label">已验证证据</p><h2>目前能够被代码、测试或运行记录支持的事实</h2><ul class="learning-list evidence-detail-list"><li v-for="item in project.verifiedEvidence" :key="item">{{ item }}</li></ul></section>

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-28T02:13:27.000Z",
+  "generatedAt": "2026-08-04T20:33:02+08:00",
   "projects": [
     {
       "projectId": "exchange-wallet-infrastructure",
@@ -8,15 +8,16 @@
       "portfolioTier": "flagship",
       "activityStatus": "active",
       "visibility": "private",
-      "updatedAt": "2026-07-28",
-      "nextAction": "冻结 V4 跨仓库兼容基线并完成一条非 Sepolia 测试网闭环",
-      "publicSummary": "围绕交易所充值、提现与资金安全组织的 Go 钱包基础设施：wallet-service 编排资金状态，risk-service 承担交易校验与风控放行，wallet-api 隔离多链节点能力，wallet-sign 收敛密钥与签名能力。",
+      "updatedAt": "2026-08-04",
+      "nextAction": "冻结统一多链 release candidate 并完成 Agent Payment 依赖组合",
+      "publicSummary": "面向交易所与稳定币支付的多链钱包基础设施：用统一资金状态承载充值、归集与提现，用独立风控、链适配和签名边界把业务权限、链上资源与资产控制权分开。",
       "publicEvidence": [
         "一键本地栈已串联 wallet-service、risk-server、wallet-api、wallet-sign、TSS 节点与 Wallet Launchpad，并执行仓库 test / build / vet、HTTP 冒烟和双租户隔离门禁",
         "Sepolia ETH 已完成测试网充值、手动归集、2-of-3 MPC 提现、广播、两个确认、账本结算与通知，最终账实差额为零",
+        "Base Sepolia 原生 ETH、Base / BNB WLT 与 Bitcoin Testnet4 已完成独立 clean 本地无资金 Gate，覆盖链身份、资产元数据、原生手续费、nonce / UTXO 资源、scanner finality 与幂等恢复",
         "wallet-sign 已收敛 local、HSM、TSS 与 FROST 后端；TSS 2-of-3 fail-closed / 恢复已通过本地栈验证，Solana FROST 链上 E2E 仍待验收"
       ],
-      "publicNextMilestone": "冻结 V4 跨仓库兼容基线，完成至少一条非 Sepolia 测试网的充提归集闭环，并对广播结果未知和签名节点不足执行可复现故障注入。"
+      "publicNextMilestone": "冻结统一多链 release candidate，完成一条非 Sepolia funded 测试网闭环，并完成 Agent Stablecoin Wallet 与 Wallet Launchpad 的版本化 risk / signer / delivery 依赖组合。"
     },
     {
       "projectId": "risk-server",
@@ -43,15 +44,15 @@
       "portfolioTier": "verified",
       "activityStatus": "active",
       "visibility": "private",
-      "updatedAt": "2026-07-28",
-      "nextAction": "合并 reviewed artifact 后完成 production migration、Preview 与七天滚动证据",
-      "publicSummary": "多场所可信行情与虚拟现货交易学习产品：聚合 CEX、Perp 与 AMM 行情，以 PostgreSQL / Redis / Doris 组织数据事实，并通过仅使用虚拟资金的 BTC/USDT 撮合、账本和恢复链路学习交易系统。",
+      "updatedAt": "2026-08-04",
+      "nextAction": "固定同一 release artifact 并完成 production migration、Preview 与七天滚动证据",
+      "publicSummary": "面向行情产品与交易系统的统一 Market Server：接入 CEX、Perp 与 AMM 来源，输出带来源、新鲜度和降级状态的可信市场事实，并为虚拟现货交易提供撮合、账本、事件和确定性恢复。",
       "publicEvidence": [
-        "当前本地分支已实现四家 CEX WebSocket / REST 对账、Hyperliquid、Uniswap / PancakeSwap、可信新鲜度和 16 个只读 gRPC RPC",
+        "release artifact 72343ba 已实现四家 CEX WebSocket / REST 对账、Hyperliquid、Uniswap / PancakeSwap、可信新鲜度和 16 个只读 gRPC RPC",
         "BTC/USDT 虚拟交易已覆盖定点数撮合、available / held 双重记账、PostgreSQL 事件/快照/outbox、幂等、WebSocket cursor 与重启 state hash 恢复",
-        "HEAD 7df9001 的 review 修复已通过 Go test/race/vet、前端 25 个测试与构建、隔离 PostgreSQL publisher/feed/cleanup 集成和当前二进制恢复演练"
+        "2026-08-04 在 release artifact 上重新通过完整 Go test；已有记录还覆盖 race / vet、前端测试与构建、隔离 PostgreSQL publisher/feed/cleanup 集成和二进制恢复演练"
       ],
-      "publicNextMilestone": "先把当前 reviewed artifact 推送并合并到共享基线，再完成生产 migration、受保护 Preview 验收与完整七天滚动证据；任何门未通过都不晋级生产状态。"
+      "publicNextMilestone": "完成标准是固定同一 release artifact，通过生产迁移、受保护 Preview、OAuth、备份恢复、容量与连续七天稳定性门，并让浏览器展示的行情、订单、余额和系统状态都能追溯到同一后端事实。"
     },
     {
       "projectId": "stableflow",
@@ -111,16 +112,18 @@
       "portfolioTier": "verified",
       "activityStatus": "active",
       "visibility": "private",
-      "updatedAt": "2026-07-28",
-      "nextAction": "完成一条非 Sepolia 测试网完整验收并固定 reviewed artifact",
-      "publicSummary": "面向交易所与支付业务方的多租户钱包控制台学习版，把地址、扫链、资金对账、风险审批、门限签名和交易状态组织成可演示、可复核的 B 端测试网工作台。",
+      "updatedAt": "2026-08-04",
+      "nextAction": "冻结统一多链 release candidate 并完成一条非 Sepolia funded 测试网验收",
+      "publicSummary": "面向交易所与支付团队的钱包控制平面：在一个多租户工作台中管理链与资产 readiness、充值地址、归集、提现、资金对账、风险审批、签名健康和异常恢复。",
       "publicEvidence": [
         "Go BFF 与 React / Next.js 控制台支持两个隔离租户、Demo / Live 边界、资金总览、地址、充值提现、归集、签名健康、多链矩阵与状态时间线",
         "一键本地栈可启动钱包服务、风险服务、链 API、统一签名入口、TSS / FROST 节点、数据库与控制台，并执行仓库门禁、HTTP 冒烟和双租户隔离检查",
         "Sepolia ETH 已完成测试网充值、local 地址归集、2-of-3 MPC 提现、广播确认、账本结算与通知，最终账实差额为零",
+        "Base Sepolia 原生 ETH 已通过地址、nonce、L1+L2 fee quote、资源预留、签名与广播前置条件的本地无资金验收门",
+        "Base / BNB WLT 已验证资产元数据、独立本金与原生手续费预留、scanner finalized head 和幂等 Transfer 日志；Bitcoin Testnet4 已验证 UTXO 选择、reservation replay 与恢复门",
         "受保护的 Vercel Preview 通过同源 BFF 与短期 OIDC 访问隔离的 Mac mini staging，数据库、gRPC 和签名节点不直接暴露公网"
       ],
-      "publicNextMilestone": "冻结当前跨仓库兼容基线，完成至少一条非 Sepolia 测试网的充值、归集、提现与对账验收，并让私有 Preview 使用同一 reviewed artifact 复核。"
+      "publicNextMilestone": "冻结包含 Base、BNB、Bitcoin 无资金门禁的统一 reviewed artifact，选择一条已获明确授权的非 Sepolia 测试网完成注资、充值、归集、提现与对账验收，并让私有 Preview 复核同一版本。"
     },
     {
       "projectId": "wallet-reliability-lab",

@@ -1,18 +1,18 @@
 ---
 {
-  "updatedAt": "2026-07-28",
-  "headline": "Web3 钱包后端，用 AI 加速但以证据收口",
-  "summary": "当前主线是交易所钱包资金状态、多链交易、签名边界与异常恢复；AI 用于需求拆解、代码审查、测试和知识治理，最终判断仍回到源码、运行结果与可复核证据。",
+  "updatedAt": "2026-08-04",
+  "headline": "把 Wallet Launchpad 与 Market Server 做成两个完整产品",
+  "summary": "Wallet Launchpad 负责多链钱包的验收、操作与恢复入口，Qiu Market Server 负责可信行情、虚拟撮合、账本与确定性恢复；网站先表达完成后的产品价值，再用分层证据说明实现进度。",
   "developmentProjectSlugs": [
     "exchange-wallet-system",
-    "wallet-core",
-    "wallet-reliability-lab",
-    "tss-mpc"
+    "wallet-launchpad",
+    "s78-market-services",
+    "wallet-reliability-lab"
   ],
   "nextFocus": [
-    "固定 wallet-service、risk-service、wallet-api 与 wallet-sign 的兼容基线，跑通包含风控放行与失败注入的提现验收",
-    "把签名意图不一致、广播结果未知与 canonical 恢复收敛为可重复运行的失败实验和结构化证据",
-    "为 wallet-core 补齐链资源过期、错误最小单位与无效对象引用的统一负向测试"
+    "冻结 Wallet Launchpad 的统一多链 release candidate，完成一条非 Sepolia funded 测试网闭环与 Agent Payment 依赖组合",
+    "固定 Qiu Market Server 的同一 release artifact，完成迁移、Preview、OAuth、备份恢复、容量与七天稳定性门",
+    "让两个产品的页面状态都能继续追到服务边界、失败恢复和可复核证据"
   ]
 }
 ---
