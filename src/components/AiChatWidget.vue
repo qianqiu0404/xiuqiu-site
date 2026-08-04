@@ -26,8 +26,10 @@ interface AskAiEventDetail {
 
 const props = withDefaults(defineProps<{
   cinematic?: boolean
+  hideDesktopToggle?: boolean
 }>(), {
   cinematic: false,
+  hideDesktopToggle: false,
 })
 
 const route = useRoute()
@@ -368,7 +370,13 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="ai-chat" :class="{ 'ai-chat--cinematic': props.cinematic }">
+  <div
+    class="ai-chat"
+    :class="{
+      'ai-chat--cinematic': props.cinematic,
+      'ai-chat--desktop-rail': props.hideDesktopToggle,
+    }"
+  >
     <section
       v-if="isOpen"
       id="ai-chat-panel"
@@ -608,11 +616,11 @@ onUnmounted(() => {
 }
 
 @media (min-width: 1025px) {
-  .ai-chat--cinematic .ai-chat-toggle {
+  .ai-chat--desktop-rail .ai-chat-toggle {
     display: none;
   }
 
-  .ai-chat--cinematic .ai-chat-panel {
+  .ai-chat--desktop-rail .ai-chat-panel {
     bottom: 0;
   }
 }

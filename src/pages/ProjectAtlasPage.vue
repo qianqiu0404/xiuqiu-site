@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
+import '../styles/cinematic-pages.css'
 import {
   projectActivityLabels,
   projectPortfolioTierLabels,
@@ -44,30 +45,40 @@ onMounted(() =>
 </script>
 
 <template>
-  <section class="section page-top project-atlas-page">
-    <div class="container">
-      <header class="project-atlas-hero">
-        <p class="section-label">Project Atlas</p>
-        <h1>项目不是数量列表，而是一张证据地图</h1>
-        <p>每个项目先说明完成后的产品形态，再标明当前阶段与已验证事实。愿景负责方向，证据负责可信，二者不会混成同一个完成状态。</p>
-      </header>
+  <section class="project-atlas-page project-atlas-page--cinematic cinematic-page">
+    <header class="project-atlas-hero cinematic-page-hero">
+      <div class="container project-atlas-hero-layout">
+        <div class="project-atlas-hero-copy">
+          <p class="cinematic-page-kicker">Project Atlas / Evidence Registry</p>
+          <h1>项目不是数量列表，<span>而是一张证据地图。</span></h1>
+          <p>每个项目先说明完成后的产品形态，再标明当前阶段与已验证事实。愿景负责方向，证据负责可信，二者不会混成同一个完成状态。</p>
+          <div class="project-atlas-tracks" aria-label="三条系统主线">
+            <router-link to="/projects/exchange-wallet-system"><span>01</span>Wallet Platform</router-link>
+            <router-link to="/projects/s78-market-services"><span>02</span>Market Server</router-link>
+            <router-link to="/ai/deliveries"><span>03</span>AI Engineering</router-link>
+          </div>
+        </div>
 
-      <nav class="project-atlas-summary" aria-label="项目层级">
-        <a v-for="group in groupedProjects" :key="group.tier" :href="`#${group.tier}`">
-          <strong>{{ group.projects.length }}</strong>
-          <span>{{ projectPortfolioTierLabels[group.tier] }}</span>
-        </a>
-      </nav>
+        <nav class="project-atlas-summary" aria-label="项目层级">
+          <a v-for="group in groupedProjects" :key="group.tier" :href="`#${group.tier}`">
+            <span>{{ projectPortfolioTierLabels[group.tier] }}</span>
+            <strong>{{ String(group.projects.length).padStart(2, '0') }}</strong>
+            <small>进入层级 ↘</small>
+          </a>
+        </nav>
+      </div>
+    </header>
 
+    <div class="container project-atlas-registry">
       <section
-        v-for="group in groupedProjects"
+        v-for="(group, groupIndex) in groupedProjects"
         :id="group.tier"
         :key="group.tier"
         class="project-atlas-group"
       >
         <div class="project-atlas-group-heading">
           <div>
-            <p class="section-label">{{ projectPortfolioTierLabels[group.tier] }}</p>
+            <p class="cinematic-page-kicker">Scene {{ String(groupIndex + 1).padStart(2, '0') }}</p>
             <h2>{{ projectPortfolioTierLabels[group.tier] }}</h2>
           </div>
           <p>{{ tierDescriptions[group.tier] }}</p>
@@ -85,17 +96,19 @@ onMounted(() =>
               <span>{{ projectStageLabels[project.stage] }}</span>
               <span>{{ projectActivityLabels[project.activityStatus] }}</span>
             </div>
-            <div class="project-atlas-next">
-              <small>产品完成形态</small>
-              <p>{{ project.targetOutcome }}</p>
-            </div>
             <div class="project-atlas-proof">
-              <small>已验证到哪里</small>
+              <small>Verified Evidence / 已验证到哪里</small>
               <p>{{ project.verifiedEvidence[0] }}</p>
             </div>
-            <div class="project-atlas-next">
-              <small>完成标准</small>
-              <p>{{ project.nextMilestone }}</p>
+            <div class="project-atlas-future-grid">
+              <div class="project-atlas-next">
+                <small>Target Outcome / 产品完成形态</small>
+                <p>{{ project.targetOutcome }}</p>
+              </div>
+              <div class="project-atlas-next">
+                <small>Next Gate / 完成标准</small>
+                <p>{{ project.nextMilestone }}</p>
+              </div>
             </div>
             <a
               v-if="projectAction(project).href"
