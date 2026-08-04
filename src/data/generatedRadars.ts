@@ -6,6 +6,503 @@ export interface DailyRadar { date: string; slug: string; title: string; summary
 
 export const dailyRadars: DailyRadar[] = [
   {
+    "date": "2026-08-04",
+    "slug": "2026-08-04",
+    "title": "每日研究雷达 · 2026-08-04",
+    "summary": "聚焦 Chainlink 遥测与批处理、Polkadot collator 信誉修复、Celestia CheckTx 限制、受限 agent 写入、沙箱钱包、Gemini CLI，以及条件化最小权限。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-08-04T09:46:53+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "Chainlink Node v2.58.0 调整遥测与批量发送默认值",
+        "summary": "版本新增指标属性丢弃配置，并依据容量分析扩大 Chip ingress 缓冲与批量、延长发送窗口；这是节点配置更新，生产使用仍需按负载验证并固定镜像 digest。",
+        "sourceUrl": "https://github.com/smartcontractkit/chainlink/releases/tag/v2.58.0"
+      },
+      {
+        "title": "Polkadot SDK 补丁修正 collator 信誉归因",
+        "summary": "stable2603-5 修正 ApprovedPeer 携带错误 PeerId 导致诚实 collator 无法累积信誉的问题，并缓解持久化请求拥塞；该发布仅含 crates，不提供 binary 或镜像。",
+        "sourceUrl": "https://github.com/paritytech/polkadot-sdk/releases/tag/polkadot-stable2603-5"
+      },
+      {
+        "title": "Celestia Corto 版本在 CheckTx 限制消息数量",
+        "summary": "v9.0.5-corto 为 CheckTx 增加 SDK message 上限并升级 celestia-core；它是仅面向 Corto 的 prerelease，不能外推为主网稳定版本。",
+        "sourceUrl": "https://github.com/celestiaorg/celestia-app/releases/tag/v9.0.5-corto"
+      }
+    ],
+    "aiTip": {
+      "title": "让模型产出结构化意图，由确定性 handler 执行写入",
+      "summary": "先用代码固定仓库、分支和文件边界，再让 agent 只输出变更意图；独立 handler 用窄权限、白名单、draft PR 与失败回退执行。模型判断仍需内容审阅，安全来自权限分离和可验证动作面。",
+      "sourceUrl": "https://github.blog/ai-and-ml/github-copilot/automating-cross-repo-documentation-with-github-agentic-workflows/"
+    },
+    "web3Design": {
+      "title": "把 agent 资产与 owner 账户做单向隔离",
+      "summary": "ERC-8199 用独立沙箱钱包、agent 有效期、前后置 checker 与 owner 恢复路径限制自动执行。钱包服务可迁移独立资金边界和显式策略，但草案未补齐 nonce、升级、checker 信任与跨链恢复，不能直接用于生产。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-8199"
+    },
+    "vibeProject": {
+      "title": "Gemini CLI · 终端开源 coding agent",
+      "summary": "Gemini CLI 面向终端代码与工具工作流；固定版 0.53.1 已在无凭据临时目录复现版本输出。公开仓库与 npm 数据显示广泛关注和分发，但工具权限、提示注入和供应链风险仍需沙箱、审批与独立测试约束。",
+      "sourceUrl": "https://github.com/google-gemini/gemini-cli"
+    },
+    "readingPick": {
+      "title": "用条件把最小权限收紧到服务、工具与时间",
+      "summary": "Google Cloud 展示用 IAM Conditions 限定可授予角色、MCP 服务、具体工具和时间窗。思考题：为只读研究 agent 写出三条允许、三条拒绝案例，并检查属性缺失或新工具上线时是否默认拒绝。",
+      "sourceUrl": "https://cloud.google.com/blog/topics/developers-practitioners/generosity-under-conditions-hardening-google-cloud-access-management/"
+    },
+    "sourceUrls": [
+      "https://github.com/smartcontractkit/chainlink/releases/tag/v2.58.0",
+      "https://github.com/paritytech/polkadot-sdk/releases/tag/polkadot-stable2603-5",
+      "https://github.com/celestiaorg/celestia-app/releases/tag/v9.0.5-corto",
+      "https://github.blog/ai-and-ml/github-copilot/automating-cross-repo-documentation-with-github-agentic-workflows/",
+      "https://eips.ethereum.org/EIPS/eip-8199",
+      "https://github.com/google-gemini/gemini-cli",
+      "https://github.com/google-gemini/gemini-cli/releases/tag/v0.53.1",
+      "https://registry.npmjs.org/@google/gemini-cli/0.53.1",
+      "https://api.npmjs.org/downloads/point/2026-07-05:2026-08-03/@google/gemini-cli",
+      "https://github.com/google-gemini/gemini-cli/blob/v0.53.1/docs/cli/sandbox.md",
+      "https://github.com/google-gemini/gemini-cli/blob/v0.53.1/LICENSE",
+      "https://cloud.google.com/blog/topics/developers-practitioners/generosity-under-conditions-hardening-google-cloud-access-management/"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
+    "date": "2026-08-03",
+    "slug": "2026-08-03",
+    "title": "每日研究雷达 · 2026-08-03",
+    "summary": "聚焦 Coinbase 资金工作流事故、以太坊 agent 安全分诊、SEC 加密监管议程、stacked PR 迁移、模块化智能账户、Cline，以及依赖更新信噪比分流。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-08-03T10:14:03+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "Coinbase 共享入口故障暂停多类资金工作流",
+        "summary": "资源名称冲突使共享 Istio ingress gateway 不可用，充提、卡、链上和结算工作流同时受影响，标准回滚又依赖故障入口。公司称资金未受风险，但改进项仍需后续运行证据验证。",
+        "sourceUrl": "https://www.coinbase.com/fr-fr/blog/a-postmortem-of-our-july-14-2026-incident"
+      },
+      {
+        "title": "以太坊协议安全 agent 的瓶颈是可复现分诊",
+        "summary": "Ethereum Foundation 将 agent 视为安全搜索工具，要求候选用真实代码 PoC、调用链、影响边界和维护者复核转成有效漏洞；已确认一项公开 CVE，但未披露完整误报率。",
+        "sourceUrl": "https://blog.ethereum.org/2026/07/09/triage-is-the-product"
+      },
+      {
+        "title": "SEC 议程覆盖加密融资、托管与链上代币化证券",
+        "summary": "SEC 主席声明拟为加密资产融资、托管和链上代币化证券提供更清晰路径，同时保留投资者保护和执法；这是政策议程，不是已生效规则或产品豁免。",
+        "sourceUrl": "https://www.sec.gov/newsroom/speeches-statements/atkins-statement-2026-regulatory-agenda-070726"
+      }
+    ],
+    "aiTip": {
+      "title": "把大型迁移拆成有依赖关系的短会话与小 PR 栈",
+      "summary": "先提交可独立测试的基础层，后续会话从前一分支派生并只承担一个目标；每层记录前置提交、局部测试和回滚。stacked PR 缩小审阅面，但最终仍需在合并基线做完整回归。",
+      "sourceUrl": "https://github.blog/ai-and-ml/github-copilot/stacked-sessions-and-pull-requests-in-the-github-copilot-app/"
+    },
+    "web3Design": {
+      "title": "把账户验证、执行与约束拆成可清点模块",
+      "summary": "ERC-6900 用 validation、execution 和 hook 模块描述智能账户能力。钱包系统可迁移 manifest、selector、hook 顺序和安装审计，但恶意模块仍可拒绝服务或转走资金，卸载残留也必须显式清理。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-6900"
+    },
+    "vibeProject": {
+      "title": "Cline · 多客户端开源 coding agent",
+      "summary": "Cline 在编辑器、CLI 与 SDK 中提供项目编辑、命令、checkpoint 和扩展能力。公开发布与 issue 显示活跃维护；试用应固定 CLI 版本、使用无凭据示例仓库，并保留命令审批与独立测试。",
+      "sourceUrl": "https://github.com/cline/cline"
+    },
+    "readingPick": {
+      "title": "分组普通依赖更新，同时保留安全修复快车道",
+      "summary": "文章建议按生态分组普通版本更新、降低 cadence，并确认安全更新独立即时触发。可用 15 分钟画出普通升级与安全修复两条路径，验证冷却不会拖延已有修复的高危漏洞。",
+      "sourceUrl": "https://github.blog/security/supply-chain-security/tame-dependabot-group-your-updates-slow-the-cadence-keep-security-fast/"
+    },
+    "sourceUrls": [
+      "https://www.coinbase.com/fr-fr/blog/a-postmortem-of-our-july-14-2026-incident",
+      "https://blog.ethereum.org/2026/07/09/triage-is-the-product",
+      "https://www.sec.gov/newsroom/speeches-statements/atkins-statement-2026-regulatory-agenda-070726",
+      "https://github.blog/ai-and-ml/github-copilot/stacked-sessions-and-pull-requests-in-the-github-copilot-app/",
+      "https://eips.ethereum.org/EIPS/eip-6900",
+      "https://github.com/cline/cline",
+      "https://github.com/cline/cline/releases/tag/cli-v3.0.49",
+      "https://www.npmjs.com/package/cline/v/3.0.49",
+      "https://docs.cline.bot/",
+      "https://github.com/cline/cline/blob/main/LICENSE",
+      "https://github.blog/security/supply-chain-security/tame-dependabot-group-your-updates-slow-the-cadence-keep-security-fast/"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
+    "date": "2026-08-02",
+    "slug": "2026-08-02",
+    "title": "每日研究雷达 · 2026-08-02",
+    "summary": "聚焦以太坊客户端安全升级与 RPC 边界、Avalanche Helicon 测试网窗口、低成本原型比较、无地址签名者表示、Agent 会话审计，以及 Spotify 队列事故复盘。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-08-02T07:04:00+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "Lighthouse v8.2.1 要求主网节点优先升级",
+        "summary": "Sigma Prime 将 v8.2.1 标为高优先级安全升级，并修正 partial data columns 的缓存与 gossip 行为；安全漏洞细节尚未披露，数据列回填仍可能 OOM，因此补丁升级与资源风险验证必须分开处理。",
+        "sourceUrl": "https://github.com/sigp/lighthouse/releases/tag/v8.2.1"
+      },
+      {
+        "title": "Nethermind 1.39.2 同时改变安全与日志查询边界",
+        "summary": "Nethermind 1.39.2 纳入 .NET 10.0.10 安全修复，并一致执行 eth_getLogs 默认 10,000 区块扫描上限。节点升级需要同步回归客户端分页与兼容性；发布信息不证明所有依赖漏洞都可经节点路径利用。",
+        "sourceUrl": "https://github.com/NethermindEth/nethermind/releases/tag/1.39.2"
+      },
+      {
+        "title": "Avalanche Helicon 仅在 Fuji 提供升级验证窗口",
+        "summary": "AvalancheGo v1.15.0-fuji 已在 Fuji 激活连续执行、自动续期质押等 Helicon 变更，为节点和钱包集成提供测试窗口；该二进制拒绝主网配置，且激活后暂不支持 C-Chain state sync，不能视为主网上线证据。",
+        "sourceUrl": "https://github.com/ava-labs/avalanchego/releases/tag/v1.15.0-fuji"
+      }
+    ],
+    "aiTip": {
+      "title": "实现前并排比较多个低成本原型",
+      "summary": "让 agent 在同一目标、约束和输入下生成 3–5 个刻意不同的低保真方案，把成功、校验失败、超时和重试放进同一工件审阅，并记录采用与拒绝理由。原型用于澄清契约，正式实现仍需类型、测试、真实依赖和人工评审验证。",
+      "sourceUrl": "https://github.blog/ai-and-ml/github-copilot/the-harness-is-all-you-need-mostly/"
+    },
+    "web3Design": {
+      "title": "用验证器与公钥材料表示没有链上地址的签名者",
+      "summary": "ERC-7913 用 verifier 与 key 组合表示 P-256、RSA 等无 Ethereum 地址的签名者。钱包系统可借鉴算法、验证器、公钥材料、链域和用途的版本化描述，但必须独立完成验证器信任、签名者授权、撤销恢复与防降级控制，不能把密码学验证等同于业务批准。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-7913"
+    },
+    "vibeProject": {
+      "title": "Entire CLI · 把 Agent 会话检查点纳入 Git 审阅",
+      "summary": "Entire CLI 通过 agent 与 Git hooks 捕获会话并把检查点存入独立 refs，提供状态、解释、恢复和诊断入口。公开长会话超时报告说明它已进入真实工作流，也暴露锁竞争与隐私风险；试点应使用私有临时仓库、禁止推送会话并先审阅 refs。",
+      "sourceUrl": "https://github.com/entireio/cli/blob/v0.9.0/README.md"
+    },
+    "readingPick": {
+      "title": "Spotify 视频播客摄取事故复盘",
+      "summary": "Spotify 将队列故障拆为需求突发、后台争用、单项转码成本上升、调度损耗与响应延迟的叠加。可用 15 分钟为一个异步流程画队列压力卡：标出实时与后台任务、成本和余量，再为接收确认、等待时间与端到端完成设置阈值和责任人。",
+      "sourceUrl": "https://engineering.atspotify.com/2026/7/content-ingestion-and-podcast-video-incident-report"
+    },
+    "sourceUrls": [
+      "https://github.com/sigp/lighthouse/releases/tag/v8.2.1",
+      "https://github.com/NethermindEth/nethermind/releases/tag/1.39.2",
+      "https://github.com/ava-labs/avalanchego/releases/tag/v1.15.0-fuji",
+      "https://github.blog/ai-and-ml/github-copilot/the-harness-is-all-you-need-mostly/",
+      "https://eips.ethereum.org/EIPS/eip-7913",
+      "https://github.com/entireio/cli/blob/v0.9.0/README.md",
+      "https://github.com/entireio/cli/releases/tag/v0.9.0",
+      "https://api.github.com/repos/entireio/cli/releases/tags/v0.9.0",
+      "https://github.com/entireio/cli/blob/v0.9.0/docs/security-and-privacy.md",
+      "https://github.com/entireio/cli/issues/1887",
+      "https://github.com/entireio/cli/pull/1880",
+      "https://github.com/entireio/cli/issues/1697",
+      "https://github.com/entireio/cli/blob/v0.9.0/LICENSE",
+      "https://engineering.atspotify.com/2026/7/content-ingestion-and-podcast-video-incident-report"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
+    "date": "2026-08-01",
+    "slug": "2026-08-01",
+    "title": "每日研究雷达 · 2026-08-01",
+    "summary": "聚焦 OP Stack 交易入口与证明迁移、Cosmos 密钥升级、俄罗斯加密流通框架、agent 结果成本、可衰减钱包权限、Codex CLI，以及代码搜索热路径优化。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-08-03T10:08:54+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "op-reth 2.4.1 改变交易池入口与历史证明迁移边界",
+        "summary": "转发交易进入 txpool 现在需要显式启用，历史证明 v1 数据库将在 8 月 31 日弃用；节点升级必须分别验证交易入口、资源校验和 v2 证明库重建，不能只替换二进制。",
+        "sourceUrl": "https://github.com/ethereum-optimism/optimism/releases/tag/op-reth/v2.4.1"
+      },
+      {
+        "title": "Cosmos SDK 0.55 把共识密钥轮换变成链级升级事项",
+        "summary": "v0.55.0 新增共识密钥轮换与后量子密钥类型，从 v0.54.x 升级需要协调链升级；框架能力不代表采用链或历史账户已具备后量子安全性。",
+        "sourceUrl": "https://github.com/cosmos/cosmos-sdk/releases/tag/v0.55.0"
+      },
+      {
+        "title": "俄罗斯加密流通框架保留境内支付禁令",
+        "summary": "俄罗斯央行称相关法律计划 9 月 1 日生效，允许受监管中介和部分跨境用途，同时继续禁止境内支付；最终法律文本、许可与过渡实施仍需独立确认。",
+        "sourceUrl": "https://www.cbr.ru/eng/press/event/?id=32724"
+      }
+    ],
+    "aiTip": {
+      "title": "用可验收结果衡量 agent 单位成本",
+      "summary": "为重复工作流记录被接受的完成物、模型成本、耗时、人工复核与重试，只在质量达到同一门槛后比较单位结果成本。不同任务难度和失败样本必须保留，不能用 token 单价代替业务验收。",
+      "sourceUrl": "https://openai.com/index/managing-ai-investments-in-agentic-era/"
+    },
+    "web3Design": {
+      "title": "把自动执行权限做成可衰减、可过期的类型化授权",
+      "summary": "ERC-7715 让应用请求带链、session 账户、权限类型和规则的执行权限。钱包系统可迁移最小授权、衰减、过期和撤销机制，但必须为不透明 permissionsContext 增加 schema、完整性和生命周期校验。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-7715"
+    },
+    "vibeProject": {
+      "title": "OpenAI Codex CLI · 本地开源 coding agent",
+      "summary": "Codex CLI 把仓库读取、修改、命令与验证收敛到终端客户端。公开仓库和稳定发布显示活跃维护，但首次验证应固定版本、使用无凭据样例仓库，并以 diff、测试和权限记录验收。",
+      "sourceUrl": "https://github.com/openai/codex"
+    },
+    "readingPick": {
+      "title": "GitHub 代码搜索的无分支大小写折叠优化",
+      "summary": "文章用基准与汇编说明提前退出会阻止向量化，完整无分支扫描反而达到内存带宽。可用 15 分钟为一个热循环记录输入分布、数据相关分支、向量化和分配，再用两个最小变体验证直觉。",
+      "sourceUrl": "https://github.blog/engineering/architecture-optimization/dont-stop-early-case-folding-source-code-at-memory-speed/"
+    },
+    "sourceUrls": [
+      "https://github.com/ethereum-optimism/optimism/releases/tag/op-reth/v2.4.1",
+      "https://github.com/cosmos/cosmos-sdk/releases/tag/v0.55.0",
+      "https://www.cbr.ru/eng/press/event/?id=32724",
+      "https://openai.com/index/managing-ai-investments-in-agentic-era/",
+      "https://eips.ethereum.org/EIPS/eip-7715",
+      "https://github.com/openai/codex",
+      "https://github.com/openai/codex/releases/tag/rust-v0.146.0",
+      "https://github.com/openai/codex/blob/rust-v0.146.0/README.md",
+      "https://github.com/openai/codex/blob/rust-v0.146.0/LICENSE",
+      "https://github.blog/engineering/architecture-optimization/dont-stop-early-case-folding-source-code-at-memory-speed/"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
+    "date": "2026-07-31",
+    "slug": "2026-07-31",
+    "title": "每日研究雷达 · 2026-07-31",
+    "summary": "聚焦 Prysm 与 Gaia 节点升级、Aptos 私有热修、Agent 评测难度梯度、交易内一次性动作证明、Lightning Wavelength，以及 AI 推动的工作任务跨界。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-07-31T11:33:25+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "Prysm v7.1.8 修复 attestation 传播与验证者及时签名",
+        "summary": "Prysm v7.1.8 修复了早到 attestation 已被标记但未投递时无法重新传播的问题，也修复 gRPC 通知流可能导致验证者无法及时完成 attestation 的问题，并为 builder 的 SSZ 拒绝加入 JSON 回退。官方将其列为高度推荐补丁，但未披露既有主网损失或全网收益。",
+        "sourceUrl": "https://github.com/OffchainLabs/prysm/releases/tag/v7.1.8"
+      },
+      {
+        "title": "Gaia v27.6.0 扩大 CosmWasm 合约上限与查询能力",
+        "summary": "Gaia v27.6.0 将最大 CosmWasm 合约大小从 800 KiB 提高到 1.6 MiB，并允许合约查询治理提案与验证者信息。发布版本不等于 Cosmos Hub 主网已经采用，节点运营者仍需依据治理升级高度验证兼容性与资源预算。",
+        "sourceUrl": "https://github.com/cosmos/gaia/releases/tag/v27.6.0"
+      },
+      {
+        "title": "Aptos v1.48.5 私有热修要求验证者与全节点升级",
+        "summary": "Aptos v1.48.5-hotfix 要求验证者和全节点升级，但公开仓库没有对应源码，只提供二进制或镜像。官方未披露根因和代码差异，因此应同时记录版本收敛要求与供应链审阅受限，不能把它表述为已确认漏洞。",
+        "sourceUrl": "https://github.com/aptos-labs/aptos-core/releases/tag/aptos-node-v1.48.5-hotfix"
+      }
+    ],
+    "aiTip": {
+      "title": "把同一评测问题做成可调信息量的难度梯度",
+      "summary": "固定目标证据，只增删仓库名、字段名、错误码或路径等高信息线索，为每个真实任务生成由易到难的提示变体，再分别记录检索命中、工具轨迹和最终答案。先用人工复核的小样本确认难度排序，避免生成无解或标签错误的案例；高风险任务仍需单独验证权限与副作用。",
+      "sourceUrl": "https://cloud.google.com/blog/products/data-analytics/evaluate-agent-performance"
+    },
+    "web3Design": {
+      "title": "用交易内一次性动作证明收紧 Agent 授权",
+      "summary": "ERC-8273 用 capability 与 actionDigest 绑定目标、函数、参数和 nonce，并借助 transient storage 让授权只在同一交易内活跃。钱包后端可先复用具体动作绑定、一次性窗口、失败原子回滚与独立审计记录，但不应在缺少可信 Attestor 和离线评估语义时直接引入链上 registry 或 ERC-4337。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-8273"
+    },
+    "vibeProject": {
+      "title": "Wavelength · 自托管 Bitcoin 与 Lightning 统一开发栈",
+      "summary": "Lightning Labs 的 Wavelength 把 Ark 客户端、Lightning swap、链上钱包、持久 daemon、SDK 与 MCP 工具收敛为统一接口，创建和解锁仍留在 CLI 或宿主应用侧。当前公开 alpha 可在 signet/testnet 复现，但主网仍需邀请，RPC、磁盘 schema、费用依赖与单边退出路径都需要继续验证。",
+      "sourceUrl": "https://lightning.engineering/posts/2026-07-21-wavelength-launch/"
+    },
+    "readingPick": {
+      "title": "How AI is expanding what people do at work",
+      "summary": "OpenAI 对超过 80 万条美国 ChatGPT 工作消息的研究显示，去除通用任务后，43.5% 的职业特定消息涉及用户本职之外的任务。文章提示团队应先追踪任务如何跨过岗位边界，再明确验证、授权和上线责任；可自问：本周哪项跨界任务仍缺少明确验证者？这是一项描述性研究，不能直接证明生产率或能力提升。",
+      "sourceUrl": "https://openai.com/index/how-ai-is-expanding-what-people-do-at-work/"
+    },
+    "sourceUrls": [
+      "https://github.com/OffchainLabs/prysm/releases/tag/v7.1.8",
+      "https://github.com/cosmos/gaia/releases/tag/v27.6.0",
+      "https://github.com/aptos-labs/aptos-core/releases/tag/aptos-node-v1.48.5-hotfix",
+      "https://cloud.google.com/blog/products/data-analytics/evaluate-agent-performance",
+      "https://eips.ethereum.org/EIPS/eip-8273",
+      "https://lightning.engineering/posts/2026-07-21-wavelength-launch/",
+      "https://github.com/lightninglabs/wavelength",
+      "https://wavelength.lightning.engineering/",
+      "https://wavelength.lightning.engineering/demo/",
+      "https://github.com/lightninglabs/wavelength/blob/main/LICENSE",
+      "https://openai.com/index/how-ai-is-expanding-what-people-do-at-work/"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
+    "date": "2026-07-30",
+    "slug": "2026-07-30",
+    "title": "每日研究雷达 · 2026-07-30",
+    "summary": "聚焦 Erigon RPC 内存泄漏修复、Sui 索引与分叉恢复、Eclair BOLT12 风险收敛、Agent 评测出网负向测试、授权快照根设计，以及编码 Agent 沙箱 nono。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-07-30T07:03:23+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe"
+    ],
+    "missingSections": [
+      "reading"
+    ],
+    "marketSignals": [
+      {
+        "title": "Erigon 3.5.4 修复 RPC gzip 路径的原生内存泄漏",
+        "summary": "Erigon 3.5.4 修复了启用响应压缩的 RPC daemon 中压缩器未关闭的问题，官方在归档节点场景观察到每日约 9–15 GiB 的原生内存增长。受影响的高流量 RPC 与归档节点应验证升级和内存曲线；该数据不应外推为共识错误、资金损失或远程代码执行。",
+        "sourceUrl": "https://github.com/erigontech/erigon/releases/tag/v3.5.4"
+      },
+      {
+        "title": "Sui mainnet v1.76.1 加入一次性 RPC 重建索引",
+        "summary": "Sui 主网 v1.76.1 的新 RPC Store 需要一次可续跑的索引重建，并收紧节点重启后的分叉自动恢复条件。节点运营者需要把 HTTP 可用时间、历史索引完整性和恢复策略纳入升级窗口；官方约 1.5 小时的估计仍取决于具体部署。",
+        "sourceUrl": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.76.1"
+      },
+      {
+        "title": "Eclair 0.14.1 撤回 BOLT12 blinded path 费用折扣",
+        "summary": "Eclair 0.14.1 因费用折扣与多路径支付配合不佳而禁用该行为，并警告自定义 offer-handler 继续设置 feeOverride_opt 会使节点处于风险中。版本同时要求 Bitcoin Core 31.x，并加入多项防御性校验；官方未披露具体利用路径或既有资金损失。",
+        "sourceUrl": "https://github.com/ACINQ/eclair/releases/tag/v0.14.1"
+      }
+    ],
+    "aiTip": {
+      "title": "把 Agent 评测环境的禁止出网做成负向测试",
+      "summary": "为每次评测固定沙箱镜像与允许能力清单，在模型启动前从其真实网络命名空间探测公网域名、裸 IP、DNS、包代理和元数据地址，并要求全部失败；运行中记录被拒目标，结束后断言没有未声明连接。包缓存代理仍是可组合利用的出口，高风险评测还需要独立网络控制、最小凭据、异常检测和人工停机能力。",
+      "sourceUrl": "https://openai.com/index/hugging-face-model-evaluation-security-incident/"
+    },
+    "web3Design": {
+      "title": "用有时效的授权快照根固定签名策略状态",
+      "summary": "可把限额、收款白名单、审批人与 key usage 规范化成策略树，让签名请求绑定链域、已发布且未过期的策略根及成员证明。wallet-api 传递版本化快照，wallet-service 负责生成、确认、重组重验与失效，wallet-sign 只签绑定根与过期边界的规范摘要；EIP-8272 仍是依赖未激活协议的草案，不能直接照搬到生产链或其他账本。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-8272"
+    },
+    "vibeProject": {
+      "title": "nono · 编码 Agent 的进程级权限沙箱",
+      "summary": "nono 在 macOS 使用 Seatbelt、在 Linux 使用 Landlock，为终端编码 Agent 和普通子进程施加文件系统与网络能力边界。本次固定 0.70.0 验证了本地文件访问负面探针，但没有连接真实 Agent、凭据或云环境；默认系统路径和网络策略仍需用实际 profile、nono why 与持续审计逐项核验。",
+      "sourceUrl": "https://github.com/nolabs-ai/nono"
+    },
+    "sourceUrls": [
+      "https://github.com/erigontech/erigon/releases/tag/v3.5.4",
+      "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.76.1",
+      "https://github.com/ACINQ/eclair/releases/tag/v0.14.1",
+      "https://github.com/ACINQ/eclair/blob/v0.14.1/docs/release-notes/eclair-v0.14.1.md",
+      "https://openai.com/index/hugging-face-model-evaluation-security-incident/",
+      "https://eips.ethereum.org/EIPS/eip-8272",
+      "https://github.com/nolabs-ai/nono",
+      "https://github.com/nolabs-ai/nono/releases/tag/v0.70.0",
+      "https://github.com/nolabs-ai/nono/blob/v0.70.0/README.md",
+      "https://api.github.com/repos/nolabs-ai/nono",
+      "https://api.github.com/repos/nolabs-ai/nono/releases/tags/v0.70.0",
+      "https://formulae.brew.sh/api/formula/nono.json",
+      "https://github.com/nolabs-ai/nono/issues/1502",
+      "https://github.com/nolabs-ai/nono/issues/1528",
+      "https://github.com/nolabs-ai/nono/blob/v0.70.0/LICENSE"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
+    "date": "2026-07-29",
+    "slug": "2026-07-29",
+    "title": "每日研究雷达 · 2026-07-29",
+    "summary": "聚焦 Besu 安全升级与 RPC 边界、Zcash Ironwood 激活、MiCA 人员能力责任、Agent 委派收益门、智能账户调用准备协议、Sandbox Agent，以及一次前沿实验室 Agent 入侵复盘。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-07-29T07:02:17+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "Besu 26.7.1 修复安全漏洞并改变 RPC 资源边界",
+        "summary": "Besu 26.7.1 修复了未披露安全漏洞，同时为过滤器和 WebSocket 订阅加入默认数量上限，并缩短默认过滤器过期时间。节点运营者应把升级与现有 RPC 客户端的生命周期、订阅规模和拒绝行为一起回归验证；官方尚未公布漏洞类型、利用条件或在野利用证据。",
+        "sourceUrl": "https://github.com/besu-eth/besu/releases/tag/26.7.1"
+      },
+      {
+        "title": "Zcash Ironwood 已越过主网激活高度",
+        "summary": "Zcash NU6.3 Ironwood 已在主网区块 3,428,143 激活，引入 Ironwood 隐私池和 V6 交易格式。节点和钱包需要按新规则处理交易构造、签名、解析与资金迁移；公开链高只确认协议切换发生，不能证明历史供应量已完成独立审计或所有生态参与者均已兼容。",
+        "sourceUrl": "https://zfnd.org/zebra-6-0-0-release/"
+      },
+      {
+        "title": "ESMA 的 MiCA 人员能力指引开始适用",
+        "summary": "ESMA 指引要求加密资产服务提供商区分信息与建议岗位、持续培训并至少每年复核制度有效性；自动化或半自动化系统背后的内容、参数和设置负责人也落入能力责任边界。具体义务仍取决于机构角色、所在地主管机关的采纳与实施方式。",
+        "sourceUrl": "https://www.esma.europa.eu/document/guidelines-criteria-assessment-knowledge-and-competence-under-markets-crypto-assets"
+      }
+    ],
+    "aiTip": {
+      "title": "为 Agent 编排加入可审计的委派收益门",
+      "summary": "每次委派前检查子任务是否需要独立上下文、能否与主路径并行、交接成本是否低于直接完成；定点读改验留在主路径，陌生领域探索、独立安全复核或可并行慢任务才交给子 Agent。持续记录重复搜索、空等、工具失败、质量和总等待时间，用真实失败轨迹校准策略。",
+      "sourceUrl": "https://github.blog/ai-and-ml/how-we-made-github-copilot-cli-more-selective-about-delegation/"
+    },
+    "web3Design": {
+      "title": "把智能账户差异收敛到准备、签名与提交协议",
+      "summary": "ERC-7836 草案让钱包先按账户实现生成 digest 与受约束上下文，外部 key 只签 digest，再由钱包验证授权、能力范围、有效期和 prehash 语义后执行。wallet-api 可提供版本化准备与提交接口，wallet-service 负责构造、重算、权限与幂等，wallet-sign 只签已批准 digest；草案、EVM RPC 与 ERC-4337 细节都不能直接外推到其他链。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-7836"
+    },
+    "vibeProject": {
+      "title": "Sandbox Agent · 编码 Agent 的统一隔离运行接口",
+      "summary": "Sandbox Agent 用隔离环境内的服务端、HTTP/SSE、ACP、统一事件、TypeScript SDK 和 Inspector 适配多种编码 Agent。本次固定 0.4.2 验证了 CLI、服务和公开接口，但未连接真实 Agent、凭据或云端沙箱；生产使用仍需低权限隔离、认证、网络出口限制、重连幂等和版本契约测试。",
+      "sourceUrl": "https://github.com/rivet-dev/sandbox-agent"
+    },
+    "readingPick": {
+      "title": "Anatomy of a Frontier Lab Agent Intrusion",
+      "summary": "Hugging Face 的技术复盘展示 Agent 如何把第三方执行环境、本地文件读取、模板注入、工作负载身份、云元数据、过宽集群权限和共享凭据串成跨系统入侵链。行动问题：为一个代理或签名服务画出从不可信输入到制品系统的六格信任链，标明每格读写权限与凭据寿命，并选出最早能切断整条链、且可验证的一项控制。",
+      "sourceUrl": "https://huggingface.co/blog/agent-intrusion-technical-timeline"
+    },
+    "sourceUrls": [
+      "https://github.com/besu-eth/besu/releases/tag/26.7.1",
+      "https://zfnd.org/zebra-6-0-0-release/",
+      "https://api.blockchair.com/zcash/dashboards/block/3428143",
+      "https://www.esma.europa.eu/document/guidelines-criteria-assessment-knowledge-and-competence-under-markets-crypto-assets",
+      "https://github.blog/ai-and-ml/how-we-made-github-copilot-cli-more-selective-about-delegation/",
+      "https://eips.ethereum.org/EIPS/eip-7836",
+      "https://github.com/rivet-dev/sandbox-agent",
+      "https://github.com/rivet-dev/sandbox-agent/releases/tag/v0.4.2",
+      "https://github.com/rivet-dev/sandbox-agent/blob/v0.4.2/README.md",
+      "https://registry.npmjs.org/%40sandbox-agent%2Fcli/0.4.2",
+      "https://api.npmjs.org/downloads/point/2026-06-29:2026-07-28/@sandbox-agent/cli",
+      "https://github.com/rivet-dev/sandbox-agent/issues/307",
+      "https://github.com/rivet-dev/sandbox-agent/blob/v0.4.2/docs/openapi.json",
+      "https://github.com/rivet-dev/sandbox-agent/blob/v0.4.2/LICENSE",
+      "https://huggingface.co/blog/agent-intrusion-technical-timeline"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
     "date": "2026-07-28",
     "slug": "2026-07-28",
     "title": "每日研究雷达 · 2026-07-28",
