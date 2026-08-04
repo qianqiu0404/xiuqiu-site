@@ -261,7 +261,7 @@ async function sendMessage() {
     errorMessage.value = error instanceof Error ? error.message : '暂时无法连接 AI 服务，请稍后再试。'
     messages.value.push({
       role: 'assistant',
-      content: '抱歉，AI 服务暂时不可用。你可以稍后再试，或直接通过 Email 联系 xiuqiu。',
+      content: '抱歉，AI 服务暂时不可用。你可以稍后再试，或通过 GitHub 继续了解 xiuqiu 的项目。',
     })
   } finally {
     explicitPageContext.value = null
@@ -311,13 +311,13 @@ onUnmounted(() => {
 
 <template>
   <div class="ai-chat">
-    <section v-if="isOpen" class="ai-chat-panel" aria-label="AI chat assistant">
+    <section v-if="isOpen" class="ai-chat-panel" aria-label="xiuqiu AI 客服">
       <header class="ai-chat-header">
         <div>
-          <p class="ai-chat-kicker">DeepSeek AI</p>
-          <h2 class="ai-chat-title">Ask about xiuqiu</h2>
+          <p class="ai-chat-kicker">xiuqiu AI</p>
+          <h2 class="ai-chat-title">工程内容助手</h2>
         </div>
-        <button class="ai-icon-button" type="button" aria-label="Close chat" @click="toggleChat">
+        <button class="ai-icon-button" type="button" aria-label="关闭 AI 客服" @click="toggleChat">
           ×
         </button>
       </header>
@@ -366,18 +366,20 @@ onUnmounted(() => {
 
       <p v-if="errorMessage" class="ai-chat-error">{{ errorMessage }}</p>
 
+      <p class="ai-chat-privacy">只使用本站公开内容回答。请勿输入密钥、账户、地址、交易或其他隐私信息。</p>
+
       <form class="ai-chat-form" @submit.prevent="sendMessage">
         <textarea
           v-model="input"
           class="ai-chat-input"
           rows="2"
           maxlength="1000"
-          placeholder="Ask about projects, writing, wallet backend..."
-          aria-label="Ask a question"
+          placeholder="询问项目、工程证据或钱包后端..."
+          aria-label="向 xiuqiu AI 客服提问"
           @keydown.enter.exact.prevent="sendMessage"
         ></textarea>
         <button class="ai-send-button" type="submit" :disabled="!canSend">
-          Send
+          发送
         </button>
       </form>
     </section>
@@ -386,7 +388,7 @@ onUnmounted(() => {
       class="ai-chat-toggle"
       type="button"
       :aria-expanded="isOpen"
-      aria-label="Open AI chat"
+      aria-label="打开 xiuqiu AI 客服"
       @click="toggleChat"
     >
       AI
@@ -604,6 +606,14 @@ onUnmounted(() => {
   margin: 10px 18px 0;
   color: #b42318;
   font-size: 12px;
+  line-height: 1.5;
+}
+
+.ai-chat-privacy {
+  margin: 0;
+  padding: 0 18px 10px;
+  color: var(--text-light);
+  font-size: 11px;
   line-height: 1.5;
 }
 
