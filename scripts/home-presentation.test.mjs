@@ -4,6 +4,8 @@ import test from 'node:test'
 import {
   aiEngineeringOutcomes,
   flagshipProjectSlug,
+  homeAiProofContexts,
+  homeAiWorkflow,
   homeCapabilities,
   homeEvidenceHighlights,
   homeProductGroups,
@@ -30,12 +32,16 @@ test('homepage presentation keeps the intended cardinalities', () => {
   assert.equal(homeEvidenceHighlights.length, 3)
   assert.equal(homeProductGroups.length, 2)
   assert.equal(aiEngineeringOutcomes.length, 8)
+  assert.equal(homeAiProofContexts.length, 3)
+  assert.equal(homeAiWorkflow.length, 7)
   assertUnique(homeCapabilities.map(item => item.id), 'capability ids')
   assertUnique(homeServiceFlow.map(item => item.name), 'service names')
   assertUnique(homeProofMethods.map(item => item.id), 'proof ids')
   assertUnique(homeEvidenceHighlights.map(item => item.evidenceSlug), 'evidence highlight slugs')
   assertUnique(homeProductGroups.map(item => item.id), 'product group ids')
   assertUnique(aiEngineeringOutcomes, 'AI outcomes')
+  assertUnique(homeAiProofContexts.map(item => item.id), 'AI proof context ids')
+  assertUnique(homeAiWorkflow, 'AI workflow steps')
 })
 
 test('every homepage action has one type-safe destination', () => {
@@ -103,18 +109,17 @@ test('homepage evidence highlights resolve to dated site evidence', () => {
 
 test('homepage and primary navigation keep their structural contract', () => {
   assert.equal((homeSource.match(/<section(?:\s|>)/g) || []).length, 6)
-  const heroSource = homeSource.match(/<section class="value-home-hero"[\s\S]*?<\/section>/)?.[0]
+  const heroSource = homeSource.match(/<section class="cinematic-hero"[\s\S]*?<\/section>/)?.[0]
   assert.ok(heroSource, 'Homepage hero markup is missing')
-  assert.equal((heroSource.match(/class="btn /g) || []).length, 2)
-  assert.doesNotMatch(heroSource, /value-home-proof-links|value-home-proof-strip/)
-  assert.match(homeSource, /class="value-home-proof-links"/)
-  assert.match(homeSource, /value-home-product-line--\$\{group\.id\}/)
-  assert.match(homeSource, /class="value-home-ai-strip"/)
-  assert.doesNotMatch(homeSource, /explorationProjectSlugs/)
-  assert.doesNotMatch(homeSource, /v-for="project in explorationProjects"/)
-  assert.match(homeSource, /to="\/projects">\s*查看工程探索与完整项目图谱/)
-  assert.doesNotMatch(homeSource, /project\.knownLimits/)
-  assert.doesNotMatch(homeSource, /project\.nextMilestone/)
+  assert.equal((heroSource.match(/class="cinematic-button /g) || []).length, 2)
+  assert.match(homeSource, /id="wallet"/)
+  assert.match(homeSource, /id="market"/)
+  assert.match(homeSource, /id="ai-engineering"/)
+  assert.match(homeSource, /id="evidence"/)
+  assert.equal((homeSource.match(/data-proof-context="(?:wallet|market|ai)"/g) || []).length, 3)
+  assert.match(homeSource, /AiEngineeringProofRail/)
+  assert.match(homeSource, /Ask xiuqiu AI/)
+  assert.match(homeSource, /AI 不替我判断/)
 
   const primaryNavigation = appSource.match(/<div id="primary-navigation"[\s\S]*?<\/div>/)?.[0]
   assert.ok(primaryNavigation, 'Primary navigation markup is missing')
@@ -126,12 +131,29 @@ test('homepage and primary navigation keep their structural contract', () => {
   assertUnique(links.map(link => link.to), 'primary navigation destinations')
   assertUnique(links.map(link => link.label), 'primary navigation labels')
   assert.deepEqual(links.map(link => link.to), [
-    '/#capabilities',
-    '/projects',
+    '/#overview',
+    '/#wallet',
+    '/#market',
+    '/#ai-engineering',
     '/engineering/evidence',
-    '/radar',
-    '/now',
   ])
+})
+
+test('AI proof rails preserve evidence and human-decision boundaries', () => {
+  assert.deepEqual(homeAiProofContexts.map(context => context.id), ['wallet', 'market', 'ai'])
+
+  homeAiProofContexts.forEach(context => {
+    assert.ok(context.steps.length >= 5)
+    assert.ok(context.boundary.length > 20)
+    assert.ok(context.assistantPrompt.length > 10)
+    assert.ok(context.steps.some(step => step.status === 'verified' || step.status === 'pending'))
+    if (context.evidence.destination.kind === 'internal') {
+      assert.match(context.evidence.destination.to, /^\//)
+    }
+  })
+
+  assert.match(homeAiProofContexts[1].summary, /没有单独发布的 AI delivery/)
+  assert.match(homeAiProofContexts[2].boundary, /不能替代安全判断/)
 })
 
 test('static and runtime homepage SEO stay aligned', () => {

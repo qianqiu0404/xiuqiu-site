@@ -21,7 +21,14 @@ interface PageContext {
 interface AskAiEventDetail {
   prompt: string
   context?: PageContext
+  opener?: HTMLElement
 }
+
+const props = withDefaults(defineProps<{
+  cinematic?: boolean
+}>(), {
+  cinematic: false,
+})
 
 const route = useRoute()
 const isOpen = ref(false)
@@ -31,6 +38,7 @@ const errorMessage = ref('')
 const messageList = ref<HTMLElement | null>(null)
 const chatInput = ref<HTMLTextAreaElement | null>(null)
 const chatToggle = ref<HTMLButtonElement | null>(null)
+const lastOpener = ref<HTMLElement | null>(null)
 const explicitPageContext = ref<PageContext | null>(null)
 const messages = ref<ChatMessage[]>([
   {
@@ -138,6 +146,14 @@ const currentPageContext = computed<PageContext>(() => {
     }
   }
 
+  if (route.name === 'home') {
+    return {
+      type: 'home',
+      title: 'Wallet Platform × Market Server × AI Engineering',
+      summary: 'Wallet 与 Market 是构建的系统，AI 是贯穿计划、实现、审查、测试、文档和知识治理的工程工作流。',
+    }
+  }
+
   if (route.name === 'project-detail') {
     const project = getProjectByKey(String(route.params.project || ''))
     return {
@@ -213,6 +229,7 @@ async function toggleChat() {
     return
   }
 
+  lastOpener.value = chatToggle.value
   isOpen.value = true
   errorMessage.value = ''
   await nextTick()
@@ -223,7 +240,7 @@ async function toggleChat() {
 function closeChat() {
   isOpen.value = false
   errorMessage.value = ''
-  void nextTick(() => chatToggle.value?.focus())
+  void nextTick(() => (lastOpener.value || chatToggle.value)?.focus())
 }
 
 async function sendQuickPrompt(prompt: string) {
@@ -232,10 +249,17 @@ async function sendQuickPrompt(prompt: string) {
 }
 
 async function askWithContext(detail: AskAiEventDetail) {
+  lastOpener.value = detail.opener || chatToggle.value
   explicitPageContext.value = detail.context || null
   isOpen.value = true
   input.value = detail.prompt
   await sendMessage()
+}
+
+function handleInputKeydown(event: KeyboardEvent) {
+  if (event.key !== 'Enter' || event.shiftKey || event.isComposing) return
+  event.preventDefault()
+  void sendMessage()
 }
 
 async function sendMessage() {
@@ -344,7 +368,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="ai-chat">
+  <div class="ai-chat" :class="{ 'ai-chat--cinematic': props.cinematic }">
     <section
       v-if="isOpen"
       id="ai-chat-panel"
@@ -418,7 +442,7 @@ onUnmounted(() => {
           maxlength="1000"
           placeholder="询问项目、工程证据或钱包后端..."
           aria-label="向 xiuqiu AI 助手提问"
-          @keydown.enter.exact.prevent="sendMessage"
+          @keydown="handleInputKeydown"
         ></textarea>
         <button class="ai-send-button" type="submit" :disabled="!canSend">
           发送
@@ -432,10 +456,11 @@ onUnmounted(() => {
       type="button"
       :aria-expanded="isOpen"
       aria-controls="ai-chat-panel"
-      aria-label="打开 xiuqiu AI 工程内容助手"
+      :aria-label="isOpen ? '关闭 xiuqiu AI 工程内容助手' : '打开 xiuqiu AI 工程内容助手'"
       @click="toggleChat"
     >
-      AI
+      <span v-if="props.cinematic">Ask xiuqiu AI</span>
+      <span v-else>AI</span>
     </button>
   </div>
 </template>
@@ -473,6 +498,29 @@ onUnmounted(() => {
   box-shadow: 0 14px 36px rgba(0, 113, 227, 0.28);
 }
 
+.ai-chat--cinematic .ai-chat-toggle {
+  width: auto;
+  min-width: 132px;
+  height: 48px;
+  border-color: rgba(222, 237, 255, 0.24);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(35, 43, 56, 0.92), rgba(9, 12, 18, 0.94));
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.34), inset 0 1px rgba(255, 255, 255, 0.13);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  padding: 0 19px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.ai-chat--cinematic .ai-chat-toggle:hover {
+  border-color: rgba(222, 237, 255, 0.42);
+  box-shadow:
+    0 20px 54px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(97, 164, 255, 0.12),
+    inset 0 1px rgba(255, 255, 255, 0.18);
+}
+
 .ai-chat-panel {
   position: absolute;
   right: 0;
@@ -488,6 +536,85 @@ onUnmounted(() => {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
+}
+
+.ai-chat--cinematic .ai-chat-panel {
+  border-color: rgba(255, 255, 255, 0.14);
+  background:
+    radial-gradient(circle at 84% -10%, rgba(82, 147, 239, 0.2), transparent 32%),
+    rgba(7, 10, 15, 0.96);
+  box-shadow: 0 34px 90px rgba(0, 0, 0, 0.48), inset 0 1px rgba(255, 255, 255, 0.08);
+  color: #f7f9fd;
+}
+
+.ai-chat--cinematic .ai-chat-header,
+.ai-chat--cinematic .ai-chat-context {
+  border-color: rgba(255, 255, 255, 0.09);
+}
+
+.ai-chat--cinematic .ai-chat-kicker,
+.ai-chat--cinematic .ai-chat-context,
+.ai-chat--cinematic .ai-chat-privacy,
+.ai-chat--cinematic .ai-message-loading,
+.ai-chat--cinematic .ai-references-title,
+.ai-chat--cinematic .ai-reference small {
+  color: rgba(225, 235, 249, 0.58);
+}
+
+.ai-chat--cinematic .ai-chat-title,
+.ai-chat--cinematic .ai-reference,
+.ai-chat--cinematic .ai-prompt,
+.ai-chat--cinematic .ai-chat-input {
+  color: #f7f9fd;
+}
+
+.ai-chat--cinematic .ai-icon-button,
+.ai-chat--cinematic .ai-prompt,
+.ai-chat--cinematic .ai-chat-input,
+.ai-chat--cinematic .ai-reference {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.ai-chat--cinematic .ai-icon-button {
+  color: rgba(241, 247, 255, 0.7);
+}
+
+.ai-chat--cinematic .ai-chat-messages {
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.ai-chat--cinematic .ai-message-assistant {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.065);
+  color: rgba(244, 248, 255, 0.84);
+}
+
+.ai-chat--cinematic .ai-message-user,
+.ai-chat--cinematic .ai-send-button {
+  background: #e9f3ff;
+  color: #10141c;
+}
+
+.ai-chat--cinematic .ai-prompt:hover:not(:disabled),
+.ai-chat--cinematic .ai-icon-button:hover {
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #fff;
+}
+
+.ai-chat--cinematic .ai-chat-input:focus {
+  border-color: rgba(171, 211, 255, 0.52);
+  box-shadow: 0 0 0 3px rgba(121, 184, 255, 0.1);
+}
+
+@media (min-width: 1025px) {
+  .ai-chat--cinematic .ai-chat-toggle {
+    display: none;
+  }
+
+  .ai-chat--cinematic .ai-chat-panel {
+    bottom: 0;
+  }
 }
 
 .ai-chat-header {
@@ -752,6 +879,13 @@ onUnmounted(() => {
     font-size: 13px;
   }
 
+  .ai-chat--cinematic .ai-chat-toggle {
+    width: auto;
+    min-width: 118px;
+    height: 44px;
+    padding: 0 16px;
+  }
+
   .ai-chat-form {
     align-items: stretch;
     flex-direction: column;
@@ -759,6 +893,20 @@ onUnmounted(() => {
 
   .ai-send-button {
     width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-chat-toggle,
+  .ai-icon-button,
+  .ai-prompt,
+  .ai-chat-input,
+  .ai-send-button {
+    transition: none;
+  }
+
+  .ai-chat-toggle:hover {
+    transform: none;
   }
 }
 </style>
