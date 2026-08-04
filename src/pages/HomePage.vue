@@ -1,221 +1,413 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { dailyRadars } from '../data/generatedRadars'
-import { radarWeeklies } from '../data/generatedRadarWeeklies'
-import { deliveryRecords } from '../data/generatedDeliveries'
 import {
-  projectStageLabels,
-  siteProjects,
-  type SiteProject,
-} from '../data/siteKnowledge'
+  aiEngineeringOutcomes,
+  flagshipProjectSlug,
+  githubProfileUrl,
+  githubRepositoriesUrl,
+  homeCapabilities,
+  homeEvidenceHighlights,
+  homeProductGroups,
+  homeProofMethods,
+  homeSeo,
+  homeServiceFlow,
+  representativeProjectSlugs,
+  walletLabUrl,
+  type HomeDestination,
+} from '../data/homePresentation'
+import {
+  projects,
+  type Project,
+  type ProjectPortfolioTier,
+  type ProjectStage,
+} from '../data/generatedProjects'
+import { evidenceRecords, type EvidenceRecord } from '../data/generatedEvidence'
+import { aiCases } from '../data/generatedAiCases'
+import { deliveryRecords } from '../data/generatedDeliveries'
+import { articleKnowledge } from '../data/generatedArticleKnowledge'
+import { dailyRadars } from '../data/generatedRadars'
 import { setSeoMeta } from '../utils/seo'
 
-const walletLabUrl = 'https://wallet-reliability-lab.vercel.app'
-const githubUrl = 'https://github.com/qianqiu0404'
-const flagshipProject = siteProjects.find(project => project.portfolioTier === 'flagship')!
-const verifiedOrder = [
-  'wallet-reliability-lab',
-  'web3-wallet-engineer-lab',
-  'wallet-core',
-  's78-market-services',
-]
-const explorationOrder = ['tss-mpc', 'stableflow', 'risk-server']
-const verifiedProjects = siteProjects
-  .filter(project => verifiedOrder.includes(project.slug))
-  .sort((a, b) => verifiedOrder.indexOf(a.slug) - verifiedOrder.indexOf(b.slug))
-const explorationProjects = siteProjects
-  .filter(project => explorationOrder.includes(project.slug))
-  .sort((a, b) => explorationOrder.indexOf(a.slug) - explorationOrder.indexOf(b.slug))
-const latestDelivery = deliveryRecords[0]
-const latestRadar = dailyRadars[0]
-const latestWeekly = radarWeeklies[0]
-const serviceFlow = [
-  ['wallet-service', '资金状态与业务编排'],
-  ['risk-service', '提现校验与风控放行'],
-  ['wallet-api', '多链节点与交易构建'],
-  ['wallet-sign', '密钥边界与交易签名'],
-]
+type HomeAction = HomeDestination & { label: string }
 
-function projectAction(project: SiteProject) {
-  if (project.slug === 'wallet-reliability-lab') {
-    return { label: '运行在线实验', href: walletLabUrl }
-  }
-  return { label: '查看项目档案', to: `/projects/${project.slug}` }
+interface HomeProjectCard {
+  project: Project
+  action: HomeAction
 }
+
+interface HomeEvidenceCard {
+  record: EvidenceRecord
+  label: string
+  action: HomeAction
+}
+
+interface HomeProductGroupView {
+  id: (typeof homeProductGroups)[number]['id']
+  label: string
+  title: string
+  description: string
+  cards: HomeProjectCard[]
+}
+
+const projectStageLabels: Record<ProjectStage, string> = {
+  exploring: '探索中',
+  building: '实现中',
+  'verified-local': '本地已验证',
+  'showcase-ready': '可展示',
+}
+const projectPortfolioTierLabels: Record<ProjectPortfolioTier, string> = {
+  flagship: '旗舰系统',
+  verified: '可验证作品',
+  exploration: '工程探索',
+  paused: '暂停保留',
+}
+const projectsBySlug = new Map(projects.map(project => [project.slug, project]))
+const evidenceBySlug = new Map(evidenceRecords.map(record => [record.slug, record]))
+
+function requireProject(slug: string): Project {
+  const project = projectsBySlug.get(slug)
+  if (!project) {
+    throw new Error(`Homepage project configuration references missing slug: ${slug}`)
+  }
+  return project
+}
+
+function requireEvidence(slug: string): EvidenceRecord {
+  const record = evidenceBySlug.get(slug)
+  if (!record) {
+    throw new Error(`Homepage evidence configuration references missing slug: ${slug}`)
+  }
+  return record
+}
+
+function buildProjectAction(project: Project): HomeAction {
+  if (project.slug === 'wallet-reliability-lab') {
+    return { kind: 'external', label: '运行在线实验', href: walletLabUrl }
+  }
+  return { kind: 'internal', label: '查看项目详情', to: `/projects/${project.slug}` }
+}
+
+const flagshipProject = requireProject(flagshipProjectSlug)
+const representativeProjectCards: HomeProjectCard[] = representativeProjectSlugs.map(slug => {
+  const project = requireProject(slug)
+  return { project, action: buildProjectAction(project) }
+})
+const projectCardsBySlug = new Map(
+  representativeProjectCards.map(card => [card.project.slug, card]),
+)
+const homeProductGroupViews: HomeProductGroupView[] = homeProductGroups.map(group => ({
+  ...group,
+  cards: group.projectSlugs.map(slug => {
+    const card = projectCardsBySlug.get(slug)
+    if (!card) {
+      throw new Error(`Homepage product group references missing representative project: ${slug}`)
+    }
+    return card
+  }),
+}))
+const evidenceCards: HomeEvidenceCard[] = homeEvidenceHighlights.map(item => ({
+  record: requireEvidence(item.evidenceSlug),
+  label: item.label,
+  action: { ...item.destination, label: item.linkLabel },
+}))
+const primaryAiCase = aiCases.find(aiCase => aiCase.slug === 'ai-coding-collaboration')
+const latestDelivery = [...deliveryRecords].sort((a, b) => b.date.localeCompare(a.date))[0]
+const articlesByNewest = [...articleKnowledge].sort((a, b) => {
+  const dateOrder = b.date.localeCompare(a.date)
+  return dateOrder || b.id - a.id
+})
+const latestEngineeringArticle =
+  articlesByNewest.find(
+    article =>
+      article.kind === 'engineering-note'
+      && article.relatedProjectIds.includes(flagshipProject.id),
+  )
+  || articlesByNewest.find(article => article.kind === 'engineering-note')
+const latestRadar = dailyRadars[0]
 
 onMounted(() =>
   setSeoMeta({
-    title: 'xiuqiu｜Web3 钱包后端 × AI 协作工程',
-    description: '面向工程合作者的 Web3 钱包后端作品集，展示资金状态、多链交易、签名安全、异常恢复与可复核工程证据。',
+    ...homeSeo,
     path: '/',
   }),
 )
 </script>
 
 <template>
-  <div class="portfolio-home">
-    <section class="portfolio-home-hero" aria-labelledby="home-title">
-      <div class="container portfolio-home-intro">
-        <p class="hero-eyebrow">Web3 Wallet Backend · AI-assisted Engineering</p>
-        <h1 id="home-title">把钱包系统做成可运行、可解释、可验证的工程</h1>
-        <p class="portfolio-home-lead">
-          聚焦资金状态、多链交易、签名安全与异常恢复；用公开实验、源码和测试说明边界，也明确哪些仍在研究与集成。
+  <div class="value-home">
+    <section class="value-home-hero" aria-labelledby="home-title">
+      <div class="container value-home-hero-inner">
+        <p class="value-home-eyebrow">Wallet Platform · Market Server</p>
+        <h1 id="home-title">
+          帮助 Web3 团队构建更可靠的<span class="value-home-nowrap">钱包充值</span>、<span class="value-home-nowrap">提现</span>、<span class="value-home-nowrap">签名</span>与多链基础设施
+        </h1>
+        <p class="value-home-lead">
+          我专注交易所钱包后端，围绕资金状态、交易风控、多链交互、签名安全和异常恢复，提供可运行、可解释、可验证的工程实现。
         </p>
-        <div class="hero-actions portfolio-home-actions">
-          <router-link class="btn btn-primary" to="/projects">查看项目图谱</router-link>
-          <a class="btn btn-secondary" :href="walletLabUrl" target="_blank" rel="noopener">运行 Wallet Lab</a>
+        <p class="value-home-trust">
+          <span aria-hidden="true">✓</span>
+          当前以本地运行、公开实验、源码、测试和失败场景复现作为主要工程证据。
+        </p>
+        <div class="hero-actions value-home-actions">
+          <router-link class="btn btn-primary" to="/projects/wallet-launchpad">查看 Wallet Launchpad</router-link>
+          <router-link class="btn btn-secondary" to="/projects/s78-market-services">查看 Market Server</router-link>
         </div>
       </div>
     </section>
 
-    <section class="portfolio-home-section portfolio-home-flagship" aria-labelledby="flagship-title">
+    <section id="capabilities" class="value-home-section value-home-capabilities" aria-labelledby="capabilities-title">
       <div class="container">
-        <div class="portfolio-home-heading">
+        <div class="value-home-heading">
           <div>
-            <p class="section-label">Flagship System</p>
-            <h2 id="flagship-title">{{ flagshipProject.name }}</h2>
+            <p class="section-label">Capabilities & Flagship Flow</p>
+            <h2 id="capabilities-title">从资金风险出发，完成一笔可恢复的提现</h2>
           </div>
-          <p>{{ flagshipProject.positioning }}</p>
+          <p>四类工程能力在同一条提现生命周期中协作；每个服务只拥有自己需要的状态与权限。</p>
         </div>
 
-        <div class="flagship-flow" aria-label="Exchange Wallet Infrastructure 服务边界">
-          <template v-for="(service, index) in serviceFlow" :key="service[0]">
-            <article>
-              <span>0{{ index + 1 }}</span>
-              <h3>{{ service[0] }}</h3>
-              <p>{{ service[1] }}</p>
-            </article>
-            <span v-if="index < serviceFlow.length - 1" class="flagship-flow-arrow" aria-hidden="true">→</span>
-          </template>
+        <div class="value-home-capability-grid">
+          <article
+            v-for="(capability, index) in homeCapabilities"
+            :key="capability.id"
+            class="value-home-capability"
+          >
+            <span class="value-home-index">{{ String(index + 1).padStart(2, '0') }}</span>
+            <div>
+              <h3>{{ capability.title }}</h3>
+              <p>{{ capability.description }}</p>
+              <p class="value-home-capability-tags">{{ capability.tags.join(' · ') }}</p>
+            </div>
+          </article>
         </div>
 
-        <div class="flagship-status">
-          <div>
-            <span>当前阶段</span>
-            <strong>{{ projectStageLabels[flagshipProject.stage] }}</strong>
-          </div>
-          <div>
-            <span>最近验证</span>
-            <strong>{{ flagshipProject.verifiedEvidence[0] }}</strong>
-          </div>
-          <div>
-            <span>下一里程碑</span>
-            <strong>{{ flagshipProject.nextMilestone }}</strong>
+        <div class="value-home-lifecycle">
+          <header class="value-home-lifecycle-heading">
+            <div>
+              <p class="section-label">Exchange Wallet Infrastructure</p>
+              <h3>提现完整生命周期</h3>
+            </div>
+            <span>{{ projectStageLabels[flagshipProject.stage] }} · {{ flagshipProject.updatedAt }}</span>
+          </header>
+
+          <ol class="value-home-service-flow" aria-label="Exchange Wallet Infrastructure 四服务调用链">
+            <li v-for="(service, index) in homeServiceFlow" :key="service.name">
+              <span>{{ String(index + 1).padStart(2, '0') }}</span>
+              <h3>{{ service.name }}</h3>
+              <p>{{ service.description }}</p>
+            </li>
+          </ol>
+
+          <div class="value-home-lifecycle-proof">
+            <p><strong>当前最强证据：</strong>{{ flagshipProject.verifiedEvidence[0] }}</p>
+            <router-link class="value-home-inline-link" :to="`/projects/${flagshipProject.slug}`">
+              查看旗舰系统详情 →
+            </router-link>
           </div>
         </div>
-        <router-link class="portfolio-home-link" :to="`/projects/${flagshipProject.slug}`">
-          查看旗舰系统档案 →
+      </div>
+    </section>
+
+    <section id="representative-projects" class="value-home-section value-home-projects" aria-labelledby="projects-title">
+      <div class="container">
+        <div class="value-home-heading">
+          <div>
+            <p class="section-label">Representative Work</p>
+            <h2 id="projects-title">一套钱包平台，一个可信 Market Server</h2>
+          </div>
+          <p>先展示项目完成后的产品形态，再用当前最强证据说明实现基础；完整边界与验收门放在项目详情页。</p>
+        </div>
+
+        <div class="value-home-product-lines">
+          <div
+            v-for="(group, groupIndex) in homeProductGroupViews"
+            :key="group.id"
+            class="value-home-product-line"
+            :class="`value-home-product-line--${group.id}`"
+          >
+            <header class="value-home-product-line-heading">
+              <div>
+                <span>{{ group.label }}</span>
+                <h3>{{ group.title }}</h3>
+              </div>
+              <p>{{ group.description }}</p>
+            </header>
+
+            <div class="value-home-project-grid" :class="{ 'value-home-project-grid--single': group.cards.length === 1 }">
+              <article
+                v-for="({ project, action }, projectIndex) in group.cards"
+                :key="project.id"
+                class="value-home-project"
+              >
+                <header>
+                  <span>{{ String(groupIndex + 1).padStart(2, '0') }}.{{ projectIndex + 1 }} · {{ projectPortfolioTierLabels[project.portfolioTier] }}</span>
+                  <strong>{{ projectStageLabels[project.stage] }}</strong>
+                </header>
+                <h3>{{ project.name }}</h3>
+                <p class="value-home-project-outcome">{{ project.positioning }}</p>
+                <div class="value-home-project-proof">
+                  <span>当前证据</span>
+                  <p>{{ project.verifiedEvidence[0] }}</p>
+                </div>
+                <footer>
+                  <time :datetime="project.updatedAt">更新于 {{ project.updatedAt }}</time>
+                  <a
+                    v-if="action.kind === 'external'"
+                    class="value-home-inline-link"
+                    :href="action.href"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    {{ action.label }} ↗
+                  </a>
+                  <router-link v-else class="value-home-inline-link" :to="action.to">
+                    {{ action.label }} →
+                  </router-link>
+                </footer>
+              </article>
+            </div>
+          </div>
+        </div>
+
+        <router-link class="value-home-projects-more" to="/projects">
+          查看工程探索与完整项目图谱 →
         </router-link>
       </div>
     </section>
 
-    <section class="portfolio-home-section portfolio-home-work" aria-labelledby="work-title">
+    <section class="value-home-section value-home-evidence" aria-labelledby="evidence-title">
       <div class="container">
-        <div class="portfolio-home-heading">
+        <div class="value-home-heading">
           <div>
-            <p class="section-label">Layered Project Atlas</p>
-            <h2 id="work-title">从验证作品到工程探索</h2>
+            <p class="section-label">Evidence, Not Claims</p>
+            <h2 id="evidence-title">三条可以继续追溯的工程证据</h2>
           </div>
-          <p>成熟作品给出可复核证据；探索项目只陈述当前已经验证到哪一步，不用完成百分比制造确定性。</p>
+          <p>测试网和本地验收、失败恢复手册、公开交互实验分别证明不同层级的能力，不互相替代。</p>
         </div>
 
-        <div class="portfolio-home-projects">
-          <article v-for="(project, index) in verifiedProjects" :key="project.id" class="portfolio-home-project">
-            <div class="portfolio-home-project-meta">
-              <span>{{ String(index + 1).padStart(2, '0') }} · Verified Work</span>
-              <strong>{{ projectStageLabels[project.stage] }}</strong>
-            </div>
-            <h3>{{ project.name }}</h3>
-            <p class="portfolio-home-project-desc">{{ project.positioning }}</p>
-            <div class="portfolio-home-project-proof">
-              <span>当前证据</span>
-              <p>{{ project.verifiedEvidence[0] }}</p>
-            </div>
+        <div class="value-home-evidence-grid">
+          <article v-for="{ record, label, action } in evidenceCards" :key="record.slug">
+            <header>
+              <span>{{ label }}</span>
+              <time :datetime="record.verifiedAt">{{ record.verifiedAt }}</time>
+            </header>
+            <h3>{{ record.title }}</h3>
+            <p>{{ record.summary }}</p>
             <a
-              v-if="projectAction(project).href"
-              class="portfolio-home-link"
-              :href="projectAction(project).href"
+              v-if="action.kind === 'external'"
+              class="value-home-inline-link"
+              :href="action.href"
               target="_blank"
               rel="noopener"
             >
-              {{ projectAction(project).label }} ↗
+              {{ action.label }} ↗
             </a>
-            <router-link v-else class="portfolio-home-link" :to="projectAction(project).to!">
-              {{ projectAction(project).label }} →
+            <router-link v-else class="value-home-inline-link" :to="action.to">
+              {{ action.label }} →
             </router-link>
           </article>
         </div>
 
-        <div class="portfolio-home-explorations">
-          <div class="portfolio-home-explorations-heading">
-            <p class="section-label">Engineering Explorations</p>
-            <router-link to="/projects">查看完整项目图谱 →</router-link>
-          </div>
-          <router-link
-            v-for="project in explorationProjects"
-            :key="project.id"
-            class="portfolio-home-exploration"
-            :to="`/projects/${project.slug}`"
-          >
-            <div>
-              <span>{{ project.category }}</span>
-              <h3>{{ project.name }}</h3>
-            </div>
-            <p>{{ project.verifiedEvidence[0] }}</p>
-            <strong>{{ projectStageLabels[project.stage] }} →</strong>
-          </router-link>
-        </div>
+        <nav class="value-home-proof-links" aria-label="完整工程验证路径">
+          <span>完整验证路径</span>
+          <template v-for="proof in homeProofMethods" :key="proof.id">
+            <a
+              v-if="proof.destination.kind === 'external'"
+              :href="proof.destination.href"
+              target="_blank"
+              rel="noopener"
+            >{{ proof.title }} ↗</a>
+            <router-link v-else :to="proof.destination.to">{{ proof.title }}</router-link>
+          </template>
+        </nav>
       </div>
     </section>
 
-    <section class="portfolio-home-section portfolio-home-latest" aria-labelledby="latest-title">
+    <section id="engineering-judgments" class="value-home-section value-home-latest" aria-labelledby="latest-title">
       <div class="container">
-        <div class="portfolio-home-heading portfolio-home-latest-heading">
+        <div class="value-home-heading">
           <div>
-            <p class="section-label">Latest Engineering & Research</p>
-            <h2 id="latest-title">最近工程与研究</h2>
+            <p class="section-label">Latest Balance</p>
+            <h2 id="latest-title">最近交付、工程文章与行业判断</h2>
           </div>
-          <p>工程交付说明做成了什么；雷达说明当前正在观察什么，以及哪些判断已经收敛。</p>
+          <p>交付记录说明做了什么，工程文章沉淀可复用判断，雷达只保留与钱包基础设施相关的最新信号。</p>
         </div>
 
-        <div class="portfolio-home-latest-pair">
+        <div class="value-home-latest-grid">
           <router-link
             v-if="latestDelivery"
-            class="portfolio-home-latest-item"
+            class="value-home-latest-card"
             :to="`/ai/deliveries/${latestDelivery.slug}`"
           >
-            <div><span>最新工程交付</span><time :datetime="latestDelivery.date">{{ latestDelivery.date }}</time></div>
+            <div>
+              <span>最新工程交付</span>
+              <time :datetime="latestDelivery.date">{{ latestDelivery.date }}</time>
+            </div>
             <h3>{{ latestDelivery.title }}</h3>
             <p>{{ latestDelivery.summary }}</p>
             <strong>查看交付记录 →</strong>
           </router-link>
 
-          <article class="portfolio-home-research">
-            <router-link v-if="latestRadar" :to="`/radar/${latestRadar.slug}`">
-              <div><span>最新每日简报</span><time :datetime="latestRadar.date">{{ latestRadar.date }}</time></div>
-              <h3>{{ latestRadar.web3Design?.title || latestRadar.title }}</h3>
-              <p>{{ latestRadar.summary }}</p>
-            </router-link>
-            <router-link v-if="latestWeekly" :to="`/radar/week/${latestWeekly.slug}`" class="weekly-link">
-              <span>本周收敛</span>
-              <strong>{{ latestWeekly.title }} →</strong>
-            </router-link>
-          </article>
+          <router-link
+            v-if="latestEngineeringArticle"
+            class="value-home-latest-card"
+            :to="`/articles/${latestEngineeringArticle.slug}`"
+          >
+            <div>
+              <span>最新工程文章</span>
+              <time :datetime="latestEngineeringArticle.date">{{ latestEngineeringArticle.date }}</time>
+            </div>
+            <h3>{{ latestEngineeringArticle.title }}</h3>
+            <p>{{ latestEngineeringArticle.summary }}</p>
+            <strong>阅读工程文章 →</strong>
+          </router-link>
+
+          <router-link
+            v-if="latestRadar"
+            class="value-home-latest-card"
+            :to="`/radar/${latestRadar.slug}`"
+          >
+            <div>
+              <span>最新行业雷达</span>
+              <time :datetime="latestRadar.date">{{ latestRadar.date }}</time>
+            </div>
+            <h3>{{ latestRadar.web3Design?.title || latestRadar.title }}</h3>
+            <p>{{ latestRadar.summary }}</p>
+            <strong>查看行业简报 →</strong>
+          </router-link>
         </div>
+
+        <aside class="value-home-ai-strip" aria-labelledby="ai-method-title">
+          <div>
+            <p class="section-label">AI-assisted Engineering</p>
+            <h3 id="ai-method-title">AI 加速工程，但不代替验证</h3>
+            <p v-if="primaryAiCase">{{ primaryAiCase.summary }}</p>
+          </div>
+          <ul aria-label="AI 工程方法">
+            <li v-for="outcome in aiEngineeringOutcomes" :key="outcome">{{ outcome }}</li>
+          </ul>
+          <div class="value-home-ai-links">
+            <router-link class="value-home-inline-link" to="/ai">AI 协作案例 →</router-link>
+            <router-link class="value-home-inline-link" to="/ai/deliveries">交付记录 →</router-link>
+          </div>
+        </aside>
       </div>
     </section>
 
-    <section class="portfolio-home-section portfolio-home-cta" aria-labelledby="cta-title">
-      <div class="container portfolio-home-cta-inner">
-        <p class="section-label">Explore & Collaborate</p>
-        <h2 id="cta-title">从项目边界和验证证据开始协作</h2>
-        <p>先通过项目图谱理解整体工程，再进入证据矩阵或公开仓库复核具体实现。</p>
-        <div class="hero-actions">
-          <router-link class="btn btn-primary" to="/projects">查看项目图谱</router-link>
-          <router-link class="btn btn-secondary" to="/engineering/evidence">查看工程证据</router-link>
-          <a class="btn btn-ghost" :href="githubUrl" target="_blank" rel="noopener">查看 GitHub</a>
+    <section class="value-home-section value-home-contact" aria-labelledby="contact-title">
+      <div class="container value-home-contact-inner">
+        <p class="section-label">Work, Collaboration & About</p>
+        <h2 id="contact-title">正在寻找钱包后端工作与工程合作机会</h2>
+        <p>
+          如果你正在建设交易所钱包、链上资产服务、多链交易系统或签名基础设施，可以从当前状态、项目证据和公开仓库了解我。
+        </p>
+        <div class="hero-actions value-home-contact-actions">
+          <router-link class="btn btn-primary" to="/now">关于我与当前状态</router-link>
+          <a class="btn btn-secondary" :href="githubRepositoriesUrl" target="_blank" rel="noopener">查看 GitHub 仓库</a>
+          <a class="btn btn-ghost" :href="githubProfileUrl" target="_blank" rel="noopener">通过 GitHub 联系 ↗</a>
         </div>
       </div>
     </section>
   </div>
 </template>
+
+<style scoped src="../styles/home.css"></style>

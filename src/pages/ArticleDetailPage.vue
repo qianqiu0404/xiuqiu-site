@@ -256,6 +256,7 @@ watchEffect(() => {
       title: 'Article not found | xiuqiu',
       description: 'The requested xiuqiu writing page was not found.',
       path: route.fullPath,
+      indexable: false,
     })
     return
   }

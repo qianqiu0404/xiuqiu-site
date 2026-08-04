@@ -12,7 +12,7 @@ const evidence = computed(() => delivery.value?.evidenceSlugs.map(evidenceBySlug
 const projects = computed(() => delivery.value?.projectSlugs.map(getProjectByKey).filter(Boolean) || [])
 const statusLabel = { 'in-progress': '进行中', partial: '部分完成', delivered: '已交付' }
 
-watchEffect(() => setSeoMeta(delivery.value ? { title: `${delivery.value.title}｜AI 交付记录`, description: delivery.value.summary, path: `/ai/deliveries/${delivery.value.slug}` } : { title: '交付记录不存在｜xiuqiu', path: route.fullPath }))
+watchEffect(() => setSeoMeta(delivery.value ? { title: `${delivery.value.title}｜AI 交付记录`, description: delivery.value.summary, path: `/ai/deliveries/${delivery.value.slug}`, type: 'article' } : { title: '交付记录不存在｜xiuqiu', path: route.fullPath, indexable: false }))
 </script>
 
 <template>

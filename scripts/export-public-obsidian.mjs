@@ -1,6 +1,7 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs'
 import { resolve, relative, sep } from 'node:path'
 import { parseMarkdownFrontmatter, requireDate, requireFields, requireStringArray } from './frontmatter.mjs'
+import { selectPublishableRadarWeeklies } from './generate-radar-weeklies.mjs'
 
 const vaultPath = process.env.OBSIDIAN_VAULT_PATH
 if (!vaultPath) throw new Error('OBSIDIAN_VAULT_PATH is required.')
@@ -140,9 +141,9 @@ for (const project of projects) {
 }
 
 projects.sort((a, b) => a.siteSlug.localeCompare(b.siteSlug))
-radarWeeklies.sort((a, b) => b.week.localeCompare(a.week))
+const validatedRadarWeeklies = selectPublishableRadarWeeklies(radarWeeklies, slugs)
 mkdirSync(new URL('../content/obsidian-public/', import.meta.url), { recursive: true })
 const generatedAt = new Date().toISOString()
 writeFileSync(projectOutputUrl, `${JSON.stringify({ generatedAt, projects }, null, 2)}\n`)
-writeFileSync(weeklyOutputUrl, `${JSON.stringify({ generatedAt, radarWeeklies }, null, 2)}\n`)
-console.log(`Exported ${projects.length} projects and ${radarWeeklies.length} weekly radar entries without note bodies or source paths.`)
+writeFileSync(weeklyOutputUrl, `${JSON.stringify({ generatedAt, radarWeeklies: validatedRadarWeeklies }, null, 2)}\n`)
+console.log(`Exported ${projects.length} projects and ${validatedRadarWeeklies.length} weekly radar entries without note bodies or source paths.`)

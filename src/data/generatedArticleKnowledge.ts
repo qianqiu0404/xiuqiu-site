@@ -1532,6 +1532,83 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "多节点返回不同区块或交易状态时钱包应该怎么做？",
       "EVM、BTC、Solana 与 Sui 应分别记录什么最终性证据？"
     ]
+  },
+  {
+    "id": 39,
+    "slug": "evm-broadcast-unknown-canonical-recovery",
+    "title": "广播超时后不能重发第二笔：broadcast_unknown 的 Canonical Recovery",
+    "date": "2026-07-28",
+    "summary": "EVM 广播超时不是普通失败。本文用已实现的 broadcast_unknown 恢复路径说明：先锁住资金和链资源，再验证原始签名交易，查询 canonical 事实，只有在安全条件成立时才重放完全相同的 raw transaction。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Withdrawal",
+      "EVM",
+      "Recovery"
+    ],
+    "readingTime": "5 min",
+    "difficulty": "安全工程",
+    "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "基于 exchange-wallet-service 已提交的本地基线与自动化测试：durable broadcast_unknown、原 signed raw 身份校验、canonical hash/nonce 查询、同字节重放和数据库 CAS 已验证；不代表生产事故、主网运行或 staging provider 验收。",
+    "conceptTags": [
+      "wallet-backend",
+      "evm",
+      "multi-chain",
+      "go-infra"
+    ],
+    "relatedProjectIds": [
+      1
+    ],
+    "recommendedSlugs": [
+      "withdrawal-error-handling",
+      "wallet-rpc-trust-boundary",
+      "wallet-ledger-transaction-mq-consistency",
+      "cex-evm-wallet-deposit-withdrawal-loop"
+    ],
+    "suggestedQuestions": [
+      "为什么 eth_sendRawTransaction 超时后不能直接构建第二笔交易？",
+      "broadcast_unknown 恢复前必须验证哪些本地与链上事实？",
+      "为什么 nonce 已推进但找不到原 txHash 时仍不能释放资金？"
+    ]
+  },
+  {
+    "id": 40,
+    "slug": "qiu-market-virtual-funds-recovery",
+    "title": "虚拟资金也要守账：Qiu Market 的撮合、双重记账与确定性恢复",
+    "date": "2026-07-28",
+    "updatedAt": "2026-08-04",
+    "summary": "Qiu Market 不连接真实资金，但仍用资金系统的标准约束一个 BTC/USDT 虚拟交易纵切片：整数金额、available/held、借贷平衡、串行撮合、事务事件流、结果未知停机和 state hash 恢复。",
+    "tags": [
+      "Go",
+      "Exchange",
+      "Ledger",
+      "PostgreSQL",
+      "Recovery"
+    ],
+    "readingTime": "4 min",
+    "difficulty": "项目拆解",
+    "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "基于 Qiu Market 已审核的本地提交与测试记录：BTC/USDT 虚拟撮合、available/held 双重记账、PostgreSQL 事件/快照/outbox、幂等重试与 state hash 恢复已验证；不代表真实资金、实盘交易或生产部署。",
+    "conceptTags": [
+      "go-infra",
+      "api-design",
+      "wallet-backend"
+    ],
+    "relatedProjectIds": [
+      3
+    ],
+    "recommendedSlugs": [
+      "market-services-data-flow",
+      "wallet-ledger-transaction-mq-consistency",
+      "http-rpc-grpc"
+    ],
+    "suggestedQuestions": [
+      "为什么虚拟资金系统也需要双重记账和不可变分录？",
+      "提交结果未知时为什么 MarketRunner 必须停止接单？",
+      "事件流、快照、投影和 outbox 在恢复中分别负责什么？"
+    ]
   }
 ]
 
@@ -2253,5 +2330,44 @@ export const articleSummaries: ArticleSummary[] = [
     "evidenceSummary": "依据 Ethereum、Bitcoin Core、Solana 与 Sui 官方协议/RPC 文档，以及当前多链验收代码整理；多节点分歧和错误 RPC 故障注入尚待完整实现。",
     "series": "钱包签名与基础设施安全",
     "seriesOrder": 6
+  },
+  {
+    "id": 39,
+    "slug": "evm-broadcast-unknown-canonical-recovery",
+    "title": "广播超时后不能重发第二笔：broadcast_unknown 的 Canonical Recovery",
+    "date": "2026-07-28",
+    "summary": "EVM 广播超时不是普通失败。本文用已实现的 broadcast_unknown 恢复路径说明：先锁住资金和链资源，再验证原始签名交易，查询 canonical 事实，只有在安全条件成立时才重放完全相同的 raw transaction。",
+    "tags": [
+      "Web3",
+      "Wallet",
+      "Withdrawal",
+      "EVM",
+      "Recovery"
+    ],
+    "readingTime": "5 min",
+    "difficulty": "安全工程",
+    "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "基于 exchange-wallet-service 已提交的本地基线与自动化测试：durable broadcast_unknown、原 signed raw 身份校验、canonical hash/nonce 查询、同字节重放和数据库 CAS 已验证；不代表生产事故、主网运行或 staging provider 验收。"
+  },
+  {
+    "id": 40,
+    "slug": "qiu-market-virtual-funds-recovery",
+    "title": "虚拟资金也要守账：Qiu Market 的撮合、双重记账与确定性恢复",
+    "date": "2026-07-28",
+    "updatedAt": "2026-08-04",
+    "summary": "Qiu Market 不连接真实资金，但仍用资金系统的标准约束一个 BTC/USDT 虚拟交易纵切片：整数金额、available/held、借贷平衡、串行撮合、事务事件流、结果未知停机和 state hash 恢复。",
+    "tags": [
+      "Go",
+      "Exchange",
+      "Ledger",
+      "PostgreSQL",
+      "Recovery"
+    ],
+    "readingTime": "4 min",
+    "difficulty": "项目拆解",
+    "kind": "engineering-note",
+    "evidenceLevel": "local-verified",
+    "evidenceSummary": "基于 Qiu Market 已审核的本地提交与测试记录：BTC/USDT 虚拟撮合、available/held 双重记账、PostgreSQL 事件/快照/outbox、幂等重试与 state hash 恢复已验证；不代表真实资金、实盘交易或生产部署。"
   }
 ]

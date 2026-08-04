@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url'
 import { articleSummaries } from '../src/data/generatedArticleKnowledge.ts'
 import { projects } from '../src/data/generatedProjects.ts'
 import { dailyRadars } from '../src/data/generatedRadars.ts'
+import { radarWeeklies } from '../src/data/generatedRadarWeeklies.ts'
 import { deliveryRecords } from '../src/data/generatedDeliveries.ts'
 import { nowSnapshot } from '../src/data/generatedNow.ts'
 
@@ -29,16 +30,25 @@ function jsonLdScript(data) {
   return `<script type="application/ld+json" data-site-meta>${json}</script>`
 }
 
-function replaceMeta(html, { title, description, path, type = 'website', structuredData }) {
+function replaceMeta(html, { title, description, path, type = 'website', structuredData, robots }) {
   const escapedTitle = escapeHtml(title)
   const escapedDescription = escapeHtml(description)
   const escapedUrl = escapeHtml(`${SITE_URL}${path}`)
-  const withoutGeneratedJsonLd = html.replace(/\s*<script type="application\/ld\+json" data-site-meta>[\s\S]*?<\/script>/g, '')
-  const withStructuredData = structuredData
-    ? withoutGeneratedJsonLd.replace('</head>', `    ${jsonLdScript(structuredData)}\n  </head>`)
-    : withoutGeneratedJsonLd
+  const generatedHead = [
+    structuredData ? jsonLdScript(structuredData) : '',
+    robots ? `<meta name="robots" content="${escapeHtml(robots)}" data-site-meta />` : '',
+  ].filter(Boolean)
+  const robotsPattern = robots
+    ? /\s*<meta\b(?=[^>]*\bname=["']robots["'])[^>]*\/?>/gi
+    : /\s*<meta\b(?=[^>]*\bname=["']robots["'])(?=[^>]*\bdata-site-meta\b)[^>]*\/?>/gi
+  const withoutGeneratedMeta = html
+    .replace(/\s*<script type="application\/ld\+json" data-site-meta>[\s\S]*?<\/script>/g, '')
+    .replace(robotsPattern, '')
+  const withGeneratedMeta = generatedHead.length
+    ? withoutGeneratedMeta.replace('</head>', `    ${generatedHead.join('\n    ')}\n  </head>`)
+    : withoutGeneratedMeta
 
-  return withStructuredData
+  return withGeneratedMeta
     .replace(/<title>[\s\S]*?<\/title>/, `<title>${escapedTitle}</title>`)
     .replace(
       /<meta name="description" content="[\s\S]*?" \/>/,
@@ -65,11 +75,14 @@ function replaceMeta(html, { title, description, path, type = 'website', structu
     .replace(/<link rel="canonical" href="[\s\S]*?" \/>/, `<link rel="canonical" href="${escapedUrl}" />`)
 }
 
+let generatedRouteCount = 0
+
 function writePage(path, html) {
   const normalizedPath = path === '/' ? '/index' : path
   const outputUrl = new URL(`../dist${normalizedPath}/index.html`, import.meta.url)
   mkdirSync(dirname(fileURLToPath(outputUrl)), { recursive: true })
   writeFileSync(outputUrl, html)
+  generatedRouteCount += 1
 }
 
 if (articleSummaries.length === 0) {
@@ -77,6 +90,22 @@ if (articleSummaries.length === 0) {
 }
 
 const writingDescription = `${articleSummaries.length} 篇关于交易所钱包、多链模型、签名服务、Go 后端与 AI 工程工作流的学习笔记。`
+
+writePage(
+  '/projects',
+  replaceMeta(baseHtml, {
+    title: '项目图谱｜xiuqiu',
+    description: '按旗舰系统、可验证作品、工程探索与暂停项目分层展示 Web3 钱包后端和 AI 协作工程。',
+    path: '/projects',
+    structuredData: {
+      '@context': 'https://schema.org',
+      '@type': 'CollectionPage',
+      name: '项目图谱｜xiuqiu',
+      url: `${SITE_URL}/projects`,
+      author: { '@type': 'Person', name: 'xiuqiu' },
+    },
+  }),
+)
 
 writePage(
   '/engineering',
@@ -244,6 +273,28 @@ dailyRadars.forEach(radar => {
   )
 })
 
+radarWeeklies.forEach(weekly => {
+  writePage(
+    `/radar/week/${weekly.slug}`,
+    replaceMeta(baseHtml, {
+      title: `${weekly.title}｜xiuqiu`,
+      description: weekly.summary,
+      path: `/radar/week/${weekly.slug}`,
+      type: 'article',
+      structuredData: {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: weekly.title,
+        description: weekly.summary,
+        datePublished: weekly.reviewedAt,
+        author: { '@type': 'Person', name: 'xiuqiu' },
+        url: `${SITE_URL}/radar/week/${weekly.slug}`,
+        mainEntityOfPage: `${SITE_URL}/radar/week/${weekly.slug}`,
+      },
+    }),
+  )
+})
+
 deliveryRecords.forEach(record => {
   writePage(
     `/ai/deliveries/${record.slug}`,
@@ -261,5 +312,13 @@ deliveryRecords.forEach(record => {
   )
 })
 
-const legacyProjectPages = projects.reduce((total, project) => total + 1 + project.legacyIds.length, 0)
-console.log(`Generated static meta pages for ${articleSummaries.length + projects.length + legacyProjectPages + dailyRadars.length + deliveryRecords.length + 10} routes.`)
+const notFoundHtml = replaceMeta(baseHtml, {
+  title: '页面没有找到｜xiuqiu',
+  description: '这个页面不存在、已移动或尚未公开。请返回项目图谱、工程证据或网站首页继续浏览。',
+  path: '/404',
+  robots: 'noindex, nofollow',
+})
+writePage('/404', notFoundHtml)
+writeFileSync(new URL('../dist/404.html', import.meta.url), notFoundHtml)
+
+console.log(`Generated static meta pages for ${generatedRouteCount} routes.`)
