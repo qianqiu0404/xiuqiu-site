@@ -324,60 +324,292 @@ export function buildKnowledgeContext(): string {
 }
 
 function tokenize(text: string): string[] {
-  return text.toLowerCase().split(/[^a-z0-9\u4e00-\u9fa5]+/).filter(token => token.length > 1)
+  const normalized = text.toLowerCase()
+  const tokens = new Set<string>()
+
+  for (const match of normalized.matchAll(/[a-z0-9][a-z0-9._/-]*/g)) {
+    const token = match[0].replace(/^[./_-]+|[./_-]+$/g, '')
+    if (token.length > 1) tokens.add(token)
+  }
+
+  for (const match of normalized.matchAll(/[\u4e00-\u9fa5]+/g)) {
+    const sequence = match[0]
+    if (sequence.length <= 8) tokens.add(sequence)
+
+    for (let size = 2; size <= Math.min(4, sequence.length); size += 1) {
+      for (let index = 0; index <= sequence.length - size; index += 1) {
+        tokens.add(sequence.slice(index, index + size))
+      }
+    }
+  }
+
+  return [...tokens]
 }
 
 function scoreText(queryTokens: string[], value: string): number {
   const haystack = value.toLowerCase()
-  return queryTokens.reduce((score, token) => score + (haystack.includes(token) ? 1 : 0), 0)
+  return queryTokens.reduce((score, token) => {
+    if (!haystack.includes(token)) return score
+    return score + (token.length >= 4 ? 2 : 1)
+  }, 0)
+}
+
+function defaultReferences(): SiteReference[] {
+  const references: SiteReference[] = []
+  const flagship = siteProjects.find(project => project.portfolioTier === 'flagship')
+  const primaryCapability = engineeringMap.find(node => node.id === 'multi-chain') || engineeringMap[0]
+
+  if (flagship) {
+    references.push({
+      type: 'project',
+      title: flagship.name,
+      href: `/projects/${flagship.slug}`,
+      summary: flagship.positioning,
+    })
+  }
+
+  if (primaryCapability) {
+    references.push({
+      type: 'capability',
+      title: primaryCapability.title,
+      href: '/engineering',
+      summary: primaryCapability.subtitle,
+    })
+  }
+
+  references.push({
+    type: 'evidence',
+    title: '工程证据覆盖',
+    href: '/engineering/evidence',
+    summary: '按工程实现、自动化测试、可运行演示和公开说明查看已验证能力、部分证据与当前限制。',
+  })
+
+  return references
 }
 
 export function findRelevantReferences(query: string, pageTitle?: string, max = 4): SiteReference[] {
   const queryTokens = tokenize([query, pageTitle || ''].join(' '))
+  const normalizedQuery = query.toLowerCase()
+  const exactTitleBoost = (title: string) => normalizedQuery.includes(title.toLowerCase()) ? 50 : 0
 
   const articleRefs = siteArticles.map(article => ({
-    score: scoreText(queryTokens, [article.title, article.summary, article.tags.join(' '), article.conceptTags.join(' '), article.suggestedQuestions.join(' ')].join(' ')) + (pageTitle === article.title ? 10 : 0),
+    score: scoreText(queryTokens, [article.title, article.summary, article.tags.join(' '), article.conceptTags.join(' '), article.suggestedQuestions.join(' ')].join(' ')) + exactTitleBoost(article.title) + (pageTitle === article.title ? 10 : 0),
     ref: { type: 'article' as const, title: article.title, href: `/articles/${article.slug}`, summary: article.summary },
   }))
 
   const projectRefs = siteProjects.map(project => ({
-    score: scoreText(queryTokens, [project.name, project.positioning, project.currentFocus, project.targetOutcome, project.techStack.join(' '), project.conceptTags.join(' ')].join(' ')) + (pageTitle === project.name ? 10 : 0),
+    score: scoreText(queryTokens, [project.name, project.positioning, project.currentFocus, project.targetOutcome, project.techStack.join(' '), project.conceptTags.join(' ')].join(' ')) + exactTitleBoost(project.name) + (pageTitle === project.name ? 10 : 0),
     ref: { type: 'project' as const, title: project.name, href: `/projects/${project.slug}`, summary: project.positioning },
   }))
 
   const aiRefs = siteAiCases.map(item => ({
-    score: scoreText(queryTokens, [item.title, item.summary, item.ownershipNote, item.currentFocus, item.flow.join(' '), item.evidence.join(' ')].join(' ')) + (pageTitle === item.title ? 10 : 0),
+    score: scoreText(queryTokens, [item.title, item.summary, item.ownershipNote, item.currentFocus, item.flow.join(' '), item.evidence.join(' ')].join(' ')) + exactTitleBoost(item.title) + (pageTitle === item.title ? 10 : 0),
     ref: { type: 'ai' as const, title: item.title, href: `/ai#${item.slug}`, summary: item.summary },
   }))
 
   const radarRefs = siteRadars.map(item => ({
-    score: scoreText(queryTokens, [item.title, item.summary, ...item.marketSignals.map(signal => signal.title), item.aiTip?.title || '', item.web3Design?.title || '', item.vibeProject?.title || '', item.readingPick?.title || ''].join(' ')) + (pageTitle === item.title ? 10 : 0),
+    score: scoreText(queryTokens, [item.title, item.summary, ...item.marketSignals.map(signal => signal.title), item.aiTip?.title || '', item.web3Design?.title || '', item.vibeProject?.title || '', item.readingPick?.title || ''].join(' ')) + exactTitleBoost(item.title) + (pageTitle === item.title ? 10 : 0),
     ref: { type: 'radar' as const, title: item.title, href: `/radar/${item.slug}`, summary: item.summary },
   }))
 
   const capabilityRefs = engineeringMap.map(node => ({
-    score: scoreText(queryTokens, [node.title, node.subtitle, node.id].join(' ')),
+    score: scoreText(queryTokens, [node.title, node.subtitle, node.id].join(' ')) + exactTitleBoost(node.title),
     ref: { type: 'capability' as const, title: node.title, href: '/engineering', summary: node.subtitle },
   }))
 
   const failureRefs = siteFailureCases.map(item => ({
-    score: scoreText(queryTokens, [item.title, item.symptom, item.fundRisk, item.stopLoss, item.services.join(' '), item.chains.join(' ')].join(' ')) + (pageTitle === item.title ? 10 : 0),
+    score: scoreText(queryTokens, [item.title, item.symptom, item.fundRisk, item.stopLoss, item.services.join(' '), item.chains.join(' ')].join(' ')) + exactTitleBoost(item.title) + (pageTitle === item.title ? 10 : 0),
     ref: { type: 'failure' as const, title: item.title, href: `/engineering/failures#${item.slug}`, summary: `${item.stopLoss} 当前边界：${item.currentBoundary}` },
   }))
 
   const evidenceRefs = siteEvidenceRecords.map(item => ({
-    score: scoreText(queryTokens, [item.title, item.summary, item.kind, item.status, item.capabilityIds.join(' '), item.failureSlugs.join(' ')].join(' ')),
+    score: scoreText(queryTokens, [item.title, item.summary, item.kind, item.status, item.capabilityIds.join(' '), item.failureSlugs.join(' ')].join(' ')) + exactTitleBoost(item.title),
     ref: { type: 'evidence' as const, title: item.title, href: '/engineering/evidence', summary: `${item.summary} 当前状态：${item.status}。` },
   }))
 
   const deliveryRefs = siteDeliveryRecords.map(item => ({
-    score: scoreText(queryTokens, [item.title, item.summary, item.goal, item.aiContribution.join(' '), item.humanDecisions.join(' '), item.reviewFindings.join(' '), item.corrections.join(' ')].join(' ')) + (pageTitle === item.title ? 10 : 0),
+    score: scoreText(queryTokens, [item.title, item.summary, item.goal, item.aiContribution.join(' '), item.humanDecisions.join(' '), item.reviewFindings.join(' '), item.corrections.join(' ')].join(' ')) + exactTitleBoost(item.title) + (pageTitle === item.title ? 10 : 0),
     ref: { type: 'delivery' as const, title: item.title, href: `/ai/deliveries/${item.slug}`, summary: item.summary },
   }))
 
-  return [...articleRefs, ...projectRefs, ...aiRefs, ...radarRefs, ...capabilityRefs, ...failureRefs, ...evidenceRefs, ...deliveryRefs]
+  const rankedReferences = [...articleRefs, ...projectRefs, ...aiRefs, ...radarRefs, ...capabilityRefs, ...failureRefs, ...evidenceRefs, ...deliveryRefs]
     .filter(item => item.score > 0)
     .sort((a, b) => b.score - a.score)
-    .slice(0, max)
     .map(item => item.ref)
+
+  const directlyNamedProjectReferences = siteProjects
+    .filter(project => normalizedQuery.includes(project.name.toLowerCase()) || pageTitle === project.name)
+    .flatMap(project => [
+      {
+        type: 'project' as const,
+        title: project.name,
+        href: `/projects/${project.slug}`,
+        summary: project.positioning,
+      },
+      ...getArticlesBySlugs(project.relatedArticleSlugs.slice(0, 3)).map(article => ({
+        type: 'article' as const,
+        title: article.title,
+        href: `/articles/${article.slug}`,
+        summary: article.summary,
+      })),
+    ])
+  const isOverviewQuestion = /工程主线|代表项目|当前在做|快速了解|哪些能力|已经验证|待验收/.test(query)
+  const candidateReferences = directlyNamedProjectReferences.length > 0
+    ? [...directlyNamedProjectReferences, ...rankedReferences, ...defaultReferences()]
+    : isOverviewQuestion
+      ? [...defaultReferences(), ...rankedReferences]
+      : [...rankedReferences, ...defaultReferences()]
+
+  const selected: SiteReference[] = []
+  const seen = new Set<string>()
+
+  for (const reference of candidateReferences) {
+    const key = `${reference.type}:${reference.href}:${reference.title}`
+    if (seen.has(key)) continue
+    seen.add(key)
+    selected.push(reference)
+    if (selected.length >= max) break
+  }
+
+  return selected
+}
+
+function referenceContext(reference: SiteReference): string {
+  if (reference.type === 'project') {
+    const project = siteProjects.find(item => `/projects/${item.slug}` === reference.href)
+    if (project) {
+      return [
+        `Project: ${project.name}`,
+        `Positioning: ${project.positioning}`,
+        `Stage: ${projectStageLabels[project.stage]}; Portfolio tier: ${projectPortfolioTierLabels[project.portfolioTier]}`,
+        `Current focus: ${project.currentFocus}`,
+        `Verified evidence: ${project.verifiedEvidence.join(' | ')}`,
+        `Target outcome: ${project.targetOutcome}`,
+        `Next milestone: ${project.nextMilestone}`,
+        `System boundary: ${project.engineering.systemBoundary}`,
+        `Call flow: ${project.engineering.callFlow.join(' -> ')}`,
+        `Known limits: ${project.knownLimits.join(' | ')}`,
+        `Public link: ${reference.href}`,
+      ].join('\n')
+    }
+  }
+
+  if (reference.type === 'article') {
+    const article = siteArticles.find(item => `/articles/${item.slug}` === reference.href)
+    if (article) {
+      return [
+        `Article: ${article.title}`,
+        `Summary: ${article.summary}`,
+        `Kind: ${article.kind}; Tags: ${article.conceptTags.join(' | ')}`,
+        `Public link: ${reference.href}`,
+      ].join('\n')
+    }
+  }
+
+  if (reference.type === 'ai') {
+    const item = siteAiCases.find(candidate => reference.href === `/ai#${candidate.slug}`)
+    if (item) {
+      return [
+        `AI collaboration case: ${item.title}`,
+        `Summary: ${item.summary}`,
+        `Status: ${aiStageLabels[item.stage]}`,
+        `Flow: ${item.flow.join(' -> ')}`,
+        `Human responsibility: ${item.responsibilities.join(' | ')}`,
+        `Evidence: ${item.evidence.join(' | ')}`,
+        `Known limits: ${item.knownLimits.join(' | ')}`,
+        `Public link: ${reference.href}`,
+      ].join('\n')
+    }
+  }
+
+  if (reference.type === 'radar') {
+    const item = siteRadars.find(candidate => `/radar/${candidate.slug}` === reference.href)
+    if (item) {
+      return [
+        `Research radar: ${item.title}`,
+        `Summary: ${item.summary}`,
+        `Signals: ${[...item.marketSignals, item.aiTip, item.web3Design, item.vibeProject, item.readingPick].filter(Boolean).map(signal => signal!.title).join(' | ')}`,
+        `Public link: ${reference.href}`,
+      ].join('\n')
+    }
+  }
+
+  if (reference.type === 'capability') {
+    const item = engineeringMap.find(candidate => candidate.title === reference.title)
+    if (item) {
+      return [
+        `Engineering capability: ${item.title}`,
+        `Summary: ${item.subtitle}`,
+        `Related projects: ${getProjectsByIds(item.projectIds).map(project => project.name).join(' | ')}`,
+        `Related articles: ${getArticlesBySlugs(item.articleSlugs).map(article => article.title).join(' | ')}`,
+        `Public link: ${reference.href}`,
+      ].join('\n')
+    }
+  }
+
+  if (reference.type === 'failure') {
+    const slug = reference.href.split('#')[1]
+    const item = siteFailureCases.find(candidate => candidate.slug === slug)
+    if (item) {
+      return [
+        `Wallet failure case: ${item.title}`,
+        `Symptom: ${item.symptom}`,
+        `Evidence status: ${item.evidenceStatus}; Fund risk: ${item.fundRisk}`,
+        `Stop-loss first: ${item.stopLoss}`,
+        `Recovery: ${item.recovery.join(' | ')}`,
+        `Idempotency: ${item.idempotencyBasis}`,
+        `Current project boundary: ${item.currentBoundary}`,
+        `Public link: ${reference.href}`,
+      ].join('\n')
+    }
+  }
+
+  if (reference.type === 'evidence') {
+    const item = siteEvidenceRecords.find(candidate => candidate.title === reference.title)
+    if (item) {
+      return [
+        `Engineering evidence: ${item.title}`,
+        `Summary: ${item.summary}`,
+        `Kind: ${item.kind}; Status: ${item.status}; Visibility: ${item.visibility}; Verified at: ${item.verifiedAt}`,
+        `Capabilities: ${item.capabilityIds.join(' | ')}`,
+        item.command ? `Verification command: ${item.command}` : '',
+        `Public link: ${reference.href}`,
+      ].filter(Boolean).join('\n')
+    }
+  }
+
+  if (reference.type === 'delivery') {
+    const item = siteDeliveryRecords.find(candidate => `/ai/deliveries/${candidate.slug}` === reference.href)
+    if (item) {
+      return [
+        `AI-assisted delivery: ${item.title}`,
+        `Summary: ${item.summary}`,
+        `Status: ${item.status}; Goal: ${item.goal}`,
+        `AI contribution: ${item.aiContribution.join(' | ')}`,
+        `Human decisions: ${item.humanDecisions.join(' | ')}`,
+        `Review findings: ${item.reviewFindings.join(' | ')}`,
+        `Corrections: ${item.corrections.join(' | ')}`,
+        `Known limits: ${item.knownLimits.join(' | ')}`,
+        `Public link: ${reference.href}`,
+      ].join('\n')
+    }
+  }
+
+  return `${reference.title}: ${reference.summary}\nPublic link: ${reference.href}`
+}
+
+export function buildRelevantKnowledgeContext(
+  query: string,
+  pageTitle?: string,
+  references = findRelevantReferences(query, pageTitle, 6),
+): string {
+  return [
+    `${siteKnowledge.owner.name}: ${siteKnowledge.owner.title}.`,
+    siteKnowledge.owner.summary,
+    `Current public snapshot (${nowSnapshot.updatedAt}): ${nowSnapshot.headline}. ${nowSnapshot.summary}`,
+    `Next focus: ${nowSnapshot.nextFocus.join(' | ')}`,
+    '',
+    'Relevant public records:',
+    ...references.map((reference, index) => `${index + 1}. ${referenceContext(reference)}`),
+  ].join('\n')
 }

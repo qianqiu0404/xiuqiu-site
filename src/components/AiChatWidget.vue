@@ -30,48 +30,51 @@ const isLoading = ref(false)
 const errorMessage = ref('')
 const messageList = ref<HTMLElement | null>(null)
 const explicitPageContext = ref<PageContext | null>(null)
+const CLIENT_REQUEST_TIMEOUT_MS = 20_000
+let activeRequestController: AbortController | null = null
 const messages = ref<ChatMessage[]>([
   {
     role: 'assistant',
-    content: '你好，我可以基于网站中经过整理的工程证据，帮你了解 xiuqiu 正在做什么、已经验证了什么，以及目标完成形态是什么。',
+    content: '你好，我是 xiuqiu AI。我只基于本站公开资料，帮你理解 Wallet Launchpad、Qiu Market Server、钱包工程证据，以及它们的目标完成形态与当前验证边界。',
   },
 ])
 
 const promptGroups = [
   {
-    label: 'Projects',
+    label: '产品完成形态',
     prompts: [
-      '介绍一下 xiuqiu 的 Web3 钱包项目',
-      'wallet-api 和 wallet-sign 的边界是什么？',
-      'wallet-core 展示了哪些 TypeScript 多链能力？',
+      '完成后的 Wallet Launchpad 是什么？',
+      'Qiu Market Server 解决什么问题？',
+      '用三分钟介绍 xiuqiu 的代表项目',
     ],
   },
   {
-    label: 'AI Collaboration',
+    label: '工程证据',
     prompts: [
-      'xiuqiu 如何使用 AI 协作完成工程任务？',
-      '跨设备 Skill 工具链如何区分个人与第三方能力？',
-      'Obsidian 知识系统如何避免公开私人内容？',
-      '研究自动化如何处理来源、去重和失败？',
+      '哪些能力已经验证，哪些仍待验收？',
+      'wallet-api、risk-service 和 wallet-sign 的边界是什么？',
+      '遇到广播结果未知时，系统如何止损与恢复？',
     ],
   },
   {
-    label: 'Writing',
+    label: 'AI 协作',
     prompts: [
-      '哪些文章适合了解后端 API 和 gRPC？',
-      '给我一条学习多链钱包后端的阅读路径',
-      '推荐几篇理解 EVM 工程的文章',
-    ],
-  },
-  {
-    label: 'Learning Path',
-    prompts: [
-      '如何快速了解 xiuqiu 当前在做的工程？',
-      '从钱包架构到签名服务应该按什么顺序学习？',
-      '请概括这个网站的工程主线',
+      'xiuqiu 如何让 AI 加速工程但不代替验证？',
+      '公开站点如何避免泄露 Obsidian 私人内容？',
     ],
   },
 ]
+
+const referenceTypeLabels: Record<SiteReference['type'], string> = {
+  article: '工程笔记',
+  project: '项目',
+  capability: '能力',
+  ai: 'AI 协作',
+  radar: '研究雷达',
+  failure: '异常手册',
+  evidence: '工程证据',
+  delivery: '交付记录',
+}
 
 const canSend = computed(() => input.value.trim().length > 0 && !isLoading.value)
 const currentPageContext = computed<PageContext>(() => {
@@ -190,12 +193,18 @@ const currentPageContext = computed<PageContext>(() => {
 })
 
 function toggleChat() {
+  if (isOpen.value) cancelActiveRequest()
   isOpen.value = !isOpen.value
   errorMessage.value = ''
 
   if (isOpen.value) {
     void scrollToBottom()
   }
+}
+
+function cancelActiveRequest() {
+  activeRequestController?.abort()
+  activeRequestController = null
 }
 
 async function sendQuickPrompt(prompt: string) {
@@ -223,9 +232,18 @@ async function sendMessage() {
 
   await scrollToBottom()
 
+  const controller = new AbortController()
+  activeRequestController = controller
+  let didTimeout = false
+  const timeoutId = window.setTimeout(() => {
+    didTimeout = true
+    controller.abort()
+  }, CLIENT_REQUEST_TIMEOUT_MS)
+
   try {
     const response = await fetch('/api/chat', {
       method: 'POST',
+      signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -236,7 +254,7 @@ async function sendMessage() {
     })
 
     const responseText = await response.text()
-    let payload: { answer?: unknown; error?: string; references?: unknown } = {}
+    let payload: { answer?: unknown; error?: string; references?: unknown; requestId?: unknown } = {}
 
     try {
       payload = responseText ? JSON.parse(responseText) : {}
@@ -258,12 +276,21 @@ async function sendMessage() {
       references: normalizeReferences(payload.references),
     })
   } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      if (didTimeout) {
+        errorMessage.value = 'xiuqiu AI 响应超过 20 秒，请稍后重试。'
+      }
+      return
+    }
+
     errorMessage.value = error instanceof Error ? error.message : '暂时无法连接 AI 服务，请稍后再试。'
     messages.value.push({
       role: 'assistant',
       content: '抱歉，AI 服务暂时不可用。你可以稍后再试，或通过 GitHub 继续了解 xiuqiu 的项目。',
     })
   } finally {
+    window.clearTimeout(timeoutId)
+    if (activeRequestController === controller) activeRequestController = null
     explicitPageContext.value = null
     isLoading.value = false
     await scrollToBottom()
@@ -305,6 +332,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  cancelActiveRequest()
   window.removeEventListener('ai-chat:ask', handleAskAi)
 })
 </script>
@@ -315,14 +343,15 @@ onUnmounted(() => {
       <header class="ai-chat-header">
         <div>
           <p class="ai-chat-kicker">xiuqiu AI</p>
-          <h2 class="ai-chat-title">工程内容助手</h2>
+          <h2 class="ai-chat-title">产品与工程证据助手</h2>
+          <p class="ai-chat-scope">公开知识 · 不读取私有仓库</p>
         </div>
         <button class="ai-icon-button" type="button" aria-label="关闭 AI 客服" @click="toggleChat">
           ×
         </button>
       </header>
 
-      <div ref="messageList" class="ai-chat-messages" aria-live="polite">
+      <div ref="messageList" class="ai-chat-messages" aria-live="polite" :aria-busy="isLoading">
         <article
           v-for="(message, index) in messages"
           :key="index"
@@ -331,7 +360,7 @@ onUnmounted(() => {
         >
           {{ message.content }}
           <div v-if="message.references?.length" class="ai-references">
-            <p class="ai-references-title">Related on this site</p>
+            <p class="ai-references-title">本站相关资料</p>
             <a
               v-for="reference in message.references"
               :key="reference.type + reference.href + reference.title"
@@ -339,16 +368,16 @@ onUnmounted(() => {
               :href="reference.href"
             >
               <span>{{ reference.title }}</span>
-              <small>{{ reference.type }}</small>
+              <small>{{ referenceTypeLabels[reference.type] }}</small>
             </a>
           </div>
         </article>
         <article v-if="isLoading" class="ai-message ai-message-assistant ai-message-loading">
-          Thinking...
+          正在核对公开资料...
         </article>
       </div>
 
-      <div class="ai-chat-prompts" aria-label="Suggested questions">
+      <div class="ai-chat-prompts" aria-label="推荐问题">
         <div v-for="group in promptGroups" :key="group.label" class="ai-prompt-group">
           <p class="ai-prompt-label">{{ group.label }}</p>
           <button
@@ -366,7 +395,7 @@ onUnmounted(() => {
 
       <p v-if="errorMessage" class="ai-chat-error">{{ errorMessage }}</p>
 
-      <p class="ai-chat-privacy">只使用本站公开内容回答。请勿输入密钥、账户、地址、交易或其他隐私信息。</p>
+      <p class="ai-chat-privacy">只使用本站公开内容，不读取 Obsidian 原文、私有仓库或账户数据。请勿输入密钥、地址、交易或其他隐私信息。</p>
 
       <form class="ai-chat-form" @submit.prevent="sendMessage">
         <textarea
@@ -464,6 +493,13 @@ onUnmounted(() => {
   font-weight: 700;
   letter-spacing: 0;
   line-height: 1.25;
+}
+
+.ai-chat-scope {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.35;
 }
 
 .ai-icon-button {
