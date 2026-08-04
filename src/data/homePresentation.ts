@@ -10,6 +10,14 @@ export interface HomeServiceStep {
   description: string
 }
 
+export interface HomeProductGroup {
+  id: 'wallet-platform' | 'market-server'
+  label: string
+  title: string
+  description: string
+  projectSlugs: readonly string[]
+}
+
 export type HomeDestination =
   | { kind: 'internal'; to: string }
   | { kind: 'external'; href: string }
@@ -39,12 +47,23 @@ export const homeSeo = {
 } as const
 
 export const flagshipProjectSlug = 'exchange-wallet-system'
-export const representativeProjectSlugs = [
-  flagshipProjectSlug,
-  'wallet-launchpad',
-  's78-market-services',
-  'wallet-reliability-lab',
+export const homeProductGroups: readonly HomeProductGroup[] = [
+  {
+    id: 'wallet-platform',
+    label: 'Product Line 01',
+    title: 'Wallet Platform',
+    description: '从多链资金底座、控制平面到公开可靠性实验，形成一条可以运行、验证和继续扩展的钱包产品线。',
+    projectSlugs: [flagshipProjectSlug, 'wallet-launchpad', 'wallet-reliability-lab'],
+  },
+  {
+    id: 'market-server',
+    label: 'Product Line 02',
+    title: 'Market Server',
+    description: '把行情来源、降级状态、虚拟交易、账本与恢复收敛成一个可信市场事实服务。',
+    projectSlugs: ['s78-market-services'],
+  },
 ] as const
+export const representativeProjectSlugs = homeProductGroups.flatMap(group => group.projectSlugs)
 
 export const homeCapabilities: HomeCapability[] = [
   {

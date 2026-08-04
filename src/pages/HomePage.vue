@@ -7,6 +7,7 @@ import {
   githubRepositoriesUrl,
   homeCapabilities,
   homeEvidenceHighlights,
+  homeProductGroups,
   homeProofMethods,
   homeSeo,
   homeServiceFlow,
@@ -38,6 +39,14 @@ interface HomeEvidenceCard {
   record: EvidenceRecord
   label: string
   action: HomeAction
+}
+
+interface HomeProductGroupView {
+  id: (typeof homeProductGroups)[number]['id']
+  label: string
+  title: string
+  description: string
+  cards: HomeProjectCard[]
 }
 
 const projectStageLabels: Record<ProjectStage, string> = {
@@ -83,6 +92,19 @@ const representativeProjectCards: HomeProjectCard[] = representativeProjectSlugs
   const project = requireProject(slug)
   return { project, action: buildProjectAction(project) }
 })
+const projectCardsBySlug = new Map(
+  representativeProjectCards.map(card => [card.project.slug, card]),
+)
+const homeProductGroupViews: HomeProductGroupView[] = homeProductGroups.map(group => ({
+  ...group,
+  cards: group.projectSlugs.map(slug => {
+    const card = projectCardsBySlug.get(slug)
+    if (!card) {
+      throw new Error(`Homepage product group references missing representative project: ${slug}`)
+    }
+    return card
+  }),
+}))
 const evidenceCards: HomeEvidenceCard[] = homeEvidenceHighlights.map(item => ({
   record: requireEvidence(item.evidenceSlug),
   label: item.label,
@@ -115,8 +137,10 @@ onMounted(() =>
   <div class="value-home">
     <section class="value-home-hero" aria-labelledby="home-title">
       <div class="container value-home-hero-inner">
-        <p class="value-home-eyebrow">Web3 Wallet Backend · Evidence-first Engineering</p>
-        <h1 id="home-title">帮助 Web3 团队构建更可靠的钱包充值、提现、签名与多链基础设施</h1>
+        <p class="value-home-eyebrow">Wallet Platform · Market Server</p>
+        <h1 id="home-title">
+          帮助 Web3 团队构建更可靠的<span class="value-home-nowrap">钱包充值</span>、<span class="value-home-nowrap">提现</span>、<span class="value-home-nowrap">签名</span>与多链基础设施
+        </h1>
         <p class="value-home-lead">
           我专注交易所钱包后端，围绕资金状态、交易风控、多链交互、签名安全和异常恢复，提供可运行、可解释、可验证的工程实现。
         </p>
@@ -125,28 +149,9 @@ onMounted(() =>
           当前以本地运行、公开实验、源码、测试和失败场景复现作为主要工程证据。
         </p>
         <div class="hero-actions value-home-actions">
-          <router-link class="btn btn-primary" to="/projects">查看代表项目</router-link>
-          <a class="btn btn-secondary" :href="walletLabUrl" target="_blank" rel="noopener">运行 Wallet Lab</a>
-          <router-link class="value-home-text-link" to="/engineering/evidence">查看工程证据 →</router-link>
+          <router-link class="btn btn-primary" to="/projects/wallet-launchpad">查看 Wallet Launchpad</router-link>
+          <router-link class="btn btn-secondary" to="/projects/s78-market-services">查看 Market Server</router-link>
         </div>
-
-        <nav class="value-home-proof-strip" aria-label="工程证明方式">
-          <template v-for="(proof, index) in homeProofMethods" :key="proof.id">
-            <a
-              v-if="proof.destination.kind === 'external'"
-              :href="proof.destination.href"
-              target="_blank"
-              rel="noopener"
-            >
-              <span>{{ String(index + 1).padStart(2, '0') }}</span>
-              <strong>{{ proof.title }}</strong>
-            </a>
-            <router-link v-else :to="proof.destination.to">
-              <span>{{ String(index + 1).padStart(2, '0') }}</span>
-              <strong>{{ proof.title }}</strong>
-            </router-link>
-          </template>
-        </nav>
       </div>
     </section>
 
@@ -212,43 +217,55 @@ onMounted(() =>
           <p>先展示项目完成后的产品形态，再用当前最强证据说明实现基础；完整边界与验收门放在项目详情页。</p>
         </div>
 
-        <div class="value-home-project-grid">
-          <article
-            v-for="({ project, action }, index) in representativeProjectCards"
-            :key="project.id"
-            class="value-home-project"
+        <div class="value-home-product-lines">
+          <div
+            v-for="(group, groupIndex) in homeProductGroupViews"
+            :key="group.id"
+            class="value-home-product-line"
+            :class="`value-home-product-line--${group.id}`"
           >
-            <header>
-              <span>{{ String(index + 1).padStart(2, '0') }} · {{ projectPortfolioTierLabels[project.portfolioTier] }}</span>
-              <strong>{{ projectStageLabels[project.stage] }}</strong>
+            <header class="value-home-product-line-heading">
+              <div>
+                <span>{{ group.label }}</span>
+                <h3>{{ group.title }}</h3>
+              </div>
+              <p>{{ group.description }}</p>
             </header>
-            <h3>{{ project.name }}</h3>
-            <dl>
-              <div>
-                <dt>目标结果</dt>
-                <dd>{{ project.targetOutcome }}</dd>
-              </div>
-              <div>
-                <dt>最强证据</dt>
-                <dd>{{ project.verifiedEvidence[0] }}</dd>
-              </div>
-            </dl>
-            <footer>
-              <time :datetime="project.updatedAt">更新于 {{ project.updatedAt }}</time>
-              <a
-                v-if="action.kind === 'external'"
-                class="value-home-inline-link"
-                :href="action.href"
-                target="_blank"
-                rel="noopener"
+
+            <div class="value-home-project-grid" :class="{ 'value-home-project-grid--single': group.cards.length === 1 }">
+              <article
+                v-for="({ project, action }, projectIndex) in group.cards"
+                :key="project.id"
+                class="value-home-project"
               >
-                {{ action.label }} ↗
-              </a>
-              <router-link v-else class="value-home-inline-link" :to="action.to">
-                {{ action.label }} →
-              </router-link>
-            </footer>
-          </article>
+                <header>
+                  <span>{{ String(groupIndex + 1).padStart(2, '0') }}.{{ projectIndex + 1 }} · {{ projectPortfolioTierLabels[project.portfolioTier] }}</span>
+                  <strong>{{ projectStageLabels[project.stage] }}</strong>
+                </header>
+                <h3>{{ project.name }}</h3>
+                <p class="value-home-project-outcome">{{ project.positioning }}</p>
+                <div class="value-home-project-proof">
+                  <span>当前证据</span>
+                  <p>{{ project.verifiedEvidence[0] }}</p>
+                </div>
+                <footer>
+                  <time :datetime="project.updatedAt">更新于 {{ project.updatedAt }}</time>
+                  <a
+                    v-if="action.kind === 'external'"
+                    class="value-home-inline-link"
+                    :href="action.href"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    {{ action.label }} ↗
+                  </a>
+                  <router-link v-else class="value-home-inline-link" :to="action.to">
+                    {{ action.label }} →
+                  </router-link>
+                </footer>
+              </article>
+            </div>
+          </div>
         </div>
 
         <router-link class="value-home-projects-more" to="/projects">
@@ -289,6 +306,19 @@ onMounted(() =>
             </router-link>
           </article>
         </div>
+
+        <nav class="value-home-proof-links" aria-label="完整工程验证路径">
+          <span>完整验证路径</span>
+          <template v-for="proof in homeProofMethods" :key="proof.id">
+            <a
+              v-if="proof.destination.kind === 'external'"
+              :href="proof.destination.href"
+              target="_blank"
+              rel="noopener"
+            >{{ proof.title }} ↗</a>
+            <router-link v-else :to="proof.destination.to">{{ proof.title }}</router-link>
+          </template>
+        </nav>
       </div>
     </section>
 

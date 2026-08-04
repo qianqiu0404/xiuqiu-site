@@ -6,6 +6,7 @@ import {
   flagshipProjectSlug,
   homeCapabilities,
   homeEvidenceHighlights,
+  homeProductGroups,
   homeProofMethods,
   homeSeo,
   homeServiceFlow,
@@ -27,11 +28,13 @@ test('homepage presentation keeps the intended cardinalities', () => {
   assert.equal(homeServiceFlow.length, 4)
   assert.equal(homeProofMethods.length, 5)
   assert.equal(homeEvidenceHighlights.length, 3)
+  assert.equal(homeProductGroups.length, 2)
   assert.equal(aiEngineeringOutcomes.length, 8)
   assertUnique(homeCapabilities.map(item => item.id), 'capability ids')
   assertUnique(homeServiceFlow.map(item => item.name), 'service names')
   assertUnique(homeProofMethods.map(item => item.id), 'proof ids')
   assertUnique(homeEvidenceHighlights.map(item => item.evidenceSlug), 'evidence highlight slugs')
+  assertUnique(homeProductGroups.map(item => item.id), 'product group ids')
   assertUnique(aiEngineeringOutcomes, 'AI outcomes')
 })
 
@@ -54,9 +57,22 @@ test('configured homepage projects foreground the two finished-product direction
   assert.deepEqual([...representativeProjectSlugs], [
     'exchange-wallet-system',
     'wallet-launchpad',
-    's78-market-services',
     'wallet-reliability-lab',
+    's78-market-services',
   ])
+  assert.deepEqual(
+    homeProductGroups.map(group => ({ id: group.id, projectSlugs: [...group.projectSlugs] })),
+    [
+      {
+        id: 'wallet-platform',
+        projectSlugs: ['exchange-wallet-system', 'wallet-launchpad', 'wallet-reliability-lab'],
+      },
+      {
+        id: 'market-server',
+        projectSlugs: ['s78-market-services'],
+      },
+    ],
+  )
   assertUnique([...representativeProjectSlugs], 'homepage project slugs')
   assert.ok(representativeProjectSlugs.includes('wallet-launchpad'))
   assert.ok(representativeProjectSlugs.includes('s78-market-services'))
@@ -87,6 +103,12 @@ test('homepage evidence highlights resolve to dated site evidence', () => {
 
 test('homepage and primary navigation keep their structural contract', () => {
   assert.equal((homeSource.match(/<section(?:\s|>)/g) || []).length, 6)
+  const heroSource = homeSource.match(/<section class="value-home-hero"[\s\S]*?<\/section>/)?.[0]
+  assert.ok(heroSource, 'Homepage hero markup is missing')
+  assert.equal((heroSource.match(/class="btn /g) || []).length, 2)
+  assert.doesNotMatch(heroSource, /value-home-proof-links|value-home-proof-strip/)
+  assert.match(homeSource, /class="value-home-proof-links"/)
+  assert.match(homeSource, /value-home-product-line--\$\{group\.id\}/)
   assert.match(homeSource, /class="value-home-ai-strip"/)
   assert.doesNotMatch(homeSource, /explorationProjectSlugs/)
   assert.doesNotMatch(homeSource, /v-for="project in explorationProjects"/)
