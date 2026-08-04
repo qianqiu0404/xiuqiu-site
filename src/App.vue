@@ -6,6 +6,15 @@ const navOpen = ref(false)
 const navToggle = ref<HTMLButtonElement | null>(null)
 const router = useRouter()
 const isCinematicHome = computed(() => router.currentRoute.value.name === 'home')
+const cinematicRouteNames = new Set([
+  'home',
+  'projects',
+  'engineering-evidence',
+  'ai',
+  'ai-deliveries',
+  'ai-delivery-detail',
+])
+const usesCinematicChrome = computed(() => cinematicRouteNames.has(String(router.currentRoute.value.name || '')))
 const AiChatWidget = defineAsyncComponent(() => import('./components/AiChatWidget.vue'))
 
 function closeNav() {
@@ -26,7 +35,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
 <template>
   <a class="skip-link" href="#main-content">跳到主要内容</a>
 
-  <header class="site-header" :class="{ 'site-header--cinematic': isCinematicHome }">
+  <header class="site-header" :class="{ 'site-header--cinematic': usesCinematicChrome }">
     <nav class="nav container">
       <router-link class="brand" to="/">xiuqiu</router-link>
 
@@ -57,7 +66,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
     <router-view />
   </main>
 
-  <footer class="footer" :class="{ 'footer--cinematic': isCinematicHome }">
+  <footer class="footer" :class="{ 'footer--cinematic': usesCinematicChrome }">
     <div class="container footer-inner">
       <span>© {{ new Date().getFullYear() }} xiuqiu</span>
       <nav class="footer-links" aria-label="页尾导航">
@@ -69,5 +78,5 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
     </div>
   </footer>
 
-  <AiChatWidget :cinematic="isCinematicHome" />
+  <AiChatWidget :cinematic="usesCinematicChrome" :hide-desktop-toggle="isCinematicHome" />
 </template>

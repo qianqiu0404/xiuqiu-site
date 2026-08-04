@@ -19,6 +19,11 @@ import { projects } from '../src/data/generatedProjects.ts'
 
 const homeSource = readFileSync(new URL('../src/pages/HomePage.vue', import.meta.url), 'utf8')
 const appSource = readFileSync(new URL('../src/App.vue', import.meta.url), 'utf8')
+const chatWidgetSource = readFileSync(new URL('../src/components/AiChatWidget.vue', import.meta.url), 'utf8')
+const projectAtlasSource = readFileSync(new URL('../src/pages/ProjectAtlasPage.vue', import.meta.url), 'utf8')
+const evidencePageSource = readFileSync(new URL('../src/pages/EngineeringEvidencePage.vue', import.meta.url), 'utf8')
+const aiPageSource = readFileSync(new URL('../src/pages/AiCollaborationPage.vue', import.meta.url), 'utf8')
+const deliveryDetailSource = readFileSync(new URL('../src/pages/DeliveryDetailPage.vue', import.meta.url), 'utf8')
 const indexHtml = readFileSync(new URL('../index.html', import.meta.url), 'utf8')
 
 function assertUnique(values, label) {
@@ -154,6 +159,50 @@ test('AI proof rails preserve evidence and human-decision boundaries', () => {
 
   assert.match(homeAiProofContexts[1].summary, /没有单独发布的 AI delivery/)
   assert.match(homeAiProofContexts[2].boundary, /不能替代安全判断/)
+})
+
+test('cinematic secondary routes keep shared chrome without hiding their desktop AI entry', () => {
+  const routeSetSource = appSource.match(/const cinematicRouteNames = new Set\(\[([\s\S]*?)\]\)/)?.[1]
+  assert.ok(routeSetSource, 'Cinematic route set is missing')
+
+  const routeNames = [...routeSetSource.matchAll(/'([^']+)'/g)].map(match => match[1])
+  assert.deepEqual(routeNames, [
+    'home',
+    'projects',
+    'engineering-evidence',
+    'ai',
+    'ai-deliveries',
+    'ai-delivery-detail',
+  ])
+  assert.match(appSource, /:cinematic="usesCinematicChrome"/)
+  assert.match(appSource, /:hide-desktop-toggle="isCinematicHome"/)
+  assert.match(chatWidgetSource, /'ai-chat--desktop-rail': props\.hideDesktopToggle/)
+  assert.match(chatWidgetSource, /\.ai-chat--desktop-rail \.ai-chat-toggle/)
+})
+
+test('cinematic evidence pages preserve their source-backed interaction contracts', () => {
+  assert.match(projectAtlasSource, /:id="group\.tier"/)
+  assert.match(projectAtlasSource, /portfolioTier === tier/)
+  assert.match(projectAtlasSource, /project\.verifiedEvidence\[0\]/)
+  assert.match(projectAtlasSource, /project\.targetOutcome/)
+  assert.match(projectAtlasSource, /project\.nextMilestone/)
+  assert.match(projectAtlasSource, /target="_blank"/)
+  assert.match(projectAtlasSource, /rel="noopener"/)
+
+  assert.match(evidencePageSource, /role="table"/)
+  assert.match(evidencePageSource, /role="columnheader"/)
+  assert.match(evidencePageSource, /role="rowheader"/)
+  assert.match(evidencePageSource, /role="cell"/)
+  assert.match(evidencePageSource, /record\.visibility === 'public' && record\.url/)
+  assert.match(evidencePageSource, /私有工程去敏摘要/)
+  assert.match(evidencePageSource, /它不自动等于生产可用、经过审计或处理过真实资金/)
+
+  assert.match(aiPageSource, /item\.ownershipNote/)
+  assert.match(aiPageSource, /item\.failureHandling/)
+  assert.match(aiPageSource, /item\.knownLimits/)
+  for (const field of ['aiContribution', 'humanDecisions', 'reviewFindings', 'corrections', 'knownLimits', 'nextStep']) {
+    assert.match(deliveryDetailSource, new RegExp(`delivery\\.${field}`))
+  }
 })
 
 test('static and runtime homepage SEO stay aligned', () => {
