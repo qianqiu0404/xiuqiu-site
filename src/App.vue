@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const navOpen = ref(false)
 const navToggle = ref<HTMLButtonElement | null>(null)
 const router = useRouter()
+const isCinematicHome = computed(() => router.currentRoute.value.name === 'home')
 const AiChatWidget = defineAsyncComponent(() => import('./components/AiChatWidget.vue'))
 
 function closeNav() {
@@ -25,7 +26,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
 <template>
   <a class="skip-link" href="#main-content">跳到主要内容</a>
 
-  <header class="site-header">
+  <header class="site-header" :class="{ 'site-header--cinematic': isCinematicHome }">
     <nav class="nav container">
       <router-link class="brand" to="/">xiuqiu</router-link>
 
@@ -43,11 +44,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
       </button>
 
       <div id="primary-navigation" class="nav-links" :class="{ open: navOpen }">
-        <router-link to="/#capabilities" @click="navOpen = false">能力</router-link>
-        <router-link to="/projects" @click="navOpen = false">项目</router-link>
+        <router-link to="/#overview" @click="navOpen = false">概览</router-link>
+        <router-link to="/#wallet" @click="navOpen = false">Wallet</router-link>
+        <router-link to="/#market" @click="navOpen = false">Market</router-link>
+        <router-link to="/#ai-engineering" @click="navOpen = false">AI</router-link>
         <router-link to="/engineering/evidence" @click="navOpen = false">证据</router-link>
-        <router-link to="/radar" @click="navOpen = false">研究</router-link>
-        <router-link to="/now" @click="navOpen = false">关于</router-link>
       </div>
     </nav>
   </header>
@@ -56,7 +57,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
     <router-view />
   </main>
 
-  <footer class="footer">
+  <footer class="footer" :class="{ 'footer--cinematic': isCinematicHome }">
     <div class="container footer-inner">
       <span>© {{ new Date().getFullYear() }} xiuqiu</span>
       <nav class="footer-links" aria-label="页尾导航">
@@ -68,5 +69,5 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
     </div>
   </footer>
 
-  <AiChatWidget />
+  <AiChatWidget :cinematic="isCinematicHome" />
 </template>

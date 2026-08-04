@@ -1,6 +1,6 @@
-const DEFAULT_TITLE = 'xiuqiu｜Web3 钱包后端与多链基础设施工程'
+const DEFAULT_TITLE = 'xiuqiu｜Web3 Systems × AI Engineering'
 const DEFAULT_DESCRIPTION =
-  '专注交易所钱包充值、提现、资金状态、多链交易、签名安全与异常恢复，通过可运行项目、源码、测试和工程证据展示 Web3 钱包后端能力。'
+  '构建 Wallet Platform、可信 Market Server 与 AI-native Engineering 工作流，用可运行项目、代码审查、测试和工程证据展示 Web3 系统能力。'
 const SITE_URL = 'https://xiuqiu-site.vercel.app'
 
 interface SeoOptions {
