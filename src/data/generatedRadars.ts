@@ -6,6 +6,77 @@ export interface DailyRadar { date: string; slug: string; title: string; summary
 
 export const dailyRadars: DailyRadar[] = [
   {
+    "date": "2026-08-04",
+    "slug": "2026-08-04",
+    "title": "每日研究雷达 · 2026-08-04",
+    "summary": "聚焦 Chainlink 遥测与批处理、Polkadot collator 信誉修复、Celestia CheckTx 限制、受限 agent 写入、沙箱钱包、Gemini CLI，以及条件化最小权限。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-08-04T09:46:53+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "Chainlink Node v2.58.0 调整遥测与批量发送默认值",
+        "summary": "版本新增指标属性丢弃配置，并依据容量分析扩大 Chip ingress 缓冲与批量、延长发送窗口；这是节点配置更新，生产使用仍需按负载验证并固定镜像 digest。",
+        "sourceUrl": "https://github.com/smartcontractkit/chainlink/releases/tag/v2.58.0"
+      },
+      {
+        "title": "Polkadot SDK 补丁修正 collator 信誉归因",
+        "summary": "stable2603-5 修正 ApprovedPeer 携带错误 PeerId 导致诚实 collator 无法累积信誉的问题，并缓解持久化请求拥塞；该发布仅含 crates，不提供 binary 或镜像。",
+        "sourceUrl": "https://github.com/paritytech/polkadot-sdk/releases/tag/polkadot-stable2603-5"
+      },
+      {
+        "title": "Celestia Corto 版本在 CheckTx 限制消息数量",
+        "summary": "v9.0.5-corto 为 CheckTx 增加 SDK message 上限并升级 celestia-core；它是仅面向 Corto 的 prerelease，不能外推为主网稳定版本。",
+        "sourceUrl": "https://github.com/celestiaorg/celestia-app/releases/tag/v9.0.5-corto"
+      }
+    ],
+    "aiTip": {
+      "title": "让模型产出结构化意图，由确定性 handler 执行写入",
+      "summary": "先用代码固定仓库、分支和文件边界，再让 agent 只输出变更意图；独立 handler 用窄权限、白名单、draft PR 与失败回退执行。模型判断仍需内容审阅，安全来自权限分离和可验证动作面。",
+      "sourceUrl": "https://github.blog/ai-and-ml/github-copilot/automating-cross-repo-documentation-with-github-agentic-workflows/"
+    },
+    "web3Design": {
+      "title": "把 agent 资产与 owner 账户做单向隔离",
+      "summary": "ERC-8199 用独立沙箱钱包、agent 有效期、前后置 checker 与 owner 恢复路径限制自动执行。钱包服务可迁移独立资金边界和显式策略，但草案未补齐 nonce、升级、checker 信任与跨链恢复，不能直接用于生产。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-8199"
+    },
+    "vibeProject": {
+      "title": "Gemini CLI · 终端开源 coding agent",
+      "summary": "Gemini CLI 面向终端代码与工具工作流；固定版 0.53.1 已在无凭据临时目录复现版本输出。公开仓库与 npm 数据显示广泛关注和分发，但工具权限、提示注入和供应链风险仍需沙箱、审批与独立测试约束。",
+      "sourceUrl": "https://github.com/google-gemini/gemini-cli"
+    },
+    "readingPick": {
+      "title": "用条件把最小权限收紧到服务、工具与时间",
+      "summary": "Google Cloud 展示用 IAM Conditions 限定可授予角色、MCP 服务、具体工具和时间窗。思考题：为只读研究 agent 写出三条允许、三条拒绝案例，并检查属性缺失或新工具上线时是否默认拒绝。",
+      "sourceUrl": "https://cloud.google.com/blog/topics/developers-practitioners/generosity-under-conditions-hardening-google-cloud-access-management/"
+    },
+    "sourceUrls": [
+      "https://github.com/smartcontractkit/chainlink/releases/tag/v2.58.0",
+      "https://github.com/paritytech/polkadot-sdk/releases/tag/polkadot-stable2603-5",
+      "https://github.com/celestiaorg/celestia-app/releases/tag/v9.0.5-corto",
+      "https://github.blog/ai-and-ml/github-copilot/automating-cross-repo-documentation-with-github-agentic-workflows/",
+      "https://eips.ethereum.org/EIPS/eip-8199",
+      "https://github.com/google-gemini/gemini-cli",
+      "https://github.com/google-gemini/gemini-cli/releases/tag/v0.53.1",
+      "https://registry.npmjs.org/@google/gemini-cli/0.53.1",
+      "https://api.npmjs.org/downloads/point/2026-07-05:2026-08-03/@google/gemini-cli",
+      "https://github.com/google-gemini/gemini-cli/blob/v0.53.1/docs/cli/sandbox.md",
+      "https://github.com/google-gemini/gemini-cli/blob/v0.53.1/LICENSE",
+      "https://cloud.google.com/blog/topics/developers-practitioners/generosity-under-conditions-hardening-google-cloud-access-management/"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
     "date": "2026-08-03",
     "slug": "2026-08-03",
     "title": "每日研究雷达 · 2026-08-03",
