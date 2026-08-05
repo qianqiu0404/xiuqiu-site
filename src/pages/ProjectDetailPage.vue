@@ -42,12 +42,22 @@ watchEffect(() => {
           <h1 id="product-title"><span v-for="line in presentation.heroLines" :key="line">{{ line }}</span></h1>
           <p class="product-hero-lead">{{ presentation.promise }}</p>
           <div class="product-hero-actions">
-            <a class="product-button product-button--primary" :href="presentation.publicAction.href" target="_blank" rel="noopener">
-              {{ presentation.publicAction.label }} ↗
-            </a>
-            <router-link class="product-button product-button--quiet" :to="presentation.proofAction.to">
-              {{ presentation.proofAction.label }}
-            </router-link>
+            <template v-if="presentation.publicAction.role === 'companion'">
+              <router-link class="product-button product-button--primary" :to="presentation.proofAction.to">
+                {{ presentation.proofAction.label }}
+              </router-link>
+              <a class="product-button product-button--quiet" :href="presentation.publicAction.href" target="_blank" rel="noopener">
+                {{ presentation.publicAction.label }} ↗
+              </a>
+            </template>
+            <template v-else>
+              <a class="product-button product-button--primary" :href="presentation.publicAction.href" target="_blank" rel="noopener">
+                {{ presentation.publicAction.label }} ↗
+              </a>
+              <router-link class="product-button product-button--quiet" :to="presentation.proofAction.to">
+                {{ presentation.proofAction.label }}
+              </router-link>
+            </template>
           </div>
           <p class="product-public-boundary">{{ presentation.publicAction.boundary }}</p>
         </div>
@@ -139,13 +149,28 @@ watchEffect(() => {
       <div class="container product-finale-layout">
         <div>
           <p class="cinematic-page-kicker">Continue from evidence</p>
-          <h2 id="product-finale-title">先体验产品，再检查它如何被证明。</h2>
+          <h2 v-if="presentation.publicAction.role === 'companion'" id="product-finale-title">
+            先检查 Launchpad 的工程证据，再运行独立的配套实验。
+          </h2>
+          <h2 v-else id="product-finale-title">先体验产品，再检查它如何被证明。</h2>
         </div>
         <div class="product-finale-actions">
-          <a class="product-button product-button--primary" :href="presentation.publicAction.href" target="_blank" rel="noopener">
-            {{ presentation.publicAction.label }} ↗
-          </a>
-          <router-link class="product-button product-button--quiet" to="/engineering/evidence">Verification Matrix</router-link>
+          <template v-if="presentation.publicAction.role === 'companion'">
+            <router-link class="product-button product-button--primary" :to="presentation.proofAction.to">
+              {{ presentation.proofAction.label }}
+            </router-link>
+            <a class="product-button product-button--quiet" :href="presentation.publicAction.href" target="_blank" rel="noopener">
+              {{ presentation.publicAction.label }} ↗
+            </a>
+          </template>
+          <template v-else>
+            <a class="product-button product-button--primary" :href="presentation.publicAction.href" target="_blank" rel="noopener">
+              {{ presentation.publicAction.label }} ↗
+            </a>
+            <router-link class="product-button product-button--quiet" :to="presentation.proofAction.to">
+              {{ presentation.proofAction.label }}
+            </router-link>
+          </template>
           <router-link class="product-text-link" to="/projects">全部项目 →</router-link>
         </div>
       </div>

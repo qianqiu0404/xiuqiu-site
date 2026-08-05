@@ -13,8 +13,10 @@ import {
   homeSeo,
   homeServiceFlow,
   representativeProjectSlugs,
+  walletLabUrl,
 } from '../src/data/homePresentation.ts'
 import { evidenceRecords } from '../src/data/generatedEvidence.ts'
+import { evidenceLedgerRecords, evidenceLedgerStats } from '../src/data/evidenceLedger.ts'
 import { projects } from '../src/data/generatedProjects.ts'
 import { productPresentations, qiuMarketUrl } from '../src/data/productPresentation.ts'
 
@@ -22,6 +24,7 @@ const homeSource = readFileSync(new URL('../src/pages/HomePage.vue', import.meta
 const appSource = readFileSync(new URL('../src/App.vue', import.meta.url), 'utf8')
 const chatWidgetSource = readFileSync(new URL('../src/components/AiChatWidget.vue', import.meta.url), 'utf8')
 const projectAtlasSource = readFileSync(new URL('../src/pages/ProjectAtlasPage.vue', import.meta.url), 'utf8')
+const projectDetailSource = readFileSync(new URL('../src/pages/ProjectDetailPage.vue', import.meta.url), 'utf8')
 const evidencePageSource = readFileSync(new URL('../src/pages/EngineeringEvidencePage.vue', import.meta.url), 'utf8')
 const aiPageSource = readFileSync(new URL('../src/pages/AiCollaborationPage.vue', import.meta.url), 'utf8')
 const radarPageSource = readFileSync(new URL('../src/pages/RadarPage.vue', import.meta.url), 'utf8')
@@ -117,6 +120,25 @@ test('homepage evidence highlights resolve to dated site evidence', () => {
   })
 })
 
+test('verification ledger resolves only source-backed evidence relationships', () => {
+  assert.equal(evidenceLedgerRecords.length, evidenceRecords.length)
+  assert.equal(
+    evidenceLedgerStats.verified + evidenceLedgerStats.partial + evidenceLedgerStats.design,
+    evidenceLedgerStats.total,
+  )
+  assert.equal(
+    evidenceLedgerStats.public,
+    evidenceRecords.filter(record => record.visibility === 'public' && record.url).length,
+  )
+
+  evidenceLedgerRecords.forEach(record => {
+    assert.deepEqual(record.projects.map(project => project.slug), record.evidence.projectSlugs)
+    assert.deepEqual(record.deliveries.map(delivery => delivery.slug), record.evidence.deliverySlugs)
+    assert.deepEqual(record.failures.map(failure => failure.slug), record.evidence.failureSlugs)
+    assert.deepEqual(record.articles.map(article => article.slug), record.evidence.articleSlugs)
+  })
+})
+
 test('homepage and primary navigation keep their structural contract', () => {
   assert.equal((homeSource.match(/<section(?:\s|>)/g) || []).length, 5)
   const heroSource = homeSource.match(/<section class="cinematic-hero"[\s\S]*?<\/section>/)?.[0]
@@ -150,7 +172,7 @@ test('homepage and primary navigation keep their structural contract', () => {
   ])
 })
 
-test('two product home presentations expose explicit and safe public actions', () => {
+test('two product home presentations keep public products separate from companion experiments', () => {
   assert.deepEqual(productPresentations.map(item => item.slug), [
     'wallet-launchpad',
     's78-market-services',
@@ -160,6 +182,22 @@ test('two product home presentations expose explicit and safe public actions', (
     assert.ok(item.publicAction.boundary.length > 20)
     assert.match(item.proofAction.to, /^\//)
   })
+
+  const walletPresentation = productPresentations.find(item => item.slug === 'wallet-launchpad')
+  const marketPresentation = productPresentations.find(item => item.slug === 's78-market-services')
+  assert.ok(walletPresentation)
+  assert.ok(marketPresentation)
+  assert.equal(walletPresentation.publicAction.role, 'companion')
+  assert.equal(walletPresentation.publicAction.href, walletLabUrl)
+  assert.match(walletPresentation.publicAction.label, /simulation-only/)
+  assert.match(walletPresentation.publicAction.boundary, /不是 Wallet Launchpad/)
+  assert.equal(
+    walletPresentation.proofAction.to,
+    '/engineering/evidence#wallet-launchpad-no-funds-acceptance',
+  )
+  assert.match(homeSource, /v-if="entry\.presentation\.publicAction\.role === 'companion'"/)
+  assert.match(homeSource, /:to="entry\.presentation\.proofAction\.to"/)
+  assert.equal(marketPresentation.publicAction.role, 'product')
   assert.equal(qiuMarketUrl, 'https://qiu-market.vercel.app')
 })
 
@@ -199,22 +237,48 @@ test('cinematic evidence pages preserve their source-backed interaction contract
   assert.match(projectAtlasSource, /target="_blank"/)
   assert.match(projectAtlasSource, /rel="noopener"/)
 
+  assert.match(evidencePageSource, /Verification Ledger/)
+  assert.match(evidencePageSource, /class="verification-ledger-row"/)
+  assert.match(evidencePageSource, /projectFilter/)
+  assert.match(evidencePageSource, /kindFilter/)
+  assert.match(evidencePageSource, /statusFilter/)
+  assert.match(evidencePageSource, /visibilityFilter/)
+  assert.match(evidencePageSource, /record\.projects/)
+  assert.match(evidencePageSource, /record\.deliveries/)
+  assert.match(evidencePageSource, /record\.failures/)
+  assert.match(evidencePageSource, /record\.articles/)
+  assert.match(evidencePageSource, /Coverage Map/)
   assert.match(evidencePageSource, /role="table"/)
   assert.match(evidencePageSource, /role="columnheader"/)
   assert.match(evidencePageSource, /role="rowheader"/)
   assert.match(evidencePageSource, /role="cell"/)
-  assert.match(evidencePageSource, /record\.visibility === 'public' && record\.url/)
+  assert.match(evidencePageSource, /record\.evidence\.visibility === 'public' && record\.evidence\.url/)
   assert.match(evidencePageSource, /私有工程去敏摘要/)
   assert.match(evidencePageSource, /它不自动等于生产可用、经过审计或处理过真实资金/)
+  assert.match(evidencePageSource, /:id="record\.evidence\.slug"/)
+
+  assert.match(
+    projectDetailSource,
+    /<template v-if="presentation\.publicAction\.role === 'companion'">[\s\S]*?<router-link class="product-button product-button--primary" :to="presentation\.proofAction\.to">/,
+  )
+  assert.match(
+    projectDetailSource,
+    /<a class="product-button product-button--quiet" :href="presentation\.publicAction\.href"/,
+  )
+  assert.match(projectDetailSource, /先检查 Launchpad 的工程证据，再运行独立的配套实验/)
 
   assert.match(aiPageSource, /executionKernel/)
   assert.match(aiPageSource, /latestDeliveries/)
   assert.match(aiPageSource, /aiModules/)
+  assert.match(aiPageSource, /AI Engineering \/ Evidence OS/)
+  assert.match(aiPageSource, /Review Before Claim/)
+  assert.match(aiPageSource, /Operational Automation/)
+  assert.match(aiPageSource, /Private Control Plane/)
   assert.match(aiPageSource, /Human Boundary/)
   assert.match(aiPageSource, /\/ai\/deliveries/)
   assert.ok(
-    aiPageSource.indexOf('class="aio-registry"') < aiPageSource.indexOf('class="aio-deliveries"'),
-    'AI module registry should appear before the latest delivery ledger',
+    aiPageSource.indexOf('class="aeo-protocol"') < aiPageSource.indexOf('class="aeo-ledger"'),
+    'AI execution protocol should appear before the public delivery ledger',
   )
   for (const field of ['aiContribution', 'humanDecisions', 'reviewFindings', 'corrections', 'knownLimits', 'nextStep']) {
     assert.match(deliveryDetailSource, new RegExp(`delivery\\.${field}`))

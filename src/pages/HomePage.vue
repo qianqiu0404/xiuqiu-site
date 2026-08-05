@@ -178,7 +178,18 @@ onMounted(() => setSeoMeta({ ...homeSeo, path: '/' }))
               <router-link class="product-premiere-primary" :to="`/projects/${entry.project.slug}`">
                 进入项目主页 <span aria-hidden="true">↗</span>
               </router-link>
-              <a :href="entry.presentation.publicAction.href" target="_blank" rel="noopener">
+              <router-link
+                v-if="entry.presentation.publicAction.role === 'companion'"
+                :to="entry.presentation.proofAction.to"
+              >
+                {{ entry.presentation.proofAction.label }} →
+              </router-link>
+              <a
+                v-else
+                :href="entry.presentation.publicAction.href"
+                target="_blank"
+                rel="noopener"
+              >
                 {{ entry.presentation.publicAction.label }} ↗
               </a>
             </div>
