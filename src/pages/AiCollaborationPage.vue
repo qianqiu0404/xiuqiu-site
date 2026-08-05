@@ -95,6 +95,26 @@ onMounted(() => setSeoMeta({
       </div>
     </section>
 
+    <section class="aio-registry" aria-labelledby="ai-registry-title">
+      <div class="container aio-registry-layout">
+        <header class="aio-section-heading">
+          <div>
+            <p class="aio-kicker">Module Registry</p>
+            <h2 id="ai-registry-title">五个可重复使用的协作模块。</h2>
+          </div>
+          <p>这里只保留模块身份与当前阶段；职责、流程和长复盘回到交付账本与工程笔记。</p>
+        </header>
+
+        <ol class="aio-module-list">
+          <li v-for="item in aiModules" :key="item.id">
+            <span>{{ String(item.displayOrder).padStart(2, '0') }}</span>
+            <strong>{{ item.title }}</strong>
+            <small>{{ aiStageLabels[item.stage] }}</small>
+          </li>
+        </ol>
+      </div>
+    </section>
+
     <section v-if="latestDeliveries.length" class="aio-deliveries" aria-labelledby="ai-deliveries-title">
       <div class="container">
         <header class="aio-section-heading aio-section-heading--dark">
@@ -134,26 +154,6 @@ onMounted(() => setSeoMeta({
             <b class="aio-row-arrow" aria-hidden="true">↗</b>
           </router-link>
         </div>
-      </div>
-    </section>
-
-    <section class="aio-registry" aria-labelledby="ai-registry-title">
-      <div class="container aio-registry-layout">
-        <header class="aio-section-heading">
-          <div>
-            <p class="aio-kicker">Module Registry</p>
-            <h2 id="ai-registry-title">五个可重复使用的协作模块。</h2>
-          </div>
-          <p>这里只保留模块身份与当前阶段；职责、流程和长复盘回到交付账本与工程笔记。</p>
-        </header>
-
-        <ol class="aio-module-list">
-          <li v-for="item in aiModules" :key="item.id">
-            <span>{{ String(item.displayOrder).padStart(2, '0') }}</span>
-            <strong>{{ item.title }}</strong>
-            <small>{{ aiStageLabels[item.stage] }}</small>
-          </li>
-        </ol>
       </div>
     </section>
 
