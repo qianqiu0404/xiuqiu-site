@@ -14,6 +14,7 @@ export interface ProductPresentation {
     label: string
     href: string
     boundary: string
+    role: 'product' | 'companion'
   }
   proofAction: {
     label: string
@@ -35,13 +36,14 @@ export const productPresentations: readonly ProductPresentation[] = [
     heroLines: ['钱包控制平面', '资金事实可操作'],
     promise: '让团队在同一个入口理解链与资产 readiness、资金状态、签名健康和异常恢复，而不把浏览器带进私钥与基础设施边界。',
     publicAction: {
-      label: '运行 Wallet Lab',
+      label: '运行配套实验（simulation-only）',
       href: walletLabUrl,
-      boundary: '公开入口为可靠性实验；完整 Launchpad Preview 仍受身份保护。',
+      boundary: '这是独立的 simulation-only 配套实验，不是 Wallet Launchpad 或其受保护 Preview。',
+      role: 'companion',
     },
     proofAction: {
-      label: '检查钱包证据',
-      to: '/engineering/evidence',
+      label: '检查 Wallet Launchpad 证据',
+      to: '/engineering/evidence#wallet-launchpad-no-funds-acceptance',
     },
     flowLabel: 'A withdrawal through explicit trust boundaries',
     proofTitle: '从测试网闭环与无资金门禁，说明系统已经走到哪里。',
@@ -58,6 +60,7 @@ export const productPresentations: readonly ProductPresentation[] = [
       label: '打开 Qiu Market',
       href: qiuMarketUrl,
       boundary: '公开产品使用虚拟资金，不连接充值、提现、私钥或实盘资产。',
+      role: 'product',
     },
     proofAction: {
       label: '检查 Market 证据',
