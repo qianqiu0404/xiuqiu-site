@@ -6,6 +6,85 @@ export interface DailyRadar { date: string; slug: string; title: string; summary
 
 export const dailyRadars: DailyRadar[] = [
   {
+    "date": "2026-08-06",
+    "slug": "2026-08-06",
+    "title": "每日研究雷达 · 2026-08-06",
+    "summary": "聚焦 Safe Guard 防误配、合约注册表控制面、Foundry Upgrades 编译器门槛、程序化工具调用、原生密钥迁移、OpenCode，以及数据湖在线点查。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-08-06T07:04:21+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "Safe Wallet 为旧版 Safe 的 Guard 配置增加客户端检查",
+        "summary": "web-v1.97.0 会解析直接调用和 MultiSend 内的 setGuard，并对低于 v1.4.1 的 Safe 检查目标接口；这仍是可被用户继续确认的客户端提示，不是链上强制拒绝。",
+        "sourceUrl": "https://github.com/safe-global/safe-wallet-monorepo/releases/tag/web-v1.97.0"
+      },
+      {
+        "title": "Parity Contract Dependency Manager 明确注册表控制面",
+        "summary": "v0.12.0 用 EIP-1967 代理维持稳定地址，并显式提供实现升级、紧急冻结与 ABI 漂移测试；冻结不约束管理员，仍需独立审计实现、密钥和治理流程。",
+        "sourceUrl": "https://github.com/paritytech/contract-dependency-manager/releases/tag/v0.12.0"
+      },
+      {
+        "title": "OpenZeppelin Foundry Upgrades 补丁版提高 Solidity 下限",
+        "summary": "v0.4.2 为新版 memory-safe assembly 语法把最低 Solidity 提升到 0.8.13。官方标注其 potentially breaking，依赖升级前需要验证编译器矩阵，不能因 patch 版本而忽略兼容性。",
+        "sourceUrl": "https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades/releases/tag/v0.4.2"
+      }
+    ],
+    "aiTip": {
+      "title": "只把可判定的数据归并交给程序化工具调用",
+      "summary": "把过滤、连接、排序、去重或字段校验限定为固定 schema、只读工具、并发和停止条件明确的子流程，再由模型完成取舍。程序输出和最终回答都要回归验证，写入与授权仍走确定性门禁。",
+      "sourceUrl": "https://developers.openai.com/api/docs/guides/latest-model#programmatic-tool-calling"
+    },
+    "web3Design": {
+      "title": "把签名算法迁移建模为不可逆控制权切换",
+      "summary": "EIP-8164 草案会在账户写入 ML-DSA-44 公钥后永久关闭旧 ECDSA 路径。钱包服务应绑定链、账户、nonce、算法和公钥指纹，分离旧密钥迁移授权与新密钥签名；草案未激活且无链上恢复，不能用于生产。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-8164"
+    },
+    "vibeProject": {
+      "title": "OpenCode · 多端可扩展 coding agent 运行时",
+      "summary": "OpenCode 把终端、桌面、LSP、MCP、权限审批、headless server 和 SDK 集成到同一运行时；固定版 1.18.14 已复现 CLI 与本地健康端点。默认开发权限、无认证 server 和长输出丢失风险要求隔离、明确 deny 与独立证据校验。",
+      "sourceUrl": "https://github.com/anomalyco/opencode"
+    },
+    "readingPick": {
+      "title": "Indexing the Data Lake for Online Point Queries",
+      "summary": "文章用外部 key-to-file/row 索引和精确 ranged read 让 Parquet 同时支持分析与在线点查，并写明分区、PageIndex、blob、列交错和 covering index 的代价。思考题：为真实单键查询列出读取预算，并比较只加索引与再加一种布局优化的副作用。",
+      "sourceUrl": "https://engineering.atspotify.com/2026/7/indexing-the-data-lake-for-online-point-queries"
+    },
+    "sourceUrls": [
+      "https://github.com/safe-global/safe-wallet-monorepo/releases/tag/web-v1.97.0",
+      "https://github.com/safe-global/safe-wallet-monorepo/pull/8364",
+      "https://github.com/paritytech/contract-dependency-manager/releases/tag/v0.12.0",
+      "https://github.com/paritytech/contract-dependency-manager/pull/71",
+      "https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades/releases/tag/v0.4.2",
+      "https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades/pull/128",
+      "https://developers.openai.com/api/docs/guides/latest-model#programmatic-tool-calling",
+      "https://eips.ethereum.org/EIPS/eip-8164",
+      "https://github.com/anomalyco/opencode",
+      "https://github.com/anomalyco/opencode/releases/tag/v1.18.14",
+      "https://github.com/anomalyco/opencode/blob/v1.18.14/README.md",
+      "https://api.github.com/repos/anomalyco/opencode",
+      "https://api.github.com/repos/anomalyco/opencode/releases/tags/v1.18.14",
+      "https://registry.npmjs.org/opencode-ai/1.18.14",
+      "https://api.npmjs.org/downloads/point/2026-07-06:2026-08-04/opencode-ai",
+      "https://opencode.ai/docs/permissions/",
+      "https://opencode.ai/docs/server/",
+      "https://github.com/anomalyco/opencode/issues/40728",
+      "https://github.com/anomalyco/opencode/blob/v1.18.14/LICENSE",
+      "https://engineering.atspotify.com/2026/7/indexing-the-data-lake-for-online-point-queries"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
     "date": "2026-08-05",
     "slug": "2026-08-05",
     "title": "每日研究雷达 · 2026-08-05",
