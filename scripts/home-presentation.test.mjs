@@ -24,6 +24,10 @@ const chatWidgetSource = readFileSync(new URL('../src/components/AiChatWidget.vu
 const projectAtlasSource = readFileSync(new URL('../src/pages/ProjectAtlasPage.vue', import.meta.url), 'utf8')
 const evidencePageSource = readFileSync(new URL('../src/pages/EngineeringEvidencePage.vue', import.meta.url), 'utf8')
 const aiPageSource = readFileSync(new URL('../src/pages/AiCollaborationPage.vue', import.meta.url), 'utf8')
+const radarPageSource = readFileSync(new URL('../src/pages/RadarPage.vue', import.meta.url), 'utf8')
+const radarDetailSource = readFileSync(new URL('../src/pages/RadarDetailPage.vue', import.meta.url), 'utf8')
+const radarWeeklySource = readFileSync(new URL('../src/pages/RadarWeeklyPage.vue', import.meta.url), 'utf8')
+const routerSource = readFileSync(new URL('../src/router/index.ts', import.meta.url), 'utf8')
 const deliveryDetailSource = readFileSync(new URL('../src/pages/DeliveryDetailPage.vue', import.meta.url), 'utf8')
 const indexHtml = readFileSync(new URL('../index.html', import.meta.url), 'utf8')
 
@@ -208,9 +212,28 @@ test('cinematic evidence pages preserve their source-backed interaction contract
   assert.match(aiPageSource, /aiModules/)
   assert.match(aiPageSource, /Human Boundary/)
   assert.match(aiPageSource, /\/ai\/deliveries/)
+  assert.ok(
+    aiPageSource.indexOf('class="aio-registry"') < aiPageSource.indexOf('class="aio-deliveries"'),
+    'AI module registry should appear before the latest delivery ledger',
+  )
   for (const field of ['aiContribution', 'humanDecisions', 'reviewFindings', 'corrections', 'knownLimits', 'nextStep']) {
     assert.match(deliveryDetailSource, new RegExp(`delivery\\.${field}`))
   }
+})
+
+test('radar uses one intelligence system across overview, daily and weekly readers', () => {
+  assert.match(radarPageSource, /radar-intelligence-hero/)
+  assert.match(radarPageSource, /radar-signal-ledger/)
+  assert.match(radarPageSource, /radar-convergence-stage/)
+  assert.match(radarPageSource, /radar-archive-ledger/)
+  assert.match(radarPageSource, /archiveLimit = 10/)
+  assert.match(radarDetailSource, /radar-daily-reader-page/)
+  assert.match(radarDetailSource, /radar-reader-articles/)
+  assert.match(radarWeeklySource, /radar-weekly-reader-page/)
+  assert.match(radarWeeklySource, /radar-weekly-boundary/)
+  assert.match(routerSource, /path: '\/radar',[\s\S]*?visual: 'narrative'/)
+  assert.match(routerSource, /path: '\/radar\/week\/:week',[\s\S]*?visual: 'narrative'/)
+  assert.match(routerSource, /path: '\/radar\/:date',[\s\S]*?visual: 'narrative'/)
 })
 
 test('static and runtime homepage SEO stay aligned', () => {

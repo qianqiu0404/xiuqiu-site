@@ -79,19 +79,19 @@ const router = createRouter({
       path: '/radar',
       name: 'radar',
       component: () => import('../pages/RadarPage.vue'),
-      meta: { visual: 'editorial', navGroup: 'radar' },
+      meta: { visual: 'narrative', navGroup: 'radar' },
     },
     {
       path: '/radar/week/:week',
       name: 'radar-weekly-detail',
       component: () => import('../pages/RadarWeeklyPage.vue'),
-      meta: { visual: 'editorial', navGroup: 'radar' },
+      meta: { visual: 'narrative', navGroup: 'radar' },
     },
     {
       path: '/radar/:date',
       name: 'radar-detail',
       component: () => import('../pages/RadarDetailPage.vue'),
-      meta: { visual: 'editorial', navGroup: 'radar' },
+      meta: { visual: 'narrative', navGroup: 'radar' },
     },
     {
       path: '/articles/:slug',
