@@ -16,6 +16,7 @@ const links = [
   'https://wallet-reliability-lab.vercel.app/lab/compensation-recovery',
   'https://wallet-reliability-lab.vercel.app/architecture',
   'https://wallet-reliability-lab.vercel.app/evidence',
+  'https://qiu-market.vercel.app/',
   'https://qianqiu0404.github.io/web3-wallet-engineer-lab/',
   'https://github.com/qianqiu0404/xiuqiu-site',
   'https://github.com/qianqiu0404/wallet-reliability-lab',

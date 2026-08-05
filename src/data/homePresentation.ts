@@ -64,9 +64,9 @@ export const walletLabUrl = 'https://wallet-reliability-lab.vercel.app'
 export const githubProfileUrl = 'https://github.com/qianqiu0404'
 export const githubRepositoriesUrl = 'https://github.com/qianqiu0404?tab=repositories'
 export const homeSeo = {
-  title: 'xiuqiu｜Web3 Systems × AI Engineering',
+  title: 'xiuqiu｜Wallet Launchpad、Qiu Market 与 AI Engineering',
   description:
-    '构建 Wallet Platform、可信 Market Server 与 AI-native Engineering 工作流，用可运行项目、代码审查、测试和工程证据展示 Web3 系统能力。',
+    '构建 Wallet Launchpad 与 Qiu Market，并用 AI-native Engineering 工作流、自动化测试、失败恢复和公开证据说明 Web3 系统能力。',
 } as const
 
 export const flagshipProjectSlug = 'exchange-wallet-system'

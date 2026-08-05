@@ -16,6 +16,7 @@ import {
 } from '../src/data/homePresentation.ts'
 import { evidenceRecords } from '../src/data/generatedEvidence.ts'
 import { projects } from '../src/data/generatedProjects.ts'
+import { productPresentations, qiuMarketUrl } from '../src/data/productPresentation.ts'
 
 const homeSource = readFileSync(new URL('../src/pages/HomePage.vue', import.meta.url), 'utf8')
 const appSource = readFileSync(new URL('../src/App.vue', import.meta.url), 'utf8')
@@ -113,18 +114,19 @@ test('homepage evidence highlights resolve to dated site evidence', () => {
 })
 
 test('homepage and primary navigation keep their structural contract', () => {
-  assert.equal((homeSource.match(/<section(?:\s|>)/g) || []).length, 6)
+  assert.equal((homeSource.match(/<section(?:\s|>)/g) || []).length, 5)
   const heroSource = homeSource.match(/<section class="cinematic-hero"[\s\S]*?<\/section>/)?.[0]
   assert.ok(heroSource, 'Homepage hero markup is missing')
   assert.equal((heroSource.match(/class="cinematic-button /g) || []).length, 2)
-  assert.match(homeSource, /id="wallet"/)
-  assert.match(homeSource, /id="market"/)
+  assert.match(heroSource, /to="\/projects\/wallet-launchpad"/)
+  assert.match(heroSource, /to="\/projects\/s78-market-services"/)
+  assert.match(homeSource, /id="products"/)
   assert.match(homeSource, /id="ai-engineering"/)
   assert.match(homeSource, /id="evidence"/)
-  assert.equal((homeSource.match(/data-proof-context="(?:wallet|market|ai)"/g) || []).length, 3)
   assert.match(homeSource, /AiEngineeringProofRail/)
   assert.match(homeSource, /Ask xiuqiu AI/)
   assert.match(homeSource, /AI 不替我判断/)
+  assert.match(homeSource, /qiu-market\.vercel\.app/)
 
   const primaryNavigation = appSource.match(/<div id="primary-navigation"[\s\S]*?<\/div>/)?.[0]
   assert.ok(primaryNavigation, 'Primary navigation markup is missing')
@@ -136,12 +138,25 @@ test('homepage and primary navigation keep their structural contract', () => {
   assertUnique(links.map(link => link.to), 'primary navigation destinations')
   assertUnique(links.map(link => link.label), 'primary navigation labels')
   assert.deepEqual(links.map(link => link.to), [
-    '/#overview',
-    '/#wallet',
-    '/#market',
-    '/#ai-engineering',
+    '/projects/wallet-launchpad',
+    '/projects/s78-market-services',
+    '/ai',
     '/engineering/evidence',
+    '/radar',
   ])
+})
+
+test('two product home presentations expose explicit and safe public actions', () => {
+  assert.deepEqual(productPresentations.map(item => item.slug), [
+    'wallet-launchpad',
+    's78-market-services',
+  ])
+  productPresentations.forEach(item => {
+    assert.match(item.publicAction.href, /^https:\/\//)
+    assert.ok(item.publicAction.boundary.length > 20)
+    assert.match(item.proofAction.to, /^\//)
+  })
+  assert.equal(qiuMarketUrl, 'https://qiu-market.vercel.app')
 })
 
 test('AI proof rails preserve evidence and human-decision boundaries', () => {
@@ -161,19 +176,10 @@ test('AI proof rails preserve evidence and human-decision boundaries', () => {
   assert.match(homeAiProofContexts[2].boundary, /不能替代安全判断/)
 })
 
-test('cinematic secondary routes keep shared chrome without hiding their desktop AI entry', () => {
-  const routeSetSource = appSource.match(/const cinematicRouteNames = new Set\(\[([\s\S]*?)\]\)/)?.[1]
-  assert.ok(routeSetSource, 'Cinematic route set is missing')
-
-  const routeNames = [...routeSetSource.matchAll(/'([^']+)'/g)].map(match => match[1])
-  assert.deepEqual(routeNames, [
-    'home',
-    'projects',
-    'engineering-evidence',
-    'ai',
-    'ai-deliveries',
-    'ai-delivery-detail',
-  ])
+test('route-driven visual modes keep shared chrome without hiding their desktop AI entry', () => {
+  assert.match(appSource, /currentRoute\.meta\.visual/)
+  assert.match(appSource, /wallet-launchpad/)
+  assert.match(appSource, /s78-market-services/)
   assert.match(appSource, /:cinematic="usesCinematicChrome"/)
   assert.match(appSource, /:hide-desktop-toggle="isCinematicHome"/)
   assert.match(chatWidgetSource, /'ai-chat--desktop-rail': props\.hideDesktopToggle/)
@@ -184,8 +190,8 @@ test('cinematic evidence pages preserve their source-backed interaction contract
   assert.match(projectAtlasSource, /:id="group\.tier"/)
   assert.match(projectAtlasSource, /portfolioTier === tier/)
   assert.match(projectAtlasSource, /project\.verifiedEvidence\[0\]/)
-  assert.match(projectAtlasSource, /project\.targetOutcome/)
-  assert.match(projectAtlasSource, /project\.nextMilestone/)
+  assert.match(projectAtlasSource, /productPresentations/)
+  assert.match(projectAtlasSource, /进入产品主页/)
   assert.match(projectAtlasSource, /target="_blank"/)
   assert.match(projectAtlasSource, /rel="noopener"/)
 
@@ -197,9 +203,11 @@ test('cinematic evidence pages preserve their source-backed interaction contract
   assert.match(evidencePageSource, /私有工程去敏摘要/)
   assert.match(evidencePageSource, /它不自动等于生产可用、经过审计或处理过真实资金/)
 
-  assert.match(aiPageSource, /item\.ownershipNote/)
-  assert.match(aiPageSource, /item\.failureHandling/)
-  assert.match(aiPageSource, /item\.knownLimits/)
+  assert.match(aiPageSource, /executionKernel/)
+  assert.match(aiPageSource, /latestDeliveries/)
+  assert.match(aiPageSource, /aiModules/)
+  assert.match(aiPageSource, /Human Boundary/)
+  assert.match(aiPageSource, /\/ai\/deliveries/)
   for (const field of ['aiContribution', 'humanDecisions', 'reviewFindings', 'corrections', 'knownLimits', 'nextStep']) {
     assert.match(deliveryDetailSource, new RegExp(`delivery\\.${field}`))
   }

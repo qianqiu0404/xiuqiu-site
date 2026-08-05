@@ -142,12 +142,12 @@ function expectedMetadataByRoute() {
     `${articleSummaries.length} 篇关于交易所钱包、多链模型、签名服务、Go 后端与 AI 工程工作流的学习笔记。`
   const metadata = new Map([
     ['/', {
-      title: 'xiuqiu｜Web3 Systems × AI Engineering',
-      description: '构建 Wallet Platform、可信 Market Server 与 AI-native Engineering 工作流，用可运行项目、代码审查、测试和工程证据展示 Web3 系统能力。',
+      title: 'xiuqiu｜Wallet Launchpad、Qiu Market 与 AI Engineering',
+      description: '构建 Wallet Launchpad 与 Qiu Market，并用 AI-native Engineering 工作流、自动化测试、失败恢复和公开证据说明 Web3 系统能力。',
     }],
     ['/engineering', {
-      title: '工程档案｜xiuqiu Web3 钱包后端',
-      description: '交易所钱包工程档案：资金编排、风险控制、链交互、签名边界、失败场景和验证证据。',
+      title: '工程证据索引｜xiuqiu',
+      description: '从证据矩阵、失败恢复手册和项目档案复核 xiuqiu 的 Web3 钱包与工程实践边界。',
     }],
     ['/engineering/failures', {
       title: '钱包异常恢复手册｜xiuqiu',
@@ -159,11 +159,11 @@ function expectedMetadataByRoute() {
     }],
     ['/projects', {
       title: '项目图谱｜xiuqiu',
-      description: '按旗舰系统、可验证作品、工程探索与暂停项目分层展示 Web3 钱包后端和 AI 协作工程。',
+      description: '先进入 Wallet Launchpad 与 Qiu Market 两个产品主页，再按证据层级浏览其他 Web3 与 AI 工程项目。',
     }],
     ['/ai', {
-      title: 'AI 工作流｜xiuqiu',
-      description: 'AI Coding、跨设备 Skill、社交研究、每日发布与 Obsidian 知识治理五个真实 Loop。',
+      title: 'AI Engineering OS｜xiuqiu',
+      description: 'AI 参与定义、执行、审查与验证；真实交付、人工门禁和工程证据共同决定结果。',
     }],
     ['/ai/social-research', {
       title: 'Social Media Research Skill｜xiuqiu',
@@ -179,7 +179,7 @@ function expectedMetadataByRoute() {
     }],
     ['/learning', {
       title: '学习复盘｜xiuqiu',
-      description: '精选公开的 Web3 钱包工程学习进度、验证证据、失败复盘与下一步。',
+      description: '按阶段归档的 Web3 钱包工程学习结论、验证证据与下一步。',
     }],
     ['/radar', {
       title: '行业情报雷达｜xiuqiu',
