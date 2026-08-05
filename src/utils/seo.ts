@@ -1,6 +1,6 @@
-const DEFAULT_TITLE = 'xiuqiu｜Web3 Systems × AI Engineering'
+const DEFAULT_TITLE = 'xiuqiu｜Wallet Launchpad、Qiu Market 与 AI Engineering'
 const DEFAULT_DESCRIPTION =
-  '构建 Wallet Platform、可信 Market Server 与 AI-native Engineering 工作流，用可运行项目、代码审查、测试和工程证据展示 Web3 系统能力。'
+  '构建 Wallet Launchpad 与 Qiu Market，并用 AI-native Engineering 工作流、自动化测试、失败恢复和公开证据说明 Web3 系统能力。'
 const SITE_URL = 'https://xiuqiu-site.vercel.app'
 
 interface SeoOptions {
