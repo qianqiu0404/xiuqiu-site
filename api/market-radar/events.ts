@@ -1,5 +1,6 @@
-import { listEvents, parseEventCursor } from '../../lib/market-radar/repository.ts'
-import { allowMethods, clampInteger, preparePublicResponse, queryValue, type MarketRadarRequest, type MarketRadarResponse } from '../../lib/market-radar/http.ts'
+import { listEvents } from '../../lib/market-radar/repository.js'
+import { parseEventCursor } from '../../src/market-radar/contracts.js'
+import { allowMethods, clampInteger, preparePublicResponse, queryValue, type MarketRadarRequest, type MarketRadarResponse } from '../../lib/market-radar/http.js'
 
 const markets = new Set(['crypto', 'us_equity', 'macro'])
 const priorities = new Set(['P0', 'P1', 'P2'])

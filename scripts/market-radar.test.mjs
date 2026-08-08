@@ -7,7 +7,7 @@ import {
 } from '../market-radar/worker/core.mjs'
 import { isUsPremarketWindow, newYorkParts } from '../market-radar/worker/market-calendar.mjs'
 import { parseAlphaVantagePayload, parseMarketauxPayload, parseRss } from '../market-radar/worker/providers.mjs'
-import { parseEventCursor } from '../lib/market-radar/repository.ts'
+import { parseEventCursor } from '../src/market-radar/contracts.ts'
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8')
 

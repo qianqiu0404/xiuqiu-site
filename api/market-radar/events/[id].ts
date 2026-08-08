@@ -1,5 +1,5 @@
-import { getEvent } from '../../../lib/market-radar/repository.ts'
-import { allowMethods, preparePublicResponse, queryValue, type MarketRadarRequest, type MarketRadarResponse } from '../../../lib/market-radar/http.ts'
+import { getEvent } from '../../../lib/market-radar/repository.js'
+import { allowMethods, preparePublicResponse, queryValue, type MarketRadarRequest, type MarketRadarResponse } from '../../../lib/market-radar/http.js'
 
 export default async function handler(req: MarketRadarRequest, res: MarketRadarResponse) {
   preparePublicResponse(res)

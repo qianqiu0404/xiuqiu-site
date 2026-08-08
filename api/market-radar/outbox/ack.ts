@@ -1,5 +1,5 @@
-import { getMarketRadarDb } from '../../../lib/market-radar/db.ts'
-import { allowMethods, hasInternalToken, parseJsonBody, preparePrivateResponse, type MarketRadarRequest, type MarketRadarResponse } from '../../../lib/market-radar/http.ts'
+import { getMarketRadarDb } from '../../../lib/market-radar/db.js'
+import { allowMethods, hasInternalToken, parseJsonBody, preparePrivateResponse, type MarketRadarRequest, type MarketRadarResponse } from '../../../lib/market-radar/http.js'
 
 export default async function handler(req: MarketRadarRequest, res: MarketRadarResponse) {
   preparePrivateResponse(res)

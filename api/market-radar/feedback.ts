@@ -1,8 +1,8 @@
-import { recordFeedback } from '../../lib/market-radar/repository.ts'
+import { recordFeedback } from '../../lib/market-radar/repository.js'
 import {
   allowMethods, consumeRateLimit, getClientId, hashClientId, parseJsonBody, preparePrivateResponse,
   type MarketRadarRequest, type MarketRadarResponse,
-} from '../../lib/market-radar/http.ts'
+} from '../../lib/market-radar/http.js'
 
 const values = new Set(['useful', 'noise', 'missed_context', 'wrong_direction'])
 

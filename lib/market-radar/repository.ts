@@ -1,12 +1,13 @@
-import type {
-  MarketRadarDigest,
-  MarketRadarDigestList,
-  MarketRadarEvent,
-  MarketRadarEventList,
-  MarketRadarHealth,
-  MarketRadarSummary,
-} from '../../src/market-radar/contracts.ts'
-import { getMarketRadarDb, isMarketRadarConfigured } from './db.ts'
+import {
+  parseEventCursor,
+  type MarketRadarDigest,
+  type MarketRadarDigestList,
+  type MarketRadarEvent,
+  type MarketRadarEventList,
+  type MarketRadarHealth,
+  type MarketRadarSummary,
+} from '../../src/market-radar/contracts.js'
+import { getMarketRadarDb, isMarketRadarConfigured } from './db.js'
 
 type QueryRow = Record<string, unknown>
 
@@ -107,16 +108,6 @@ export interface EventFilters {
   windowHours: number
   cursor?: string
   limit: number
-}
-
-export function parseEventCursor(value: string | undefined): { publishedAt: string; id: string } | null {
-  if (!value) return null
-  const separator = value.indexOf('|')
-  if (separator < 1) return null
-  const publishedAt = value.slice(0, separator)
-  const id = value.slice(separator + 1)
-  if (!id || id.length > 160 || Number.isNaN(Date.parse(publishedAt))) return null
-  return { publishedAt: new Date(publishedAt).toISOString(), id }
 }
 
 function encodeEventCursor(row: QueryRow | undefined): string | null {

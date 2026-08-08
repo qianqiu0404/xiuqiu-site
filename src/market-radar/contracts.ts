@@ -68,6 +68,16 @@ export interface MarketRadarEventList {
   message?: string
 }
 
+export function parseEventCursor(value: string | undefined): { publishedAt: string; id: string } | null {
+  if (!value) return null
+  const separator = value.indexOf('|')
+  if (separator < 1) return null
+  const publishedAt = value.slice(0, separator)
+  const id = value.slice(separator + 1)
+  if (!id || id.length > 160 || Number.isNaN(Date.parse(publishedAt))) return null
+  return { publishedAt: new Date(publishedAt).toISOString(), id }
+}
+
 export interface MarketRadarDigest {
   id: string
   kind: 'daily' | 'us_premarket' | 'p1_batch' | 'trial_report'
