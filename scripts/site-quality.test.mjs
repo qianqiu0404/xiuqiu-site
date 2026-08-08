@@ -185,6 +185,10 @@ function expectedMetadataByRoute() {
       title: '行业情报雷达｜xiuqiu',
       description: '面向 Web3 钱包与 AI 工程的每日行业简报、人工复核周度收敛和可追溯历史档案。',
     }],
+    ['/market-radar', {
+      title: '交易雷达｜xiuqiu',
+      description: '将公开市场事件、关注资产、规则评分与真实行情反应分开呈现的交易研究雷达。',
+    }],
     ['/articles', {
       title: '工程笔记｜xiuqiu Web3 钱包学习档案',
       description: writingDescription,

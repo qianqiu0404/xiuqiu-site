@@ -19,6 +19,7 @@ const routes = [
   '/ai/deliveries',
   '/now',
   '/radar',
+  '/market-radar',
   '/learning',
   '/articles',
   ...projects.map(project => `/projects/${project.slug}`),

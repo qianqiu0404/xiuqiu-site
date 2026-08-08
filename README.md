@@ -28,6 +28,9 @@ xiuqiu-site                     个人技术品牌、文章与证据总入口
 - `src/data/generated*.ts`: generated typed metadata; article bodies are loaded from Markdown only when their route opens
 - `src/data/siteKnowledge.ts`: unified project/article/evidence knowledge graph
 - `api/chat.ts`: serverless chat proxy for xiuqiu AI, with scoped public-context retrieval, request limits, upstream timeout, and content-free operational logs
+- `market-radar/`: isolated trading-event migrations, collectors, deterministic scoring, reaction tracking and digest/outbox workers
+- `api/market-radar/`: public read/feedback endpoints plus token-protected Hermes claim/ack endpoints
+- `src/pages/MarketRadar*.vue`: independently lazy-loaded Trade Radar list and event detail views; `/radar` remains the static Learn Radar
 
 ## Commands
 
@@ -35,6 +38,8 @@ xiuqiu-site                     个人技术品牌、文章与证据总入口
 npm ci
 npm run dev
 npm run test:radar
+npm run test:market-radar
+npm run typecheck:api
 npm run sync:obsidian-public
 npm run build
 npm run check:knowledge
@@ -50,11 +55,23 @@ Configure only in Vercel:
 ```env
 DEEPSEEK_API_KEY=
 DEEPSEEK_MODEL=deepseek-v4-flash
+MARKET_RADAR_DATABASE_URL=
+MARKETAUX_API_TOKEN=
+ALPHAVANTAGE_API_KEY=
+TWELVE_DATA_API_KEY=
+MARKET_RADAR_DISPATCH_TOKEN=
+SEC_USER_AGENT=
 ```
 
 The right-side assistant is part of the public site. It uses the reviewed public knowledge graph, sends visitor questions to the DeepSeek API, and fails closed when the provider key is unavailable. The in-memory limiter is a best-effort per-instance guard, not a persistent production quota. Never commit a real API key. `.env.example` contains names and safe defaults only.
 
 xiuqiu AI receives only the most relevant records from the generated public knowledge layer for each question. It does not read private repositories or Obsidian source notes, and operational logs record request timing and response sizes without recording the user's question text.
+
+### Market Radar boundary
+
+`/market-radar` is a read-only event radar, not an account or execution system. It never connects to positions, wallets or broker accounts and cannot place orders. The GitHub Actions worker runs independently from the website build, writes to the dedicated Neon `market_radar` schema, and fails closed when a provider or AI response is unavailable. The public API is backed only by a reviewed SQL view; raw provider payloads, model prompts, credentials and private notes are not selected by public endpoints.
+
+The worker is disabled until the GitHub variable `MARKET_RADAR_ENABLED=true` and all required secrets are configured. Run `npm run market-radar:migrate` once before enabling ingestion. Raw provider payloads are purged after 14 days while event source links remain auditable; events, reactions, digests, feedback and trial metrics expire after one year.
 
 ## Content workflow
 

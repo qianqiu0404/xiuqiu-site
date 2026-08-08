@@ -193,6 +193,19 @@ writePage(
 )
 
 writePage(
+  '/market-radar',
+  replaceMeta(baseHtml, {
+    title: '交易雷达｜xiuqiu',
+    description: '将公开市场事件、关注资产、规则评分与真实行情反应分开呈现的交易研究雷达。',
+    path: '/market-radar',
+    structuredData: {
+      '@context': 'https://schema.org', '@type': 'CollectionPage', name: '交易雷达｜xiuqiu',
+      url: `${SITE_URL}/market-radar`, author: { '@type': 'Person', name: 'xiuqiu' },
+    },
+  }),
+)
+
+writePage(
   '/articles',
   replaceMeta(baseHtml, {
     title: '工程笔记｜xiuqiu Web3 钱包学习档案',
