@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { dailyRadars, type DailyRadar } from '../data/generatedRadars'
 import { radarWeeklies } from '../data/generatedRadarWeeklies'
 import { getSupportingRadarItems, radarSourceStatus } from '../data/radarPresentation'
@@ -8,6 +8,7 @@ import '../styles/radar.css'
 
 const latestRadar = dailyRadars[0]
 const latestWeekly = radarWeeklies[0]
+const archiveLimit = 10
 type ArchiveFilter = 'all' | 'crypto' | 'ai' | 'web3' | 'tools' | 'reading'
 
 interface ArchiveFilterOption {
@@ -22,6 +23,7 @@ interface RadarArchiveGroup {
 }
 
 const archiveFilter = ref<ArchiveFilter>('all')
+const archiveExpanded = ref(false)
 const archiveFilters: ArchiveFilterOption[] = [
   { key: 'all', label: '全部' },
   { key: 'crypto', label: 'Crypto' },
@@ -41,16 +43,6 @@ function radarMatchesFilter(radar: DailyRadar, filter: ArchiveFilter): boolean {
   if (filter === 'web3') return Boolean(radar.web3Design)
   if (filter === 'tools') return Boolean(radar.vibeProject)
   return Boolean(radar.readingPick)
-}
-
-function radarCategoryLabels(radar: DailyRadar): string[] {
-  return [
-    radar.marketSignals.length ? 'Crypto' : undefined,
-    radar.aiTip ? 'AI' : undefined,
-    radar.web3Design ? 'Web3' : undefined,
-    radar.vibeProject ? 'Tools' : undefined,
-    radar.readingPick ? 'Reading' : undefined,
-  ].filter((label): label is string => Boolean(label))
 }
 
 function radarArchiveTitle(radar: DailyRadar): string {
@@ -74,7 +66,7 @@ function getIsoWeek(dateValue: string): { key: string; label: string } {
     (thursday.getTime() - firstThursday.getTime()) / (7 * 24 * 60 * 60 * 1000),
   )
   const week = String(weekNumber).padStart(2, '0')
-  return { key: `${weekYear}-W${week}`, label: `${weekYear} · 第 ${weekNumber} 周` }
+  return { key: `${weekYear}-W${week}`, label: `${weekYear} · W${week}` }
 }
 
 const archiveFilterCounts = computed(() =>
@@ -86,20 +78,27 @@ const archiveFilterCounts = computed(() =>
   ) as Record<ArchiveFilter, number>,
 )
 
+const filteredArchive = computed(() =>
+  dailyRadars.filter(radar => radarMatchesFilter(radar, archiveFilter.value)),
+)
+
+const visibleArchive = computed(() =>
+  archiveExpanded.value ? filteredArchive.value : filteredArchive.value.slice(0, archiveLimit),
+)
+
 const archiveGroups = computed<RadarArchiveGroup[]>(() => {
   const groups = new Map<string, RadarArchiveGroup>()
-  dailyRadars
-    .filter(radar => radarMatchesFilter(radar, archiveFilter.value))
-    .forEach((radar) => {
-      const week = getIsoWeek(radar.date)
-      const current = groups.get(week.key)
-      if (current) {
-        current.radars.push(radar)
-      } else {
-        groups.set(week.key, { week: week.key, label: week.label, radars: [radar] })
-      }
-    })
+  visibleArchive.value.forEach((radar) => {
+    const week = getIsoWeek(radar.date)
+    const current = groups.get(week.key)
+    if (current) current.radars.push(radar)
+    else groups.set(week.key, { week: week.key, label: week.label, radars: [radar] })
+  })
   return [...groups.values()]
+})
+
+watch(archiveFilter, () => {
+  archiveExpanded.value = false
 })
 
 onMounted(() =>
@@ -112,50 +111,62 @@ onMounted(() =>
 </script>
 
 <template>
-  <section class="page-top radar-editorial-page">
-    <div class="container radar-editorial-container">
-      <header class="radar-editorial-hero">
-        <p class="radar-kicker">Industry Intelligence Radar</p>
-        <div class="radar-editorial-hero-copy">
+  <main class="radar-intelligence-page" lang="zh-CN">
+    <section class="radar-intelligence-hero" aria-labelledby="radar-title">
+      <div class="container radar-intelligence-shell radar-hero-layout">
+        <div class="radar-hero-copy">
+          <p class="radar-kicker">Industry Intelligence / Human Convergence</p>
+          <h1 id="radar-title">把行业信号，<br /><span>压缩成<br />工程判断。</span></h1>
+          <p>
+            日报负责保留公开事实与待验证线索，周报负责决定哪些进入 Wallet、Market 与 AI Engineering。
+          </p>
+        </div>
+
+        <aside v-if="latestRadar" class="radar-hero-status" aria-label="最新情报状态">
           <div>
-            <h1>行业情报雷达</h1>
-            <p>从公开信号中提炼钱包与 AI 工程判断，每周再由人工复核哪些值得进入项目。</p>
-          </div>
-          <div v-if="latestRadar" class="radar-freshness" aria-label="最新雷达状态">
+            <span>Latest brief</span>
             <time :datetime="latestRadar.date">{{ latestRadar.date }}</time>
-            <span>AI 自动汇总</span>
-            <span>{{ radarSourceStatus(latestRadar) }}</span>
           </div>
-        </div>
-      </header>
-
-      <section v-if="latestRadar" class="radar-today" aria-labelledby="radar-today-title">
-        <div class="radar-section-heading">
-          <div>
-            <p class="radar-kicker">01 · Latest Daily Brief</p>
-            <h2 id="radar-today-title">最新日报核心信号</h2>
-          </div>
-          <router-link :to="`/radar/${latestRadar.slug}`">阅读完整简报 <span aria-hidden="true">→</span></router-link>
-        </div>
-
-        <div class="radar-latest-brief">
-          <div class="radar-latest-primary">
-            <div class="radar-latest-intro">
-              <div>
-                <time :datetime="latestRadar.date">{{ latestRadar.date }}</time>
-                <span>AI 自动汇总 · 公开来源</span>
-              </div>
-              <p>{{ latestRadar.summary }}</p>
+          <dl>
+            <div>
+              <dt>Signals</dt>
+              <dd>{{ latestRadar.marketSignals.length }}</dd>
             </div>
+            <div>
+              <dt>Archive</dt>
+              <dd>{{ dailyRadars.length }}</dd>
+            </div>
+          </dl>
+          <p>AI 自动汇总 · {{ radarSourceStatus(latestRadar) }}</p>
+        </aside>
+      </div>
+    </section>
 
-            <ol class="radar-core-signals">
+    <section v-if="latestRadar" class="radar-daily-stage" aria-labelledby="radar-daily-title">
+      <div class="container radar-intelligence-shell">
+        <header class="radar-stage-heading">
+          <div>
+            <p class="radar-kicker">01 / Daily Brief</p>
+            <h2 id="radar-daily-title">今天值得留下的三条信号。</h2>
+          </div>
+          <router-link :to="`/radar/${latestRadar.slug}`">阅读完整简报 <span aria-hidden="true">↗</span></router-link>
+        </header>
+
+        <div class="radar-daily-layout">
+          <div class="radar-daily-primary">
+            <header>
+              <time :datetime="latestRadar.date">{{ latestRadar.date }}</time>
+              <p>{{ latestRadar.summary }}</p>
+            </header>
+
+            <ol class="radar-signal-ledger">
               <li v-for="(signal, index) in latestRadar.marketSignals" :key="signal.title">
                 <span>{{ String(index + 1).padStart(2, '0') }}</span>
-                <div>
-                  <p>公开事实与待验证边界</p>
+                <article>
+                  <p>Public signal / verify before use</p>
                   <h3>{{ signal.title }}</h3>
                   <p>{{ signal.summary }}</p>
-                </div>
+                </article>
                 <a
                   v-if="signal.sourceUrl"
                   :href="signal.sourceUrl"
@@ -167,68 +178,78 @@ onMounted(() =>
             </ol>
           </div>
 
-          <aside v-if="supportingSignals.length" class="radar-research-lanes" aria-label="本期次级研究栏目">
+          <aside v-if="supportingSignals.length" class="radar-research-index" aria-label="本期研究分支">
             <header>
-              <p class="radar-kicker">Research Lanes</p>
+              <p class="radar-kicker">Research Index</p>
               <span>推断与观察</span>
             </header>
-            <article v-for="signal in supportingSignals" :key="signal.title">
+            <router-link
+              v-for="(signal, index) in supportingSignals"
+              :key="signal.title"
+              :to="`/radar/${latestRadar.slug}#${signal.key === 'web3' ? 'web3-design' : signal.key === 'ai' ? 'ai-engineering' : signal.key}`"
+            >
+              <span>{{ String(index + 1).padStart(2, '0') }}</span>
               <div>
-                <span>{{ signal.label }}</span>
-                <strong>{{ signal.evidenceLabel }}</strong>
+                <small>{{ signal.label }} · {{ signal.evidenceLabel }}</small>
+                <strong>{{ signal.title }}</strong>
               </div>
-              <h3>{{ signal.title }}</h3>
-              <router-link
-                :to="`/radar/${latestRadar.slug}#${signal.key === 'web3' ? 'web3-design' : signal.key === 'ai' ? 'ai-engineering' : signal.key}`"
-                :aria-label="`阅读 ${signal.title}`"
-              >→</router-link>
-            </article>
+              <b aria-hidden="true">→</b>
+            </router-link>
           </aside>
         </div>
-      </section>
+      </div>
+    </section>
 
-      <section v-if="latestWeekly" class="radar-weekly-section" aria-labelledby="weekly-title">
-        <div class="radar-section-heading">
+    <section v-if="latestWeekly" class="radar-convergence-stage" aria-labelledby="radar-weekly-title">
+      <div class="container radar-intelligence-shell">
+        <header class="radar-stage-heading radar-stage-heading--dark">
           <div>
-            <p class="radar-kicker">02 · Human Reviewed Weekly</p>
-            <h2 id="weekly-title">最新人工周度收敛</h2>
+            <p class="radar-kicker">02 / Human Reviewed Weekly</p>
+            <h2 id="radar-weekly-title">信号只有经过取舍，<br />才配进入工程。</h2>
           </div>
-          <time :datetime="latestWeekly.reviewedAt">复核于 {{ latestWeekly.reviewedAt }}</time>
-        </div>
+          <time :datetime="latestWeekly.reviewedAt">Reviewed {{ latestWeekly.reviewedAt }}</time>
+        </header>
 
-        <div class="radar-weekly-card">
-          <div class="radar-weekly-copy">
+        <div class="radar-convergence-lead">
+          <div>
             <p class="radar-kicker">{{ latestWeekly.title }}</p>
             <p>{{ latestWeekly.summary }}</p>
-            <router-link :to="`/radar/week/${latestWeekly.slug}`">查看五类收敛结论 <span aria-hidden="true">→</span></router-link>
           </div>
-          <div class="radar-weekly-digest">
-            <div v-if="latestWeekly.judgments[0]">
-              <span>人工判断</span>
-              <p>{{ latestWeekly.judgments[0] }}</p>
-            </div>
-            <div v-if="latestWeekly.shipped[0]">
-              <span>已进入工程</span>
-              <p>{{ latestWeekly.shipped[0] }}</p>
-            </div>
-            <div v-if="latestWeekly.nextFocus[0]">
-              <span>下周重点</span>
-              <p>{{ latestWeekly.nextFocus[0] }}</p>
-            </div>
-          </div>
+          <blockquote v-if="latestWeekly.judgments[0]">{{ latestWeekly.judgments[0] }}</blockquote>
         </div>
-      </section>
 
-      <section class="radar-editorial-archive" aria-labelledby="archive-title">
-        <div class="radar-section-heading">
+        <div class="radar-convergence-grid">
+          <article v-if="latestWeekly.shipped[0]">
+            <span>01 / Entered Engineering</span>
+            <p>{{ latestWeekly.shipped[0] }}</p>
+          </article>
+          <article v-if="latestWeekly.watch[0]">
+            <span>02 / Keep Watching</span>
+            <p>{{ latestWeekly.watch[0] }}</p>
+          </article>
+          <article v-if="latestWeekly.nextFocus[0]">
+            <span>03 / Next Focus</span>
+            <p>{{ latestWeekly.nextFocus[0] }}</p>
+          </article>
+        </div>
+
+        <router-link class="radar-convergence-action" :to="`/radar/week/${latestWeekly.slug}`">
+          查看完整周度收敛 <span aria-hidden="true">↗</span>
+        </router-link>
+      </div>
+    </section>
+
+    <section class="radar-archive-stage" aria-labelledby="radar-archive-title">
+      <div class="container radar-intelligence-shell">
+        <header class="radar-stage-heading">
           <div>
-            <p class="radar-kicker">03 · Archive</p>
-            <h2 id="archive-title">按周历史档案</h2>
+            <p class="radar-kicker">03 / Intelligence Archive</p>
+            <h2 id="radar-archive-title">历史不是卡片墙，<br />是可检索的判断轨迹。</h2>
           </div>
-          <span>{{ dailyRadars.length }} 期公开记录</span>
-        </div>
+          <span>{{ filteredArchive.length }} / {{ dailyRadars.length }} 期</span>
+        </header>
 
-        <div class="radar-archive-filters" role="group" aria-label="按栏目筛选历史简报">
+        <div class="radar-filter-line" role="group" aria-label="按栏目筛选历史简报">
           <button
             v-for="option in archiveFilters"
             :key="option.key"
@@ -237,42 +258,37 @@ onMounted(() =>
             :aria-pressed="archiveFilter === option.key"
             @click="archiveFilter = option.key"
           >
-            {{ option.label }}
-            <span>{{ archiveFilterCounts[option.key] }}</span>
+            {{ option.label }} <span>{{ archiveFilterCounts[option.key] }}</span>
           </button>
         </div>
 
-        <p class="sr-only" aria-live="polite">
-          当前显示 {{ archiveFilterCounts[archiveFilter] }} 期简报
-        </p>
-        <div v-if="archiveGroups.length" class="radar-archive-groups">
-          <div v-for="group in archiveGroups" :key="group.week" class="radar-archive-group">
-            <header>
-              <h3>{{ group.label }}</h3>
-              <span>{{ group.radars.length }} 期</span>
-            </header>
-            <div>
-              <router-link
-                v-for="radar in group.radars"
-                :key="radar.slug"
-                :to="`/radar/${radar.slug}`"
-              >
-                <time :datetime="radar.date">{{ radar.date.slice(5).replace('-', '.') }}</time>
-                <strong>{{ radarArchiveTitle(radar) }}</strong>
-                <span class="radar-archive-tags" aria-label="包含栏目">
-                  <small v-for="label in radarCategoryLabels(radar)" :key="label">{{ label }}</small>
-                </span>
-                <span aria-hidden="true">→</span>
-              </router-link>
-            </div>
-          </div>
+        <p class="sr-only" aria-live="polite">当前显示 {{ visibleArchive.length }} 期简报</p>
+        <div v-if="archiveGroups.length" class="radar-archive-ledger">
+          <section v-for="group in archiveGroups" :key="group.week">
+            <header><h3>{{ group.label }}</h3><span>{{ group.radars.length }} briefs</span></header>
+            <router-link v-for="radar in group.radars" :key="radar.slug" :to="`/radar/${radar.slug}`">
+              <time :datetime="radar.date">{{ radar.date.slice(5).replace('-', '.') }}</time>
+              <strong>{{ radarArchiveTitle(radar) }}</strong>
+              <span aria-hidden="true">→</span>
+            </router-link>
+          </section>
         </div>
         <p v-else class="radar-archive-empty">该栏目暂时没有公开简报。</p>
-      </section>
 
-      <p class="radar-editorial-disclaimer">
-        内容由公开来源经 AI 自动汇总，周度判断另行人工复核。市场信息仅用于研究与教育，不构成投资建议。
-      </p>
-    </div>
-  </section>
+        <button
+          v-if="filteredArchive.length > archiveLimit"
+          class="radar-archive-toggle"
+          type="button"
+          :aria-expanded="archiveExpanded"
+          @click="archiveExpanded = !archiveExpanded"
+        >
+          {{ archiveExpanded ? '收起历史记录' : `展开全部 ${filteredArchive.length} 期` }}
+        </button>
+
+        <p class="radar-editorial-disclaimer">
+          内容由公开来源经 AI 自动汇总，周度判断另行人工复核。市场信息仅用于研究与教育，不构成投资建议。
+        </p>
+      </div>
+    </section>
+  </main>
 </template>

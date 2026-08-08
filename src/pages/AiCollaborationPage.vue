@@ -1,327 +1,232 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { aiStageLabels, getArticlesBySlugs, siteAiCases } from '../data/siteKnowledge'
-import { deliveryRecords } from '../data/generatedDeliveries'
+import '../styles/ai-evidence-os.css'
+import {
+  aiAutomationRun,
+  aiPublicDeliveries,
+  aiReviewCases,
+  aiSystemSurfaces,
+  executionKernel,
+  humanBoundaries,
+} from '../data/aiEvidencePresentation'
 import { setSeoMeta } from '../utils/seo'
 
-const aiMethod = [
-  {
-    step: '01',
-    title: '定义问题与边界',
-    description: '先明确目标、允许使用的来源、权限边界和完成标准，避免把生成内容当作结论。',
-  },
-  {
-    step: '02',
-    title: '实现并记录假设',
-    description: '让 AI 加速检索、拆解、代码和文档工作，同时保留关键假设与待验证项。',
-  },
-  {
-    step: '03',
-    title: '审查与运行验证',
-    description: '人工检查差异、代码和来源，再用测试、构建、浏览器或链接检查验证实际结果。',
-  },
-  {
-    step: '04',
-    title: '沉淀证据并回流',
-    description: '记录结果、限制、失败和下一步，让交付证据回到项目与知识系统。',
-  },
-] as const
-
-const recentAuditableResults = [...deliveryRecords]
-  .sort((a, b) => b.date.localeCompare(a.date))
-  .slice(0, 3)
-
-function loopNumber(order: number) {
-  return String(order).padStart(2, '0')
-}
+const latestDeliveries = aiPublicDeliveries
+const aiModules = aiSystemSurfaces
 
 onMounted(() => setSeoMeta({
-  title: 'AI 工程协作｜xiuqiu',
-  description: 'AI 加速需求拆解、实现与知识治理，但不替代人工审查、测试验证和证据收口。',
+  title: 'AI Engineering OS｜xiuqiu',
+  description: 'AI 参与定义、执行、审查与验证；真实交付、人工门禁和工程证据共同决定结果。',
   path: '/ai',
 }))
 </script>
 
 <template>
-  <section class="section page-top ai-collaboration-page">
-    <div class="container">
-      <header class="ai-page-hero">
-        <p class="section-label">AI Engineering</p>
-        <h1>AI 加速工程，但不代替验证</h1>
-        <p>AI 参与需求拆解、实现、审查辅助、测试准备、文档和知识治理；我负责目标、来源边界、关键判断与最终验收，外部模型、工具与第三方 Skill 保留各自归属。</p>
-        <div class="ai-principle-strip"><span>目标由我定义</span><span>来源明确</span><span>证据可复核</span><span>失败可回流</span></div>
-      </header>
+  <div class="ai-evidence-os" lang="zh-CN">
+    <section class="aeo-hero" aria-labelledby="ai-evidence-title">
+      <div class="container aeo-hero-grid">
+        <div class="aeo-hero-copy">
+          <p class="aeo-kicker">AI Engineering / Evidence OS</p>
+          <h1 id="ai-evidence-title">
+            <span class="aeo-title-primary">AI 不是侧边工具。</span>
+            <span class="aeo-title-secondary">它是一套有证据门禁的工程系统。</span>
+          </h1>
+          <p class="aeo-lead">
+            我让 AI 进入需求拆解、实现、审查、测试、发布和知识治理，但只有公开交付、可复核纠正与运行证据能改变工作状态。
+          </p>
+          <div class="aeo-actions">
+            <router-link class="aeo-action aeo-action--primary" to="/ai/deliveries">
+              查看公开交付 <span aria-hidden="true">↗</span>
+            </router-link>
+            <a class="aeo-action" href="#review-before-claim">查看 Review Gate</a>
+          </div>
+        </div>
 
-      <section class="ai-method" aria-labelledby="ai-method-title">
-        <header>
-          <p class="section-label">Verification First</p>
-          <h2 id="ai-method-title">从问题到证据的四步方法</h2>
+        <aside class="aeo-hero-console" aria-label="AI 工程系统当前状态">
+          <header>
+            <span>CONTROL SURFACE</span>
+            <i aria-hidden="true"></i>
+            <strong>HUMAN GATE ACTIVE</strong>
+          </header>
+          <dl>
+            <div>
+              <dt>Public delivery</dt>
+              <dd>{{ latestDeliveries.length }} traces</dd>
+            </div>
+            <div>
+              <dt>Review mode</dt>
+              <dd>Before claim</dd>
+            </div>
+            <div>
+              <dt>Latest automation</dt>
+              <dd>Partial</dd>
+            </div>
+            <div>
+              <dt>Tool boundary</dt>
+              <dd>Integration only</dd>
+            </div>
+          </dl>
+          <p>生成只是候选。没有来源、测试或运行证据，就不升级交付状态。</p>
+        </aside>
+      </div>
+    </section>
+
+    <section class="aeo-protocol" aria-labelledby="execution-kernel-title">
+      <div class="container">
+        <header class="aeo-section-heading aeo-section-heading--compact">
+          <p class="aeo-kicker">Execution Kernel</p>
+          <h2 id="execution-kernel-title">先定义门，再运行模型。</h2>
         </header>
-        <ol class="ai-method-grid">
-          <li v-for="item in aiMethod" :key="item.step">
+        <ol class="aeo-kernel-list">
+          <li v-for="item in executionKernel" :key="item.step">
             <span>{{ item.step }}</span>
             <h3>{{ item.title }}</h3>
             <p>{{ item.description }}</p>
           </li>
         </ol>
-      </section>
+      </div>
+    </section>
 
-      <section class="ai-delivery-preview">
-        <header><div><p class="section-label">Recent Auditable Results</p><h2>近期可审计结果</h2><p>最多展示三条真实交付，记录 AI 参与、人工判断、审查发现、纠正动作和公开证据。</p></div><router-link to="/ai/deliveries">查看全部交付 &rarr;</router-link></header>
-        <div><router-link v-for="item in recentAuditableResults" :key="item.slug" :to="`/ai/deliveries/${item.slug}`"><div class="card-status-row"><time>{{ item.date }}</time><strong>{{ item.status === 'delivered' ? '已交付' : item.status === 'partial' ? '部分完成' : '进行中' }}</strong></div><h3>{{ item.title }}</h3><p>{{ item.summary }}</p><small>{{ item.evidenceSlugs.length }} 项证据 · {{ item.publicLinks.length }} 个公开链接</small></router-link></div>
-      </section>
-
-      <nav class="ai-case-nav" aria-label="AI workflow loops">
-        <a v-for="item in siteAiCases" :key="item.id" :href="`#${item.slug}`"><span>{{ loopNumber(item.displayOrder) }}</span><strong>{{ item.title }}</strong></a>
-      </nav>
-
-      <section class="ai-case-collection" aria-labelledby="ai-cases-title">
-        <header>
-          <p class="section-label">Case Library</p>
-          <h2 id="ai-cases-title">五个真实协作 Loop</h2>
-          <p>默认收起长案例；展开后查看职责、流程、证据、失败处理与当前限制。</p>
-        </header>
-        <details v-for="item in siteAiCases" :id="item.slug" :key="item.id" class="ai-case-detail ai-case-compact">
-          <summary>
-            <span class="ai-case-number">Loop {{ loopNumber(item.displayOrder) }}</span>
-            <div>
-              <p>{{ aiStageLabels[item.stage] }}</p>
-              <h3>{{ item.title }}<small v-if="item.slug === 'cross-device-skill-toolchain'">SkillOps Loop</small></h3>
-              <span>{{ item.summary }}</span>
-            </div>
-            <b aria-hidden="true">展开</b>
-          </summary>
-          <div class="ai-case-expanded">
-            <router-link v-if="item.slug === 'social-media-research'" class="btn btn-secondary ai-case-action" to="/ai/social-research">查看交互展示</router-link>
-            <div class="ai-ownership-note"><span>来源与归属</span><p>{{ item.ownershipNote }}</p></div>
-            <div class="ai-case-current"><span>当前重点</span><p>{{ item.currentFocus }}</p></div>
-            <div class="ai-flow" aria-label="Workflow"><template v-for="(step, index) in item.flow" :key="step"><div><span>{{ index + 1 }}</span><p>{{ step }}</p></div><b v-if="index < item.flow.length - 1">&rarr;</b></template></div>
-            <div class="ai-loop-core-grid">
-              <section><p class="project-abilities-title">我的职责</p><ul class="learning-list"><li v-for="value in item.responsibilities" :key="value">{{ value }}</li></ul></section>
-              <section><p class="project-abilities-title">已有证据</p><ul class="learning-list"><li v-for="value in item.evidence" :key="value">{{ value }}</li></ul></section>
-              <section><p class="project-abilities-title">下一里程碑</p><p>{{ item.nextMilestone }}</p></section>
-            </div>
-            <div class="ai-loop-details-grid">
-              <section><p class="project-abilities-title">目标完成形态</p><p>{{ item.targetOutcome }}</p></section>
-              <section><p class="project-abilities-title">失败处理</p><ul class="learning-list"><li v-for="value in item.failureHandling" :key="value">{{ value }}</li></ul></section>
-              <section><p class="project-abilities-title">当前限制</p><ul class="learning-list"><li v-for="value in item.knownLimits" :key="value">{{ value }}</li></ul></section>
-            </div>
-            <div class="ai-related-links"><p class="project-abilities-title">相关公开复盘</p><router-link v-for="article in getArticlesBySlugs(item.relatedArticleSlugs)" :key="article.slug" :to="`/articles/${article.slug}`">{{ article.title }} &rarr;</router-link></div>
+    <section class="aeo-ledger" aria-labelledby="public-delivery-title">
+      <div class="container">
+        <header class="aeo-section-heading aeo-section-heading--dark">
+          <div>
+            <p class="aeo-kicker">Public Delivery Ledger</p>
+            <h2 id="public-delivery-title">不展示 prompt 数量，展示被验证的结果。</h2>
           </div>
-        </details>
-      </section>
-    </div>
-  </section>
+          <p>每条公开记录把 AI 参与、人工决定、测试证据和已知限制分开保存。</p>
+        </header>
+
+        <div class="aeo-delivery-list">
+          <article v-for="(item, index) in latestDeliveries" :key="item.delivery.slug" class="aeo-delivery-row">
+            <div class="aeo-delivery-id">
+              <span>TRACE {{ String(index + 1).padStart(2, '0') }}</span>
+              <time :datetime="item.delivery.date">{{ item.delivery.date }}</time>
+            </div>
+            <div class="aeo-delivery-main">
+              <p>PUBLIC / {{ item.delivery.status.toUpperCase() }}</p>
+              <h3>{{ item.delivery.title }}</h3>
+              <span>{{ item.delivery.summary }}</span>
+            </div>
+            <dl class="aeo-delivery-proof">
+              <div>
+                <dt>Human decision</dt>
+                <dd>{{ item.delivery.humanDecisions[0] }}</dd>
+              </div>
+              <div>
+                <dt>Verified evidence</dt>
+                <dd>{{ item.evidence.summary }}</dd>
+              </div>
+            </dl>
+            <router-link :to="`/ai/deliveries/${item.delivery.slug}`" :aria-label="`查看 ${item.delivery.title} 交付记录`">↗</router-link>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="review-before-claim" class="aeo-review" aria-labelledby="review-before-claim-title">
+      <div class="container">
+        <header class="aeo-section-heading">
+          <div>
+            <p class="aeo-kicker">Review Before Claim</p>
+            <h2 id="review-before-claim-title">能力不在第一次生成，而在发现它错在哪里。</h2>
+          </div>
+          <p>以下纠正来自现有交付记录，不是为了页面补写的假想案例。</p>
+        </header>
+
+        <ol class="aeo-review-list">
+          <li v-for="(item, index) in aiReviewCases" :key="item.delivery.slug">
+            <div class="aeo-review-index">
+              <span>{{ String(index + 1).padStart(2, '0') }}</span>
+              <small>{{ item.label }}</small>
+            </div>
+            <div class="aeo-review-before">
+              <p>Finding</p>
+              <h3>{{ item.finding }}</h3>
+            </div>
+            <div class="aeo-review-after">
+              <p>Correction</p>
+              <h3>{{ item.correction }}</h3>
+              <a v-if="item.evidence.url" :href="item.evidence.url" target="_blank" rel="noopener">
+                {{ item.evidence.title }} ↗
+              </a>
+            </div>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="aeo-automation" aria-labelledby="automation-run-title">
+      <div class="container aeo-automation-grid">
+        <header class="aeo-automation-intro">
+          <p class="aeo-kicker">Operational Automation / {{ aiAutomationRun.date }}</p>
+          <span class="aeo-status aeo-status--partial">{{ aiAutomationRun.statusLabel }}</span>
+          <h2 id="automation-run-title">{{ aiAutomationRun.title }}</h2>
+          <p>{{ aiAutomationRun.summary }}</p>
+          <small>{{ aiAutomationRun.boundary }}</small>
+          <div class="aeo-inline-links">
+            <a :href="aiAutomationRun.pullRequestUrl" target="_blank" rel="noopener">PR #49 ↗</a>
+            <a :href="aiAutomationRun.productionUrl" target="_blank" rel="noopener">生产雷达 ↗</a>
+          </div>
+        </header>
+
+        <ol class="aeo-run-trace">
+          <li v-for="(stage, index) in aiAutomationRun.stages" :key="stage.label" :class="{ 'is-failed': stage.value === 'FAILED' }">
+            <span>{{ String(index + 1).padStart(2, '0') }}</span>
+            <div>
+              <p>{{ stage.label }}</p>
+              <small>{{ stage.detail }}</small>
+            </div>
+            <strong>{{ stage.value }}</strong>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="aeo-surfaces" aria-labelledby="system-surfaces-title">
+      <div class="container">
+        <header class="aeo-section-heading">
+          <div>
+            <p class="aeo-kicker">Private Control Plane</p>
+            <h2 id="system-surfaces-title">把事实状态写在能力名称旁边。</h2>
+          </div>
+          <p>私有治理、工具集成和进行中实验使用不同证据等级，不把它们包装成同一种产品能力。</p>
+        </header>
+
+        <div class="aeo-surface-list">
+          <article v-for="(item, index) in aiModules" :key="item.id" :id="item.id" :data-level="item.evidenceLevel">
+            <div class="aeo-surface-title">
+              <span>{{ String(index + 1).padStart(2, '0') }} / {{ item.eyebrow }}</span>
+              <strong>{{ item.statusLabel }}</strong>
+            </div>
+            <div class="aeo-surface-copy">
+              <h3>{{ item.title }}</h3>
+              <p>{{ item.summary }}</p>
+            </div>
+            <ul>
+              <li v-for="fact in item.facts" :key="fact">{{ fact }}</li>
+            </ul>
+            <p class="aeo-surface-boundary">{{ item.boundary }}</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="aeo-boundary" aria-labelledby="human-boundary-title">
+      <div class="container aeo-boundary-grid">
+        <div>
+          <p class="aeo-kicker">Human Boundary</p>
+          <h2 id="human-boundary-title">AI 可以缩短路径，<br />不能拥有最终决定。</h2>
+        </div>
+        <div>
+          <ul>
+            <li v-for="item in humanBoundaries" :key="item">{{ item }}</li>
+          </ul>
+          <router-link class="aeo-action aeo-action--light" to="/ai/deliveries">
+            进入完整交付账本 <span aria-hidden="true">↗</span>
+          </router-link>
+        </div>
+      </div>
+    </section>
+  </div>
 </template>
-
-<style scoped>
-.ai-method {
-  margin-top: 3rem;
-  padding: 2.25rem 0;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-
-.ai-method > header h2,
-.ai-case-collection > header h2 {
-  margin: 0.45rem 0 0;
-  font-size: clamp(1.55rem, 3vw, 2.35rem);
-}
-
-.ai-method-grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0;
-  margin: 2rem 0 0;
-  padding: 0;
-  list-style: none;
-}
-
-.ai-method-grid li {
-  min-width: 0;
-  padding: 0 1.25rem;
-  border-left: 1px solid var(--border);
-}
-
-.ai-method-grid li:first-child {
-  padding-left: 0;
-  border-left: 0;
-}
-
-.ai-method-grid li:last-child {
-  padding-right: 0;
-}
-
-.ai-method-grid span,
-.ai-case-number {
-  color: var(--accent);
-  font-size: 0.74rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-
-.ai-method-grid h3 {
-  margin: 0.75rem 0 0.55rem;
-  font-size: 1.02rem;
-}
-
-.ai-method-grid p {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  line-height: 1.7;
-}
-
-.ai-case-collection {
-  margin-top: 4rem;
-}
-
-.ai-case-collection > header {
-  margin-bottom: 1.5rem;
-}
-
-.ai-case-collection > header > p:last-child {
-  max-width: 46rem;
-  margin: 0.8rem 0 0;
-  color: var(--text-muted);
-}
-
-.ai-case-detail.ai-case-compact {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  border-top: 1px solid var(--border);
-  border-radius: 0;
-  box-shadow: none;
-}
-
-.ai-case-detail.ai-case-compact:last-child {
-  border-bottom: 1px solid var(--border);
-}
-
-.ai-case-compact > summary {
-  display: grid;
-  grid-template-columns: 6.5rem minmax(0, 1fr) auto;
-  gap: 1.25rem;
-  align-items: start;
-  min-width: 0;
-  padding: 1.4rem 0;
-  cursor: pointer;
-  list-style: none;
-}
-
-.ai-case-compact > summary::-webkit-details-marker {
-  display: none;
-}
-
-.ai-case-compact > summary > div {
-  min-width: 0;
-}
-
-.ai-case-compact > summary p {
-  margin: 0 0 0.3rem;
-  color: var(--accent);
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-
-.ai-case-compact > summary h3 {
-  margin: 0;
-  font-size: clamp(1.05rem, 2vw, 1.35rem);
-}
-
-.ai-case-compact > summary h3 small {
-  display: inline-block;
-  margin-left: 0.6rem;
-  color: var(--text-muted);
-  font-size: 0.7rem;
-  font-weight: 600;
-}
-
-.ai-case-compact > summary div > span {
-  display: block;
-  margin-top: 0.55rem;
-  color: var(--text-muted);
-  line-height: 1.6;
-}
-
-.ai-case-compact > summary > b {
-  color: var(--text-muted);
-  font-size: 0.78rem;
-  font-weight: 600;
-}
-
-.ai-case-compact[open] > summary > b {
-  color: var(--accent);
-}
-
-.ai-case-expanded {
-  position: relative;
-  padding: 0.4rem 0 2.5rem 7.75rem;
-}
-
-.ai-case-action {
-  margin-bottom: 1.25rem;
-}
-
-.ai-case-expanded .ai-loop-details-grid {
-  margin-top: 1rem;
-}
-
-@media (max-width: 900px) {
-  .ai-method-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    row-gap: 1.5rem;
-  }
-
-  .ai-method-grid li:nth-child(3) {
-    padding-left: 0;
-    border-left: 0;
-  }
-
-  .ai-method-grid li:nth-child(2) {
-    padding-right: 0;
-  }
-}
-
-@media (max-width: 768px) {
-  .ai-case-compact > summary {
-    grid-template-columns: minmax(0, 1fr) auto;
-    gap: 0.8rem;
-  }
-
-  .ai-case-number {
-    grid-column: 1 / -1;
-  }
-
-  .ai-case-expanded {
-    padding-left: 0;
-  }
-}
-
-@media (max-width: 560px) {
-  .ai-method-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1.25rem;
-  }
-
-  .ai-method-grid li,
-  .ai-method-grid li:first-child,
-  .ai-method-grid li:nth-child(3) {
-    padding: 0 0 1.25rem;
-    border-left: 0;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .ai-method-grid li:last-child {
-    padding-bottom: 0;
-    border-bottom: 0;
-  }
-
-  .ai-case-compact > summary {
-    padding: 1.2rem 0;
-  }
-}
-</style>

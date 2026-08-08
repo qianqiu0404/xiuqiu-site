@@ -6,6 +6,238 @@ export interface DailyRadar { date: string; slug: string; title: string; summary
 
 export const dailyRadars: DailyRadar[] = [
   {
+    "date": "2026-08-07",
+    "slug": "2026-08-07",
+    "title": "每日研究雷达 · 2026-08-07",
+    "summary": "聚焦 Nethermind ABI 内存硬化、viem EIP-712 类型校验、欧盟加密服务治理限制、评测资源噪声、P-256 钱包授权分层、Pi，以及 agentic AI 科研软件验证。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-08-07T07:04:03+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "Nethermind 1.39.3 封住畸形 ABI 输入的超大内存分配路径",
+        "summary": "强制节点补丁会在创建托管数组前拒绝异常动态 bytes 与数组长度，并补齐多条异常路径的池化内存清理。官方未披露 CVE 或利用事件，升级仍需验证制品、回滚与本地负载。",
+        "sourceUrl": "https://github.com/NethermindEth/nethermind/releases/tag/1.39.3"
+      },
+      {
+        "title": "viem 2.55.11 拒绝 EIP-712 裸写 uint 与 int",
+        "summary": "typed-data 校验与哈希现在要求 uint256、int256 等完整位宽，避免非规范类型哈希或 RangeError。它只改变 viem 相关调用路径，不代表 EVM 或链上合约规则统一升级。",
+        "sourceUrl": "https://github.com/wevm/viem/releases/tag/viem%402.55.11"
+      },
+      {
+        "title": "欧盟扩展加密资产服务实体的治理控制限制",
+        "summary": "Regulation (EU) 2026/1848 自 8 月 25 日起把特定所有、控制和治理席位禁令扩展到其他 MiCA 加密资产服务。适用仍取决于主体、设立地、控制关系、豁免与主管机关解释。",
+        "sourceUrl": "https://eur-lex.europa.eu/eli/reg/2026/1848/oj/eng"
+      }
+    ],
+    "aiTip": {
+      "title": "把评测容器的资源保证值与硬终止上限分开校准",
+      "summary": "固定模型、提示、任务集与 harness，只逐级调整硬上限，分别统计答案错误和容器被杀；选择能降低基础设施失败、又未显著抬高正确率的最窄区间。Anthropic 的约 3 倍上限只是特定实验示例，不是通用倍率。",
+      "sourceUrl": "https://www.anthropic.com/engineering/infrastructure-noise"
+    },
+    "web3Design": {
+      "title": "把 P-256 硬件密钥接入拆成链能力、验签与账户授权三层",
+      "summary": "EIP-7951 的 P256VERIFY 只证明签名匹配公钥。钱包基础设施还应逐链绑定预编译能力，规范化 r、s 与公钥坐标，重算动作摘要，并独立校验账户、额度、nonce、有效期及恢复策略。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-7951"
+    },
+    "vibeProject": {
+      "title": "Pi · 可组合的 coding agent 最小运行时",
+      "summary": "Pi 同时提供交互、print/JSON、RPC 与 SDK 入口，并开放工具、权限门、沙箱、MCP 与 UI 扩展。固定版 0.84.0 已复现 CLI；默认写入与 bash、package 全系统权限、安装脚本和极端长会话资源风险要求隔离与逐项放权。",
+      "sourceUrl": "https://github.com/earendil-works/pi/releases/tag/v0.84.0"
+    },
+    "readingPick": {
+      "title": "Scientific computing in the age of agentic AI",
+      "summary": "八个科研软件案例表明，agent 可加速初版，但科学有效性、数值边界、兼容性和长期所有权仍由人定义与验收。思考题：为一次真实重构列出目标行为、独立真值、最难边界与长期所有者。",
+      "sourceUrl": "https://openai.com/index/scientific-computing-agentic-ai/"
+    },
+    "sourceUrls": [
+      "https://github.com/NethermindEth/nethermind/releases/tag/1.39.3",
+      "https://github.com/NethermindEth/nethermind/pull/12588",
+      "https://github.com/wevm/viem/releases/tag/viem%402.55.11",
+      "https://github.com/wevm/viem/pull/4961",
+      "https://eur-lex.europa.eu/eli/reg/2026/1848/oj/eng",
+      "https://www.anthropic.com/engineering/infrastructure-noise",
+      "https://eips.ethereum.org/EIPS/eip-7951",
+      "https://github.com/earendil-works/pi/blob/v0.84.0/packages/coding-agent/README.md",
+      "https://github.com/earendil-works/pi/releases/tag/v0.84.0",
+      "https://registry.npmjs.org/%40earendil-works%2Fpi-coding-agent/0.84.0",
+      "https://api.npmjs.org/downloads/point/2026-07-07:2026-08-05/%40earendil-works%2Fpi-coding-agent",
+      "https://api.github.com/repos/earendil-works/pi",
+      "https://github.com/earendil-works/pi/issues/7194",
+      "https://github.com/earendil-works/pi/blob/v0.84.0/packages/coding-agent/docs/packages.md",
+      "https://github.com/earendil-works/pi/issues/7517",
+      "https://github.com/earendil-works/pi/issues/7730",
+      "https://github.com/earendil-works/pi/blob/v0.84.0/LICENSE",
+      "https://openai.com/index/scientific-computing-agentic-ai/"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
+    "date": "2026-08-06",
+    "slug": "2026-08-06",
+    "title": "每日研究雷达 · 2026-08-06",
+    "summary": "聚焦 Safe Guard 防误配、合约注册表控制面、Foundry Upgrades 编译器门槛、程序化工具调用、原生密钥迁移、OpenCode，以及数据湖在线点查。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-08-06T07:04:21+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "Safe Wallet 为旧版 Safe 的 Guard 配置增加客户端检查",
+        "summary": "web-v1.97.0 会解析直接调用和 MultiSend 内的 setGuard，并对低于 v1.4.1 的 Safe 检查目标接口；这仍是可被用户继续确认的客户端提示，不是链上强制拒绝。",
+        "sourceUrl": "https://github.com/safe-global/safe-wallet-monorepo/releases/tag/web-v1.97.0"
+      },
+      {
+        "title": "Parity Contract Dependency Manager 明确注册表控制面",
+        "summary": "v0.12.0 用 EIP-1967 代理维持稳定地址，并显式提供实现升级、紧急冻结与 ABI 漂移测试；冻结不约束管理员，仍需独立审计实现、密钥和治理流程。",
+        "sourceUrl": "https://github.com/paritytech/contract-dependency-manager/releases/tag/v0.12.0"
+      },
+      {
+        "title": "OpenZeppelin Foundry Upgrades 补丁版提高 Solidity 下限",
+        "summary": "v0.4.2 为新版 memory-safe assembly 语法把最低 Solidity 提升到 0.8.13。官方标注其 potentially breaking，依赖升级前需要验证编译器矩阵，不能因 patch 版本而忽略兼容性。",
+        "sourceUrl": "https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades/releases/tag/v0.4.2"
+      }
+    ],
+    "aiTip": {
+      "title": "只把可判定的数据归并交给程序化工具调用",
+      "summary": "把过滤、连接、排序、去重或字段校验限定为固定 schema、只读工具、并发和停止条件明确的子流程，再由模型完成取舍。程序输出和最终回答都要回归验证，写入与授权仍走确定性门禁。",
+      "sourceUrl": "https://developers.openai.com/api/docs/guides/latest-model#programmatic-tool-calling"
+    },
+    "web3Design": {
+      "title": "把签名算法迁移建模为不可逆控制权切换",
+      "summary": "EIP-8164 草案会在账户写入 ML-DSA-44 公钥后永久关闭旧 ECDSA 路径。钱包服务应绑定链、账户、nonce、算法和公钥指纹，分离旧密钥迁移授权与新密钥签名；草案未激活且无链上恢复，不能用于生产。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-8164"
+    },
+    "vibeProject": {
+      "title": "OpenCode · 多端可扩展 coding agent 运行时",
+      "summary": "OpenCode 把终端、桌面、LSP、MCP、权限审批、headless server 和 SDK 集成到同一运行时；固定版 1.18.14 已复现 CLI 与本地健康端点。默认开发权限、无认证 server 和长输出丢失风险要求隔离、明确 deny 与独立证据校验。",
+      "sourceUrl": "https://github.com/anomalyco/opencode"
+    },
+    "readingPick": {
+      "title": "Indexing the Data Lake for Online Point Queries",
+      "summary": "文章用外部 key-to-file/row 索引和精确 ranged read 让 Parquet 同时支持分析与在线点查，并写明分区、PageIndex、blob、列交错和 covering index 的代价。思考题：为真实单键查询列出读取预算，并比较只加索引与再加一种布局优化的副作用。",
+      "sourceUrl": "https://engineering.atspotify.com/2026/7/indexing-the-data-lake-for-online-point-queries"
+    },
+    "sourceUrls": [
+      "https://github.com/safe-global/safe-wallet-monorepo/releases/tag/web-v1.97.0",
+      "https://github.com/safe-global/safe-wallet-monorepo/pull/8364",
+      "https://github.com/paritytech/contract-dependency-manager/releases/tag/v0.12.0",
+      "https://github.com/paritytech/contract-dependency-manager/pull/71",
+      "https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades/releases/tag/v0.4.2",
+      "https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades/pull/128",
+      "https://developers.openai.com/api/docs/guides/latest-model#programmatic-tool-calling",
+      "https://eips.ethereum.org/EIPS/eip-8164",
+      "https://github.com/anomalyco/opencode",
+      "https://github.com/anomalyco/opencode/releases/tag/v1.18.14",
+      "https://github.com/anomalyco/opencode/blob/v1.18.14/README.md",
+      "https://api.github.com/repos/anomalyco/opencode",
+      "https://api.github.com/repos/anomalyco/opencode/releases/tags/v1.18.14",
+      "https://registry.npmjs.org/opencode-ai/1.18.14",
+      "https://api.npmjs.org/downloads/point/2026-07-06:2026-08-04/opencode-ai",
+      "https://opencode.ai/docs/permissions/",
+      "https://opencode.ai/docs/server/",
+      "https://github.com/anomalyco/opencode/issues/40728",
+      "https://github.com/anomalyco/opencode/blob/v1.18.14/LICENSE",
+      "https://engineering.atspotify.com/2026/7/indexing-the-data-lake-for-online-point-queries"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
+    "date": "2026-08-05",
+    "slug": "2026-08-05",
+    "title": "每日研究雷达 · 2026-08-05",
+    "summary": "聚焦 Solana 分阶段升级、Sui 可复现构建、NEAR 出站缓冲隔离、agent 轨迹分级、EOA 代码委托、Crush，以及可审计的 agent harness。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-08-05T07:03:11+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "Solana Agave 4.2 将多项主网变化拆成 feature gate",
+        "summary": "官方计划分阶段降低账户存储保证金、引入更大的 v1 交易格式并缩短 slot；页面仍标为开发中，钱包、RPC 与索引服务需分别验证编码、原始字节解析、状态增长和性能指标。",
+        "sourceUrl": "https://solana.com/zh/upgrades/agave-4-2-release-overview"
+      },
+      {
+        "title": "Sui testnet v1.77.1 收紧源码复现的工具链与依赖身份",
+        "summary": "verify-source 默认使用发布时工具链并读取链上地址，annotated tag 依赖会固定到实际 commit；这是 testnet 发布，既有锁文件仍需显式更新且不能外推为主网激活。",
+        "sourceUrl": "https://github.com/MystenLabs/sui/releases/tag/testnet-v1.77.1"
+      },
+      {
+        "title": "NEAR 2.13.3 用分层出站缓冲限制隔离慢连接",
+        "summary": "版本为单连接与全局出站写缓冲设置独立可配置上限，避免慢 peer 独占额度；官方明确它不是协议、数据库或安全升级，默认容量也不构成所有负载的通用保证。",
+        "sourceUrl": "https://github.com/near/nearcore/releases/tag/2.13.3"
+      }
+    ],
+    "aiTip": {
+      "title": "把结果正确与工具过程合规分开评分",
+      "summary": "保留人工裁决的端到端轨迹，分别标注工具选择、参数范围、写前校验和成功状态一致性，再用同一回归集比较模型或编排变更。轨迹 grader 可能误判，权限和副作用仍需确定性约束。",
+      "sourceUrl": "https://developers.openai.com/api/docs/guides/trace-grading"
+    },
+    "web3Design": {
+      "title": "把 EOA 代码委托视为持续存在的账户迁移",
+      "summary": "EIP-7702 授权会持久改变 EOA 的代码语义，且外层调用回滚不撤销已处理委托。托管钱包应显式展示 authority、链域、代码哈希、nonce、初始化与撤销路径，并拒绝未知代码或漂移状态。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-7702"
+    },
+    "vibeProject": {
+      "title": "Crush · 可切换模型与权限审阅的终端 coding agent",
+      "summary": "Crush 用 Go 集成文件与 shell 工具、会话、LSP、MCP、非交互入口和 server 模式；固定版 v0.88.0 已复现 CLI 与 provider 路由问题。可执行配置、yolo 权限、协议静默替换和网络文件系统数据库锁仍需隔离验证。",
+      "sourceUrl": "https://github.com/charmbracelet/crush"
+    },
+    "readingPick": {
+      "title": "The harness is all you need (mostly)",
+      "summary": "文章用原型、计划、实现、复核构成可观察的 agent 闭环，并强调自主执行要与沙箱隔离配套。思考题：为一个真实小任务分别写出四阶段证据，以及自动循环中仍必须停下的权限边界。",
+      "sourceUrl": "https://github.blog/ai-and-ml/github-copilot/the-harness-is-all-you-need-mostly/"
+    },
+    "sourceUrls": [
+      "https://solana.com/zh/upgrades/agave-4-2-release-overview",
+      "https://github.com/MystenLabs/sui/releases/tag/testnet-v1.77.1",
+      "https://github.com/near/nearcore/releases/tag/2.13.3",
+      "https://github.com/near/nearcore/pull/16145",
+      "https://developers.openai.com/api/docs/guides/trace-grading",
+      "https://eips.ethereum.org/EIPS/eip-7702",
+      "https://github.com/charmbracelet/crush",
+      "https://github.com/charmbracelet/crush/releases/tag/v0.88.0",
+      "https://github.com/charmbracelet/crush/blob/v0.88.0/README.md",
+      "https://api.github.com/repos/charmbracelet/crush/releases/tags/v0.88.0",
+      "https://api.github.com/repos/charmbracelet/crush",
+      "https://registry.npmjs.org/%40charmland%2Fcrush/0.88.0",
+      "https://api.npmjs.org/downloads/point/2026-07-05:2026-08-03/%40charmland%2Fcrush",
+      "https://github.com/charmbracelet/crush/issues/3504",
+      "https://github.com/charmbracelet/crush/issues/3461",
+      "https://github.com/charmbracelet/crush/blob/v0.88.0/LICENSE.md",
+      "https://github.blog/ai-and-ml/github-copilot/the-harness-is-all-you-need-mostly/"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
     "date": "2026-08-04",
     "slug": "2026-08-04",
     "title": "每日研究雷达 · 2026-08-04",

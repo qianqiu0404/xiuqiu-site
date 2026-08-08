@@ -21,7 +21,16 @@ interface PageContext {
 interface AskAiEventDetail {
   prompt: string
   context?: PageContext
+  opener?: HTMLElement
 }
+
+const props = withDefaults(defineProps<{
+  cinematic?: boolean
+  hideDesktopToggle?: boolean
+}>(), {
+  cinematic: false,
+  hideDesktopToggle: false,
+})
 
 const route = useRoute()
 const isOpen = ref(false)
@@ -29,6 +38,9 @@ const input = ref('')
 const isLoading = ref(false)
 const errorMessage = ref('')
 const messageList = ref<HTMLElement | null>(null)
+const chatInput = ref<HTMLTextAreaElement | null>(null)
+const chatToggle = ref<HTMLButtonElement | null>(null)
+const lastOpener = ref<HTMLElement | null>(null)
 const explicitPageContext = ref<PageContext | null>(null)
 const CLIENT_REQUEST_TIMEOUT_MS = 20_000
 let activeRequestController: AbortController | null = null
@@ -38,32 +50,6 @@ const messages = ref<ChatMessage[]>([
     content: '你好，我是 xiuqiu AI。我只基于本站公开资料，帮你理解 Wallet Launchpad、Qiu Market Server、钱包工程证据，以及它们的目标完成形态与当前验证边界。',
   },
 ])
-
-const promptGroups = [
-  {
-    label: '产品完成形态',
-    prompts: [
-      '完成后的 Wallet Launchpad 是什么？',
-      'Qiu Market Server 解决什么问题？',
-      '用三分钟介绍 xiuqiu 的代表项目',
-    ],
-  },
-  {
-    label: '工程证据',
-    prompts: [
-      '哪些能力已经验证，哪些仍待验收？',
-      'wallet-api、risk-service 和 wallet-sign 的边界是什么？',
-      '遇到广播结果未知时，系统如何止损与恢复？',
-    ],
-  },
-  {
-    label: 'AI 协作',
-    prompts: [
-      'xiuqiu 如何让 AI 加速工程但不代替验证？',
-      '公开站点如何避免泄露 Obsidian 私人内容？',
-    ],
-  },
-]
 
 const referenceTypeLabels: Record<SiteReference['type'], string> = {
   article: '工程笔记',
@@ -175,6 +161,14 @@ const currentPageContext = computed<PageContext>(() => {
     }
   }
 
+  if (route.name === 'home') {
+    return {
+      type: 'home',
+      title: 'Wallet Platform × Market Server × AI Engineering',
+      summary: 'Wallet 与 Market 是构建的系统，AI 是贯穿计划、实现、审查、测试、文档和知识治理的工程工作流。',
+    }
+  }
+
   if (route.name === 'project-detail') {
     const project = getProjectByKey(String(route.params.project || ''))
     return {
@@ -192,14 +186,77 @@ const currentPageContext = computed<PageContext>(() => {
   }
 })
 
-function toggleChat() {
-  if (isOpen.value) cancelActiveRequest()
-  isOpen.value = !isOpen.value
-  errorMessage.value = ''
-
-  if (isOpen.value) {
-    void scrollToBottom()
+const contextualPrompts = computed(() => {
+  switch (currentPageContext.value.type) {
+    case 'project':
+      return [
+        '这个项目解决什么问题，当前证据和限制是什么？',
+        '这个项目完成后的产品形态是什么？',
+        '推荐相关工程证据和文章',
+      ]
+    case 'engineering-failures':
+      return [
+        '广播结果未知时为什么不能直接重发？',
+        '链上成功但本地失败应该如何恢复？',
+        '先止损、查事实和幂等恢复分别做什么？',
+      ]
+    case 'engineering-evidence':
+    case 'engineering':
+      return [
+        '哪些钱包能力已经有可复现证据？',
+        '本地验证、测试网验证和生产经验有什么区别？',
+        'wallet-api、wallet-sign 和 risk-service 的边界是什么？',
+      ]
+    case 'article':
+    case 'articles':
+      return [
+        '概括这篇内容的核心工程判断',
+        '推荐一条多链钱包后端阅读路径',
+        '哪些文章适合理解签名与异常恢复？',
+      ]
+    case 'ai':
+    case 'ai-deliveries':
+    case 'ai-delivery':
+      return [
+        'AI 在工程任务中负责什么，人负责什么？',
+        '哪些 AI 协作结果有公开验证？',
+        '知识治理如何避免公开私人内容？',
+      ]
+    case 'radar':
+    case 'radar-detail':
+      return [
+        '这条研究信号与哪些工程项目相关？',
+        '哪些是事实，哪些仍是推断？',
+        '最近研究正在收敛到什么主题？',
+      ]
+    default:
+      return [
+        'xiuqiu 的 Wallet Platform 包含哪些项目？',
+        'Market Server 完成后是什么产品？',
+        '哪些能力已经有可复现证据？',
+      ]
   }
+})
+
+async function toggleChat() {
+  if (isOpen.value) {
+    closeChat()
+    return
+  }
+
+  lastOpener.value = chatToggle.value
+  isOpen.value = true
+  errorMessage.value = ''
+  await nextTick()
+  chatInput.value?.focus()
+  await scrollToBottom()
+}
+
+function closeChat() {
+  cancelActiveRequest()
+  isOpen.value = false
+  errorMessage.value = ''
+  void nextTick(() => (lastOpener.value || chatToggle.value)?.focus())
 }
 
 function cancelActiveRequest() {
@@ -213,10 +270,17 @@ async function sendQuickPrompt(prompt: string) {
 }
 
 async function askWithContext(detail: AskAiEventDetail) {
+  lastOpener.value = detail.opener || chatToggle.value
   explicitPageContext.value = detail.context || null
   isOpen.value = true
   input.value = detail.prompt
   await sendMessage()
+}
+
+function handleInputKeydown(event: KeyboardEvent) {
+  if (event.key !== 'Enter' || event.shiftKey || event.isComposing) return
+  event.preventDefault()
+  void sendMessage()
 }
 
 async function sendMessage() {
@@ -327,29 +391,49 @@ function handleAskAi(event: Event) {
   void askWithContext(detail)
 }
 
+function handleEscape(event: KeyboardEvent) {
+  if (event.key === 'Escape' && isOpen.value) closeChat()
+}
+
 onMounted(() => {
   window.addEventListener('ai-chat:ask', handleAskAi)
+  window.addEventListener('keydown', handleEscape)
 })
 
 onUnmounted(() => {
   cancelActiveRequest()
   window.removeEventListener('ai-chat:ask', handleAskAi)
+  window.removeEventListener('keydown', handleEscape)
 })
 </script>
 
 <template>
-  <div class="ai-chat">
-    <section v-if="isOpen" class="ai-chat-panel" aria-label="xiuqiu AI 客服">
+  <div
+    class="ai-chat"
+    :class="{
+      'ai-chat--cinematic': props.cinematic,
+      'ai-chat--desktop-rail': props.hideDesktopToggle,
+    }"
+  >
+    <section
+      v-if="isOpen"
+      id="ai-chat-panel"
+      class="ai-chat-panel"
+      role="dialog"
+      aria-label="xiuqiu AI 工程内容助手"
+    >
       <header class="ai-chat-header">
         <div>
-          <p class="ai-chat-kicker">xiuqiu AI</p>
+          <p class="ai-chat-kicker">xiuqiu AI · DeepSeek</p>
           <h2 class="ai-chat-title">产品与工程证据助手</h2>
           <p class="ai-chat-scope">公开知识 · 不读取私有仓库</p>
         </div>
-        <button class="ai-icon-button" type="button" aria-label="关闭 AI 客服" @click="toggleChat">
+        <button class="ai-icon-button" type="button" aria-label="关闭 AI 助手" @click="closeChat">
           ×
         </button>
       </header>
+
+      <p class="ai-chat-context">当前页面 · {{ currentPageContext.title }}</p>
 
       <div ref="messageList" class="ai-chat-messages" aria-live="polite" :aria-busy="isLoading">
         <article
@@ -360,7 +444,7 @@ onUnmounted(() => {
         >
           {{ message.content }}
           <div v-if="message.references?.length" class="ai-references">
-            <p class="ai-references-title">本站相关资料</p>
+            <p class="ai-references-title">站内相关证据</p>
             <a
               v-for="reference in message.references"
               :key="reference.type + reference.href + reference.title"
@@ -372,40 +456,40 @@ onUnmounted(() => {
             </a>
           </div>
         </article>
-        <article v-if="isLoading" class="ai-message ai-message-assistant ai-message-loading">
-          正在核对公开资料...
+        <article v-if="isLoading" class="ai-message ai-message-assistant ai-message-loading" role="status">
+          正在整理公开证据…
         </article>
       </div>
 
-      <div class="ai-chat-prompts" aria-label="推荐问题">
-        <div v-for="group in promptGroups" :key="group.label" class="ai-prompt-group">
-          <p class="ai-prompt-label">{{ group.label }}</p>
-          <button
-            v-for="prompt in group.prompts"
-            :key="prompt"
-            class="ai-prompt"
-            type="button"
-            :disabled="isLoading"
-            @click="sendQuickPrompt(prompt)"
-          >
-            {{ prompt }}
-          </button>
-        </div>
+      <div class="ai-chat-prompts" aria-label="当前页面建议问题">
+        <button
+          v-for="prompt in contextualPrompts"
+          :key="prompt"
+          class="ai-prompt"
+          type="button"
+          :disabled="isLoading"
+          @click="sendQuickPrompt(prompt)"
+        >
+          {{ prompt }}
+        </button>
       </div>
 
-      <p v-if="errorMessage" class="ai-chat-error">{{ errorMessage }}</p>
+      <p v-if="errorMessage" class="ai-chat-error" role="alert">{{ errorMessage }}</p>
 
-      <p class="ai-chat-privacy">只使用本站公开内容，不读取 Obsidian 原文、私有仓库或账户数据。请勿输入密钥、地址、交易或其他隐私信息。</p>
+      <p class="ai-chat-privacy">
+        回答只使用本站公开内容，不读取 Obsidian 原文、私有仓库或账户数据；你的问题会发送至 DeepSeek API。请勿输入密钥、账户、地址、交易或其他隐私信息。
+      </p>
 
       <form class="ai-chat-form" @submit.prevent="sendMessage">
         <textarea
+          ref="chatInput"
           v-model="input"
           class="ai-chat-input"
           rows="2"
           maxlength="1000"
           placeholder="询问项目、工程证据或钱包后端..."
-          aria-label="向 xiuqiu AI 客服提问"
-          @keydown.enter.exact.prevent="sendMessage"
+          aria-label="向 xiuqiu AI 助手提问"
+          @keydown="handleInputKeydown"
         ></textarea>
         <button class="ai-send-button" type="submit" :disabled="!canSend">
           发送
@@ -414,13 +498,16 @@ onUnmounted(() => {
     </section>
 
     <button
+      ref="chatToggle"
       class="ai-chat-toggle"
       type="button"
       :aria-expanded="isOpen"
-      aria-label="打开 xiuqiu AI 客服"
+      aria-controls="ai-chat-panel"
+      :aria-label="isOpen ? '关闭 xiuqiu AI 工程内容助手' : '打开 xiuqiu AI 工程内容助手'"
       @click="toggleChat"
     >
-      AI
+      <span v-if="props.cinematic">Ask xiuqiu AI</span>
+      <span v-else>AI</span>
     </button>
   </div>
 </template>
@@ -432,6 +519,11 @@ onUnmounted(() => {
   bottom: 24px;
   z-index: 140;
   font-family: var(--font);
+}
+
+.ai-chat :where(button, textarea, a):focus-visible {
+  outline: 3px solid rgba(0, 113, 227, 0.28);
+  outline-offset: 2px;
 }
 
 .ai-chat-toggle {
@@ -453,6 +545,29 @@ onUnmounted(() => {
   box-shadow: 0 14px 36px rgba(0, 113, 227, 0.28);
 }
 
+.ai-chat--cinematic .ai-chat-toggle {
+  width: auto;
+  min-width: 132px;
+  height: 48px;
+  border-color: rgba(222, 237, 255, 0.24);
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(35, 43, 56, 0.92), rgba(9, 12, 18, 0.94));
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.34), inset 0 1px rgba(255, 255, 255, 0.13);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  padding: 0 19px;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.ai-chat--cinematic .ai-chat-toggle:hover {
+  border-color: rgba(222, 237, 255, 0.42);
+  box-shadow:
+    0 20px 54px rgba(0, 0, 0, 0.4),
+    0 0 30px rgba(97, 164, 255, 0.12),
+    inset 0 1px rgba(255, 255, 255, 0.18);
+}
+
 .ai-chat-panel {
   position: absolute;
   right: 0;
@@ -468,6 +583,85 @@ onUnmounted(() => {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
+}
+
+.ai-chat--cinematic .ai-chat-panel {
+  border-color: rgba(255, 255, 255, 0.14);
+  background:
+    radial-gradient(circle at 84% -10%, rgba(82, 147, 239, 0.2), transparent 32%),
+    rgba(7, 10, 15, 0.96);
+  box-shadow: 0 34px 90px rgba(0, 0, 0, 0.48), inset 0 1px rgba(255, 255, 255, 0.08);
+  color: #f7f9fd;
+}
+
+.ai-chat--cinematic .ai-chat-header,
+.ai-chat--cinematic .ai-chat-context {
+  border-color: rgba(255, 255, 255, 0.09);
+}
+
+.ai-chat--cinematic .ai-chat-kicker,
+.ai-chat--cinematic .ai-chat-context,
+.ai-chat--cinematic .ai-chat-privacy,
+.ai-chat--cinematic .ai-message-loading,
+.ai-chat--cinematic .ai-references-title,
+.ai-chat--cinematic .ai-reference small {
+  color: rgba(225, 235, 249, 0.58);
+}
+
+.ai-chat--cinematic .ai-chat-title,
+.ai-chat--cinematic .ai-reference,
+.ai-chat--cinematic .ai-prompt,
+.ai-chat--cinematic .ai-chat-input {
+  color: #f7f9fd;
+}
+
+.ai-chat--cinematic .ai-icon-button,
+.ai-chat--cinematic .ai-prompt,
+.ai-chat--cinematic .ai-chat-input,
+.ai-chat--cinematic .ai-reference {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.ai-chat--cinematic .ai-icon-button {
+  color: rgba(241, 247, 255, 0.7);
+}
+
+.ai-chat--cinematic .ai-chat-messages {
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.ai-chat--cinematic .ai-message-assistant {
+  border-color: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.065);
+  color: rgba(244, 248, 255, 0.84);
+}
+
+.ai-chat--cinematic .ai-message-user,
+.ai-chat--cinematic .ai-send-button {
+  background: #e9f3ff;
+  color: #10141c;
+}
+
+.ai-chat--cinematic .ai-prompt:hover:not(:disabled),
+.ai-chat--cinematic .ai-icon-button:hover {
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #fff;
+}
+
+.ai-chat--cinematic .ai-chat-input:focus {
+  border-color: rgba(171, 211, 255, 0.52);
+  box-shadow: 0 0 0 3px rgba(121, 184, 255, 0.1);
+}
+
+@media (min-width: 1025px) {
+  .ai-chat--desktop-rail .ai-chat-toggle {
+    display: none;
+  }
+
+  .ai-chat--desktop-rail .ai-chat-panel {
+    bottom: 0;
+  }
 }
 
 .ai-chat-header {
@@ -500,6 +694,17 @@ onUnmounted(() => {
   color: var(--text-muted);
   font-size: 11px;
   line-height: 1.35;
+}
+
+.ai-chat-context {
+  overflow: hidden;
+  border-bottom: 1px solid var(--border-light);
+  padding: 9px 18px;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .ai-icon-button {
@@ -600,21 +805,6 @@ onUnmounted(() => {
   padding: 12px 18px 0;
 }
 
-.ai-prompt-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-}
-
-.ai-prompt-label {
-  width: 100%;
-  color: var(--text-muted);
-  font-family: var(--mono);
-  font-size: 10px;
-  line-height: 1.2;
-  text-transform: uppercase;
-}
-
 .ai-prompt {
   border: 1px solid var(--border-light);
   border-radius: 999px;
@@ -647,9 +837,9 @@ onUnmounted(() => {
 
 .ai-chat-privacy {
   margin: 0;
-  padding: 0 18px 10px;
-  color: var(--text-light);
-  font-size: 11px;
+  padding: 10px 18px 0;
+  color: var(--text-muted);
+  font-size: 10px;
   line-height: 1.5;
 }
 
@@ -743,6 +933,13 @@ onUnmounted(() => {
     font-size: 13px;
   }
 
+  .ai-chat--cinematic .ai-chat-toggle {
+    width: auto;
+    min-width: 118px;
+    height: 44px;
+    padding: 0 16px;
+  }
+
   .ai-chat-form {
     align-items: stretch;
     flex-direction: column;
@@ -750,6 +947,20 @@ onUnmounted(() => {
 
   .ai-send-button {
     width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-chat-toggle,
+  .ai-icon-button,
+  .ai-prompt,
+  .ai-chat-input,
+  .ai-send-button {
+    transition: none;
+  }
+
+  .ai-chat-toggle:hover {
+    transform: none;
   }
 }
 </style>

@@ -95,7 +95,7 @@ writePage(
   '/projects',
   replaceMeta(baseHtml, {
     title: '项目图谱｜xiuqiu',
-    description: '按旗舰系统、可验证作品、工程探索与暂停项目分层展示 Web3 钱包后端和 AI 协作工程。',
+    description: '先进入 Wallet Launchpad 与 Qiu Market 两个产品主页，再按证据层级浏览其他 Web3 与 AI 工程项目。',
     path: '/projects',
     structuredData: {
       '@context': 'https://schema.org',
@@ -110,8 +110,8 @@ writePage(
 writePage(
   '/engineering',
   replaceMeta(baseHtml, {
-    title: '工程档案｜xiuqiu Web3 钱包后端',
-    description: '交易所钱包工程档案：资金编排、风险控制、链交互、签名边界、失败场景和验证证据。',
+    title: '工程证据索引｜xiuqiu',
+    description: '从证据矩阵、失败恢复手册和项目档案复核 xiuqiu 的 Web3 钱包与工程实践边界。',
     path: '/engineering',
   }),
 )
@@ -137,8 +137,8 @@ writePage(
 writePage(
   '/ai',
   replaceMeta(baseHtml, {
-    title: 'AI 工作流｜xiuqiu',
-    description: 'AI Coding、跨设备 Skill、社交研究、每日发布与 Obsidian 知识治理五个真实 Loop。',
+    title: 'AI Engineering OS｜xiuqiu',
+    description: 'AI 参与定义、执行、审查与验证；真实交付、人工门禁和工程证据共同决定结果。',
     path: '/ai',
   }),
 )
@@ -174,7 +174,7 @@ writePage(
   '/learning',
   replaceMeta(baseHtml, {
     title: '学习复盘｜xiuqiu',
-    description: '精选公开的 Web3 钱包工程学习进度、验证证据、失败复盘与下一步。',
+    description: '按阶段归档的 Web3 钱包工程学习结论、验证证据与下一步。',
     path: '/learning',
   }),
 )

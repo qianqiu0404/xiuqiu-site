@@ -1,10 +1,22 @@
 <script setup lang="ts">
-import { defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 
 const navOpen = ref(false)
 const navToggle = ref<HTMLButtonElement | null>(null)
 const router = useRouter()
+const isCinematicHome = computed(() => router.currentRoute.value.name === 'home')
+const visualMode = computed(() => {
+  const currentRoute = router.currentRoute.value
+  if (
+    currentRoute.name === 'project-detail'
+    && ['wallet-launchpad', 's78-market-services'].includes(String(currentRoute.params.project || ''))
+  ) {
+    return 'narrative'
+  }
+  return String(currentRoute.meta.visual || 'editorial')
+})
+const usesCinematicChrome = computed(() => visualMode.value === 'narrative' || visualMode.value === 'lab')
 const AiChatWidget = defineAsyncComponent(() => import('./components/AiChatWidget.vue'))
 
 function closeNav() {
@@ -25,7 +37,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
 <template>
   <a class="skip-link" href="#main-content">跳到主要内容</a>
 
-  <header class="site-header">
+  <header class="site-header" :class="{ 'site-header--cinematic': usesCinematicChrome }">
     <nav class="nav container">
       <router-link class="brand" to="/">xiuqiu</router-link>
 
@@ -43,11 +55,11 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
       </button>
 
       <div id="primary-navigation" class="nav-links" :class="{ open: navOpen }">
-        <router-link to="/#capabilities" @click="navOpen = false">能力</router-link>
-        <router-link to="/projects" @click="navOpen = false">项目</router-link>
-        <router-link to="/engineering/evidence" @click="navOpen = false">证据</router-link>
-        <router-link to="/radar" @click="navOpen = false">研究</router-link>
-        <router-link to="/now" @click="navOpen = false">关于</router-link>
+        <router-link to="/projects/wallet-launchpad" @click="navOpen = false">Wallet</router-link>
+        <router-link to="/projects/s78-market-services" @click="navOpen = false">Market</router-link>
+        <router-link to="/ai" @click="navOpen = false">AI</router-link>
+        <router-link to="/engineering/evidence" @click="navOpen = false">Evidence</router-link>
+        <router-link to="/radar" @click="navOpen = false">Radar</router-link>
       </div>
     </nav>
   </header>
@@ -56,17 +68,18 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
     <router-view />
   </main>
 
-  <footer class="footer">
+  <footer class="footer" :class="{ 'footer--cinematic': usesCinematicChrome }">
     <div class="container footer-inner">
       <span>© {{ new Date().getFullYear() }} xiuqiu</span>
       <nav class="footer-links" aria-label="页尾导航">
-        <router-link to="/ai">AI 工程</router-link>
+        <router-link to="/projects">全部项目</router-link>
         <router-link to="/articles">工程笔记</router-link>
-        <router-link to="/learning">学习复盘</router-link>
+        <router-link to="/engineering/failures">失败手册</router-link>
+        <router-link to="/now">关于 / Now</router-link>
         <a href="https://github.com/qianqiu0404" target="_blank" rel="noopener">GitHub</a>
       </nav>
     </div>
   </footer>
 
-  <AiChatWidget />
+  <AiChatWidget :cinematic="usesCinematicChrome" :hide-desktop-toggle="isCinematicHome" />
 </template>

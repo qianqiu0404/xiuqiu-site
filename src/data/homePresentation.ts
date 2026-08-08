@@ -37,13 +37,36 @@ export interface HomeEvidenceHighlight {
   destination: HomeDestination
 }
 
+export type HomeStoryId = 'wallet' | 'market' | 'ai'
+export type HomeAiProofStatus = 'scoped' | 'implemented' | 'reviewed' | 'verified' | 'human-gate' | 'pending'
+
+export interface HomeAiProofStep {
+  label: string
+  detail: string
+  status: HomeAiProofStatus
+}
+
+export interface HomeAiProofContext {
+  id: HomeStoryId
+  label: string
+  title: string
+  summary: string
+  steps: readonly HomeAiProofStep[]
+  boundary: string
+  evidence: {
+    label: string
+    destination: HomeDestination
+  }
+  assistantPrompt: string
+}
+
 export const walletLabUrl = 'https://wallet-reliability-lab.vercel.app'
 export const githubProfileUrl = 'https://github.com/qianqiu0404'
 export const githubRepositoriesUrl = 'https://github.com/qianqiu0404?tab=repositories'
 export const homeSeo = {
-  title: 'xiuqiu｜Web3 钱包后端与多链基础设施工程',
+  title: 'xiuqiu｜Wallet Launchpad、Qiu Market 与 AI Engineering',
   description:
-    '专注交易所钱包充值、提现、资金状态、多链交易、签名安全与异常恢复，通过可运行项目、源码、测试和工程证据展示 Web3 钱包后端能力。',
+    '构建 Wallet Launchpad 与 Qiu Market，并用 AI-native Engineering 工作流、自动化测试、失败恢复和公开证据说明 Web3 系统能力。',
 } as const
 
 export const flagshipProjectSlug = 'exchange-wallet-system'
@@ -184,3 +207,73 @@ export const aiEngineeringOutcomes = [
   '失败复盘',
   '跨设备工作流',
 ]
+
+export const homeAiWorkflow = [
+  'Context',
+  'Plan',
+  'Execute',
+  'Review',
+  'Test',
+  'Document',
+  'Remember',
+] as const
+
+export const homeAiProofContexts: readonly HomeAiProofContext[] = [
+  {
+    id: 'wallet',
+    label: 'Current frame · Wallet Platform',
+    title: '让 AI 参与实现，让资金事实决定交付。',
+    summary: '公开交付记录保留 AI 参与、审查发现、纠正动作与人工决定，而不是用生成代码量替代工程证据。',
+    steps: [
+      { label: 'Scope', detail: '冻结状态机、签名边界与公开模拟范围', status: 'scoped' },
+      { label: 'Build', detail: '实现 Runner、SSE、响应式工作台与验证候选', status: 'implemented' },
+      { label: 'Review', detail: '发现并修复重复启动、订阅取消和地址暴露风险', status: 'reviewed' },
+      { label: 'Verify', detail: '构建、race、重连和公开安全门禁通过', status: 'verified' },
+      { label: 'Human decision', detail: '公开版保持 simulation，不包装成生产钱包', status: 'human-gate' },
+    ],
+    boundary: '当前证据来自 Wallet Reliability Lab 公开交付；Launchpad 的多链注资 E2E 与生产签名集群仍需单独验收。',
+    evidence: {
+      label: '查看 Wallet AI 交付',
+      destination: { kind: 'internal', to: '/ai/deliveries/wallet-reliability-lab-v1' },
+    },
+    assistantPrompt: 'AI 在 Wallet Platform 的工程交付中做了什么，人做了哪些决定？',
+  },
+  {
+    id: 'market',
+    label: 'Current frame · Market Server',
+    title: '先把市场事实做可信，再公开 AI 交付。',
+    summary: 'Market Server 已有本地构建、测试和 release artifact；当前没有单独发布的 AI delivery，因此右轨只展示可复核项目证据。',
+    steps: [
+      { label: 'Scope', detail: '统一来源、新鲜度、降级状态与虚拟交易边界', status: 'scoped' },
+      { label: 'Build', detail: '聚合 CEX、Perp、AMM 与只读 gRPC 能力', status: 'implemented' },
+      { label: 'Review', detail: '区分来源事实、缓存状态与服务降级', status: 'reviewed' },
+      { label: 'Verify', detail: 'go test、构建与 release artifact 本地验证', status: 'verified' },
+      { label: 'AI delivery', detail: '尚未形成独立公开交付记录', status: 'pending' },
+    ],
+    boundary: '使用虚拟资金与本地验证；Doris 真实联调、长期运行和生产流量尚未作为公开完成证据。',
+    evidence: {
+      label: '查看 Market 验证证据',
+      destination: { kind: 'internal', to: '/engineering/evidence' },
+    },
+    assistantPrompt: 'Market Server 当前已经验证什么，AI 交付证据还缺什么？',
+  },
+  {
+    id: 'ai',
+    label: 'Current frame · AI Engineering System',
+    title: 'AI 不替我判断，它让判断更快进入验证。',
+    summary: 'Planner、Worker、Reviewer 与人工验收拆开计划、执行和审查；代码差异、测试结果和已知限制共同决定是否交付。',
+    steps: [
+      { label: 'Context', detail: '定义目标、风险、允许修改范围与不做什么', status: 'scoped' },
+      { label: 'Execute', detail: '按计划实现并保留可审查的代码差异', status: 'implemented' },
+      { label: 'Review', detail: '寻找错误、遗漏、越权和证据不足', status: 'reviewed' },
+      { label: 'Test', detail: '构建、类型、链接、安全和场景门禁', status: 'verified' },
+      { label: 'Accept', detail: '由我决定接受、修正、暂停或拒绝', status: 'human-gate' },
+    ],
+    boundary: '模型审查不能替代安全判断；私人内容、密钥、账户与未核验结论不进入公开知识图谱。',
+    evidence: {
+      label: '查看全部 AI 真实交付',
+      destination: { kind: 'internal', to: '/ai/deliveries' },
+    },
+    assistantPrompt: '用真实交付证据解释 xiuqiu 的 AI Engineering 工作流。',
+  },
+] as const
