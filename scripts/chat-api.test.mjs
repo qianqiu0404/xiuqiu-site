@@ -110,6 +110,7 @@ test('chat endpoint sends public context with low-latency model settings', async
   assert.deepEqual(upstreamBody.thinking, { type: 'disabled' })
   assert.equal(upstreamBody.messages.at(-1).content, 'Wallet Launchpad 完成后是什么产品？')
   assert.match(upstreamBody.messages[0].content, /Current page title: Wallet Launchpad/)
-  assert.match(upstreamBody.messages[0].content, /Website context:/)
+  assert.match(upstreamBody.messages[0].content, /Relevant public website context:/)
+  assert.match(upstreamBody.messages[0].content, /Project: Wallet Launchpad/)
   assert.equal(upstreamRequest.options.headers.Authorization, 'Bearer test-only-key')
 })

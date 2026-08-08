@@ -42,12 +42,25 @@ const chatInput = ref<HTMLTextAreaElement | null>(null)
 const chatToggle = ref<HTMLButtonElement | null>(null)
 const lastOpener = ref<HTMLElement | null>(null)
 const explicitPageContext = ref<PageContext | null>(null)
+const CLIENT_REQUEST_TIMEOUT_MS = 20_000
+let activeRequestController: AbortController | null = null
 const messages = ref<ChatMessage[]>([
   {
     role: 'assistant',
-    content: '你好，我可以基于网站中经过整理的工程证据，帮你了解 xiuqiu 正在做什么、已经验证了什么，以及目标完成形态是什么。',
+    content: '你好，我是 xiuqiu AI。我只基于本站公开资料，帮你理解 Wallet Launchpad、Qiu Market Server、钱包工程证据，以及它们的目标完成形态与当前验证边界。',
   },
 ])
+
+const referenceTypeLabels: Record<SiteReference['type'], string> = {
+  article: '工程笔记',
+  project: '项目',
+  capability: '能力',
+  ai: 'AI 协作',
+  radar: '研究雷达',
+  failure: '异常手册',
+  evidence: '工程证据',
+  delivery: '交付记录',
+}
 
 const canSend = computed(() => input.value.trim().length > 0 && !isLoading.value)
 const currentPageContext = computed<PageContext>(() => {
@@ -240,9 +253,15 @@ async function toggleChat() {
 }
 
 function closeChat() {
+  cancelActiveRequest()
   isOpen.value = false
   errorMessage.value = ''
   void nextTick(() => (lastOpener.value || chatToggle.value)?.focus())
+}
+
+function cancelActiveRequest() {
+  activeRequestController?.abort()
+  activeRequestController = null
 }
 
 async function sendQuickPrompt(prompt: string) {
@@ -277,9 +296,18 @@ async function sendMessage() {
 
   await scrollToBottom()
 
+  const controller = new AbortController()
+  activeRequestController = controller
+  let didTimeout = false
+  const timeoutId = window.setTimeout(() => {
+    didTimeout = true
+    controller.abort()
+  }, CLIENT_REQUEST_TIMEOUT_MS)
+
   try {
     const response = await fetch('/api/chat', {
       method: 'POST',
+      signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
       },
@@ -290,7 +318,7 @@ async function sendMessage() {
     })
 
     const responseText = await response.text()
-    let payload: { answer?: unknown; error?: string; references?: unknown } = {}
+    let payload: { answer?: unknown; error?: string; references?: unknown; requestId?: unknown } = {}
 
     try {
       payload = responseText ? JSON.parse(responseText) : {}
@@ -312,12 +340,21 @@ async function sendMessage() {
       references: normalizeReferences(payload.references),
     })
   } catch (error) {
+    if (error instanceof Error && error.name === 'AbortError') {
+      if (didTimeout) {
+        errorMessage.value = 'xiuqiu AI 响应超过 20 秒，请稍后重试。'
+      }
+      return
+    }
+
     errorMessage.value = error instanceof Error ? error.message : '暂时无法连接 AI 服务，请稍后再试。'
     messages.value.push({
       role: 'assistant',
       content: '抱歉，AI 服务暂时不可用。你可以稍后再试，或通过 GitHub 继续了解 xiuqiu 的项目。',
     })
   } finally {
+    window.clearTimeout(timeoutId)
+    if (activeRequestController === controller) activeRequestController = null
     explicitPageContext.value = null
     isLoading.value = false
     await scrollToBottom()
@@ -364,6 +401,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  cancelActiveRequest()
   window.removeEventListener('ai-chat:ask', handleAskAi)
   window.removeEventListener('keydown', handleEscape)
 })
@@ -387,7 +425,8 @@ onUnmounted(() => {
       <header class="ai-chat-header">
         <div>
           <p class="ai-chat-kicker">xiuqiu AI · DeepSeek</p>
-          <h2 class="ai-chat-title">工程内容助手</h2>
+          <h2 class="ai-chat-title">产品与工程证据助手</h2>
+          <p class="ai-chat-scope">公开知识 · 不读取私有仓库</p>
         </div>
         <button class="ai-icon-button" type="button" aria-label="关闭 AI 助手" @click="closeChat">
           ×
@@ -396,7 +435,7 @@ onUnmounted(() => {
 
       <p class="ai-chat-context">当前页面 · {{ currentPageContext.title }}</p>
 
-      <div ref="messageList" class="ai-chat-messages" aria-live="polite">
+      <div ref="messageList" class="ai-chat-messages" aria-live="polite" :aria-busy="isLoading">
         <article
           v-for="(message, index) in messages"
           :key="index"
@@ -413,7 +452,7 @@ onUnmounted(() => {
               :href="reference.href"
             >
               <span>{{ reference.title }}</span>
-              <small>{{ reference.type }}</small>
+              <small>{{ referenceTypeLabels[reference.type] }}</small>
             </a>
           </div>
         </article>
@@ -438,7 +477,7 @@ onUnmounted(() => {
       <p v-if="errorMessage" class="ai-chat-error" role="alert">{{ errorMessage }}</p>
 
       <p class="ai-chat-privacy">
-        回答只使用本站公开内容；你的问题会发送至 DeepSeek API。请勿输入密钥、账户、地址、交易或其他隐私信息。
+        回答只使用本站公开内容，不读取 Obsidian 原文、私有仓库或账户数据；你的问题会发送至 DeepSeek API。请勿输入密钥、账户、地址、交易或其他隐私信息。
       </p>
 
       <form class="ai-chat-form" @submit.prevent="sendMessage">
@@ -648,6 +687,13 @@ onUnmounted(() => {
   font-weight: 700;
   letter-spacing: 0;
   line-height: 1.25;
+}
+
+.ai-chat-scope {
+  margin-top: 4px;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.35;
 }
 
 .ai-chat-context {
