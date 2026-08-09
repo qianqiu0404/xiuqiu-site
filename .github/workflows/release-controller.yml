@@ -1,0 +1,511 @@
+name: Release Controller
+run-name: Release controller · ${{ inputs.operation || 'dry-run' }} · ${{ inputs.release_sha || github.sha }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: Dry-run is inert; release enables the production chain
+        type: choice
+        options: [dry-run, release]
+        default: dry-run
+        required: true
+      release_sha:
+        description: Required for release; must equal the live main HEAD SHA
+        type: string
+        required: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ inputs.operation == 'release' && 'xiuqiu-production-release' || format('release-controller-dry-run-{0}', github.run_id) }}
+  cancel-in-progress: false
+
+jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    outputs:
+      operation: ${{ steps.plan.outputs.operation }}
+      release_sha: ${{ steps.plan.outputs.release_sha }}
+      dag_audit: ${{ steps.audit.outputs.dag_audit }}
+      permission_audit: ${{ steps.audit.outputs.permission_audit }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      REQUESTED_OPERATION: ${{ inputs.operation }}
+      REQUESTED_SHA: ${{ inputs.release_sha }}
+      MARKET_RADAR_ENABLED: ${{ vars.MARKET_RADAR_ENABLED }}
+    steps:
+      - name: Resolve an immutable release plan
+        id: plan
+        shell: bash
+        run: |
+          set -euo pipefail
+          operation="${REQUESTED_OPERATION:-dry-run}"
+          case "$operation" in
+            dry-run|release) ;;
+            *) echo "Unsupported operation: $operation" >&2; exit 1 ;;
+          esac
+
+          remote_main=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')
+          release_sha="${REQUESTED_SHA:-$GITHUB_SHA}"
+          if [[ ! "$release_sha" =~ ^[0-9a-f]{40}$ ]]; then
+            echo 'release_sha must be a full lowercase 40-character commit SHA' >&2
+            exit 1
+          fi
+
+          if [ "$operation" = 'release' ]; then
+            test -n "$REQUESTED_SHA"
+            test "$GITHUB_REF" = 'refs/heads/main'
+            test "$GITHUB_SHA" = "$remote_main"
+            test "$release_sha" = "$remote_main"
+            test "$MARKET_RADAR_ENABLED" = 'true'
+          fi
+
+          echo "operation=$operation" >> "$GITHUB_OUTPUT"
+          echo "release_sha=$release_sha" >> "$GITHUB_OUTPUT"
+          echo "Resolved $operation at $release_sha (live main: $remote_main)"
+
+      - name: Checkout the exact planned SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.plan.outputs.release_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify exact checkout
+        env:
+          RELEASE_SHA: ${{ steps.plan.outputs.release_sha }}
+        run: test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - name: Audit release DAG and permission boundaries
+        id: audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          node <<'NODE'
+          const assert = require('node:assert/strict')
+          const fs = require('node:fs')
+          const { parse } = require('yaml')
+
+          const controller = parse(fs.readFileSync('.github/workflows/release-controller.yml', 'utf8'))
+          const worker = parse(fs.readFileSync('.github/workflows/market-radar.yml', 'utf8'))
+          const controllerSource = fs.readFileSync('.github/workflows/release-controller.yml', 'utf8')
+          assert.deepEqual(Object.keys(controller.on), ['workflow_dispatch'])
+          assert.equal(controller.on.workflow_dispatch.inputs.operation.default, 'dry-run')
+          assert.equal(controller.jobs.preflight.environment, undefined)
+          assert.doesNotMatch(JSON.stringify(controller.jobs.preflight), /secrets\./)
+          assert.equal(controller.jobs.production_migration.needs, 'preflight')
+          assert.deepEqual(controller.jobs.stage_vercel_candidate.needs, ['preflight', 'production_migration'])
+          assert.deepEqual(controller.jobs.verify_vercel_candidate.needs, ['preflight', 'stage_vercel_candidate'])
+          assert.deepEqual(controller.jobs.promote_vercel_production.needs, ['preflight', 'verify_vercel_candidate'])
+          assert.deepEqual(controller.jobs.mark_deployed_sha.needs, ['preflight', 'promote_vercel_production'])
+          assert.deepEqual(controller.jobs.promote_market_radar_worker.needs, ['preflight', 'mark_deployed_sha'])
+          assert.match(controller.concurrency.group, /xiuqiu-production-release/)
+          for (const jobName of [
+            'production_migration', 'stage_vercel_candidate', 'verify_vercel_candidate',
+            'promote_vercel_production', 'mark_deployed_sha', 'promote_market_radar_worker',
+          ]) assert.equal(controller.jobs[jobName].environment, 'production-release')
+          assert.match(controllerSource, /VERCEL_CLI_VERSION: 58\.9\.0/)
+          const tokenFlag = ['--', 'token'].join('')
+          for (const job of Object.values(controller.jobs)) {
+            for (const step of job.steps || []) {
+              if (!step.run || step.id === 'audit') continue
+              assert.equal(step.run.includes(tokenFlag), false)
+              if (step.run.includes('curl')) {
+                assert.equal(step.run.includes('VERCEL_TOKEN'), false)
+                assert.equal(step.run.includes('Authorization'), false)
+              }
+            }
+          }
+          assert.equal(worker.concurrency.group, 'xiuqiu-production-release')
+          assert.equal(worker.on.workflow_dispatch.inputs.mode.default, 'dry-run')
+          assert.equal(worker.jobs.authorize.environment, undefined)
+          assert.doesNotMatch(JSON.stringify(worker.jobs.authorize), /secrets\./)
+          assert.equal(worker.jobs.run.environment, 'production-release')
+          console.log('Release DAG and inert dry-run boundary are valid')
+          NODE
+          echo 'dag_audit=passed' >> "$GITHUB_OUTPUT"
+          echo 'permission_audit=passed' >> "$GITHUB_OUTPUT"
+          {
+            echo '### Release controller dry-run evidence'
+            echo '- DAG audit: passed'
+            echo '- Permission/environment audit: passed'
+            echo '- Production secrets requested: none'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Run release preflight
+        run: npm run build
+
+      - name: Confirm dry-run remains inert
+        if: steps.plan.outputs.operation == 'dry-run'
+        run: echo 'Dry-run complete. No production environment or production secret was requested.'
+
+  production_migration:
+    if: needs.preflight.outputs.operation == 'release'
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production-release
+    permissions:
+      contents: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_SHA: ${{ needs.preflight.outputs.release_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Revalidate live main and exact checkout
+        run: |
+          set -euo pipefail
+          remote_main=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')
+          test "$remote_main" = "$RELEASE_SHA"
+          test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - name: Apply production Market Radar migrations
+        env:
+          MARKET_RADAR_DATABASE_URL: ${{ secrets.MARKET_RADAR_DATABASE_URL }}
+        run: |
+          set -euo pipefail
+          test -n "$MARKET_RADAR_DATABASE_URL"
+          npm run market-radar:migrate
+
+  stage_vercel_candidate:
+    if: needs.preflight.outputs.operation == 'release'
+    needs: [preflight, production_migration]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production-release
+    permissions:
+      contents: read
+    outputs:
+      deployment_url: ${{ steps.deploy.outputs.deployment_url }}
+      deployment_id: ${{ steps.deploy.outputs.deployment_id }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_SHA: ${{ needs.preflight.outputs.release_sha }}
+      VERCEL_CLI_VERSION: 58.9.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Revalidate live main and exact checkout
+        run: |
+          set -euo pipefail
+          remote_main=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')
+          test "$remote_main" = "$RELEASE_SHA"
+          test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+      - name: Install the pinned Vercel CLI
+        run: |
+          set -euo pipefail
+          npm install --global "vercel@${VERCEL_CLI_VERSION}"
+          vercel --version | grep -Eq '(^| )58\.9\.0$'
+
+      - name: Pull production configuration and build the exact SHA
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID || secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID || secrets.VERCEL_PROJECT_ID }}
+          VERCEL_GIT_COMMIT_SHA: ${{ needs.preflight.outputs.release_sha }}
+          VERCEL_GIT_COMMIT_REF: main
+        run: |
+          set -euo pipefail
+          test -n "$VERCEL_TOKEN"
+          test -n "$VERCEL_ORG_ID"
+          test -n "$VERCEL_PROJECT_ID"
+          vercel pull --yes --environment=production
+          vercel build --prod
+
+      - name: Stage an unaliased production candidate
+        id: deploy
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID || secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID || secrets.VERCEL_PROJECT_ID }}
+          VERCEL_GIT_COMMIT_SHA: ${{ needs.preflight.outputs.release_sha }}
+          VERCEL_GIT_COMMIT_REF: main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$VERCEL_TOKEN"
+          test -n "$VERCEL_ORG_ID"
+          test -n "$VERCEL_PROJECT_ID"
+          deployment_json=$(vercel deploy --prebuilt --prod --skip-domain --yes --json \
+            --meta "githubCommitSha=$RELEASE_SHA" \
+            --meta 'githubCommitRef=main' \
+            --meta "githubCommitRepo=$GITHUB_REPOSITORY")
+          deployment_id=$(jq -r '.id // empty' <<< "$deployment_json")
+          deployment_url=$(jq -r '.url // empty' <<< "$deployment_json")
+          if [[ "$deployment_url" != https://* ]]; then deployment_url="https://${deployment_url}"; fi
+          [[ "$deployment_id" =~ ^dpl_[A-Za-z0-9]+$ ]]
+          [[ "$deployment_url" =~ ^https://[A-Za-z0-9.-]+$ ]]
+          echo "deployment_id=$deployment_id" >> "$GITHUB_OUTPUT"
+          echo "deployment_url=$deployment_url" >> "$GITHUB_OUTPUT"
+          echo "Staged exact-SHA candidate without moving a production alias: $deployment_url"
+
+  verify_vercel_candidate:
+    if: needs.preflight.outputs.operation == 'release'
+    needs: [preflight, stage_vercel_candidate]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production-release
+    permissions:
+      contents: read
+    outputs:
+      deployment_url: ${{ steps.ready.outputs.deployment_url }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_SHA: ${{ needs.preflight.outputs.release_sha }}
+      DEPLOYMENT_URL: ${{ needs.stage_vercel_candidate.outputs.deployment_url }}
+      DEPLOYMENT_ID: ${{ needs.stage_vercel_candidate.outputs.deployment_id }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Revalidate live main and exact checkout
+        run: |
+          set -euo pipefail
+          remote_main=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')
+          test "$remote_main" = "$RELEASE_SHA"
+          test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
+
+      - name: Verify candidate READY, target, project and Git metadata
+        id: ready
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID || secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID || secrets.VERCEL_PROJECT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$VERCEL_TOKEN"
+          test -n "$VERCEL_ORG_ID"
+          test -n "$VERCEL_PROJECT_ID"
+          node <<'NODE'
+          const fs = require('node:fs')
+          const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+          const deployment = new URL(process.env.DEPLOYMENT_URL)
+          const endpoint = new URL(`https://api.vercel.com/v13/deployments/${encodeURIComponent(process.env.DEPLOYMENT_ID)}`)
+          endpoint.searchParams.set('teamId', process.env.VERCEL_ORG_ID)
+          const headers = { Authorization: `Bearer ${process.env.VERCEL_TOKEN}` }
+
+          async function verify() {
+            for (let attempt = 1; attempt <= 30; attempt += 1) {
+              const response = await fetch(endpoint, { headers })
+              if (!response.ok) throw new Error(`Vercel deployment API returned ${response.status}`)
+              const value = await response.json()
+              const projectId = value.projectId || value.project?.id
+              const gitSourceMatches = value.gitSource?.sha == null
+                || value.gitSource.sha === process.env.RELEASE_SHA
+              const exact = value.readyState === 'READY'
+                && value.target === 'production'
+                && value.url === deployment.hostname
+                && projectId === process.env.VERCEL_PROJECT_ID
+                && value.aliasError == null
+                && gitSourceMatches
+                && value.meta?.githubCommitSha === process.env.RELEASE_SHA
+                && value.meta?.githubCommitRef === 'main'
+              if (exact) {
+                fs.appendFileSync(process.env.GITHUB_OUTPUT, `deployment_url=${process.env.DEPLOYMENT_URL}\n`)
+                console.log(`Verified READY production candidate for exact SHA ${process.env.RELEASE_SHA}`)
+                return
+              }
+              if (['ERROR', 'CANCELED'].includes(value.readyState)) {
+                throw new Error(`Vercel candidate entered terminal state ${value.readyState}`)
+              }
+              console.log(`Attempt ${attempt}: candidate is not exact-SHA READY yet`)
+              await sleep(20_000)
+            }
+            throw new Error('Exact-SHA Vercel candidate did not become READY')
+          }
+          verify().catch(error => {
+            console.error(error instanceof Error ? error.message : String(error))
+            process.exit(1)
+          })
+          NODE
+
+      - name: Smoke the unaliased candidate before promotion
+        env:
+          SMOKE_URL: ${{ steps.ready.outputs.deployment_url }}
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error --location --max-time 30 "$SMOKE_URL/" >/dev/null
+          curl --fail --silent --show-error --location --max-time 30 "$SMOKE_URL/market-radar" >/dev/null
+          events=$(curl --fail --silent --show-error --max-time 30 "$SMOKE_URL/api/market-radar/events?limit=1")
+          jq -e '(.items | type) == "array"' <<< "$events" >/dev/null
+
+  promote_vercel_production:
+    if: needs.preflight.outputs.operation == 'release'
+    needs: [preflight, verify_vercel_candidate]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production-release
+    permissions:
+      contents: read
+    outputs:
+      deployment_url: ${{ steps.promote.outputs.deployment_url }}
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_SHA: ${{ needs.preflight.outputs.release_sha }}
+      DEPLOYMENT_URL: ${{ needs.verify_vercel_candidate.outputs.deployment_url }}
+      VERCEL_CLI_VERSION: 58.9.0
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Revalidate promotion boundary
+        run: |
+          set -euo pipefail
+          remote_main=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')
+          test "$remote_main" = "$RELEASE_SHA"
+          test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install the pinned Vercel CLI
+        run: |
+          set -euo pipefail
+          npm install --global "vercel@${VERCEL_CLI_VERSION}"
+          vercel --version | grep -Eq '(^| )58\.9\.0$'
+
+      - name: Promote the verified candidate to production aliases
+        id: promote
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID || secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID || secrets.VERCEL_PROJECT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$VERCEL_TOKEN"
+          test -n "$VERCEL_ORG_ID"
+          test -n "$VERCEL_PROJECT_ID"
+          vercel promote "$DEPLOYMENT_URL" --yes
+          echo "deployment_url=$DEPLOYMENT_URL" >> "$GITHUB_OUTPUT"
+
+  mark_deployed_sha:
+    if: needs.preflight.outputs.operation == 'release'
+    needs: [preflight, promote_vercel_production]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production-release
+    permissions:
+      contents: read
+      deployments: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_SHA: ${{ needs.preflight.outputs.release_sha }}
+      DEPLOYMENT_URL: ${{ needs.promote_vercel_production.outputs.deployment_url }}
+    steps:
+      - name: Revalidate live main
+        run: |
+          set -euo pipefail
+          remote_main=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')
+          test "$remote_main" = "$RELEASE_SHA"
+
+      - name: Record the controller-authorized deployed SHA
+        shell: bash
+        run: |
+          set -euo pipefail
+          deployment=$(jq -n \
+            --arg ref "$RELEASE_SHA" \
+            '{
+              ref: $ref,
+              environment: "market-radar-production-authorized",
+              description: "release-controller-authorized",
+              auto_merge: false,
+              required_contexts: [],
+              payload: {controller: "release-controller.yml", release_sha: $ref}
+            }' | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input -)
+          deployment_id=$(jq -r '.id' <<< "$deployment")
+          test -n "$deployment_id"
+
+          jq -n \
+            --arg url "$DEPLOYMENT_URL" \
+            '{
+              state: "success",
+              environment: "market-radar-production-authorized",
+              description: "Exact-SHA Vercel production deployment is READY",
+              environment_url: $url,
+              auto_inactive: true
+            }' | gh api --method POST \
+              "repos/${GITHUB_REPOSITORY}/deployments/${deployment_id}/statuses" --input - >/dev/null
+          echo "Recorded deployment marker $deployment_id for $RELEASE_SHA"
+
+  promote_market_radar_worker:
+    if: needs.preflight.outputs.operation == 'release'
+    needs: [preflight, mark_deployed_sha]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production-release
+    permissions:
+      contents: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_SHA: ${{ needs.preflight.outputs.release_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Revalidate worker promotion boundary
+        run: |
+          set -euo pipefail
+          remote_main=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')
+          test "$remote_main" = "$RELEASE_SHA"
+          test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - name: Promote the exact-SHA Market Radar worker
+        env:
+          MARKET_RADAR_DATABASE_URL: ${{ secrets.MARKET_RADAR_DATABASE_URL }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          DEEPSEEK_MODEL: ${{ vars.DEEPSEEK_MODEL || 'deepseek-v4-flash' }}
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+          QIU_MARKET_BASE_URL: https://qiu-market.vercel.app
+        run: |
+          set -euo pipefail
+          test -n "$MARKET_RADAR_DATABASE_URL"
+          test -n "$DEEPSEEK_API_KEY"
+          test -n "$SEC_USER_AGENT"
+          npm run market-radar:worker
