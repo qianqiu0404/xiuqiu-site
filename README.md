@@ -50,18 +50,27 @@ npm run check:public
 
 ## Environment
 
-Configure only in Vercel:
+Configure the website runtime in Vercel for both Production and Preview:
 
 ```env
 DEEPSEEK_API_KEY=
 DEEPSEEK_MODEL=deepseek-v4-flash
 MARKET_RADAR_DATABASE_URL=
+MARKET_RADAR_DISPATCH_TOKEN=
+```
+
+Configure the scheduled Market Radar worker in GitHub Actions secrets. The database URL must be the same Neon pooled connection string used by Vercel:
+
+```env
+MARKET_RADAR_DATABASE_URL=
 MARKETAUX_API_TOKEN=
 ALPHAVANTAGE_API_KEY=
 TWELVE_DATA_API_KEY=
-MARKET_RADAR_DISPATCH_TOKEN=
+DEEPSEEK_API_KEY=
 SEC_USER_AGENT=
 ```
+
+Keep `MARKET_RADAR_ENABLED` as a GitHub Actions variable set to `false` until migrations and the manual ingestion smoke test pass. Hermes stores `MARKET_RADAR_DISPATCH_TOKEN` and `WEIXIN_HOME_CHANNEL` only in its local secret environment; Weixin credentials never belong in Vercel or GitHub.
 
 The right-side assistant is part of the public site. It uses the reviewed public knowledge graph, sends visitor questions to the DeepSeek API, and fails closed when the provider key is unavailable. The in-memory limiter is a best-effort per-instance guard, not a persistent production quota. Never commit a real API key. `.env.example` contains names and safe defaults only.
 
