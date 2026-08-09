@@ -160,7 +160,7 @@ test('homepage and primary navigation keep their structural contract', () => {
   const links = [...primaryNavigation.matchAll(/<router-link\s+to="([^"]+)"[^>]*>([^<]+)<\/router-link>/g)]
     .map(([, to, label]) => ({ to, label: label.trim() }))
 
-  assert.equal(links.length, 5)
+  assert.equal(links.length, 6)
   assertUnique(links.map(link => link.to), 'primary navigation destinations')
   assertUnique(links.map(link => link.label), 'primary navigation labels')
   assert.deepEqual(links.map(link => link.to), [
@@ -169,6 +169,7 @@ test('homepage and primary navigation keep their structural contract', () => {
     '/ai',
     '/engineering/evidence',
     '/radar',
+    '/market-radar',
   ])
 })
 

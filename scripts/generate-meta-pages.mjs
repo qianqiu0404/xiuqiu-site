@@ -7,6 +7,7 @@ import { dailyRadars } from '../src/data/generatedRadarAll.ts'
 import { radarWeeklies } from '../src/data/generatedRadarWeeklies.ts'
 import { deliveryRecords } from '../src/data/generatedDeliveries.ts'
 import { nowSnapshot } from '../src/data/generatedNow.ts'
+import { allMarketRadars } from '../src/data/generatedMarketRadarAll.ts'
 
 const SITE_URL = 'https://xiuqiu-site.vercel.app'
 const distIndexUrl = new URL('../dist/index.html', import.meta.url)
@@ -193,6 +194,19 @@ writePage(
 )
 
 writePage(
+  '/market-radar',
+  replaceMeta(baseHtml, {
+    title: '交易研究雷达｜xiuqiu',
+    description: '基于公开来源的静态交易事件观察：事实、影响资产、观察条件和失效边界分开呈现，不调用实时行情 API。',
+    path: '/market-radar',
+    structuredData: {
+      '@context': 'https://schema.org', '@type': 'CollectionPage', name: '交易研究雷达｜xiuqiu',
+      url: `${SITE_URL}/market-radar`, author: { '@type': 'Person', name: 'xiuqiu' },
+    },
+  }),
+)
+
+writePage(
   '/articles',
   replaceMeta(baseHtml, {
     title: '工程笔记｜xiuqiu Web3 钱包学习档案',
@@ -268,6 +282,20 @@ dailyRadars.forEach(radar => {
         '@context': 'https://schema.org', '@type': 'Article', headline: radar.title, description: radar.summary,
         datePublished: radar.date, author: { '@type': 'Person', name: 'xiuqiu' },
         url: `${SITE_URL}/radar/${radar.slug}`, mainEntityOfPage: `${SITE_URL}/radar/${radar.slug}`,
+      },
+    }),
+  )
+})
+
+allMarketRadars.forEach(radar => {
+  writePage(
+    `/market-radar/${radar.slug}`,
+    replaceMeta(baseHtml, {
+      title: `${radar.title}｜xiuqiu`, description: radar.summary, path: `/market-radar/${radar.slug}`, type: 'article',
+      structuredData: {
+        '@context': 'https://schema.org', '@type': 'Article', headline: radar.title, description: radar.summary,
+        datePublished: radar.date, author: { '@type': 'Person', name: 'xiuqiu' },
+        url: `${SITE_URL}/market-radar/${radar.slug}`, mainEntityOfPage: `${SITE_URL}/market-radar/${radar.slug}`,
       },
     }),
   )
