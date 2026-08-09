@@ -21,15 +21,17 @@
 
 .radar-intelligence-page *,
 .radar-daily-reader-page *,
-.radar-weekly-reader-page * {
+.radar-weekly-reader-page *,
+.radar-reader-not-found * {
   min-width: 0;
 }
 
 .radar-intelligence-page :where(a, button):focus-visible,
-.radar-daily-reader-page :where(a, summary):focus-visible,
-.radar-weekly-reader-page :where(a, summary):focus-visible {
+.radar-daily-reader-page :where(a, button, summary):focus-visible,
+.radar-weekly-reader-page :where(a, button, summary):focus-visible,
+.radar-reader-not-found :where(a, button):focus-visible {
   outline: 2px solid #9eb3ff;
-  outline-offset: 5px;
+  outline-offset: 3px;
 }
 
 .radar-intelligence-shell,
@@ -132,6 +134,13 @@
   letter-spacing: -0.04em;
 }
 
+.radar-hero-status > div:first-child strong {
+  color: #e9edf3;
+  font-size: 17px;
+  font-weight: 620;
+  line-height: 1.45;
+}
+
 .radar-hero-status dl {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -160,6 +169,26 @@
 .radar-hero-status > p {
   border-top: 1px solid var(--radar-night-line);
   padding: 17px 0;
+}
+
+.radar-review-status {
+  display: grid;
+  justify-items: end;
+  gap: 7px;
+  color: #7e8896;
+  font: 620 11px/1.55 var(--mono);
+  text-align: right;
+}
+
+.radar-review-status time {
+  color: #c5ccd6;
+}
+
+.radar-review-status span,
+.radar-review-boundary {
+  color: #8f98a5;
+  font-size: 10px;
+  line-height: 1.65;
 }
 
 /* Daily stage */
@@ -277,8 +306,8 @@
 }
 
 .radar-signal-ledger li > a {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -564,7 +593,66 @@
 .radar-archive-empty {
   border-bottom: 1px solid var(--radar-line);
   color: var(--radar-muted);
+  line-height: 1.75;
   padding: 42px 0;
+}
+
+.radar-daily-empty {
+  border-top: 1px solid var(--radar-line);
+  border-bottom: 1px solid var(--radar-line);
+  color: var(--radar-copy);
+  line-height: 1.8;
+  padding: clamp(30px, 5vw, 48px) 0;
+}
+
+.radar-daily-empty :where(h2, strong) {
+  display: block;
+  color: var(--radar-ink);
+  font-size: clamp(20px, 2.6vw, 28px);
+  font-weight: 620;
+  letter-spacing: -0.025em;
+}
+
+.radar-daily-empty p {
+  max-width: 640px;
+  margin-top: 10px;
+}
+
+.radar-daily-empty a {
+  min-height: 44px;
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  margin-top: 14px;
+  color: #3559bb;
+  font-size: 13px;
+  font-weight: 680;
+}
+
+.radar-convergence-stage .radar-daily-empty {
+  border-color: var(--radar-night-line);
+  color: var(--radar-night-copy);
+}
+
+.radar-convergence-stage .radar-daily-empty :where(h2, strong) {
+  color: #f2f4f7;
+}
+
+.radar-archive-empty button {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  background: transparent;
+  color: #3559bb;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.4;
+  margin-top: 10px;
+  padding: 0;
 }
 
 .radar-archive-toggle {
@@ -679,6 +767,13 @@
 
 .radar-reader-summary dd {
   color: #c5ccd6;
+}
+
+.radar-reader-summary .radar-review-boundary {
+  display: block;
+  margin-top: 14px;
+  color: #9fa8b4;
+  font: 600 11px/1.7 var(--mono);
 }
 
 .radar-reader-body {
@@ -982,6 +1077,10 @@
   font: 650 9px/1.5 var(--mono);
 }
 
+.radar-weekly-reader-section h2.radar-kicker {
+  margin: 0;
+}
+
 .radar-weekly-reader-section[data-tone='shipped'] > header > span,
 .radar-weekly-reader-section[data-tone='shipped'] .radar-kicker {
   color: #2d8066;
@@ -993,9 +1092,70 @@
 }
 
 .radar-reader-not-found {
-  min-height: 100vh;
-  padding-top: 140px;
+  min-height: max(520px, calc(100svh - 96px));
+  display: grid;
+  align-items: center;
+  padding: clamp(92px, 12vw, 148px) 0;
   background: var(--radar-paper);
+  color: var(--radar-ink);
+}
+
+.radar-state {
+  width: 100%;
+}
+
+.radar-state__content {
+  width: min(100% - 48px, 760px);
+  margin: 0 auto;
+  border-top: 1px solid var(--radar-line);
+  border-bottom: 1px solid var(--radar-line);
+  padding: clamp(30px, 6vw, 54px) 0;
+}
+
+.radar-state__eyebrow {
+  color: #5d6f9f;
+  font: 650 10px/1.5 var(--mono);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.radar-state__title {
+  max-width: 680px;
+  margin-top: 13px;
+  font-size: clamp(31px, 5vw, 48px);
+  font-weight: 630;
+  letter-spacing: -0.045em;
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.radar-state__message {
+  max-width: 620px;
+  margin-top: 16px;
+  color: var(--radar-copy);
+  font-size: 15px;
+  line-height: 1.8;
+  text-wrap: pretty;
+}
+
+.radar-state__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 18px;
+  margin-top: 24px;
+}
+
+.radar-state__actions :where(a, button) {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radar-state__actions a:not(.btn) {
+  color: #3559bb;
+  font-size: 13px;
+  font-weight: 680;
 }
 
 @media (hover: hover) {
@@ -1052,6 +1212,11 @@
     justify-self: start;
   }
 
+  .radar-review-status {
+    justify-items: start;
+    text-align: left;
+  }
+
   .radar-convergence-grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -1082,20 +1247,41 @@
 @media (max-width: 620px) {
   .radar-intelligence-hero {
     min-height: auto;
-    padding: 112px 0 76px;
+    padding: 92px 0 58px;
   }
 
   .radar-hero-layout {
-    gap: 58px;
+    gap: 34px;
   }
 
   .radar-hero-copy h1 {
-    font-size: clamp(50px, 15vw, 67px);
+    margin-top: 17px;
+    font-size: clamp(46px, 13.2vw, 56px);
   }
 
   .radar-hero-copy > p:last-child {
-    margin-top: 24px;
+    margin-top: 20px;
     font-size: 15px;
+  }
+
+  .radar-hero-status > div:first-child {
+    padding: 14px 0 16px;
+  }
+
+  .radar-hero-status time {
+    font-size: 20px;
+  }
+
+  .radar-hero-status dl > div {
+    padding: 16px 0;
+  }
+
+  .radar-hero-status dd {
+    font-size: 36px;
+  }
+
+  .radar-hero-status > p {
+    padding: 13px 0;
   }
 
   .radar-daily-stage,
@@ -1124,7 +1310,7 @@
   }
 
   .radar-signal-ledger li {
-    grid-template-columns: 28px minmax(0, 1fr) 34px;
+    grid-template-columns: 28px minmax(0, 1fr) 44px;
     gap: 10px;
     padding: 28px 0;
   }
@@ -1134,8 +1320,8 @@
   }
 
   .radar-signal-ledger li > a {
-    width: 34px;
-    height: 34px;
+    width: 44px;
+    height: 44px;
   }
 
   .radar-convergence-lead {
@@ -1190,16 +1376,20 @@
   }
 
   .radar-reader-hero {
-    padding: 102px 0 70px;
+    padding: 86px 0 54px;
   }
 
   .radar-reader-hero-grid {
-    gap: 42px;
-    margin-top: 34px;
+    gap: 30px;
+    margin-top: 28px;
   }
 
   .radar-reader-hero h1 {
-    font-size: clamp(43px, 13vw, 58px);
+    font-size: clamp(39px, 11.5vw, 50px);
+  }
+
+  .radar-reader-summary dl {
+    margin-top: 20px;
   }
 
   .radar-reader-index,
@@ -1246,12 +1436,39 @@
     font-size: 15px;
     padding-left: 38px;
   }
+
+  .radar-state {
+    width: 100%;
+  }
+
+  .radar-state__content {
+    width: min(100% - 32px, 760px);
+  }
+
+  .radar-state__actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .radar-state__actions :where(a, button) {
+    width: 100%;
+  }
+
+  .radar-reader-articles :where(h2, p),
+  .radar-weekly-reader-section li,
+  .radar-reader-disclosure,
+  .radar-weekly-source-links a,
+  .radar-daily-empty,
+  .radar-state__content {
+    overflow-wrap: anywhere;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .radar-intelligence-page *,
   .radar-daily-reader-page *,
-  .radar-weekly-reader-page * {
+  .radar-weekly-reader-page *,
+  .radar-reader-not-found * {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }

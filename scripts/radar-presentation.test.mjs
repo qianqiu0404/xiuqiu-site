@@ -2,11 +2,13 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import {
+  getRadarReviewBoundary,
   getFeaturedRadarItem,
   getIndustryRadarItems,
   getRadarDetailSections,
   getSupportingRadarItems,
   getVisibleRadarArchive,
+  radarSignalCountLabel,
 } from '../src/data/radarPresentation.ts'
 import { dailyRadars } from '../src/data/generatedRadarAll.ts'
 import { latestRadars, radarIndex } from '../src/data/generatedRadars.ts'
@@ -15,6 +17,11 @@ import {
   selectPublishableRadarWeeklies,
   validateRadarWeekly,
 } from './generate-radar-weeklies.mjs'
+
+const appSource = readFileSync(new URL('../src/App.vue', import.meta.url), 'utf8')
+const radarPageSource = readFileSync(new URL('../src/pages/RadarPage.vue', import.meta.url), 'utf8')
+const radarDetailSource = readFileSync(new URL('../src/pages/RadarDetailPage.vue', import.meta.url), 'utf8')
+const radarWeeklySource = readFileSync(new URL('../src/pages/RadarWeeklyPage.vue', import.meta.url), 'utf8')
 
 function radar(overrides = {}) {
   return {
@@ -77,6 +84,54 @@ test('archive shows seven records by default and all records after expansion', (
   const records = Array.from({ length: 13 }, (_, index) => index)
   assert.equal(getVisibleRadarArchive(records, false).length, 7)
   assert.equal(getVisibleRadarArchive(records, true).length, 13)
+})
+
+test('daily signal promise always reflects the actual 0, 1, 2, 3 or larger count', () => {
+  assert.equal(radarSignalCountLabel(0), '今天暂无公开行业信号。')
+  assert.equal(radarSignalCountLabel(1), '今天值得留下的一条信号。')
+  assert.equal(radarSignalCountLabel(2), '今天值得留下的两条信号。')
+  assert.equal(radarSignalCountLabel(3), '今天值得留下的三条信号。')
+  assert.equal(radarSignalCountLabel(7), '今天值得留下的 7 条信号。')
+})
+
+test('manual review boundary derives only from published review and daily dates', () => {
+  assert.deepEqual(getRadarReviewBoundary('2026-07-24', '2026-08-09'), {
+    lastReviewedLabel: '最后人工复核 2026-07-24',
+    statusLabel: '截至最新日报 2026-08-09，尚无更新周报。',
+    nextReviewLabel: '下一次复核时间未在公开数据中排期。',
+  })
+  assert.equal(
+    getRadarReviewBoundary('2026-07-24', '2026-07-24').statusLabel,
+    '这是当前公开的最近一次人工复核。',
+  )
+  assert.equal(
+    getRadarReviewBoundary('2026-07-24').statusLabel,
+    '这是当前公开的最近一次人工复核。',
+  )
+})
+
+test('Learn Radar routes rely on the single application main landmark', () => {
+  assert.equal((appSource.match(/<main\b/g) || []).length, 1)
+  for (const [name, source, h1Count] of [
+    ['overview', radarPageSource, 1],
+    ['daily detail', radarDetailSource, 4],
+    ['weekly detail', radarWeeklySource, 2],
+  ]) {
+    assert.equal((source.match(/<main\b/g) || []).length, 0, name)
+    assert.equal((source.match(/<h1\b/g) || []).length, h1Count, `${name} keeps one h1 per visible branch`)
+  }
+  assert.match(radarWeeklySource, /<h2 class="radar-kicker">\{\{ section\.label \}\}<\/h2>/)
+})
+
+test('Learn Radar exposes generated, review, loading, empty and error boundaries', () => {
+  assert.match(radarPageSource, /radarSignalCountLabel\(latestRadar\?\.marketSignals\.length \?\? 0\)/)
+  assert.match(radarPageSource, /latestRadar\.date[\s\S]*latestWeekly\.reviewedAt|latestWeekly\.reviewedAt[\s\S]*latestRadar\?\.date/)
+  assert.match(radarDetailSource, /aria-busy="true"/)
+  assert.match(radarDetailSource, /role="alert"/)
+  assert.match(radarDetailSource, /AI 自动汇总 · 未经人工复核/)
+  assert.match(radarDetailSource, /@click="loadRadar\(/)
+  assert.match(radarWeeklySource, /reviewBoundary\.statusLabel/)
+  assert.match(radarWeeklySource, /reviewBoundary\.nextReviewLabel/)
 })
 
 test('generated radar layers keep the compact archive and recent full records aligned', () => {

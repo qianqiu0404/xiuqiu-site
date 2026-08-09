@@ -2,6 +2,8 @@
 import { computed, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import { radarWeeklies } from '../data/generatedRadarWeeklies'
+import { latestRadars } from '../data/generatedRadars'
+import { getRadarReviewBoundary } from '../data/radarPresentation'
 import { getProjectByKey } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
 import '../styles/radar.css'
@@ -10,6 +12,11 @@ const route = useRoute()
 const weekly = computed(() => radarWeeklies.find(item => item.slug === String(route.params.week || '')))
 const relatedProjects = computed(() =>
   weekly.value?.relatedProjectSlugs.map(getProjectByKey).filter(Boolean) || [],
+)
+const reviewBoundary = computed(() =>
+  weekly.value
+    ? getRadarReviewBoundary(weekly.value.reviewedAt, latestRadars[0]?.date)
+    : undefined,
 )
 const sections = computed(() =>
   weekly.value
@@ -73,7 +80,7 @@ watchEffect(() =>
 </script>
 
 <template>
-  <main v-if="weekly" class="radar-weekly-reader-page" lang="zh-CN">
+  <div v-if="weekly" class="radar-weekly-reader-page" lang="zh-CN">
     <header class="radar-reader-hero radar-reader-hero--weekly">
       <div class="container radar-reader-shell">
         <router-link to="/radar" class="radar-reader-back">← Intelligence Radar</router-link>
@@ -85,10 +92,13 @@ watchEffect(() =>
           <div class="radar-reader-summary">
             <p>{{ weekly.summary }}</p>
             <dl>
-              <div><dt>Reviewed</dt><dd><time :datetime="weekly.reviewedAt">{{ weekly.reviewedAt }}</time></dd></div>
+              <div><dt>Reviewed</dt><dd><time :datetime="weekly.reviewedAt">{{ reviewBoundary?.lastReviewedLabel }}</time></dd></div>
               <div><dt>Gate</dt><dd>人工复核后公开</dd></div>
               <div><dt>Sections</dt><dd>{{ sections.length }}</dd></div>
             </dl>
+            <p v-if="reviewBoundary" class="radar-review-boundary">
+              {{ reviewBoundary.statusLabel }} {{ reviewBoundary.nextReviewLabel }}
+            </p>
           </div>
         </div>
       </div>
@@ -122,7 +132,7 @@ watchEffect(() =>
         >
           <header>
             <span>{{ String(index + 1).padStart(2, '0') }}</span>
-            <div><p class="radar-kicker">{{ section.label }}</p><strong>{{ section.boundary }}</strong></div>
+            <div><h2 class="radar-kicker">{{ section.label }}</h2><strong>{{ section.boundary }}</strong></div>
           </header>
           <ol><li v-for="item in section.items" :key="item">{{ item }}</li></ol>
         </section>
@@ -149,12 +159,16 @@ watchEffect(() =>
         </details>
       </div>
     </div>
-  </main>
+  </div>
 
-  <main v-else class="radar-reader-not-found">
-    <div class="container not-found">
-      <p class="not-found-title">这份周度收敛不存在或尚未公开</p>
-      <router-link to="/radar" class="btn btn-primary">返回雷达</router-link>
+  <div v-else class="radar-reader-not-found radar-state">
+    <div class="container radar-state__content">
+      <p class="radar-state__eyebrow">Weekly review unavailable</p>
+      <h1 class="radar-state__title">这份周度收敛不存在或尚未公开。</h1>
+      <p class="radar-state__message">周报只在人工复核并通过公开门禁后出现。请返回雷达阅读已公开日报与最近一次周报。</p>
+      <div class="radar-state__actions">
+        <router-link to="/radar" class="btn btn-primary">返回雷达</router-link>
+      </div>
     </div>
-  </main>
+  </div>
 </template>

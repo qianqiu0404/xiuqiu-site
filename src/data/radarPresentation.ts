@@ -15,6 +15,12 @@ export interface RadarDetailSection {
   items: RadarItem[]
 }
 
+export interface RadarReviewBoundary {
+  lastReviewedLabel: string
+  statusLabel: string
+  nextReviewLabel: string
+}
+
 function presentationItem(
   key: RadarPresentationKey,
   label: string,
@@ -84,4 +90,27 @@ export function getVisibleRadarArchive<T>(radars: readonly T[], expanded: boolea
 
 export function radarSourceStatus(radar: DailyRadar): string {
   return `${radar.sourceSections.length}/4 来源已汇总`
+}
+
+export function radarSignalCountLabel(count: number): string {
+  const normalizedCount = Math.max(0, Math.floor(count))
+  if (normalizedCount === 0) return '今天暂无公开行业信号。'
+  if (normalizedCount === 1) return '今天值得留下的一条信号。'
+  if (normalizedCount === 2) return '今天值得留下的两条信号。'
+  if (normalizedCount === 3) return '今天值得留下的三条信号。'
+  return `今天值得留下的 ${normalizedCount} 条信号。`
+}
+
+export function getRadarReviewBoundary(
+  reviewedAt: string,
+  latestDailyDate?: string,
+): RadarReviewBoundary {
+  const hasNewerDailyBrief = Boolean(latestDailyDate && latestDailyDate > reviewedAt)
+  return {
+    lastReviewedLabel: `最后人工复核 ${reviewedAt}`,
+    statusLabel: hasNewerDailyBrief
+      ? `截至最新日报 ${latestDailyDate}，尚无更新周报。`
+      : '这是当前公开的最近一次人工复核。',
+    nextReviewLabel: '下一次复核时间未在公开数据中排期。',
+  }
 }

@@ -11,24 +11,29 @@ import '../styles/radar.css'
 const route = useRoute()
 const radar = ref<DailyRadar>()
 const loading = ref(true)
+const loadError = ref(false)
 let requestVersion = 0
+
+async function loadRadar(slug: string) {
+  const version = ++requestVersion
+  loading.value = true
+  loadError.value = false
+  radar.value = undefined
+  let loadedRadar: DailyRadar | undefined
+  try {
+    loadedRadar = await loadRadarBySlug(slug)
+  } catch {
+    if (version !== requestVersion) return
+    loadError.value = true
+  }
+  if (version !== requestVersion) return
+  radar.value = loadedRadar
+  loading.value = false
+}
 
 watch(
   () => String(route.params.date || ''),
-  async (slug) => {
-    const version = ++requestVersion
-    loading.value = true
-    radar.value = undefined
-    let loadedRadar: DailyRadar | undefined
-    try {
-      loadedRadar = await loadRadarBySlug(slug)
-    } catch {
-      loadedRadar = undefined
-    }
-    if (version !== requestVersion) return
-    radar.value = loadedRadar
-    loading.value = false
-  },
+  slug => loadRadar(slug),
   { immediate: true },
 )
 
@@ -42,13 +47,15 @@ watchEffect(() => {
 </script>
 
 <template>
-  <main v-if="loading" class="radar-reader-not-found" aria-busy="true">
-    <div class="container not-found">
-      <p class="not-found-title">正在载入本期雷达…</p>
+  <div v-if="loading" class="radar-reader-not-found radar-state" aria-busy="true" aria-live="polite">
+    <div class="container radar-state__content">
+      <p class="radar-state__eyebrow">Daily Industry Brief</p>
+      <h1 class="radar-state__title">正在载入本期雷达…</h1>
+      <p class="radar-state__message">正在读取公开简报与来源状态，请稍候。</p>
     </div>
-  </main>
+  </div>
 
-  <main v-else-if="radar" class="radar-daily-reader-page" lang="zh-CN">
+  <div v-else-if="radar" class="radar-daily-reader-page" lang="zh-CN">
     <header class="radar-reader-hero">
       <div class="container radar-reader-shell">
         <router-link to="/radar" class="radar-reader-back">← Intelligence Radar</router-link>
@@ -61,7 +68,8 @@ watchEffect(() => {
             <p>{{ radar.summary }}</p>
             <dl>
               <div><dt>Date</dt><dd><time :datetime="radar.date">{{ radar.date }}</time></dd></div>
-              <div><dt>Review</dt><dd>AI 自动汇总</dd></div>
+              <div><dt>Generated</dt><dd><time :datetime="radar.generatedAt">{{ radar.generatedAt }}</time></dd></div>
+              <div><dt>Review</dt><dd>AI 自动汇总 · 未经人工复核</dd></div>
               <div><dt>Sources</dt><dd>{{ radarSourceStatus(radar) }}</dd></div>
             </dl>
           </div>
@@ -128,12 +136,28 @@ watchEffect(() => {
         </details>
       </div>
     </div>
-  </main>
+  </div>
 
-  <main v-else class="radar-reader-not-found">
-    <div class="container not-found">
-      <p class="not-found-title">这期雷达不存在或未通过发布门禁</p>
-      <router-link to="/radar" class="btn btn-primary">返回雷达</router-link>
+  <div v-else-if="loadError" class="radar-reader-not-found radar-state" role="alert">
+    <div class="container radar-state__content">
+      <p class="radar-state__eyebrow">Load error</p>
+      <h1 class="radar-state__title">本期雷达暂时无法载入。</h1>
+      <p class="radar-state__message">公开简报资源可能暂时不可用。可重试一次，或返回雷达查看其他期数。</p>
+      <div class="radar-state__actions">
+        <button type="button" class="btn btn-primary" @click="loadRadar(String(route.params.date || ''))">重新载入</button>
+        <router-link to="/radar" class="btn btn-secondary">返回雷达</router-link>
+      </div>
     </div>
-  </main>
+  </div>
+
+  <div v-else class="radar-reader-not-found radar-state">
+    <div class="container radar-state__content">
+      <p class="radar-state__eyebrow">Brief unavailable</p>
+      <h1 class="radar-state__title">这期雷达不存在或未通过发布门禁。</h1>
+      <p class="radar-state__message">日期可能不在公开档案中。请返回雷达，从已公开的历史简报继续阅读。</p>
+      <div class="radar-state__actions">
+        <router-link to="/radar" class="btn btn-primary">返回雷达</router-link>
+      </div>
+    </div>
+  </div>
 </template>
