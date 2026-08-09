@@ -29,8 +29,8 @@ onMounted(() => setSeoMeta({
       <div class="container trade-radar-shell trade-radar-hero-grid">
         <div>
           <p class="trade-radar-kicker">Static Event Intelligence / No Trading API</p>
-          <h1>不是告诉你<br /><span>买什么。</span><br />是先告诉你<br />该验证什么。</h1>
-          <p class="trade-radar-lead">每天从公开网页、官方日程和项目发布中提取少量事件，把事实、市场含义、观察条件与失效边界拆开。</p>
+          <h1>先验证，<br /><span>再判断。</span></h1>
+          <p class="trade-radar-lead">它不告诉你买什么。每天从公开网页、官方日程和项目发布中提取少量事件，把事实、市场含义、观察条件与失效边界拆开。</p>
         </div>
         <aside class="trade-radar-boundary">
           <span>Execution boundary</span>
