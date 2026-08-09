@@ -6,6 +6,114 @@ export interface DailyRadar { date: string; slug: string; title: string; summary
 
 export const dailyRadars: DailyRadar[] = [
   {
+    "date": "2026-08-09",
+    "slug": "2026-08-09",
+    "title": "每日研究雷达 · 2026-08-09",
+    "summary": "聚焦 lnd 迁移修复、专家纠错 Eval、清晰签名、Qwen Code 与多 Agent 研究边界。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-08-09T11:36:30+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "lnd 0.21.2-beta.rc1 修补迁移失败与图同步内存边界",
+        "summary": "该 RC 修复历史支付迁移启动失败、缺失版本键跳过迁移和通道图同步内存增长。运维应先备份、演练迁移与回滚；候选版不能直接替代生产稳定版。",
+        "sourceUrl": "https://github.com/lightningnetwork/lnd/releases/tag/v0.21.2-beta.rc1"
+      }
+    ],
+    "aiTip": {
+      "title": "把专家纠错沉淀成定向 Eval，再给 Agent 有边界的修复任务",
+      "summary": "案例把生产 trace 中反复且经专家确认的错误转成定向 eval，再让 Agent 在回归集约束下提出 PR。雷达应记录接受、拒绝和改写原因；税务指标不能外推到开放研究。",
+      "sourceUrl": "https://openai.com/index/building-self-improving-tax-agents-with-codex/"
+    },
+    "web3Design": {
+      "title": "签名前把调用数据翻译为与链和合约绑定的人类意图",
+      "summary": "ERC-7730 先匹配链、合约和 selector，再把调用数据翻译成动作、对象与金额。上下文不匹配必须退回原始字段；规范仍为 Draft，清晰展示不能替代模拟。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-7730"
+    },
+    "vibeProject": {
+      "title": "Qwen Code 0.21.8 · 并行提速前先封住信任继承",
+      "summary": "版本加入 ACP 受限并发与审阅预算，并修复不可信目录继承信任、日志命令注入和 MCP 超时等边界。本地已验证 0.21.8；并发仍会放大副作用。",
+      "sourceUrl": "https://github.com/QwenLM/qwen-code/releases/tag/v0.21.8"
+    },
+    "readingPick": {
+      "title": "How we built our multi-agent research system",
+      "summary": "主 Agent 规划，子 Agent 分头压缩证据，引用再独立核验。内部广度评测提升 90.2%，但约耗普通聊天 15 倍 token；必须给角色明确来源、停止条件和 schema。",
+      "sourceUrl": "https://www.anthropic.com/engineering/multi-agent-research-system"
+    },
+    "sourceUrls": [
+      "https://github.com/lightningnetwork/lnd/releases/tag/v0.21.2-beta.rc1",
+      "https://openai.com/index/building-self-improving-tax-agents-with-codex/",
+      "https://eips.ethereum.org/EIPS/eip-7730",
+      "https://github.com/QwenLM/qwen-code/releases/tag/v0.21.8",
+      "https://www.anthropic.com/engineering/multi-agent-research-system"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
+    "date": "2026-08-08",
+    "slug": "2026-08-08",
+    "title": "每日研究雷达 · 2026-08-08",
+    "summary": "聚焦 Algorand 后量子账户预览、长任务 Agent 闭环、跨链地址、Spec Kit 与 Agent 工作研究。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-08-09T11:36:00+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "Algorand BetaNet 5.0.0 预演 Falcon-1024 后量子账户",
+        "summary": "BetaNet 引入 Falcon-1024 签名、大交易按字节计费与 AVM v13。钱包需联动迁移密钥、费用和工具链；这仍是测试网预览，不代表主网已激活。",
+        "sourceUrl": "https://github.com/algorand/go-algorand/releases/tag/v5.0.0-beta"
+      }
+    ],
+    "aiTip": {
+      "title": "让长任务 Agent 在生成、评估和上下文重置之间形成闭环",
+      "summary": "planner、generator、evaluator 分工并用结构化交接跨越上下文重置。采集只交证据、独立检查器反驳；代价是更多延迟与 token，错误评分标准仍会稳定误导。",
+      "sourceUrl": "https://www.anthropic.com/engineering/harness-design-long-running-apps"
+    },
+    "web3Design": {
+      "title": "跨链地址必须把链语境与账户字节绑定成同一对象",
+      "summary": "ERC-7930 把链类型、链引用和地址封进版本化二进制对象。钱包应让链语境共同进入确认、签名与策略键；规范仍在 Review，部分命名空间未必能唯一规范化。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-7930"
+    },
+    "vibeProject": {
+      "title": "GitHub Spec Kit 0.16.1 · 把 Agent 开发交接变成可审阅规格",
+      "summary": "它把 constitution、spec、plan、tasks 与实现收敛为版本化工件，并收紧畸形输入和临时文件边界。临时环境已验证 0.16.1；生成规格仍须审查差异。",
+      "sourceUrl": "https://github.com/github/spec-kit/releases/tag/v0.16.1"
+    },
+    "readingPick": {
+      "title": "How agents are transforming work",
+      "summary": "样本中 70.2% 的个人用户曾发起估算超过一小时的人类工作任务。应衡量可验收产出和失败成本，而非 token 或时长；样本与模型估算不能外推为普遍生产率。",
+      "sourceUrl": "https://openai.com/index/how-agents-are-transforming-work/"
+    },
+    "sourceUrls": [
+      "https://github.com/algorand/go-algorand/releases/tag/v5.0.0-beta",
+      "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+      "https://eips.ethereum.org/EIPS/eip-7930",
+      "https://github.com/github/spec-kit/releases/tag/v0.16.1",
+      "https://openai.com/index/how-agents-are-transforming-work/"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
     "date": "2026-08-07",
     "slug": "2026-08-07",
     "title": "每日研究雷达 · 2026-08-07",
