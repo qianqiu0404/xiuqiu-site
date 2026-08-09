@@ -67,10 +67,10 @@ export async function getSummary(): Promise<MarketRadarSummary> {
 
   const sql = getMarketRadarDb()
   const [counts, sourceRows] = await Promise.all([
-    sql.query(`select max(published_at) as latest_event_at,
-      count(*) filter (where published_at >= now() - interval '24 hours') as event_count_24h,
-      count(*) filter (where published_at >= now() - interval '24 hours' and priority = 'P0') as p0_count_24h,
-      count(*) filter (where published_at >= now() - interval '24 hours' and priority = 'P1') as p1_count_24h
+    sql.query(`select max(occurred_at) as latest_event_at,
+      count(*) filter (where occurred_at >= now() - interval '24 hours') as event_count_24h,
+      count(*) filter (where occurred_at >= now() - interval '24 hours' and priority = 'P0') as p0_count_24h,
+      count(*) filter (where occurred_at >= now() - interval '24 hours' and priority = 'P1') as p1_count_24h
       from market_radar.public_events`, []),
     sql.query(`select distinct on (source) source, status, finished_at, error_code
       from market_radar.job_runs order by source, started_at desc`, []),
@@ -78,13 +78,19 @@ export async function getSummary(): Promise<MarketRadarSummary> {
 
   const first = (counts[0] || {}) as QueryRow
   const latestEventAt = iso(first.latest_event_at)
-  const freshnessMinutes = latestEventAt ? Math.max(0, Math.round((Date.now() - new Date(latestEventAt).getTime()) / 60_000)) : null
   const sourceByName = new Map((sourceRows as QueryRow[]).map(row => [String(row.source), row]))
   const sources = knownSources.map(source => {
     const row = sourceByName.get(source)
     const health: MarketRadarHealth = !row ? 'degraded' : row.status === 'succeeded' ? 'healthy' : 'degraded'
     return { source, health, lastSuccessAt: row?.status === 'succeeded' ? iso(row.finished_at) : null, message: row?.error_code ? String(row.error_code) : undefined }
   })
+  const latestSourceSuccessAt = sources.reduce<string | null>((latest, source) => {
+    if (!source.lastSuccessAt) return latest
+    return !latest || source.lastSuccessAt > latest ? source.lastSuccessAt : latest
+  }, null)
+  const freshnessMinutes = latestSourceSuccessAt
+    ? Math.max(0, Math.round((Date.now() - new Date(latestSourceSuccessAt).getTime()) / 60_000))
+    : null
   const isDelayed = freshnessMinutes === null || freshnessMinutes > 90
   return {
     status: sources.some(source => source.health === 'healthy') ? (isDelayed ? 'degraded' : 'healthy') : 'degraded',
@@ -111,14 +117,14 @@ export interface EventFilters {
 }
 
 function encodeEventCursor(row: QueryRow | undefined): string | null {
-  const publishedAt = iso(row?.published_at)
-  return publishedAt && row?.id ? `${publishedAt}|${String(row.id)}` : null
+  const occurredAt = iso(row?.occurred_at)
+  return occurredAt && row?.id ? `${occurredAt}|${String(row.id)}` : null
 }
 
 export async function listEvents(filters: EventFilters): Promise<MarketRadarEventList> {
   if (!isMarketRadarConfigured()) return { status: 'unconfigured', items: [], nextCursor: null, message: '交易雷达数据库尚未配置。' }
   const values: unknown[] = [filters.windowHours]
-  const where = [`published_at >= now() - ($1::text || ' hours')::interval`]
+  const where = [`occurred_at >= now() - ($1::text || ' hours')::interval`]
   const add = (clause: string, value: unknown) => { values.push(value); where.push(clause.replace('?', `$${values.length}`)) }
   if (filters.market) add('market = ?', filters.market)
   if (filters.priority) add('priority = ?', filters.priority)
@@ -127,11 +133,11 @@ export async function listEvents(filters: EventFilters): Promise<MarketRadarEven
   const cursor = parseEventCursor(filters.cursor)
   if (cursor) {
     values.push(cursor.publishedAt, cursor.id)
-    where.push(`(published_at, id) < ($${values.length - 1}::timestamptz, $${values.length}::text)`)
+    where.push(`(occurred_at, id) < ($${values.length - 1}::timestamptz, $${values.length}::text)`)
   }
   values.push(filters.limit + 1)
   const rows = await getMarketRadarDb().query(
-    `select * from market_radar.public_events where ${where.join(' and ')} order by published_at desc, id desc limit $${values.length}`,
+    `select * from market_radar.public_events where ${where.join(' and ')} order by occurred_at desc, id desc limit $${values.length}`,
     values,
   ) as QueryRow[]
   const hasMore = rows.length > filters.limit

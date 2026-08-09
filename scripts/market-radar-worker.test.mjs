@@ -3,8 +3,9 @@ import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import {
   calculateExcess, calculateReturn, clusterKey, mapAssets, nearestPrice, normalizeUrl,
-  priorityForScore, scoreEvent, titleSimilarity, validateAiSummary,
+  isFreshForPublic, priorityForScore, scoreEvent, titleSimilarity, validateAiSummary,
 } from '../market-radar/worker/core.mjs'
+import { buildDigestBody, summarizeAttentionAssets } from '../market-radar/worker/digests.mjs'
 import { isUsPremarketWindow, newYorkParts } from '../market-radar/worker/market-calendar.mjs'
 import { parseBinanceKlines, parseGitHubReleasePayload, parseRss, parseSecCompanyFeed } from '../market-radar/worker/providers.mjs'
 import { parseEventCursor } from '../src/market-radar/contracts.ts'
@@ -36,6 +37,59 @@ test('rule scoring and priority boundaries remain deterministic', () => {
   const official = scoreEvent({ source: 'sec_edgar', assets: [{ relevance: 100 }], occurredAt: new Date().toISOString(), sourceCount: 3, reactionStrength: 0.03, text: 'SEC approved an ETF' })
   const weak = scoreEvent({ source: 'qiu_market', assets: [], occurredAt: '2025-01-01T00:00:00Z', sourceCount: 1, text: 'unclear rumor' })
   assert.ok(official > weak)
+})
+
+test('public freshness uses occurrence time instead of ingestion time', () => {
+  const now = new Date('2026-08-09T12:00:00Z')
+  assert.equal(isFreshForPublic('2026-08-09T11:00:00Z', now), true)
+  assert.equal(isFreshForPublic('2026-08-06T12:00:00Z', now), true)
+  assert.equal(isFreshForPublic('2026-08-06T11:59:59Z', now), false)
+  assert.equal(isFreshForPublic('not-a-date', now), false)
+})
+
+test('digest leads with grouped asset direction and a fixed attention summary', () => {
+  const events = [
+    {
+      priority: 'P1', score: 78, title_zh: 'BTC ETF 获得监管批准', summary_zh: '测试摘要',
+      news_direction: 'bullish', horizon: 'days', source_count: 2,
+      assets: [{ namespace: 'crypto', symbol: 'BTC', relevance: 100 }],
+      reaction: { status: 'confirmed', excess4h: 0.02 },
+    },
+    {
+      priority: 'P2', score: 61, title_zh: 'BTC 资金流继续改善', summary_zh: '测试摘要',
+      news_direction: 'bullish', horizon: 'days', source_count: 1,
+      assets: [{ namespace: 'crypto', symbol: 'BTC', relevance: 90 }],
+      reaction: { status: 'pending' },
+    },
+    {
+      priority: 'P2', score: 55, title_zh: 'ETH 常规维护版本发布', summary_zh: '测试摘要',
+      news_direction: 'neutral', horizon: 'days', source_count: 1,
+      assets: [{ namespace: 'crypto', symbol: 'ETH', relevance: 100 }],
+      reaction: { status: 'ignored' },
+    },
+  ]
+  const attention = summarizeAttentionAssets(events)
+  assert.deepEqual(attention.map(asset => asset.symbol), ['BTC'])
+  assert.equal(attention[0].direction, 'bullish')
+  assert.equal(attention[0].confidence, '中')
+  const digest = buildDigestBody(events)
+  assert.deepEqual(digest.attentionAssets, ['BTC'])
+  assert.match(digest.body, /【结论先行】/)
+  assert.match(digest.body, /特别关注：BTC/)
+  assert.match(digest.body, /BTC · 偏多观察 · 天级 · 置信度中/)
+  assert.match(digest.body, /确认：行情已确认/)
+  assert.match(digest.body, /失效：若 4 小时相对基准收益不为正/)
+  assert.doesNotMatch(digest.body, /特别关注：.*ETH/)
+})
+
+test('digest states that no asset qualifies instead of forcing a direction', () => {
+  const digest = buildDigestBody([{
+    priority: 'P2', score: 52, title_zh: '常规监管公告', news_direction: 'neutral', horizon: 'weeks',
+    source_count: 1, assets: [{ namespace: 'macro', symbol: 'FED', relevance: 85 }], reaction: { status: 'pending' },
+  }])
+  assert.deepEqual(digest.attentionAssets, [])
+  assert.match(digest.body, /特别关注：暂无/)
+  assert.match(digest.body, /不为凑结论而强行指定资产/)
 })
 
 test('AI summaries fail closed unless every public field and enum is valid', () => {
@@ -122,15 +176,26 @@ test('event pagination cursor keeps timestamp and id together', () => {
   assert.equal(parseEventCursor('2026-08-08T10:00:00.000Z'), null)
   assert.equal(parseEventCursor('not-a-date|event-2'), null)
   const repository = read('lib/market-radar/repository.ts')
-  assert.match(repository, /\(published_at, id\) < /)
+  assert.match(repository, /\(occurred_at, id\) < /)
+  assert.match(repository, /occurred_at >= now\(\) - /)
 })
 
 test('a confirmed draft can publish and enqueue P0 exactly once', () => {
   const worker = read('market-radar/worker/run.mjs')
-  assert.match(worker, /Boolean\(existing\.ai_schema_version\) && score >= 50/)
+  assert.match(worker, /Boolean\(existing\.ai_schema_version\) && score >= 50 && isFreshForPublic/)
   assert.match(worker, /published_at = case when \$4::boolean then coalesce\(published_at, now\(\)\)/)
   assert.match(worker, /existing\.priority !== 'P0'/)
   assert.match(worker, /on conflict \(idempotency_key\) do nothing/)
+})
+
+test('migrations hide stale backlog and the runner applies every numbered file', () => {
+  const migration = read('market-radar/migrations/002_freshness_gate.sql')
+  const runner = read('market-radar/worker/migrate.mjs')
+  assert.match(migration, /occurred_at < now\(\) - interval '7 days'/)
+  assert.match(migration, /id not like '%-v2-%'/)
+  assert.match(migration, /occurred_at >= now\(\) - interval '7 days'/)
+  assert.match(runner, /readdir\(migrationsUrl\)/)
+  assert.match(runner, /files\.length/)
 })
 
 test('all worker modes share a crash-safe database lease', () => {

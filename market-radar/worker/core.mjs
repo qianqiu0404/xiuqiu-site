@@ -87,6 +87,14 @@ export function priorityForScore(score) {
   return 'rejected'
 }
 
+export function isFreshForPublic(occurredAt, now = new Date(), maxAgeHours = 72) {
+  const occurredMs = new Date(occurredAt).getTime()
+  const nowMs = new Date(now).getTime()
+  if (!Number.isFinite(occurredMs) || !Number.isFinite(nowMs)) return false
+  const ageMs = nowMs - occurredMs
+  return ageMs >= -60 * 60_000 && ageMs <= maxAgeHours * 60 * 60_000
+}
+
 export function validateAiSummary(value) {
   if (!value || typeof value !== 'object') return null
   const enums = {

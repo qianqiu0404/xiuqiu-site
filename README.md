@@ -84,6 +84,8 @@ The worker is disabled until the GitHub variable `MARKET_RADAR_ENABLED=true` and
 
 The initial worker uses only registration-free public sources: official crypto project releases from GitHub, SEC company filings and press releases, Federal Reserve RSS, and Binance public spot candles for supported crypto reaction tracking. US-equity reactions and assets without a Binance public pair remain explicitly `pending`; the system does not substitute unlicensed or synthetic prices. Hermes never calls upstream providers or stores their credentials: it only claims prepared messages from the token-protected Market Radar outbox.
 
+Public freshness is based on when an event occurred, not when a provider backlog was collected. Events older than 72 hours fail the publication gate, and the public SQL view keeps only the latest seven days. Daily and premarket digests lead with a grouped conclusion, list at most three specially watched assets with direction, horizon, confirmation and invalidation, and explicitly report “暂无” when no asset clears the threshold instead of forcing a directional call.
+
 ## Content workflow
 
 1. Maintain project status and public-safe summaries in the canonical Obsidian project home.
