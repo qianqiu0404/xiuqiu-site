@@ -31,6 +31,9 @@
     <loc>https://xiuqiu-site.vercel.app/radar</loc>
   </url>
   <url>
+    <loc>https://xiuqiu-site.vercel.app/market-radar</loc>
+  </url>
+  <url>
     <loc>https://xiuqiu-site.vercel.app/learning</loc>
   </url>
   <url>
@@ -266,6 +269,9 @@
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/radar/2026-07-13</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-08-09</loc>
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/radar/week/2026-W29</loc>

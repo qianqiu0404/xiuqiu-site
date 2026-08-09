@@ -60,6 +60,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
         <router-link to="/ai" @click="navOpen = false">AI</router-link>
         <router-link to="/engineering/evidence" @click="navOpen = false">Evidence</router-link>
         <router-link to="/radar" @click="navOpen = false">Radar</router-link>
+        <router-link to="/market-radar" @click="navOpen = false">Trade Radar</router-link>
       </div>
     </nav>
   </header>
