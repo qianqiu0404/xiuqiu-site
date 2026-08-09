@@ -1,22 +1,54 @@
 <script setup lang="ts">
-import { computed, watchEffect } from 'vue'
+import { computed, ref, watch, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
-import { dailyRadars } from '../data/generatedRadars'
+import type { DailyRadar } from '../data/generatedRadars'
+import { loadRadarBySlug } from '../data/generatedRadarLoader'
 import { getRadarDetailSections, radarSourceStatus } from '../data/radarPresentation'
 import { getProjectByKey } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
 import '../styles/radar.css'
 
 const route = useRoute()
-const radar = computed(() => dailyRadars.find(item => item.slug === String(route.params.date || '')))
+const radar = ref<DailyRadar>()
+const loading = ref(true)
+let requestVersion = 0
+
+watch(
+  () => String(route.params.date || ''),
+  async (slug) => {
+    const version = ++requestVersion
+    loading.value = true
+    radar.value = undefined
+    let loadedRadar: DailyRadar | undefined
+    try {
+      loadedRadar = await loadRadarBySlug(slug)
+    } catch {
+      loadedRadar = undefined
+    }
+    if (version !== requestVersion) return
+    radar.value = loadedRadar
+    loading.value = false
+  },
+  { immediate: true },
+)
+
 const sections = computed(() => radar.value ? getRadarDetailSections(radar.value) : [])
 const relatedProjects = computed(() => radar.value?.relatedProjectSlugs.map(getProjectByKey).filter(Boolean) || [])
 
-watchEffect(() => setSeoMeta(radar.value ? { title: `${radar.value.title}｜xiuqiu`, description: radar.value.summary, path: `/radar/${radar.value.slug}`, type: 'article' } : { title: 'Radar not found｜xiuqiu', path: route.fullPath, indexable: false }))
+watchEffect(() => {
+  if (loading.value) return
+  setSeoMeta(radar.value ? { title: `${radar.value.title}｜xiuqiu`, description: radar.value.summary, path: `/radar/${radar.value.slug}`, type: 'article' } : { title: 'Radar not found｜xiuqiu', path: route.fullPath, indexable: false })
+})
 </script>
 
 <template>
-  <main v-if="radar" class="radar-daily-reader-page" lang="zh-CN">
+  <main v-if="loading" class="radar-reader-not-found" aria-busy="true">
+    <div class="container not-found">
+      <p class="not-found-title">正在载入本期雷达…</p>
+    </div>
+  </main>
+
+  <main v-else-if="radar" class="radar-daily-reader-page" lang="zh-CN">
     <header class="radar-reader-hero">
       <div class="container radar-reader-shell">
         <router-link to="/radar" class="radar-reader-back">← Intelligence Radar</router-link>
