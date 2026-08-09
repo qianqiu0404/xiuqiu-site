@@ -19,6 +19,7 @@ import { evidenceRecords } from '../src/data/generatedEvidence.ts'
 import { evidenceLedgerRecords, evidenceLedgerStats } from '../src/data/evidenceLedger.ts'
 import { projects } from '../src/data/generatedProjects.ts'
 import { productPresentations, qiuMarketUrl } from '../src/data/productPresentation.ts'
+import { getAdjacentArticles, sortArticlesForReading } from '../src/data/articlePresentation.ts'
 
 const homeSource = readFileSync(new URL('../src/pages/HomePage.vue', import.meta.url), 'utf8')
 const appSource = readFileSync(new URL('../src/App.vue', import.meta.url), 'utf8')
@@ -30,6 +31,8 @@ const aiPageSource = readFileSync(new URL('../src/pages/AiCollaborationPage.vue'
 const radarPageSource = readFileSync(new URL('../src/pages/RadarPage.vue', import.meta.url), 'utf8')
 const radarDetailSource = readFileSync(new URL('../src/pages/RadarDetailPage.vue', import.meta.url), 'utf8')
 const radarWeeklySource = readFileSync(new URL('../src/pages/RadarWeeklyPage.vue', import.meta.url), 'utf8')
+const articlesPageSource = readFileSync(new URL('../src/pages/ArticlesPage.vue', import.meta.url), 'utf8')
+const articleDetailSource = readFileSync(new URL('../src/pages/ArticleDetailPage.vue', import.meta.url), 'utf8')
 const routerSource = readFileSync(new URL('../src/router/index.ts', import.meta.url), 'utf8')
 const deliveryDetailSource = readFileSync(new URL('../src/pages/DeliveryDetailPage.vue', import.meta.url), 'utf8')
 const indexHtml = readFileSync(new URL('../index.html', import.meta.url), 'utf8')
@@ -38,6 +41,73 @@ const globalStyleSource = readFileSync(new URL('../src/style.css', import.meta.u
 function assertUnique(values, label) {
   assert.equal(new Set(values).size, values.length, `${label} must be unique`)
 }
+
+test('article reading order is deterministic and never wraps at either edge', () => {
+  const records = [
+    { id: 1, slug: 'oldest', date: '2026-06-01' },
+    { id: 3, slug: 'newest', date: '2026-08-01' },
+    { id: 2, slug: 'middle', date: '2026-07-01', updatedAt: '2026-07-02' },
+  ]
+
+  assert.deepEqual(sortArticlesForReading(records).map(item => item.slug), ['newest', 'middle', 'oldest'])
+  assert.deepEqual(getAdjacentArticles(records, 'newest'), { previous: undefined, next: records[2] })
+  assert.deepEqual(getAdjacentArticles(records, 'middle'), { previous: records[1], next: records[0] })
+  assert.deepEqual(getAdjacentArticles(records, 'oldest'), { previous: records[2], next: undefined })
+  assert.deepEqual(getAdjacentArticles(records, 'missing'), {})
+})
+
+test('article list and reader keep one main landmark and truthful editorial metadata', () => {
+  assert.equal((appSource.match(/<main\b/g) || []).length, 1)
+  assert.equal((articlesPageSource.match(/<main\b/g) || []).length, 0)
+  assert.equal((articleDetailSource.match(/<main\b/g) || []).length, 0)
+  assert.equal((articlesPageSource.match(/<h1\b/g) || []).length, 1)
+  assert.equal((articleDetailSource.match(/<h1\b/g) || []).length, 4)
+
+  assert.match(articlesPageSource, /发布\s*<time :datetime="article\.date">/)
+  assert.match(articlesPageSource, /v-if="article\.updatedAt">更新\s*<time :datetime="article\.updatedAt">/)
+  assert.match(articlesPageSource, /articleSeriesLabel\(article\)/)
+  assert.match(articlesPageSource, /articleProjectNames\(article\)/)
+  assert.match(articleDetailSource, /发布\s*<time :datetime="article\.date">/)
+  assert.match(articleDetailSource, /v-if="article\.updatedAt">更新\s*<time :datetime="article\.updatedAt">/)
+  assert.match(articleDetailSource, /v-if="article\.series \|\| relatedProjects\.length"/)
+})
+
+test('article reader exposes only source-backed next steps and recoverable states', () => {
+  assert.match(articleDetailSource, /v-if="article\.series"/)
+  assert.match(articleDetailSource, /v-if="relatedProjects\.length"/)
+  assert.match(articleDetailSource, /v-if="recommendedArticles\.length"/)
+  assert.match(articleDetailSource, /v-if="previousArticle \|\| nextArticle"/)
+  assert.doesNotMatch(articleDetailSource, /\(index \+ 1\) % siteArticles\.length/)
+  assert.match(articleDetailSource, /!hasEditorialRelations/)
+  assert.match(articleDetailSource, /返回工程笔记列表/)
+
+  assert.match(articleDetailSource, /role="status" aria-live="polite" aria-busy="true"/)
+  assert.match(articleDetailSource, /role="alert"/)
+  assert.match(articleDetailSource, /@click="loadCurrentArticle\(slug\)"/)
+  assert.match(articleDetailSource, /这篇文章不存在。/)
+})
+
+test('article body keeps heading hierarchy without repeating the document title', () => {
+  assert.match(articleDetailSource, /renderContent\(article\.content, article\.title\)/)
+  assert.match(articleDetailSource, /headingText === documentTitle/)
+  assert.match(articleDetailSource, /result\.push\('<h2>'/)
+  assert.match(articleDetailSource, /result\.push\('<h3>'/)
+  assert.match(articleDetailSource, /article-table-wrap/)
+  assert.match(articleDetailSource, /code-block/)
+})
+
+test('article paper, touch, focus and long-content style contracts stay responsive', () => {
+  assert.match(globalStyleSource, /\.article-reader-page\s*\{[\s\S]*?--article-paper: #f5f3ee;[\s\S]*?background: var\(--article-paper\)/)
+  assert.match(globalStyleSource, /\.article-reader-page :where\(a, button\):focus-visible/)
+  assert.match(globalStyleSource, /\.article-detail-body\s*\{[\s\S]*?width: min\(100%, 760px\);[\s\S]*?overflow-wrap: anywhere/)
+  assert.match(globalStyleSource, /\.article-detail-body \.code-block\s*\{[\s\S]*?overflow-x: auto/)
+  assert.match(globalStyleSource, /\.article-detail-body \.article-table-wrap\s*\{[\s\S]*?overflow-x: auto/)
+  assert.match(globalStyleSource, /\.article-reader-state__actions :where\(a, button\)\s*\{[\s\S]*?min-height: 44px/)
+  assert.match(globalStyleSource, /\.article-navigation > a\s*\{[\s\S]*?min-height: 88px/)
+  assert.match(globalStyleSource, /@media \(prefers-reduced-motion: reduce\)[\s\S]*?\.article-series-links a,[\s\S]*?\.followup-link/)
+  assert.match(articlesPageSource, /min-height: 46px/)
+  assert.match(articlesPageSource, /@media \(prefers-reduced-motion: reduce\)/)
+})
 
 test('homepage presentation keeps the intended cardinalities', () => {
   assert.equal(homeCapabilities.length, 4)

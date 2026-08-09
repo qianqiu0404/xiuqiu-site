@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, watch, watchEffect } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { loadArticleContent } from '../data/articles'
+import { getAdjacentArticles } from '../data/articlePresentation'
 import { evidenceStatusLabels } from '../data/evidence'
 import { evidenceRecords } from '../data/generatedEvidence'
 import {
@@ -13,7 +14,6 @@ import {
 import { setSeoMeta } from '../utils/seo'
 
 const route = useRoute()
-const router = useRouter()
 const slug = computed(() => route.params.slug as string)
 const evidenceLabels = { design: '架构设计', 'source-reviewed': '资料与代码复核', 'local-verified': '本地已验证', integrated: '已集成验证', 'public-demo': '公开可运行' } as const
 const evidenceKindLabels = { implementation: '工程实现', test: '自动化测试', demo: '可运行演示', writeup: '公开说明' } as const
@@ -24,7 +24,7 @@ const loadingArticle = ref(false)
 const articleLoadFailed = ref(false)
 let loadVersion = 0
 
-watch(slug, async currentSlug => {
+async function loadCurrentArticle(currentSlug: string) {
   const version = ++loadVersion
   articleContent.value = undefined
   articleLoadFailed.value = false
@@ -45,7 +45,9 @@ watch(slug, async currentSlug => {
   } finally {
     if (version === loadVersion) loadingArticle.value = false
   }
-}, { immediate: true })
+}
+
+watch(slug, currentSlug => loadCurrentArticle(currentSlug), { immediate: true })
 
 const article = computed(() => {
   if (!articleSummary.value || articleContent.value === undefined) return undefined
@@ -62,12 +64,12 @@ const seriesArticles = computed(() => {
 const linkedEvidence = computed(() => evidenceRecords
   .filter(record => record.articleSlugs?.includes(slug.value))
   .sort((a, b) => b.verifiedAt.localeCompare(a.verifiedAt)))
-const nextArticle = computed(() => {
-  if (!articleSummary.value) return undefined
-
-  const index = siteArticles.findIndex(a => a.slug === articleSummary.value?.slug)
-  return siteArticles[(index + 1) % siteArticles.length]
-})
+const adjacentArticles = computed(() => getAdjacentArticles(siteArticles, slug.value))
+const previousArticle = computed(() => adjacentArticles.value.previous)
+const nextArticle = computed(() => adjacentArticles.value.next)
+const hasEditorialRelations = computed(() =>
+  Boolean(seriesArticles.value.length || relatedProjects.value.length || recommendedArticles.value.length),
+)
 
 function splitTableRow(line: string): string[] {
   let row = line.trim()
@@ -116,11 +118,12 @@ function renderTableRow(cells: string[], tag: 'th' | 'td', columnCount: number):
   return `<tr>${normalizedCells.map(cell => `<${tag}>${renderInlineMarkdown(cell)}</${tag}>`).join('')}</tr>`
 }
 
-function renderContent(text: string): string {
+function renderContent(text: string, documentTitle?: string): string {
   const lines = text.split('\n')
   const result: string[] = []
   let inList = false
   let inCode = false
+  let hasSeenLevelOneHeading = false
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i]
@@ -186,7 +189,10 @@ function renderContent(text: string): string {
     }
     if (line.startsWith('# ')) {
       if (inList) { result.push('</ul>'); inList = false }
-      result.push('<h2>' + renderInlineMarkdown(line.slice(2)) + '</h2>')
+      const headingText = line.slice(2).trim()
+      const repeatsDocumentTitle = !hasSeenLevelOneHeading && headingText === documentTitle
+      hasSeenLevelOneHeading = true
+      if (!repeatsDocumentTitle) result.push('<h2>' + renderInlineMarkdown(headingText) + '</h2>')
       continue
     }
 
@@ -246,10 +252,6 @@ function renderInlineMarkdown(text: string): string {
     })
 }
 
-function goHome() {
-  router.push('/')
-}
-
 watchEffect(() => {
   if (!articleSummary.value) {
     setSeoMeta({
@@ -271,18 +273,25 @@ watchEffect(() => {
 </script>
 
 <template>
-  <section class="section page-top">
-    <div class="container article-detail-container" v-if="article">
+  <section class="section page-top article-reader-page">
+    <div v-if="article" class="container article-detail-container article-reader-shell">
       <router-link to="/articles" class="back-link">&larr; 返回工程笔记</router-link>
 
       <article class="article-detail">
         <header class="article-detail-header">
+          <div class="article-publish-meta" aria-label="文章发布与更新时间">
+            <span>发布 <time :datetime="article.date">{{ article.date }}</time></span>
+            <span v-if="article.updatedAt">更新 <time :datetime="article.updatedAt">{{ article.updatedAt }}</time></span>
+          </div>
+          <div v-if="article.series || relatedProjects.length" class="article-context-meta" aria-label="文章所属系列与项目">
+            <span v-if="article.series">系列 · {{ article.series }} · {{ article.seriesOrder }}/{{ seriesArticles.length }}</span>
+            <router-link v-for="project in relatedProjects" :key="project.id" :to="`/projects/${project.slug}`">
+              项目 · {{ project.name }}
+            </router-link>
+          </div>
           <div class="article-detail-meta">
-            <time class="meta-tag">{{ article.date }}</time>
-            <span v-if="article.updatedAt" class="meta-tag">Updated {{ article.updatedAt }}</span>
             <span class="meta-tag">{{ article.difficulty }}</span>
             <span v-if="article.evidenceLevel" class="meta-tag evidence-meta">{{ evidenceLabels[article.evidenceLevel] }}</span>
-            <span v-if="article.series" class="meta-tag">{{ article.series }} · {{ article.seriesOrder }}/{{ seriesArticles.length }}</span>
             <span class="meta-reading">{{ article.readingTime }}</span>
           </div>
           <h1 class="article-detail-title">{{ article.title }}</h1>
@@ -295,17 +304,12 @@ watchEffect(() => {
 
         <div
           class="article-detail-body"
-          v-html="renderContent(article.content)"
+          v-html="renderContent(article.content, article.title)"
         ></div>
-
-        <footer class="article-detail-footer">
-          <router-link to="/articles" class="back-link">&larr; 返回工程笔记</router-link>
-          <a href="#" @click.prevent="goHome" class="back-link">返回首页</a>
-        </footer>
       </article>
 
-      <section class="article-followup">
-        <div v-if="article.series" class="followup-block article-series-block">
+      <section class="article-followup" aria-label="文章后续阅读">
+        <section v-if="article.series" class="followup-block article-series-block">
           <div class="article-series-heading">
             <div>
               <p class="section-label">系列阅读</p>
@@ -324,10 +328,10 @@ watchEffect(() => {
               <strong>{{ item.title }}</strong>
             </router-link>
           </div>
-        </div>
+        </section>
 
-        <div v-if="linkedEvidence.length" class="followup-block">
-          <p class="section-label">工程证据</p>
+        <section v-if="linkedEvidence.length" class="followup-block">
+          <h2 class="section-label">工程证据</h2>
           <div class="article-evidence-links">
             <article v-for="record in linkedEvidence" :key="record.slug">
               <div>
@@ -340,10 +344,10 @@ watchEffect(() => {
               <small v-else>当前为去敏摘要，不提供私有仓库链接。</small>
             </article>
           </div>
-        </div>
+        </section>
 
-        <div class="followup-block">
-          <p class="section-label">相关项目</p>
+        <section v-if="relatedProjects.length" class="followup-block">
+          <h2 class="section-label">相关项目</h2>
           <div class="followup-grid">
             <article v-for="project in relatedProjects" :key="project.id" class="followup-card">
               <h3>{{ project.name }}</h3>
@@ -353,10 +357,10 @@ watchEffect(() => {
               </router-link>
             </article>
           </div>
-        </div>
+        </section>
 
-        <div class="followup-block">
-          <p class="section-label">推荐阅读</p>
+        <section v-if="recommendedArticles.length" class="followup-block">
+          <h2 class="section-label">推荐阅读</h2>
           <div class="followup-links">
             <router-link
               v-for="item in recommendedArticles"
@@ -368,37 +372,52 @@ watchEffect(() => {
               <small>{{ item.difficulty }} · {{ item.readingTime }}</small>
             </router-link>
           </div>
-        </div>
+        </section>
 
-        <div class="followup-block">
-          <p class="section-label">延伸问题</p>
-          <div class="suggested-question-list">
-            <p
-              v-for="question in article.suggestedQuestions"
-              :key="question"
-              class="suggested-question"
-            >
-              {{ question }}
-            </p>
-          </div>
-        </div>
+        <section v-if="!hasEditorialRelations" class="followup-block article-followup-empty">
+          <h2 class="section-label">继续阅读</h2>
+          <p>这篇文章暂时没有已公开的系列、相关项目或推荐文章。</p>
+          <router-link to="/articles">返回工程笔记列表 &rarr;</router-link>
+        </section>
 
-        <router-link v-if="nextArticle" :to="'/articles/' + nextArticle.slug" class="next-article">
-          <span>下一篇</span>
-          <strong>{{ nextArticle.title }}</strong>
-        </router-link>
+        <nav v-if="previousArticle || nextArticle" class="article-navigation" aria-label="按发布时间继续阅读">
+          <router-link v-if="previousArticle" :to="`/articles/${previousArticle.slug}`">
+            <span>上一篇</span>
+            <strong>{{ previousArticle.title }}</strong>
+          </router-link>
+          <router-link v-if="nextArticle" :to="`/articles/${nextArticle.slug}`">
+            <span>下一篇</span>
+            <strong>{{ nextArticle.title }}</strong>
+          </router-link>
+        </nav>
       </section>
+
+      <footer class="article-detail-footer">
+        <router-link to="/articles" class="back-link">&larr; 返回工程笔记</router-link>
+      </footer>
     </div>
 
-    <div v-else-if="loadingArticle" class="container article-loading" role="status">
-      <p class="section-label">工程笔记</p>
-      <p>正在加载正文…</p>
+    <div v-else-if="loadingArticle" class="container article-reader-state" role="status" aria-live="polite" aria-busy="true">
+      <p class="article-reader-state__eyebrow">Engineering Notes</p>
+      <h1 class="article-reader-state__title">正在加载正文…</h1>
+      <p class="article-reader-state__message">文章元数据已经找到，正在读取正文内容。</p>
     </div>
 
-    <div class="container" v-else>
-      <div class="not-found">
-        <p class="not-found-title">{{ articleLoadFailed ? '正文加载失败' : '文章不存在' }}</p>
-        <p class="not-found-desc">{{ articleLoadFailed ? '文章元数据存在，但正文暂时无法加载，请稍后重试。' : '请检查链接，或返回浏览全部工程笔记。' }}</p>
+    <div v-else-if="articleLoadFailed" class="container article-reader-state" role="alert">
+      <p class="article-reader-state__eyebrow">Load error</p>
+      <h1 class="article-reader-state__title">正文暂时无法加载。</h1>
+      <p class="article-reader-state__message">文章元数据仍然有效，可重新载入正文，或返回工程笔记列表。</p>
+      <div class="article-reader-state__actions">
+        <button type="button" class="btn btn-primary" @click="loadCurrentArticle(slug)">重新载入</button>
+        <router-link to="/articles" class="btn btn-secondary">查看全部工程笔记</router-link>
+      </div>
+    </div>
+
+    <div v-else class="container article-reader-state">
+      <p class="article-reader-state__eyebrow">Article unavailable</p>
+      <h1 class="article-reader-state__title">这篇文章不存在。</h1>
+      <p class="article-reader-state__message">链接中的文章标识不在公开内容索引中。请返回列表，从已发布的工程笔记继续阅读。</p>
+      <div class="article-reader-state__actions">
         <router-link to="/articles" class="btn btn-primary">查看全部工程笔记</router-link>
       </div>
     </div>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { siteArticles, siteArticlesByNewest, siteKnowledge } from '../data/siteKnowledge'
+import { sortArticlesForReading } from '../data/articlePresentation'
+import { getProjectsByIds, siteArticles, siteKnowledge } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
 
 type SiteArticle = (typeof siteArticles)[number]
@@ -24,9 +25,7 @@ const evidenceLabels = {
   'public-demo': '公开可运行',
 } as const
 
-const prioritizedArticles = [...siteArticlesByNewest].sort((a, b) =>
-  b.date.localeCompare(a.date) || (b.updatedAt ?? '').localeCompare(a.updatedAt ?? '') || b.id - a.id,
-)
+const prioritizedArticles = sortArticlesForReading(siteArticles)
 
 const featuredPriority = [
   'evm-broadcast-unknown-canonical-recovery',
@@ -117,6 +116,16 @@ function kindLabel(kind: ArticleKind) {
   return kindOptions.find(option => option.id === kind)?.title ?? kind
 }
 
+function articleProjectNames(article: SiteArticle): string[] {
+  return getProjectsByIds(article.relatedProjectIds).map(project => project.name)
+}
+
+function articleSeriesLabel(article: SiteArticle): string | undefined {
+  if (!article.series || !article.seriesOrder) return undefined
+  const seriesLength = siteArticles.filter(item => item.series === article.series).length
+  return `${article.series} · ${article.seriesOrder}/${seriesLength}`
+}
+
 function resetFilters() {
   query.value = ''
   selectedKind.value = 'All'
@@ -140,7 +149,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <main class="articles-editorial-page">
+  <div class="articles-editorial-page">
     <header class="articles-hero">
       <div class="container articles-shell">
         <p class="articles-kicker">Engineering Notes / {{ siteArticles.length }} Records</p>
@@ -170,12 +179,19 @@ onMounted(() => {
             >
               <div class="featured-reading-meta">
                 <span>{{ String(index + 1).padStart(2, '0') }}</span>
-                <time :datetime="article.date">{{ article.updatedAt ?? article.date }}</time>
+                <div class="article-date-stack">
+                  <span>发布 <time :datetime="article.date">{{ article.date }}</time></span>
+                  <span v-if="article.updatedAt">更新 <time :datetime="article.updatedAt">{{ article.updatedAt }}</time></span>
+                </div>
               </div>
               <div>
                 <p>{{ kindLabel(article.kind) }}</p>
                 <h3>{{ article.title }}</h3>
-                <p>{{ article.summary }}</p>
+                <p class="featured-reading-summary">{{ article.summary }}</p>
+                <div v-if="article.series || article.relatedProjectIds.length" class="article-context-line">
+                  <span v-if="articleSeriesLabel(article)">系列 · {{ articleSeriesLabel(article) }}</span>
+                  <span v-for="projectName in articleProjectNames(article)" :key="projectName">项目 · {{ projectName }}</span>
+                </div>
               </div>
               <span class="featured-reading-arrow" aria-hidden="true">↗</span>
             </router-link>
@@ -206,7 +222,14 @@ onMounted(() => {
                 <router-link :to="`/articles/${article.slug}`">
                   <span>{{ String(index + 1).padStart(2, '0') }}</span>
                   <strong>{{ article.title }}</strong>
-                  <time :datetime="article.date">{{ article.date }}</time>
+                  <div class="article-date-stack reading-lane-dates">
+                    <span>发布 <time :datetime="article.date">{{ article.date }}</time></span>
+                    <span v-if="article.updatedAt">更新 <time :datetime="article.updatedAt">{{ article.updatedAt }}</time></span>
+                  </div>
+                  <div v-if="article.series || article.relatedProjectIds.length" class="article-context-line reading-lane-context">
+                    <span v-if="articleSeriesLabel(article)">系列 · {{ articleSeriesLabel(article) }}</span>
+                    <span v-for="projectName in articleProjectNames(article)" :key="projectName">项目 · {{ projectName }}</span>
+                  </div>
                 </router-link>
               </li>
             </ol>
@@ -252,11 +275,18 @@ onMounted(() => {
             class="articles-index-row"
             role="listitem"
           >
-            <time :datetime="article.date">{{ article.date }}</time>
+            <div class="article-date-stack articles-index-dates">
+              <span>发布 <time :datetime="article.date">{{ article.date }}</time></span>
+              <span v-if="article.updatedAt">更新 <time :datetime="article.updatedAt">{{ article.updatedAt }}</time></span>
+            </div>
             <span>{{ kindLabel(article.kind) }}</span>
             <div>
               <h3>{{ article.title }}</h3>
               <p>{{ article.summary }}</p>
+              <div v-if="article.series || article.relatedProjectIds.length" class="article-context-line articles-index-context">
+                <span v-if="articleSeriesLabel(article)">系列 · {{ articleSeriesLabel(article) }}</span>
+                <span v-for="projectName in articleProjectNames(article)" :key="projectName">项目 · {{ projectName }}</span>
+              </div>
             </div>
             <span class="articles-index-evidence">
               {{ article.evidenceLevel ? evidenceLabels[article.evidenceLevel] : article.difficulty }}
@@ -279,7 +309,7 @@ onMounted(() => {
         </div>
       </div>
     </section>
-  </main>
+  </div>
 </template>
 
 <style scoped>
@@ -290,7 +320,7 @@ onMounted(() => {
   --articles-paper: #f5f3ee;
   min-width: 0;
   overflow: clip;
-  background: #fff;
+  background: var(--articles-paper);
   color: var(--articles-ink);
 }
 
@@ -303,7 +333,7 @@ onMounted(() => {
   padding: clamp(120px, 15vw, 184px) 0 clamp(72px, 9vw, 112px);
   background:
     linear-gradient(90deg, transparent 0, transparent calc(50% - 1px), rgba(17, 22, 31, 0.035) 50%, transparent calc(50% + 1px)),
-    #fff;
+    var(--articles-paper);
 }
 
 .articles-kicker {
@@ -411,7 +441,7 @@ onMounted(() => {
   text-wrap: pretty;
 }
 
-.featured-reading-item > div:nth-child(2) > p:last-child {
+.featured-reading-summary {
   display: -webkit-box;
   margin: 1rem 0 0;
   overflow: hidden;
@@ -420,6 +450,28 @@ onMounted(() => {
   line-height: 1.72;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
+}
+
+.article-date-stack {
+  display: grid;
+  gap: 4px;
+  color: var(--articles-muted);
+  font: 600 0.68rem/1.45 var(--mono);
+}
+
+.featured-reading-meta .article-date-stack {
+  justify-items: end;
+  text-align: right;
+}
+
+.article-context-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 12px;
+  margin-top: 14px;
+  color: #53766e;
+  font: 650 0.66rem/1.5 var(--mono);
+  overflow-wrap: anywhere;
 }
 
 .featured-reading-arrow {
@@ -511,7 +563,8 @@ onMounted(() => {
 }
 
 .reading-lane a > span,
-.reading-lane time {
+.reading-lane .article-date-stack,
+.reading-lane .article-context-line {
   color: var(--articles-muted);
   font: 600 0.68rem/1.4 var(--mono);
 }
@@ -523,8 +576,14 @@ onMounted(() => {
   text-wrap: pretty;
 }
 
-.reading-lane time {
+.reading-lane-dates,
+.reading-lane-context {
   grid-column: 2;
+}
+
+.reading-lane-context {
+  margin-top: 2px;
+  color: #53766e !important;
 }
 
 .reading-lane a:hover strong,
@@ -622,7 +681,7 @@ onMounted(() => {
 
 .articles-index-row {
   display: grid;
-  grid-template-columns: 6.4rem 7rem minmax(0, 1fr) 8.5rem 4.4rem 1.2rem;
+  grid-template-columns: 7.4rem 7rem minmax(0, 1fr) 8.5rem 4.4rem 1.2rem;
   gap: 18px;
   align-items: start;
   min-width: 0;
@@ -634,10 +693,14 @@ onMounted(() => {
   border-top: 1px solid var(--articles-line);
 }
 
-.articles-index-row > time,
+.articles-index-dates,
 .articles-index-row > span {
   color: var(--articles-muted);
   font: 600 0.7rem/1.55 var(--mono);
+}
+
+.articles-index-context {
+  margin-top: 8px;
 }
 
 .articles-index-row > div {
@@ -788,7 +851,7 @@ onMounted(() => {
     padding: 18px 0;
   }
 
-  .articles-index-row > time {
+  .articles-index-dates {
     grid-column: 1;
     grid-row: 1;
   }
