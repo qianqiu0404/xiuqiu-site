@@ -5,8 +5,14 @@ import { setSeoMeta } from '../utils/seo'
 import '../styles/market-radar.css'
 
 const latest = latestMarketRadars[0]
-const assets = computed(() => latest ? [...new Set(latest.events.flatMap(event => event.assets))] : [])
-const urgentCount = computed(() => latest?.events.filter(event => event.priority === 'P0').length || 0)
+const highPriorityCount = computed(() => latest?.events.filter(event => event.priority === 'P0' || event.priority === 'P1').length || 0)
+const nextEvent = computed(() => {
+  if (!latest) return undefined
+  const generatedAt = Date.parse(latest.generatedAt)
+  return [...latest.events]
+    .filter(event => event.eventAt && Date.parse(event.eventAt) >= generatedAt)
+    .sort((a, b) => Date.parse(a.eventAt!) - Date.parse(b.eventAt!))[0]
+})
 const statusLabels = { scheduled: '已排期', released: '已发布', monitoring: '观察中' }
 const categoryLabels = { macro: '宏观', crypto: '加密', equity: '美股', regulation: '政策' }
 const priorityLabels = { P0: '关键', P1: '重要', P2: '跟踪' }
@@ -50,15 +56,12 @@ onMounted(() => setSeoMeta({
 
     <div v-if="latest" class="trade-radar-main">
       <section class="container trade-radar-shell trade-radar-status" aria-labelledby="radar-status-title">
-        <div class="trade-radar-status-heading">
-          <p id="radar-status-title">今日雷达</p>
-          <strong>{{ latest.date }}</strong>
-          <span>更新于 {{ formatGeneratedAt(latest.generatedAt) }} CST</span>
-        </div>
+        <h2 id="radar-status-title" class="trade-radar-sr-only">今日雷达状态摘要</h2>
         <dl class="trade-radar-metrics">
-          <div><dt>待验证事件</dt><dd>{{ latest.events.length }}</dd></div>
-          <div class="is-urgent"><dt>关键事件 P0</dt><dd>{{ urgentCount }}</dd></div>
-          <div><dt>影响资产</dt><dd>{{ assets.length }}</dd></div>
+          <div><dt>总事件</dt><dd>{{ latest.events.length }}</dd></div>
+          <div class="is-urgent"><dt>P0 + P1</dt><dd>{{ highPriorityCount }}</dd></div>
+          <div><dt>下一事件</dt><dd>{{ nextEvent ? formatEventTime(nextEvent.eventAt) : '持续观察' }}</dd></div>
+          <div><dt>更新于</dt><dd>{{ formatGeneratedAt(latest.generatedAt) }} CST</dd></div>
         </dl>
       </section>
 
@@ -100,7 +103,14 @@ onMounted(() => setSeoMeta({
                 <span class="trade-event-source-date">来源发布 {{ event.sourcePublishedAt }}</span>
               </div>
 
-              <details class="trade-event-analysis">
+              <div v-if="event.priority !== 'P2'" class="trade-event-analysis trade-event-analysis--static">
+                <dl>
+                  <div><dt>为什么关注</dt><dd>{{ event.whyWatch }}</dd></div>
+                  <div><dt>接下来验证</dt><dd>{{ event.watchFor }}</dd></div>
+                  <div><dt>何时失效</dt><dd>{{ event.invalidation }}</dd></div>
+                </dl>
+              </div>
+              <details v-else class="trade-event-analysis">
                 <summary>展开判断边界 <span aria-hidden="true">＋</span></summary>
                 <dl>
                   <div><dt>为什么关注</dt><dd>{{ event.whyWatch }}</dd></div>

@@ -28,25 +28,39 @@ function formatGeneratedAt(value: string) {
   }).format(new Date(value))
 }
 
-watch(() => String(route.params.date || ''), async (slug) => {
+async function focusEventHash(hash: string, version: number) {
+  if (!hash) return
+  await nextTick()
+  await document.fonts.ready
+  await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+  if (version !== requestVersion) return
+
+  let id = hash.slice(1)
+  try { id = decodeURIComponent(id) } catch { return }
+  const target = document.getElementById(id)
+  const heading = target?.querySelector<HTMLElement>('h2')
+  if (!target || !heading) return
+
+  target.scrollIntoView({ block: 'start' })
+  heading.focus({ preventScroll: true })
+}
+
+watch(() => ({ slug: String(route.params.date || ''), hash: route.hash }), async ({ slug, hash }, previous) => {
   const version = ++requestVersion
-  loading.value = true
-  entry.value = undefined
-  let loaded: MarketRadarDaily | undefined
-  try { loaded = await loadMarketRadarBySlug(slug) } catch { loaded = undefined }
+  const shouldLoad = slug !== previous?.slug || !entry.value
+  let loaded = entry.value
+
+  if (shouldLoad) {
+    loading.value = true
+    entry.value = undefined
+    try { loaded = await loadMarketRadarBySlug(slug) } catch { loaded = undefined }
+  }
+
   if (version !== requestVersion) return
   entry.value = loaded
   loading.value = false
 
-  if (loaded && route.hash) {
-    await nextTick()
-    const target = document.getElementById(route.hash.slice(1))
-    const heading = target?.querySelector<HTMLElement>('h2')
-    if (target && heading) {
-      target.scrollIntoView({ block: 'start' })
-      heading.focus({ preventScroll: true })
-    }
-  }
+  if (loaded) await focusEventHash(hash, version)
 }, { immediate: true })
 
 watchEffect(() => {
@@ -81,9 +95,9 @@ watchEffect(() => {
       <aside class="trade-radar-detail-index">
         <p class="trade-radar-kicker">Event index</p>
         <nav aria-label="本期事件目录">
-          <a v-for="(event, index) in entry.events" :key="event.id" :href="`#${event.id}`">
+          <router-link v-for="(event, index) in entry.events" :key="event.id" :to="{ name: 'market-radar-detail', params: { date: entry.slug }, hash: `#${event.id}` }">
             <span>{{ String(index + 1).padStart(2, '0') }}</span><strong>{{ event.title }}</strong>
-          </a>
+          </router-link>
         </nav>
       </aside>
 
