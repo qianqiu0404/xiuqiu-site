@@ -23,14 +23,24 @@ export function preparePublicResponse(res: MarketRadarResponse): void {
   res.setHeader('X-Content-Type-Options', 'nosniff')
 }
 
-export function preparePrivateResponse(res: MarketRadarResponse): void {
+export function prepareNoStoreResponse(res: MarketRadarResponse): void {
   res.setHeader('Content-Type', 'application/json; charset=utf-8')
   res.setHeader('Cache-Control', 'no-store')
   res.setHeader('X-Content-Type-Options', 'nosniff')
 }
 
+export function preparePrivateResponse(res: MarketRadarResponse): void {
+  prepareNoStoreResponse(res)
+}
+
+export function sendPublicError(res: MarketRadarResponse, status: number, code: string, error: string): void {
+  prepareNoStoreResponse(res)
+  res.status(status).json({ code, error })
+}
+
 export function allowMethods(req: MarketRadarRequest, res: MarketRadarResponse, methods: string[]): boolean {
   if (req.method && methods.includes(req.method)) return true
+  prepareNoStoreResponse(res)
   res.setHeader('Allow', methods.join(', '))
   res.status(405).json({ code: 'method_not_allowed', error: 'Method not allowed.' })
   return false

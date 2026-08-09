@@ -14,6 +14,8 @@ let requestVersion = 0
 const directionLabels = { bullish: '偏多', bearish: '偏空', mixed: '分歧', neutral: '中性' }
 const reactionLabels = { pending: '待观察', confirmed: '已确认', priced_in: '已计价', ignored: '反应有限', contradicted: '方向相反' }
 const horizonLabels = { intraday: '日内', days: '数日', weeks: '数周' }
+const legacyWatchFor = '历史记录未提供独立观察条件。'
+const legacyInvalidation = '历史记录未提供独立失效条件。'
 
 function percent(value: number | null | undefined) {
   if (value == null) return '待观察'
@@ -78,6 +80,33 @@ watch(() => String(route.params.id || ''), async (id) => {
 
         <section class="trade-radar-event-fact"><h2>为什么重要</h2><p>{{ event.whyItMattersZh }}</p></section>
 
+        <section class="trade-radar-event-boundaries" aria-labelledby="event-boundaries-title">
+          <header>
+            <p class="trade-radar-kicker">System observation boundaries</p>
+            <h2 id="event-boundaries-title">来源、观察与失效边界始终分开。</h2>
+            <p>下列观察条件由系统结构化生成，不是原始来源的原文。</p>
+          </header>
+          <dl>
+            <div>
+              <dt>原始来源</dt>
+              <dd>
+                <ul v-if="event.sources.length">
+                  <li v-for="source in event.sources" :key="source.url"><a :href="source.url" target="_blank" rel="noopener"><span class="trade-radar-source-name">{{ source.name }}</span><span aria-hidden="true">↗</span></a></li>
+                </ul>
+                <p v-else class="is-legacy">当前记录没有可公开的原始来源。</p>
+              </dd>
+            </div>
+            <div>
+              <dt>接下来观察</dt>
+              <dd><p :class="{ 'is-legacy': !event.watchFor }">{{ event.watchFor || legacyWatchFor }}</p></dd>
+            </div>
+            <div>
+              <dt>何时失效</dt>
+              <dd><p :class="{ 'is-legacy': !event.invalidation }">{{ event.invalidation || legacyInvalidation }}</p></dd>
+            </div>
+          </dl>
+        </section>
+
         <section class="trade-radar-event-reaction" aria-labelledby="event-reaction-title">
           <header><p class="trade-radar-kicker">Three-layer judgment</p><h2 id="event-reaction-title">把新闻、行情与系统判断分开。</h2></header>
           <dl>
@@ -89,7 +118,7 @@ watch(() => String(route.params.id || ''), async (id) => {
 
         <section class="trade-radar-event-evidence">
           <div><p class="trade-radar-kicker">Affected assets</p><h2>相关资产</h2><div class="trade-event-assets"><span v-for="asset in event.assets" :key="`${asset.namespace}:${asset.symbol}`">{{ asset.namespace }} · {{ asset.symbol }}</span></div></div>
-          <div><p class="trade-radar-kicker">Primary sources / {{ event.sourceCount }}</p><h2>原始来源</h2><ul><li v-for="source in event.sources" :key="source.url"><a :href="source.url" target="_blank" rel="noopener">{{ source.name }} <span aria-hidden="true">↗</span></a></li></ul></div>
+          <div><p class="trade-radar-kicker">Evidence count</p><h2>{{ event.sourceCount }} 个公开来源</h2><p>资产映射、来源证据和系统边界可能继续更新，但不会自动转成交易指令。</p></div>
         </section>
 
         <p class="trade-radar-disclaimer">这是一条事件研究记录，不构成投资建议。来源、行情和系统判断可能继续更新。</p>

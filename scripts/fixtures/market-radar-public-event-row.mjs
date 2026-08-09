@@ -1,0 +1,33 @@
+export const publicEventRowV2 = {
+  id: 'fixture-event-v2',
+  slug: '2026-08-10-btc-client-release-fixture',
+  market: 'crypto',
+  priority: 'P1',
+  score: 78,
+  title_zh: 'BTC 客户端发布了需要继续验证的新版本',
+  summary_zh: '公开发布说明已确认版本发布，当前只记录工程变化与可审查来源。',
+  why_it_matters_zh: '节点软件变化可能影响运行稳定性，但不自动构成价格方向信号。',
+  event_type: 'client_release',
+  news_direction: 'neutral',
+  system_judgment: '等待节点运营者的公开运行反馈。',
+  horizon: 'days',
+  occurred_at: '2026-08-10T02:00:00.000Z',
+  published_at: '2026-08-10T02:08:00.000Z',
+  source_count: 1,
+  sources: [{ name: 'Bitcoin Core Releases', url: 'https://github.com/bitcoin/bitcoin/releases/tag/v30.0' }],
+  assets: [{ namespace: 'crypto', symbol: 'BTC', relevance: 100 }],
+  reaction: {
+    status: 'pending', benchmark: 'BTC', return5m: null, return30m: null, return4h: null,
+    excess5m: null, excess30m: null, excess4h: null,
+  },
+  watch_for: '继续观察签名发布物、节点运营者反馈与后续公开修复说明。',
+  invalidation: '若没有节点运行证据或正式修复说明，不把版本发布外推为网络异常或市场方向。',
+}
+
+export const publicEventRowLegacy = {
+  ...publicEventRowV2,
+  id: 'fixture-event-legacy',
+  slug: '2026-08-10-btc-client-release-legacy',
+  watch_for: null,
+  invalidation: null,
+}

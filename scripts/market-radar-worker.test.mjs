@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import {
   calculateExcess, calculateReturn, clusterKey, mapAssets, nearestPrice, normalizeUrl,
-  isFreshForPublic, priorityForScore, scoreEvent, titleSimilarity, validateAiSummary,
+  hasCompleteAiV2Boundaries, isFreshForPublic, priorityForScore, scoreEvent, titleSimilarity, validateAiSummary,
 } from '../market-radar/worker/core.mjs'
 import { buildDigestBody, summarizeAttentionAssets } from '../market-radar/worker/digests.mjs'
 import { isUsPremarketWindow, newYorkParts } from '../market-radar/worker/market-calendar.mjs'
@@ -96,10 +96,37 @@ test('AI summaries fail closed unless every public field and enum is valid', () 
   const valid = validateAiSummary({
     titleZh: '监管事件', summaryZh: '公开摘要', whyItMattersZh: '影响关注资产', eventType: 'regulation',
     direction: 'mixed', horizon: 'days', systemJudgment: '等待行情确认',
+    watchFor: '  观察监管方是否公布具体执行时间表  ',
+    invalidation: '  若后续公告明确取消该执行计划，则当前判断失效  ',
   })
   assert.equal(valid?.direction, 'mixed')
+  assert.equal(valid?.watchFor, '观察监管方是否公布具体执行时间表')
+  assert.equal(valid?.invalidation, '若后续公告明确取消该执行计划，则当前判断失效')
   assert.equal(validateAiSummary({ titleZh: '缺字段' }), null)
   assert.equal(validateAiSummary({ ...valid, direction: 'buy_now' }), null)
+  assert.equal(validateAiSummary({ ...valid, watchFor: '暂无' }), null)
+  assert.equal(validateAiSummary({ ...valid, watchFor: '暂无。' }), null)
+  assert.equal(validateAiSummary({ ...valid, watchFor: 'N/A.' }), null)
+  assert.equal(validateAiSummary({ ...valid, watchFor: '后续待补充具体数据' }), null)
+  assert.equal(validateAiSummary({ ...valid, watchFor: 'TODO later' }), null)
+  assert.equal(validateAiSummary({ ...valid, watchFor: '这是占位文本' }), null)
+  assert.equal(validateAiSummary({ ...valid, watchFor: '。！--' }), null)
+  assert.equal(validateAiSummary({ ...valid, watchFor: '\u200b\u200d' }), null)
+  assert.equal(validateAiSummary({ ...valid, invalidation: 'x'.repeat(601) }), null)
+  assert.equal(validateAiSummary({ ...valid, invalidation: '   ' }), null)
+  assert.equal(validateAiSummary({ ...valid, invalidation: '界'.repeat(600) })?.invalidation.length, 600)
+})
+
+test('only complete v2 event boundaries satisfy the publish gate', () => {
+  const complete = {
+    ai_schema_version: 'v2',
+    watch_for_zh: '观察公开文件的后续更新',
+    invalidation_zh: '若公开文件撤回该计划则失效',
+  }
+  assert.equal(hasCompleteAiV2Boundaries(complete), true)
+  assert.equal(hasCompleteAiV2Boundaries({ ...complete, ai_schema_version: 'v1' }), false)
+  assert.equal(hasCompleteAiV2Boundaries({ ...complete, watch_for_zh: null }), false)
+  assert.equal(hasCompleteAiV2Boundaries({ ...complete, invalidation_zh: '待补充' }), false)
 })
 
 test('reaction alignment and excess returns use bounded 5-minute observations', () => {
@@ -182,10 +209,26 @@ test('event pagination cursor keeps timestamp and id together', () => {
 
 test('a confirmed draft can publish and enqueue P0 exactly once', () => {
   const worker = read('market-radar/worker/run.mjs')
-  assert.match(worker, /Boolean\(existing\.ai_schema_version\) && score >= 50 && isFreshForPublic/)
+  assert.match(worker, /hasCompleteAiV2Boundaries\(existing\) && score >= 50 && isFreshForPublic/)
   assert.match(worker, /published_at = case when \$4::boolean then coalesce\(published_at, now\(\)\)/)
   assert.match(worker, /existing\.priority !== 'P0'/)
   assert.match(worker, /on conflict \(idempotency_key\) do nothing/)
+})
+
+test('new events publish only with complete AI v2 verification boundaries', () => {
+  const worker = read('market-radar/worker/run.mjs')
+  const summarizer = worker.slice(worker.indexOf('async function summarizeWithAi'), worker.indexOf('async function enqueueP0'))
+  const existingBranch = worker.slice(worker.indexOf('if (existing)'), worker.indexOf('const summary = await summarizeWithAi'))
+  assert.match(worker, /watchFor, invalidation/)
+  assert.match(worker, /系统观察边界，不是来源已陈述的事实/)
+  assert.match(summarizer, /max_tokens: 900/)
+  assert.match(summarizer, /JSON\.stringify\(\{ title: item\.title, summary: item\.summary, provider: item\.provider, assets \}\)/)
+  assert.doesNotMatch(summarizer, /item\.(?:payload|sourceUrl|providerId|explicitSymbols)/)
+  assert.match(worker, /const publishable = Boolean\(summary\) && score >= 50 && isFreshForPublic/)
+  assert.match(worker, /summary \? 'v2' : null/)
+  assert.match(worker, /summary\?\.watchFor \|\| null, summary\?\.invalidation \|\| null/)
+  assert.doesNotMatch(worker, /summary \? 'v1' : null/)
+  assert.doesNotMatch(existingBranch, /(?:watch_for_zh|invalidation_zh)\s*=/)
 })
 
 test('migrations hide stale backlog and the runner applies every numbered file', () => {
@@ -196,6 +239,18 @@ test('migrations hide stale backlog and the runner applies every numbered file',
   assert.match(migration, /occurred_at >= now\(\) - interval '7 days'/)
   assert.match(runner, /readdir\(migrationsUrl\)/)
   assert.match(runner, /files\.length/)
+})
+
+test('verification-boundary migration is repeatable, private by default and preserves freshness', () => {
+  const migration = read('market-radar/migrations/003_event_verification_boundaries.sql')
+  const publicView = migration.slice(migration.indexOf('create or replace view market_radar.public_events'))
+  assert.match(migration, /add column if not exists watch_for_zh text/i)
+  assert.match(migration, /add column if not exists invalidation_zh text/i)
+  assert.match(migration, /create or replace view market_radar\.public_events/i)
+  assert.match(publicView, /e\.watch_for_zh as watch_for[\s\S]*e\.invalidation_zh as invalidation/i)
+  assert.match(publicView, /occurred_at >= now\(\) - interval '7 days'/i)
+  assert.doesNotMatch(publicView, /ai_schema_version|raw_items\.payload|prompt|private_note/i)
+  assert.doesNotMatch(migration, /update market_radar\.events|insert into market_radar\.events/i)
 })
 
 test('all worker modes share a crash-safe database lease', () => {
