@@ -1,6 +1,6 @@
 import { neon } from '@neondatabase/serverless'
 import { MARKET_GROUPS } from './config.mjs'
-import { clusterKey, mapAssets, normalizeTitle, priorityForScore, scoreEvent, titleSimilarity, validateAiSummary } from './core.mjs'
+import { clusterKey, isFreshForPublic, mapAssets, normalizeTitle, priorityForScore, scoreEvent, titleSimilarity, validateAiSummary } from './core.mjs'
 import { checkQiuMarketHealth, fetchCryptoReleases, fetchFederalReserve, fetchSecCompanyFilings, fetchSecEdgar } from './providers.mjs'
 import { enrichPendingReactions } from './reactions.mjs'
 import { generateDailyDigest, generateP1Batch, generateUsPremarketDigest } from './digests.mjs'
@@ -105,7 +105,7 @@ async function persistItem(item) {
     const scored = scoreEvent({ source: item.provider, assets, occurredAt: item.publishedAt, sourceCount: countRows[0]?.count || 1, text: `${item.title} ${item.summary}` })
     const score = Math.max(Number(existing.score), scored)
     const priority = priorityForScore(score)
-    const publishable = Boolean(existing.ai_schema_version) && score >= 50
+    const publishable = Boolean(existing.ai_schema_version) && score >= 50 && isFreshForPublic(item.publishedAt)
     for (const asset of assets) {
       await sql.query(`insert into market_radar.event_assets (event_id, namespace, symbol, relevance)
         values ($1,$2,$3,$4) on conflict (event_id, namespace, symbol) do update
@@ -125,7 +125,7 @@ async function persistItem(item) {
   const summary = await summarizeWithAi(item, assets)
   const score = scoreEvent({ source: item.provider, assets, occurredAt: item.publishedAt, text: `${item.title} ${item.summary}` })
   const priority = priorityForScore(score)
-  const publishable = Boolean(summary) && score >= 50
+  const publishable = Boolean(summary) && score >= 50 && isFreshForPublic(item.publishedAt)
   const id = crypto.randomUUID()
   const slug = `${new Date(item.publishedAt).toISOString().slice(0, 10)}-${normalizeTitle(item.title).replace(/ /g, '-').slice(0, 90)}-${id.slice(0, 6)}`
   await sql.query(`insert into market_radar.events
