@@ -49,6 +49,8 @@ export interface MarketRadarEvent {
   titleZh: string
   summaryZh: string
   whyItMattersZh: string
+  watchFor?: string | null
+  invalidation?: string | null
   eventType: string
   newsDirection: 'bullish' | 'bearish' | 'mixed' | 'neutral'
   systemJudgment: string

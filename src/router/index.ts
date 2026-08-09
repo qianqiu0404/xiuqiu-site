@@ -132,6 +132,9 @@ const router = createRouter({
   ],
   scrollBehavior(to) {
     if (to.hash) {
+      // Market Radar date snapshots load asynchronously and restore their own
+      // hash after the event headings exist, including in-page hash changes.
+      if (to.name === 'market-radar-detail') return false
       return { el: to.hash, behavior: 'smooth' }
     }
     return { top: 0 }

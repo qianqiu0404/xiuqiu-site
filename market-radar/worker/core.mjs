@@ -95,6 +95,21 @@ export function isFreshForPublic(occurredAt, now = new Date(), maxAgeHours = 72)
   return ageMs >= -60 * 60_000 && ageMs <= maxAgeHours * 60 * 60_000
 }
 
+const boundaryPlaceholders = new Set([
+  'na', 'none', 'null', 'unknown',
+  '无', '暂无', '未知', '待定', '待补充', '待观察', '等待结构化验证',
+])
+const boundaryPlaceholderPattern = /(?:待补充|占位|稍后补充|todo|tbd|placeholder)/i
+
+function validateBoundary(value) {
+  if (typeof value !== 'string') return null
+  const normalized = value.trim()
+  const meaningful = normalized.replace(/[\p{White_Space}\p{Cf}\p{P}\p{S}]/gu, '').toLowerCase()
+  if (!meaningful || [...normalized].length > 600
+    || boundaryPlaceholders.has(meaningful) || boundaryPlaceholderPattern.test(meaningful)) return null
+  return normalized
+}
+
 export function validateAiSummary(value) {
   if (!value || typeof value !== 'object') return null
   const enums = {
@@ -104,6 +119,9 @@ export function validateAiSummary(value) {
   const required = ['titleZh', 'summaryZh', 'whyItMattersZh', 'eventType', 'direction', 'horizon', 'systemJudgment']
   if (!required.every(key => typeof value[key] === 'string' && value[key].trim())) return null
   if (!enums.direction.includes(value.direction) || !enums.horizon.includes(value.horizon)) return null
+  const watchFor = validateBoundary(value.watchFor)
+  const invalidation = validateBoundary(value.invalidation)
+  if (!watchFor || !invalidation) return null
   return {
     titleZh: value.titleZh.trim().slice(0, 160),
     summaryZh: value.summaryZh.trim().slice(0, 800),
@@ -112,7 +130,14 @@ export function validateAiSummary(value) {
     direction: value.direction,
     horizon: value.horizon,
     systemJudgment: value.systemJudgment.trim().slice(0, 400),
+    watchFor,
+    invalidation,
   }
+}
+
+export function hasCompleteAiV2Boundaries(value) {
+  if (!value || value.ai_schema_version !== 'v2') return false
+  return Boolean(validateBoundary(value.watch_for_zh) && validateBoundary(value.invalidation_zh))
 }
 
 export function calculateReturn(start, end) {

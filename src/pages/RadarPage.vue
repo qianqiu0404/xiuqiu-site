@@ -2,7 +2,12 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { latestRadars, radarIndex, type RadarIndexEntry } from '../data/generatedRadars'
 import { radarWeeklies } from '../data/generatedRadarWeeklies'
-import { getSupportingRadarItems, radarSourceStatus } from '../data/radarPresentation'
+import {
+  getRadarReviewBoundary,
+  getSupportingRadarItems,
+  radarSignalCountLabel,
+  radarSourceStatus,
+} from '../data/radarPresentation'
 import { setSeoMeta } from '../utils/seo'
 import '../styles/radar.css'
 
@@ -34,6 +39,12 @@ const archiveFilters: ArchiveFilterOption[] = [
 ]
 const supportingSignals = computed(() =>
   latestRadar ? getSupportingRadarItems(latestRadar) : [],
+)
+const latestSignalLabel = computed(() => radarSignalCountLabel(latestRadar?.marketSignals.length ?? 0))
+const latestReviewBoundary = computed(() =>
+  latestWeekly
+    ? getRadarReviewBoundary(latestWeekly.reviewedAt, latestRadar?.date)
+    : undefined,
 )
 
 function radarMatchesFilter(radar: RadarIndexEntry, filter: ArchiveFilter): boolean {
@@ -111,7 +122,7 @@ onMounted(() =>
 </script>
 
 <template>
-  <main class="radar-intelligence-page" lang="zh-CN">
+  <div class="radar-intelligence-page" lang="zh-CN">
     <section class="radar-intelligence-hero" aria-labelledby="radar-title">
       <div class="container radar-intelligence-shell radar-hero-layout">
         <div class="radar-hero-copy">
@@ -139,6 +150,13 @@ onMounted(() =>
           </dl>
           <p>AI 自动汇总 · {{ radarSourceStatus(latestRadar) }}</p>
         </aside>
+        <aside v-else class="radar-hero-status" aria-label="最新情报状态">
+          <div>
+            <span>Latest brief</span>
+            <strong>暂无已公开日报</strong>
+          </div>
+          <p>请查看历史档案，或稍后返回确认新的公开简报。</p>
+        </aside>
       </div>
     </section>
 
@@ -147,7 +165,7 @@ onMounted(() =>
         <header class="radar-stage-heading">
           <div>
             <p class="radar-kicker">01 / Daily Brief</p>
-            <h2 id="radar-daily-title">今天值得留下的三条信号。</h2>
+            <h2 id="radar-daily-title">{{ latestSignalLabel }}</h2>
           </div>
           <router-link :to="`/radar/${latestRadar.slug}`">阅读完整简报 <span aria-hidden="true">↗</span></router-link>
         </header>
@@ -159,7 +177,7 @@ onMounted(() =>
               <p>{{ latestRadar.summary }}</p>
             </header>
 
-            <ol class="radar-signal-ledger">
+            <ol v-if="latestRadar.marketSignals.length" class="radar-signal-ledger">
               <li v-for="(signal, index) in latestRadar.marketSignals" :key="signal.title">
                 <span>{{ String(index + 1).padStart(2, '0') }}</span>
                 <article>
@@ -176,6 +194,10 @@ onMounted(() =>
                 >↗</a>
               </li>
             </ol>
+            <div v-else class="radar-daily-empty" role="status">
+              <strong>本期没有通过公开门禁的行业信号。</strong>
+              <p>完整简报仍保留工程观察与来源状态；可继续阅读，或在历史档案中查看往期信号。</p>
+            </div>
           </div>
 
           <aside v-if="supportingSignals.length" class="radar-research-index" aria-label="本期研究分支">
@@ -200,6 +222,14 @@ onMounted(() =>
       </div>
     </section>
 
+    <section v-else class="radar-daily-stage" aria-labelledby="radar-daily-empty-title">
+      <div class="container radar-intelligence-shell radar-daily-empty">
+        <p class="radar-kicker">01 / Daily Brief</p>
+        <h2 id="radar-daily-empty-title">暂无已公开日报。</h2>
+        <p>可先浏览历史档案，或稍后返回确认新的公开简报。</p>
+      </div>
+    </section>
+
     <section v-if="latestWeekly" class="radar-convergence-stage" aria-labelledby="radar-weekly-title">
       <div class="container radar-intelligence-shell">
         <header class="radar-stage-heading radar-stage-heading--dark">
@@ -207,7 +237,11 @@ onMounted(() =>
             <p class="radar-kicker">02 / Human Reviewed Weekly</p>
             <h2 id="radar-weekly-title">信号只有经过取舍，<br />才配进入工程。</h2>
           </div>
-          <time :datetime="latestWeekly.reviewedAt">Reviewed {{ latestWeekly.reviewedAt }}</time>
+          <div v-if="latestReviewBoundary" class="radar-review-status" aria-label="周报复核状态">
+            <time :datetime="latestWeekly.reviewedAt">{{ latestReviewBoundary.lastReviewedLabel }}</time>
+            <span>{{ latestReviewBoundary.statusLabel }}</span>
+            <span>{{ latestReviewBoundary.nextReviewLabel }}</span>
+          </div>
         </header>
 
         <div class="radar-convergence-lead">
@@ -236,6 +270,14 @@ onMounted(() =>
         <router-link class="radar-convergence-action" :to="`/radar/week/${latestWeekly.slug}`">
           查看完整周度收敛 <span aria-hidden="true">↗</span>
         </router-link>
+      </div>
+    </section>
+
+    <section v-else class="radar-convergence-stage" aria-labelledby="radar-weekly-empty-title">
+      <div class="container radar-intelligence-shell radar-daily-empty">
+        <p class="radar-kicker">02 / Human Reviewed Weekly</p>
+        <h2 id="radar-weekly-empty-title">暂无已公开的人工复核周报。</h2>
+        <p>日报仍可作为待验证线索阅读；在周报公开前，不应把自动汇总视为人工结论。</p>
       </div>
     </section>
 
@@ -273,7 +315,11 @@ onMounted(() =>
             </router-link>
           </section>
         </div>
-        <p v-else class="radar-archive-empty">该栏目暂时没有公开简报。</p>
+        <div v-else class="radar-archive-empty" role="status">
+          <p>该栏目暂时没有公开简报。</p>
+          <button v-if="archiveFilter !== 'all'" type="button" @click="archiveFilter = 'all'">查看全部历史简报</button>
+          <p v-else>请稍后返回确认新的公开简报。</p>
+        </div>
 
         <button
           v-if="filteredArchive.length > archiveLimit"
@@ -290,5 +336,5 @@ onMounted(() =>
         </p>
       </div>
     </section>
-  </main>
+  </div>
 </template>

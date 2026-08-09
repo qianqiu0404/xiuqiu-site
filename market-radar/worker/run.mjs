@@ -1,6 +1,6 @@
 import { neon } from '@neondatabase/serverless'
 import { MARKET_GROUPS } from './config.mjs'
-import { clusterKey, isFreshForPublic, mapAssets, normalizeTitle, priorityForScore, scoreEvent, titleSimilarity, validateAiSummary } from './core.mjs'
+import { clusterKey, hasCompleteAiV2Boundaries, isFreshForPublic, mapAssets, normalizeTitle, priorityForScore, scoreEvent, titleSimilarity, validateAiSummary } from './core.mjs'
 import { checkQiuMarketHealth, fetchCryptoReleases, fetchFederalReserve, fetchSecCompanyFilings, fetchSecEdgar } from './providers.mjs'
 import { enrichPendingReactions } from './reactions.mjs'
 import { generateDailyDigest, generateP1Batch, generateUsPremarketDigest } from './digests.mjs'
@@ -64,11 +64,11 @@ async function summarizeWithAi(item, assets) {
     method: 'POST', signal: AbortSignal.timeout(15_000),
     headers: { Authorization: `Bearer ${env.DEEPSEEK_API_KEY}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      model: env.DEEPSEEK_MODEL || 'deepseek-v4-flash', thinking: { type: 'disabled' }, temperature: 0.1, max_tokens: 700,
+      model: env.DEEPSEEK_MODEL || 'deepseek-v4-flash', thinking: { type: 'disabled' }, temperature: 0.1, max_tokens: 900,
       response_format: { type: 'json_object' },
       messages: [
-        { role: 'system', content: '你是交易事件结构化器，不提供投资建议。只输出 JSON：titleZh, summaryZh, whyItMattersZh, eventType, direction(bullish|bearish|mixed|neutral), horizon(intraday|days|weeks), systemJudgment。不得编造价格、来源或确定性。' },
-        { role: 'user', content: JSON.stringify({ title: item.title, summary: item.summary, source: item.provider, assets }) },
+        { role: 'system', content: '你是交易事件结构化器，不提供投资建议。只输出 JSON：titleZh, summaryZh, whyItMattersZh, eventType, direction(bullish|bearish|mixed|neutral), horizon(intraday|days|weeks), systemJudgment, watchFor, invalidation。watchFor 写接下来需要观察的可验证信号，invalidation 写何种后续情况会使当前系统判断失效；它们都是系统观察边界，不是来源已陈述的事实。两个字段必须是具体的非占位文本，各不超过 600 字符。不得编造价格、来源或确定性。' },
+        { role: 'user', content: JSON.stringify({ title: item.title, summary: item.summary, provider: item.provider, assets }) },
       ],
     }),
   })
@@ -95,7 +95,7 @@ async function persistItem(item) {
 
   const assets = mapAssets(`${item.title} ${item.summary}`, item.explicitSymbols)
   const key = clusterKey(item.title, item.publishedAt)
-  const candidates = await sql.query(`select id, title_zh, score, priority, status, ai_schema_version from market_radar.events
+  const candidates = await sql.query(`select id, title_zh, score, priority, status, ai_schema_version, watch_for_zh, invalidation_zh from market_radar.events
     where cluster_key = $1 and occurred_at >= $2::timestamptz - interval '12 hours' order by occurred_at desc limit 5`, [key, item.publishedAt])
   const existing = candidates.find(candidate => titleSimilarity(candidate.title_zh, item.title) >= 0.45) || candidates[0]
   if (existing) {
@@ -105,7 +105,7 @@ async function persistItem(item) {
     const scored = scoreEvent({ source: item.provider, assets, occurredAt: item.publishedAt, sourceCount: countRows[0]?.count || 1, text: `${item.title} ${item.summary}` })
     const score = Math.max(Number(existing.score), scored)
     const priority = priorityForScore(score)
-    const publishable = Boolean(existing.ai_schema_version) && score >= 50 && isFreshForPublic(item.publishedAt)
+    const publishable = hasCompleteAiV2Boundaries(existing) && score >= 50 && isFreshForPublic(item.publishedAt)
     for (const asset of assets) {
       await sql.query(`insert into market_radar.event_assets (event_id, namespace, symbol, relevance)
         values ($1,$2,$3,$4) on conflict (event_id, namespace, symbol) do update
@@ -130,13 +130,15 @@ async function persistItem(item) {
   const slug = `${new Date(item.publishedAt).toISOString().slice(0, 10)}-${normalizeTitle(item.title).replace(/ /g, '-').slice(0, 90)}-${id.slice(0, 6)}`
   await sql.query(`insert into market_radar.events
     (id, slug, cluster_key, market, status, priority, score, title_zh, summary_zh, why_it_matters_zh,
-     event_type, news_direction, system_judgment, horizon, ai_schema_version, occurred_at, published_at)
-    values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17)`, [
+     event_type, news_direction, system_judgment, horizon, ai_schema_version, occurred_at, published_at,
+     watch_for_zh, invalidation_zh)
+    values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)`, [
       id, slug, key, item.market, publishable ? 'published' : (score < 30 ? 'rejected' : 'draft'),
       priority === 'rejected' ? null : priority, score,
       summary?.titleZh || item.title.slice(0, 160), summary?.summaryZh || '', summary?.whyItMattersZh || '',
       summary?.eventType || 'unclassified', summary?.direction || 'neutral', summary?.systemJudgment || '等待结构化验证',
-      summary?.horizon || 'days', summary ? 'v1' : null, item.publishedAt, publishable ? new Date().toISOString() : null,
+      summary?.horizon || 'days', summary ? 'v2' : null, item.publishedAt, publishable ? new Date().toISOString() : null,
+      summary?.watchFor || null, summary?.invalidation || null,
     ])
   await sql.query(`insert into market_radar.event_sources (event_id, raw_item_id, source_name, source_url) values ($1,$2,$3,$4)`,
     [id, rawId, item.provider, item.sourceUrl])

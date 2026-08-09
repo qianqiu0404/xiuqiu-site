@@ -26,7 +26,7 @@
     "test:ai": "node --test scripts/ai-evidence-presentation.test.mjs",
     "test:assistant": "node --test scripts/ai-assistant.test.mjs",
     "test:radar": "node --test scripts/radar-pipeline.test.mjs scripts/radar-presentation.test.mjs",
-    "test:market-radar": "node --test scripts/market-radar.test.mjs scripts/market-radar-worker.test.mjs",
+    "test:market-radar": "node --test scripts/market-radar.test.mjs scripts/market-radar-worker.test.mjs scripts/market-radar-event-contract.test.mjs",
     "test:release": "node --test scripts/release-workflow.test.mjs",
     "test:quality": "node --test scripts/site-quality.test.mjs",
     "validate:radar": "node scripts/validate-radar-candidate.mjs",

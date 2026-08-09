@@ -1,10 +1,8 @@
-update market_radar.events
-set status = 'rejected', published_at = null, updated_at = now()
-where status = 'published' and occurred_at < now() - interval '7 days';
+alter table market_radar.events
+  add column if not exists watch_for_zh text;
 
-update market_radar.digests
-set visibility = 'internal'
-where visibility = 'public' and id not like '%-v2-%';
+alter table market_radar.events
+  add column if not exists invalidation_zh text;
 
 create or replace view market_radar.public_events as
 select
@@ -19,8 +17,8 @@ select
     'status', mr.status, 'benchmark', mr.benchmark, 'return5m', mr.return_5m, 'return30m', mr.return_30m,
     'return4h', mr.return_4h, 'excess5m', mr.excess_5m, 'excess30m', mr.excess_30m, 'excess4h', mr.excess_4h
   ) end as reaction,
-  null::text as watch_for,
-  null::text as invalidation
+  e.watch_for_zh as watch_for,
+  e.invalidation_zh as invalidation
 from market_radar.events e
 left join market_radar.event_sources es on es.event_id = e.id
 left join market_radar.event_assets ea on ea.event_id = e.id

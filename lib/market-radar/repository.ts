@@ -7,6 +7,7 @@ import {
   type MarketRadarHealth,
   type MarketRadarSummary,
 } from '../../src/market-radar/contracts.js'
+import { mapPublicEventRow } from '../../src/market-radar/public-event.js'
 import { getMarketRadarDb, isMarketRadarConfigured } from './db.js'
 
 type QueryRow = Record<string, unknown>
@@ -23,35 +24,6 @@ function numberOrNull(value: unknown): number | null {
   if (value === null || value === undefined || value === '') return null
   const parsed = Number(value)
   return Number.isFinite(parsed) ? parsed : null
-}
-
-function parseJson<T>(value: unknown, fallback: T): T {
-  if (value && typeof value === 'object') return value as T
-  if (typeof value !== 'string') return fallback
-  try { return JSON.parse(value) as T } catch { return fallback }
-}
-
-function mapEvent(row: QueryRow): MarketRadarEvent {
-  return {
-    id: String(row.id),
-    slug: String(row.slug),
-    market: row.market as MarketRadarEvent['market'],
-    priority: row.priority as MarketRadarEvent['priority'],
-    score: Number(row.score),
-    titleZh: String(row.title_zh),
-    summaryZh: String(row.summary_zh),
-    whyItMattersZh: String(row.why_it_matters_zh),
-    eventType: String(row.event_type),
-    newsDirection: row.news_direction as MarketRadarEvent['newsDirection'],
-    systemJudgment: String(row.system_judgment),
-    horizon: row.horizon as MarketRadarEvent['horizon'],
-    occurredAt: iso(row.occurred_at) || new Date(0).toISOString(),
-    publishedAt: iso(row.published_at) || new Date(0).toISOString(),
-    sourceCount: Number(row.source_count || 0),
-    sources: parseJson(row.sources, []),
-    assets: parseJson(row.assets, []),
-    reaction: row.reaction ? parseJson(row.reaction, null) : null,
-  }
 }
 
 export async function getSummary(): Promise<MarketRadarSummary> {
@@ -142,13 +114,13 @@ export async function listEvents(filters: EventFilters): Promise<MarketRadarEven
   ) as QueryRow[]
   const hasMore = rows.length > filters.limit
   const selected = hasMore ? rows.slice(0, filters.limit) : rows
-  return { status: 'healthy', items: selected.map(mapEvent), nextCursor: hasMore ? encodeEventCursor(selected[selected.length - 1]) : null }
+  return { status: 'healthy', items: selected.map(mapPublicEventRow), nextCursor: hasMore ? encodeEventCursor(selected[selected.length - 1]) : null }
 }
 
 export async function getEvent(id: string): Promise<MarketRadarEvent | null> {
   if (!isMarketRadarConfigured()) return null
   const rows = await getMarketRadarDb().query(`select * from market_radar.public_events where id = $1 or slug = $1 limit 1`, [id]) as QueryRow[]
-  return rows[0] ? mapEvent(rows[0]) : null
+  return rows[0] ? mapPublicEventRow(rows[0]) : null
 }
 
 export async function listDigests(limit: number): Promise<MarketRadarDigestList> {
