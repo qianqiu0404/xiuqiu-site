@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { dailyRadars, type DailyRadar } from '../data/generatedRadars'
+import { latestRadars, radarIndex, type RadarIndexEntry } from '../data/generatedRadars'
 import { radarWeeklies } from '../data/generatedRadarWeeklies'
 import { getSupportingRadarItems, radarSourceStatus } from '../data/radarPresentation'
 import { setSeoMeta } from '../utils/seo'
 import '../styles/radar.css'
 
-const latestRadar = dailyRadars[0]
+const latestRadar = latestRadars[0]
 const latestWeekly = radarWeeklies[0]
 const archiveLimit = 10
 type ArchiveFilter = 'all' | 'crypto' | 'ai' | 'web3' | 'tools' | 'reading'
@@ -19,7 +19,7 @@ interface ArchiveFilterOption {
 interface RadarArchiveGroup {
   week: string
   label: string
-  radars: DailyRadar[]
+  radars: RadarIndexEntry[]
 }
 
 const archiveFilter = ref<ArchiveFilter>('all')
@@ -36,7 +36,7 @@ const supportingSignals = computed(() =>
   latestRadar ? getSupportingRadarItems(latestRadar) : [],
 )
 
-function radarMatchesFilter(radar: DailyRadar, filter: ArchiveFilter): boolean {
+function radarMatchesFilter(radar: RadarIndexEntry, filter: ArchiveFilter): boolean {
   if (filter === 'all') return true
   if (filter === 'crypto') return radar.marketSignals.length > 0
   if (filter === 'ai') return Boolean(radar.aiTip)
@@ -45,7 +45,7 @@ function radarMatchesFilter(radar: DailyRadar, filter: ArchiveFilter): boolean {
   return Boolean(radar.readingPick)
 }
 
-function radarArchiveTitle(radar: DailyRadar): string {
+function radarArchiveTitle(radar: RadarIndexEntry): string {
   if (archiveFilter.value === 'ai') return radar.aiTip?.title || radar.summary
   if (archiveFilter.value === 'web3') return radar.web3Design?.title || radar.summary
   if (archiveFilter.value === 'tools') return radar.vibeProject?.title || radar.summary
@@ -73,13 +73,13 @@ const archiveFilterCounts = computed(() =>
   Object.fromEntries(
     archiveFilters.map(option => [
       option.key,
-      dailyRadars.filter(radar => radarMatchesFilter(radar, option.key)).length,
+      radarIndex.filter(radar => radarMatchesFilter(radar, option.key)).length,
     ]),
   ) as Record<ArchiveFilter, number>,
 )
 
 const filteredArchive = computed(() =>
-  dailyRadars.filter(radar => radarMatchesFilter(radar, archiveFilter.value)),
+  radarIndex.filter(radar => radarMatchesFilter(radar, archiveFilter.value)),
 )
 
 const visibleArchive = computed(() =>
@@ -134,7 +134,7 @@ onMounted(() =>
             </div>
             <div>
               <dt>Archive</dt>
-              <dd>{{ dailyRadars.length }}</dd>
+              <dd>{{ radarIndex.length }}</dd>
             </div>
           </dl>
           <p>AI 自动汇总 · {{ radarSourceStatus(latestRadar) }}</p>
@@ -246,7 +246,7 @@ onMounted(() =>
             <p class="radar-kicker">03 / Intelligence Archive</p>
             <h2 id="radar-archive-title">历史不是卡片墙，<br />是可检索的判断轨迹。</h2>
           </div>
-          <span>{{ filteredArchive.length }} / {{ dailyRadars.length }} 期</span>
+          <span>{{ filteredArchive.length }} / {{ radarIndex.length }} 期</span>
         </header>
 
         <div class="radar-filter-line" role="group" aria-label="按栏目筛选历史简报">

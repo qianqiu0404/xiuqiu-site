@@ -1,7 +1,7 @@
 import { aiCases, type AiCase } from './generatedAiCases.ts'
 import { articleKnowledge, type ArticleKnowledge } from './generatedArticleKnowledge.ts'
 import { learningRecords } from './generatedLearningRecords.ts'
-import { dailyRadars, type DailyRadar } from './generatedRadars.ts'
+import { radarIndex, type RadarIndexEntry } from './generatedRadars.ts'
 import { radarWeeklies, type RadarWeekly } from './generatedRadarWeeklies.ts'
 import {
   projects,
@@ -21,7 +21,7 @@ export type KnowledgeTag = ArticleKnowledge['conceptTags'][number] | 'wallet-cor
 export type SiteArticle = ArticleKnowledge
 export type SiteProject = Project
 export type SiteAiCase = AiCase
-export type SiteRadar = DailyRadar
+export type SiteRadar = RadarIndexEntry
 export type SiteRadarWeekly = RadarWeekly
 export type SiteFailureCase = FailureCase
 export type SiteEvidenceRecord = EvidenceRecord
@@ -108,7 +108,7 @@ export const siteArticlesByNewest: SiteArticle[] = [...siteArticles].sort((a, b)
 
 export const siteProjects: SiteProject[] = projects
 export const siteAiCases: SiteAiCase[] = aiCases
-export const siteRadars: SiteRadar[] = dailyRadars
+export const siteRadars: SiteRadar[] = radarIndex
 export const siteRadarWeeklies: SiteRadarWeekly[] = radarWeeklies
 export const siteFailureCases: SiteFailureCase[] = failureCases
 export const siteEvidenceRecords: SiteEvidenceRecord[] = evidenceRecords

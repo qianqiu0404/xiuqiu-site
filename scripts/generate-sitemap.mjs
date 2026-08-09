@@ -1,7 +1,7 @@
 import { writeFileSync } from 'node:fs'
 import { articleSummaries } from '../src/data/generatedArticleKnowledge.ts'
 import { projects } from '../src/data/generatedProjects.ts'
-import { dailyRadars } from '../src/data/generatedRadars.ts'
+import { dailyRadars } from '../src/data/generatedRadarAll.ts'
 import { radarWeeklies } from '../src/data/generatedRadarWeeklies.ts'
 import { deliveryRecords } from '../src/data/generatedDeliveries.ts'
 

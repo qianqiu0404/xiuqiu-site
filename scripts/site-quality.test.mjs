@@ -8,7 +8,7 @@ import { deliveryRecords } from '../src/data/generatedDeliveries.ts'
 import { nowSnapshot } from '../src/data/generatedNow.ts'
 import { projects } from '../src/data/generatedProjects.ts'
 import { radarWeeklies } from '../src/data/generatedRadarWeeklies.ts'
-import { dailyRadars } from '../src/data/generatedRadars.ts'
+import { dailyRadars } from '../src/data/generatedRadarAll.ts'
 import { parseMarkdownFrontmatter } from './frontmatter.mjs'
 
 const SITE_ORIGIN = 'https://xiuqiu-site.vercel.app'
