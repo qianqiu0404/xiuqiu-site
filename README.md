@@ -28,9 +28,10 @@ xiuqiu-site                     个人技术品牌、文章与证据总入口
 - `src/data/generated*.ts`: generated typed metadata; article bodies are loaded from Markdown only when their route opens
 - `src/data/siteKnowledge.ts`: unified project/article/evidence knowledge graph
 - `api/chat.ts`: serverless chat proxy for xiuqiu AI, with scoped public-context retrieval, request limits, upstream timeout, and content-free operational logs
-- `market-radar/`: isolated trading-event migrations, collectors, deterministic scoring, reaction tracking and digest/outbox workers
-- `api/market-radar/`: public read/feedback endpoints plus token-protected Hermes claim/ack endpoints
-- `src/pages/MarketRadar*.vue`: independently lazy-loaded Trade Radar list and event detail views; `/radar` remains the static Learn Radar
+- `content/market-radar/*.md`: reviewed static Trade Radar snapshots, isolated from the Learn Radar content model
+- `market-radar/`: optional shadow engine with isolated migrations, registration-free collectors, scoring, crypto reaction tracking and digest/outbox workers
+- `api/market-radar/`: shadow-engine read/feedback endpoints plus token-protected Hermes claim/ack endpoints
+- `src/pages/MarketRadar*.vue`: independently lazy-loaded static Trade Radar overview and dated snapshot views; `/radar` remains the separate Learn Radar
 
 ## Commands
 
@@ -50,7 +51,7 @@ npm run check:public
 
 ## Environment
 
-Configure the website runtime in Vercel for both Production and Preview:
+Configure the public assistant in Vercel. The Market Radar database and dispatcher values are only required when the optional shadow engine and Hermes outbox are enabled:
 
 ```env
 DEEPSEEK_API_KEY=
@@ -59,7 +60,7 @@ MARKET_RADAR_DATABASE_URL=
 MARKET_RADAR_DISPATCH_TOKEN=
 ```
 
-Configure the scheduled Market Radar worker in GitHub Actions secrets. The database URL must be the same Neon pooled connection string used by Vercel:
+Configure the optional scheduled Market Radar shadow worker in GitHub Actions secrets. The database URL must be the same Neon pooled connection string used by Vercel:
 
 ```env
 MARKET_RADAR_DATABASE_URL=
@@ -75,7 +76,9 @@ xiuqiu AI receives only the most relevant records from the generated public know
 
 ### Market Radar boundary
 
-`/market-radar` is a read-only event radar, not an account or execution system. It never connects to positions, wallets or broker accounts and cannot place orders. The GitHub Actions worker runs independently from the website build, writes to the dedicated Neon `market_radar` schema, and fails closed when a provider or AI response is unavailable. The public API is backed only by a reviewed SQL view; raw provider payloads, model prompts, credentials and private notes are not selected by public endpoints.
+`/market-radar` is a static, source-backed research snapshot, not an account or execution system. It never connects to positions, wallets or broker accounts and cannot place orders. Its public page is generated from reviewed `content/market-radar/` files and does not depend on the database or an upstream provider at request time.
+
+The optional GitHub Actions shadow worker runs independently from the static website build, writes to the dedicated Neon `market_radar` schema, and prepares auditable Hermes outbox messages. Its read API is backed only by a reviewed SQL view; raw provider payloads, model prompts, credentials and private notes are not selected by those endpoints. Shadow-engine failure cannot erase or replace the reviewed static snapshot.
 
 The worker is disabled until the GitHub variable `MARKET_RADAR_ENABLED=true` and all required secrets are configured. Run `npm run market-radar:migrate` once before enabling ingestion. Raw provider payloads are purged after 14 days while event source links remain auditable; events, reactions, digests, feedback and trial metrics expire after one year.
 

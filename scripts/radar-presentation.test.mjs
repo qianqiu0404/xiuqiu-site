@@ -8,6 +8,9 @@ import {
   getSupportingRadarItems,
   getVisibleRadarArchive,
 } from '../src/data/radarPresentation.ts'
+import { dailyRadars } from '../src/data/generatedRadarAll.ts'
+import { latestRadars, radarIndex } from '../src/data/generatedRadars.ts'
+import { loadRadarBySlug } from '../src/data/generatedRadarLoader.ts'
 import {
   selectPublishableRadarWeeklies,
   validateRadarWeekly,
@@ -74,6 +77,30 @@ test('archive shows seven records by default and all records after expansion', (
   const records = Array.from({ length: 13 }, (_, index) => index)
   assert.equal(getVisibleRadarArchive(records, false).length, 7)
   assert.equal(getVisibleRadarArchive(records, true).length, 13)
+})
+
+test('generated radar layers keep the compact archive and recent full records aligned', () => {
+  assert.deepEqual(
+    radarIndex.map(item => item.slug),
+    dailyRadars.map(item => item.slug),
+  )
+  assert.deepEqual(latestRadars, dailyRadars.slice(0, 7))
+  assert.ok(latestRadars.length <= 7)
+  assert.deepEqual(
+    radarIndex[0].marketSignals.map(item => item.title),
+    dailyRadars[0].marketSignals.map(item => item.title),
+  )
+  assert.equal('summary' in radarIndex[0].marketSignals[0], false)
+})
+
+test('historical radar detail loads by month and rejects invalid routes', async () => {
+  const newest = dailyRadars[0]
+  const oldest = dailyRadars.at(-1)
+
+  assert.deepEqual(await loadRadarBySlug(newest.slug), newest)
+  assert.deepEqual(await loadRadarBySlug(oldest.slug), oldest)
+  assert.equal(await loadRadarBySlug('not-a-date'), undefined)
+  assert.equal(await loadRadarBySlug('2025-01-01'), undefined)
 })
 
 const publicProjectSlugs = new Set([

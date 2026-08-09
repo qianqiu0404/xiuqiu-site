@@ -8,7 +8,8 @@ import { deliveryRecords } from '../src/data/generatedDeliveries.ts'
 import { nowSnapshot } from '../src/data/generatedNow.ts'
 import { projects } from '../src/data/generatedProjects.ts'
 import { radarWeeklies } from '../src/data/generatedRadarWeeklies.ts'
-import { dailyRadars } from '../src/data/generatedRadars.ts'
+import { dailyRadars } from '../src/data/generatedRadarAll.ts'
+import { allMarketRadars } from '../src/data/generatedMarketRadarAll.ts'
 import { parseMarkdownFrontmatter } from './frontmatter.mjs'
 
 const SITE_ORIGIN = 'https://xiuqiu-site.vercel.app'
@@ -71,6 +72,7 @@ function expectedSitemapRoutes() {
     '/ai/deliveries/:slug',
     '/radar/week/:week',
     '/radar/:date',
+    '/market-radar/:date',
     '/articles/:slug',
     '/projects/:project',
   ]) {
@@ -82,6 +84,7 @@ function expectedSitemapRoutes() {
     ...projects.map(project => `/projects/${project.slug}`),
     ...articleSummaries.map(article => `/articles/${article.slug}`),
     ...dailyRadars.map(radar => `/radar/${radar.slug}`),
+    ...allMarketRadars.map(radar => `/market-radar/${radar.slug}`),
     ...radarWeeklies.map(weekly => `/radar/week/${weekly.slug}`),
     ...deliveryRecords.map(record => `/ai/deliveries/${record.slug}`),
   ]
@@ -186,8 +189,8 @@ function expectedMetadataByRoute() {
       description: '面向 Web3 钱包与 AI 工程的每日行业简报、人工复核周度收敛和可追溯历史档案。',
     }],
     ['/market-radar', {
-      title: '交易雷达｜xiuqiu',
-      description: '将公开市场事件、关注资产、规则评分与真实行情反应分开呈现的交易研究雷达。',
+      title: '交易研究雷达｜xiuqiu',
+      description: '基于公开来源的静态交易事件观察：事实、影响资产、观察条件和失效边界分开呈现，不调用实时行情 API。',
     }],
     ['/articles', {
       title: '工程笔记｜xiuqiu Web3 钱包学习档案',
@@ -209,6 +212,12 @@ function expectedMetadataByRoute() {
   }
   for (const radar of dailyRadars) {
     metadata.set(`/radar/${radar.slug}`, {
+      title: `${radar.title}｜xiuqiu`,
+      description: radar.summary,
+    })
+  }
+  for (const radar of allMarketRadars) {
+    metadata.set(`/market-radar/${radar.slug}`, {
       title: `${radar.title}｜xiuqiu`,
       description: radar.summary,
     })
@@ -244,6 +253,11 @@ test('generated public records stay aligned with their reviewed source files', (
     dailyRadars.map(radar => radar.slug),
     markdownSourceSlugs('content/radar', { requirePublish: true }),
     'generated daily radar slugs',
+  )
+  assertSameSet(
+    allMarketRadars.map(radar => radar.slug),
+    markdownSourceSlugs('content/market-radar', { requirePublish: true }),
+    'generated static market radar slugs',
   )
   assertSameSet(
     deliveryRecords.map(record => record.slug),
