@@ -1,0 +1,128 @@
+import { IMPACT_PATTERNS, SOURCE_WEIGHTS, WATCHLIST } from './config.mjs'
+
+const aliases = new Map([
+  ['BITCOIN', 'BTC'], ['ETHEREUM', 'ETH'], ['SOLANA', 'SOL'], ['HYPERLIQUID', 'HYPE'],
+  ['RIPPLE', 'XRP'], ['ZCASH', 'ZEC'], ['NVIDIA', 'NVDA'], ['TESLA', 'TSLA'],
+  ['COINBASE', 'COIN'], ['MICROSTRATEGY', 'MSTR'], ['STRATEGY', 'MSTR'], ['APPLE', 'AAPL'],
+  ['MICROSOFT', 'MSFT'], ['FEDERAL RESERVE', 'FED'], ['INFLATION', 'CPI'], ['STABLECOIN', 'STABLECOIN_REGULATION'],
+  ['ETF', 'CRYPTO_ETF'], ['ARTIFICIAL INTELLIGENCE', 'AI_INFRA'],
+])
+
+export function normalizeUrl(input) {
+  try {
+    const url = new URL(input)
+    for (const key of [...url.searchParams.keys()]) {
+      if (/^(utm_|fbclid|gclid|mc_)/i.test(key)) url.searchParams.delete(key)
+    }
+    url.hash = ''
+    return url.toString().replace(/\/$/, '')
+  } catch {
+    return String(input || '').trim()
+  }
+}
+
+export function normalizeTitle(input) {
+  return String(input || '').toLowerCase().normalize('NFKC')
+    .replace(/https?:\/\/\S+/g, ' ')
+    .replace(/[^a-z0-9\u4e00-\u9fff]+/g, ' ')
+    .replace(/\s+/g, ' ').trim()
+}
+
+function tokens(input) {
+  return new Set(normalizeTitle(input).split(' ').filter(token => token.length > 1).map(token => {
+    if (/^[a-z]{5,}$/.test(token)) return token.replace(/(?:ed|es|s)$/, '')
+    return token
+  }))
+}
+
+export function titleSimilarity(left, right) {
+  const a = tokens(left)
+  const b = tokens(right)
+  if (!a.size || !b.size) return 0
+  const intersection = [...a].filter(token => b.has(token)).length
+  return intersection / (a.size + b.size - intersection)
+}
+
+export function clusterKey(title, occurredAt) {
+  const day = new Date(occurredAt).toISOString().slice(0, 10)
+  return `${day}:${normalizeTitle(title).split(' ').slice(0, 8).join('-')}`.slice(0, 180)
+}
+
+export function mapAssets(text, explicitSymbols = []) {
+  const normalized = ` ${String(text || '').toUpperCase()} `
+  const selected = new Map()
+  for (const namespace of Object.keys(WATCHLIST)) {
+    for (const symbol of WATCHLIST[namespace]) {
+      const pattern = new RegExp(`(^|[^A-Z0-9_])${symbol.replace('_', '[ _-]')}([^A-Z0-9_]|$)`, 'i')
+      if (pattern.test(normalized) || explicitSymbols.map(String).map(value => value.toUpperCase()).includes(symbol)) {
+        selected.set(`${namespace}:${symbol}`, { namespace, symbol, relevance: 100 })
+      }
+    }
+  }
+  for (const [alias, symbol] of aliases) {
+    if (!normalized.includes(alias)) continue
+    const namespace = Object.entries(WATCHLIST).find(([, symbols]) => symbols.includes(symbol))?.[0]
+    if (namespace) selected.set(`${namespace}:${symbol}`, { namespace, symbol, relevance: 85 })
+  }
+  return [...selected.values()]
+}
+
+export function scoreEvent({ source, assets, occurredAt, sourceCount = 1, reactionStrength = 0, text = '' }) {
+  const sourceQuality = SOURCE_WEIGHTS[source] ?? 8
+  const relevance = assets.length ? Math.min(25, 12 + Math.max(...assets.map(asset => asset.relevance)) * 0.13) : 0
+  const impact = IMPACT_PATTERNS.some(pattern => pattern.test(text)) ? 20 : 9
+  const ageMinutes = Math.max(0, (Date.now() - new Date(occurredAt).getTime()) / 60_000)
+  const freshness = ageMinutes <= 30 ? 10 : ageMinutes <= 180 ? 7 : ageMinutes <= 720 ? 4 : 1
+  const confirmation = sourceCount >= 3 ? 10 : sourceCount === 2 ? 6 : 0
+  const reaction = Math.min(15, Math.round(Math.abs(reactionStrength) * 300))
+  const unconfirmedPenalty = sourceCount === 1 && sourceQuality < 16 ? 5 : 0
+  return Math.max(0, Math.min(100, Math.round(sourceQuality + relevance + impact + freshness + confirmation + reaction - unconfirmedPenalty)))
+}
+
+export function priorityForScore(score) {
+  if (score >= 85) return 'P0'
+  if (score >= 70) return 'P1'
+  if (score >= 50) return 'P2'
+  if (score >= 30) return 'P3'
+  return 'rejected'
+}
+
+export function validateAiSummary(value) {
+  if (!value || typeof value !== 'object') return null
+  const enums = {
+    direction: ['bullish', 'bearish', 'mixed', 'neutral'],
+    horizon: ['intraday', 'days', 'weeks'],
+  }
+  const required = ['titleZh', 'summaryZh', 'whyItMattersZh', 'eventType', 'direction', 'horizon', 'systemJudgment']
+  if (!required.every(key => typeof value[key] === 'string' && value[key].trim())) return null
+  if (!enums.direction.includes(value.direction) || !enums.horizon.includes(value.horizon)) return null
+  return {
+    titleZh: value.titleZh.trim().slice(0, 160),
+    summaryZh: value.summaryZh.trim().slice(0, 800),
+    whyItMattersZh: value.whyItMattersZh.trim().slice(0, 600),
+    eventType: value.eventType.trim().slice(0, 80),
+    direction: value.direction,
+    horizon: value.horizon,
+    systemJudgment: value.systemJudgment.trim().slice(0, 400),
+  }
+}
+
+export function calculateReturn(start, end) {
+  if (!Number.isFinite(start) || !Number.isFinite(end) || start <= 0) return null
+  return (end - start) / start
+}
+
+export function calculateExcess(assetReturn, benchmarkReturn) {
+  if (!Number.isFinite(assetReturn) || !Number.isFinite(benchmarkReturn)) return null
+  return assetReturn - benchmarkReturn
+}
+
+export function nearestPrice(series, target, toleranceMinutes = 8) {
+  const targetMs = new Date(target).getTime()
+  const toleranceMs = toleranceMinutes * 60_000
+  const candidate = series.reduce((best, point) => {
+    const distance = Math.abs(new Date(point.at).getTime() - targetMs)
+    return !best || distance < best.distance ? { distance, close: point.close } : best
+  }, null)
+  return candidate && candidate.distance <= toleranceMs ? candidate.close : null
+}

@@ -88,6 +88,12 @@ const router = createRouter({
       meta: { visual: 'narrative', navGroup: 'market-radar' },
     },
     {
+      path: '/market-radar/events/:id',
+      name: 'market-radar-event',
+      component: () => import('../pages/MarketRadarEventPage.vue'),
+      meta: { visual: 'narrative', navGroup: 'market-radar' },
+    },
+    {
       path: '/market-radar/:date',
       name: 'market-radar-detail',
       component: () => import('../pages/MarketRadarDetailPage.vue'),

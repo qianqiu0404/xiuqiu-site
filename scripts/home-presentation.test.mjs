@@ -225,6 +225,7 @@ test('route-driven visual modes keep shared chrome without hiding their desktop 
   assert.match(appSource, /s78-market-services/)
   assert.match(appSource, /:cinematic="usesCinematicChrome"/)
   assert.match(appSource, /:hide-desktop-toggle="isCinematicHome"/)
+  assert.match(appSource, /v-if="showAiChat"/)
   assert.match(chatWidgetSource, /'ai-chat--desktop-rail': props\.hideDesktopToggle/)
   assert.match(chatWidgetSource, /\.ai-chat--desktop-rail \.ai-chat-toggle/)
 })

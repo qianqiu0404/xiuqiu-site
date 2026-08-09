@@ -6,6 +6,7 @@ const navOpen = ref(false)
 const navToggle = ref<HTMLButtonElement | null>(null)
 const router = useRouter()
 const isCinematicHome = computed(() => router.currentRoute.value.name === 'home')
+const showAiChat = computed(() => !String(router.currentRoute.value.name || '').startsWith('market-radar'))
 const visualMode = computed(() => {
   const currentRoute = router.currentRoute.value
   if (
@@ -59,8 +60,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
         <router-link to="/projects/s78-market-services" @click="navOpen = false">Market</router-link>
         <router-link to="/ai" @click="navOpen = false">AI</router-link>
         <router-link to="/engineering/evidence" @click="navOpen = false">Evidence</router-link>
-        <router-link to="/radar" @click="navOpen = false">Radar</router-link>
-        <router-link to="/market-radar" @click="navOpen = false">Trade Radar</router-link>
+        <router-link to="/radar" @click="navOpen = false">Learn</router-link>
+        <router-link to="/market-radar" @click="navOpen = false">Trade</router-link>
       </div>
     </nav>
   </header>
@@ -82,5 +83,5 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
     </div>
   </footer>
 
-  <AiChatWidget :cinematic="usesCinematicChrome" :hide-desktop-toggle="isCinematicHome" />
+  <AiChatWidget v-if="showAiChat" :cinematic="usesCinematicChrome" :hide-desktop-toggle="isCinematicHome" />
 </template>

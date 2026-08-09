@@ -26,7 +26,7 @@
     "test:ai": "node --test scripts/ai-evidence-presentation.test.mjs",
     "test:assistant": "node --test scripts/ai-assistant.test.mjs",
     "test:radar": "node --test scripts/radar-pipeline.test.mjs scripts/radar-presentation.test.mjs",
-    "test:market-radar": "node --test scripts/market-radar.test.mjs",
+    "test:market-radar": "node --test scripts/market-radar.test.mjs scripts/market-radar-worker.test.mjs",
     "test:quality": "node --test scripts/site-quality.test.mjs",
     "validate:radar": "node scripts/validate-radar-candidate.mjs",
     "sync:learning": "node scripts/sync-learning-from-obsidian.mjs",
@@ -37,10 +37,13 @@
     "check:public": "node scripts/check-public.mjs",
     "check:links": "node scripts/check-portfolio-links.mjs",
     "check:budget": "node scripts/check-build-budget.mjs",
-    "typecheck:api": "tsc --noEmit --target ES2020 --module ESNext --moduleResolution bundler --allowImportingTsExtensions --skipLibCheck --strict api/chat.ts",
+    "typecheck:api": "tsc -p tsconfig.api.json",
+    "market-radar:migrate": "node market-radar/worker/migrate.mjs",
+    "market-radar:worker": "node market-radar/worker/run.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
     "vue": "^3.5.13",
     "vue-router": "^4.6.4"
   },
@@ -48,10 +51,11 @@
     "@vitejs/plugin-vue": "^5.2.3",
     "typescript": "~5.7.3",
     "vite": "^6.4.3",
-    "yaml": "^2.9.0",
-    "vue-tsc": "^3.3.8"
+    "vue-tsc": "^3.3.8",
+    "yaml": "^2.9.0"
   },
   "overrides": {
+    "nanoid": "3.3.17",
     "postcss": "^8.5.23"
   }
 }

@@ -1,0 +1,61 @@
+name: Market Radar Worker
+
+on:
+  schedule:
+    - cron: '*/20 * * * *'
+    - cron: '30 23 * * *'
+    - cron: '45 12,13 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Worker mode
+        type: choice
+        options: [ingest, daily, premarket, migrate]
+        default: ingest
+
+permissions:
+  contents: read
+
+concurrency:
+  group: market-radar-${{ github.event.schedule || inputs.mode || 'manual' }}
+  cancel-in-progress: false
+
+jobs:
+  run:
+    if: github.event_name == 'workflow_dispatch' || vars.MARKET_RADAR_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      MARKET_RADAR_DATABASE_URL: ${{ secrets.MARKET_RADAR_DATABASE_URL }}
+      DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+      DEEPSEEK_MODEL: ${{ vars.DEEPSEEK_MODEL || 'deepseek-v4-flash' }}
+      SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+      QIU_MARKET_BASE_URL: https://qiu-market.vercel.app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Verify required configuration
+        env:
+          REQUESTED_MODE: ${{ inputs.mode }}
+        run: |
+          test -n "$MARKET_RADAR_DATABASE_URL"
+          if [ "${REQUESTED_MODE:-ingest}" != "migrate" ]; then
+            test -n "$DEEPSEEK_API_KEY"
+            test -n "$SEC_USER_AGENT"
+          fi
+      - name: Run market radar
+        env:
+          REQUESTED_MODE: ${{ inputs.mode }}
+          RUN_SCHEDULE: ${{ github.event.schedule }}
+        run: |
+          mode="${REQUESTED_MODE:-ingest}"
+          if [ "$RUN_SCHEDULE" = "30 23 * * *" ]; then mode="daily"; fi
+          if [ "$RUN_SCHEDULE" = "45 12,13 * * 1-5" ]; then mode="premarket"; fi
+          if [ "$mode" = "migrate" ]; then npm run market-radar:migrate; exit 0; fi
+          if [ "$mode" = "daily" ]; then npm run market-radar:worker -- --digest=daily; exit 0; fi
+          if [ "$mode" = "premarket" ]; then npm run market-radar:worker -- --digest=premarket; exit 0; fi
+          npm run market-radar:worker
