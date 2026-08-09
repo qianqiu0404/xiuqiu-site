@@ -2,6 +2,8 @@
 
 [Live site](https://xiuqiu-site.vercel.app) · [Wallet Reliability Lab](https://wallet-reliability-lab.vercel.app) · [Wallet Domain Engine](https://github.com/qianqiu0404/web3-wallet-engineer-lab)
 
+Production releases follow the exact-SHA, DB-first process in [`docs/release-controller.md`](docs/release-controller.md).
+
 面向工程合作者的 Web3 钱包后端公开工程档案。网站用分层项目图谱区分旗舰系统、可验证作品和工程探索，并把行业雷达、异常恢复、测试证据和 AI 协作交付连接成一条可复核路径。
 
 ## Three-repository portfolio

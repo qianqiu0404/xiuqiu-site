@@ -10,52 +10,174 @@ on:
       mode:
         description: Worker mode
         type: choice
-        options: [ingest, daily, premarket, migrate]
-        default: ingest
+        options: [dry-run, ingest, daily, premarket]
+        default: dry-run
+        required: true
 
 permissions:
   contents: read
 
 concurrency:
-  group: market-radar-${{ github.event.schedule || inputs.mode || 'manual' }}
+  group: xiuqiu-production-release
   cancel-in-progress: false
 
 jobs:
-  run:
+  authorize:
     if: github.event_name == 'workflow_dispatch' || vars.MARKET_RADAR_ENABLED == 'true'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 5
+    permissions:
+      actions: read
+      contents: read
+      deployments: read
+    outputs:
+      release_sha: ${{ steps.gate.outputs.release_sha }}
+      mode: ${{ steps.gate.outputs.mode }}
+      authorized: ${{ steps.gate.outputs.authorized }}
+      deployment_id: ${{ steps.gate.outputs.deployment_id }}
+      controller_run: ${{ steps.gate.outputs.controller_run }}
     env:
-      MARKET_RADAR_DATABASE_URL: ${{ secrets.MARKET_RADAR_DATABASE_URL }}
-      DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-      DEEPSEEK_MODEL: ${{ vars.DEEPSEEK_MODEL || 'deepseek-v4-flash' }}
-      SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
-      QIU_MARKET_BASE_URL: https://qiu-market.vercel.app
+      GH_TOKEN: ${{ github.token }}
+      REQUESTED_MODE: ${{ inputs.mode }}
+      RUN_SCHEDULE: ${{ github.event.schedule }}
+      MARKET_RADAR_ENABLED: ${{ vars.MARKET_RADAR_ENABLED }}
     steps:
-      - uses: actions/checkout@v4
+      - name: Require deployed SHA marker and controller authorization
+        id: gate
+        shell: bash
+        run: |
+          set -euo pipefail
+          release_sha=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')
+          [[ "$release_sha" =~ ^[0-9a-f]{40}$ ]]
+
+          mode="${REQUESTED_MODE:-ingest}"
+          if [ "$RUN_SCHEDULE" = '30 23 * * *' ]; then mode='daily'; fi
+          if [ "$RUN_SCHEDULE" = '45 12,13 * * 1-5' ]; then mode='premarket'; fi
+          case "$mode" in
+            dry-run|ingest|daily|premarket) ;;
+            *) echo "Unsupported worker mode: $mode" >&2; exit 1 ;;
+          esac
+
+          deployments=$(gh api --method GET "repos/${GITHUB_REPOSITORY}/deployments" \
+            -f sha="$release_sha" \
+            -f environment='market-radar-production-authorized' \
+            -f per_page=100)
+          deployment_id=$(jq -r --arg sha "$release_sha" '
+            [.[] | select(
+              .sha == $sha and
+              .description == "release-controller-authorized" and
+              .payload.controller == "release-controller.yml" and
+              .payload.release_sha == $sha
+            )][0].id // empty
+          ' <<< "$deployments")
+          deployment_state='missing'
+          if [ -n "$deployment_id" ]; then
+            deployment_state=$(gh api \
+              "repos/${GITHUB_REPOSITORY}/deployments/${deployment_id}/statuses" \
+              --jq '.[0].state // empty')
+          fi
+
+          runs=$(gh api --method GET \
+            "repos/${GITHUB_REPOSITORY}/actions/workflows/release-controller.yml/runs" \
+            -f event='workflow_dispatch' -f status='success' -f per_page=100)
+          expected_title="Release controller · release · $release_sha"
+          controller_run=$(jq -r --arg sha "$release_sha" --arg title "$expected_title" '
+            [.workflow_runs[] | select(
+              .conclusion == "success" and
+              .head_sha == $sha and
+              .display_title == $title
+            )][0].id // empty
+          ' <<< "$runs")
+
+          authorized=false
+          if [ "$MARKET_RADAR_ENABLED" = 'true' ] \
+            && [ "$deployment_state" = 'success' ] \
+            && [ -n "$controller_run" ]; then
+            authorized=true
+          fi
+
+          if [ "$mode" != 'dry-run' ]; then
+            test "$MARKET_RADAR_ENABLED" = 'true'
+            test "$deployment_state" = 'success'
+            test -n "$controller_run"
+            test "$authorized" = 'true'
+          fi
+
+          echo "release_sha=$release_sha" >> "$GITHUB_OUTPUT"
+          echo "mode=$mode" >> "$GITHUB_OUTPUT"
+          echo "authorized=$authorized" >> "$GITHUB_OUTPUT"
+          echo "deployment_id=$deployment_id" >> "$GITHUB_OUTPUT"
+          echo "controller_run=$controller_run" >> "$GITHUB_OUTPUT"
+          {
+            echo '### Market Radar authorization evidence'
+            echo "- Mode: $mode"
+            echo "- Live main: $release_sha"
+            echo "- Enabled: ${MARKET_RADAR_ENABLED:-false}"
+            echo "- Deployment marker state: $deployment_state"
+            echo "- Successful controller run: $([ -n "$controller_run" ] && echo true || echo false)"
+            echo "- Authorized: $authorized"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  report_dry_run:
+    needs: authorize
+    if: needs.authorize.outputs.mode == 'dry-run'
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    permissions:
+      contents: read
+    steps:
+      - name: Confirm dry-run did not request production access
+        env:
+          RELEASE_SHA: ${{ needs.authorize.outputs.release_sha }}
+          AUTHORIZED: ${{ needs.authorize.outputs.authorized }}
+        run: echo "Dry-run evaluated main $RELEASE_SHA; production authorization currently $AUTHORIZED. No environment or secret was requested."
+
+  run:
+    needs: authorize
+    if: needs.authorize.result == 'success' && needs.authorize.outputs.mode != 'dry-run' && needs.authorize.outputs.authorized == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production-release
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout the authorized deployed SHA
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.authorize.outputs.release_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify exact checkout
+        env:
+          RELEASE_SHA: ${{ needs.authorize.outputs.release_sha }}
+        run: test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+
       - run: npm ci
       - name: Verify required configuration
         env:
-          REQUESTED_MODE: ${{ inputs.mode }}
+          MARKET_RADAR_DATABASE_URL: ${{ secrets.MARKET_RADAR_DATABASE_URL }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
         run: |
           test -n "$MARKET_RADAR_DATABASE_URL"
-          if [ "${REQUESTED_MODE:-ingest}" != "migrate" ]; then
-            test -n "$DEEPSEEK_API_KEY"
-            test -n "$SEC_USER_AGENT"
-          fi
+          test -n "$DEEPSEEK_API_KEY"
+          test -n "$SEC_USER_AGENT"
       - name: Run market radar
         env:
-          REQUESTED_MODE: ${{ inputs.mode }}
-          RUN_SCHEDULE: ${{ github.event.schedule }}
+          REQUESTED_MODE: ${{ needs.authorize.outputs.mode }}
+          MARKET_RADAR_DATABASE_URL: ${{ secrets.MARKET_RADAR_DATABASE_URL }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          DEEPSEEK_MODEL: ${{ vars.DEEPSEEK_MODEL || 'deepseek-v4-flash' }}
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+          QIU_MARKET_BASE_URL: https://qiu-market.vercel.app
         run: |
-          mode="${REQUESTED_MODE:-ingest}"
-          if [ "$RUN_SCHEDULE" = "30 23 * * *" ]; then mode="daily"; fi
-          if [ "$RUN_SCHEDULE" = "45 12,13 * * 1-5" ]; then mode="premarket"; fi
-          if [ "$mode" = "migrate" ]; then npm run market-radar:migrate; exit 0; fi
-          if [ "$mode" = "daily" ]; then npm run market-radar:worker -- --digest=daily; exit 0; fi
-          if [ "$mode" = "premarket" ]; then npm run market-radar:worker -- --digest=premarket; exit 0; fi
+          set -euo pipefail
+          if [ "$REQUESTED_MODE" = "daily" ]; then npm run market-radar:worker -- --digest=daily; exit 0; fi
+          if [ "$REQUESTED_MODE" = "premarket" ]; then npm run market-radar:worker -- --digest=premarket; exit 0; fi
           npm run market-radar:worker
