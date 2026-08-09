@@ -153,6 +153,13 @@ test('worker uses only registration-free upstream market sources', () => {
   assert.doesNotMatch(`${worker}\n${workflow}`, /MARKETAUX|ALPHAVANTAGE|TWELVE_DATA/)
 })
 
+test('manual smoke runs can select one bounded market group', () => {
+  const worker = read('market-radar/worker/run.mjs')
+  assert.match(worker, /--group=/)
+  assert.match(worker, /Unknown market radar group/)
+  assert.match(worker, /MARKET_GROUPS\.find/)
+})
+
 test('the duplicate DST premarket trigger exits before claiming quota', () => {
   const worker = read('market-radar/worker/run.mjs')
   assert.ok(worker.indexOf("reason: 'outside_us_premarket_window'") < worker.indexOf('claimWorkerLease()'))

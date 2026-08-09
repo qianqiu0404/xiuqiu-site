@@ -37,6 +37,13 @@ function slotIndex(date = new Date()) {
   return Math.floor(date.getTime() / (20 * 60_000))
 }
 
+function requestedGroup() {
+  const value = process.argv.find(argument => argument.startsWith('--group='))?.slice('--group='.length)
+  if (!value) return null
+  if (!MARKET_GROUPS.some(group => group.key === value)) throw new Error(`Unknown market radar group: ${value}`)
+  return value
+}
+
 async function startRun(source, groupKey, slot) {
   const id = crypto.randomUUID()
   const rows = await sql.query(`insert into market_radar.job_runs
@@ -185,7 +192,10 @@ if (!workerLease) {
 }
 
 const slot = slotIndex()
-const group = MARKET_GROUPS[slot % MARKET_GROUPS.length]
+const requestedGroupKey = requestedGroup()
+const group = requestedGroupKey
+  ? MARKET_GROUPS.find(candidate => candidate.key === requestedGroupKey)
+  : MARKET_GROUPS[slot % MARKET_GROUPS.length]
 const results = []
 if (group.key === 'crypto') {
   results.push(await runSource('github_releases', group, slot, fetchCryptoReleases))
