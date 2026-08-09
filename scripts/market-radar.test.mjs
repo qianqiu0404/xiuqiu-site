@@ -6,7 +6,7 @@ import {
   priorityForScore, scoreEvent, titleSimilarity, validateAiSummary,
 } from '../market-radar/worker/core.mjs'
 import { isUsPremarketWindow, newYorkParts } from '../market-radar/worker/market-calendar.mjs'
-import { parseAlphaVantagePayload, parseMarketauxPayload, parseRss } from '../market-radar/worker/providers.mjs'
+import { parseBinanceKlines, parseGitHubReleasePayload, parseRss, parseSecCompanyFeed } from '../market-radar/worker/providers.mjs'
 import { parseEventCursor } from '../src/market-radar/contracts.ts'
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8')
@@ -68,11 +68,21 @@ test('official RSS normalization rejects incomplete entries', () => {
   assert.equal(items[0].market, 'macro')
 })
 
-test('provider payload parsers fail closed and discard malformed records', () => {
-  assert.throws(() => parseMarketauxPayload({ error: 'quota' }, 'crypto'), /invalid_payload/)
-  assert.throws(() => parseAlphaVantagePayload({ Information: 'rate limit' }, 'us_equity'), /invalid_payload/)
-  assert.equal(parseMarketauxPayload({ data: [{ title: 'missing URL', published_at: '2026-08-08' }] }, 'crypto').length, 0)
-  assert.equal(parseAlphaVantagePayload({ feed: [{ title: 'bad date', url: 'https://example.com', time_published: 'bad' }] }, 'us_equity').length, 0)
+test('registration-free provider parsers fail closed and discard malformed records', () => {
+  assert.throws(() => parseGitHubReleasePayload({ error: 'quota' }, 'BTC', 'bitcoin/bitcoin'), /invalid_payload/)
+  assert.throws(() => parseBinanceKlines({ code: -1121 }), /invalid_payload/)
+  assert.equal(parseGitHubReleasePayload([{ id: 1, name: 'missing URL', published_at: '2026-08-08' }], 'BTC', 'bitcoin/bitcoin').length, 0)
+  assert.deepEqual(parseBinanceKlines([[1786275300000, '1', '2', '1', '64990.45']]).map(item => item.close), [64990.45])
+})
+
+test('SEC company feeds keep significant forms and bind the requested symbol', () => {
+  const items = parseSecCompanyFeed(`<?xml version="1.0"?><feed>
+    <entry><title>8-K - Apple Inc.</title><link href="https://www.sec.gov/Archives/a"/><updated>2026-08-08T10:00:00Z</updated><id>a</id></entry>
+    <entry><title>4 - Apple Inc.</title><link href="https://www.sec.gov/Archives/b"/><updated>2026-08-08T10:00:00Z</updated><id>b</id></entry>
+  </feed>`, 'AAPL')
+  assert.equal(items.length, 1)
+  assert.equal(items[0].explicitSymbols[0], 'AAPL')
+  assert.match(items[0].title, /^AAPL 8-K/)
 })
 
 test('US premarket scheduling follows New York wall time and excludes weekends', () => {
@@ -132,10 +142,15 @@ test('all worker modes share a crash-safe database lease', () => {
   assert.match(worker, /reason: 'worker_lease_held'/)
 })
 
-test('Alpha Vantage cross-check alternates groups across four daily runs', () => {
+test('worker uses only registration-free upstream market sources', () => {
   const worker = read('market-radar/worker/run.mjs')
-  assert.match(worker, /slot % 18 === 0/)
-  assert.match(worker, /Math\.floor\(slot \/ 18\) % MARKET_GROUPS\.length/)
+  const workflow = read('.github/workflows/market-radar.yml')
+  const reactions = read('market-radar/worker/reactions.mjs')
+  assert.match(worker, /fetchCryptoReleases/)
+  assert.match(worker, /fetchSecCompanyFilings/)
+  assert.match(reactions, /fetchBinanceSeries/)
+  assert.match(reactions, /ea\.namespace = 'crypto'/)
+  assert.doesNotMatch(`${worker}\n${workflow}`, /MARKETAUX|ALPHAVANTAGE|TWELVE_DATA/)
 })
 
 test('the duplicate DST premarket trigger exits before claiming quota', () => {

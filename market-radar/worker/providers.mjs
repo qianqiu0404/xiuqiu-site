@@ -1,4 +1,5 @@
 import { normalizeUrl } from './core.mjs'
+import { CRYPTO_RELEASE_REPOSITORIES } from './config.mjs'
 
 function ensureOk(response, source) {
   if (!response.ok) throw new Error(`${source}_http_${response.status}`)
@@ -43,56 +44,72 @@ export function parseRss(xml, provider, market = 'macro') {
   return records
 }
 
-export function parseMarketauxPayload(payload, market) {
-  if (!Array.isArray(payload?.data)) throw new Error('marketaux_invalid_payload')
-  return payload.data.flatMap(item => {
-    const sourceUrl = publicUrl(item?.url)
-    const publishedAt = isoDate(item?.published_at)
-    if (!item?.title || !sourceUrl || !publishedAt) return []
+export function parseGitHubReleasePayload(payload, symbol, repository) {
+  if (!Array.isArray(payload)) throw new Error('github_releases_invalid_payload')
+  return payload.flatMap(release => {
+    const sourceUrl = publicUrl(release?.html_url)
+    const publishedAt = isoDate(release?.published_at)
+    const label = String(release?.name || release?.tag_name || '').trim()
+    if (release?.draft || !release?.id || !label || !sourceUrl || !publishedAt) return []
     return [{
-      provider: 'marketaux', providerId: String(item.uuid || sourceUrl), market,
-      sourceUrl, title: String(item.title), summary: String(item.description || item.snippet || ''), publishedAt,
-      explicitSymbols: (item.entities || []).map(entity => entity.symbol).filter(Boolean), payload: item,
+      provider: 'github_releases', providerId: `${repository}:${release.id}`, market: 'crypto',
+      sourceUrl, title: `${symbol} ${label} released`, summary: String(release.body || '').slice(0, 4_000), publishedAt,
+      explicitSymbols: [symbol], payload: {
+        repository, tagName: String(release.tag_name || ''), prerelease: release.prerelease === true,
+        publishedAt, sourceUrl,
+      },
     }]
   })
 }
 
-export function parseAlphaVantagePayload(payload, market) {
-  if (!Array.isArray(payload?.feed)) throw new Error('alpha_vantage_invalid_payload')
-  return payload.feed.flatMap(item => {
-    const sourceUrl = publicUrl(item?.url)
-    const timestamp = String(item?.time_published || '').replace(/^(\d{4})(\d{2})(\d{2})T(\d{2})(\d{2})(\d{2})$/, '$1-$2-$3T$4:$5:$6Z')
-    const publishedAt = isoDate(timestamp)
-    if (!item?.title || !sourceUrl || !publishedAt) return []
-    return [{
-      provider: 'alpha_vantage', providerId: sourceUrl, market,
-      sourceUrl, title: String(item.title), summary: String(item.summary || ''), publishedAt,
-      explicitSymbols: (item.ticker_sentiment || []).map(entry => entry.ticker).filter(Boolean), payload: item,
-    }]
-  })
+export function parseSecCompanyFeed(xml, symbol) {
+  const significantForm = /\b(?:8-K|10-Q|10-K|6-K|20-F|S-1|S-3|DEF 14A)\b/i
+  return parseRss(xml, 'sec_edgar', 'us_equity')
+    .filter(item => significantForm.test(item.title))
+    .map(item => ({ ...item, explicitSymbols: [symbol], title: `${symbol} ${item.title}` }))
 }
 
-export async function fetchMarketaux({ token, market, symbols }) {
-  if (!token) return []
-  const url = new URL('https://api.marketaux.com/v1/news/all')
-  url.searchParams.set('api_token', token)
-  url.searchParams.set('symbols', symbols.join(','))
-  url.searchParams.set('filter_entities', 'true')
-  url.searchParams.set('language', 'en')
-  url.searchParams.set('limit', '50')
-  const payload = await ensureOk(await fetch(url), 'marketaux').json()
-  return parseMarketauxPayload(payload, market)
+export function parseBinanceKlines(payload) {
+  if (!Array.isArray(payload)) throw new Error('binance_market_data_invalid_payload')
+  return payload.flatMap(item => {
+    const at = new Date(Number(item?.[0]))
+    const close = Number(item?.[4])
+    return Number.isNaN(at.getTime()) || !Number.isFinite(close) ? [] : [{ at, close }]
+  }).sort((a, b) => a.at - b.at)
 }
 
-export async function fetchAlphaVantage({ apiKey, symbols, market }) {
-  if (!apiKey) return []
-  const url = new URL('https://www.alphavantage.co/query')
-  url.searchParams.set('function', 'NEWS_SENTIMENT')
-  url.searchParams.set('tickers', symbols.join(','))
-  url.searchParams.set('limit', '50')
-  url.searchParams.set('apikey', apiKey)
-  const payload = await ensureOk(await fetch(url), 'alpha_vantage').json()
-  return parseAlphaVantagePayload(payload, market)
+export async function fetchCryptoReleases(repositories = CRYPTO_RELEASE_REPOSITORIES) {
+  const records = []
+  for (const { symbol, repository } of repositories) {
+    const response = ensureOk(await fetch(`https://api.github.com/repos/${repository}/releases?per_page=5`, {
+      signal: AbortSignal.timeout(10_000),
+      headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'xiuqiu-market-radar' },
+    }), 'github_releases')
+    records.push(...parseGitHubReleasePayload(await response.json(), symbol, repository))
+  }
+  const oldestAccepted = Date.now() - 30 * 24 * 60 * 60_000
+  return records.filter(item => Date.parse(item.publishedAt) >= oldestAccepted)
+}
+
+export async function fetchSecCompanyFilings(userAgent, symbols) {
+  if (!userAgent) return []
+  const records = []
+  for (const symbol of symbols) {
+    const url = new URL('https://www.sec.gov/cgi-bin/browse-edgar')
+    url.searchParams.set('action', 'getcompany')
+    url.searchParams.set('CIK', symbol)
+    url.searchParams.set('owner', 'exclude')
+    url.searchParams.set('count', '10')
+    url.searchParams.set('output', 'atom')
+    const response = ensureOk(await fetch(url, {
+      signal: AbortSignal.timeout(10_000),
+      headers: { 'User-Agent': userAgent, Accept: 'application/atom+xml,application/rss+xml' },
+    }), 'sec_edgar')
+    records.push(...parseSecCompanyFeed(await response.text(), symbol))
+    await new Promise(resolve => setTimeout(resolve, 150))
+  }
+  const oldestAccepted = Date.now() - 30 * 24 * 60 * 60_000
+  return records.filter(item => Date.parse(item.publishedAt) >= oldestAccepted)
 }
 
 export async function fetchSecEdgar(userAgent) {
@@ -106,18 +123,15 @@ export async function fetchFederalReserve() {
   return parseRss(await response.text(), 'federal_reserve', 'macro')
 }
 
-export async function fetchTwelveDataSeries({ apiKey, symbol, interval = '5min', outputsize = 60 }) {
-  if (!apiKey) return []
-  const url = new URL('https://api.twelvedata.com/time_series')
-  url.searchParams.set('symbol', symbol)
+export async function fetchBinanceSeries({ symbol, startTime, endTime, interval = '5m', limit = 120 }) {
+  const url = new URL('https://data-api.binance.vision/api/v3/klines')
+  url.searchParams.set('symbol', `${symbol}USDT`)
   url.searchParams.set('interval', interval)
-  url.searchParams.set('outputsize', String(outputsize))
-  url.searchParams.set('timezone', 'UTC')
-  url.searchParams.set('apikey', apiKey)
-  const payload = await ensureOk(await fetch(url), 'twelve_data').json()
-  if (payload.status === 'error') throw new Error(`twelve_data_${payload.code || 'error'}`)
-  return (payload.values || []).map(item => ({ at: new Date(`${item.datetime}Z`), close: Number(item.close) }))
-    .filter(item => !Number.isNaN(item.at.getTime()) && Number.isFinite(item.close)).sort((a, b) => a.at - b.at)
+  url.searchParams.set('limit', String(limit))
+  if (startTime) url.searchParams.set('startTime', String(new Date(startTime).getTime()))
+  if (endTime) url.searchParams.set('endTime', String(new Date(endTime).getTime()))
+  const payload = await ensureOk(await fetch(url, { signal: AbortSignal.timeout(10_000) }), 'binance_market_data').json()
+  return parseBinanceKlines(payload)
 }
 
 export async function checkQiuMarketHealth(baseUrl = 'https://qiu-market.vercel.app') {

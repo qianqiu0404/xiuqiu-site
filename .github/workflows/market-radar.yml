@@ -27,9 +27,6 @@ jobs:
     timeout-minutes: 15
     env:
       MARKET_RADAR_DATABASE_URL: ${{ secrets.MARKET_RADAR_DATABASE_URL }}
-      MARKETAUX_API_TOKEN: ${{ secrets.MARKETAUX_API_TOKEN }}
-      ALPHAVANTAGE_API_KEY: ${{ secrets.ALPHAVANTAGE_API_KEY }}
-      TWELVE_DATA_API_KEY: ${{ secrets.TWELVE_DATA_API_KEY }}
       DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
       DEEPSEEK_MODEL: ${{ vars.DEEPSEEK_MODEL || 'deepseek-v4-flash' }}
       SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
@@ -47,9 +44,6 @@ jobs:
         run: |
           test -n "$MARKET_RADAR_DATABASE_URL"
           if [ "${REQUESTED_MODE:-ingest}" != "migrate" ]; then
-            test -n "$MARKETAUX_API_TOKEN"
-            test -n "$ALPHAVANTAGE_API_KEY"
-            test -n "$TWELVE_DATA_API_KEY"
             test -n "$DEEPSEEK_API_KEY"
             test -n "$SEC_USER_AGENT"
           fi

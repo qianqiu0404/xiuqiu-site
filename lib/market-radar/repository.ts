@@ -11,7 +11,7 @@ import { getMarketRadarDb, isMarketRadarConfigured } from './db.js'
 
 type QueryRow = Record<string, unknown>
 
-const knownSources = ['marketaux', 'alpha_vantage', 'sec_edgar', 'federal_reserve', 'twelve_data', 'qiu_market']
+const knownSources = ['github_releases', 'sec_edgar', 'federal_reserve', 'binance_market_data', 'qiu_market']
 
 function iso(value: unknown): string | null {
   if (!value) return null

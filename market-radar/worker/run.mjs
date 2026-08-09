@@ -1,7 +1,7 @@
 import { neon } from '@neondatabase/serverless'
 import { MARKET_GROUPS } from './config.mjs'
 import { clusterKey, mapAssets, normalizeTitle, priorityForScore, scoreEvent, titleSimilarity, validateAiSummary } from './core.mjs'
-import { checkQiuMarketHealth, fetchAlphaVantage, fetchFederalReserve, fetchMarketaux, fetchSecEdgar } from './providers.mjs'
+import { checkQiuMarketHealth, fetchCryptoReleases, fetchFederalReserve, fetchSecCompanyFilings, fetchSecEdgar } from './providers.mjs'
 import { enrichPendingReactions } from './reactions.mjs'
 import { generateDailyDigest, generateP1Batch, generateUsPremarketDigest } from './digests.mjs'
 import { isUsPremarketWindow } from './market-calendar.mjs'
@@ -187,10 +187,10 @@ if (!workerLease) {
 const slot = slotIndex()
 const group = MARKET_GROUPS[slot % MARKET_GROUPS.length]
 const results = []
-results.push(await runSource('marketaux', group, slot, () => fetchMarketaux({ token: env.MARKETAUX_API_TOKEN, ...group })))
-if (slot % 18 === 0) {
-  const alphaGroup = MARKET_GROUPS[Math.floor(slot / 18) % MARKET_GROUPS.length]
-  results.push(await runSource('alpha_vantage', alphaGroup, slot, () => fetchAlphaVantage({ apiKey: env.ALPHAVANTAGE_API_KEY, ...alphaGroup })))
+if (group.key === 'crypto') {
+  results.push(await runSource('github_releases', group, slot, fetchCryptoReleases))
+} else {
+  results.push(await runSource('sec_edgar', group, slot, () => fetchSecCompanyFilings(env.SEC_USER_AGENT, group.symbols)))
 }
 if (slot % 9 === 0) {
   results.push(await runSource('sec_edgar', { key: 'macro' }, slot, () => fetchSecEdgar(env.SEC_USER_AGENT)))
@@ -202,7 +202,18 @@ if (qiuRun) {
   await finishRun(qiuRun, health.healthy ? 'succeeded' : 'failed', 0, health.healthy ? null : `http_${health.status || 'unavailable'}`)
   results.push({ source: 'qiu_market', ...health })
 }
-const reactions = await enrichPendingReactions(sql, env.TWELVE_DATA_API_KEY)
+let reactions = { checked: 0, updated: 0 }
+const reactionRun = await startRun('binance_market_data', 'reactions', slot)
+if (reactionRun) {
+  try {
+    reactions = await enrichPendingReactions(sql)
+    await finishRun(reactionRun, 'succeeded', reactions.checked)
+  } catch (error) {
+    const code = error instanceof Error ? error.message.slice(0, 120) : 'unknown_error'
+    await finishRun(reactionRun, 'failed', 0, code)
+    reactions = { checked: 0, updated: 0, error: code }
+  }
+}
 const digests = { p1: await generateP1Batch(sql) }
 if (process.argv.includes('--digest=daily')) digests.daily = await generateDailyDigest(sql)
 if (process.argv.includes('--digest=premarket')) digests.premarket = await generateUsPremarketDigest(sql)

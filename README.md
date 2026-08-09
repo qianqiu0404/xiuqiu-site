@@ -63,9 +63,6 @@ Configure the scheduled Market Radar worker in GitHub Actions secrets. The datab
 
 ```env
 MARKET_RADAR_DATABASE_URL=
-MARKETAUX_API_TOKEN=
-ALPHAVANTAGE_API_KEY=
-TWELVE_DATA_API_KEY=
 DEEPSEEK_API_KEY=
 SEC_USER_AGENT=
 ```
@@ -81,6 +78,8 @@ xiuqiu AI receives only the most relevant records from the generated public know
 `/market-radar` is a read-only event radar, not an account or execution system. It never connects to positions, wallets or broker accounts and cannot place orders. The GitHub Actions worker runs independently from the website build, writes to the dedicated Neon `market_radar` schema, and fails closed when a provider or AI response is unavailable. The public API is backed only by a reviewed SQL view; raw provider payloads, model prompts, credentials and private notes are not selected by public endpoints.
 
 The worker is disabled until the GitHub variable `MARKET_RADAR_ENABLED=true` and all required secrets are configured. Run `npm run market-radar:migrate` once before enabling ingestion. Raw provider payloads are purged after 14 days while event source links remain auditable; events, reactions, digests, feedback and trial metrics expire after one year.
+
+The initial worker uses only registration-free public sources: official crypto project releases from GitHub, SEC company filings and press releases, Federal Reserve RSS, and Binance public spot candles for supported crypto reaction tracking. US-equity reactions and assets without a Binance public pair remain explicitly `pending`; the system does not substitute unlicensed or synthetic prices. Hermes never calls upstream providers or stores their credentials: it only claims prepared messages from the token-protected Market Radar outbox.
 
 ## Content workflow
 

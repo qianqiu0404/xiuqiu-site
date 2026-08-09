@@ -9,12 +9,20 @@ export const MARKET_GROUPS = [
   { key: 'us_equity', market: 'us_equity', symbols: WATCHLIST.us_equity },
 ]
 
+export const CRYPTO_RELEASE_REPOSITORIES = [
+  { symbol: 'BTC', repository: 'bitcoin/bitcoin' },
+  { symbol: 'ETH', repository: 'ethereum/go-ethereum' },
+  { symbol: 'SOL', repository: 'anza-xyz/agave' },
+  { symbol: 'HYPE', repository: 'hyperliquid-dex/hyperliquid-python-sdk' },
+  { symbol: 'XRP', repository: 'XRPLF/rippled' },
+  { symbol: 'ZEC', repository: 'zcash/zcash' },
+]
+
 export const SOURCE_WEIGHTS = {
   sec_edgar: 20,
   federal_reserve: 20,
-  marketaux: 16,
-  alpha_vantage: 14,
-  twelve_data: 15,
+  github_releases: 18,
+  binance_market_data: 15,
   qiu_market: 8,
 }
 
