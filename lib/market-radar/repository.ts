@@ -136,7 +136,7 @@ export async function listEvents(filters: EventFilters): Promise<MarketRadarEven
   ) as QueryRow[]
   const hasMore = rows.length > filters.limit
   const selected = hasMore ? rows.slice(0, filters.limit) : rows
-  return { status: 'healthy', items: selected.map(mapEvent), nextCursor: hasMore ? encodeEventCursor(selected.at(-1)) : null }
+  return { status: 'healthy', items: selected.map(mapEvent), nextCursor: hasMore ? encodeEventCursor(selected[selected.length - 1]) : null }
 }
 
 export async function getEvent(id: string): Promise<MarketRadarEvent | null> {
