@@ -242,6 +242,11 @@ test('migrations hide stale backlog and the runner applies every numbered file',
 })
 
 test('verification-boundary migration is repeatable, private by default and preserves freshness', () => {
+  for (const file of ['001_initial.sql', '002_freshness_gate.sql']) {
+    const earlierMigration = read(`market-radar/migrations/${file}`)
+    const earlierPublicView = earlierMigration.slice(earlierMigration.indexOf('create or replace view market_radar.public_events'))
+    assert.match(earlierPublicView, /null::text as watch_for[\s\S]*null::text as invalidation/i)
+  }
   const migration = read('market-radar/migrations/003_event_verification_boundaries.sql')
   const publicView = migration.slice(migration.indexOf('create or replace view market_radar.public_events'))
   assert.match(migration, /add column if not exists watch_for_zh text/i)

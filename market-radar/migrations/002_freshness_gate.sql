@@ -18,7 +18,9 @@ select
   case when mr.event_id is null then null else jsonb_build_object(
     'status', mr.status, 'benchmark', mr.benchmark, 'return5m', mr.return_5m, 'return30m', mr.return_30m,
     'return4h', mr.return_4h, 'excess5m', mr.excess_5m, 'excess30m', mr.excess_30m, 'excess4h', mr.excess_4h
-  ) end as reaction
+  ) end as reaction,
+  null::text as watch_for,
+  null::text as invalidation
 from market_radar.events e
 left join market_radar.event_sources es on es.event_id = e.id
 left join market_radar.event_assets ea on ea.event_id = e.id
