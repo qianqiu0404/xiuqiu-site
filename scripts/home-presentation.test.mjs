@@ -33,6 +33,7 @@ const radarWeeklySource = readFileSync(new URL('../src/pages/RadarWeeklyPage.vue
 const routerSource = readFileSync(new URL('../src/router/index.ts', import.meta.url), 'utf8')
 const deliveryDetailSource = readFileSync(new URL('../src/pages/DeliveryDetailPage.vue', import.meta.url), 'utf8')
 const indexHtml = readFileSync(new URL('../index.html', import.meta.url), 'utf8')
+const globalStyleSource = readFileSync(new URL('../src/style.css', import.meta.url), 'utf8')
 
 function assertUnique(values, label) {
   assert.equal(new Set(values).size, values.length, `${label} must be unique`)
@@ -154,16 +155,41 @@ test('homepage and primary navigation keep their structural contract', () => {
   assert.match(homeSource, /AI 不替我判断/)
   assert.match(homeSource, /qiu-market\.vercel\.app/)
 
-  const primaryNavigation = appSource.match(/<div id="primary-navigation"[\s\S]*?<\/div>/)?.[0]
-  assert.ok(primaryNavigation, 'Primary navigation markup is missing')
+  function linksInClass(className) {
+    const block = appSource.match(new RegExp(`<div class="${className}"[\\s\\S]*?<\\/div>`))?.[0]
+    assert.ok(block, `${className} markup is missing`)
+    return [...block.matchAll(/<router-link\b([\s\S]*?)>([\s\S]*?)<\/router-link>/g)]
+      .map(([, attributes, label]) => ({
+        to: attributes.match(/\bto="([^"]+)"/)?.[1],
+        label: label.replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim(),
+      }))
+  }
 
-  const links = [...primaryNavigation.matchAll(/<router-link\s+to="([^"]+)"[^>]*>([^<]+)<\/router-link>/g)]
-    .map(([, to, label]) => ({ to, label: label.trim() }))
+  assert.match(appSource, /id="primary-navigation"/)
+  const primaryLinks = linksInClass('nav-primary-links')
+  assert.equal(primaryLinks.length, 6)
+  assertUnique(primaryLinks.map(link => link.to), 'primary navigation destinations')
+  assertUnique(primaryLinks.map(link => link.label), 'primary navigation labels')
+  assert.deepEqual(primaryLinks, [
+    { to: '/projects/wallet-launchpad', label: 'Wallet' },
+    { to: '/projects/s78-market-services', label: 'Qiu Market' },
+    { to: '/ai', label: 'AI' },
+    { to: '/engineering/evidence', label: 'Proof' },
+    { to: '/radar', label: 'Learn Radar' },
+    { to: '/market-radar', label: 'Trade Radar' },
+  ])
 
-  assert.equal(links.length, 6)
-  assertUnique(links.map(link => link.to), 'primary navigation destinations')
-  assertUnique(links.map(link => link.label), 'primary navigation labels')
-  assert.deepEqual(links.map(link => link.to), [
+  const secondaryLinks = linksInClass('nav-secondary-links')
+  assert.deepEqual(secondaryLinks, [
+    { to: '/projects', label: '项目图谱' },
+    { to: '/articles', label: '工程笔记' },
+    { to: '/now', label: 'About' },
+  ])
+  assertUnique(
+    [...primaryLinks, ...secondaryLinks].map(link => link.to),
+    'all navigation destinations',
+  )
+  assert.deepEqual(primaryLinks.map(link => link.to), [
     '/projects/wallet-launchpad',
     '/projects/s78-market-services',
     '/ai',
@@ -171,6 +197,24 @@ test('homepage and primary navigation keep their structural contract', () => {
     '/radar',
     '/market-radar',
   ])
+
+  assert.match(appSource, /currentRoute\.name === 'learning'\) return 'learn-radar'/)
+  assert.match(appSource, /aria-current="location"/)
+  assert.match(appSource, /class="nav-mobile-context"/)
+  assert.match(appSource, /'trade-radar': 'Trade Radar'/)
+  assert.match(appSource, /@click="toggleNav"/)
+  assert.equal((appSource.match(/@keydown\.space\.prevent="activateLinkOnSpace"/g) || []).length, 9)
+  assert.match(appSource, /navToggle\.value\?\.focus\(\)/)
+  assert.match(appSource, /mainContent\.value\?\.focus\(\{ preventScroll: true \}\)/)
+  assert.match(appSource, /<main id="main-content" ref="mainContent" tabindex="-1">/)
+
+  assert.match(globalStyleSource, /\.nav-context\s*\{/)
+  assert.match(globalStyleSource, /\.nav-mobile-context\s*\{/)
+  assert.match(globalStyleSource, /\.nav-link[\s\S]*?min-width:\s*44px/)
+  assert.match(globalStyleSource, /\.nav-toggle[\s\S]*?width:\s*44px[\s\S]*?height:\s*44px/)
+  assert.match(globalStyleSource, /max-height:\s*calc\(100dvh - 48px\)/)
+  assert.match(globalStyleSource, /overflow-x:\s*hidden/)
+  assert.match(globalStyleSource, /@media \(prefers-reduced-motion: reduce\)/)
 })
 
 test('two product home presentations keep public products separate from companion experiments', () => {
