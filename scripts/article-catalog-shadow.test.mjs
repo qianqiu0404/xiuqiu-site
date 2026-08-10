@@ -25,10 +25,19 @@ import { importArticleCatalog } from '../article-catalog-shadow/import-articles.
 import { migrateArticleCatalog } from '../article-catalog-shadow/migrate.mjs'
 import { queryJson, runPsql } from '../article-catalog-shadow/postgres.mjs'
 import { createArticleCatalogServer } from '../article-catalog-shadow/server.mjs'
+import {
+  ARTICLE_CATALOG_AUTH_HEADERS,
+  signArticleCatalogRequest,
+} from '../lib/article-catalog-auth.js'
 import { parseMarkdownFrontmatter } from './frontmatter.mjs'
 
 const CONTENT_DIR = new URL('../content/articles/', import.meta.url)
 const TEST_COMMIT = 'a'.repeat(40)
+const HMAC_NOW = 1_786_291_200_000
+const HMAC_KEYS = {
+  preview_current: 'current-article-catalog-test-secret-0001',
+  preview_previous: 'previous-article-catalog-test-secret-01',
+}
 
 function resolvePostgresBinary(name) {
   const direct = spawnSync(name, ['--version'], { encoding: 'utf8' })
@@ -178,7 +187,28 @@ function rewriteArticle(directory, file, mutateMeta, bodySuffix = '') {
   writeFileSync(path, `---\n${JSON.stringify(meta, null, 2)}\n---\n\n${body}${bodySuffix}\n`)
 }
 
-async function request(server, path = '/v1/public/articles', init) {
+function securedServer(options = {}) {
+  return createArticleCatalogServer({
+    ...options,
+    hmacKeys: HMAC_KEYS,
+    now: () => HMAC_NOW,
+  })
+}
+
+async function request(
+  server,
+  path = '/v1/public/articles',
+  init = {},
+  {
+    authenticated = true,
+    keyId = 'preview_current',
+    secret = HMAC_KEYS[keyId],
+    timestamp = HMAC_NOW,
+    nonce,
+    signedTarget = path,
+    signedMethod = init.method || 'GET',
+  } = {},
+) {
   if (!server.listening) {
     await new Promise((resolve, reject) => {
       server.once('error', reject)
@@ -186,7 +216,20 @@ async function request(server, path = '/v1/public/articles', init) {
     })
   }
   const address = server.address()
-  return fetch(`http://127.0.0.1:${address.port}${path}`, init)
+  const signedHeaders = authenticated
+    ? signArticleCatalogRequest({
+        secret,
+        keyId,
+        method: signedMethod,
+        target: signedTarget,
+        timestamp,
+        nonce,
+      })
+    : {}
+  return fetch(`http://127.0.0.1:${address.port}${path}`, {
+    ...init,
+    headers: { ...signedHeaders, ...init.headers },
+  })
 }
 
 async function closeServer(server) {
@@ -306,12 +349,13 @@ test('Article Catalog Shadow uses a real disposable PostgreSQL database', async 
   })
 
   await t.test('public GET matches every Git slug and exposes only the catalog allowlist', async subtest => {
-    const server = createArticleCatalogServer({ databaseUrl: fixture.apiUrl })
+    const server = securedServer({ databaseUrl: fixture.apiUrl })
     subtest.after(() => closeServer(server))
     const response = await request(server)
     assert.equal(response.status, 200)
     assert.equal(response.headers.get('cache-control'), 'no-store')
     assert.equal(response.headers.get('x-content-type-options'), 'nosniff')
+    assert.equal(response.headers.get('x-robots-tag'), 'noindex, nofollow')
     const payload = await response.json()
     assert.equal(payload.articles.length, expectedCount)
     assert.deepEqual(payload.articles, expectedPublicArticles)
@@ -342,7 +386,78 @@ test('Article Catalog Shadow uses a real disposable PostgreSQL database', async 
     const missing = await request(server, '/missing')
     assert.equal(missing.status, 404)
     assert.equal(missing.headers.get('cache-control'), 'no-store')
+    assert.equal(missing.headers.get('x-robots-tag'), 'noindex, nofollow')
     await missing.text()
+  })
+
+  await t.test('HMAC gate rejects missing, invalid, expired, replayed, and variant requests', async subtest => {
+    const server = securedServer({ databaseUrl: fixture.apiUrl })
+    subtest.after(() => closeServer(server))
+
+    const missing = await request(server, '/v1/public/articles', {}, { authenticated: false })
+    assert.equal(missing.status, 401)
+    assert.equal(missing.headers.get('cache-control'), 'no-store')
+    assert.doesNotMatch(await missing.text(), /current-article-catalog-test-secret/)
+
+    const wrongSecret = await request(server, '/v1/public/articles', {}, {
+      secret: 'wrong-article-catalog-test-secret-000001',
+    })
+    assert.equal(wrongSecret.status, 401)
+    await wrongSecret.text()
+
+    const expired = await request(server, '/v1/public/articles', {}, {
+      timestamp: HMAC_NOW - 60_001,
+    })
+    assert.equal(expired.status, 401)
+    await expired.text()
+
+    const wrongMethod = await request(server, '/v1/public/articles', {}, { signedMethod: 'POST' })
+    assert.equal(wrongMethod.status, 401)
+    await wrongMethod.text()
+
+    const wrongPath = await request(server, '/v1/public/articles', {}, { signedTarget: '/health' })
+    assert.equal(wrongPath.status, 401)
+    await wrongPath.text()
+
+    const bodyHashHeaders = signArticleCatalogRequest({
+      secret: HMAC_KEYS.preview_current,
+      keyId: 'preview_current',
+      method: 'GET',
+      target: '/v1/public/articles',
+      timestamp: HMAC_NOW,
+      nonce: '1'.repeat(32),
+    })
+    bodyHashHeaders[ARTICLE_CATALOG_AUTH_HEADERS.bodyHash] = '0'.repeat(64)
+    const bodyHash = await request(server, '/v1/public/articles', { headers: bodyHashHeaders }, {
+      authenticated: false,
+    })
+    assert.equal(bodyHash.status, 401)
+    await bodyHash.text()
+
+    const fixedNonce = '2'.repeat(32)
+    const first = await request(server, '/v1/public/articles', {}, { nonce: fixedNonce })
+    assert.equal(first.status, 200)
+    await first.text()
+    const replay = await request(server, '/v1/public/articles', {}, { nonce: fixedNonce })
+    assert.equal(replay.status, 409)
+    assert.equal(replay.headers.get('cache-control'), 'no-store')
+    await replay.text()
+
+    const rotated = await request(server, '/health', {}, { keyId: 'preview_previous' })
+    assert.equal(rotated.status, 200)
+    assert.deepEqual(await rotated.json(), {
+      status: 'ok',
+      service: 'article-catalog-shadow',
+      articleCount: expectedCount,
+      schemaVersion: 1,
+    })
+
+    const queryVariant = await request(server, '/v1/public/articles?preview=1')
+    assert.equal(queryVariant.status, 404)
+    await queryVariant.text()
+    const encodedVariant = await request(server, '/v1/public%2Farticles')
+    assert.equal(encodedVariant.status, 404)
+    await encodedVariant.text()
   })
 
   await t.test('no database and database errors fail closed with no-store', async () => {
@@ -359,7 +474,7 @@ test('Article Catalog Shadow uses a real disposable PostgreSQL database', async 
     await closeServer(noDatabase)
 
     runPsql(fixture.migratorUrl, 'REVOKE SELECT ON article_catalog.public_articles FROM article_catalog_reader;')
-    const brokenDatabase = createArticleCatalogServer({ databaseUrl: fixture.apiUrl })
+    const brokenDatabase = securedServer({ databaseUrl: fixture.apiUrl })
     const errorResponse = await request(brokenDatabase)
     assert.equal(errorResponse.status, 503)
     assert.equal(errorResponse.headers.get('cache-control'), 'no-store')
@@ -367,7 +482,7 @@ test('Article Catalog Shadow uses a real disposable PostgreSQL database', async 
     await closeServer(brokenDatabase)
     runPsql(fixture.migratorUrl, 'GRANT SELECT ON article_catalog.public_articles TO article_catalog_reader;')
 
-    const remoteDatabase = createArticleCatalogServer({
+    const remoteDatabase = securedServer({
       databaseUrl: 'postgresql://article_catalog_api@db.example.com/xiuqiu_content',
     })
     const remoteResponse = await request(remoteDatabase)
@@ -390,7 +505,7 @@ test('Article Catalog Shadow uses a real disposable PostgreSQL database', async 
       sourceCommit: TEST_COMMIT,
     })
     assert.equal(result.updated, 0)
-    const server = createArticleCatalogServer({ databaseUrl: fixture.apiUrl })
+    const server = securedServer({ databaseUrl: fixture.apiUrl })
     const response = await request(server)
     assert.doesNotMatch(await response.text(), /ARTICLE_SHADOW_PRIVATE_SENTINEL/)
     await closeServer(server)

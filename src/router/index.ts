@@ -1,8 +1,19 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+const CONTENT_CATALOG_PREVIEW_PATH = ['', 'content-catalog-preview'].join('/')
+const contentCatalogPreviewRoutes = import.meta.env.VITE_CONTENT_CATALOG_PREVIEW === 'true'
+  ? [{
+      path: CONTENT_CATALOG_PREVIEW_PATH,
+      name: 'content-catalog-preview',
+      component: () => import('../pages/ContentCatalogPreviewPage.vue'),
+      meta: { visual: 'editorial' },
+    }]
+  : []
+
 const router = createRouter({
   history: createWebHistory(),
   routes: [
+    ...contentCatalogPreviewRoutes,
     {
       path: '/',
       name: 'home',
