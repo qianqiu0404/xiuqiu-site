@@ -22,9 +22,6 @@ const statusLabel = computed(() => ({
   offline: '离线 · 构建快照',
 })[state.value])
 
-const shortCommit = computed(() => catalog.value?.audit.sourceCommit.slice(0, 12) ?? '—')
-const shortCatalogHash = computed(() => catalog.value?.audit.catalogHash.slice(0, 12) ?? '—')
-
 function formatDate(value: string | null | undefined): string {
   if (!value) return '—'
   const date = new Date(value)
@@ -72,7 +69,7 @@ async function loadCatalog(): Promise<void> {
       state.value = aligned ? 'online' : 'stale'
       detail.value = aligned
         ? '本地数据库发布记录与这次 Preview 构建完全一致。'
-        : '本地数据库可以读取，但提交或目录哈希与这次 Preview 构建不同；下方展示数据库版本。'
+        : '本地数据库可以读取，但发布记录与这次 Preview 构建不同；下方展示数据库版本。'
     } finally {
       window.clearTimeout(timeout)
     }
@@ -139,14 +136,6 @@ onBeforeUnmount(() => {
         <div class="catalog-preview__fact catalog-preview__fact--count">
           <dt>公开文章</dt>
           <dd>{{ catalog?.audit.articleCount ?? '—' }}</dd>
-        </div>
-        <div class="catalog-preview__fact">
-          <dt>提交</dt>
-          <dd><code :title="catalog?.audit.sourceCommit">{{ shortCommit }}</code></dd>
-        </div>
-        <div class="catalog-preview__fact">
-          <dt>目录哈希</dt>
-          <dd><code :title="catalog?.audit.catalogHash">{{ shortCatalogHash }}</code></dd>
         </div>
         <div class="catalog-preview__fact">
           <dt>Schema</dt>
@@ -310,7 +299,7 @@ onBeforeUnmount(() => {
 
 .catalog-preview__facts {
   display: grid;
-  grid-template-columns: 1.15fr repeat(4, 1fr);
+  grid-template-columns: 1.15fr repeat(2, 1fr);
   margin: 24px 0 0;
   border-top: 1px solid var(--catalog-line);
 }
@@ -325,8 +314,6 @@ onBeforeUnmount(() => {
 .catalog-preview__fact dt { color: var(--catalog-muted); font-size: 0.75rem; }
 .catalog-preview__fact dd { margin: 8px 0 0; font-size: 1rem; font-weight: 700; }
 .catalog-preview__fact--count dd { font-size: 2.5rem; line-height: 1; }
-.catalog-preview__fact code { font-size: 0.82rem; overflow-wrap: anywhere; }
-
 .catalog-preview__boundary {
   display: grid;
   grid-template-columns: 120px 1fr;

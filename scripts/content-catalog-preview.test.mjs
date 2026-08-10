@@ -249,6 +249,7 @@ test('Content Catalog Preview security and fallback contracts', async t => {
     assert.doesNotMatch(meta, /content-catalog-preview/)
     assert.doesNotMatch(page, /<main(?:\s|>)/)
     assert.doesNotMatch(page, /article\.sourceHash/, 'Per-article hashes must stay out of the visual catalog.')
+    assert.doesNotMatch(page, /<dt>提交<\/dt>|<dt>目录哈希<\/dt>|<code/, 'Commit and catalog hashes must stay out of the visual catalog.')
     assert.match(page, /document\.title = '内容目录状态｜xiuqiu'/)
     assert.match(page, /noindex, nofollow/)
     assert.match(page, /min-height:\s*44px/)
