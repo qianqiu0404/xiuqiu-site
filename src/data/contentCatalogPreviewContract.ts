@@ -49,7 +49,7 @@ function normalizeArticle(value: unknown): ContentCatalogPreviewArticle | undefi
     title: value.title.trim(),
     summary: value.summary.trim(),
     publishedAt: value.publishedAt,
-    updatedAt: value.updatedAt,
+    updatedAt: typeof value.updatedAt === 'string' ? value.updatedAt : null,
     sourceCommit: value.sourceCommit,
     sourceHash: value.sourceHash,
     schemaVersion: value.schemaVersion,

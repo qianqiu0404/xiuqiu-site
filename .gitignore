@@ -28,6 +28,7 @@ pnpm-debug.log*
 # cache
 .cache/
 .temp/
+.vercel/
 
 # keep old unrelated sub project out of this MVP
 brand-studio-next/
