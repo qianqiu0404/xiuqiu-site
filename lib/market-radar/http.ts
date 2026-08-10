@@ -87,7 +87,7 @@ export function consumeRateLimit(key: string, limit: number, windowMs: number): 
 }
 
 export function hasInternalToken(req: MarketRadarRequest): boolean {
-  const configured = process.env.MARKET_RADAR_DISPATCH_TOKEN
+  const configured = process.env.RADAR_DISPATCH_TOKEN || process.env.MARKET_RADAR_DISPATCH_TOKEN
   if (!configured) return false
   const header = req.headers.authorization
   const value = Array.isArray(header) ? header[0] : header

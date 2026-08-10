@@ -1,0 +1,7 @@
+name: market-radar-weixin
+version: 0.3.0
+description: "Two isolated, model-free radar outbox consumers using Hermes' native Weixin adapter."
+author: xiuqiu
+kind: standalone
+platforms:
+  - macos

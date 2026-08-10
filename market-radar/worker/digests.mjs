@@ -164,8 +164,8 @@ export function buildDigestBody(events) {
   return { body: lines.join('\n'), attentionAssets: attention.map(asset => asset.symbol) }
 }
 
-async function createDigest(sql, { id, kind, title, periodStart, periodEnd, events, outboxKind }) {
-  if (!events.length) return { created: false, reason: 'no_important_events' }
+async function createDigest(sql, { id, kind, title, periodStart, periodEnd, events, outboxKind, idempotencyKey, pageUrl, allowQuiet = false }) {
+  if (!events.length && !allowQuiet) return { created: false, reason: 'no_important_events' }
   const { body, attentionAssets } = buildDigestBody(events)
   const digestRows = await sql.query(`insert into market_radar.digests
     (id, kind, title, body_zh, visibility, period_start, period_end, published_at)
@@ -174,7 +174,10 @@ async function createDigest(sql, { id, kind, title, periodStart, periodEnd, even
   if (!digestRows[0]) return { created: false, reason: 'already_exists' }
   await sql.query(`insert into market_radar.outbox
     (id, digest_id, kind, idempotency_key, payload) values ($1,$2,$3,$4,$5::jsonb)
-    on conflict (idempotency_key) do nothing`, [crypto.randomUUID(), id, outboxKind, `digest:${id}`, JSON.stringify({ digestId: id, title, body })])
+    on conflict (idempotency_key) do nothing`, [
+      crypto.randomUUID(), id, outboxKind, idempotencyKey || `digest:${id}`,
+      JSON.stringify({ digestId: id, title, body, pageUrl }),
+    ])
   return { created: true, count: events.length, attentionAssets }
 }
 
@@ -202,6 +205,7 @@ export async function generateDailyDigest(sql, now = new Date()) {
   return createDigest(sql, {
     id: `daily-v2-${shanghaiDate}`, kind: 'daily', title: `交易雷达早报 · ${shanghaiDate}`,
     periodStart, periodEnd, events: await publicEvents(sql, periodStart, periodEnd), outboxKind: 'daily',
+    idempotencyKey: `market:daily:${shanghaiDate}`, pageUrl: `/market-radar/${shanghaiDate}`, allowQuiet: true,
   })
 }
 
