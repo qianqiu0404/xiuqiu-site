@@ -55,7 +55,7 @@ test('2026-08-05 automation remains partial when notification delivery is unconf
     'FAILED',
   ])
   assert.match(aiAutomationRun.boundary, /发布成功不等于通知成功/)
-  assert.match(researchCaseSource, /"updatedAt": "2026-08-05"/)
+  assert.match(researchCaseSource, /"updatedAt": "2026-08-10"/)
   assert.match(researchCaseSource, /整次运行保持 partial/)
   assert.match(researchCaseSource, /weixin\.send/)
 })
