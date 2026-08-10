@@ -6,11 +6,24 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/market-radar/events/:id",
+      "destination": "/market-radar/index.html"
+    },
+    {
       "source": "/radar/stories/:slug",
       "destination": "/radar/index.html"
     }
   ],
   "headers": [
+    {
+      "source": "/market-radar/events/:id",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
     {
       "source": "/radar/stories/:slug",
       "headers": [

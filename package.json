@@ -28,7 +28,7 @@
     "test:radar": "node --test scripts/radar-pipeline.test.mjs scripts/radar-presentation.test.mjs scripts/researchops-ledger.test.mjs scripts/daily-radar-workflow.test.mjs",
     "test:learning-radar": "node --test scripts/learning-radar-worker.test.mjs scripts/learning-radar-ui.test.mjs",
     "test:learning-radar-ui": "node --test scripts/learning-radar-ui.test.mjs",
-    "test:market-radar": "node --test scripts/market-radar.test.mjs scripts/market-radar-worker.test.mjs scripts/market-radar-event-contract.test.mjs scripts/dual-timeline-contract.test.mjs scripts/static-market-radar-workflow.test.mjs",
+    "test:market-radar": "node --test scripts/market-radar.test.mjs scripts/market-radar-ui.test.mjs scripts/market-radar-worker.test.mjs scripts/market-radar-event-contract.test.mjs scripts/dual-timeline-contract.test.mjs scripts/static-market-radar-workflow.test.mjs",
     "test:timeline-review": "node --test scripts/timeline-review.test.mjs",
     "test:radar-db": "RUN_RADAR_DB_TESTS=true node --test --test-name-pattern='real PostgreSQL' scripts/dual-timeline-contract.test.mjs scripts/timeline-review.test.mjs",
     "test:notifications": "node --test scripts/radar-notifications.test.mjs",

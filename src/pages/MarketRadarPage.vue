@@ -1,28 +1,62 @@
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import MarketTimelineCard from '../components/MarketTimelineCard.vue'
 import { latestMarketRadars, marketRadarIndex } from '../data/generatedMarketRadars'
+import type { MarketRadarSummary } from '../market-radar/contracts'
+import {
+  buildStaticTradeTimeline,
+  formatTradeTimelineTime,
+  groupHistoricalTradeTimeline,
+  parseMarketTimelineList,
+  parseMarketTimelineSummary,
+  partitionTradeTimeline,
+  toTradeTimelineCard,
+  type TradeTimelineCardViewModel,
+} from '../market-radar/timeline-presentation'
 import { setSeoMeta } from '../utils/seo'
 import '../styles/market-radar.css'
 
 const latest = latestMarketRadars[0]
-const highPriorityCount = computed(() => latest?.events.filter(event => event.priority === 'P0' || event.priority === 'P1').length || 0)
-const nextEvent = computed(() => {
-  if (!latest) return undefined
-  const generatedAt = Date.parse(latest.generatedAt)
-  return [...latest.events]
-    .filter(event => event.eventAt && Date.parse(event.eventAt) >= generatedAt)
-    .sort((a, b) => Date.parse(a.eventAt!) - Date.parse(b.eventAt!))[0]
-})
-const statusLabels = { scheduled: '已排期', released: '已发布', monitoring: '观察中' }
-const categoryLabels = { macro: '宏观', crypto: '加密', equity: '美股', regulation: '政策' }
-const priorityLabels = { P0: '关键', P1: '重要', P2: '跟踪' }
+const apiCards = ref<TradeTimelineCardViewModel[]>([])
+const summary = ref<MarketRadarSummary | null>(null)
+const origin = ref<'api' | 'static'>('static')
+const loading = ref(true)
+const statusMessage = ref('')
+let requestVersion = 0
+let activeRequest: AbortController | null = null
 
-function formatEventTime(value?: string) {
-  if (!value) return '持续观察'
-  return new Intl.DateTimeFormat('zh-CN', {
-    timeZone: 'Asia/Shanghai', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false,
-  }).format(new Date(value))
-}
+const staticBaseCards = buildStaticTradeTimeline(latest)
+const committedScheduleCards = (() => {
+  const ids = new Set<string>()
+  return latestMarketRadars.flatMap(buildStaticTradeTimeline)
+    .filter(item => item.statusLabel === '已排期' && Date.parse(item.occurredAt) > Date.now())
+    .filter(item => ids.has(item.id) ? false : (ids.add(item.id), true))
+})()
+
+const cards = computed(() => {
+  const base = origin.value === 'api' ? apiCards.value : staticBaseCards
+  const ids = new Set(base.map(item => item.id))
+  return [...base, ...committedScheduleCards.filter(item => !ids.has(item.id))]
+})
+const partitioned = computed(() => partitionTradeTimeline(cards.value))
+const futureCards = computed(() => partitioned.value.future)
+const historicalGroups = computed(() => groupHistoricalTradeTimeline(partitioned.value.historical))
+const hasStaticSchedule = computed(() => futureCards.value.some(item => item.origin === 'static'))
+const summaryAvailable = computed(() => Boolean(summary.value && summary.value.status !== 'unconfigured'))
+const totalEventCount = computed(() => origin.value === 'static' ? cards.value.length
+  : summaryAvailable.value ? summary.value?.eventCount24h : '—')
+const highPriorityCount = computed(() => origin.value === 'static'
+  ? cards.value.filter(item => item.priority === 'P0' || item.priority === 'P1').length
+  : summaryAvailable.value ? Number(summary.value?.p0Count24h || 0) + Number(summary.value?.p1Count24h || 0) : '—')
+const nextEvent = computed(() => futureCards.value[0])
+const updatedAt = computed(() => origin.value === 'static'
+  ? latest?.generatedAt || new Date(0).toISOString()
+  : (summaryAvailable.value ? summary.value?.latestEventAt : null) || apiCards.value.reduce<string | null>((latestValue, item) => (
+    !latestValue || item.publishedAt > latestValue ? item.publishedAt : latestValue
+  ), null) || new Date(0).toISOString())
+const scheduleUpdatedAt = computed(() => committedScheduleCards.reduce<string | null>((latestValue, item) => (
+  !latestValue || item.publishedAt > latestValue ? item.publishedAt : latestValue
+), null))
 
 function formatGeneratedAt(value: string) {
   return new Intl.DateTimeFormat('zh-CN', {
@@ -30,11 +64,66 @@ function formatGeneratedAt(value: string) {
   }).format(new Date(value))
 }
 
-onMounted(() => setSeoMeta({
-  title: '交易研究雷达｜xiuqiu',
-  description: '基于公开来源的静态交易事件观察：事实、影响资产、观察条件和失效边界分开呈现，不调用实时行情 API。',
-  path: '/market-radar',
-}))
+async function requestSummary(signal: AbortSignal): Promise<MarketRadarSummary | null> {
+  try {
+    const response = await fetch('/api/market-radar/summary', { signal })
+    if (!response.ok || !response.headers.get('content-type')?.includes('application/json')) return null
+    return parseMarketTimelineSummary(await response.json())
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') throw error
+    return null
+  }
+}
+
+async function loadTimeline() {
+  const version = ++requestVersion
+  activeRequest?.abort()
+  activeRequest = new AbortController()
+  loading.value = true
+  statusMessage.value = ''
+  apiCards.value = []
+  summary.value = null
+  try {
+    const [itemsResponse, summaryPayload] = await Promise.all([
+      fetch('/api/market-radar/events?window=168&limit=50', { signal: activeRequest.signal }),
+      requestSummary(activeRequest.signal),
+    ])
+    if (version !== requestVersion) return
+    if (!itemsResponse.ok || !itemsResponse.headers.get('content-type')?.includes('application/json')) throw new Error('events-unavailable')
+    const timeline = parseMarketTimelineList(await itemsResponse.json())
+    if (!timeline || timeline.status === 'unconfigured') throw new Error('events-unconfigured')
+    apiCards.value = timeline.items.map(toTradeTimelineCard)
+    summary.value = summaryPayload
+    origin.value = 'api'
+    statusMessage.value = timeline.status === 'degraded'
+      ? timeline.message || '事件列表当前延迟；已显示内容仍来自数据库公开记录。'
+      : summaryPayload?.status === 'degraded'
+        ? summaryPayload.message || '汇总状态延迟；事件列表仍为数据库公开记录。'
+        : !summaryPayload || summaryPayload.status === 'unconfigured'
+          ? '汇总状态不可用；事件列表仍为数据库公开记录。' : ''
+  } catch (error) {
+    if (version !== requestVersion) return
+    if (error instanceof DOMException && error.name === 'AbortError') return
+    origin.value = 'static'
+    statusMessage.value = '动态交易事件暂时不可用，当前展示已提交的静态雷达快照。'
+  } finally {
+    if (version === requestVersion) loading.value = false
+  }
+}
+
+onMounted(() => {
+  setSeoMeta({
+    title: '交易研究雷达｜xiuqiu',
+    description: '基于公开来源的交易事件时间线：事实、影响资产、观察条件和失效边界分开呈现，不调用账户或自动下单。',
+    path: '/market-radar',
+  })
+  void loadTimeline()
+})
+
+onBeforeUnmount(() => {
+  requestVersion += 1
+  activeRequest?.abort()
+})
 </script>
 
 <template>
@@ -44,98 +133,66 @@ onMounted(() => setSeoMeta({
         <div class="trade-radar-hero-copy">
           <p class="trade-radar-kicker">Trade Radar / Verified event intelligence</p>
           <h1>先看发生了什么。<span>再判断市场怎么走。</span></h1>
-          <p class="trade-radar-lead">每天只保留少量值得验证的事件，把事实、影响资产、观察条件与失效边界拆开。它不告诉你买什么。</p>
+          <p class="trade-radar-lead">事实、影响资产、观察条件与失效边界分开记录；较远预定事件只来自已提交静态排期。它不告诉你买什么。</p>
         </div>
         <aside class="trade-radar-boundary" aria-label="研究与执行边界">
-          <span>Research boundary</span>
-          <strong>不接账户 · 不自动下单</strong>
-          <p>当前页面读取构建时静态快照。原始来源可回查，市场反应需要在事件发生后另行验证。</p>
+          <span>Research boundary</span><strong>不接账户 · 不自动下单</strong>
+          <p>数据库时间线只承载已发生或临近事件；未来排期明确标注静态快照，市场反应仍需发生后验证。</p>
         </aside>
       </div>
     </header>
 
-    <div v-if="latest" class="trade-radar-main">
+    <div class="trade-radar-main">
       <section class="container trade-radar-shell trade-radar-status" aria-labelledby="radar-status-title">
-        <h2 id="radar-status-title" class="trade-radar-sr-only">今日雷达状态摘要</h2>
+        <h2 id="radar-status-title" class="trade-radar-sr-only">交易雷达状态摘要</h2>
         <dl class="trade-radar-metrics">
-          <div><dt>总事件</dt><dd>{{ latest.events.length }}</dd></div>
+          <div><dt>总事件</dt><dd>{{ totalEventCount }}</dd></div>
           <div class="is-urgent"><dt>P0 + P1</dt><dd>{{ highPriorityCount }}</dd></div>
-          <div><dt>下一事件</dt><dd>{{ nextEvent ? formatEventTime(nextEvent.eventAt) : '持续观察' }}</dd></div>
-          <div><dt>更新于</dt><dd>{{ formatGeneratedAt(latest.generatedAt) }} CST</dd></div>
+          <div><dt>下一事件</dt><dd>{{ nextEvent ? formatTradeTimelineTime(nextEvent.occurredAt) : '持续观察' }}</dd></div>
+          <div><dt>更新于</dt><dd>{{ formatGeneratedAt(updatedAt) }} CST</dd></div>
         </dl>
       </section>
 
-      <section class="container trade-radar-shell trade-radar-brief" aria-labelledby="trade-radar-title">
-        <header class="trade-radar-section-heading">
-          <div>
-            <p class="trade-radar-kicker">Today's verification queue</p>
-            <h2 id="trade-radar-title">{{ latest.title }}</h2>
-          </div>
-          <router-link class="trade-radar-text-link" :to="`/market-radar/${latest.slug}`">阅读完整快照 <span aria-hidden="true">↗</span></router-link>
-        </header>
-        <p class="trade-radar-summary">{{ latest.summary }}</p>
-
-        <div class="trade-event-list">
-          <article
-            v-for="(event, index) in latest.events"
-            :id="`queue-${event.id}`"
-            :key="event.id"
-            class="trade-event-card"
-            :class="`priority-${event.priority.toLowerCase()}`"
-          >
-            <div class="trade-event-signal" aria-hidden="true"><span>{{ String(index + 1).padStart(2, '0') }}</span></div>
-            <div class="trade-event-content">
-              <header class="trade-event-header">
-                <div class="trade-event-classification">
-                  <strong>{{ event.priority }} · {{ priorityLabels[event.priority] }}</strong>
-                  <span>{{ categoryLabels[event.category] }}</span>
-                  <span>{{ statusLabels[event.status] }}</span>
-                </div>
-                <time v-if="event.eventAt" :datetime="event.eventAt">{{ formatEventTime(event.eventAt) }}</time>
-                <span v-else class="trade-event-continuous">持续观察</span>
-              </header>
-
-              <h3><router-link :to="`/market-radar/${latest.slug}#${event.id}`">{{ event.title }}</router-link></h3>
-              <p class="trade-event-fact">{{ event.fact }}</p>
-
-              <div class="trade-event-context">
-                <div class="trade-event-assets" aria-label="影响资产"><span v-for="asset in event.assets" :key="asset">{{ asset }}</span></div>
-                <span class="trade-event-source-date">来源发布 {{ event.sourcePublishedAt }}</span>
-              </div>
-
-              <div v-if="event.priority !== 'P2'" class="trade-event-analysis trade-event-analysis--static">
-                <dl>
-                  <div><dt>为什么关注</dt><dd>{{ event.whyWatch }}</dd></div>
-                  <div><dt>接下来验证</dt><dd>{{ event.watchFor }}</dd></div>
-                  <div><dt>何时失效</dt><dd>{{ event.invalidation }}</dd></div>
-                </dl>
-              </div>
-              <details v-else class="trade-event-analysis">
-                <summary>展开判断边界 <span aria-hidden="true">＋</span></summary>
-                <dl>
-                  <div><dt>为什么关注</dt><dd>{{ event.whyWatch }}</dd></div>
-                  <div><dt>接下来验证</dt><dd>{{ event.watchFor }}</dd></div>
-                  <div><dt>何时失效</dt><dd>{{ event.invalidation }}</dd></div>
-                </dl>
-              </details>
-
-              <footer class="trade-event-footer">
-                <a :href="event.sourceUrl" target="_blank" rel="noopener">核对 {{ event.sourceName }} 原始来源 <span aria-hidden="true">↗</span></a>
-                <router-link :to="`/market-radar/${latest.slug}#${event.id}`">进入事件记录 <span aria-hidden="true">→</span></router-link>
-              </footer>
-            </div>
-          </article>
+      <div class="container trade-radar-shell trade-radar-runtime-status">
+        <div v-if="origin === 'static'" class="trade-radar-static-notice" role="status">
+          <strong>静态快照</strong><p>{{ statusMessage || '正在读取数据库时间线。' }} 快照更新时间 {{ formatGeneratedAt(updatedAt) }} CST，不代表实时状态。</p>
+          <router-link v-if="latest" :to="`/market-radar/${latest.slug}`">查看日期快照</router-link>
         </div>
+        <p v-else-if="statusMessage" class="trade-radar-api-notice" role="status">{{ statusMessage }}</p>
+      </div>
+
+      <section class="container trade-radar-shell trade-radar-brief" aria-labelledby="trade-next-title">
+        <header class="trade-radar-section-heading">
+          <div><p class="trade-radar-kicker">Scheduled / committed evidence</p><h2 id="trade-next-title">接下来。</h2></div>
+          <router-link v-if="latest" class="trade-radar-text-link" :to="`/market-radar/${latest.slug}`">阅读完整快照 <span aria-hidden="true">↗</span></router-link>
+        </header>
+        <p v-if="hasStaticSchedule" class="trade-radar-schedule-note">静态排期快照 · 更新于 {{ scheduleUpdatedAt ? formatGeneratedAt(scheduleUpdatedAt) : '未知' }} CST；较远预定事件不来自数据库 live 时间线。</p>
+        <div v-if="loading" class="trade-radar-timeline-state" aria-busy="true" aria-live="polite">正在读取交易事件…</div>
+        <div v-else-if="futureCards.length" class="trade-event-list trade-event-list--future">
+          <MarketTimelineCard v-for="(item, index) in futureCards" :key="item.id" :item="item" :index="index" />
+        </div>
+        <p v-else class="trade-radar-timeline-state">当前没有已确认的未来排期；持续观察不等于没有风险。</p>
+      </section>
+
+      <section class="container trade-radar-shell trade-radar-brief trade-radar-occurred" aria-labelledby="trade-occurred-title">
+        <header class="trade-radar-section-heading">
+          <div><p class="trade-radar-kicker">Occurred / reverse chronological</p><h2 id="trade-occurred-title">已发生。</h2></div>
+          <time :datetime="updatedAt">更新 {{ formatGeneratedAt(updatedAt) }} CST</time>
+        </header>
+        <template v-if="!loading && historicalGroups.length">
+          <section v-for="group in historicalGroups" :key="group.date" class="trade-radar-date-group" :aria-labelledby="`trade-date-${group.date}`">
+            <h3 :id="`trade-date-${group.date}`"><time :datetime="group.date">{{ group.label }}</time></h3>
+            <div class="trade-event-list"><MarketTimelineCard v-for="(item, index) in group.items" :key="item.id" :item="item" :index="index" /></div>
+          </section>
+        </template>
+        <p v-else-if="!loading" class="trade-radar-timeline-state">当前没有通过公开门禁的已发生事件。</p>
       </section>
 
       <section class="container trade-radar-shell trade-radar-archive" aria-labelledby="trade-archive-title">
-        <header class="trade-radar-section-heading">
-          <div><p class="trade-radar-kicker">Verification archive</p><h2 id="trade-archive-title">历史快照，不覆盖改写。</h2></div>
-        </header>
+        <header class="trade-radar-section-heading"><div><p class="trade-radar-kicker">Verification archive</p><h2 id="trade-archive-title">历史快照，不覆盖改写。</h2></div></header>
         <nav aria-label="交易雷达历史快照">
           <router-link v-for="entry in marketRadarIndex" :key="entry.slug" :to="`/market-radar/${entry.slug}`">
-            <time :datetime="entry.date">{{ entry.date }}</time>
-            <strong>{{ entry.leadTitle }}</strong>
+            <time :datetime="entry.date">{{ entry.date }}</time><strong>{{ entry.leadTitle }}</strong>
             <span>{{ entry.eventCount }} 事件 · {{ entry.assetCount }} 资产 <i aria-hidden="true">↗</i></span>
           </router-link>
         </nav>
@@ -143,13 +200,5 @@ onMounted(() => setSeoMeta({
 
       <p class="container trade-radar-shell trade-radar-disclaimer">内容仅供研究与教育，不构成投资建议。事实必须回到原始来源复核；市场反应必须在事件发生后单独记录。</p>
     </div>
-
-    <section v-else class="trade-radar-state" aria-labelledby="radar-empty-title">
-      <div class="container trade-radar-shell">
-        <p class="trade-radar-kicker">No verified snapshot</p>
-        <h2 id="radar-empty-title">今天还没有通过发布门禁的雷达。</h2>
-        <p>新的静态快照通过来源、内容边界与重复事件检查后，会出现在这里。</p>
-      </div>
-    </section>
   </div>
 </template>

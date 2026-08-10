@@ -153,7 +153,8 @@ test('learning UI keeps API contracts, abort/cursor safety, native disclosures a
   const storyRoute = router.indexOf("path: '/radar/stories/:slug'")
   const broadRoute = router.indexOf("path: '/radar/:date'")
   assert.ok(storyRoute > 0 && storyRoute < broadRoute)
-  assert.deepEqual(vercel.rewrites, [{ source: '/radar/stories/:slug', destination: '/radar/index.html' }])
+  assert.deepEqual(vercel.rewrites.find(rule => rule.source === '/radar/stories/:slug'),
+    { source: '/radar/stories/:slug', destination: '/radar/index.html' })
   assert.deepEqual(vercel.headers.find(rule => rule.source === '/radar/stories/:slug')?.headers,
     [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }])
   assert.doesNotMatch(JSON.stringify(vercel.rewrites), /\/api\/|\/assets\/|\/radar\/:date|\/radar\/week/)
