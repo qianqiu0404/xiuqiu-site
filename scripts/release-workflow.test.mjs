@@ -19,20 +19,26 @@ const productionJobs = [
   'promote_market_radar_worker',
 ]
 
-const vercelCommandPattern = /\bvercel\s+(?:pull|build|deploy|promote|inspect|project\s+inspect|whoami|curl)\b/
+const vercelCommandPattern = /\bvercel\s+(?:--token\s+"\$VERCEL_TOKEN"\s+)?(?:pull|build|deploy|promote|inspect|project\s+inspect|whoami|curl)\b/
+const vercelCurlPattern = /\bvercel\s+(?:--token\s+"\$VERCEL_TOKEN"\s+)?curl\b/
 const safeTokenFlag = '--token "$VERCEL_TOKEN"'
 
 const assertSafeVercelRun = run => {
   assert.doesNotMatch(run, /\bset\s+(?:-[A-Za-z]*x[A-Za-z]*(?:\s|$)|-o\s+xtrace\b)/)
   assert.doesNotMatch(run, /\b(?:echo|printf|printenv)\b[^\n]*VERCEL_TOKEN/)
   for (const line of run.split('\n')) {
-    if (/(^|\s)curl\b/.test(line) && !/\bvercel\s+curl\b/.test(line)) {
+    if (/(^|\s)curl\b/.test(line) && !vercelCurlPattern.test(line)) {
       assert.doesNotMatch(line, /VERCEL_TOKEN|Authorization/)
     }
     if (!vercelCommandPattern.test(line)) continue
     assert.equal(line.includes(safeTokenFlag), true, 'Vercel commands must use the safe shell token flag')
     assert.equal((line.match(/--token/g) || []).length, 1)
     assert.doesNotMatch(line, /--token(?:=|\s+)(?!"\$VERCEL_TOKEN"(?:\s|$))/)
+    if (vercelCurlPattern.test(line)) {
+      assert.match(line, /\bvercel\s+--token\s+"\$VERCEL_TOKEN"\s+curl\b/)
+      assert.doesNotMatch(line, /\bcurl\b[^\n]*--token/)
+      assert.match(line, /\s--\s/)
+    }
     if (/\bvercel\s+project\s+inspect\b/.test(line)) {
       assert.doesNotMatch(line, /--scope(?:=|\s+)/)
     }
@@ -91,11 +97,11 @@ test('release DAG is migration, staged Vercel promotion, worker smoke, then acti
     .find(step => step.name === 'Smoke the unaliased candidate before promotion')
   assert.ok(smokeStep)
   assert.equal(smokeStep.env.VERCEL_TOKEN, '${{ secrets.VERCEL_TOKEN }}')
-  assert.equal((smokeStep.run.match(/vercel curl/g) || []).length, 3)
+  assert.equal((smokeStep.run.match(/vercel --token "\$VERCEL_TOKEN" curl/g) || []).length, 3)
   assert.doesNotMatch(smokeStep.run, /(^|\n)\s*curl\b/)
-  assert.match(smokeStep.run, /vercel curl "\$SMOKE_URL\/api\/market-radar\/events\?limit=1" --token "\$VERCEL_TOKEN" -- --fail/)
-  for (const line of smokeStep.run.split('\n').filter(line => /\bvercel\s+curl\b/.test(line))) {
-    assert.match(line, /--token "\$VERCEL_TOKEN" -- --fail/)
+  assert.match(smokeStep.run, /vercel --token "\$VERCEL_TOKEN" curl "\$SMOKE_URL\/api\/market-radar\/events\?limit=1" -- --fail/)
+  for (const line of smokeStep.run.split('\n').filter(line => vercelCurlPattern.test(line))) {
+    assert.match(line, /vercel --token "\$VERCEL_TOKEN" curl [^\n]+ -- --fail/)
   }
   assertSafeVercelRun(smokeStep.run)
   assertSafeProductionVercelCommands()
@@ -137,6 +143,7 @@ test('release token audit rejects missing, literal, expression and log-exposing 
     'vercel project inspect "$VERCEL_PROJECT_ID" --scope "$VERCEL_ORG_ID" --token "$VERCEL_TOKEN"',
     'vercel project inspect "$VERCEL_PROJECT_ID" --scope team_example --token "$VERCEL_TOKEN"',
     'vercel curl "$SMOKE_URL/api/health"',
+    'vercel curl "$SMOKE_URL/api/health" --token "$VERCEL_TOKEN" -- --fail',
     'curl -H "Authorization: Bearer $VERCEL_TOKEN" "$SMOKE_URL/api/health"',
   ]
   for (const run of unsafeRuns) assert.throws(() => assertSafeVercelRun(run))
