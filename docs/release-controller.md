@@ -38,6 +38,8 @@ Create a protected GitHub Environment named `production-release` and restrict it
 
 T7 may add a read-only preflight that verifies required secret **names** are configured. It must not retrieve, print, copy, rotate, or otherwise inspect secret values.
 
+Timeline review uses a separate protected Environment named `timeline-review`. Its `TIMELINE_REVIEW_DATABASE_URL` must point to the same Neon database through a least-privilege role that can only use the review schema and execute `radar_system.review_timeline`; it must not receive direct table access. T7 is responsible for creating the Environment, configuring that secret name, and granting the database role. Do not place secret values, review notes, source payloads, or reviewer personal data in repository documentation, workflow summaries, or logs.
+
 Protect `main` with pull requests and the existing `verify` and `secrets` Site CI checks. Do not add a required check name that has not already succeeded in this repository.
 
 The controller uses the Environment secret only through the shell variable `"$VERCEL_TOKEN"`. Before it reads production configuration, it runs non-printing account and project access checks. A token that cannot inspect the configured project, build the candidate, or promote it must fail the chain without exposing the credential.

@@ -354,8 +354,9 @@ test('event pagination cursor keeps timestamp and id together', () => {
 
 test('a confirmed draft can publish and enqueue P0 exactly once', () => {
   const persistence = read('market-radar/worker/persistence.mjs')
-  assert.match(persistence, /hasCompleteAiV2Boundaries\(existing\) && score >= 50 && isFreshForPublic/)
-  assert.match(persistence, /published_at = case when \$4::boolean then coalesce\(published_at, now\(\)\)/)
+  assert.match(persistence, /existing\.status !== 'rejected'[\s\S]*hasCompleteAiV2Boundaries\(existing\) && score >= 50 && isFreshForPublic/)
+  assert.match(persistence, /when status = 'rejected' then 'rejected'[\s\S]*when \$4::boolean then 'published'/)
+  assert.match(persistence, /published_at = case[\s\S]*when status = 'rejected' then null[\s\S]*when \$4::boolean then coalesce\(published_at, now\(\)\)/)
   assert.match(persistence, /existing\.priority !== 'P0'/)
   assert.match(persistence, /on conflict \(idempotency_key\) do nothing/)
 })

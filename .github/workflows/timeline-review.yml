@@ -1,0 +1,177 @@
+name: Timeline Review
+
+on:
+  workflow_dispatch:
+    inputs:
+      domain:
+        description: Timeline domain
+        type: choice
+        options: [learning, market]
+        required: true
+      target_id:
+        description: Draft story or event ID
+        type: string
+        required: true
+      decision:
+        description: Review decision
+        type: choice
+        options: [approve, reject]
+        required: true
+      expected_version:
+        description: Exact draft updated_at value (UTC)
+        type: string
+        required: true
+      note:
+        description: Private audit note (optional)
+        type: string
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xiuqiu-timeline-review
+  cancel-in-progress: false
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: timeline-review
+    permissions:
+      actions: read
+      contents: read
+      deployments: read
+    steps:
+      - name: Resolve exact live main and release authorization
+        id: authorize
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REVIEW_DOMAIN: ${{ inputs.domain }}
+          REQUESTED_RELEASE_SHA: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+          release_sha="$REQUESTED_RELEASE_SHA"
+          [[ "$release_sha" =~ ^[0-9a-f]{40}$ ]]
+          remote_main=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')
+          test "$remote_main" = "$release_sha"
+
+          case "$REVIEW_DOMAIN" in
+            learning) marker_environment='learning-radar-production-authorized' ;;
+            market) marker_environment='market-radar-production-authorized' ;;
+            *) echo 'Unsupported timeline review domain' >&2; exit 1 ;;
+          esac
+
+          deployments=$(gh api --method GET "repos/${GITHUB_REPOSITORY}/deployments" \
+            -f sha="$release_sha" -f environment="$marker_environment" -f per_page=100)
+          deployment_id=$(jq -r --arg sha "$release_sha" '
+            [.[] | select(
+              .sha == $sha and
+              .description == "release-controller-authorized" and
+              .payload.controller == "release-controller.yml" and
+              .payload.release_sha == $sha
+            )][0].id // empty
+          ' <<< "$deployments")
+          test -n "$deployment_id"
+          deployment_state=$(gh api \
+            "repos/${GITHUB_REPOSITORY}/deployments/${deployment_id}/statuses" \
+            --jq '.[0].state // empty')
+          test "$deployment_state" = 'success'
+
+          runs=$(gh api --method GET \
+            "repos/${GITHUB_REPOSITORY}/actions/workflows/release-controller.yml/runs" \
+            -f event='workflow_dispatch' -f status='success' -f per_page=100)
+          expected_title="Release controller · release · $release_sha"
+          controller_run=$(jq -r --arg sha "$release_sha" --arg title "$expected_title" '
+            [.workflow_runs[] | select(
+              .conclusion == "success" and
+              .head_sha == $sha and
+              .display_title == $title
+            )][0].id // empty
+          ' <<< "$runs")
+          test -n "$controller_run"
+
+          approvals=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}/approvals")
+          approved_reviewers=$(jq -c '[
+              .[] | select(
+                .state == "approved" and
+                any(.environments[]?; .name == "timeline-review")
+              ) | .user.login | select(type == "string" and length > 0)
+            ] | unique' <<< "$approvals")
+          test "$(jq 'length' <<< "$approved_reviewers")" -eq 1
+          approved_by=$(jq -r '.[0]' <<< "$approved_reviewers")
+          [[ "$approved_by" =~ ^[A-Za-z0-9][A-Za-z0-9-]{0,38}$ ]]
+          test "$approved_by" != "$GITHUB_ACTOR"
+
+          echo "release_sha=$release_sha" >> "$GITHUB_OUTPUT"
+          echo "marker_environment=$marker_environment" >> "$GITHUB_OUTPUT"
+          echo "deployment_id=$deployment_id" >> "$GITHUB_OUTPUT"
+          echo "controller_run=$controller_run" >> "$GITHUB_OUTPUT"
+          echo "approved_by=$approved_by" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout exact authorized main
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.authorize.outputs.release_sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Revalidate exact live main
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_SHA: ${{ steps.authorize.outputs.release_sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
+          remote_main=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')
+          test "$remote_main" = "$RELEASE_SHA"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Apply protected timeline review
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TIMELINE_REVIEW_DATABASE_URL: ${{ secrets.TIMELINE_REVIEW_DATABASE_URL }}
+          REVIEW_DOMAIN: ${{ inputs.domain }}
+          REVIEW_TARGET_ID: ${{ inputs.target_id }}
+          REVIEW_DECISION: ${{ inputs.decision }}
+          REVIEW_NOTE: ${{ inputs.note }}
+          REVIEW_EXPECTED_VERSION: ${{ inputs.expected_version }}
+          REVIEW_APPROVED_BY: ${{ steps.authorize.outputs.approved_by }}
+          RELEASE_SHA: ${{ steps.authorize.outputs.release_sha }}
+          MARKER_ENVIRONMENT: ${{ steps.authorize.outputs.marker_environment }}
+          DEPLOYMENT_ID: ${{ steps.authorize.outputs.deployment_id }}
+          CONTROLLER_RUN: ${{ steps.authorize.outputs.controller_run }}
+        run: |
+          set -euo pipefail
+          revalidate_authorization() {
+            test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
+            remote_main=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')
+            test "$remote_main" = "$RELEASE_SHA"
+            deployment=$(gh api "repos/${GITHUB_REPOSITORY}/deployments/${DEPLOYMENT_ID}")
+            test "$(jq -r '.sha' <<< "$deployment")" = "$RELEASE_SHA"
+            test "$(jq -r '.environment' <<< "$deployment")" = "$MARKER_ENVIRONMENT"
+            test "$(jq -r '.description' <<< "$deployment")" = 'release-controller-authorized'
+            test "$(jq -r '.payload.controller' <<< "$deployment")" = 'release-controller.yml'
+            test "$(jq -r '.payload.release_sha' <<< "$deployment")" = "$RELEASE_SHA"
+            deployment_state=$(gh api \
+              "repos/${GITHUB_REPOSITORY}/deployments/${DEPLOYMENT_ID}/statuses" \
+              --jq '.[0].state // empty')
+            test "$deployment_state" = 'success'
+            controller=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${CONTROLLER_RUN}")
+            test "$(jq -r '.conclusion' <<< "$controller")" = 'success'
+            test "$(jq -r '.head_sha' <<< "$controller")" = "$RELEASE_SHA"
+            test "$(jq -r '.display_title' <<< "$controller")" = "Release controller · release · $RELEASE_SHA"
+          }
+          revalidate_authorization
+          npm run timeline-review
+          revalidate_authorization

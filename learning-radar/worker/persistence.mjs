@@ -188,9 +188,14 @@ export async function persistPreparedLearningItem(client, prepared, { now = new 
     ? { ...prepared.analysis, hasConflict: conflict }
     : null
   const decision = decideLearningPublication({ analysis: publicationAnalysis, sources, now })
-  const shouldPublish = (decision.publish || story.status === 'published') && !conflict
+  const shouldPublish = story.status !== 'rejected'
+    && (decision.publish || story.status === 'published') && !conflict
   await query(client, `update learning_radar.stories set
-      status = case when status = 'published' or $2::boolean then 'published' else status end,
+      status = case
+        when status = 'rejected' then 'rejected'
+        when status = 'published' or $2::boolean then 'published'
+        else status
+      end,
       importance = coalesce($3, importance),
       internal_score = coalesce($4, internal_score),
       title_zh = coalesce($5, title_zh),
@@ -205,7 +210,11 @@ export async function persistPreparedLearningItem(client, prepared, { now = new 
       end,
       has_conflict = has_conflict or $10::boolean,
       conflict_evidence = $12::jsonb,
-      published_at = case when $2::boolean then coalesce(published_at, now()) else published_at end,
+      published_at = case
+        when status = 'rejected' then null
+        when $2::boolean then coalesce(published_at, now())
+        else published_at
+      end,
       occurred_at = least(occurred_at, $11::timestamptz),
       updated_at = now()
     where id = $1`, [
@@ -227,7 +236,8 @@ export async function persistPreparedLearningItem(client, prepared, { now = new 
       ])
   }
   return {
-    storyId: story.id, inserted: raw.inserted, published: decision.publish, basis: decision.basis,
+    storyId: story.id, inserted: raw.inserted,
+    published: decision.publish && story.status !== 'rejected', basis: decision.basis,
     reason: decision.reason, visible: shouldPublish, conflictEvidence,
   }
 }

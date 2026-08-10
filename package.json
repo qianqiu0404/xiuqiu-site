@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "npm run generate:content && vite",
-    "build": "npm run test:release && npm run test:content && npm run test:content-preview && npm run test:radar && npm run test:learning-radar && npm run test:market-radar && npm run test:notifications && npm run generate:content && npm run test:home && npm run test:ai && npm run test:assistant && npm run test:chat && npm run generate:sitemap && npm run check:knowledge && npm run check:public && npm run typecheck:api && vue-tsc && vite build && npm run generate:meta-pages && npm run test:quality && npm run check:budget",
+    "build": "npm run test:release && npm run test:timeline-review && npm run test:content && npm run test:content-preview && npm run test:radar && npm run test:learning-radar && npm run test:market-radar && npm run test:notifications && npm run generate:content && npm run test:home && npm run test:ai && npm run test:assistant && npm run test:chat && npm run generate:sitemap && npm run check:knowledge && npm run check:public && npm run typecheck:api && vue-tsc && vite build && npm run generate:meta-pages && npm run test:quality && npm run check:budget",
     "build:vite": "vue-tsc && vite build",
     "generate:content": "npm run generate:articles && npm run generate:projects && npm run generate:ai && npm run generate:learning && npm run generate:radar && npm run generate:market-radar && npm run generate:radar-weekly && npm run generate:failures && npm run generate:evidence && npm run generate:deliveries && npm run generate:now",
     "generate:articles": "node scripts/generate-articles.mjs",
@@ -28,7 +28,8 @@
     "test:radar": "node --test scripts/radar-pipeline.test.mjs scripts/radar-presentation.test.mjs scripts/researchops-ledger.test.mjs scripts/daily-radar-workflow.test.mjs",
     "test:learning-radar": "node --test scripts/learning-radar-worker.test.mjs",
     "test:market-radar": "node --test scripts/market-radar.test.mjs scripts/market-radar-worker.test.mjs scripts/market-radar-event-contract.test.mjs scripts/dual-timeline-contract.test.mjs scripts/static-market-radar-workflow.test.mjs",
-    "test:radar-db": "RUN_RADAR_DB_TESTS=true node --test --test-name-pattern='real PostgreSQL' scripts/dual-timeline-contract.test.mjs",
+    "test:timeline-review": "node --test scripts/timeline-review.test.mjs",
+    "test:radar-db": "RUN_RADAR_DB_TESTS=true node --test --test-name-pattern='real PostgreSQL' scripts/dual-timeline-contract.test.mjs scripts/timeline-review.test.mjs",
     "test:notifications": "node --test scripts/radar-notifications.test.mjs",
     "test:release": "node --test scripts/release-workflow.test.mjs",
     "test:article-shadow": "node --test scripts/article-catalog-shadow.test.mjs",
@@ -51,6 +52,7 @@
     "market-radar:migrate": "node market-radar/worker/migrate.mjs",
     "market-radar:worker": "node market-radar/worker/run.mjs",
     "learning-radar:worker": "node learning-radar/worker/run.mjs",
+    "timeline-review": "node timeline-review/run.mjs",
     "notifications:enqueue": "node scripts/enqueue-radar-notifications.mjs",
     "preview": "vite preview"
   },

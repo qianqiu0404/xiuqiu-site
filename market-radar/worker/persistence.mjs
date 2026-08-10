@@ -178,11 +178,20 @@ export async function persistMarketItem(client, item, {
       })
       const score = Math.max(Number(existing.score), scored)
       const priority = priorityForScore(score)
-      const publishable = hasCompleteAiV2Boundaries(existing) && score >= 50 && isFreshForPublic(item.publishedAt, now)
+      const publishable = existing.status !== 'rejected'
+        && hasCompleteAiV2Boundaries(existing) && score >= 50 && isFreshForPublic(item.publishedAt, now)
       await upsertAssets(client, existing.id, assets)
       await query(client, `update market_radar.events set score = $2, priority = $3,
-        status = case when $4::boolean then 'published' else status end,
-        published_at = case when $4::boolean then coalesce(published_at, now()) else published_at end,
+        status = case
+          when status = 'rejected' then 'rejected'
+          when $4::boolean then 'published'
+          else status
+        end,
+        published_at = case
+          when status = 'rejected' then null
+          when $4::boolean then coalesce(published_at, now())
+          else published_at
+        end,
         occurred_at = least(occurred_at, $5::timestamptz),
         updated_at = now() where id = $1`, [existing.id, score, priority, publishable, item.publishedAt])
       if (publishable && priority === 'P0' && existing.priority !== 'P0') {
