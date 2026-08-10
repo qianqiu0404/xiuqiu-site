@@ -6,6 +6,22 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/api/learning-radar/summary",
+      "destination": "/api/learning-radar?__learning_route=summary"
+    },
+    {
+      "source": "/api/learning-radar/items",
+      "destination": "/api/learning-radar?__learning_route=items"
+    },
+    {
+      "source": "/api/learning-radar/digests",
+      "destination": "/api/learning-radar?__learning_route=digests"
+    },
+    {
+      "source": "/api/learning-radar/stories/:id",
+      "destination": "/api/learning-radar?__learning_route=story&id=:id"
+    },
+    {
       "source": "/market-radar/events/:id",
       "destination": "/market-radar/index.html"
     },

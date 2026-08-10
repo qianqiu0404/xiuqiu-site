@@ -1,4 +1,4 @@
-import type { MarketRadarRequest, MarketRadarResponse } from '../../lib/market-radar/http.js'
+import type { MarketRadarRequest, MarketRadarResponse } from './http.js'
 
 interface MarketEventsQuery {
   market?: string

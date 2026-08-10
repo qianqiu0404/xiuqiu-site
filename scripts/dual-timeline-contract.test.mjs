@@ -8,7 +8,7 @@ import { spawnSync } from 'node:child_process'
 import test from 'node:test'
 import { Pool as PgPool } from 'pg'
 import { parse } from 'yaml'
-import { createMarketEventsHandler } from '../api/market-radar/events-handler.ts'
+import { createMarketEventsHandler } from '../lib/market-radar/events-handler.ts'
 import { allowMethods, clampInteger, preparePublicResponse, queryValue, sendPublicError } from '../lib/market-radar/http.ts'
 import { withRadarDatabaseLock, RADAR_DATABASE_LOCK_KEY, RadarDatabaseLockTimeoutError } from '../market-radar/worker/advisory-lock.mjs'
 import { applyRadarMigrations, loadRadarMigrations } from '../market-radar/worker/migrations.mjs'
@@ -172,18 +172,19 @@ test('market event validation errors are 400 no-store responses from the real ha
 test('all public API failure paths are no-store and detail reports stay out of list queries', async () => {
   const [marketEvents, marketEventsHandler, marketSummary, marketDigests, marketDetail, marketRepository, learningRepository, learningItems] = await Promise.all([
     read('api/market-radar/events.ts'),
-    read('api/market-radar/events-handler.ts'),
+    read('lib/market-radar/events-handler.ts'),
     read('api/market-radar/summary.ts'),
     read('api/market-radar/digests.ts'),
     read('api/market-radar/events/[id].ts'),
     read('lib/market-radar/repository.ts'),
     read('lib/learning-radar/repository.ts'),
-    read('api/learning-radar/items.ts'),
+    read('lib/learning-radar/http-handlers.ts'),
   ])
   assert.match(marketEvents, /createMarketEventsHandler/)
-  for (const source of [marketEventsHandler, marketSummary, marketDigests, marketDetail, learningItems]) {
+  for (const source of [marketEventsHandler, marketSummary, marketDigests, marketDetail]) {
     assert.match(source, /sendPublicError\(res, (?:400|404|503)/)
   }
+  assert.match(learningItems, /sendError\(res, (?:400|404|503)/)
   const marketList = marketRepository.slice(marketRepository.indexOf('export async function listEvents'), marketRepository.indexOf('export async function getEvent'))
   const learningList = learningRepository.slice(learningRepository.indexOf('export async function listLearningRadarItems'), learningRepository.indexOf('export async function getLearningRadarStory'))
   assert.doesNotMatch(marketList, /public_event_reports|reports:/)

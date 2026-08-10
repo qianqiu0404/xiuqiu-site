@@ -157,7 +157,7 @@ test('learning UI keeps API contracts, abort/cursor safety, native disclosures a
     { source: '/radar/stories/:slug', destination: '/radar/index.html' })
   assert.deepEqual(vercel.headers.find(rule => rule.source === '/radar/stories/:slug')?.headers,
     [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }])
-  assert.doesNotMatch(JSON.stringify(vercel.rewrites), /\/api\/|\/assets\/|\/radar\/:date|\/radar\/week/)
+  assert.doesNotMatch(JSON.stringify(vercel.rewrites), /\/api\/\(\.\*\)|\/assets\/|\/radar\/:date|\/radar\/week/)
   assert.match(css, /min-height: 44px/)
   assert.match(css, /@media \(max-width: 520px\)/)
   assert.match(css, /font-size: clamp\(34px, 11\.2vw, 43px\)/)
