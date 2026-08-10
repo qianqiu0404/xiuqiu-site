@@ -130,6 +130,9 @@ jobs:
                   assert.equal(line.includes(safeTokenFlag), true)
                   assert.equal((line.match(/--token/g) || []).length, 1)
                   assert.doesNotMatch(line, /--token(?:=|\s+)(?!"\$VERCEL_TOKEN"(?:\s|$))/)
+                  if (/\bvercel\s+project\s+inspect\b/.test(line)) {
+                    assert.doesNotMatch(line, /--scope(?:=|\s+)/)
+                  }
                 }
               }
               if (step.run.includes('curl')) {
@@ -139,7 +142,7 @@ jobs:
             }
           }
           assert.match(controllerSource, /vercel whoami --token "\$VERCEL_TOKEN"/)
-          assert.match(controllerSource, /vercel project inspect "\$VERCEL_PROJECT_ID" --scope "\$VERCEL_ORG_ID" --token "\$VERCEL_TOKEN"/)
+          assert.match(controllerSource, /vercel project inspect "\$VERCEL_PROJECT_ID" --token "\$VERCEL_TOKEN"/)
           assert.match(controllerSource, /vercel pull --yes --environment=production --token "\$VERCEL_TOKEN"/)
           assert.match(controllerSource, /vercel build --prod --token "\$VERCEL_TOKEN"/)
           assert.match(controllerSource, /vercel deploy --prebuilt --prod --skip-domain --yes --json --token "\$VERCEL_TOKEN"/)
@@ -258,7 +261,7 @@ jobs:
           test -n "$VERCEL_ORG_ID"
           test -n "$VERCEL_PROJECT_ID"
           vercel whoami --token "$VERCEL_TOKEN" >/dev/null
-          vercel project inspect "$VERCEL_PROJECT_ID" --scope "$VERCEL_ORG_ID" --token "$VERCEL_TOKEN" >/dev/null
+          vercel project inspect "$VERCEL_PROJECT_ID" --token "$VERCEL_TOKEN" >/dev/null
 
       - name: Pull production configuration and build the exact SHA
         env:
