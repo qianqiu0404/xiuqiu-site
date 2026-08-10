@@ -103,7 +103,8 @@ jobs:
           test "$(jq 'length' <<< "$approved_reviewers")" -eq 1
           approved_by=$(jq -r '.[0]' <<< "$approved_reviewers")
           [[ "$approved_by" =~ ^[A-Za-z0-9][A-Za-z0-9-]{0,38}$ ]]
-          test "$approved_by" != "$GITHUB_ACTOR"
+          test "${approved_by,,}" != "${GITHUB_ACTOR,,}"
+          approved_by="${approved_by,,}"
 
           echo "release_sha=$release_sha" >> "$GITHUB_OUTPUT"
           echo "marker_environment=$marker_environment" >> "$GITHUB_OUTPUT"

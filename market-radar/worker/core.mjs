@@ -213,10 +213,31 @@ const boundaryPlaceholders = new Set([
 ])
 const boundaryPlaceholderPattern = /(?:待补充|占位|稍后补充|todo|tbd|placeholder)/i
 
+function decodeBoundaryEntities(value) {
+  let decoded = value
+  for (let pass = 0; pass < 2; pass += 1) {
+    decoded = decoded
+      .replace(/&amp;/gi, '&')
+      .replace(/&(?:nbsp|ensp|emsp|thinsp);/gi, ' ')
+      .replace(/&lt;/gi, '<')
+      .replace(/&gt;/gi, '>')
+      .replace(/&quot;/gi, '"')
+      .replace(/&apos;/gi, "'")
+      .replace(/&#(?:x([0-9a-f]{1,6})|(\d{1,7}));/gi, (entity, hex, decimal) => {
+        const codePoint = Number.parseInt(hex || decimal, hex ? 16 : 10)
+        return Number.isInteger(codePoint) && codePoint > 0 && codePoint <= 0x10ffff
+          && !(codePoint >= 0xd800 && codePoint <= 0xdfff)
+          ? String.fromCodePoint(codePoint) : entity
+      })
+  }
+  return decoded
+}
+
 function validateBoundary(value) {
   if (typeof value !== 'string') return null
   const normalized = value.trim()
-  const meaningful = normalized.replace(/[\p{White_Space}\p{Cf}\p{P}\p{S}]/gu, '').toLowerCase()
+  const meaningful = decodeBoundaryEntities(normalized)
+    .replace(/[^\p{L}\p{N}]/gu, '').toLowerCase()
   if (!meaningful || [...normalized].length > 600
     || boundaryPlaceholders.has(meaningful) || boundaryPlaceholderPattern.test(meaningful)) return null
   return normalized

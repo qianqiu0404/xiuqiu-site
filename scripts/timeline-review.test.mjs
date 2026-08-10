@@ -24,11 +24,12 @@ const read = path => readFile(new URL(path, root), 'utf8')
 const releaseSha = 'a'.repeat(40)
 
 test('timeline review workflow is manual, exact-SHA bound and protected by the real approver', async () => {
-  const [source, runCommand, command, migration, guide] = await Promise.all([
+  const [source, runCommand, command, migration, safetyMigration, guide] = await Promise.all([
     read('.github/workflows/timeline-review.yml'),
     read('timeline-review/run.mjs'),
     read('timeline-review/command.mjs'),
     read('market-radar/migrations/009_timeline_review.sql'),
+    read('market-radar/migrations/010_timeline_review_safety.sql'),
     read('docs/timeline-review.md'),
   ])
   const workflow = parse(source)
@@ -51,7 +52,7 @@ test('timeline review workflow is manual, exact-SHA bound and protected by the r
   assert.match(source, /\.name == "timeline-review"/)
   assert.doesNotMatch(source, /submitted_at/)
   assert.match(source, /approved_by=\$approved_by/)
-  assert.match(source, /test "\$approved_by" != "\$GITHUB_ACTOR"/)
+  assert.match(source, /test "\$\{approved_by,,\}" != "\$\{GITHUB_ACTOR,,\}"/)
   const mutationStep = workflow.jobs.review.steps.find(step => step.name === 'Apply protected timeline review')
   assert.match(mutationStep.run, /revalidate_authorization\s+npm run timeline-review\s+revalidate_authorization/)
   assert.match(source, /release-controller-authorized/)
@@ -65,6 +66,10 @@ test('timeline review workflow is manual, exact-SHA bound and protected by the r
   assert.doesNotMatch(command, /from learning_radar|from market_radar|update learning_radar|update market_radar/i)
   assert.match(migration, /security definer\s+set search_path = pg_catalog/i)
   assert.match(migration, /revoke all on function radar_system\.review_timeline[\s\S]*from public/i)
+  assert.match(safetyMigration, /create table if not exists radar_system\.timeline_review_runs/i)
+  assert.match(safetyMigration, /meaningful_timeline_boundary\(e\.watch_for_zh\)/i)
+  assert.match(safetyMigration, /ss\.published_at >= v_now - interval '30 days'/i)
+  assert.match(safetyMigration, /pg_advisory_xact_lock\(hashtextextended\('timeline-review-run:'/i)
   assert.match(guide, /same Neon database/)
   assert.match(guide, /must have no direct access/)
   assert.doesNotMatch(guide, /postgres(?:ql)?:\/\//i)
@@ -83,6 +88,7 @@ test('timeline review validates identities, versions and private notes before SQ
   assert.throws(() => validateTimelineReviewInput({ ...valid, targetId: "x' or 1=1 --" }), /target ID/i)
   assert.throws(() => validateTimelineReviewInput({ ...valid, approvedBy: '' }), /approving GitHub reviewer/i)
   assert.throws(() => validateTimelineReviewInput({ ...valid, approvedBy: valid.requestedBy }), /must be different users/i)
+  assert.throws(() => validateTimelineReviewInput({ ...valid, requestedBy: 'CaseUser', approvedBy: 'caseuser' }), /must be different users/i)
   assert.throws(() => validateTimelineReviewInput({ ...valid, expectedVersion: 'yesterday' }), /Expected version/i)
   assert.throws(() => validateTimelineReviewInput({ ...valid, releaseSha: releaseSha.toUpperCase() }), /lowercase/i)
 })
@@ -107,6 +113,7 @@ async function openPort() {
 async function insertLearningFixture(database, id, {
   status = 'draft', verified = true, conflict = false, source = true, aiSchema = 'learning-v1',
   publicationBasis = null, sourceUrl = 'https://example.com/source', discoveredVia = 'fixture',
+  sourceHoursAgo = 1,
 } = {}) {
   const updated = (await database.query(`insert into learning_radar.stories
     (id, slug, cluster_key, category, status, importance, internal_score, title_zh, summary_zh,
@@ -124,9 +131,9 @@ async function insertLearningFixture(database, id, {
       (id,provider,provider_id,source_url,source_domain,title,excerpt,published_at,payload,
         origin_verified_at,is_official,discovered_via,verification_state)
       values ($1,'fixture',$1,$3,$4,'Fixture source','Fixture excerpt',
-        now() - interval '1 hour','{}'::jsonb,case when $2 then now() else null end,false,$5,
+        now() - ($6::text || ' hours')::interval,'{}'::jsonb,case when $2 then now() else null end,false,$5,
         case when $2 then 'verified' else 'unverified' end)`, [
-      `${id}-raw`, verified, sourceUrl, sourceDomain, discoveredVia,
+      `${id}-raw`, verified, sourceUrl, sourceDomain, discoveredVia, sourceHoursAgo,
     ])
     await database.query(`insert into learning_radar.story_sources
       (story_id,raw_item_id,source_name,source_url,title,excerpt,published_at,is_primary,
@@ -243,11 +250,14 @@ test('real PostgreSQL protects timeline review transitions, audit privacy and ex
   assert.equal(replayedMigrations.value.skippedFiles, migrations.length)
   database = new PgPool({ connectionString: databaseUrl })
 
-  const reviewMigration = migrations.find(migration => migration.file === '009_timeline_review.sql')
+  const reviewMigration = migrations.find(migration => migration.file === '010_timeline_review_safety.sql')
   assert.ok(reviewMigration)
   assert.equal(reviewMigration.statements.filter(statement => statement.includes('create or replace function radar_system.review_timeline')).length, 1)
   await database.query('create view learning_radar.timeline_review_dependency as select id from learning_radar.public_timeline_items')
+  await database.query('create view market_radar.timeline_review_dependency as select id from market_radar.public_events')
   await database.query('grant select on learning_radar.public_timeline_items to pg_monitor')
+  await database.query('grant select on market_radar.public_events to pg_monitor')
+  await database.query('grant execute on function radar_system.meaningful_timeline_boundary(text) to pg_monitor')
   await database.query(`grant execute on function radar_system.review_timeline(text,text,text,text,text,text,text,timestamptz,text) to pg_monitor`)
   for (let replay = 0; replay < 2; replay += 1) {
     await database.query('begin')
@@ -260,7 +270,11 @@ test('real PostgreSQL protects timeline review transitions, audit privacy and ex
     }
   }
   assert.equal((await database.query('select count(*)::integer as count from learning_radar.timeline_review_dependency')).rows[0].count, 0)
+  assert.equal((await database.query('select count(*)::integer as count from market_radar.timeline_review_dependency')).rows[0].count, 0)
   assert.equal((await database.query(`select has_table_privilege('pg_monitor','learning_radar.public_timeline_items','select') as allowed`)).rows[0].allowed, true)
+  assert.equal((await database.query(`select has_table_privilege('pg_monitor','market_radar.public_events','select') as allowed`)).rows[0].allowed, true)
+  assert.equal((await database.query(`select has_function_privilege('pg_monitor',
+    'radar_system.meaningful_timeline_boundary(text)','execute') as allowed`)).rows[0].allowed, true)
   assert.equal((await database.query(`select has_function_privilege('pg_monitor',
     'radar_system.review_timeline(text,text,text,text,text,text,text,timestamp with time zone,text)','execute') as allowed`)).rows[0].allowed, true)
 
@@ -277,6 +291,17 @@ test('real PostgreSQL protects timeline review transitions, audit privacy and ex
       $1::timestamptz,$2)`, [selfApprovalVersion, releaseSha]), /requester_cannot_approve/)
   assert.equal((await database.query(`select status from learning_radar.stories
     where id = 'learning-self-approve'`)).rows[0].status, 'draft')
+  const caseSelfApprovalVersion = await insertLearningFixture(database, 'learning-case-self-approve')
+  await assert.rejects(executor.query(`select * from radar_system.review_timeline(
+      'learning','learning-case-self-approve','approve',null,'CaseUser','caseuser','998',
+      $1::timestamptz,$2)`, [caseSelfApprovalVersion, releaseSha]), /requester_cannot_approve/)
+  const caseConstraintVersion = await insertLearningFixture(database, 'learning-case-constraint')
+  await assert.rejects(database.query(`insert into learning_radar.review_decisions
+    (id,story_id,decision,actor,requested_by,approved_by,note,workflow_run_id,release_sha,input_hash,
+      expected_version,previous_status,new_status)
+    values ('case-constraint','learning-case-constraint','reject','CaseUser','CaseUser','caseuser',null,
+      '997',$1,repeat('c',64),$2,'draft','rejected')`, [releaseSha, caseConstraintVersion]),
+  /learning_review_identity_check/)
 
   const learningVersion = await insertLearningFixture(database, 'learning-approve', {
     discoveredVia: 'https://aihot.virxact.com/items/discovery-only',
@@ -298,6 +323,8 @@ test('real PostgreSQL protects timeline review transitions, audit privacy and ex
   assert.deepEqual([learningAudit.previous_status, learningAudit.new_status], ['draft', 'published'])
   assert.equal((await database.query(`select count(*)::integer as count from learning_radar.public_timeline_items
     where id = 'learning-approve'`)).rows[0].count, 1)
+  assert.equal(learningAudit.requested_by, learningAudit.requested_by.toLowerCase())
+  assert.equal(learningAudit.approved_by, learningAudit.approved_by.toLowerCase())
   await assert.rejects(executor.query('select payload from learning_radar.raw_items limit 1'), /permission denied/)
   await assert.rejects(executor.query('select note from learning_radar.review_decisions limit 1'), /permission denied/)
 
@@ -319,6 +346,21 @@ test('real PostgreSQL protects timeline review transitions, audit privacy and ex
   })
   await assert.rejects(reviewTimelineTarget(executor,
     reviewInput('learning', 'learning-aihot-only', aihotVersion, '1005')), /unsafe_learning_draft/)
+
+  for (const [id, sourceHoursAgo, run] of [
+    ['learning-source-too-old', 31 * 24, '1007'],
+    ['learning-source-too-future', -2, '1008'],
+  ]) {
+    const version = await insertLearningFixture(database, id, { sourceHoursAgo })
+    await assert.rejects(reviewTimelineTarget(executor, reviewInput('learning', id, version, run)),
+      /unsafe_learning_draft/)
+    assert.deepEqual((await database.query(`select status, published_at from learning_radar.stories
+      where id = $1`, [id])).rows[0], { status: 'draft', published_at: null })
+    assert.equal((await database.query(`select count(*)::integer as count from learning_radar.review_decisions
+      where story_id = $1`, [id])).rows[0].count, 0)
+    assert.equal((await database.query(`select count(*)::integer as count from learning_radar.public_timeline_items
+      where id = $1`, [id])).rows[0].count, 0)
+  }
 
   await insertLearningFixture(database, 'learning-aihot-public', {
     status: 'published', publicationBasis: 'manual_review',
@@ -367,6 +409,26 @@ test('real PostgreSQL protects timeline review transitions, audit privacy and ex
   assert.equal(approvedMarket.newStatus, 'published')
   assert.equal((await database.query(`select count(*)::integer as count from market_radar.public_events
     where id = 'market-approve'`)).rows[0].count, 1)
+
+  for (const [id, boundary, run] of [
+    ['market-boundary-placeholder', '待补充', '2010'],
+    ['market-boundary-punctuation', '。！？--', '2011'],
+    ['market-boundary-arabic-punctuation', '،؛', '2017'],
+    ['market-boundary-emoji', '😀🚀', '2012'],
+    ['market-boundary-zero-width', '\u200b\u200d', '2013'],
+    ['market-boundary-entity', '&#24453;&#34917;&#20805;', '2014'],
+    ['market-boundary-double-entity', '&amp;#24453;&amp;#34917;&amp;#20805;', '2015'],
+    ['market-boundary-too-long', '界'.repeat(601), '2016'],
+  ]) {
+    const version = await insertMarketFixture(database, id, { watch: boundary })
+    await assert.rejects(reviewTimelineTarget(executor, reviewInput('market', id, version, run)),
+      /unsafe_market_draft/)
+    assert.equal((await database.query(`select count(*)::integer as count from market_radar.public_events
+      where id = $1`, [id])).rows[0].count, 0)
+    await insertMarketFixture(database, `${id}-public`, { status: 'published', watch: boundary })
+    assert.equal((await database.query(`select count(*)::integer as count from market_radar.public_events
+      where id = $1`, [`${id}-public`])).rows[0].count, 0)
+  }
   const sixDayVersion = await insertMarketFixture(database, 'market-six-days', { occurredHoursAgo: 144 })
   assert.equal((await reviewTimelineTarget(executor,
     reviewInput('market', 'market-six-days', sixDayVersion, '2008'))).newStatus, 'published')
@@ -388,6 +450,20 @@ test('real PostgreSQL protects timeline review transitions, audit privacy and ex
   const rejectedMarketState = (await database.query(`select status, published_at from market_radar.events
     where id = 'market-reject'`)).rows[0]
   assert.deepEqual(rejectedMarketState, { status: 'rejected', published_at: null })
+
+  const reusedRunLearningVersion = await insertLearningFixture(database, 'learning-global-run')
+  const reusedRunMarketVersion = await insertMarketFixture(database, 'market-global-run')
+  await reviewTimelineTarget(executor,
+    reviewInput('learning', 'learning-global-run', reusedRunLearningVersion, '2099', 'reject'))
+  await assert.rejects(reviewTimelineTarget(executor,
+    reviewInput('market', 'market-global-run', reusedRunMarketVersion, '2099', 'reject')),
+  /workflow_run_reused/)
+  assert.equal((await database.query(`select status from market_radar.events
+    where id = 'market-global-run'`)).rows[0].status, 'draft')
+  assert.equal((await database.query(`select count(*)::integer as count from market_radar.review_decisions
+    where event_id = 'market-global-run'`)).rows[0].count, 0)
+  assert.equal((await database.query(`select count(*)::integer as count from radar_system.timeline_review_runs
+    where workflow_run_id = '2099'`)).rows[0].count, 1)
 
   for (const [id, options, run] of [
     ['market-p3', { priority: 'P3' }, '2003'],
