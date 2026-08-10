@@ -1,5 +1,8 @@
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { chmodSync, mkdirSync, mkdtempSync, readFileSync, utimesSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { execFileSync } from 'node:child_process'
 import test from 'node:test'
 import { parse } from 'yaml'
 import { buildLearningDailyNotification, buildMarketDailyNotification, buildMarketQuantNotification } from './radar-notification-contracts.mjs'
@@ -116,4 +119,56 @@ test('Hermes dispatchers are model-free, one-at-a-time and keep the radar lanes 
   assert.match(marketScript, /market-radar prepare/)
   assert.match(learningScript, /learning-radar prepare/)
   assert.doesNotMatch(`${common}\n${marketScript}\n${learningScript}`, /leaseToken.*print|dispatch_token.*print/i)
+})
+
+test('gateway watchdog cross-notifies once after two failures and once on recovery', () => {
+  const root = mkdtempSync(join(tmpdir(), 'xiuqiu-gateway-watchdog-'))
+  const primaryHome = join(root, '.hermes')
+  const secondaryHome = join(primaryHome, 'profiles', 'radar-secondary')
+  const stateDir = join(primaryHome, 'state')
+  const fakeHermes = join(root, 'fake-hermes.sh')
+  const sentMessages = join(root, 'messages.log')
+  mkdirSync(join(secondaryHome, 'state'), { recursive: true })
+  mkdirSync(stateDir, { recursive: true })
+  writeFileSync(fakeHermes, '#!/bin/bash\nprintf \'%s\\n\' "$*" >> "$WATCHDOG_TEST_MESSAGES"\nprintf \'{"success":true,"message_id":"watchdog-test-receipt"}\\n\'\n')
+  chmodSync(fakeHermes, 0o700)
+  const script = new URL('../ops/hermes/scripts/gateway-peer-watchdog.sh', import.meta.url)
+  const env = {
+    ...process.env,
+    HOME: root,
+    HERMES_HOME: primaryHome,
+    HERMES_BIN: fakeHermes,
+    WATCHDOG_TEST_MESSAGES: sentMessages,
+    GATEWAY_WATCHDOG_PRIMARY_HOME: primaryHome,
+    GATEWAY_WATCHDOG_SECONDARY_HOME: secondaryHome,
+    GATEWAY_WATCHDOG_STATE_DIR: stateDir,
+    GATEWAY_WATCHDOG_NO_JITTER: '1',
+  }
+  execFileSync('bash', [script.pathname], { env })
+  assert.throws(() => readFileSync(sentMessages, 'utf8'), /ENOENT/)
+  execFileSync('bash', [script.pathname], { env })
+  assert.match(readFileSync(sentMessages, 'utf8'), /第二微信 gateway 连续 2 次健康检查失败/)
+
+  writeFileSync(join(secondaryHome, 'gateway_state.json'), JSON.stringify({
+    pid: process.pid,
+    gateway_state: 'running',
+    platforms: { weixin: { state: 'connected' } },
+  }))
+  const heartbeat = join(secondaryHome, 'state', 'gateway.heartbeat')
+  writeFileSync(heartbeat, JSON.stringify({ pid: process.pid }))
+  const now = new Date()
+  utimesSync(heartbeat, now, now)
+  execFileSync('bash', [script.pathname], { env })
+  const messages = readFileSync(sentMessages, 'utf8')
+  assert.equal((messages.match(/Hermes 双微信告警/g) || []).length, 1)
+  assert.equal((messages.match(/Hermes 双微信恢复/g) || []).length, 1)
+  const receipt = JSON.parse(readFileSync(join(stateDir, 'gateway-peer-watchdog-secondary.json'), 'utf8'))
+  assert.equal(receipt.health, 'healthy')
+  assert.equal(receipt.alerted, false)
+  assert.equal(receipt.providerMessageId, 'watchdog-test-receipt')
+  assert.equal(receipt.lastNotificationKind, 'recovery')
+  execFileSync('bash', [script.pathname], { env })
+  const preservedReceipt = JSON.parse(readFileSync(join(stateDir, 'gateway-peer-watchdog-secondary.json'), 'utf8'))
+  assert.equal(preservedReceipt.providerMessageId, 'watchdog-test-receipt')
+  assert.equal(preservedReceipt.lastNotificationKind, 'recovery')
 })
