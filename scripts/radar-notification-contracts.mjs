@@ -64,6 +64,7 @@ export function buildMarketDailyNotification(radar) {
     })
   }
   lines.push('', '【边界】', '- 公开事实与系统观察分开；不接账户、不自动下单。')
+  const quant = radar.quantStrategy ? buildMarketQuantNotification(radar) : null
   return {
     kind: 'daily',
     idempotencyKey: `market:daily:${radar.date}`,
@@ -73,6 +74,55 @@ export function buildMarketDailyNotification(radar) {
       body: lines.join('\n'),
       pageUrl: `/market-radar/${radar.date}`,
       eventCount: radar.events?.length || 0,
+      followUp: quant ? {
+        kind: quant.kind,
+        idempotencyKey: quant.idempotencyKey,
+        ...quant.payload,
+      } : null,
+    },
+  }
+}
+
+export function buildMarketQuantNotification(radar) {
+  const strategy = radar.quantStrategy
+  if (!strategy) throw new Error(`Market radar ${radar.date} has no quantStrategy.`)
+  const bySymbol = new Map(strategy.assets.map(asset => [asset.symbol, asset]))
+  const formatAsset = symbol => {
+    const asset = bySymbol.get(symbol)
+    if (!asset) throw new Error(`Market quant strategy is missing ${symbol}.`)
+    return `• ${symbol}：上涨 ${asset.up}%｜震荡 ${asset.sideways}%｜下跌 ${asset.down}%`
+  }
+  const lines = [
+    `口径：未来 ${strategy.horizonTradingDays} 个交易日，上涨／震荡／下跌情景权重。${strategy.methodology}`,
+    '',
+    '美股 ETF',
+    formatAsset('SPY'),
+    formatAsset('QQQ'),
+    '',
+    '币圈',
+    formatAsset('BTC'),
+    formatAsset('ETH'),
+    '',
+    '黄金 ETF',
+    formatAsset('GLD'),
+    '',
+    `为什么这样分配：${strategy.rationale}`,
+    '',
+    `接下来验证：${strategy.nextValidation}`,
+    '',
+    `失效条件：${strategy.invalidation}`,
+  ]
+  return {
+    kind: 'quant',
+    idempotencyKey: `market:quant:${radar.date}`,
+    payload: {
+      date: radar.date,
+      title: `交易雷达概率简报 · ${radar.date}`,
+      body: lines.join('\n'),
+      pageUrl: `/market-radar/${radar.date}`,
+      sourceUrls: [...strategy.sourceUrls],
+      horizonTradingDays: strategy.horizonTradingDays,
+      probabilityStatus: strategy.status,
     },
   }
 }

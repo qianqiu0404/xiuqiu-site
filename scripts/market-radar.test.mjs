@@ -36,6 +36,27 @@ test('trade calls, malformed sources and duplicate archive events fail closed', 
   assert.throws(() => assertMarketRadarArchive([radar(), radar()]), /Duplicate market event/)
 })
 
+test('quant strategies require five assets, probability sums and source-subset evidence', () => {
+  const sourceUrl = 'https://github.com/example/project/releases/tag/v1.0.0'
+  const strategy = {
+    horizonTradingDays: 3,
+    status: 'heuristic_unbacktested',
+    methodology: '透明启发式，尚未进行历史回测。',
+    assets: [
+      ['SPY', 'us_equity_etf', 34, 41, 25], ['QQQ', 'us_equity_etf', 36, 36, 28],
+      ['BTC', 'crypto', 27, 40, 33], ['ETH', 'crypto', 25, 40, 35], ['GLD', 'gold_etf', 42, 36, 22],
+    ].map(([symbol, group, up, sideways, down]) => ({ symbol, group, up, sideways, down })),
+    rationale: '价格动量与公开事件共同构成情景权重。',
+    nextValidation: '核对公开结果与资产反应。',
+    invalidation: '来源更新或窗口结束后重新计算。',
+    sourceUrls: [sourceUrl],
+  }
+  const current = radar({ date: '2026-08-10', slug: '2026-08-10', quantStrategy: strategy })
+  assert.doesNotThrow(() => validateMarketRadar(current))
+  assert.throws(() => validateMarketRadar({ ...current, quantStrategy: { ...strategy, assets: strategy.assets.map((item, index) => index ? item : { ...item, up: 35 }) } }), /sum to 100/)
+  assert.throws(() => validateMarketRadar({ ...current, quantStrategy: { ...strategy, sourceUrls: ['https://www.federalreserve.gov/unlisted'] } }), /subset/)
+})
+
 test('generated index, recent records and monthly loader remain aligned', async () => {
   assert.deepEqual(marketRadarIndex.map(item => item.slug), allMarketRadars.map(item => item.slug))
   assert.deepEqual(latestMarketRadars, allMarketRadars.slice(0, 7))
@@ -65,6 +86,8 @@ test('the public page is static and contains no runtime API dependency', async (
   assert.match(detail, /hash === '#main-content'/)
   assert.match(detail, /classList\.contains\('trade-radar-detail-event'\)/)
   assert.match(detail, /name: 'market-radar-event'/)
+  assert.match(detail, /entry\.quantStrategy/)
+  assert.match(detail, /未回测情景权重/)
   assert.match(detail, /name: 'market-radar-detail'[\s\S]*hash: `#\$\{event\.id\}`/)
   assert.match(router, /to\.name === 'market-radar-detail'\) return false/)
   assert.match(styles, /--trade-market: #5ad7c7/)

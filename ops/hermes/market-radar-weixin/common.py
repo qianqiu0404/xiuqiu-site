@@ -35,6 +35,7 @@ class RadarSpec:
     default_title: str
     footer: str
     kinds: tuple[str, ...]
+    recipient_aliases: tuple[str, ...]
 
 
 class DeliveryBlocked(RuntimeError):
@@ -55,6 +56,21 @@ def settings() -> tuple[str, str, str, bool]:
     dispatch_token = (os.getenv("RADAR_DISPATCH_TOKEN") or os.getenv("MARKET_RADAR_DISPATCH_TOKEN") or "").strip()
     chat_id = os.getenv("WEIXIN_HOME_CHANNEL", "").strip()
     return base_url, dispatch_token, chat_id, shadow_mode
+
+
+def local_delivery_options() -> tuple[str, float]:
+    config = load_config()
+    secondary_profile = str(cfg_get(
+        config, "plugins", "entries", PLUGIN_NAME, "config", "secondary_profile", default="",
+    )).strip()
+    interval_value = cfg_get(
+        config, "plugins", "entries", PLUGIN_NAME, "config", "delivery_interval_seconds", default=35,
+    )
+    try:
+        interval = float(interval_value)
+    except (TypeError, ValueError):
+        interval = 35.0
+    return secondary_profile, min(300.0, max(35.0, interval))
 
 
 def post(url: str, token: str, payload: dict[str, Any]) -> dict[str, Any]:
@@ -158,11 +174,21 @@ def message(payload: dict[str, Any], page_url: str, spec: RadarSpec, shadow_mode
         title = f"【影子模式测试】{title}"
     body = truncate_body(str(payload.get("body") or payload.get("summary") or "").strip())
     source_url = str(payload.get("sourceUrl") or "").strip()
+    source_urls = payload.get("sourceUrls") or []
+    if not isinstance(source_urls, list):
+        source_urls = []
     lines = [f"# {title}"]
     if body:
         lines.extend(["", body])
     if source_url:
         lines.extend(["", f"原始来源：{source_url}"])
+    safe_sources = []
+    for value in source_urls:
+        parsed = urllib.parse.urlparse(str(value).strip())
+        if parsed.scheme == "https" and parsed.netloc:
+            safe_sources.append(urllib.parse.urlunparse(parsed))
+    if safe_sources:
+        lines.extend(["", "依据来源：", *(f"- {value}" for value in safe_sources[:8])])
     lines.extend(["", f"完整页面：{page_url}", "", spec.footer])
     return "\n".join(lines)
 
@@ -210,8 +236,7 @@ def pending_dir() -> Path:
 def store_pending_delivery(
     spec: RadarSpec,
     item: dict[str, Any],
-    idempotency_key: str,
-    prepared_message: str,
+    deliveries: list[dict[str, str]],
 ) -> str:
     directory = pending_dir()
     directory.mkdir(parents=True, exist_ok=True)
@@ -227,8 +252,7 @@ def store_pending_delivery(
         "radar": spec.name,
         "itemId": str(item["id"]),
         "leaseToken": lease_token(item),
-        "idempotencyKey": idempotency_key,
-        "message": prepared_message,
+        "deliveries": deliveries,
     }
     path = directory / f"{reference}.json"
     with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=directory, delete=False) as handle:
@@ -283,6 +307,8 @@ def lease_token(item: dict[str, Any]) -> str:
 
 def classify_weixin_error(value: Any) -> tuple[str, str]:
     lowered = str(value or "").lower()
+    if "recipient_not_configured" in lowered:
+        return "recipient_not_configured", "Configured Weixin recipient is unavailable."
     if "cooldown" in lowered or "rate" in lowered or "频" in lowered:
         return "weixin_rate_limited", "Weixin adapter reported rate limiting."
     return "weixin_send_failed", "Weixin adapter did not confirm delivery."
@@ -308,7 +334,7 @@ async def prepare(spec: RadarSpec, dry_run: bool) -> int:
         return 0
     claim = await asyncio.to_thread(
         post, f"{base_url}{spec.claim_path}", dispatch_token,
-        {"leaseSeconds": 120, "kinds": list(spec.kinds)},
+        {"leaseSeconds": 300, "kinds": list(spec.kinds)},
     )
     item = claim.get("item")
     if not item:
@@ -316,15 +342,6 @@ async def prepare(spec: RadarSpec, dry_run: bool) -> int:
         return 0
 
     payload = normalized_payload(item, spec)
-    known_message_id = acknowledged_delivery(spec, item, payload)
-    if known_message_id:
-        await asyncio.to_thread(post, f"{base_url}{spec.ack_path}", dispatch_token, {
-            "id": item["id"], "leaseToken": lease_token(item), "success": True,
-            "providerMessageId": known_message_id,
-        })
-        print("[SILENT]")
-        return 0
-
     try:
         page_url = await asyncio.to_thread(check_page, payload, base_url, spec.page_prefix)
     except DeliveryBlocked as exc:
@@ -336,7 +353,30 @@ async def prepare(spec: RadarSpec, dry_run: bool) -> int:
         return 0
 
     key = logical_delivery_key(spec, item, payload)
-    reference = store_pending_delivery(spec, item, key, message(payload, page_url, spec, shadow_mode))
+    deliveries = []
+    for alias in spec.recipient_aliases:
+        delivery_key = key if len(spec.recipient_aliases) == 1 else f"{key}:{alias}"
+        deliveries.append({
+            "recipientAlias": alias,
+            "idempotencyKey": delivery_key,
+            "message": message(payload, page_url, spec, shadow_mode),
+        })
+
+    follow_up = payload.get("followUp")
+    if str(item.get("kind") or "") == "daily" and isinstance(follow_up, dict):
+        follow_key = str(follow_up.get("idempotencyKey") or "").strip()
+        expected_key = f"market:quant:{payload.get('date', '')}"
+        if spec.name != "market-radar" or follow_up.get("kind") != "quant" or follow_key != expected_key:
+            raise RuntimeError("Market quant follow-up failed its idempotency boundary.")
+        follow_page_url = await asyncio.to_thread(check_page, follow_up, base_url, spec.page_prefix)
+        for alias in spec.recipient_aliases:
+            deliveries.append({
+                "recipientAlias": alias,
+                "idempotencyKey": f"{follow_key}:{alias}",
+                "message": message(follow_up, follow_page_url, spec, shadow_mode),
+            })
+
+    reference = store_pending_delivery(spec, item, deliveries)
     envelope = {"version": 1, "mode": "deliver", "deliveryRef": reference}
     print(json.dumps(envelope, ensure_ascii=False, separators=(",", ":")))
     return 0
