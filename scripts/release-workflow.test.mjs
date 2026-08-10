@@ -30,6 +30,9 @@ const assertSafeVercelRun = run => {
     assert.equal(line.includes(safeTokenFlag), true, 'Vercel commands must use the safe shell token flag')
     assert.equal((line.match(/--token/g) || []).length, 1)
     assert.doesNotMatch(line, /--token(?:=|\s+)(?!"\$VERCEL_TOKEN"(?:\s|$))/)
+    if (/\bvercel\s+project\s+inspect\b/.test(line)) {
+      assert.doesNotMatch(line, /--scope(?:=|\s+)/)
+    }
   }
 }
 
@@ -78,7 +81,7 @@ test('release DAG is migration, staged Vercel promotion, worker smoke, then acti
   assert.match(controllerSource, /value\.aliasError == null/)
   assert.match(controllerSource, /vercel promote "\$DEPLOYMENT_URL" --yes --token "\$VERCEL_TOKEN"/)
   assert.match(controllerSource, /vercel whoami --token "\$VERCEL_TOKEN"/)
-  assert.match(controllerSource, /vercel project inspect "\$VERCEL_PROJECT_ID" --scope "\$VERCEL_ORG_ID" --token "\$VERCEL_TOKEN"/)
+  assert.match(controllerSource, /vercel project inspect "\$VERCEL_PROJECT_ID" --token "\$VERCEL_TOKEN"/)
   assert.match(controllerSource, /vercel pull --yes --environment=production --token "\$VERCEL_TOKEN"/)
   assert.match(controllerSource, /vercel build --prod --token "\$VERCEL_TOKEN"/)
   assertSafeProductionVercelCommands()
@@ -117,6 +120,8 @@ test('release token audit rejects missing, literal, expression and log-exposing 
     'set -euxo pipefail\nvercel promote "$DEPLOYMENT_URL" --token "$VERCEL_TOKEN"',
     'echo "$VERCEL_TOKEN"',
     'printf "%s" "$VERCEL_TOKEN"',
+    'vercel project inspect "$VERCEL_PROJECT_ID" --scope "$VERCEL_ORG_ID" --token "$VERCEL_TOKEN"',
+    'vercel project inspect "$VERCEL_PROJECT_ID" --scope team_example --token "$VERCEL_TOKEN"',
   ]
   for (const run of unsafeRuns) assert.throws(() => assertSafeVercelRun(run))
 })
