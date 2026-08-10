@@ -14,8 +14,8 @@ import {
 const args = new Map(process.argv.slice(2).map(value => value.split('=')))
 const mode = args.get('--mode') || 'live'
 const port = Number(args.get('--port') || 4175)
-if (!['live', '503', 'unconfigured', 'degraded'].includes(mode) || !Number.isInteger(port)) {
-  throw new Error('Usage: node scripts/learning-radar-browser-fixture.mjs --mode=live|503|unconfigured|degraded --port=4175')
+if (!['live', '503', 'unconfigured', 'degraded', 'summary-503'].includes(mode) || !Number.isInteger(port)) {
+  throw new Error('Usage: node scripts/learning-radar-browser-fixture.mjs --mode=live|503|unconfigured|degraded|summary-503 --port=4175')
 }
 
 const baseRow = { ...publicLearningTimelineRow, importance: 'key', occurred_at: '2026-08-10T01:00:00.000Z' }
@@ -54,11 +54,14 @@ const server = createHttpServer((req, res) => {
   const url = new URL(req.url || '/', `http://127.0.0.1:${port}`)
   if (!url.pathname.startsWith('/api/learning-radar/')) return vite.middlewares(req, res, () => undefined)
   if (mode === '503') return json(res, 503, { code: 'data_delayed', message: 'Fixture service delayed.' })
+  if (mode === 'summary-503' && url.pathname === '/api/learning-radar/summary') {
+    return json(res, 503, { code: 'summary_delayed', message: 'Fixture summary delayed.' })
+  }
   if (url.pathname === '/api/learning-radar/summary') return json(res, 200, {
     status: mode === 'degraded' ? 'degraded' : mode === 'unconfigured' ? 'unconfigured' : 'healthy',
     generatedAt: '2026-08-11T08:30:00.000Z', latestStoryAt: rows[0].publishedAt,
     freshnessMinutes: mode === 'degraded' ? 180 : 10, isDelayed: mode === 'degraded',
-    todayCount: 1, keyCount: 1, noteworthyCount: 1,
+    todayCount: 0, keyCount: 1, noteworthyCount: 1,
     sources: [{ source: 'fixture', health: mode === 'degraded' ? 'degraded' : 'healthy', lastSuccessAt: rows[0].publishedAt }],
     message: mode === 'degraded' ? 'Fixture source is delayed.' : undefined,
   })
@@ -70,6 +73,9 @@ const server = createHttpServer((req, res) => {
       message: mode === 'degraded' ? 'Fixture source is delayed.' : undefined })
   }
   const storySlug = decodeURIComponent(url.pathname.slice('/api/learning-radar/stories/'.length))
+  if (storySlug === 'slow-story') {
+    return setTimeout(() => json(res, 200, { ...stories[0], slug: storySlug, titleZh: '不应覆写离开后的 SEO' }), 800)
+  }
   const story = stories.find(item => storySlug === item.slug || storySlug === item.id)
   if (story) return json(res, 200, story)
   return json(res, 404, { code: 'story_not_found', message: 'Story not found.' })
@@ -79,9 +85,14 @@ server.listen(port, '127.0.0.1', () => {
   process.stdout.write(`Learning Radar browser fixture (${mode}) listening on http://127.0.0.1:${port}\n`)
 })
 
-async function close() {
-  await vite.close()
-  server.close(() => process.exit(0))
+function close() {
+  server.closeAllConnections?.()
+  server.close()
+  const forceExit = setTimeout(() => process.exit(0), 500)
+  void vite.close().finally(() => {
+    clearTimeout(forceExit)
+    process.exit(0)
+  })
 }
 process.on('SIGINT', close)
 process.on('SIGTERM', close)

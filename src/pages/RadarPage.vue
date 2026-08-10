@@ -5,7 +5,6 @@ import { latestRadars } from '../data/generatedRadars'
 import type { LearningRadarCategory, LearningRadarSummary } from '../learning-radar/contracts'
 import {
   buildStaticTimeline,
-  countOccurredToday,
   groupHistoricalTimeline,
   learningCategoryOptions,
   parseLearningSummary,
@@ -40,7 +39,9 @@ const futureCards = computed(() => partitionedCards.value.future)
 const historicalCards = computed(() => partitionedCards.value.historical)
 const historicalGroups = computed(() => groupHistoricalTimeline(historicalCards.value))
 const featuredCards = computed(() => rankFeaturedTimeline(historicalCards.value))
-const todayCount = computed(() => countOccurredToday(cards.value))
+const heroCount = computed(() => origin.value === 'static' ? staticCards.length
+  : summary.value && summary.value.status !== 'unconfigured' ? summary.value.todayCount : '—')
+const heroCountLabel = computed(() => origin.value === 'static' ? '快照条目' : '今日已发生')
 const updatedAt = computed(() => origin.value === 'api'
   ? summary.value?.latestStoryAt || cards.value[0]?.publishedAt || new Date(0).toISOString()
   : latestRadars[0]?.generatedAt || new Date(0).toISOString())
@@ -61,7 +62,7 @@ function useStaticFallback(message: string) {
 }
 
 async function requestTimeline(cursor?: string, signal?: AbortSignal) {
-  const params = new URLSearchParams({ window: '720', limit: '30' })
+  const params = new URLSearchParams({ window: '168', limit: '30' })
   if (category.value !== 'all') params.set('category', category.value)
   if (cursor) params.set('cursor', cursor)
   const response = await fetch(`/api/learning-radar/items?${params}`, { signal })
@@ -69,6 +70,17 @@ async function requestTimeline(cursor?: string, signal?: AbortSignal) {
   const payload = parseLearningTimelineList(await response.json())
   if (!payload || payload.status === 'unconfigured') throw new Error('timeline-unconfigured')
   return payload
+}
+
+async function requestSummary(signal: AbortSignal): Promise<LearningRadarSummary | null> {
+  try {
+    const response = await fetch('/api/learning-radar/summary', { signal })
+    if (!response.ok || !response.headers.get('content-type')?.includes('application/json')) return null
+    return parseLearningSummary(await response.json())
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') throw error
+    return null
+  }
 }
 
 async function loadTimeline() {
@@ -82,20 +94,20 @@ async function loadTimeline() {
   nextCursor.value = null
   statusMessage.value = ''
   try {
-    const [timeline, summaryResponse] = await Promise.all([
+    const [timeline, summaryPayload] = await Promise.all([
       requestTimeline(undefined, activeRequest.signal),
-      fetch('/api/learning-radar/summary', { signal: activeRequest.signal }),
+      requestSummary(activeRequest.signal),
     ])
     if (version !== requestVersion) return
-    const summaryPayload = summaryResponse.ok && summaryResponse.headers.get('content-type')?.includes('application/json')
-      ? parseLearningSummary(await summaryResponse.json()) : null
     cards.value = timeline.items.map(toTimelineCardViewModel)
     nextCursor.value = timeline.nextCursor
     summary.value = summaryPayload
     origin.value = 'api'
     statusMessage.value = timeline.status === 'degraded'
       ? timeline.message || '学习时间线当前处于延迟状态，内容仍来自已发布数据库记录。'
-      : summaryPayload?.status === 'degraded' ? summaryPayload.message || '来源健康状态延迟。' : ''
+      : summaryPayload?.status === 'degraded' ? summaryPayload.message || '来源健康状态延迟。'
+        : !summaryPayload || summaryPayload.status === 'unconfigured'
+          ? '汇总状态不可用；当前列表仍为数据库已发布记录。' : ''
   } catch (error) {
     if (version !== requestVersion) return
     if (error instanceof DOMException && error.name === 'AbortError') return
@@ -143,11 +155,11 @@ onMounted(() => {
         <div>
           <p class="learn-timeline-kicker">Learn Radar / Source-backed intelligence</p>
           <h1>把每天发生的变化，<span>整理成可追溯的学习时间线。</span></h1>
-          <p class="learn-timeline-lead">只展示已发生、可回到公开来源核对的内容。摘要与入选理由分开，先读重点，再决定是否深入原文。</p>
+          <p class="learn-timeline-lead">已发生内容进入时间线，未来事项另列；每条都可回到公开来源核对。</p>
         </div>
-        <aside class="learn-timeline-status" aria-label="学习雷达更新时间与精选数量">
+        <aside class="learn-timeline-status" aria-label="学习雷达更新时间与条目数量">
           <div><span>更新时间</span><time :datetime="updatedAt">{{ formatUpdatedAt(updatedAt) }} CST</time></div>
-          <div><span>今日精选</span><strong>{{ todayCount }}</strong></div>
+          <div><span>{{ heroCountLabel }}</span><strong>{{ heroCount }}</strong></div>
           <p :class="{ 'is-static': origin === 'static' }">{{ origin === 'api' ? '数据库时间线' : '静态快照' }}</p>
         </aside>
       </div>
@@ -156,8 +168,8 @@ onMounted(() => {
     <section class="learn-featured" aria-labelledby="learn-featured-title">
       <div class="container learn-timeline-shell">
         <header class="learn-section-heading">
-          <div><p class="learn-timeline-kicker">01 / Highest value now</p><h2 id="learn-featured-title">先看今天最值得理解的 3 条。</h2></div>
-          <p>按重要性与发生时间排序，不按热度排序。</p>
+          <div><p class="learn-timeline-kicker">01 / Highest value now</p><h2 id="learn-featured-title">{{ origin === 'api' ? '当前最值得理解的内容。' : '最近的静态学习条目。' }}</h2></div>
+          <p>{{ origin === 'api' ? '按重要性与发生时间排序，不按热度排序。' : '只按发生时间排序，不推断重要性。' }}</p>
         </header>
         <div v-if="loading" class="learn-timeline-state" aria-live="polite" aria-busy="true">正在读取学习情报…</div>
         <div v-else-if="featuredCards.length" class="learn-featured__grid">
@@ -179,7 +191,7 @@ onMounted(() => {
             :class="{ active: category === option.value }" :aria-pressed="category === option.value"
             @click="category = option.value">{{ option.label }}</button>
         </div>
-        <p class="sr-only" aria-live="polite">当前显示 {{ cards.length }} 条学习情报</p>
+        <p class="learn-filter-count" aria-live="polite">当前筛选显示 {{ cards.length }} 条学习情报</p>
         <div v-if="origin === 'static'" class="learn-static-notice" role="status">
           <strong>静态快照</strong>
           <p>{{ statusMessage }} 快照更新时间为 {{ formatUpdatedAt(updatedAt) }} CST，不代表实时状态。</p>

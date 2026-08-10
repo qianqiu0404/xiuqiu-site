@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import type { LearningRadarStory } from '../learning-radar/contracts'
 import { parseLearningStory, toTimelineCardViewModel } from '../learning-radar/timeline-presentation'
@@ -48,16 +48,27 @@ watch(() => String(route.params.slug || ''), async (slug) => {
     }
     if (!response.ok || !response.headers.get('content-type')?.includes('application/json')) throw new Error('story-unavailable')
     const payload = parseLearningStory(await response.json())
-    if (!payload) throw new Error('invalid-story')
+    if (!payload || payload.slug !== slug) throw new Error('invalid-story')
     if (version !== requestVersion) return
     story.value = payload
-    setSeoMeta({ title: `${payload.titleZh}｜学习雷达`, description: payload.summaryZh, path: `/radar/stories/${payload.slug}`, type: 'article' })
+    setSeoMeta({
+      title: `${payload.titleZh}｜学习雷达`,
+      description: payload.summaryZh,
+      path: `/radar/stories/${encodeURIComponent(payload.slug)}`,
+      type: 'article',
+      indexable: false,
+    })
   } catch {
     if (version === requestVersion) unavailable.value = '503'
   } finally {
     if (version === requestVersion) loading.value = false
   }
 }, { immediate: true })
+
+onBeforeUnmount(() => {
+  requestVersion += 1
+  activeRequest?.abort()
+})
 </script>
 
 <template>

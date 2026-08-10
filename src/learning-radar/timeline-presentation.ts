@@ -50,13 +50,29 @@ const categoryLabels: Record<LearningRadarCategory, string> = {
   reading: '研究阅读',
 }
 const importanceLabels: Record<LearningRadarImportance, string> = {
-  key: '今日精选',
+  key: '重点情报',
   noteworthy: '值得关注',
   watch: '持续观察',
 }
 
 function isDate(value: unknown): value is string {
-  return typeof value === 'string' && value.trim() !== '' && Number.isFinite(Date.parse(value))
+  if (typeof value !== 'string') return false
+  const match = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,3})?(Z|([+-])(\d{2}):(\d{2}))$/.exec(value)
+  if (!match) return false
+  const [, yearText, monthText, dayText, hourText, minuteText, secondText, zone, , offsetHourText, offsetMinuteText] = match
+  const year = Number(yearText)
+  const month = Number(monthText)
+  const day = Number(dayText)
+  const hour = Number(hourText)
+  const minute = Number(minuteText)
+  const second = Number(secondText)
+  const offsetHour = Number(offsetHourText || 0)
+  const offsetMinute = Number(offsetMinuteText || 0)
+  const daysInMonth = month >= 1 && month <= 12 ? new Date(Date.UTC(year, month, 0)).getUTCDate() : 0
+  return year >= 2000 && year <= 2100 && day >= 1 && day <= daysInMonth
+    && hour <= 23 && minute <= 59 && second <= 59
+    && (zone === 'Z' || (offsetHour <= 14 && offsetMinute <= 59 && (offsetHour < 14 || offsetMinute === 0)))
+    && Number.isFinite(Date.parse(value))
 }
 
 function isText(value: unknown): value is string {
@@ -67,10 +83,46 @@ function isHttpUrl(value: unknown): value is string {
   if (!isText(value)) return false
   try {
     const url = new URL(value)
-    return url.protocol === 'https:' || url.protocol === 'http:'
+    if ((url.protocol !== 'https:' && url.protocol !== 'http:') || url.username || url.password) return false
+    const hostname = url.hostname.toLowerCase().replace(/^\[|\]$/g, '').replace(/\.$/, '')
+    if (!hostname || (!hostname.includes('.') && !hostname.includes(':'))
+      || hostname === 'localhost' || hostname.endsWith('.localhost')
+      || hostname === 'metadata' || hostname === 'metadata.google.internal'
+      || hostname.endsWith('.internal') || hostname.endsWith('.local')
+      || hostname.endsWith('.localdomain') || hostname.endsWith('.home') || hostname.endsWith('.lan')
+      || hostname.endsWith('.svc') || hostname.endsWith('.onion')
+      || hostname.endsWith('.test') || hostname.endsWith('.invalid') || hostname.endsWith('.example')
+      || /^(?:.+\.)?example\.(?:com|net|org)$/.test(hostname)) return false
+    const ipv4 = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(hostname)
+    if (ipv4) {
+      const octets = ipv4.slice(1).map(Number)
+      if (octets.some(octet => octet > 255)) return false
+      const [a, b, c] = octets
+      if (a === 0 || a === 10 || a === 127 || a >= 224
+        || (a === 100 && b >= 64 && b <= 127)
+        || (a === 169 && b === 254)
+        || (a === 172 && b >= 16 && b <= 31)
+        || (a === 192 && (b === 0 || b === 168 || (b === 88 && c === 99)))
+        || (a === 198 && (b === 18 || b === 19 || (b === 51 && c === 100)))
+        || (a === 203 && b === 0 && c === 113)) return false
+    }
+    if (hostname.includes(':')) {
+      const compact = hostname.replace(/^0+(?=[0-9a-f])/i, '')
+      if (compact === '::' || compact === '::1' || compact.startsWith('fc') || compact.startsWith('fd')
+        || /^fe[89ab]/i.test(compact) || compact.startsWith('fec') || compact.startsWith('fed')
+        || compact.startsWith('fee') || compact.startsWith('fef') || compact.startsWith('ff')
+        || compact.startsWith('2001:db8:') || compact.startsWith('::ffff:')) return false
+    }
+    return true
   } catch {
     return false
   }
+}
+
+function hasValidMessage(value: object): boolean {
+  if (!Object.hasOwn(value, 'message')) return true
+  const message = (value as { message?: unknown }).message
+  return message === null || typeof message === 'string'
 }
 
 export function isLearningTimelineItem(value: unknown): value is LearningRadarTimelineItem {
@@ -82,17 +134,21 @@ export function isLearningTimelineItem(value: unknown): value is LearningRadarTi
     && Object.hasOwn(categoryLabels, String(item.category))
     && Object.hasOwn(importanceLabels, String(item.importance))
     && isDate(item.occurredAt) && isDate(item.publishedAt)
-    && Number.isInteger(item.sourceCount) && item.sourceCount >= 0
-    && (primary === null || Boolean(primary && isText(primary.name)
-      && isHttpUrl(primary.url) && isDate(primary.publishedAt)))
+    && Number.isInteger(item.sourceCount) && item.sourceCount >= 1
+    && Boolean(primary && isText(primary.name)
+      && isHttpUrl(primary.url) && isDate(primary.publishedAt))
 }
 
 export function parseLearningTimelineList(value: unknown): LearningRadarTimelineList | null {
   if (!value || typeof value !== 'object') return null
   const payload = value as Partial<LearningRadarTimelineList>
-  if (!['healthy', 'degraded', 'unconfigured'].includes(String(payload.status))
+  const cursorSeparator = typeof payload.nextCursor === 'string' ? payload.nextCursor.indexOf('|') : -1
+  const ids = Array.isArray(payload.items) ? payload.items.map(item => item?.id) : []
+  if (!['healthy', 'degraded', 'unconfigured'].includes(String(payload.status)) || !hasValidMessage(payload)
     || !Array.isArray(payload.items) || !payload.items.every(isLearningTimelineItem)
+    || new Set(ids).size !== ids.length
     || (payload.nextCursor !== null && (!isText(payload.nextCursor)
+      || cursorSeparator < 1 || !isDate(payload.nextCursor.slice(0, cursorSeparator))
       || !parseLearningRadarCursor(payload.nextCursor)))) return null
   return payload as LearningRadarTimelineList
 }
@@ -100,7 +156,7 @@ export function parseLearningTimelineList(value: unknown): LearningRadarTimeline
 export function parseLearningSummary(value: unknown): LearningRadarSummary | null {
   if (!value || typeof value !== 'object') return null
   const summary = value as Partial<LearningRadarSummary>
-  if (!['healthy', 'degraded', 'unconfigured'].includes(String(summary.status))
+  if (!['healthy', 'degraded', 'unconfigured'].includes(String(summary.status)) || !hasValidMessage(summary)
     || !isDate(summary.generatedAt)
     || (summary.latestStoryAt !== null && !isDate(summary.latestStoryAt))
     || (summary.freshnessMinutes !== null && (!Number.isInteger(summary.freshnessMinutes) || summary.freshnessMinutes < 0))
@@ -108,7 +164,7 @@ export function parseLearningSummary(value: unknown): LearningRadarSummary | nul
     || !Number.isInteger(summary.todayCount) || summary.todayCount < 0
     || !Number.isInteger(summary.keyCount) || summary.keyCount < 0
     || !Number.isInteger(summary.noteworthyCount) || summary.noteworthyCount < 0
-    || !Array.isArray(summary.sources) || !summary.sources.every(source => source && isText(source.source)
+    || !Array.isArray(summary.sources) || !summary.sources.every(source => source && hasValidMessage(source) && isText(source.source)
       && ['healthy', 'degraded', 'unconfigured'].includes(source.health)
       && (source.lastSuccessAt === null || isDate(source.lastSuccessAt)))) return null
   return summary as LearningRadarSummary
@@ -158,7 +214,6 @@ function staticItem(
   radar: DailyRadar,
   item: RadarItem,
   category: LearningRadarCategory,
-  importance: LearningRadarImportance,
   index: number,
 ): TimelineCardViewModel {
   const occurredAt = `${radar.date}T04:00:00+08:00`
@@ -170,8 +225,8 @@ function staticItem(
     whySelected: '静态日报未保存独立入选理由；此条因通过当日公开内容门禁而保留。',
     category,
     categoryLabel: categoryLabels[category],
-    importance,
-    importanceLabel: importanceLabels[importance],
+    importance: 'watch',
+    importanceLabel: '静态快照',
     occurredAt,
     occurredLabel: formatOccurredAt(occurredAt),
     publishedAt: radar.generatedAt,
@@ -186,15 +241,18 @@ function staticItem(
 export function buildStaticTimeline(radars: DailyRadar[]): TimelineCardViewModel[] {
   return radars.flatMap((radar) => {
     const cards: TimelineCardViewModel[] = []
-    if (radar.aiTip) cards.push(staticItem(radar, radar.aiTip, 'ai', 'key', 0))
-    if (radar.web3Design) cards.push(staticItem(radar, radar.web3Design, 'web3_wallet', 'noteworthy', 10))
-    if (radar.vibeProject) cards.push(staticItem(radar, radar.vibeProject, 'engineering_tools', 'noteworthy', 0))
-    if (radar.readingPick) cards.push(staticItem(radar, radar.readingPick, 'reading', 'watch', 0))
+    if (radar.aiTip) cards.push(staticItem(radar, radar.aiTip, 'ai', 0))
+    if (radar.web3Design) cards.push(staticItem(radar, radar.web3Design, 'web3_wallet', 10))
+    if (radar.vibeProject) cards.push(staticItem(radar, radar.vibeProject, 'engineering_tools', 0))
+    if (radar.readingPick) cards.push(staticItem(radar, radar.readingPick, 'reading', 0))
     return cards
   }).sort((a, b) => Date.parse(b.occurredAt) - Date.parse(a.occurredAt))
 }
 
 export function rankFeaturedTimeline(items: TimelineCardViewModel[]): TimelineCardViewModel[] {
+  if (items.every(item => item.isStaticSnapshot)) {
+    return [...items].sort((a, b) => Date.parse(b.occurredAt) - Date.parse(a.occurredAt)).slice(0, 3)
+  }
   const weight: Record<LearningRadarImportance, number> = { key: 3, noteworthy: 2, watch: 1 }
   return [...items].sort((a, b) => weight[b.importance] - weight[a.importance]
     || Date.parse(b.occurredAt) - Date.parse(a.occurredAt)).slice(0, 3)

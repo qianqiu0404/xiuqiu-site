@@ -6,6 +6,7 @@ import {
   buildStaticTimeline,
   countOccurredToday,
   groupHistoricalTimeline,
+  parseLearningSummary,
   parseLearningStory,
   parseLearningTimelineList,
   partitionTimelineByOccurrence,
@@ -46,13 +47,33 @@ test('runtime API validation fails closed for malformed enums, dates, cursors, a
     { ...mapped, category: 'market' },
     { ...mapped, titleZh: '' },
     { ...mapped, occurredAt: 'tomorrow' },
+    { ...mapped, occurredAt: '2026-02-30T01:00:00.000Z' },
     { ...mapped, primarySource: { ...mapped.primarySource, url: 'javascript:alert(1)' } },
+    { ...mapped, primarySource: { ...mapped.primarySource, url: 'http://127.0.0.1/private' } },
+    { ...mapped, primarySource: { ...mapped.primarySource, url: 'http://metadata.google.internal/latest/meta-data' } },
+    { ...mapped, primarySource: { ...mapped.primarySource, url: 'https://example.com/reserved' } },
+    { ...mapped, primarySource: { ...mapped.primarySource, url: 'https://user:pass@www.postgresql.org/docs' } },
+    { ...mapped, sourceCount: 0, primarySource: null },
   ]) assert.equal(parseLearningTimelineList(list(invalid)), null)
   assert.equal(parseLearningTimelineList({ ...list(mapped), nextCursor: 'broken' }), null)
+  assert.equal(parseLearningTimelineList({ ...list(mapped), nextCursor: '2026-02-30T01:00:00.000Z|story' }), null)
   assert.equal(parseLearningTimelineList({ status: 'healthy', items: {}, nextCursor: null }), null)
-  assert.equal(parseLearningStory({ ...mapped, reports: [{ ...publicLearningReportRow, sourceUrl: 'javascript:x' }], updates: [] }), null)
+  assert.equal(parseLearningTimelineList({ ...list(mapped), message: { unsafe: true } }), null)
+  assert.equal(parseLearningTimelineList({ status: 'healthy', items: [mapped, { ...mapped }], nextCursor: null }), null)
+  const report = mapPublicStoryReportRow(publicLearningReportRow)
+  assert.ok(report)
+  assert.equal(parseLearningStory({ ...mapped, reports: [{ ...report, sourceUrl: 'http://[::1]/private' }], updates: [] }), null)
   assert.equal(parseLearningStory({ ...mapped, reports: [], updates: [publicLearningUpdateRow] }), null,
     'database rows must pass through their production camelCase mappers before reaching UI')
+  const validSummary = {
+    status: 'healthy', generatedAt: mapped.publishedAt, latestStoryAt: mapped.publishedAt,
+    freshnessMinutes: 1, isDelayed: false, todayCount: 1, keyCount: 1, noteworthyCount: 0,
+    sources: [{ source: 'fixture', health: 'healthy', lastSuccessAt: mapped.publishedAt }],
+  }
+  assert.ok(parseLearningSummary(validSummary))
+  assert.equal(parseLearningSummary({ ...validSummary, message: { unsafe: true } }), null)
+  assert.equal(parseLearningSummary({ ...validSummary,
+    sources: [{ ...validSummary.sources[0], message: { unsafe: true } }] }), null)
 })
 
 test('committed daily reports make an explicit, separately ranked static fallback', () => {
@@ -65,8 +86,9 @@ test('committed daily reports make an explicit, separately ranked static fallbac
   const marketSignalTitles = new Set(latestRadars.flatMap(radar => radar.marketSignals.map(item => item.title)))
   assert.equal(fallback.length, expectedLearningItemCount, 'market signals must not affect Learn snapshot counts')
   assert.ok(fallback.every(item => !marketSignalTitles.has(item.title)), 'market signal titles must not enter Learn snapshots')
+  assert.ok(fallback.every(item => item.importance === 'watch' && item.importanceLabel === '静态快照'))
   assert.ok(fallback.every(item => item.isStaticSnapshot && item.detailHref.startsWith('/radar/2026-')))
-  assert.equal(rankFeaturedTimeline(fallback).length, 3)
+  assert.deepEqual(rankFeaturedTimeline(fallback).map(item => item.id), fallback.slice(0, 3).map(item => item.id))
 })
 
 test('future items sort ascending, history sorts descending and far-future items never count as today', () => {
@@ -95,6 +117,11 @@ test('learning UI keeps API contracts, abort/cursor safety, native disclosures a
   const css = read('../src/styles/radar-timeline.css')
   const vercel = JSON.parse(read('../vercel.json'))
   assert.match(page, /new AbortController\(\)/)
+  assert.match(page, /window: '168'/)
+  assert.doesNotMatch(page, /window: '720'/)
+  assert.match(page, /summary\.value\.todayCount/)
+  assert.match(page, /汇总状态不可用；当前列表仍为数据库已发布记录/)
+  assert.match(page, /当前最值得理解的内容/)
   assert.match(page, /existingIds/)
   assert.match(page, /nextCursor\.value = timeline\.nextCursor/)
   assert.match(page, /summary\.value\?\.latestStoryAt/)
@@ -120,13 +147,19 @@ test('learning UI keeps API contracts, abort/cursor safety, native disclosures a
   assert.match(detail, /v-if="story\.reports\.length"/)
   assert.match(detail, /暂无可展示的来源报道/)
   assert.match(detail, /indexable: false/)
+  assert.match(detail, /payload\.slug !== slug/)
+  assert.match(detail, /onBeforeUnmount/)
+  assert.match(detail, /requestVersion \+= 1/)
   const storyRoute = router.indexOf("path: '/radar/stories/:slug'")
   const broadRoute = router.indexOf("path: '/radar/:date'")
   assert.ok(storyRoute > 0 && storyRoute < broadRoute)
   assert.deepEqual(vercel.rewrites, [{ source: '/radar/stories/:slug', destination: '/radar/index.html' }])
+  assert.deepEqual(vercel.headers.find(rule => rule.source === '/radar/stories/:slug')?.headers,
+    [{ key: 'X-Robots-Tag', value: 'noindex, nofollow' }])
   assert.doesNotMatch(JSON.stringify(vercel.rewrites), /\/api\/|\/assets\/|\/radar\/:date|\/radar\/week/)
   assert.match(css, /min-height: 44px/)
   assert.match(css, /@media \(max-width: 520px\)/)
+  assert.match(css, /font-size: clamp\(34px, 11\.2vw, 43px\)/)
   assert.match(css, /prefers-reduced-motion: reduce/)
   assert.equal((page.match(/<main\b/g) || []).length, 0)
   assert.equal((detail.match(/<main\b/g) || []).length, 0)

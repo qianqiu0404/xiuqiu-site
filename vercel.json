@@ -12,6 +12,15 @@
   ],
   "headers": [
     {
+      "source": "/radar/stories/:slug",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    },
+    {
       "source": "/content-catalog-preview",
       "headers": [
         {
