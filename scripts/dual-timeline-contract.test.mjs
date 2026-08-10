@@ -22,6 +22,8 @@ import { parseLearningRadarCursor } from '../src/learning-radar/contracts.ts'
 import { parseEventCursor } from '../src/market-radar/contracts.ts'
 import { normalizeLearningItem } from '../learning-radar/worker/core.mjs'
 import { persistLearningSourceBatch } from '../learning-radar/worker/persistence.mjs'
+import { persistMarketItem } from '../market-radar/worker/persistence.mjs'
+import { cleanupRetention as cleanupMarketRetention } from '../market-radar/worker/maintenance.mjs'
 import { generateLearningDailyDigest } from '../learning-radar/worker/digests.mjs'
 import { cleanupLearningRetention } from '../learning-radar/worker/maintenance.mjs'
 import { publicEventReportRow, publicEventRowV2 } from './fixtures/market-radar-public-event-row.mjs'
@@ -110,6 +112,8 @@ test('public mappers allowlist safe timeline fields and split list from detail r
   assert.equal(Object.hasOwn(marketEvent, 'score'), false)
   assert.equal(Object.hasOwn(marketEvent, 'reports'), false)
   assert.equal(mapPublicEventReportRow(publicEventReportRow)?.isPrimary, true)
+  assert.equal(mapPublicEventReportRow({ ...publicEventReportRow, title: null })?.title, null)
+  assert.equal(mapPublicEventReportRow({ ...publicEventReportRow, source_url: null }), null)
 
   const timelineItem = mapPublicTimelineItemRow({
     ...publicLearningTimelineRow,
@@ -285,11 +289,38 @@ test('real PostgreSQL applies migrations twice, rolls back failures and enforces
     throw error
   }
 
+  await observer.query(`insert into market_radar.events
+    (id, slug, cluster_key, market, status, priority, score, title_zh, summary_zh, why_it_matters_zh,
+      event_type, news_direction, system_judgment, horizon, ai_schema_version, occurred_at, published_at,
+      watch_for_zh, invalidation_zh)
+    values ('legacy-source-event', 'legacy-source-event', 'legacy-source-event', 'macro', 'published', 'P1', 75,
+      '历史报道字段回填', '公开摘要', '回填来源证据', 'policy', 'neutral', '等待验证', 'days', 'v2', now(), now(),
+      '观察公开证据', '若证据撤回则失效')`)
+  await observer.query(`insert into market_radar.raw_items
+    (id, provider, provider_id, market, source_url, title, published_at, payload)
+    values ('legacy-source-raw', 'federal_reserve', 'legacy-source-raw', 'macro',
+      'https://www.federalreserve.gov/legacy-source', 'Historical Federal Reserve report',
+      now() - interval '2 hours', '{"private":"raw"}'::jsonb)`)
+  await observer.query(`insert into market_radar.event_sources
+    (event_id, raw_item_id, source_name, source_url, title, excerpt, published_at, is_primary)
+    values ('legacy-source-event', 'legacy-source-raw', 'federal_reserve',
+      'https://www.federalreserve.gov/legacy-source', null, null, null, false)`)
+
   const pipeline = await withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => (
     applyRadarMigrations((statement, values) => client.query(statement, values), pipelineMigrations)
   ))
   assert.equal(pipeline.value.appliedFiles, pipelineMigrations.length)
   assert.equal(pipeline.value.skippedFiles, 0)
+
+  const legacySource = await observer.query(`select title, excerpt, published_at, is_primary
+    from market_radar.event_sources where event_id = 'legacy-source-event'`)
+  assert.equal(legacySource.rows[0].title, 'Historical Federal Reserve report')
+  assert.equal(legacySource.rows[0].excerpt, null)
+  assert.ok(legacySource.rows[0].published_at instanceof Date)
+  assert.equal(legacySource.rows[0].is_primary, true)
+  const legacyPublic = await observer.query(`select id from market_radar.public_events
+    where id = 'legacy-source-event'`)
+  assert.equal(legacyPublic.rowCount, 1)
 
   const second = await withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => (
     applyRadarMigrations((statement, values) => client.query(statement, values), migrations)
@@ -318,11 +349,190 @@ test('real PostgreSQL applies migrations twice, rolls back failures and enforces
     values ('score-private', 'score-private', 'score-private', 'crypto', 'published', 'P1', 98,
       '内部评分不公开', '公开摘要', '公开原因', 'test', 'neutral', '等待验证', 'days', 'v2', now(), now(),
       '观察公开证据', '若公开证据撤回则失效')`)
+  await observer.query(`insert into market_radar.raw_items
+    (id, provider, provider_id, market, source_url, title, published_at, payload)
+    values ('score-private-raw', 'github_releases', 'score-private-raw', 'crypto',
+      'https://github.com/bitcoin/bitcoin/releases/tag/score-private', 'Score privacy source', now(),
+      '{"score":98,"private":true}'::jsonb)`)
+  await observer.query(`insert into market_radar.event_sources
+    (event_id, raw_item_id, source_name, source_url, title, published_at, is_primary)
+    values ('score-private', 'score-private-raw', 'github_releases',
+      'https://github.com/bitcoin/bitcoin/releases/tag/score-private', 'Score privacy source', now(), true)`)
   const publicMarketEvent = await observer.query("select * from market_radar.public_events where id = 'score-private'")
   assert.equal(publicMarketEvent.rows[0].score, null)
   const mappedMarketEvent = mapPublicEventRow(publicMarketEvent.rows[0])
   assert.equal(Object.hasOwn(mappedMarketEvent, 'score'), false)
   assert.doesNotMatch(JSON.stringify(mappedMarketEvent), /"score"/)
+
+  await observer.query(`insert into market_radar.events
+    (id, slug, cluster_key, market, status, priority, score, title_zh, summary_zh, why_it_matters_zh,
+      event_type, news_direction, system_judgment, horizon, ai_schema_version, occurred_at, published_at,
+      watch_for_zh, invalidation_zh)
+    values ('zero-source-event', 'zero-source-event', 'zero-source-event', 'crypto', 'published', 'P1', 90,
+      '零来源事件', '不应公开', '没有来源证据', 'test', 'neutral', '等待验证', 'days', 'v2', now(), now(),
+      '观察公开证据', '若无公开证据则失效')`)
+  const hiddenZeroSource = await observer.query(`select id from market_radar.public_events
+    where id = 'zero-source-event'`)
+  assert.equal(hiddenZeroSource.rowCount, 0)
+
+  const marketNow = new Date()
+  const midnight = Date.UTC(marketNow.getUTCFullYear(), marketNow.getUTCMonth(), marketNow.getUTCDate())
+  const firstAt = new Date(midnight - 30_000).toISOString()
+  const secondAt = new Date(midnight + 30_000).toISOString()
+  const marketSummary = {
+    titleZh: 'BTC 协议升级获得公开来源确认',
+    summaryZh: '公开来源报道了协议升级。',
+    whyItMattersZh: '协议变化可能影响节点运行。',
+    eventType: 'protocol_upgrade', direction: 'neutral', horizon: 'days',
+    systemJudgment: '等待节点运行反馈。',
+    watchFor: '观察官方版本与节点运行反馈。',
+    invalidation: '若官方撤回升级说明则当前判断失效。',
+  }
+  const firstMarketItem = {
+    provider: 'qiu_market', providerId: 'cross-midnight-qiu', market: 'crypto',
+    sourceUrl: 'https://qiu-market.example/reports/protocol-upgrade',
+    title: 'BTC protocol upgrade announced', summary: 'A public report describes the protocol upgrade.',
+    sourceReport: {
+      title: 'Qiu Market protocol report', excerpt: 'Original public report text.', publishedAt: firstAt,
+    },
+    publishedAt: firstAt, explicitSymbols: ['BTC'], payload: { revision: 1, private: 'raw-only' },
+  }
+  const secondMarketItem = {
+    ...firstMarketItem,
+    provider: 'github_releases', providerId: 'cross-midnight-github',
+    sourceUrl: 'https://github.com/bitcoin/bitcoin/releases/tag/t3-fixture',
+    sourceReport: {
+      title: 'Bitcoin Core official release', excerpt: 'Official public release notes.', publishedAt: secondAt,
+    },
+    publishedAt: secondAt, payload: { revision: 1, provider: 'github' },
+  }
+  const marketClient = await observer.connect()
+  try {
+    const firstResult = await persistMarketItem(marketClient, firstMarketItem, { summary: marketSummary, now: marketNow })
+    const secondResult = await persistMarketItem(marketClient, secondMarketItem, { summary: marketSummary, now: marketNow })
+    assert.equal(firstResult.inserted, true)
+    assert.equal(secondResult.inserted, true)
+    assert.equal(secondResult.eventId, firstResult.eventId)
+    assert.equal(secondResult.sourceAdded, true)
+
+    const revisedFirstItem = {
+      ...firstMarketItem,
+      sourceUrl: 'https://qiu-market.example/reports/protocol-upgrade-corrected',
+      title: 'BTC protocol upgrade announced with corrected details',
+      summary: 'The original public report corrected its details.',
+      sourceReport: {
+        title: 'Qiu Market protocol report corrected',
+        excerpt: 'Corrected original public report text.',
+        publishedAt: new Date(Date.parse(secondAt) + 10 * 60_000).toISOString(),
+      },
+      publishedAt: new Date(Date.parse(secondAt) + 10 * 60_000).toISOString(),
+      payload: { revision: 2, details: { alpha: 1, beta: 2 } },
+    }
+    const revision = await persistMarketItem(marketClient, revisedFirstItem, { now: marketNow })
+    const replay = await persistMarketItem(marketClient, revisedFirstItem, { now: marketNow })
+    assert.equal(revision.inserted, false)
+    assert.equal(revision.revised, true)
+    assert.equal(revision.eventId, firstResult.eventId)
+    assert.equal(replay.inserted, false)
+    assert.equal(replay.revised, false)
+    assert.equal(replay.sourceAdded, false)
+
+    const missingReportItem = {
+      ...firstMarketItem,
+      provider: 'qiu_market', providerId: 'missing-report-fields',
+      sourceUrl: 'https://qiu-market.example/reports/protocol-upgrade-follow-up',
+      sourceReport: {}, publishedAt: new Date(Date.parse(secondAt) + 20 * 60_000).toISOString(),
+      payload: { missingReport: true },
+    }
+    const missing = await persistMarketItem(marketClient, missingReportItem, { now: marketNow })
+    assert.equal(missing.eventId, firstResult.eventId)
+
+    const reports = await observer.query(`select source_name, source_url, title, excerpt, published_at, is_primary
+      from market_radar.public_event_reports where event_id = $1
+      order by published_at desc nulls last, id desc`, [firstResult.eventId])
+    assert.equal(reports.rowCount, 3)
+    assert.equal(reports.rows[0].title, 'Qiu Market protocol report corrected')
+    assert.equal(reports.rows[0].source_url, revisedFirstItem.sourceUrl)
+    assert.equal(reports.rows[1].title, 'Bitcoin Core official release')
+    assert.deepEqual(
+      reports.rows.filter(report => report.is_primary).map(report => report.source_name),
+      ['github_releases'],
+    )
+    assert.equal(reports.rows[2].title, null)
+    assert.equal(reports.rows[2].excerpt, null)
+    assert.equal(reports.rows[2].published_at, null)
+
+    const sourceEvidence = await observer.query(`select count(*)::integer as sources,
+        count(*) filter (where is_primary)::integer as primaries
+      from market_radar.event_sources where event_id = $1`, [firstResult.eventId])
+    assert.deepEqual(sourceEvidence.rows[0], { sources: 3, primaries: 1 })
+    const storedRaw = await observer.query(`select title, payload from market_radar.raw_items
+      where provider = 'qiu_market' and provider_id = 'cross-midnight-qiu'`)
+    assert.equal(storedRaw.rows[0].title, revisedFirstItem.title)
+    assert.deepEqual(storedRaw.rows[0].payload, { details: { alpha: 1, beta: 2 }, revision: 2 })
+    const storedEvent = await observer.query(`select occurred_at, status from market_radar.events
+      where id = $1`, [firstResult.eventId])
+    assert.equal(storedEvent.rows[0].occurred_at.toISOString(), firstAt)
+    assert.equal(storedEvent.rows[0].status, 'published')
+
+    const marketSql = { query: async (statement, values = []) => (await marketClient.query(statement, values)).rows }
+    await marketClient.query(`update market_radar.raw_items set payload_expires_at = now() - interval '1 minute'
+      where provider = 'qiu_market' and provider_id = 'cross-midnight-qiu'`)
+    await cleanupMarketRetention(marketSql)
+    const purgedMarketRaw = await marketClient.query(`select payload, payload_purged_at
+      from market_radar.raw_items where provider = 'qiu_market' and provider_id = 'cross-midnight-qiu'`)
+    assert.deepEqual(purgedMarketRaw.rows[0].payload, { retained: false })
+    assert.ok(purgedMarketRaw.rows[0].payload_purged_at instanceof Date)
+
+    const semanticReplay = {
+      ...revisedFirstItem,
+      payload: { details: { beta: 2, alpha: 1 }, revision: 2 },
+    }
+    const replayAfterPurge = await persistMarketItem(marketClient, semanticReplay, { now: marketNow })
+    assert.equal(replayAfterPurge.revised, false)
+    const stillPurged = await marketClient.query(`select payload, payload_purged_at
+      from market_radar.raw_items where provider = 'qiu_market' and provider_id = 'cross-midnight-qiu'`)
+    assert.deepEqual(stillPurged.rows[0].payload, { retained: false })
+    assert.ok(stillPurged.rows[0].payload_purged_at instanceof Date)
+
+    const truePayloadRevision = {
+      ...semanticReplay,
+      payload: { details: { alpha: 1, beta: 3 }, revision: 3 },
+    }
+    const restoredRevision = await persistMarketItem(marketClient, truePayloadRevision, { now: marketNow })
+    assert.equal(restoredRevision.revised, true)
+    const restoredRaw = await marketClient.query(`select payload, payload_purged_at, payload_expires_at
+      from market_radar.raw_items where provider = 'qiu_market' and provider_id = 'cross-midnight-qiu'`)
+    assert.deepEqual(restoredRaw.rows[0].payload, { details: { alpha: 1, beta: 3 }, revision: 3 })
+    assert.equal(restoredRaw.rows[0].payload_purged_at, null)
+    assert.ok(restoredRaw.rows[0].payload_expires_at.getTime() > Date.now() + 13 * 24 * 60 * 60_000)
+
+    await marketClient.query(`update market_radar.raw_items set payload_expires_at = now() - interval '1 minute'
+      where provider = 'qiu_market' and provider_id = 'cross-midnight-qiu'`)
+    await cleanupMarketRetention(marketSql)
+    const repurgedRaw = await marketClient.query(`select payload from market_radar.raw_items
+      where provider = 'qiu_market' and provider_id = 'cross-midnight-qiu'`)
+    assert.deepEqual(repurgedRaw.rows[0].payload, { retained: false })
+    const retainedMarketStructure = await marketClient.query(`select count(*)::integer as reports
+      from market_radar.event_sources where event_id = $1`, [firstResult.eventId])
+    assert.equal(retainedMarketStructure.rows[0].reports, 3)
+
+    await assert.rejects(persistMarketItem(marketClient, {
+      ...firstMarketItem, providerId: 'transaction-rollback', market: 'invalid_market',
+    }, { summary: marketSummary, now: marketNow }), /raw_items_market_check/)
+    const rolledBackRaw = await observer.query(`select id from market_radar.raw_items
+      where provider = 'qiu_market' and provider_id = 'transaction-rollback'`)
+    assert.equal(rolledBackRaw.rowCount, 0)
+  } finally {
+    marketClient.release()
+  }
+
+  const marketPublicColumns = await observer.query(`select table_name, column_name
+    from information_schema.columns
+    where table_schema = 'market_radar' and table_name in ('public_events', 'public_event_reports')`)
+  for (const forbidden of ['payload', 'prompt', 'private_note', 'ai_schema_version', 'cluster_key']) {
+    assert.equal(marketPublicColumns.rows.some(row => row.column_name === forbidden), false)
+  }
 
   await observer.query(`insert into learning_radar.stories
     (id, slug, cluster_key, category, status, importance, internal_score, title_zh, summary_zh,
@@ -366,7 +576,8 @@ test('real PostgreSQL applies migrations twice, rolls back failures and enforces
     sourceUrl: 'https://github.com/openai/openai-node/releases/tag/db-fixture',
     publishedAt: new Date(pipelineNow.getTime() - 60_000).toISOString(),
     isOfficial: true, discoveredVia: 'openai_node_releases', sourceName: 'OpenAI SDK Releases',
-    originVerifiedAt: pipelineNow.toISOString(), verificationState: 'verified', rawPayload: { fixture: true },
+    originVerifiedAt: pipelineNow.toISOString(), verificationState: 'verified',
+    rawPayload: { fixture: true, metadata: { alpha: 1, beta: 2 } },
   }, { now: pipelineNow })
   const pipelineAnalysis = {
     titleZh: 'OpenAI Node SDK 数据库验证版本', summaryZh: '官方来源已验证的测试摘要。',
@@ -512,6 +723,53 @@ test('real PostgreSQL applies migrations twice, rolls back failures and enforces
     where r.provider = $1 group by r.id`, [pipelineItem.provider])
   assert.deepEqual(retainedEvidence.rows[0].payload, { retained: false })
   assert.equal(retainedEvidence.rows[0].source_count, 1)
+
+  const semanticLearningReplay = normalizeLearningItem({
+    ...correctedItem,
+    rawPayload: { metadata: { beta: 2, alpha: 1 }, fixture: true },
+  }, { now: pipelineNow })
+  const learningReplayRun = await withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => (
+    persistLearningSourceBatch(client, {
+      source: semanticLearningReplay.provider, groupKey: semanticLearningReplay.category,
+      slot: 'db-slot-retention-replay',
+      preparedItems: [{ item: semanticLearningReplay, analysis: pipelineAnalysis }], now: pipelineNow,
+    })
+  ))
+  assert.equal(learningReplayRun.value.failed, undefined)
+  const stillPurgedLearning = await observer.query(`select payload, payload_purged_at
+    from learning_radar.raw_items where provider = $1 and provider_id = $2`, [pipelineItem.provider, pipelineItem.providerId])
+  assert.deepEqual(stillPurgedLearning.rows[0].payload, { retained: false })
+  assert.ok(stillPurgedLearning.rows[0].payload_purged_at instanceof Date)
+
+  const trueLearningRevision = normalizeLearningItem({
+    ...correctedItem,
+    rawPayload: { fixture: true, metadata: { alpha: 1, beta: 3 }, revision: 2 },
+  }, { now: pipelineNow })
+  const learningRevisionRun = await withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => (
+    persistLearningSourceBatch(client, {
+      source: trueLearningRevision.provider, groupKey: trueLearningRevision.category,
+      slot: 'db-slot-retention-revision',
+      preparedItems: [{ item: trueLearningRevision, analysis: pipelineAnalysis }], now: pipelineNow,
+    })
+  ))
+  assert.equal(learningRevisionRun.value.failed, undefined)
+  const restoredLearningRaw = await observer.query(`select payload, payload_purged_at, payload_expires_at
+    from learning_radar.raw_items where provider = $1 and provider_id = $2`, [pipelineItem.provider, pipelineItem.providerId])
+  assert.deepEqual(restoredLearningRaw.rows[0].payload, {
+    fixture: true, metadata: { alpha: 1, beta: 3 }, revision: 2,
+  })
+  assert.equal(restoredLearningRaw.rows[0].payload_purged_at, null)
+  assert.ok(restoredLearningRaw.rows[0].payload_expires_at.getTime() > Date.now() + 13 * 24 * 60 * 60_000)
+
+  await observer.query(`update learning_radar.raw_items set payload_expires_at = now() - interval '1 minute'
+    where provider = $1 and provider_id = $2`, [pipelineItem.provider, pipelineItem.providerId])
+  await withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => cleanupLearningRetention(client))
+  const repurgedLearning = await observer.query(`select payload from learning_radar.raw_items
+    where provider = $1 and provider_id = $2`, [pipelineItem.provider, pipelineItem.providerId])
+  assert.deepEqual(repurgedLearning.rows[0].payload, { retained: false })
+  const retainedLearningStructure = await observer.query(`select count(*)::integer as sources
+    from learning_radar.story_sources where story_id = $1`, [publishedPipelineStory.rows[0].id])
+  assert.equal(retainedLearningStructure.rows[0].sources, 1)
 
   const firstDigest = await withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => (
     generateLearningDailyDigest(client, pipelineNow)

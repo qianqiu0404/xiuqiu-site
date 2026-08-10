@@ -66,7 +66,7 @@ export interface MarketRadarReport {
   id: string
   sourceName: string
   sourceUrl: string
-  title: string
+  title: string | null
   excerpt: string | null
   publishedAt: string | null
   isPrimary: boolean

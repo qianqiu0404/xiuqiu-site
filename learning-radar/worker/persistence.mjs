@@ -62,22 +62,37 @@ async function findStory(client, item, rawId) {
 }
 
 async function upsertRawItem(client, item) {
-  const previous = await query(client, `select id, title from learning_radar.raw_items
-    where provider = $1 and provider_id = $2`, [item.provider, item.providerId])
+  const payloadJson = JSON.stringify(item.rawPayload)
+  const previous = await query(client, `select id, title,
+      source_url is distinct from $3
+        or title is distinct from $4
+        or excerpt is distinct from $5
+        or published_at is distinct from $6::timestamptz
+        or case
+          when payload_fingerprint is not null then payload_fingerprint is distinct from md5(($7::jsonb)::text)
+          when payload_purged_at is null then md5(payload::text) is distinct from md5(($7::jsonb)::text)
+          else false
+        end as content_changed
+    from learning_radar.raw_items
+    where provider = $1 and provider_id = $2
+    for update`, [
+      item.provider, item.providerId, item.sourceUrl, item.title, item.excerpt, item.publishedAt, payloadJson,
+    ])
   const id = previous[0]?.id || crypto.randomUUID()
   const result = await query(client, `insert into learning_radar.raw_items
     (id, provider, provider_id, source_url, source_domain, title, excerpt, published_at, payload,
-      normalized_at, origin_verified_at, is_official, discovered_via, verification_state, verification_error)
-    values ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,now(),$10,$11,$12,$13,$14)
+      payload_fingerprint, normalized_at, origin_verified_at, is_official, discovered_via, verification_state, verification_error)
+    values ($1,$2,$3,$4,$5,$6,$7,$8,$9::jsonb,md5(($9::jsonb)::text),now(),$10,$11,$12,$13,$14)
     on conflict (provider, provider_id) do update set
       source_url = excluded.source_url,
       source_domain = excluded.source_domain,
       title = excluded.title,
       excerpt = excluded.excerpt,
       published_at = excluded.published_at,
-      payload = excluded.payload,
-      payload_expires_at = now() + interval '14 days',
-      payload_purged_at = null,
+      payload = case when $15::boolean then excluded.payload else learning_radar.raw_items.payload end,
+      payload_fingerprint = case when $15::boolean then excluded.payload_fingerprint else learning_radar.raw_items.payload_fingerprint end,
+      payload_expires_at = case when $15::boolean then now() + interval '14 days' else learning_radar.raw_items.payload_expires_at end,
+      payload_purged_at = case when $15::boolean then null else learning_radar.raw_items.payload_purged_at end,
       normalized_at = now(),
       origin_verified_at = excluded.origin_verified_at,
       is_official = excluded.is_official,
@@ -86,8 +101,8 @@ async function upsertRawItem(client, item) {
       verification_error = excluded.verification_error
     returning id`, [
       id, item.provider, item.providerId, item.sourceUrl, item.sourceDomain, item.title, item.excerpt,
-      item.publishedAt, JSON.stringify(item.rawPayload), item.originVerifiedAt, item.isOfficial,
-      item.discoveredVia, item.verificationState, item.verificationError,
+      item.publishedAt, payloadJson, item.originVerifiedAt, item.isOfficial,
+      item.discoveredVia, item.verificationState, item.verificationError, previous[0]?.content_changed === true,
     ])
   return {
     id: result[0].id,

@@ -2,12 +2,15 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import {
-  calculateExcess, calculateReturn, clusterKey, mapAssets, nearestPrice, normalizeUrl,
+  calculateExcess, calculateReturn, clusterKey, encodeMarketSourceCursor, mapAssets, nearestPrice,
+  newestMarketSourceCursor, normalizeMarketSourceReport, normalizeUrl, parseMarketSourceCursor,
+  selectMarketItemsAfterCursor,
   hasCompleteAiV2Boundaries, isFreshForPublic, priorityForScore, scoreEvent, titleSimilarity, validateAiSummary,
 } from '../market-radar/worker/core.mjs'
 import { buildDigestBody, summarizeAttentionAssets } from '../market-radar/worker/digests.mjs'
 import { isUsPremarketWindow, newYorkParts } from '../market-radar/worker/market-calendar.mjs'
 import { parseBinanceKlines, parseGitHubReleasePayload, parseRss, parseSecCompanyFeed } from '../market-radar/worker/providers.mjs'
+import { collectMarketSourceOutsideLock, persistCollectedWithLock, withMarketWorkerLease } from '../market-radar/worker/orchestration.mjs'
 import { parseEventCursor } from '../src/market-radar/contracts.ts'
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8')
@@ -147,6 +150,23 @@ test('official RSS normalization rejects incomplete entries', () => {
   </channel></rss>`, 'federal_reserve')
   assert.equal(items.length, 1)
   assert.equal(items[0].market, 'macro')
+  assert.equal(items[0].sourceReport.title, 'Federal Reserve statement')
+  assert.equal(items[0].sourceReport.excerpt, null)
+})
+
+test('source reports strip markup, bound text and fail closed on missing or invalid dates', () => {
+  const now = new Date('2026-08-10T12:00:00Z')
+  const report = normalizeMarketSourceReport({
+    title: `<b>${'T'.repeat(550)}</b>`,
+    excerpt: `<p>Public &amp; original</p><script>secret()</script>${'x'.repeat(4_100)}`,
+    publishedAt: '2026-08-10T11:00:00Z',
+  }, { now })
+  assert.equal([...report.title].length, 500)
+  assert.equal([...report.excerpt].length, 4_000)
+  assert.doesNotMatch(report.excerpt, /<|secret/)
+  assert.equal(report.publishedAt, '2026-08-10T11:00:00.000Z')
+  assert.deepEqual(normalizeMarketSourceReport({}, { now }), { title: null, excerpt: null, publishedAt: null })
+  assert.equal(normalizeMarketSourceReport({ publishedAt: 'not-a-date' }, { now }).publishedAt, null)
 })
 
 test('registration-free provider parsers fail closed and discard malformed records', () => {
@@ -187,14 +207,96 @@ test('public SQL view and APIs preserve privacy and outbox delivery semantics', 
   assert.doesNotMatch(repository, /raw_items\.payload|ai_response|prompt/i)
 })
 
-test('worker uses durable cursors and purges payload without deleting source evidence', () => {
+test('worker uses composite overlap cursors and purges payload without deleting source evidence', () => {
   const worker = read('market-radar/worker/run.mjs')
   const maintenance = read('market-radar/worker/maintenance.mjs')
   assert.match(worker, /source_cursors/)
-  assert.match(worker, /Date\.parse\(item\.publishedAt\) > cursor/)
+  const cursor = parseMarketSourceCursor(encodeMarketSourceCursor({
+    publishedAt: '2026-08-10T10:00:00.000Z', providerId: 'provider-b',
+  }))
+  const items = [
+    { providerId: 'provider-a', publishedAt: '2026-08-10T10:00:00.000Z' },
+    { providerId: 'provider-c', publishedAt: '2026-08-10T10:00:00.000Z' },
+    { providerId: 'late-item', publishedAt: '2026-08-09T10:00:00.000Z' },
+    { providerId: 'expired-overlap', publishedAt: '2026-07-01T10:00:00.000Z' },
+  ]
+  assert.deepEqual(selectMarketItemsAfterCursor(items, cursor).map(item => item.providerId), [
+    'provider-a', 'provider-c', 'late-item',
+  ])
+  assert.deepEqual(newestMarketSourceCursor(items, cursor), {
+    publishedAt: '2026-08-10T10:00:00.000Z', providerId: 'provider-c',
+  })
   assert.match(maintenance, /payload = '\{"retained":false\}'::jsonb/)
   assert.match(maintenance, /payload_purged_at = now\(\)/)
   assert.doesNotMatch(maintenance, /delete from market_radar\.raw_items[\s\S]{0,120}payload_expires_at/)
+})
+
+test('slow collection leaves the shared lock free and write contention cannot advance work', async () => {
+  let releaseFetch
+  let prepareCalls = 0
+  const collecting = collectMarketSourceOutsideLock({
+    fetchItems: () => new Promise(resolve => { releaseFetch = resolve }),
+    prepareItem: async () => { prepareCalls += 1; return null },
+  })
+  await Promise.resolve()
+
+  let lockHeld = false
+  const withLock = async (work) => {
+    if (lockHeld) return { acquired: false }
+    lockHeld = true
+    try { return { acquired: true, value: await work() } } finally { lockHeld = false }
+  }
+  const migration = await withLock(async () => 'migration-acquired-during-fetch')
+  assert.deepEqual(migration, { acquired: true, value: 'migration-acquired-during-fetch' })
+  assert.equal(prepareCalls, 0)
+
+  releaseFetch([{ provider: 'fixture', providerId: 'same-second', publishedAt: '2026-08-10T10:00:00Z' }])
+  const collected = await collecting
+  assert.equal(collected.preparedItems.length, 1)
+  lockHeld = true
+  let wrote = false
+  const competed = await persistCollectedWithLock({
+    withLock,
+    work: async () => { wrote = true },
+  })
+  lockHeld = false
+  assert.deepEqual(competed, { skipped: true, reason: 'radar_database_lock_held' })
+  assert.equal(wrote, false)
+})
+
+test('overlap replays and raw revisions do not repeat AI preparation', async () => {
+  const known = new Set()
+  let aiCalls = 0
+  const item = { provider: 'github_releases', providerId: 'repo:1', publishedAt: '2026-08-10T10:00:00Z' }
+  const collect = currentItem => collectMarketSourceOutsideLock({
+    fetchItems: async () => [currentItem],
+    preflightItems: async items => new Map(items.map(candidate => [
+      `${candidate.provider}:${candidate.providerId}`,
+      !known.has(`${candidate.provider}:${candidate.providerId}`),
+    ])),
+    prepareItem: async candidate => {
+      aiCalls += 1
+      known.add(`${candidate.provider}:${candidate.providerId}`)
+      return { titleZh: 'fixture' }
+    },
+  })
+  const first = await collect(item)
+  const replay = await collect(item)
+  const revision = await collect({ ...item, title: 'corrected source title' })
+  assert.equal(first.preparedItems[0].summary.titleZh, 'fixture')
+  assert.equal(replay.preparedItems[0].summary, null)
+  assert.equal(revision.preparedItems[0].summary, null)
+  assert.equal(aiCalls, 1)
+})
+
+test('worker lease releases after collection or persistence throws', async () => {
+  const calls = []
+  await assert.rejects(withMarketWorkerLease({
+    claim: async () => ({ token: 'lease-token' }),
+    release: async state => { calls.push(`release:${state.token}`) },
+    work: async () => { calls.push('work'); throw new Error('fixture_failure') },
+  }), /fixture_failure/)
+  assert.deepEqual(calls, ['work', 'release:lease-token'])
 })
 
 test('event pagination cursor keeps timestamp and id together', () => {
@@ -208,27 +310,26 @@ test('event pagination cursor keeps timestamp and id together', () => {
 })
 
 test('a confirmed draft can publish and enqueue P0 exactly once', () => {
-  const worker = read('market-radar/worker/run.mjs')
-  assert.match(worker, /hasCompleteAiV2Boundaries\(existing\) && score >= 50 && isFreshForPublic/)
-  assert.match(worker, /published_at = case when \$4::boolean then coalesce\(published_at, now\(\)\)/)
-  assert.match(worker, /existing\.priority !== 'P0'/)
-  assert.match(worker, /on conflict \(idempotency_key\) do nothing/)
+  const persistence = read('market-radar/worker/persistence.mjs')
+  assert.match(persistence, /hasCompleteAiV2Boundaries\(existing\) && score >= 50 && isFreshForPublic/)
+  assert.match(persistence, /published_at = case when \$4::boolean then coalesce\(published_at, now\(\)\)/)
+  assert.match(persistence, /existing\.priority !== 'P0'/)
+  assert.match(persistence, /on conflict \(idempotency_key\) do nothing/)
 })
 
 test('new events publish only with complete AI v2 verification boundaries', () => {
   const worker = read('market-radar/worker/run.mjs')
-  const summarizer = worker.slice(worker.indexOf('async function summarizeWithAi'), worker.indexOf('async function enqueueP0'))
-  const existingBranch = worker.slice(worker.indexOf('if (existing)'), worker.indexOf('const summary = await summarizeWithAi'))
+  const persistence = read('market-radar/worker/persistence.mjs')
+  const summarizer = worker.slice(worker.indexOf('async function summarizeWithAi'), worker.indexOf('async function persistCollectedSource'))
   assert.match(worker, /watchFor, invalidation/)
   assert.match(worker, /系统观察边界，不是来源已陈述的事实/)
   assert.match(summarizer, /max_tokens: 900/)
   assert.match(summarizer, /JSON\.stringify\(\{ title: item\.title, summary: item\.summary, provider: item\.provider, assets \}\)/)
   assert.doesNotMatch(summarizer, /item\.(?:payload|sourceUrl|providerId|explicitSymbols)/)
-  assert.match(worker, /const publishable = Boolean\(summary\) && score >= 50 && isFreshForPublic/)
-  assert.match(worker, /summary \? 'v2' : null/)
-  assert.match(worker, /summary\?\.watchFor \|\| null, summary\?\.invalidation \|\| null/)
-  assert.doesNotMatch(worker, /summary \? 'v1' : null/)
-  assert.doesNotMatch(existingBranch, /(?:watch_for_zh|invalidation_zh)\s*=/)
+  assert.match(persistence, /const publishable = Boolean\(summary\) && score >= 50 && isFreshForPublic/)
+  assert.match(persistence, /summary \? 'v2' : null/)
+  assert.match(persistence, /summary\?\.watchFor \|\| null, summary\?\.invalidation \|\| null/)
+  assert.doesNotMatch(persistence, /summary \? 'v1' : null/)
 })
 
 test('migrations hide stale backlog and the runner applies every numbered file', () => {
@@ -261,14 +362,15 @@ test('verification-boundary migration is repeatable, private by default and pres
 
 test('all worker modes share a crash-safe database lease', () => {
   const worker = read('market-radar/worker/run.mjs')
+  const orchestration = read('market-radar/worker/orchestration.mjs')
   const migration = read('market-radar/migrations/001_initial.sql')
   assert.match(migration, /create table if not exists market_radar\.worker_locks/)
   assert.match(worker, /on conflict \(lock_key\) do update/)
   assert.match(worker, /worker_locks\.lease_until <= now\(\)/)
-  assert.match(worker, /reason: 'worker_lease_held'/)
-  assert.match(worker, /finally \{[\s\S]*releaseWorkerLease\(workerLease\)/)
+  assert.match(orchestration, /reason: 'worker_lease_held'/)
+  assert.match(orchestration, /finally \{[\s\S]*await release\(token\)/)
   assert.match(worker, /withRadarDatabaseLock/)
-  assert.match(worker, /reason: 'radar_database_lock_held'/)
+  assert.match(orchestration, /reason: 'radar_database_lock_held'/)
 })
 
 test('worker uses only registration-free upstream market sources', () => {
@@ -291,5 +393,5 @@ test('manual smoke runs can select one bounded market group', () => {
 
 test('the duplicate DST premarket trigger exits before claiming quota', () => {
   const worker = read('market-radar/worker/run.mjs')
-  assert.ok(worker.indexOf("reason: 'outside_us_premarket_window'") < worker.indexOf('claimWorkerLease()'))
+  assert.ok(worker.indexOf("reason: 'outside_us_premarket_window'") < worker.indexOf('claimWorkerLease(sql)'))
 })

@@ -5,8 +5,8 @@ function benchmarkFor(symbol) {
   return symbol === 'BTC' ? null : 'BTC'
 }
 
-export async function enrichPendingReactions(sql, limit = 2) {
-  const rows = await sql.query(`select e.id, e.occurred_at, e.news_direction, ea.namespace, ea.symbol
+export async function loadPendingReactionInputs(sql, limit = 2) {
+  return sql.query(`select e.id, e.occurred_at, e.news_direction, ea.namespace, ea.symbol
     from market_radar.events e
     join lateral (
       select namespace, symbol from market_radar.event_assets where event_id = e.id order by relevance desc limit 1
@@ -15,7 +15,10 @@ export async function enrichPendingReactions(sql, limit = 2) {
     where e.status = 'published' and mr.status = 'pending' and ea.namespace = 'crypto'
       and e.occurred_at <= now() - interval '5 minutes'
     order by e.occurred_at desc limit $1`, [limit])
-  let updated = 0
+}
+
+export async function collectReactionUpdates(rows) {
+  const updates = []
   for (const row of rows) {
     try {
       const at = new Date(row.occurred_at)
@@ -42,16 +45,34 @@ export async function enrichPendingReactions(sql, limit = 2) {
       const direction = row.news_direction === 'bullish' ? 1 : row.news_direction === 'bearish' ? -1 : 0
       const signedMove = (excess30m ?? return30m ?? excess5m ?? return5m ?? 0) * direction
       const status = direction === 0 ? 'ignored' : signedMove >= 0.003 ? 'confirmed' : signedMove <= -0.003 ? 'contradicted' : 'priced_in'
-      await sql.query(`update market_radar.market_reactions set status=$2, benchmark=$3,
-        event_price=$4, price_5m=$5, price_30m=$6, price_4h=$7,
-        benchmark_event_price=$8, benchmark_5m=$9, benchmark_30m=$10, benchmark_4h=$11,
-        return_5m=$12, return_30m=$13, return_4h=$14, excess_5m=$15, excess_30m=$16, excess_4h=$17, updated_at=now()
-        where event_id=$1`, [row.id, status, benchmark, priceAt, price5m, price30m, price4h, benchmarkAt, benchmark5m, benchmark30m, benchmark4h,
-        return5m, return30m, return4h, excess5m, excess30m, excess4h])
-      updated += 1
+      updates.push({
+        id: row.id, status, benchmark, priceAt, price5m, price30m, price4h,
+        benchmarkAt, benchmark5m, benchmark30m, benchmark4h,
+        return5m, return30m, return4h, excess5m, excess30m, excess4h,
+      })
     } catch {
       // A missing public Binance pair leaves the reaction pending for a later run.
     }
   }
-  return { checked: rows.length, updated }
+  return { checked: rows.length, updates }
+}
+
+export async function persistReactionUpdates(sql, collected) {
+  for (const update of collected.updates) {
+    await sql.query(`update market_radar.market_reactions set status=$2, benchmark=$3,
+      event_price=$4, price_5m=$5, price_30m=$6, price_4h=$7,
+      benchmark_event_price=$8, benchmark_5m=$9, benchmark_30m=$10, benchmark_4h=$11,
+      return_5m=$12, return_30m=$13, return_4h=$14, excess_5m=$15, excess_30m=$16, excess_4h=$17, updated_at=now()
+      where event_id=$1`, [
+      update.id, update.status, update.benchmark, update.priceAt, update.price5m, update.price30m, update.price4h,
+      update.benchmarkAt, update.benchmark5m, update.benchmark30m, update.benchmark4h,
+      update.return5m, update.return30m, update.return4h, update.excess5m, update.excess30m, update.excess4h,
+    ])
+  }
+  return { checked: collected.checked, updated: collected.updates.length }
+}
+
+export async function enrichPendingReactions(sql, limit = 2) {
+  const rows = await loadPendingReactionInputs(sql, limit)
+  return persistReactionUpdates(sql, await collectReactionUpdates(rows))
 }

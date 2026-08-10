@@ -1,4 +1,4 @@
-import { normalizeUrl } from './core.mjs'
+import { normalizeMarketSourceReport, normalizeUrl } from './core.mjs'
 import { CRYPTO_RELEASE_REPOSITORIES } from './config.mjs'
 
 function ensureOk(response, source) {
@@ -35,10 +35,15 @@ export function parseRss(xml, provider, market = 'macro') {
     const sourceUrl = publicUrl(href)
     const publishedAt = isoDate(published)
     if (!title || !sourceUrl || !publishedAt) continue
+    const report = normalizeMarketSourceReport({
+      title,
+      excerpt: read('summary') || read('description'),
+      publishedAt,
+    })
     records.push({
       provider, providerId: read('id') || read('guid') || sourceUrl, market,
-      sourceUrl, title, summary: read('summary') || read('description'),
-      publishedAt, explicitSymbols: [], payload: { title, href, published },
+      sourceUrl, title, summary: report.excerpt || '', sourceReport: report,
+      publishedAt, explicitSymbols: [], payload: { title, href, published, excerpt: report.excerpt },
     })
   }
   return records
@@ -51,12 +56,17 @@ export function parseGitHubReleasePayload(payload, symbol, repository) {
     const publishedAt = isoDate(release?.published_at)
     const label = String(release?.name || release?.tag_name || '').trim()
     if (release?.draft || !release?.id || !label || !sourceUrl || !publishedAt) return []
+    const sourceReport = normalizeMarketSourceReport({
+      title: label,
+      excerpt: release.body,
+      publishedAt,
+    })
     return [{
       provider: 'github_releases', providerId: `${repository}:${release.id}`, market: 'crypto',
-      sourceUrl, title: `${symbol} ${label} released`, summary: String(release.body || '').slice(0, 4_000), publishedAt,
+      sourceUrl, title: `${symbol} ${label} released`, summary: sourceReport.excerpt || '', sourceReport, publishedAt,
       explicitSymbols: [symbol], payload: {
         repository, tagName: String(release.tag_name || ''), prerelease: release.prerelease === true,
-        publishedAt, sourceUrl,
+        publishedAt, sourceUrl, excerpt: sourceReport.excerpt,
       },
     }]
   })

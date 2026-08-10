@@ -111,7 +111,7 @@ export function mapPublicEventReportRow(row: PublicEventRow): MarketRadarReport 
   const sourceName = textOrNull(row.source_name)
   const sourceUrl = textOrNull(row.source_url)
   const title = textOrNull(row.title)
-  if (!id || !sourceName || !sourceUrl || !title) return null
+  if (!id || !sourceName || !sourceUrl) return null
   return {
     id,
     sourceName,

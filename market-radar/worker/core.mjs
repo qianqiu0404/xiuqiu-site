@@ -28,6 +28,78 @@ export function normalizeTitle(input) {
     .replace(/\s+/g, ' ').trim()
 }
 
+function compactSourceText(value, maxLength) {
+  if (value === null || value === undefined) return null
+  const text = String(value)
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&nbsp;/gi, ' ')
+    .replace(/&amp;/gi, '&')
+    .replace(/&lt;/gi, '<')
+    .replace(/&gt;/gi, '>')
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/gi, "'")
+    .replace(/\s+/g, ' ')
+    .trim()
+  if (!text) return null
+  return [...text].slice(0, maxLength).join('')
+}
+
+export function normalizeMarketSourceReport(value, { now = new Date() } = {}) {
+  const title = compactSourceText(value?.title, 500)
+  const excerpt = compactSourceText(value?.excerpt, 4_000)
+  const published = value?.publishedAt ? new Date(value.publishedAt) : null
+  const publishedAt = published && Number.isFinite(published.getTime())
+    && published.getTime() >= Date.UTC(2000, 0, 1)
+    && published.getTime() <= now.getTime() + 60 * 60_000
+    ? published.toISOString()
+    : null
+  return { title, excerpt, publishedAt }
+}
+
+export function parseMarketSourceCursor(value) {
+  if (!value) return null
+  try {
+    const parsed = JSON.parse(value)
+    const publishedAt = new Date(parsed?.publishedAt)
+    const providerId = typeof parsed?.providerId === 'string' ? parsed.providerId.trim() : ''
+    if (!Number.isFinite(publishedAt.getTime()) || !providerId) return null
+    return { publishedAt: publishedAt.toISOString(), providerId }
+  } catch {
+    const publishedAt = new Date(value)
+    return Number.isFinite(publishedAt.getTime())
+      ? { publishedAt: publishedAt.toISOString(), providerId: '' }
+      : null
+  }
+}
+
+export function encodeMarketSourceCursor(value) {
+  return value ? JSON.stringify({ publishedAt: value.publishedAt, providerId: value.providerId }) : null
+}
+
+function compareMarketCursor(left, right) {
+  const timestampDifference = Date.parse(left.publishedAt) - Date.parse(right.publishedAt)
+  return timestampDifference || left.providerId.localeCompare(right.providerId)
+}
+
+export function newestMarketSourceCursor(items, previous = null) {
+  return items.reduce((latest, item) => {
+    const candidate = { publishedAt: item.publishedAt, providerId: String(item.providerId || '') }
+    if (!Number.isFinite(Date.parse(candidate.publishedAt)) || !candidate.providerId) return latest
+    return !latest || compareMarketCursor(candidate, latest) > 0 ? candidate : latest
+  }, previous)
+}
+
+export function selectMarketItemsAfterCursor(items, cursor, overlapMs = 30 * 24 * 60 * 60_000) {
+  if (!cursor) return items
+  const floor = Date.parse(cursor.publishedAt) - overlapMs
+  return items.filter(item => {
+    const timestamp = Date.parse(item.publishedAt)
+    return Number.isFinite(timestamp) && timestamp >= floor
+  })
+}
+
 function tokens(input) {
   return new Set(normalizeTitle(input).split(' ').filter(token => token.length > 1).map(token => {
     if (/^[a-z]{5,}$/.test(token)) return token.replace(/(?:ed|es|s)$/, '')
