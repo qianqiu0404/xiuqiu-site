@@ -769,6 +769,13 @@
 .trade-radar-event-detail .trade-event-classification strong { color: var(--trade-market); }
 .trade-radar-event-detail .trade-event-classification span { border-left-color: var(--trade-line-dark); }
 
+.trade-radar-event-dates {
+  display: grid;
+  justify-items: end;
+  gap: 0.45rem;
+  text-align: right;
+}
+
 .trade-radar-event-detail > .trade-radar-kicker {
   margin-top: clamp(3rem, 7vw, 5.5rem);
   color: var(--trade-market);
@@ -906,6 +913,14 @@
   line-height: 1.04;
 }
 
+.trade-radar-event-reaction--unavailable header > p:last-child {
+  max-width: 42rem;
+  margin: 1.25rem 0 0;
+  color: #98a2ae;
+  font-size: 0.82rem;
+  line-height: 1.75;
+}
+
 .trade-radar-event-reaction dl {
   display: grid;
   grid-template-columns: 0.7fr 1fr 1.4fr;
@@ -967,6 +982,12 @@
 .trade-radar-event-evidence li { border-bottom: 1px solid var(--trade-line-dark); }
 .trade-radar-event-evidence a { min-height: 3.25rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; color: #dfe5eb; font-size: 0.82rem; }
 .trade-radar-event-page .trade-radar-disclaimer { border-top-color: var(--trade-line-dark); color: #747f8c; }
+
+.trade-radar-event-snapshot-link {
+  margin-top: 2.5rem;
+  border-color: var(--trade-line-dark);
+  color: #eef2f5;
+}
 
 /* Shared loading, empty and error states */
 .trade-radar-page.trade-radar-state {
@@ -1082,6 +1103,7 @@
   .trade-event-header,
   .trade-radar-detail-event > header,
   .trade-radar-event-detail-header { align-items: flex-start; flex-direction: column; }
+  .trade-radar-event-dates { justify-items: start; text-align: left; }
   .trade-event-analysis dl,
   .trade-radar-judgment-grid { grid-template-columns: minmax(0, 1fr); }
   .trade-event-analysis dl div,

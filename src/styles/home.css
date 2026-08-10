@@ -156,7 +156,9 @@
 }
 
 .cinematic-hero-proof-link {
+  min-height: 44px;
   display: inline-flex;
+  align-items: center;
   margin-top: 21px;
   color: #929ba8;
   font-size: 12px;
@@ -275,6 +277,7 @@
   bottom: 27px;
   left: 50%;
   z-index: 2;
+  min-height: 44px;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -530,7 +533,9 @@
 }
 
 .home-ai-delivery a {
+  min-height: 44px;
   display: inline-flex;
+  align-items: center;
   margin-top: 18px;
   color: #c8d4ff;
   font-size: 12px;
@@ -702,7 +707,9 @@
 }
 
 .cinematic-profile-link {
+  min-height: 44px;
   display: inline-flex;
+  align-items: center;
   margin-top: 35px;
   color: #68717f;
   font: 500 10px/1.4 var(--mono);

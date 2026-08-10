@@ -57,6 +57,9 @@ img {
   top: 8px;
   left: 12px;
   z-index: 200;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
   padding: 8px 12px;
   border-radius: 8px;
   background: var(--text);

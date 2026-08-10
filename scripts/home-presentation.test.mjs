@@ -37,6 +37,9 @@ const routerSource = readFileSync(new URL('../src/router/index.ts', import.meta.
 const deliveryDetailSource = readFileSync(new URL('../src/pages/DeliveryDetailPage.vue', import.meta.url), 'utf8')
 const indexHtml = readFileSync(new URL('../index.html', import.meta.url), 'utf8')
 const globalStyleSource = readFileSync(new URL('../src/style.css', import.meta.url), 'utf8')
+const homeStyleSource = readFileSync(new URL('../src/styles/home.css', import.meta.url), 'utf8')
+const notFoundStyleSource = readFileSync(new URL('../src/styles/not-found.css', import.meta.url), 'utf8')
+const aiProofRailSource = readFileSync(new URL('../src/components/AiEngineeringProofRail.vue', import.meta.url), 'utf8')
 
 function assertUnique(values, label) {
   assert.equal(new Set(values).size, values.length, `${label} must be unique`)
@@ -107,6 +110,22 @@ test('article paper, touch, focus and long-content style contracts stay responsi
   assert.match(globalStyleSource, /@media \(prefers-reduced-motion: reduce\)[\s\S]*?\.article-series-links a,[\s\S]*?\.followup-link/)
   assert.match(articlesPageSource, /min-height: 46px/)
   assert.match(articlesPageSource, /@media \(prefers-reduced-motion: reduce\)/)
+})
+
+test('skip, homepage utility actions and 404 recovery keep 44px targets', () => {
+  assert.match(globalStyleSource, /\.skip-link\s*\{[\s\S]*?min-height: 44px;[\s\S]*?display: inline-flex;/)
+  for (const selector of [
+    '.cinematic-hero-proof-link',
+    '.cinematic-scroll-cue',
+    '.home-ai-delivery a',
+    '.cinematic-profile-link',
+  ]) {
+    const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    assert.match(homeStyleSource, new RegExp(`${escaped}\\s*\\{[\\s\\S]*?min-height: 44px;`), selector)
+  }
+  assert.match(homeStyleSource, /\.home-ai-actions :where\(a, button\)\s*\{[\s\S]*?min-height: 44px;/)
+  assert.match(aiProofRailSource, /\.ai-proof-evidence,[\s\S]*?\.ai-proof-ask\s*\{[\s\S]*?min-height: 44px;/)
+  assert.match(notFoundStyleSource, /\.route-not-found-home\s*\{[\s\S]*?min-height: 44px;/)
 })
 
 test('homepage presentation keeps the intended cardinalities', () => {

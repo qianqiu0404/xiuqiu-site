@@ -293,7 +293,7 @@ function askAi(event: MouseEvent) {
 .ai-proof-evidence,
 .ai-proof-ask {
   display: flex;
-  min-height: 42px;
+  min-height: 44px;
   align-items: center;
   justify-content: space-between;
   width: 100%;
