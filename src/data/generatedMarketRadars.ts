@@ -4,7 +4,10 @@ export type MarketRadarPriority = 'P0' | 'P1' | 'P2'
 export type MarketRadarStatus = 'scheduled' | 'released' | 'monitoring'
 export type MarketRadarCategory = 'macro' | 'crypto' | 'equity' | 'regulation'
 export interface MarketRadarEvent { id: string; priority: MarketRadarPriority; status: MarketRadarStatus; category: MarketRadarCategory; eventAt?: string; title: string; fact: string; whyWatch: string; assets: string[]; watchFor: string; invalidation: string; sourceName: string; sourceUrl: string; sourcePublishedAt: string }
-export interface MarketRadarDaily { date: string; slug: string; title: string; summary: string; reviewStatus: 'automated'; generatedAt: string; events: MarketRadarEvent[]; sourceUrls: string[] }
+export type MarketQuantAssetGroup = 'us_equity_etf' | 'crypto' | 'gold_etf'
+export interface MarketQuantAsset { symbol: 'SPY' | 'QQQ' | 'BTC' | 'ETH' | 'GLD'; group: MarketQuantAssetGroup; up: number; sideways: number; down: number }
+export interface MarketQuantStrategy { horizonTradingDays: number; status: 'heuristic_unbacktested'; methodology: string; assets: MarketQuantAsset[]; rationale: string; nextValidation: string; invalidation: string; sourceUrls: string[] }
+export interface MarketRadarDaily { date: string; slug: string; title: string; summary: string; reviewStatus: 'automated'; generatedAt: string; events: MarketRadarEvent[]; sourceUrls: string[]; quantStrategy?: MarketQuantStrategy }
 export interface MarketRadarIndexEntry { date: string; slug: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
 export const marketRadarIndex: MarketRadarIndexEntry[] = [
   {
@@ -99,7 +102,56 @@ export const latestMarketRadars: MarketRadarDaily[] = [
       "https://home.treasury.gov/system/files/221/TentativeAuctionScheduleQ22026.pdf",
       "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
       "https://github.com/anza-xyz/agave/releases/tag/v4.2.0"
-    ]
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "heuristic_unbacktested",
+      "methodology": "基于已确认公开事件与当前价格动量的透明启发式；尚未进行历史回测或概率校准，因此这些数字是情景权重，不是统计胜率。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "up": 34,
+          "sideways": 41,
+          "down": 25
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "up": 36,
+          "sideways": 36,
+          "down": 28
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "up": 27,
+          "sideways": 40,
+          "down": 33
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "up": 25,
+          "sideways": 40,
+          "down": 35
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "up": 42,
+          "sideways": 36,
+          "down": 22
+        }
+      ],
+      "rationale": "SPY、QQQ 与 GLD 当前动量偏强，BTC 当日略弱。联储维持利率但出现三票加息异议，对高久期与高波动资产构成约束；8 月 11–13 日美国中长期国债连续拍卖在结果公布前主要提高不确定性，不直接给出方向。",
+      "nextValidation": "逐场核对最高收益率、投标倍数、间接投标占比，再观察美债收益率、美元与相关资产反应。",
+      "invalidation": "财政部更新日程、出现新的联储官方材料，或 3 个交易日窗口结束后，必须重新计算。",
+      "sourceUrls": [
+        "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
+        "https://home.treasury.gov/system/files/221/TentativeAuctionScheduleQ22026.pdf"
+      ]
+    }
   },
   {
     "date": "2026-08-09",

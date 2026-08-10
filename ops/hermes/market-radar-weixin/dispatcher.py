@@ -17,6 +17,7 @@ SPEC = RadarSpec(
     default_title="交易雷达",
     footer="仅供研究，不构成投资建议。",
     kinds=("p0", "daily"),
+    recipient_aliases=("primary", "secondary"),
 )
 
 

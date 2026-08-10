@@ -14,6 +14,8 @@ const allAssets = computed(() => entry.value ? [...new Set(entry.value.events.fl
 const categoryLabels = { macro: '宏观', crypto: '加密', equity: '美股', regulation: '政策' }
 const statusLabels = { scheduled: '已排期', released: '已发布', monitoring: '观察中' }
 const priorityLabels = { P0: '关键', P1: '重要', P2: '跟踪' }
+const quantGroupLabels = { us_equity_etf: '美股 ETF', crypto: '币圈', gold_etf: '黄金 ETF' }
+const quantGroups = ['us_equity_etf', 'crypto', 'gold_etf'] as const
 
 function formatEventTime(value?: string) {
   if (!value) return '持续观察'
@@ -136,6 +138,34 @@ watchEffect(() => {
             </div>
           </footer>
         </article>
+
+        <section v-if="entry.quantStrategy" class="trade-radar-quant" aria-labelledby="trade-radar-quant-title">
+          <header>
+            <p class="trade-radar-kicker">Three-session scenario weights</p>
+            <h2 id="trade-radar-quant-title">量化策略简报</h2>
+            <p>未来 {{ entry.quantStrategy.horizonTradingDays }} 个交易日的上涨／震荡／下跌情景权重。{{ entry.quantStrategy.methodology }}</p>
+          </header>
+
+          <div class="trade-radar-quant-groups">
+            <section v-for="group in quantGroups" :key="group">
+              <h3>{{ quantGroupLabels[group] }}</h3>
+              <dl v-for="asset in entry.quantStrategy.assets.filter(item => item.group === group)" :key="asset.symbol">
+                <dt>{{ asset.symbol }}</dt>
+                <dd><span>上涨 {{ asset.up }}%</span><span>震荡 {{ asset.sideways }}%</span><span>下跌 {{ asset.down }}%</span></dd>
+              </dl>
+            </section>
+          </div>
+
+          <dl class="trade-radar-quant-notes">
+            <div><dt>为什么这样分配</dt><dd>{{ entry.quantStrategy.rationale }}</dd></div>
+            <div><dt>接下来验证</dt><dd>{{ entry.quantStrategy.nextValidation }}</dd></div>
+            <div><dt>失效条件</dt><dd>{{ entry.quantStrategy.invalidation }}</dd></div>
+          </dl>
+          <footer>
+            <strong>未回测情景权重，不是统计胜率。</strong>
+            <a v-for="(source, index) in entry.quantStrategy.sourceUrls" :key="source" :href="source" target="_blank" rel="noopener">核对依据 {{ index + 1 }} ↗</a>
+          </footer>
+        </section>
 
         <footer class="trade-radar-detail-footer">
           <span>Generated {{ entry.generatedAt }}</span>

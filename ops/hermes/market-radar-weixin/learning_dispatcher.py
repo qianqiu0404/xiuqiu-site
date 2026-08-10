@@ -17,6 +17,7 @@ SPEC = RadarSpec(
     default_title="学习雷达",
     footer="公开来源驱动，仅供学习与研究。",
     kinds=("daily",),
+    recipient_aliases=("primary",),
 )
 
 

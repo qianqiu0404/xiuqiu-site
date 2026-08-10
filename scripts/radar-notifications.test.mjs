@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import { parse } from 'yaml'
-import { buildLearningDailyNotification, buildMarketDailyNotification } from './radar-notification-contracts.mjs'
+import { buildLearningDailyNotification, buildMarketDailyNotification, buildMarketQuantNotification } from './radar-notification-contracts.mjs'
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8')
 
@@ -34,6 +34,30 @@ test('market daily is bounded and quiet days remain observable', () => {
   assert.ok(notification.payload.body.indexOf('P0') < notification.payload.body.indexOf('P1'))
   const quiet = buildMarketDailyNotification({ date: '2026-08-10', events: [] })
   assert.match(quiet.payload.body, /暂无达到公开门槛的重要事件/)
+})
+
+test('market quant follow-up uses bounded three-way weights and a separate idempotency key', () => {
+  const quantStrategy = {
+    horizonTradingDays: 3,
+    status: 'heuristic_unbacktested',
+    methodology: '透明启发式，尚未历史回测。',
+    assets: [
+      ['SPY', 'us_equity_etf', 34, 41, 25], ['QQQ', 'us_equity_etf', 36, 36, 28],
+      ['BTC', 'crypto', 27, 40, 33], ['ETH', 'crypto', 25, 40, 35], ['GLD', 'gold_etf', 42, 36, 22],
+    ].map(([symbol, group, up, sideways, down]) => ({ symbol, group, up, sideways, down })),
+    rationale: '当前动量与公开事件共同提高不确定性。',
+    nextValidation: '核对事件结果与资产反应。',
+    invalidation: '窗口结束或来源更新后重新计算。',
+    sourceUrls: ['https://www.federalreserve.gov/example'],
+  }
+  const quant = buildMarketQuantNotification({ date: '2026-08-10', quantStrategy })
+  assert.equal(quant.idempotencyKey, 'market:quant:2026-08-10')
+  assert.equal(quant.payload.probabilityStatus, 'heuristic_unbacktested')
+  assert.match(quant.payload.body, /SPY：上涨 34%｜震荡 41%｜下跌 25%/)
+  assert.match(quant.payload.body, /尚未历史回测/)
+  const daily = buildMarketDailyNotification({ date: '2026-08-10', events: [], quantStrategy })
+  assert.equal(daily.payload.followUp.idempotencyKey, 'market:quant:2026-08-10')
+  assert.equal(daily.payload.followUp.kind, 'quant')
 })
 
 test('two outboxes have isolated schemas, idempotency keys and delivery evidence', () => {
@@ -70,6 +94,7 @@ test('Hermes dispatchers are model-free, one-at-a-time and keep the radar lanes 
   const marketScript = read('ops/hermes/scripts/market-radar-dispatch.sh')
   const learningScript = read('ops/hermes/scripts/learning-radar-dispatch.sh')
   assert.match(common, /store_pending_delivery/)
+  assert.match(common, /market:quant/)
   assert.match(common, /\[SILENT\]/)
   assert.match(common, /remember_delivery/)
   assert.match(common, /page_date_missing/)
@@ -77,10 +102,13 @@ test('Hermes dispatchers are model-free, one-at-a-time and keep the radar lanes 
   assert.doesNotMatch(common, /send_weixin_direct/)
   assert.match(platform, /send_weixin_direct/)
   assert.match(platform, /providerMessageId/)
+  assert.match(common, /secondary_profile/)
+  assert.match(platform, /recipientAlias/)
   assert.match(platform, /forget_pending_delivery/)
   assert.match(registration, /name="radar_weixin"/)
   assert.match(registration, /cron_deliver_env_var="WEIXIN_HOME_CHANNEL"/)
   assert.match(market, /kinds=\("p0", "daily"\)/)
+  assert.match(market, /recipient_aliases=\("primary", "secondary"\)/)
   assert.match(market, /page_prefix="\/market-radar\/"/)
   assert.match(learning, /kinds=\("daily",\)/)
   assert.match(learning, /page_prefix="\/radar\/"/)
