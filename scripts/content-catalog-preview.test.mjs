@@ -15,6 +15,13 @@ const PREVIEW_SECRET = 'preview-proxy-test-secret-that-is-long-enough'
 const PREVIEW_KEY_ID = 'preview_2026_08'
 const PREVIEW_NONCE = '3'.repeat(32)
 
+const apiSource = readFileSync(new URL('../api/content-catalog-preview.ts', import.meta.url), 'utf8')
+assert.match(
+  apiSource,
+  /from ['"]\.\.\/lib\/content-catalog-preview-contract\.js['"]/,
+  'The Vercel Function must import a JavaScript runtime contract.',
+)
+
 function responseRecorder() {
   const headers = new Map()
   return {

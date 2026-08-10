@@ -1,5 +1,5 @@
 import { signArticleCatalogRequest } from '../lib/article-catalog-auth.js'
-import { normalizeContentCatalogPreviewPayload } from '../src/data/contentCatalogPreviewContract.ts'
+import { normalizeContentCatalogPreviewPayload } from '../lib/content-catalog-preview-contract.js'
 
 declare const process: {
   env: Record<string, string | undefined>
