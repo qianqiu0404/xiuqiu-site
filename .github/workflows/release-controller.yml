@@ -120,7 +120,8 @@ jobs:
           const vercelCommandPattern = /\bvercel\s+(?:--token\s+"\$VERCEL_TOKEN"\s+)?(?:pull|build|deploy|promote|inspect|project\s+inspect|whoami|curl)\b/
           const vercelCurlPattern = /\bvercel\s+(?:--token\s+"\$VERCEL_TOKEN"\s+)?curl\b/
           const safeTokenFlag = '--token "$VERCEL_TOKEN"'
-          const protectedTokenEnv = '${{ ' + 'secrets' + '.VERCEL_TOKEN }}'
+          const protectedTokenEnv = String.fromCharCode(36, 123, 123)
+            + ' ' + 'secrets' + '.VERCEL_TOKEN ' + String.fromCharCode(125, 125)
           for (const [jobName, job] of Object.entries(controller.jobs)) {
             for (const step of job.steps || []) {
               if (!step.run || step.id === 'audit') continue
