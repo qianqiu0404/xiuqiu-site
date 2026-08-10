@@ -22,7 +22,9 @@ The controller is inert by default. It prevents a Vercel Git deployment or a man
 6. A controller deployment marker and one exact-SHA worker smoke.
 7. Completion of the controller run, which—together with the exact-SHA deployment marker and the operator-managed `MARKET_RADAR_ENABLED` kill switch—authorizes later schedules.
 
-Any failed job prevents every downstream job from running. `vercel.json` disables only Git-triggered deployments from `main`; other branches continue to receive PR previews.
+Any failed job prevents every downstream job from running. `vercel.json` disables every Git-triggered Vercel deployment, including pull-request Previews, so the controller is the only active production path.
+
+Do not restore Preview deployments until both safeguards are verified: Vercel Dashboard automatic production-domain assignment (auto-assign) is disabled, and the controller has completed successfully for the same live `main` SHA. Restore Preview only with a reviewed, branch-scoped `deploymentEnabled` policy; never re-enable Git-triggered production deployments.
 
 ## Required repository settings
 
@@ -34,6 +36,8 @@ Create a protected GitHub Environment named `production-release` and restrict it
 - Repository variable: `MARKET_RADAR_ENABLED`. Keep it `false` for R0. Set it to `true` immediately before an approved controller release; the exact-SHA deployment marker still prevents worker execution until the controller completes. Set it back to `false` to stop schedules.
 
 Protect `main` with pull requests and the existing `verify` and `secrets` Site CI checks. Do not add a required check name that has not already succeeded in this repository.
+
+The controller uses the Environment secret only through the shell variable `"$VERCEL_TOKEN"`. Before it reads production configuration, it runs non-printing account and project access checks. A token that cannot inspect the configured project, build the candidate, or promote it must fail the chain without exposing the credential.
 
 ## Dry-run
 

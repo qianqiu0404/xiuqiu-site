@@ -109,22 +109,41 @@ jobs:
           assert.deepEqual(controller.jobs.mark_deployed_sha.needs, ['preflight', 'promote_vercel_production'])
           assert.deepEqual(controller.jobs.promote_market_radar_worker.needs, ['preflight', 'mark_deployed_sha'])
           assert.match(controller.concurrency.group, /xiuqiu-production-release/)
-          for (const jobName of [
+          const productionJobNames = [
             'production_migration', 'stage_vercel_candidate', 'verify_vercel_candidate',
             'promote_vercel_production', 'mark_deployed_sha', 'promote_market_radar_worker',
-          ]) assert.equal(controller.jobs[jobName].environment, 'production-release')
+          ]
+          for (const jobName of productionJobNames) {
+            assert.equal(controller.jobs[jobName].environment, 'production-release')
+          }
           assert.match(controllerSource, /VERCEL_CLI_VERSION: 58\.9\.0/)
-          const tokenFlag = ['--', 'token'].join('')
-          for (const job of Object.values(controller.jobs)) {
+          const vercelCommandPattern = /\bvercel\s+(?:pull|build|deploy|promote|inspect|project\s+inspect|whoami)\b/
+          const safeTokenFlag = '--token "$VERCEL_TOKEN"'
+          for (const [jobName, job] of Object.entries(controller.jobs)) {
             for (const step of job.steps || []) {
               if (!step.run || step.id === 'audit') continue
-              assert.equal(step.run.includes(tokenFlag), false)
+              assert.doesNotMatch(step.run, /\bset\s+(?:-[A-Za-z]*x[A-Za-z]*(?:\s|$)|-o\s+xtrace\b)/)
+              assert.doesNotMatch(step.run, /\b(?:echo|printf|printenv)\b[^\n]*VERCEL_TOKEN/)
+              if (productionJobNames.includes(jobName)) {
+                for (const line of step.run.split('\n')) {
+                  if (!vercelCommandPattern.test(line)) continue
+                  assert.equal(line.includes(safeTokenFlag), true)
+                  assert.equal((line.match(/--token/g) || []).length, 1)
+                  assert.doesNotMatch(line, /--token(?:=|\s+)(?!"\$VERCEL_TOKEN"(?:\s|$))/)
+                }
+              }
               if (step.run.includes('curl')) {
                 assert.equal(step.run.includes('VERCEL_TOKEN'), false)
                 assert.equal(step.run.includes('Authorization'), false)
               }
             }
           }
+          assert.match(controllerSource, /vercel whoami --token "\$VERCEL_TOKEN"/)
+          assert.match(controllerSource, /vercel project inspect "\$VERCEL_PROJECT_ID" --scope "\$VERCEL_ORG_ID" --token "\$VERCEL_TOKEN"/)
+          assert.match(controllerSource, /vercel pull --yes --environment=production --token "\$VERCEL_TOKEN"/)
+          assert.match(controllerSource, /vercel build --prod --token "\$VERCEL_TOKEN"/)
+          assert.match(controllerSource, /vercel deploy --prebuilt --prod --skip-domain --yes --json --token "\$VERCEL_TOKEN"/)
+          assert.match(controllerSource, /vercel promote "\$DEPLOYMENT_URL" --yes --token "\$VERCEL_TOKEN"/)
           assert.equal(worker.concurrency.group, 'xiuqiu-production-release')
           assert.equal(worker.on.workflow_dispatch.inputs.mode.default, 'dry-run')
           assert.equal(worker.jobs.authorize.environment, undefined)
@@ -228,6 +247,19 @@ jobs:
           npm install --global "vercel@${VERCEL_CLI_VERSION}"
           vercel --version | grep -Eq '(^| )58\.9\.0$'
 
+      - name: Verify Vercel account and project access
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+          VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID || secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID || secrets.VERCEL_PROJECT_ID }}
+        run: |
+          set -euo pipefail
+          test -n "$VERCEL_TOKEN"
+          test -n "$VERCEL_ORG_ID"
+          test -n "$VERCEL_PROJECT_ID"
+          vercel whoami --token "$VERCEL_TOKEN" >/dev/null
+          vercel project inspect "$VERCEL_PROJECT_ID" --scope "$VERCEL_ORG_ID" --token "$VERCEL_TOKEN" >/dev/null
+
       - name: Pull production configuration and build the exact SHA
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
@@ -240,8 +272,8 @@ jobs:
           test -n "$VERCEL_TOKEN"
           test -n "$VERCEL_ORG_ID"
           test -n "$VERCEL_PROJECT_ID"
-          vercel pull --yes --environment=production
-          vercel build --prod
+          vercel pull --yes --environment=production --token "$VERCEL_TOKEN"
+          vercel build --prod --token "$VERCEL_TOKEN"
 
       - name: Stage an unaliased production candidate
         id: deploy
@@ -257,7 +289,7 @@ jobs:
           test -n "$VERCEL_TOKEN"
           test -n "$VERCEL_ORG_ID"
           test -n "$VERCEL_PROJECT_ID"
-          deployment_json=$(vercel deploy --prebuilt --prod --skip-domain --yes --json \
+          deployment_json=$(vercel deploy --prebuilt --prod --skip-domain --yes --json --token "$VERCEL_TOKEN" \
             --meta "githubCommitSha=$RELEASE_SHA" \
             --meta 'githubCommitRef=main' \
             --meta "githubCommitRepo=$GITHUB_REPOSITORY")
@@ -413,7 +445,7 @@ jobs:
           test -n "$VERCEL_TOKEN"
           test -n "$VERCEL_ORG_ID"
           test -n "$VERCEL_PROJECT_ID"
-          vercel promote "$DEPLOYMENT_URL" --yes
+          vercel promote "$DEPLOYMENT_URL" --yes --token "$VERCEL_TOKEN"
           echo "deployment_url=$DEPLOYMENT_URL" >> "$GITHUB_OUTPUT"
 
   mark_deployed_sha:
