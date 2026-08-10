@@ -32,3 +32,22 @@
 ## 周度人工收敛
 
 每周日的日报发布完成后，主流程汇总最近七天的 `accepted`、`rejected` 与 `edited` 判断，提出来源权重、重复规则和内容结构的改进建议。规则只有在人工确认后才进入配置或测试，避免把一次编辑偏好自动固化成长期门禁。
+
+## T7 上线前只读核查
+
+正式发布前只在目标 Neon 数据库执行下面的只读计数，不更新或恢复历史 payload。结果用于量化 008 迁移前已经清除、因此无法重建原始 fingerprint 的 legacy loss window；这些行首次重新出现时只建立 incoming baseline，不恢复 raw payload。
+
+```sql
+select 'market_radar' as schema_name, count(*)::bigint as legacy_purged_without_fingerprint
+from market_radar.raw_items
+where payload_purged_at is not null
+  and payload_fingerprint is null
+union all
+select 'learning_radar' as schema_name, count(*)::bigint as legacy_purged_without_fingerprint
+from learning_radar.raw_items
+where payload_purged_at is not null
+  and payload_fingerprint is null
+order by schema_name;
+```
+
+计数不为零不是自动恢复 raw payload 的授权。记录数量后继续保持 fail-closed；只有首次 baseline 之后可确定的真实 payload 或结构变化，才从该次修订起重新保留 14 天。

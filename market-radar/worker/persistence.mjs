@@ -54,6 +54,7 @@ export async function findMarketEventCandidate(client, item) {
 
 async function upsertRawItem(client, item, serializedPayload) {
   const previous = await query(client, `select id, title,
+      payload_purged_at is not null and payload_fingerprint is null as needs_payload_baseline,
       source_url is distinct from $3
         or title is distinct from $4
         or published_at is distinct from $5::timestamptz
@@ -76,13 +77,17 @@ async function upsertRawItem(client, item, serializedPayload) {
       title = excluded.title,
       published_at = excluded.published_at,
       payload = case when $9::boolean then excluded.payload else market_radar.raw_items.payload end,
-      payload_fingerprint = case when $9::boolean then excluded.payload_fingerprint else market_radar.raw_items.payload_fingerprint end,
+      payload_fingerprint = case
+        when $9::boolean or $10::boolean then excluded.payload_fingerprint
+        else market_radar.raw_items.payload_fingerprint
+      end,
       payload_expires_at = case when $9::boolean then now() + interval '14 days' else market_radar.raw_items.payload_expires_at end,
       payload_purged_at = case when $9::boolean then null else market_radar.raw_items.payload_purged_at end,
       normalized_at = now()
     returning id`, [
       id, item.provider, item.providerId, item.market, item.sourceUrl, item.title,
       item.publishedAt, serializedPayload, previous[0]?.content_changed === true,
+      previous[0]?.needs_payload_baseline === true,
     ])
   const old = previous[0]
   return {

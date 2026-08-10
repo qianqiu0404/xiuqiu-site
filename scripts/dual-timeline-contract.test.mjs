@@ -258,10 +258,14 @@ test('real PostgreSQL applies migrations twice, rolls back failures and enforces
   const createPool = config => new PgPool(config)
   const migrations = await loadRadarMigrations()
   const contractIndex = migrations.findIndex(migration => migration.file === '005_dual_timeline_contracts.sql')
+  const fingerprintIndex = migrations.findIndex(migration => migration.file === '008_raw_payload_fingerprints.sql')
   assert.ok(contractIndex >= 0)
+  assert.ok(fingerprintIndex > contractIndex)
   const foundationMigrations = migrations.slice(0, contractIndex)
   const contractMigration = migrations[contractIndex]
-  const pipelineMigrations = migrations.slice(contractIndex + 1)
+  const pipelineMigrations = migrations.slice(contractIndex + 1, fingerprintIndex)
+  const fingerprintMigration = migrations[fingerprintIndex]
+  const postFingerprintMigrations = migrations.slice(fingerprintIndex + 1)
   const foundation = await withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => (
     applyRadarMigrations((statement, values) => client.query(statement, values), foundationMigrations)
   ))
@@ -300,11 +304,16 @@ test('real PostgreSQL applies migrations twice, rolls back failures and enforces
     (id, provider, provider_id, market, source_url, title, published_at, payload)
     values ('legacy-source-raw', 'federal_reserve', 'legacy-source-raw', 'macro',
       'https://www.federalreserve.gov/legacy-source', 'Historical Federal Reserve report',
-      now() - interval '2 hours', '{"private":"raw"}'::jsonb)`)
+      date_trunc('milliseconds', now() - interval '2 hours'), '{"private":"raw"}'::jsonb)`)
   await observer.query(`insert into market_radar.event_sources
     (event_id, raw_item_id, source_name, source_url, title, excerpt, published_at, is_primary)
     values ('legacy-source-event', 'legacy-source-raw', 'federal_reserve',
       'https://www.federalreserve.gov/legacy-source', null, null, null, false)`)
+  await observer.query(`update market_radar.raw_items
+    set payload = '{"retained":false}'::jsonb,
+      payload_expires_at = now() - interval '1 day',
+      payload_purged_at = now()
+    where id = 'legacy-source-raw'`)
 
   const pipeline = await withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => (
     applyRadarMigrations((statement, values) => client.query(statement, values), pipelineMigrations)
@@ -321,6 +330,196 @@ test('real PostgreSQL applies migrations twice, rolls back failures and enforces
   const legacyPublic = await observer.query(`select id from market_radar.public_events
     where id = 'legacy-source-event'`)
   assert.equal(legacyPublic.rowCount, 1)
+
+  await observer.query(`insert into learning_radar.raw_items
+    (id, provider, provider_id, source_url, source_domain, title, excerpt, published_at, payload,
+      payload_expires_at, payload_purged_at, normalized_at, origin_verified_at, is_official,
+      discovered_via, verification_state)
+    values ('legacy-learning-raw', 'openai_node_releases', 'legacy-learning',
+      'https://github.com/openai/openai-node/releases/tag/legacy', 'github.com',
+      'OpenAI Node legacy release', 'Official legacy release notes.',
+      date_trunc('milliseconds', now() - interval '90 minutes'),
+      '{"legacy":true,"details":{"alpha":1,"beta":2}}'::jsonb, now() - interval '1 day', null, now(), now(), true,
+      'openai_node_releases', 'verified')`)
+  await observer.query(`insert into learning_radar.stories
+    (id, slug, cluster_key, category, status, importance, internal_score, title_zh, summary_zh,
+      why_selected_zh, ai_schema_version, occurred_at, published_at, publication_basis,
+      verification_state, has_conflict, conflict_evidence)
+    values ('legacy-learning-story', 'legacy-learning-story', 'legacy-learning-story', 'ai',
+      'published', 'key', 90, 'OpenAI Node 历史版本', '官方历史版本摘要。', '保留公开结构化证据。',
+      'learning-v1', now() - interval '90 minutes', now() - interval '80 minutes',
+      'official_primary', 'verified', false, '[]'::jsonb)`)
+  await observer.query(`insert into learning_radar.story_sources
+    (story_id, raw_item_id, source_name, source_url, title, excerpt, published_at, is_primary,
+      origin_verified_at, source_domain, registrable_domain, is_official, discovered_via, verification_state)
+    select 'legacy-learning-story', 'legacy-learning-raw', 'OpenAI SDK Releases', source_url,
+      title, excerpt, published_at, true, origin_verified_at, source_domain, 'github.com', true,
+      discovered_via, verification_state
+    from learning_radar.raw_items where id = 'legacy-learning-raw'`)
+  await observer.query(`update learning_radar.raw_items
+    set payload = '{"retained":false}'::jsonb, payload_purged_at = now()
+    where id = 'legacy-learning-raw'`)
+
+  const fingerprint = await withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => (
+    applyRadarMigrations((statement, values) => client.query(statement, values), [
+      fingerprintMigration,
+      ...postFingerprintMigrations,
+    ])
+  ))
+  assert.equal(fingerprint.value.appliedFiles, 1 + postFingerprintMigrations.length)
+  assert.equal(fingerprint.value.skippedFiles, 0)
+  const legacyFingerprints = await observer.query(`
+    select 'market' as kind, payload_fingerprint from market_radar.raw_items where id = 'legacy-source-raw'
+    union all
+    select 'learning' as kind, payload_fingerprint from learning_radar.raw_items where id = 'legacy-learning-raw'
+    order by kind`)
+  assert.deepEqual(legacyFingerprints.rows, [
+    { kind: 'learning', payload_fingerprint: null },
+    { kind: 'market', payload_fingerprint: null },
+  ])
+
+  const legacyMarketMetadata = (await observer.query(`select source_url, title, published_at,
+      payload_expires_at, payload_purged_at
+    from market_radar.raw_items where id = 'legacy-source-raw'`)).rows[0]
+  const legacyMarketItem = {
+    provider: 'federal_reserve', providerId: 'legacy-source-raw', market: 'macro',
+    sourceUrl: legacyMarketMetadata.source_url,
+    title: legacyMarketMetadata.title,
+    summary: 'Historical Federal Reserve report.',
+    sourceReport: {
+      title: legacyMarketMetadata.title,
+      excerpt: null,
+      publishedAt: legacyMarketMetadata.published_at.toISOString(),
+    },
+    publishedAt: legacyMarketMetadata.published_at.toISOString(),
+    explicitSymbols: [], payload: { private: 'raw' },
+  }
+  const legacyMarketClient = await observer.connect()
+  try {
+    const legacyMarketDiff = await legacyMarketClient.query(`select
+        source_url is distinct from $1 as url_changed,
+        title is distinct from $2 as title_changed,
+        published_at is distinct from $3::timestamptz as time_changed,
+        payload_fingerprint,
+        payload_purged_at
+      from market_radar.raw_items where id = 'legacy-source-raw'`, [
+      legacyMarketItem.sourceUrl, legacyMarketItem.title, legacyMarketItem.publishedAt,
+    ])
+    assert.deepEqual({
+      urlChanged: legacyMarketDiff.rows[0].url_changed,
+      titleChanged: legacyMarketDiff.rows[0].title_changed,
+      timeChanged: legacyMarketDiff.rows[0].time_changed,
+    }, { urlChanged: false, titleChanged: false, timeChanged: false })
+    const firstSeen = await persistMarketItem(legacyMarketClient, legacyMarketItem)
+    assert.equal(firstSeen.revised, false)
+    const firstBaseline = (await legacyMarketClient.query(`select payload, payload_fingerprint,
+        payload_expires_at, payload_purged_at
+      from market_radar.raw_items where id = 'legacy-source-raw'`)).rows[0]
+    assert.deepEqual(firstBaseline.payload, { retained: false })
+    assert.match(firstBaseline.payload_fingerprint, /^[0-9a-f]{32}$/)
+    assert.equal(firstBaseline.payload_expires_at.toISOString(), legacyMarketMetadata.payload_expires_at.toISOString())
+    assert.equal(firstBaseline.payload_purged_at.toISOString(), legacyMarketMetadata.payload_purged_at.toISOString())
+
+    const repeated = await persistMarketItem(legacyMarketClient, legacyMarketItem)
+    assert.equal(repeated.revised, false)
+    const stillPurged = await legacyMarketClient.query(`select payload, payload_purged_at
+      from market_radar.raw_items where id = 'legacy-source-raw'`)
+    assert.deepEqual(stillPurged.rows[0].payload, { retained: false })
+    assert.ok(stillPurged.rows[0].payload_purged_at instanceof Date)
+
+    const restored = await persistMarketItem(legacyMarketClient, {
+      ...legacyMarketItem,
+      payload: { private: 'raw', revision: 2 },
+    })
+    assert.equal(restored.revised, true)
+    const restoredRaw = (await legacyMarketClient.query(`select payload, payload_fingerprint,
+        payload_expires_at, payload_purged_at
+      from market_radar.raw_items where id = 'legacy-source-raw'`)).rows[0]
+    assert.deepEqual(restoredRaw.payload, { private: 'raw', revision: 2 })
+    assert.equal(restoredRaw.payload_purged_at, null)
+    assert.ok(restoredRaw.payload_expires_at.getTime() > Date.now() + 13 * 24 * 60 * 60_000)
+    await legacyMarketClient.query(`update market_radar.raw_items
+      set payload_fingerprint = null, payload_expires_at = now() - interval '1 minute'
+      where id = 'legacy-source-raw'`)
+    await cleanupMarketRetention({
+      query: async (statement, values = []) => (await legacyMarketClient.query(statement, values)).rows,
+    })
+    const cleaned = (await legacyMarketClient.query(`select payload, payload_fingerprint
+      from market_radar.raw_items where id = 'legacy-source-raw'`)).rows[0]
+    assert.deepEqual(cleaned.payload, { retained: false })
+    assert.match(cleaned.payload_fingerprint, /^[0-9a-f]{32}$/)
+    const reportEvidence = await legacyMarketClient.query(`select count(*)::integer as reports
+      from market_radar.event_sources where event_id = 'legacy-source-event'`)
+    assert.equal(reportEvidence.rows[0].reports, 1)
+  } finally {
+    legacyMarketClient.release()
+  }
+
+  const legacyLearningMetadata = (await observer.query(`select source_url, source_domain, title, excerpt,
+      published_at, origin_verified_at, payload_expires_at, payload_purged_at
+    from learning_radar.raw_items where id = 'legacy-learning-raw'`)).rows[0]
+  const legacyLearningItem = normalizeLearningItem({
+    provider: 'openai_node_releases', providerId: 'legacy-learning', category: 'ai',
+    title: legacyLearningMetadata.title, excerpt: legacyLearningMetadata.excerpt,
+    sourceUrl: legacyLearningMetadata.source_url,
+    publishedAt: legacyLearningMetadata.published_at.toISOString(),
+    isOfficial: true, discoveredVia: 'openai_node_releases', sourceName: 'OpenAI SDK Releases',
+    originVerifiedAt: legacyLearningMetadata.origin_verified_at.toISOString(), verificationState: 'verified',
+    rawPayload: { details: { beta: 2, alpha: 1 }, legacy: true },
+  })
+  const legacyLearningAnalysis = {
+    titleZh: 'OpenAI Node 历史版本', summaryZh: '官方历史版本摘要。',
+    whySelectedZh: '保留公开结构化证据。', importance: 'key', internalScore: 90, hasConflict: false,
+  }
+  for (const slot of ['legacy-learning-baseline', 'legacy-learning-repeat']) {
+    const saved = await withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => (
+      persistLearningSourceBatch(client, {
+        source: legacyLearningItem.provider,
+        groupKey: legacyLearningItem.category,
+        slot,
+        preparedItems: [{ item: legacyLearningItem, analysis: legacyLearningAnalysis }],
+      })
+    ))
+    assert.equal(saved.value.failed, undefined)
+    const retained = (await observer.query(`select payload, payload_fingerprint, payload_expires_at,
+        payload_purged_at
+      from learning_radar.raw_items where id = 'legacy-learning-raw'`)).rows[0]
+    assert.deepEqual(retained.payload, { retained: false })
+    assert.match(retained.payload_fingerprint, /^[0-9a-f]{32}$/)
+    assert.equal(retained.payload_expires_at.toISOString(), legacyLearningMetadata.payload_expires_at.toISOString())
+    assert.equal(retained.payload_purged_at.toISOString(), legacyLearningMetadata.payload_purged_at.toISOString())
+  }
+  const revisedLegacyLearningItem = normalizeLearningItem({
+    ...legacyLearningItem,
+    rawPayload: { details: { alpha: 1, beta: 3 }, legacy: true, revision: 2 },
+  })
+  const restoredLearning = await withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => (
+    persistLearningSourceBatch(client, {
+      source: revisedLegacyLearningItem.provider,
+      groupKey: revisedLegacyLearningItem.category,
+      slot: 'legacy-learning-revision',
+      preparedItems: [{ item: revisedLegacyLearningItem, analysis: legacyLearningAnalysis }],
+    })
+  ))
+  assert.equal(restoredLearning.value.failed, undefined)
+  const restoredLegacyLearningRaw = (await observer.query(`select payload, payload_expires_at, payload_purged_at
+    from learning_radar.raw_items where id = 'legacy-learning-raw'`)).rows[0]
+  assert.deepEqual(restoredLegacyLearningRaw.payload, {
+    details: { alpha: 1, beta: 3 }, legacy: true, revision: 2,
+  })
+  assert.equal(restoredLegacyLearningRaw.payload_purged_at, null)
+  assert.ok(restoredLegacyLearningRaw.payload_expires_at.getTime() > Date.now() + 13 * 24 * 60 * 60_000)
+  await observer.query(`update learning_radar.raw_items
+    set payload_fingerprint = null, payload_expires_at = now() - interval '1 minute'
+    where id = 'legacy-learning-raw'`)
+  await withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => cleanupLearningRetention(client))
+  const cleanedLearning = (await observer.query(`select payload, payload_fingerprint
+    from learning_radar.raw_items where id = 'legacy-learning-raw'`)).rows[0]
+  assert.deepEqual(cleanedLearning.payload, { retained: false })
+  assert.match(cleanedLearning.payload_fingerprint, /^[0-9a-f]{32}$/)
+  const storyEvidence = await observer.query(`select count(*)::integer as sources
+    from learning_radar.story_sources where story_id = 'legacy-learning-story'`)
+  assert.equal(storyEvidence.rows[0].sources, 1)
 
   const second = await withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => (
     applyRadarMigrations((statement, values) => client.query(statement, values), migrations)
@@ -447,7 +646,7 @@ test('real PostgreSQL applies migrations twice, rolls back failures and enforces
     const missing = await persistMarketItem(marketClient, missingReportItem, { now: marketNow })
     assert.equal(missing.eventId, firstResult.eventId)
 
-    const reports = await observer.query(`select source_name, source_url, title, excerpt, published_at, is_primary
+    const reports = await observer.query(`select id, event_id, source_name, source_url, title, excerpt, published_at, is_primary
       from market_radar.public_event_reports where event_id = $1
       order by published_at desc nulls last, id desc`, [firstResult.eventId])
     assert.equal(reports.rowCount, 3)
@@ -461,6 +660,10 @@ test('real PostgreSQL applies migrations twice, rolls back failures and enforces
     assert.equal(reports.rows[2].title, null)
     assert.equal(reports.rows[2].excerpt, null)
     assert.equal(reports.rows[2].published_at, null)
+    const mappedRealReport = mapPublicEventReportRow(reports.rows[0])
+    assert.equal(mappedRealReport?.title, 'Qiu Market protocol report corrected')
+    assert.equal(mappedRealReport?.sourceUrl, revisedFirstItem.sourceUrl)
+    assert.equal(Object.hasOwn(mappedRealReport || {}, 'payload'), false)
 
     const sourceEvidence = await observer.query(`select count(*)::integer as sources,
         count(*) filter (where is_primary)::integer as primaries
@@ -559,9 +762,11 @@ test('real PostgreSQL applies migrations twice, rolls back failures and enforces
       ('update-zero', 'story-zero', '零来源更新', '不应公开', now()),
       ('update-unverified', 'story-unverified', '未验证更新', '不应公开', now()),
       ('update-verified', 'story-verified', '已验证更新', '可以公开', now())`)
-  const publicStories = await observer.query('select id from learning_radar.public_timeline_items order by id')
+  const publicStories = await observer.query(`select id from learning_radar.public_timeline_items
+    where id in ('story-zero', 'story-unverified', 'story-verified') order by id`)
   assert.deepEqual(publicStories.rows.map(row => row.id), ['story-verified'])
-  const publicReports = await observer.query('select story_id from learning_radar.public_story_reports order by story_id')
+  const publicReports = await observer.query(`select story_id from learning_radar.public_story_reports
+    where story_id in ('story-zero', 'story-unverified', 'story-verified') order by story_id`)
   assert.deepEqual(publicReports.rows.map(row => row.story_id), ['story-verified'])
   const publicUpdates = await observer.query('select story_id from learning_radar.public_story_updates order by story_id')
   assert.deepEqual(publicUpdates.rows.map(row => row.story_id), ['story-verified'])

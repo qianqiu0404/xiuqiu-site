@@ -1,11 +1,7 @@
 import { Pool } from '@neondatabase/serverless'
 import { MARKET_GROUPS } from './config.mjs'
 import {
-  encodeMarketSourceCursor,
   mapAssets,
-  newestMarketSourceCursor,
-  parseMarketSourceCursor,
-  selectMarketItemsAfterCursor,
   validateAiSummary,
 } from './core.mjs'
 import { checkQiuMarketHealth, fetchCryptoReleases, fetchFederalReserve, fetchSecCompanyFilings, fetchSecEdgar } from './providers.mjs'
@@ -15,7 +11,12 @@ import { isUsPremarketWindow } from './market-calendar.mjs'
 import { cleanupRetention, recordDailyMetrics } from './maintenance.mjs'
 import { withRadarDatabaseLock } from './advisory-lock.mjs'
 import { findMarketEventCandidate, persistMarketItem } from './persistence.mjs'
-import { collectMarketSourceOutsideLock, persistCollectedWithLock, withMarketWorkerLease } from './orchestration.mjs'
+import {
+  collectMarketSourceOutsideLock,
+  persistCollectedWithLock,
+  persistMarketSourceBatch,
+  withMarketWorkerLease,
+} from './orchestration.mjs'
 
 const env = process.env
 const databaseUrl = env.MARKET_RADAR_DATABASE_URL
@@ -96,40 +97,25 @@ async function summarizeWithAi(item, assets) {
 
 async function persistCollectedSource(client, source, group, slot, collection) {
   const sql = asArraySql(client)
-  const runId = await startRun(sql, source, group.key, slot)
-  if (!runId) return { source, skipped: true }
-  try {
-    if (collection.error) throw new Error(collection.error)
-    const cursorRows = await sql.query(`select cursor from market_radar.source_cursors
-      where source = $1 and group_key = $2`, [source, group.key])
-    const cursor = parseMarketSourceCursor(cursorRows[0]?.cursor)
-    const fetchedItems = collection.fetchedItems
-    const items = selectMarketItemsAfterCursor(fetchedItems, cursor)
-    const prepared = new Map(collection.preparedItems.map(entry => [
-      `${entry.item.provider}:${entry.item.providerId}`,
-      entry,
-    ]))
-    let inserted = 0
-    let published = 0
-    for (const item of items) {
-      const summary = prepared.get(`${item.provider}:${item.providerId}`)?.summary || null
-      const result = await persistMarketItem(client, item, { summary })
-      if (result.inserted) inserted += 1
-      if (result.published) published += 1
-    }
-    const newest = newestMarketSourceCursor(fetchedItems, cursor)
-    await sql.query(`insert into market_radar.source_cursors (source, group_key, cursor, last_success_at)
+  return persistMarketSourceBatch({
+    source,
+    fetchedItems: collection.fetchedItems,
+    preparedItems: collection.preparedItems,
+    collectionError: collection.error,
+    startRun: () => startRun(sql, source, group.key, slot),
+    finishRun: (runId, status, itemCount, errorCode) => finishRun(sql, runId, status, itemCount, errorCode),
+    loadCursor: async () => {
+      const cursorRows = await sql.query(`select cursor from market_radar.source_cursors
+        where source = $1 and group_key = $2`, [source, group.key])
+      return cursorRows[0]?.cursor || null
+    },
+    persistItem: (item, summary) => persistMarketItem(client, item, { summary }),
+    saveCursor: cursor => sql.query(`insert into market_radar.source_cursors (source, group_key, cursor, last_success_at)
       values ($1,$2,$3,now())
       on conflict (source, group_key) do update set
         cursor = excluded.cursor, last_success_at = excluded.last_success_at, updated_at = now()`,
-    [source, group.key, encodeMarketSourceCursor(newest)])
-    await finishRun(sql, runId, 'succeeded', items.length)
-    return { source, fetched: fetchedItems.length, items: items.length, inserted, published }
-  } catch (error) {
-    const code = error instanceof Error ? error.message.slice(0, 120) : 'unknown_error'
-    await finishRun(sql, runId, 'failed', 0, code)
-    return { source, error: code }
-  }
+    [source, group.key, cursor]),
+  })
 }
 
 function marketSourceDefinitions(group, slot) {

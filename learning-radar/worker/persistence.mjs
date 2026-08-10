@@ -64,6 +64,7 @@ async function findStory(client, item, rawId) {
 async function upsertRawItem(client, item) {
   const payloadJson = JSON.stringify(item.rawPayload)
   const previous = await query(client, `select id, title,
+      payload_purged_at is not null and payload_fingerprint is null as needs_payload_baseline,
       source_url is distinct from $3
         or title is distinct from $4
         or excerpt is distinct from $5
@@ -90,7 +91,10 @@ async function upsertRawItem(client, item) {
       excerpt = excluded.excerpt,
       published_at = excluded.published_at,
       payload = case when $15::boolean then excluded.payload else learning_radar.raw_items.payload end,
-      payload_fingerprint = case when $15::boolean then excluded.payload_fingerprint else learning_radar.raw_items.payload_fingerprint end,
+      payload_fingerprint = case
+        when $15::boolean or $16::boolean then excluded.payload_fingerprint
+        else learning_radar.raw_items.payload_fingerprint
+      end,
       payload_expires_at = case when $15::boolean then now() + interval '14 days' else learning_radar.raw_items.payload_expires_at end,
       payload_purged_at = case when $15::boolean then null else learning_radar.raw_items.payload_purged_at end,
       normalized_at = now(),
@@ -103,6 +107,7 @@ async function upsertRawItem(client, item) {
       id, item.provider, item.providerId, item.sourceUrl, item.sourceDomain, item.title, item.excerpt,
       item.publishedAt, payloadJson, item.originVerifiedAt, item.isOfficial,
       item.discoveredVia, item.verificationState, item.verificationError, previous[0]?.content_changed === true,
+      previous[0]?.needs_payload_baseline === true,
     ])
   return {
     id: result[0].id,

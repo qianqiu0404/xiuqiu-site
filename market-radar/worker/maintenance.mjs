@@ -1,6 +1,8 @@
 export async function cleanupRetention(sql) {
   const purgedPayloads = await sql.query(`update market_radar.raw_items
-    set payload = '{"retained":false}'::jsonb, payload_purged_at = now()
+    set payload_fingerprint = coalesce(payload_fingerprint, md5(payload::text)),
+      payload = '{"retained":false}'::jsonb,
+      payload_purged_at = now()
     where payload_expires_at < now() and payload_purged_at is null
     returning id`)
 

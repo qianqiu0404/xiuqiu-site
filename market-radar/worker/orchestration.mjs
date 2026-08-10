@@ -1,3 +1,10 @@
+import {
+  encodeMarketSourceCursor,
+  newestMarketSourceCursor,
+  parseMarketSourceCursor,
+  selectMarketItemsAfterCursor,
+} from './core.mjs'
+
 export async function collectMarketSourceOutsideLock({ fetchItems, preflightItems, prepareItem }) {
   const fetchedItems = await fetchItems()
   const preparation = preflightItems
@@ -12,6 +19,46 @@ export async function collectMarketSourceOutsideLock({ fetchItems, preflightItem
     })
   }
   return { fetchedItems, preparedItems }
+}
+
+export async function persistMarketSourceBatch({
+  source,
+  fetchedItems,
+  preparedItems,
+  collectionError = null,
+  startRun,
+  finishRun,
+  loadCursor,
+  persistItem,
+  saveCursor,
+}) {
+  const runId = await startRun()
+  if (!runId) return { source, skipped: true }
+  try {
+    if (collectionError) throw new Error(collectionError)
+    const cursor = parseMarketSourceCursor(await loadCursor())
+    const items = selectMarketItemsAfterCursor(fetchedItems, cursor)
+    const prepared = new Map(preparedItems.map(entry => [
+      `${entry.item.provider}:${entry.item.providerId}`,
+      entry,
+    ]))
+    let inserted = 0
+    let published = 0
+    for (const item of items) {
+      const summary = prepared.get(`${item.provider}:${item.providerId}`)?.summary || null
+      const result = await persistItem(item, summary)
+      if (result.inserted) inserted += 1
+      if (result.published) published += 1
+    }
+    const newest = newestMarketSourceCursor(fetchedItems, cursor)
+    await saveCursor(encodeMarketSourceCursor(newest))
+    await finishRun(runId, 'succeeded', items.length)
+    return { source, fetched: fetchedItems.length, items: items.length, inserted, published }
+  } catch (error) {
+    const code = error instanceof Error ? error.message.slice(0, 120) : 'unknown_error'
+    await finishRun(runId, 'failed', 0, code)
+    return { source, error: code }
+  }
 }
 
 export async function persistCollectedWithLock({ withLock, work }) {

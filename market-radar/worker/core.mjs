@@ -28,18 +28,44 @@ export function normalizeTitle(input) {
     .replace(/\s+/g, ' ').trim()
 }
 
+const SOURCE_NAMED_ENTITIES = new Map([
+  ['amp', '&'],
+  ['apos', "'"],
+  ['gt', '>'],
+  ['lt', '<'],
+  ['nbsp', ' '],
+  ['quot', '"'],
+])
+
+function decodeSourceEntitiesOnce(value) {
+  return value.replace(/&(?:#(?:x[0-9a-f]+|[0-9]+)|[a-z]+);/gi, entity => {
+    const token = entity.slice(1, -1)
+    if (token[0] !== '#') return SOURCE_NAMED_ENTITIES.get(token.toLowerCase()) ?? entity
+    const numeric = token[1]?.toLowerCase() === 'x'
+      ? Number.parseInt(token.slice(2), 16)
+      : Number.parseInt(token.slice(1), 10)
+    if (!Number.isInteger(numeric) || numeric < 0 || numeric > 0x10ffff
+      || (numeric >= 0xd800 && numeric <= 0xdfff)) return ''
+    return String.fromCodePoint(numeric)
+  })
+}
+
+function decodeSourceEntities(value) {
+  let decoded = value
+  for (let round = 0; round < 3; round += 1) {
+    const next = decodeSourceEntitiesOnce(decoded)
+    if (next === decoded) break
+    decoded = next
+  }
+  return decoded
+}
+
 function compactSourceText(value, maxLength) {
   if (value === null || value === undefined) return null
-  const text = String(value)
+  const text = decodeSourceEntities(String(value))
     .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
     .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
     .replace(/<[^>]+>/g, ' ')
-    .replace(/&nbsp;/gi, ' ')
-    .replace(/&amp;/gi, '&')
-    .replace(/&lt;/gi, '<')
-    .replace(/&gt;/gi, '>')
-    .replace(/&quot;/gi, '"')
-    .replace(/&#39;/gi, "'")
     .replace(/\s+/g, ' ')
     .trim()
   if (!text) return null

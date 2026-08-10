@@ -10,7 +10,12 @@ import {
 import { buildDigestBody, summarizeAttentionAssets } from '../market-radar/worker/digests.mjs'
 import { isUsPremarketWindow, newYorkParts } from '../market-radar/worker/market-calendar.mjs'
 import { parseBinanceKlines, parseGitHubReleasePayload, parseRss, parseSecCompanyFeed } from '../market-radar/worker/providers.mjs'
-import { collectMarketSourceOutsideLock, persistCollectedWithLock, withMarketWorkerLease } from '../market-radar/worker/orchestration.mjs'
+import {
+  collectMarketSourceOutsideLock,
+  persistCollectedWithLock,
+  persistMarketSourceBatch,
+  withMarketWorkerLease,
+} from '../market-radar/worker/orchestration.mjs'
 import { parseEventCursor } from '../src/market-radar/contracts.ts'
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8')
@@ -167,6 +172,16 @@ test('source reports strip markup, bound text and fail closed on missing or inva
   assert.equal(report.publishedAt, '2026-08-10T11:00:00.000Z')
   assert.deepEqual(normalizeMarketSourceReport({}, { now }), { title: null, excerpt: null, publishedAt: null })
   assert.equal(normalizeMarketSourceReport({ publishedAt: 'not-a-date' }, { now }).publishedAt, null)
+
+  const encodedMarkup = normalizeMarketSourceReport({
+    excerpt: 'Plain &AMP; stable &lt;script&gt;bad()&lt;/script&gt; <StYlE>hidden{}</sTyLe> '
+      + '&#60;img src=x&#62; &#x3C;script&#x3E;alsoBad()&#x3C;/script&#x3E; '
+      + '&amp;lt;b&amp;gt;Double encoded&amp;lt;/b&amp;gt;',
+  }, { now })
+  assert.equal(encodedMarkup.excerpt, 'Plain & stable Double encoded')
+  assert.doesNotMatch(encodedMarkup.excerpt, /<|>|script|style|img|bad|hidden/i)
+  assert.equal(normalizeMarketSourceReport({ excerpt: 'Ordinary text stays stable.' }, { now }).excerpt,
+    'Ordinary text stays stable.')
 })
 
 test('registration-free provider parsers fail closed and discard malformed records', () => {
@@ -262,6 +277,27 @@ test('slow collection leaves the shared lock free and write contention cannot ad
   lockHeld = false
   assert.deepEqual(competed, { skipped: true, reason: 'radar_database_lock_held' })
   assert.equal(wrote, false)
+})
+
+test('a failed market batch persistence cannot advance its cursor', async () => {
+  const finishCalls = []
+  let cursorWrites = 0
+  const item = {
+    provider: 'fixture', providerId: 'write-failure', publishedAt: '2026-08-10T10:00:00Z',
+  }
+  const result = await persistMarketSourceBatch({
+    source: 'fixture',
+    fetchedItems: [item],
+    preparedItems: [{ item, summary: null }],
+    startRun: async () => 'run-1',
+    finishRun: async (...args) => { finishCalls.push(args) },
+    loadCursor: async () => null,
+    persistItem: async () => { throw new Error('fixture_write_failed') },
+    saveCursor: async () => { cursorWrites += 1 },
+  })
+  assert.deepEqual(result, { source: 'fixture', error: 'fixture_write_failed' })
+  assert.equal(cursorWrites, 0)
+  assert.deepEqual(finishCalls, [['run-1', 'failed', 0, 'fixture_write_failed']])
 })
 
 test('overlap replays and raw revisions do not repeat AI preparation', async () => {
