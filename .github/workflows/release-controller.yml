@@ -120,6 +120,7 @@ jobs:
           const vercelCommandPattern = /\bvercel\s+(?:--token\s+"\$VERCEL_TOKEN"\s+)?(?:pull|build|deploy|promote|inspect|project\s+inspect|whoami|curl)\b/
           const vercelCurlPattern = /\bvercel\s+(?:--token\s+"\$VERCEL_TOKEN"\s+)?curl\b/
           const safeTokenFlag = '--token "$VERCEL_TOKEN"'
+          const protectedTokenEnv = '${{ ' + 'secrets' + '.VERCEL_TOKEN }}'
           for (const [jobName, job] of Object.entries(controller.jobs)) {
             for (const step of job.steps || []) {
               if (!step.run || step.id === 'audit') continue
@@ -128,14 +129,16 @@ jobs:
               if (productionJobNames.includes(jobName)) {
                 for (const line of step.run.split('\n')) {
                   if (!vercelCommandPattern.test(line)) continue
+                  if (vercelCurlPattern.test(line)) {
+                    assert.equal(step.env?.VERCEL_TOKEN, protectedTokenEnv)
+                    assert.match(line, /\bvercel\s+curl\b/)
+                    assert.doesNotMatch(line, /--token/)
+                    assert.match(line, /\bcurl\s+"[^"]+"\s+--yes\s+--\s/)
+                    continue
+                  }
                   assert.equal(line.includes(safeTokenFlag), true)
                   assert.equal((line.match(/--token/g) || []).length, 1)
                   assert.doesNotMatch(line, /--token(?:=|\s+)(?!"\$VERCEL_TOKEN"(?:\s|$))/)
-                  if (vercelCurlPattern.test(line)) {
-                    assert.match(line, /\bvercel\s+--token\s+"\$VERCEL_TOKEN"\s+curl\b/)
-                    assert.doesNotMatch(line, /\bcurl\b[^\n]*--token/)
-                    assert.match(line, /\bcurl\s+"[^"]+"\s+--yes\s+--\s/)
-                  }
                   if (/\bvercel\s+project\s+inspect\b/.test(line)) {
                     assert.doesNotMatch(line, /--scope(?:=|\s+)/)
                   }
@@ -413,9 +416,9 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$VERCEL_TOKEN"
-          vercel --token "$VERCEL_TOKEN" curl "$SMOKE_URL/" --yes -- --fail --silent --show-error --location --max-time 30 >/dev/null
-          vercel --token "$VERCEL_TOKEN" curl "$SMOKE_URL/market-radar" --yes -- --fail --silent --show-error --location --max-time 30 >/dev/null
-          events=$(vercel --token "$VERCEL_TOKEN" curl "$SMOKE_URL/api/market-radar/events?limit=1" --yes -- --fail --silent --show-error --max-time 30)
+          vercel curl "$SMOKE_URL/" --yes -- --fail --silent --show-error --location --max-time 30 >/dev/null
+          vercel curl "$SMOKE_URL/market-radar" --yes -- --fail --silent --show-error --location --max-time 30 >/dev/null
+          events=$(vercel curl "$SMOKE_URL/api/market-radar/events?limit=1" --yes -- --fail --silent --show-error --max-time 30)
           jq -e '(.items | type) == "array"' <<< "$events" >/dev/null
 
   promote_vercel_production:
