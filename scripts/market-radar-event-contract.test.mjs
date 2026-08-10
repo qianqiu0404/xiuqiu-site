@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import test from 'node:test'
+import { allMarketRadars } from '../src/data/generatedMarketRadarAll.ts'
+import { findStaticMarketRadarEvent } from '../src/data/marketRadarPresentation.ts'
 import { mapPublicEventRow } from '../src/market-radar/public-event.ts'
 import { publicEventRowLegacy, publicEventRowV2 } from './fixtures/market-radar-public-event-row.mjs'
 
@@ -32,6 +34,22 @@ test('legacy, missing and blank boundary columns map to explicit nulls', () => {
   assert.deepEqual([blank.watchFor, blank.invalidation], [null, null])
 })
 
+test('static event fallback preserves only generated source-backed fields', () => {
+  const match = findStaticMarketRadarEvent(allMarketRadars, 'us-inflation-releases-2026-08')
+  assert.ok(match)
+  assert.equal(match.snapshotSlug, '2026-08-09')
+  assert.equal(match.event.sourceName, 'U.S. Bureau of Labor Statistics')
+  assert.equal(match.event.sourceUrl, 'https://www.bls.gov/schedule/2026/08_sched_list.htm')
+  assert.equal(match.event.sourcePublishedAt, '2026-06-10')
+  assert.equal(match.event.eventAt, '2026-08-12T20:30:00+08:00')
+  assert.deepEqual(match.event.assets, ['BTC', 'ETH', 'SPY', 'DXY'])
+  assert.match(match.event.watchFor, /30 分钟和 4 小时/)
+  assert.match(match.event.invalidation, /BLS 最新日程/)
+  assert.equal(Object.hasOwn(match.event, 'score'), false)
+  assert.equal(Object.hasOwn(match.event, 'reaction'), false)
+  assert.equal(findStaticMarketRadarEvent(allMarketRadars, 'missing-event'), undefined)
+})
+
 test('the event reader keeps source, observation and invalidation visible without raw HTML', async () => {
   const [page, styles] = await Promise.all([
     readFile(new URL('../src/pages/MarketRadarEventPage.vue', import.meta.url), 'utf8'),
@@ -46,6 +64,11 @@ test('the event reader keeps source, observation and invalidation visible withou
   assert.match(page, /历史记录未提供独立失效条件。/)
   assert.match(page, /target="_blank" rel="noopener"/)
   assert.match(page, /class="trade-radar-source-name"/)
+  assert.match(page, /findStaticMarketRadarEvent\(allMarketRadars, id\)/)
+  assert.match(page, /event\.score !== undefined/)
+  assert.match(page, /event\.origin === 'api'/)
+  assert.match(page, /静态快照没有 score、行情反应或系统判断字段/)
+  assert.match(page, /event\.snapshotSlug/)
   assert.doesNotMatch(page, /v-html|innerHTML/)
   assert.match(styles, /\.trade-radar-event-boundaries dl \{[\s\S]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/)
   assert.match(styles, /\.trade-radar-event-boundaries a \{[\s\S]*min-height: 3\.25rem/)

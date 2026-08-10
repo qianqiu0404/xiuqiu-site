@@ -29,7 +29,7 @@ function formatGeneratedAt(value: string) {
 }
 
 async function focusEventHash(hash: string, version: number) {
-  if (!hash) return
+  if (!hash || hash === '#main-content') return
   await nextTick()
   await document.fonts.ready
   await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
@@ -38,7 +38,8 @@ async function focusEventHash(hash: string, version: number) {
   let id = hash.slice(1)
   try { id = decodeURIComponent(id) } catch { return }
   const target = document.getElementById(id)
-  const heading = target?.querySelector<HTMLElement>('h2')
+  if (!target?.classList.contains('trade-radar-detail-event')) return
+  const heading = target.querySelector<HTMLElement>(':scope > h2')
   if (!target || !heading) return
 
   target.scrollIntoView({ block: 'start' })
@@ -131,6 +132,7 @@ watchEffect(() => {
             <div class="trade-radar-source-block">
               <span>来源发布 {{ event.sourcePublishedAt }}</span>
               <a :href="event.sourceUrl" target="_blank" rel="noopener">核对 {{ event.sourceName }} <i aria-hidden="true">↗</i></a>
+              <router-link :to="{ name: 'market-radar-event', params: { id: event.id } }">查看事件详情 <i aria-hidden="true">→</i></router-link>
             </div>
           </footer>
         </article>
