@@ -4,6 +4,12 @@
     "deploymentEnabled": false
   },
   "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/radar/stories/:slug",
+      "destination": "/radar/index.html"
+    }
+  ],
   "headers": [
     {
       "source": "/content-catalog-preview",

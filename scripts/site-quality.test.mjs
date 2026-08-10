@@ -71,6 +71,7 @@ function expectedSitemapRoutes() {
   for (const dynamicPath of [
     '/ai/deliveries/:slug',
     '/radar/week/:week',
+    '/radar/stories/:slug',
     '/radar/:date',
     '/market-radar/:date',
     '/articles/:slug',

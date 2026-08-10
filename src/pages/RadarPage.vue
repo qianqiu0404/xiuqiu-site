@@ -1,339 +1,212 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { latestRadars, radarIndex, type RadarIndexEntry } from '../data/generatedRadars'
-import { radarWeeklies } from '../data/generatedRadarWeeklies'
+import TimelineCard from '../components/TimelineCard.vue'
+import { latestRadars } from '../data/generatedRadars'
+import type { LearningRadarCategory, LearningRadarSummary } from '../learning-radar/contracts'
 import {
-  getRadarReviewBoundary,
-  getSupportingRadarItems,
-  radarSignalCountLabel,
-  radarSourceStatus,
-} from '../data/radarPresentation'
+  buildStaticTimeline,
+  countOccurredToday,
+  groupHistoricalTimeline,
+  learningCategoryOptions,
+  parseLearningSummary,
+  parseLearningTimelineList,
+  partitionTimelineByOccurrence,
+  rankFeaturedTimeline,
+  toTimelineCardViewModel,
+  type TimelineCardViewModel,
+} from '../learning-radar/timeline-presentation'
 import { setSeoMeta } from '../utils/seo'
-import '../styles/radar.css'
+import '../styles/radar-timeline.css'
 
-const latestRadar = latestRadars[0]
-const latestWeekly = radarWeeklies[0]
-const archiveLimit = 10
-type ArchiveFilter = 'all' | 'crypto' | 'ai' | 'web3' | 'tools' | 'reading'
+type CategoryFilter = 'all' | LearningRadarCategory
+type TimelineOrigin = 'api' | 'static'
 
-interface ArchiveFilterOption {
-  key: ArchiveFilter
-  label: string
+const category = ref<CategoryFilter>('all')
+const cards = ref<TimelineCardViewModel[]>([])
+const summary = ref<LearningRadarSummary | null>(null)
+const origin = ref<TimelineOrigin>('static')
+const loading = ref(true)
+const loadingMore = ref(false)
+const nextCursor = ref<string | null>(null)
+const statusMessage = ref('')
+let requestVersion = 0
+let activeRequest: AbortController | null = null
+
+const staticCards = buildStaticTimeline(latestRadars)
+const filteredStaticCards = computed(() => category.value === 'all'
+  ? staticCards : staticCards.filter(item => item.category === category.value))
+const partitionedCards = computed(() => partitionTimelineByOccurrence(cards.value))
+const futureCards = computed(() => partitionedCards.value.future)
+const historicalCards = computed(() => partitionedCards.value.historical)
+const historicalGroups = computed(() => groupHistoricalTimeline(historicalCards.value))
+const featuredCards = computed(() => rankFeaturedTimeline(historicalCards.value))
+const todayCount = computed(() => countOccurredToday(cards.value))
+const updatedAt = computed(() => origin.value === 'api'
+  ? summary.value?.latestStoryAt || cards.value[0]?.publishedAt || new Date(0).toISOString()
+  : latestRadars[0]?.generatedAt || new Date(0).toISOString())
+
+function formatUpdatedAt(value: string): string {
+  return new Intl.DateTimeFormat('zh-CN', {
+    timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit', hour12: false,
+  }).format(new Date(value))
 }
 
-interface RadarArchiveGroup {
-  week: string
-  label: string
-  radars: RadarIndexEntry[]
+function useStaticFallback(message: string) {
+  origin.value = 'static'
+  cards.value = filteredStaticCards.value
+  summary.value = null
+  nextCursor.value = null
+  statusMessage.value = message
 }
 
-const archiveFilter = ref<ArchiveFilter>('all')
-const archiveExpanded = ref(false)
-const archiveFilters: ArchiveFilterOption[] = [
-  { key: 'all', label: '全部' },
-  { key: 'crypto', label: 'Crypto' },
-  { key: 'ai', label: 'AI Engineering' },
-  { key: 'web3', label: 'Web3 Design' },
-  { key: 'tools', label: 'Tools' },
-  { key: 'reading', label: 'Reading' },
-]
-const supportingSignals = computed(() =>
-  latestRadar ? getSupportingRadarItems(latestRadar) : [],
-)
-const latestSignalLabel = computed(() => radarSignalCountLabel(latestRadar?.marketSignals.length ?? 0))
-const latestReviewBoundary = computed(() =>
-  latestWeekly
-    ? getRadarReviewBoundary(latestWeekly.reviewedAt, latestRadar?.date)
-    : undefined,
-)
-
-function radarMatchesFilter(radar: RadarIndexEntry, filter: ArchiveFilter): boolean {
-  if (filter === 'all') return true
-  if (filter === 'crypto') return radar.marketSignals.length > 0
-  if (filter === 'ai') return Boolean(radar.aiTip)
-  if (filter === 'web3') return Boolean(radar.web3Design)
-  if (filter === 'tools') return Boolean(radar.vibeProject)
-  return Boolean(radar.readingPick)
+async function requestTimeline(cursor?: string, signal?: AbortSignal) {
+  const params = new URLSearchParams({ window: '720', limit: '30' })
+  if (category.value !== 'all') params.set('category', category.value)
+  if (cursor) params.set('cursor', cursor)
+  const response = await fetch(`/api/learning-radar/items?${params}`, { signal })
+  if (!response.ok || !response.headers.get('content-type')?.includes('application/json')) throw new Error('timeline-unavailable')
+  const payload = parseLearningTimelineList(await response.json())
+  if (!payload || payload.status === 'unconfigured') throw new Error('timeline-unconfigured')
+  return payload
 }
 
-function radarArchiveTitle(radar: RadarIndexEntry): string {
-  if (archiveFilter.value === 'ai') return radar.aiTip?.title || radar.summary
-  if (archiveFilter.value === 'web3') return radar.web3Design?.title || radar.summary
-  if (archiveFilter.value === 'tools') return radar.vibeProject?.title || radar.summary
-  if (archiveFilter.value === 'reading') return radar.readingPick?.title || radar.summary
-  return radar.marketSignals[0]?.title || radar.summary
+async function loadTimeline() {
+  const version = ++requestVersion
+  activeRequest?.abort()
+  activeRequest = new AbortController()
+  loading.value = true
+  loadingMore.value = false
+  cards.value = []
+  summary.value = null
+  nextCursor.value = null
+  statusMessage.value = ''
+  try {
+    const [timeline, summaryResponse] = await Promise.all([
+      requestTimeline(undefined, activeRequest.signal),
+      fetch('/api/learning-radar/summary', { signal: activeRequest.signal }),
+    ])
+    if (version !== requestVersion) return
+    const summaryPayload = summaryResponse.ok && summaryResponse.headers.get('content-type')?.includes('application/json')
+      ? parseLearningSummary(await summaryResponse.json()) : null
+    cards.value = timeline.items.map(toTimelineCardViewModel)
+    nextCursor.value = timeline.nextCursor
+    summary.value = summaryPayload
+    origin.value = 'api'
+    statusMessage.value = timeline.status === 'degraded'
+      ? timeline.message || '学习时间线当前处于延迟状态，内容仍来自已发布数据库记录。'
+      : summaryPayload?.status === 'degraded' ? summaryPayload.message || '来源健康状态延迟。' : ''
+  } catch (error) {
+    if (version !== requestVersion) return
+    if (error instanceof DOMException && error.name === 'AbortError') return
+    useStaticFallback('实时学习时间线暂时不可用，当前展示已提交的静态学习日报。')
+  } finally {
+    if (version === requestVersion) loading.value = false
+  }
 }
 
-function getIsoWeek(dateValue: string): { key: string; label: string } {
-  const date = new Date(`${dateValue}T00:00:00Z`)
-  const dayIndex = (date.getUTCDay() + 6) % 7
-  const thursday = new Date(date)
-  thursday.setUTCDate(date.getUTCDate() - dayIndex + 3)
-  const weekYear = thursday.getUTCFullYear()
-  const firstThursday = new Date(Date.UTC(weekYear, 0, 4))
-  const firstDayIndex = (firstThursday.getUTCDay() + 6) % 7
-  firstThursday.setUTCDate(firstThursday.getUTCDate() - firstDayIndex + 3)
-  const weekNumber = 1 + Math.round(
-    (thursday.getTime() - firstThursday.getTime()) / (7 * 24 * 60 * 60 * 1000),
-  )
-  const week = String(weekNumber).padStart(2, '0')
-  return { key: `${weekYear}-W${week}`, label: `${weekYear} · W${week}` }
+async function loadMore() {
+  if (!nextCursor.value || loadingMore.value || origin.value !== 'api') return
+  const version = requestVersion
+  const requestedCursor = nextCursor.value
+  loadingMore.value = true
+  try {
+    const timeline = await requestTimeline(requestedCursor, activeRequest?.signal)
+    if (version !== requestVersion) return
+    const existingIds = new Set(cards.value.map(item => item.id))
+    cards.value = [...cards.value, ...timeline.items.map(toTimelineCardViewModel)
+      .filter(item => !existingIds.has(item.id))]
+    nextCursor.value = timeline.nextCursor
+  } catch {
+    if (version !== requestVersion) return
+    statusMessage.value = '更早的时间线暂时无法载入；已显示内容保持不变。'
+  } finally {
+    loadingMore.value = false
+  }
 }
 
-const archiveFilterCounts = computed(() =>
-  Object.fromEntries(
-    archiveFilters.map(option => [
-      option.key,
-      radarIndex.filter(radar => radarMatchesFilter(radar, option.key)).length,
-    ]),
-  ) as Record<ArchiveFilter, number>,
-)
-
-const filteredArchive = computed(() =>
-  radarIndex.filter(radar => radarMatchesFilter(radar, archiveFilter.value)),
-)
-
-const visibleArchive = computed(() =>
-  archiveExpanded.value ? filteredArchive.value : filteredArchive.value.slice(0, archiveLimit),
-)
-
-const archiveGroups = computed<RadarArchiveGroup[]>(() => {
-  const groups = new Map<string, RadarArchiveGroup>()
-  visibleArchive.value.forEach((radar) => {
-    const week = getIsoWeek(radar.date)
-    const current = groups.get(week.key)
-    if (current) current.radars.push(radar)
-    else groups.set(week.key, { week: week.key, label: week.label, radars: [radar] })
-  })
-  return [...groups.values()]
-})
-
-watch(archiveFilter, () => {
-  archiveExpanded.value = false
-})
-
-onMounted(() =>
+watch(category, loadTimeline)
+onMounted(() => {
   setSeoMeta({
-    title: '行业情报雷达｜xiuqiu',
-    description: '面向 Web3 钱包与 AI 工程的每日行业简报、人工复核周度收敛和可追溯历史档案。',
+    title: '学习情报时间线｜xiuqiu',
+    description: '按发生时间整理的 AI、Web3 钱包、工程工具与研究阅读情报，保留来源、摘要与入选理由。',
     path: '/radar',
-  }),
-)
+  })
+  void loadTimeline()
+})
 </script>
 
 <template>
-  <div class="radar-intelligence-page" lang="zh-CN">
-    <section class="radar-intelligence-hero" aria-labelledby="radar-title">
-      <div class="container radar-intelligence-shell radar-hero-layout">
-        <div class="radar-hero-copy">
-          <p class="radar-kicker">Industry Intelligence / Human Convergence</p>
-          <h1 id="radar-title">把行业信号，<br /><span>压缩成<br />工程判断。</span></h1>
-          <p>
-            日报负责保留公开事实与待验证线索，周报负责决定哪些进入 Wallet、Market 与 AI Engineering。
-          </p>
+  <div class="learn-timeline-page" lang="zh-CN">
+    <header class="learn-timeline-hero">
+      <div class="container learn-timeline-shell learn-timeline-hero__grid">
+        <div>
+          <p class="learn-timeline-kicker">Learn Radar / Source-backed intelligence</p>
+          <h1>把每天发生的变化，<span>整理成可追溯的学习时间线。</span></h1>
+          <p class="learn-timeline-lead">只展示已发生、可回到公开来源核对的内容。摘要与入选理由分开，先读重点，再决定是否深入原文。</p>
         </div>
-
-        <aside v-if="latestRadar" class="radar-hero-status" aria-label="最新情报状态">
-          <div>
-            <span>Latest brief</span>
-            <time :datetime="latestRadar.date">{{ latestRadar.date }}</time>
-          </div>
-          <dl>
-            <div>
-              <dt>Signals</dt>
-              <dd>{{ latestRadar.marketSignals.length }}</dd>
-            </div>
-            <div>
-              <dt>Archive</dt>
-              <dd>{{ radarIndex.length }}</dd>
-            </div>
-          </dl>
-          <p>AI 自动汇总 · {{ radarSourceStatus(latestRadar) }}</p>
-        </aside>
-        <aside v-else class="radar-hero-status" aria-label="最新情报状态">
-          <div>
-            <span>Latest brief</span>
-            <strong>暂无已公开日报</strong>
-          </div>
-          <p>请查看历史档案，或稍后返回确认新的公开简报。</p>
+        <aside class="learn-timeline-status" aria-label="学习雷达更新时间与精选数量">
+          <div><span>更新时间</span><time :datetime="updatedAt">{{ formatUpdatedAt(updatedAt) }} CST</time></div>
+          <div><span>今日精选</span><strong>{{ todayCount }}</strong></div>
+          <p :class="{ 'is-static': origin === 'static' }">{{ origin === 'api' ? '数据库时间线' : '静态快照' }}</p>
         </aside>
       </div>
+    </header>
+
+    <section class="learn-featured" aria-labelledby="learn-featured-title">
+      <div class="container learn-timeline-shell">
+        <header class="learn-section-heading">
+          <div><p class="learn-timeline-kicker">01 / Highest value now</p><h2 id="learn-featured-title">先看今天最值得理解的 3 条。</h2></div>
+          <p>按重要性与发生时间排序，不按热度排序。</p>
+        </header>
+        <div v-if="loading" class="learn-timeline-state" aria-live="polite" aria-busy="true">正在读取学习情报…</div>
+        <div v-else-if="featuredCards.length" class="learn-featured__grid">
+          <TimelineCard v-for="item in featuredCards" :key="`featured-${item.id}`" :item="item" featured />
+        </div>
+        <div v-else class="learn-timeline-state">当前筛选下没有可展示的公开内容。</div>
+      </div>
     </section>
 
-    <section v-if="latestRadar" class="radar-daily-stage" aria-labelledby="radar-daily-title">
-      <div class="container radar-intelligence-shell">
-        <header class="radar-stage-heading">
-          <div>
-            <p class="radar-kicker">01 / Daily Brief</p>
-            <h2 id="radar-daily-title">{{ latestSignalLabel }}</h2>
-          </div>
-          <router-link :to="`/radar/${latestRadar.slug}`">阅读完整简报 <span aria-hidden="true">↗</span></router-link>
+    <section class="learn-ledger" aria-labelledby="learn-ledger-title">
+      <div class="container learn-timeline-shell">
+        <header class="learn-section-heading">
+          <div><p class="learn-timeline-kicker">02 / Occurred timeline</p><h2 id="learn-ledger-title">已发生，按日期倒序。</h2></div>
+          <time :datetime="updatedAt">更新 {{ formatUpdatedAt(updatedAt) }}</time>
         </header>
 
-        <div class="radar-daily-layout">
-          <div class="radar-daily-primary">
-            <header>
-              <time :datetime="latestRadar.date">{{ latestRadar.date }}</time>
-              <p>{{ latestRadar.summary }}</p>
-            </header>
-
-            <ol v-if="latestRadar.marketSignals.length" class="radar-signal-ledger">
-              <li v-for="(signal, index) in latestRadar.marketSignals" :key="signal.title">
-                <span>{{ String(index + 1).padStart(2, '0') }}</span>
-                <article>
-                  <p>Public signal / verify before use</p>
-                  <h3>{{ signal.title }}</h3>
-                  <p>{{ signal.summary }}</p>
-                </article>
-                <a
-                  v-if="signal.sourceUrl"
-                  :href="signal.sourceUrl"
-                  target="_blank"
-                  rel="noopener"
-                  :aria-label="`查看 ${signal.title} 的原始来源`"
-                >↗</a>
-              </li>
-            </ol>
-            <div v-else class="radar-daily-empty" role="status">
-              <strong>本期没有通过公开门禁的行业信号。</strong>
-              <p>完整简报仍保留工程观察与来源状态；可继续阅读，或在历史档案中查看往期信号。</p>
-            </div>
-          </div>
-
-          <aside v-if="supportingSignals.length" class="radar-research-index" aria-label="本期研究分支">
-            <header>
-              <p class="radar-kicker">Research Index</p>
-              <span>推断与观察</span>
-            </header>
-            <router-link
-              v-for="(signal, index) in supportingSignals"
-              :key="signal.title"
-              :to="`/radar/${latestRadar.slug}#${signal.key === 'web3' ? 'web3-design' : signal.key === 'ai' ? 'ai-engineering' : signal.key}`"
-            >
-              <span>{{ String(index + 1).padStart(2, '0') }}</span>
-              <div>
-                <small>{{ signal.label }} · {{ signal.evidenceLabel }}</small>
-                <strong>{{ signal.title }}</strong>
-              </div>
-              <b aria-hidden="true">→</b>
-            </router-link>
-          </aside>
+        <div class="learn-category-filter" role="group" aria-label="按学习分类筛选">
+          <button v-for="option in learningCategoryOptions" :key="option.value" type="button"
+            :class="{ active: category === option.value }" :aria-pressed="category === option.value"
+            @click="category = option.value">{{ option.label }}</button>
         </div>
-      </div>
-    </section>
-
-    <section v-else class="radar-daily-stage" aria-labelledby="radar-daily-empty-title">
-      <div class="container radar-intelligence-shell radar-daily-empty">
-        <p class="radar-kicker">01 / Daily Brief</p>
-        <h2 id="radar-daily-empty-title">暂无已公开日报。</h2>
-        <p>可先浏览历史档案，或稍后返回确认新的公开简报。</p>
-      </div>
-    </section>
-
-    <section v-if="latestWeekly" class="radar-convergence-stage" aria-labelledby="radar-weekly-title">
-      <div class="container radar-intelligence-shell">
-        <header class="radar-stage-heading radar-stage-heading--dark">
-          <div>
-            <p class="radar-kicker">02 / Human Reviewed Weekly</p>
-            <h2 id="radar-weekly-title">信号只有经过取舍，<br />才配进入工程。</h2>
-          </div>
-          <div v-if="latestReviewBoundary" class="radar-review-status" aria-label="周报复核状态">
-            <time :datetime="latestWeekly.reviewedAt">{{ latestReviewBoundary.lastReviewedLabel }}</time>
-            <span>{{ latestReviewBoundary.statusLabel }}</span>
-            <span>{{ latestReviewBoundary.nextReviewLabel }}</span>
-          </div>
-        </header>
-
-        <div class="radar-convergence-lead">
-          <div>
-            <p class="radar-kicker">{{ latestWeekly.title }}</p>
-            <p>{{ latestWeekly.summary }}</p>
-          </div>
-          <blockquote v-if="latestWeekly.judgments[0]">{{ latestWeekly.judgments[0] }}</blockquote>
+        <p class="sr-only" aria-live="polite">当前显示 {{ cards.length }} 条学习情报</p>
+        <div v-if="origin === 'static'" class="learn-static-notice" role="status">
+          <strong>静态快照</strong>
+          <p>{{ statusMessage }} 快照更新时间为 {{ formatUpdatedAt(updatedAt) }} CST，不代表实时状态。</p>
+          <router-link :to="`/radar/${latestRadars[0]?.slug}`">查看最新已提交日报</router-link>
         </div>
+        <p v-else-if="statusMessage" class="learn-api-notice" role="status">{{ statusMessage }}</p>
 
-        <div class="radar-convergence-grid">
-          <article v-if="latestWeekly.shipped[0]">
-            <span>01 / Entered Engineering</span>
-            <p>{{ latestWeekly.shipped[0] }}</p>
-          </article>
-          <article v-if="latestWeekly.watch[0]">
-            <span>02 / Keep Watching</span>
-            <p>{{ latestWeekly.watch[0] }}</p>
-          </article>
-          <article v-if="latestWeekly.nextFocus[0]">
-            <span>03 / Next Focus</span>
-            <p>{{ latestWeekly.nextFocus[0] }}</p>
-          </article>
-        </div>
-
-        <router-link class="radar-convergence-action" :to="`/radar/week/${latestWeekly.slug}`">
-          查看完整周度收敛 <span aria-hidden="true">↗</span>
-        </router-link>
-      </div>
-    </section>
-
-    <section v-else class="radar-convergence-stage" aria-labelledby="radar-weekly-empty-title">
-      <div class="container radar-intelligence-shell radar-daily-empty">
-        <p class="radar-kicker">02 / Human Reviewed Weekly</p>
-        <h2 id="radar-weekly-empty-title">暂无已公开的人工复核周报。</h2>
-        <p>日报仍可作为待验证线索阅读；在周报公开前，不应把自动汇总视为人工结论。</p>
-      </div>
-    </section>
-
-    <section class="radar-archive-stage" aria-labelledby="radar-archive-title">
-      <div class="container radar-intelligence-shell">
-        <header class="radar-stage-heading">
-          <div>
-            <p class="radar-kicker">03 / Intelligence Archive</p>
-            <h2 id="radar-archive-title">历史不是卡片墙，<br />是可检索的判断轨迹。</h2>
-          </div>
-          <span>{{ filteredArchive.length }} / {{ radarIndex.length }} 期</span>
-        </header>
-
-        <div class="radar-filter-line" role="group" aria-label="按栏目筛选历史简报">
-          <button
-            v-for="option in archiveFilters"
-            :key="option.key"
-            type="button"
-            :class="{ active: archiveFilter === option.key }"
-            :aria-pressed="archiveFilter === option.key"
-            @click="archiveFilter = option.key"
-          >
-            {{ option.label }} <span>{{ archiveFilterCounts[option.key] }}</span>
-          </button>
-        </div>
-
-        <p class="sr-only" aria-live="polite">当前显示 {{ visibleArchive.length }} 期简报</p>
-        <div v-if="archiveGroups.length" class="radar-archive-ledger">
-          <section v-for="group in archiveGroups" :key="group.week">
-            <header><h3>{{ group.label }}</h3><span>{{ group.radars.length }} briefs</span></header>
-            <router-link v-for="radar in group.radars" :key="radar.slug" :to="`/radar/${radar.slug}`">
-              <time :datetime="radar.date">{{ radar.date.slice(5).replace('-', '.') }}</time>
-              <strong>{{ radarArchiveTitle(radar) }}</strong>
-              <span aria-hidden="true">→</span>
-            </router-link>
+        <section v-if="!loading && futureCards.length" class="learn-future" aria-labelledby="learn-future-title">
+          <header><p class="learn-timeline-kicker">Scheduled / Future</p><h3 id="learn-future-title">未来事项，按时间正序。</h3></header>
+          <div class="learn-timeline-list"><TimelineCard v-for="item in futureCards" :key="item.id" :item="item" /></div>
+        </section>
+        <div v-if="!loading && historicalGroups.length" class="learn-history-groups">
+          <section v-for="group in historicalGroups" :key="group.date" class="learn-date-group" :aria-labelledby="`learn-date-${group.date}`">
+            <h3 :id="`learn-date-${group.date}`"><time :datetime="group.date">{{ group.label }}</time></h3>
+            <div class="learn-timeline-list"><TimelineCard v-for="item in group.items" :key="item.id" :item="item" /></div>
           </section>
         </div>
-        <div v-else class="radar-archive-empty" role="status">
-          <p>该栏目暂时没有公开简报。</p>
-          <button v-if="archiveFilter !== 'all'" type="button" @click="archiveFilter = 'all'">查看全部历史简报</button>
-          <p v-else>请稍后返回确认新的公开简报。</p>
-        </div>
+        <div v-else-if="!loading" class="learn-timeline-state">该分类暂无已发布内容，可切换分类或稍后返回。</div>
 
-        <button
-          v-if="filteredArchive.length > archiveLimit"
-          class="radar-archive-toggle"
-          type="button"
-          :aria-expanded="archiveExpanded"
-          @click="archiveExpanded = !archiveExpanded"
-        >
-          {{ archiveExpanded ? '收起历史记录' : `展开全部 ${filteredArchive.length} 期` }}
-        </button>
+        <button v-if="nextCursor && origin === 'api'" class="learn-load-more" type="button"
+          :disabled="loadingMore" @click="loadMore">{{ loadingMore ? '正在载入…' : '载入更早内容' }}</button>
 
-        <p class="radar-editorial-disclaimer">
-          内容由公开来源经 AI 自动汇总，周度判断另行人工复核。市场信息仅用于研究与教育，不构成投资建议。
-        </p>
+        <nav class="learn-legacy-links" aria-label="学习雷达历史入口">
+          <span>Legacy archive</span>
+          <router-link :to="`/radar/${latestRadars[0]?.slug}`">旧版日报档案</router-link>
+          <router-link to="/radar/week/2026-W29">人工复核周报</router-link>
+        </nav>
       </div>
     </section>
   </div>

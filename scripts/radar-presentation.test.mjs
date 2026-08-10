@@ -124,8 +124,9 @@ test('Learn Radar routes rely on the single application main landmark', () => {
 })
 
 test('Learn Radar exposes generated, review, loading, empty and error boundaries', () => {
-  assert.match(radarPageSource, /radarSignalCountLabel\(latestRadar\?\.marketSignals\.length \?\? 0\)/)
-  assert.match(radarPageSource, /latestRadar\.date[\s\S]*latestWeekly\.reviewedAt|latestWeekly\.reviewedAt[\s\S]*latestRadar\?\.date/)
+  assert.match(radarPageSource, /parseLearningTimelineList/)
+  assert.match(radarPageSource, /useStaticFallback/)
+  assert.match(radarPageSource, /实时学习时间线暂时不可用/)
   assert.match(radarDetailSource, /aria-busy="true"/)
   assert.match(radarDetailSource, /role="alert"/)
   assert.match(radarDetailSource, /AI 自动汇总 · 未经人工复核/)

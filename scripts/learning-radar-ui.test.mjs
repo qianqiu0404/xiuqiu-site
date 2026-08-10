@@ -1,0 +1,133 @@
+import assert from 'node:assert/strict'
+import { readFileSync } from 'node:fs'
+import test from 'node:test'
+import { mapPublicStoryReportRow, mapPublicStoryUpdateRow, mapPublicTimelineItemRow } from '../src/learning-radar/public-story.ts'
+import {
+  buildStaticTimeline,
+  countOccurredToday,
+  groupHistoricalTimeline,
+  parseLearningStory,
+  parseLearningTimelineList,
+  partitionTimelineByOccurrence,
+  rankFeaturedTimeline,
+  toTimelineCardViewModel,
+} from '../src/learning-radar/timeline-presentation.ts'
+import { latestRadars } from '../src/data/generatedRadars.ts'
+import { publicLearningTimelineRow, publicLearningReportRow, publicLearningUpdateRow } from './fixtures/learning-radar-public-story-row.mjs'
+
+const read = path => readFileSync(new URL(path, import.meta.url), 'utf8')
+
+test('real public row flows through the production mapper, API parser and timeline view model', () => {
+  const mapped = mapPublicTimelineItemRow(publicLearningTimelineRow)
+  const apiPayload = parseLearningTimelineList({ status: 'healthy', items: [mapped], nextCursor: null })
+  assert.ok(apiPayload)
+  const card = toTimelineCardViewModel(apiPayload.items[0])
+  assert.deepEqual({ id: card.id, title: card.title, category: card.category, sourceName: card.sourceName,
+    sourceUrl: card.sourceUrl, detailHref: card.detailHref }, {
+    id: publicLearningTimelineRow.id,
+    title: publicLearningTimelineRow.title_zh,
+    category: publicLearningTimelineRow.category,
+    sourceName: publicLearningTimelineRow.primary_source.name,
+    sourceUrl: publicLearningTimelineRow.primary_source.url,
+    detailHref: `/radar/stories/${publicLearningTimelineRow.slug}`,
+  })
+  assert.equal(card.whySelected, publicLearningTimelineRow.why_selected_zh)
+  assert.equal(card.sourceCount, 1)
+  const report = mapPublicStoryReportRow(publicLearningReportRow)
+  const update = mapPublicStoryUpdateRow(publicLearningUpdateRow)
+  assert.ok(report && update)
+  assert.ok(parseLearningStory({ ...mapped, reports: [report], updates: [update] }))
+})
+
+test('runtime API validation fails closed for malformed enums, dates, cursors, arrays and source URLs', () => {
+  const mapped = mapPublicTimelineItemRow(publicLearningTimelineRow)
+  const list = item => ({ status: 'healthy', items: [item], nextCursor: null })
+  for (const invalid of [
+    { ...mapped, category: 'market' },
+    { ...mapped, titleZh: '' },
+    { ...mapped, occurredAt: 'tomorrow' },
+    { ...mapped, primarySource: { ...mapped.primarySource, url: 'javascript:alert(1)' } },
+  ]) assert.equal(parseLearningTimelineList(list(invalid)), null)
+  assert.equal(parseLearningTimelineList({ ...list(mapped), nextCursor: 'broken' }), null)
+  assert.equal(parseLearningTimelineList({ status: 'healthy', items: {}, nextCursor: null }), null)
+  assert.equal(parseLearningStory({ ...mapped, reports: [{ ...publicLearningReportRow, sourceUrl: 'javascript:x' }], updates: [] }), null)
+  assert.equal(parseLearningStory({ ...mapped, reports: [], updates: [publicLearningUpdateRow] }), null,
+    'database rows must pass through their production camelCase mappers before reaching UI')
+})
+
+test('committed daily reports make an explicit, separately ranked static fallback', () => {
+  const fallback = buildStaticTimeline(latestRadars)
+  const expectedLearningItemCount = latestRadars.reduce((count, radar) => count
+    + Number(Boolean(radar.aiTip))
+    + Number(Boolean(radar.web3Design))
+    + Number(Boolean(radar.vibeProject))
+    + Number(Boolean(radar.readingPick)), 0)
+  const marketSignalTitles = new Set(latestRadars.flatMap(radar => radar.marketSignals.map(item => item.title)))
+  assert.equal(fallback.length, expectedLearningItemCount, 'market signals must not affect Learn snapshot counts')
+  assert.ok(fallback.every(item => !marketSignalTitles.has(item.title)), 'market signal titles must not enter Learn snapshots')
+  assert.ok(fallback.every(item => item.isStaticSnapshot && item.detailHref.startsWith('/radar/2026-')))
+  assert.equal(rankFeaturedTimeline(fallback).length, 3)
+})
+
+test('future items sort ascending, history sorts descending and far-future items never count as today', () => {
+  const mapped = toTimelineCardViewModel(mapPublicTimelineItemRow(publicLearningTimelineRow))
+  const past = { ...mapped, id: 'past', occurredAt: '2026-08-11T01:00:00.000Z' }
+  const futureNear = { ...mapped, id: 'future-near', occurredAt: '2026-08-11T04:00:00.000Z' }
+  const futureFar = { ...mapped, id: 'future-far', occurredAt: '2099-08-11T04:00:00.000Z' }
+  const now = new Date('2026-08-11T03:00:00.000Z')
+  const partitioned = partitionTimelineByOccurrence([futureFar, past, futureNear], now)
+  assert.deepEqual(partitioned.historical.map(item => item.id), ['past'])
+  assert.deepEqual(partitioned.future.map(item => item.id), ['future-near', 'future-far'])
+  assert.equal(countOccurredToday([past, futureNear, futureFar], now), 1)
+  const previousShanghaiDay = { ...mapped, id: 'previous-day', occurredAt: '2026-08-10T15:59:00.000Z' }
+  const groups = groupHistoricalTimeline([past, previousShanghaiDay])
+  assert.deepEqual(groups.map(group => ({ date: group.date, ids: group.items.map(item => item.id) })), [
+    { date: '2026-08-11', ids: ['past'] },
+    { date: '2026-08-10', ids: ['previous-day'] },
+  ])
+})
+
+test('learning UI keeps API contracts, abort/cursor safety, native disclosures and route compatibility', () => {
+  const page = read('../src/pages/RadarPage.vue')
+  const card = read('../src/components/TimelineCard.vue')
+  const detail = read('../src/pages/LearningRadarStoryPage.vue')
+  const router = read('../src/router/index.ts')
+  const css = read('../src/styles/radar-timeline.css')
+  const vercel = JSON.parse(read('../vercel.json'))
+  assert.match(page, /new AbortController\(\)/)
+  assert.match(page, /existingIds/)
+  assert.match(page, /nextCursor\.value = timeline\.nextCursor/)
+  assert.match(page, /summary\.value\?\.latestStoryAt/)
+  assert.doesNotMatch(page, /summary\.value\?\.generatedAt/)
+  assert.match(page, /partitionTimelineByOccurrence/)
+  assert.match(page, /groupHistoricalTimeline/)
+  assert.match(page, /learn-date-group/)
+  assert.match(page, /静态快照/)
+  assert.match(page, /\/radar\/week\/2026-W29/)
+  assert.match(card, /<details class="timeline-card__details">/)
+  assert.match(card, /完整摘要/)
+  assert.match(card, /展开完整摘要与入选理由/)
+  assert.doesNotMatch(card, /展开要点/)
+  assert.doesNotMatch(card, /v-html/)
+  assert.match(card, /target="_blank" rel="noopener noreferrer"/)
+  assert.match(detail, /\/api\/learning-radar\/stories\//)
+  assert.match(detail, /unavailable === '404'/)
+  assert.match(detail, /503/)
+  assert.match(detail, /来源报道时间线/)
+  assert.match(detail, /Follow-up updates/)
+  assert.match(detail, /暂无后续更新/)
+  assert.doesNotMatch(detail, /Key points|<h2>要点/)
+  assert.match(detail, /v-if="story\.reports\.length"/)
+  assert.match(detail, /暂无可展示的来源报道/)
+  assert.match(detail, /indexable: false/)
+  const storyRoute = router.indexOf("path: '/radar/stories/:slug'")
+  const broadRoute = router.indexOf("path: '/radar/:date'")
+  assert.ok(storyRoute > 0 && storyRoute < broadRoute)
+  assert.deepEqual(vercel.rewrites, [{ source: '/radar/stories/:slug', destination: '/radar/index.html' }])
+  assert.doesNotMatch(JSON.stringify(vercel.rewrites), /\/api\/|\/assets\/|\/radar\/:date|\/radar\/week/)
+  assert.match(css, /min-height: 44px/)
+  assert.match(css, /@media \(max-width: 520px\)/)
+  assert.match(css, /prefers-reduced-motion: reduce/)
+  assert.equal((page.match(/<main\b/g) || []).length, 0)
+  assert.equal((detail.match(/<main\b/g) || []).length, 0)
+})

@@ -117,6 +117,12 @@ const router = createRouter({
       meta: { visual: 'narrative', navGroup: 'radar' },
     },
     {
+      path: '/radar/stories/:slug',
+      name: 'learning-radar-story',
+      component: () => import('../pages/LearningRadarStoryPage.vue'),
+      meta: { visual: 'narrative', navGroup: 'radar' },
+    },
+    {
       path: '/radar/:date',
       name: 'radar-detail',
       component: () => import('../pages/RadarDetailPage.vue'),
