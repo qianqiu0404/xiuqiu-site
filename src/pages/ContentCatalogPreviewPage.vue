@@ -183,7 +183,6 @@ onBeforeUnmount(() => {
             <div class="catalog-preview__article-meta">
               <time :datetime="article.publishedAt">发布 {{ formatDate(article.publishedAt) }}</time>
               <time v-if="article.updatedAt" :datetime="article.updatedAt">更新 {{ formatDate(article.updatedAt) }}</time>
-              <code>{{ article.sourceHash.slice(0, 10) }}</code>
             </div>
             <h3><RouterLink :to="`/articles/${article.slug}`">{{ article.title }}</RouterLink></h3>
             <p>{{ article.summary }}</p>
