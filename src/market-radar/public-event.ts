@@ -1,6 +1,7 @@
 import type {
   MarketRadarAsset,
   MarketRadarEvent,
+  MarketRadarReport,
   MarketRadarReaction,
 } from './contracts.js'
 
@@ -87,7 +88,6 @@ export function mapPublicEventRow(row: PublicEventRow): MarketRadarEvent {
     slug: requiredText(row.slug),
     market: requiredText(row.market) as MarketRadarEvent['market'],
     priority: requiredText(row.priority) as MarketRadarEvent['priority'],
-    score: numberOrNull(row.score) ?? 0,
     titleZh: requiredText(row.title_zh),
     summaryZh: requiredText(row.summary_zh),
     whyItMattersZh: requiredText(row.why_it_matters_zh),
@@ -103,5 +103,22 @@ export function mapPublicEventRow(row: PublicEventRow): MarketRadarEvent {
     sources: mapSources(row.sources),
     assets: mapAssets(row.assets),
     reaction: mapReaction(row.reaction),
+  }
+}
+
+export function mapPublicEventReportRow(row: PublicEventRow): MarketRadarReport | null {
+  const id = textOrNull(row.id)
+  const sourceName = textOrNull(row.source_name)
+  const sourceUrl = textOrNull(row.source_url)
+  const title = textOrNull(row.title)
+  if (!id || !sourceName || !sourceUrl || !title) return null
+  return {
+    id,
+    sourceName,
+    sourceUrl,
+    title,
+    excerpt: textOrNull(row.excerpt),
+    publishedAt: row.published_at ? isoOrEpoch(row.published_at) : null,
+    isPrimary: row.is_primary === true,
   }
 }

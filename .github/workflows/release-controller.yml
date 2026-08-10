@@ -97,6 +97,7 @@ jobs:
 
           const controller = parse(fs.readFileSync('.github/workflows/release-controller.yml', 'utf8'))
           const worker = parse(fs.readFileSync('.github/workflows/market-radar.yml', 'utf8'))
+          const learningWorker = parse(fs.readFileSync('.github/workflows/learning-radar.yml', 'utf8'))
           const controllerSource = fs.readFileSync('.github/workflows/release-controller.yml', 'utf8')
           assert.deepEqual(Object.keys(controller.on), ['workflow_dispatch'])
           assert.equal(controller.on.workflow_dispatch.inputs.operation.default, 'dry-run')
@@ -160,7 +161,9 @@ jobs:
           assert.match(controllerSource, /vercel build --prod --token "\$VERCEL_TOKEN"/)
           assert.match(controllerSource, /vercel deploy --prebuilt --prod --skip-domain --yes --json --token "\$VERCEL_TOKEN"/)
           assert.match(controllerSource, /vercel promote "\$DEPLOYMENT_URL" --yes --token "\$VERCEL_TOKEN"/)
-          assert.equal(worker.concurrency.group, 'xiuqiu-production-release')
+          assert.equal(worker.concurrency.group, 'xiuqiu-market-radar-worker')
+          assert.equal(learningWorker.concurrency.group, 'xiuqiu-learning-radar-worker')
+          assert.notEqual(worker.concurrency.group, learningWorker.concurrency.group)
           assert.equal(worker.on.workflow_dispatch.inputs.mode.default, 'dry-run')
           assert.equal(worker.jobs.authorize.environment, undefined)
           assert.doesNotMatch(JSON.stringify(worker.jobs.authorize), /secrets\./)

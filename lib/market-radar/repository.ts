@@ -2,12 +2,12 @@ import {
   parseEventCursor,
   type MarketRadarDigest,
   type MarketRadarDigestList,
-  type MarketRadarEvent,
+  type MarketRadarEventDetail,
   type MarketRadarEventList,
   type MarketRadarHealth,
   type MarketRadarSummary,
 } from '../../src/market-radar/contracts.js'
-import { mapPublicEventRow } from '../../src/market-radar/public-event.js'
+import { mapPublicEventReportRow, mapPublicEventRow } from '../../src/market-radar/public-event.js'
 import { getMarketRadarDb, isMarketRadarConfigured } from './db.js'
 
 type QueryRow = Record<string, unknown>
@@ -117,10 +117,19 @@ export async function listEvents(filters: EventFilters): Promise<MarketRadarEven
   return { status: 'healthy', items: selected.map(mapPublicEventRow), nextCursor: hasMore ? encodeEventCursor(selected[selected.length - 1]) : null }
 }
 
-export async function getEvent(id: string): Promise<MarketRadarEvent | null> {
+export async function getEvent(id: string): Promise<MarketRadarEventDetail | null> {
   if (!isMarketRadarConfigured()) return null
   const rows = await getMarketRadarDb().query(`select * from market_radar.public_events where id = $1 or slug = $1 limit 1`, [id]) as QueryRow[]
-  return rows[0] ? mapPublicEventRow(rows[0]) : null
+  if (!rows[0]) return null
+  const reports = await getMarketRadarDb().query(`select * from market_radar.public_event_reports
+    where event_id = $1 order by published_at desc nulls last, id desc`, [rows[0].id]) as QueryRow[]
+  return {
+    ...mapPublicEventRow(rows[0]),
+    reports: reports.flatMap(row => {
+      const report = mapPublicEventReportRow(row)
+      return report ? [report] : []
+    }),
+  }
 }
 
 export async function listDigests(limit: number): Promise<MarketRadarDigestList> {

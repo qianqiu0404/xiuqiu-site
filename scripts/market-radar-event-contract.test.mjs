@@ -15,7 +15,7 @@ test('a public_events row is mapped through the production allowlist into the v2
   assert.equal(event.invalidation, publicEventRowV2.invalidation)
   assert.equal(event.sources[0]?.url, publicEventRowV2.sources[0].url)
   assert.equal(event.assets[0]?.symbol, 'BTC')
-  for (const key of ['payload', 'prompt', 'private_note', 'ai_schema_version', 'cluster_key', 'status']) {
+  for (const key of ['score', 'payload', 'prompt', 'private_note', 'ai_schema_version', 'cluster_key', 'status']) {
     assert.equal(Object.hasOwn(event, key), false)
   }
   assert.equal(Object.hasOwn(publicEventRowV2, 'watchFor'), false)
@@ -65,9 +65,9 @@ test('the event reader keeps source, observation and invalidation visible withou
   assert.match(page, /target="_blank" rel="noopener"/)
   assert.match(page, /class="trade-radar-source-name"/)
   assert.match(page, /findStaticMarketRadarEvent\(allMarketRadars, id\)/)
-  assert.match(page, /event\.score !== undefined/)
   assert.match(page, /event\.origin === 'api'/)
-  assert.match(page, /静态快照没有 score、行情反应或系统判断字段/)
+  assert.match(page, /静态快照没有行情反应或系统判断字段/)
+  assert.doesNotMatch(page, /event\.score|Score \{\{/)
   assert.match(page, /event\.snapshotSlug/)
   assert.doesNotMatch(page, /v-html|innerHTML/)
   assert.match(styles, /\.trade-radar-event-boundaries dl \{[\s\S]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/)
@@ -89,5 +89,5 @@ test('event detail errors are no-store while successful public responses retain 
   assert.match(http, /public, s-maxage=60, stale-while-revalidate=300/)
   assert.match(http, /prepareNoStoreResponse\(res\)/)
   assert.match(repository, /select \* from market_radar\.public_events/)
-  assert.doesNotMatch(repository, /raw_items\.payload|prompt|private_note|ai_schema_version|cluster_key/i)
+  assert.doesNotMatch(repository, /raw_items\.payload|prompt|private_note|ai_schema_version|cluster_key|e\.score/i)
 })

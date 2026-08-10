@@ -6,6 +6,7 @@ import { enrichPendingReactions } from './reactions.mjs'
 import { generateDailyDigest, generateP1Batch, generateUsPremarketDigest } from './digests.mjs'
 import { isUsPremarketWindow } from './market-calendar.mjs'
 import { cleanupRetention, recordDailyMetrics } from './maintenance.mjs'
+import { withRadarDatabaseLock } from './advisory-lock.mjs'
 
 const env = process.env
 const databaseUrl = env.MARKET_RADAR_DATABASE_URL
@@ -187,49 +188,56 @@ async function runSource(source, group, slot, fetcher) {
   }
 }
 
-const workerLease = await claimWorkerLease()
-if (!workerLease) {
-  console.log(JSON.stringify({ skipped: true, reason: 'worker_lease_held' }))
-  process.exit(0)
-}
+async function runWorker() {
+  const workerLease = await claimWorkerLease()
+  if (!workerLease) return { skipped: true, reason: 'worker_lease_held' }
 
-const slot = slotIndex()
-const requestedGroupKey = requestedGroup()
-const group = requestedGroupKey
-  ? MARKET_GROUPS.find(candidate => candidate.key === requestedGroupKey)
-  : MARKET_GROUPS[slot % MARKET_GROUPS.length]
-const results = []
-if (group.key === 'crypto') {
-  results.push(await runSource('github_releases', group, slot, fetchCryptoReleases))
-} else {
-  results.push(await runSource('sec_edgar', group, slot, () => fetchSecCompanyFilings(env.SEC_USER_AGENT, group.symbols)))
-}
-if (slot % 9 === 0) {
-  results.push(await runSource('sec_edgar', { key: 'macro' }, slot, () => fetchSecEdgar(env.SEC_USER_AGENT)))
-  results.push(await runSource('federal_reserve', { key: 'macro' }, slot, fetchFederalReserve))
-}
-const qiuRun = await startRun('qiu_market', 'health', slot)
-if (qiuRun) {
-  const health = await checkQiuMarketHealth(env.QIU_MARKET_BASE_URL)
-  await finishRun(qiuRun, health.healthy ? 'succeeded' : 'failed', 0, health.healthy ? null : `http_${health.status || 'unavailable'}`)
-  results.push({ source: 'qiu_market', ...health })
-}
-let reactions = { checked: 0, updated: 0 }
-const reactionRun = await startRun('binance_market_data', 'reactions', slot)
-if (reactionRun) {
   try {
-    reactions = await enrichPendingReactions(sql)
-    await finishRun(reactionRun, 'succeeded', reactions.checked)
-  } catch (error) {
-    const code = error instanceof Error ? error.message.slice(0, 120) : 'unknown_error'
-    await finishRun(reactionRun, 'failed', 0, code)
-    reactions = { checked: 0, updated: 0, error: code }
+    const slot = slotIndex()
+    const requestedGroupKey = requestedGroup()
+    const group = requestedGroupKey
+      ? MARKET_GROUPS.find(candidate => candidate.key === requestedGroupKey)
+      : MARKET_GROUPS[slot % MARKET_GROUPS.length]
+    const results = []
+    if (group.key === 'crypto') {
+      results.push(await runSource('github_releases', group, slot, fetchCryptoReleases))
+    } else {
+      results.push(await runSource('sec_edgar', group, slot, () => fetchSecCompanyFilings(env.SEC_USER_AGENT, group.symbols)))
+    }
+    if (slot % 9 === 0) {
+      results.push(await runSource('sec_edgar', { key: 'macro' }, slot, () => fetchSecEdgar(env.SEC_USER_AGENT)))
+      results.push(await runSource('federal_reserve', { key: 'macro' }, slot, fetchFederalReserve))
+    }
+    const qiuRun = await startRun('qiu_market', 'health', slot)
+    if (qiuRun) {
+      const health = await checkQiuMarketHealth(env.QIU_MARKET_BASE_URL)
+      await finishRun(qiuRun, health.healthy ? 'succeeded' : 'failed', 0, health.healthy ? null : `http_${health.status || 'unavailable'}`)
+      results.push({ source: 'qiu_market', ...health })
+    }
+    let reactions = { checked: 0, updated: 0 }
+    const reactionRun = await startRun('binance_market_data', 'reactions', slot)
+    if (reactionRun) {
+      try {
+        reactions = await enrichPendingReactions(sql)
+        await finishRun(reactionRun, 'succeeded', reactions.checked)
+      } catch (error) {
+        const code = error instanceof Error ? error.message.slice(0, 120) : 'unknown_error'
+        await finishRun(reactionRun, 'failed', 0, code)
+        reactions = { checked: 0, updated: 0, error: code }
+      }
+    }
+    const digests = { p1: await generateP1Batch(sql) }
+    if (process.argv.includes('--digest=daily')) digests.daily = await generateDailyDigest(sql)
+    if (process.argv.includes('--digest=premarket')) digests.premarket = await generateUsPremarketDigest(sql)
+    const maintenance = slot % 72 === 0 ? await cleanupRetention(sql) : null
+    const metrics = await recordDailyMetrics(sql)
+    return { slot, group: group.key, results, reactions, digests, maintenance, metrics }
+  } finally {
+    await releaseWorkerLease(workerLease)
   }
 }
-const digests = { p1: await generateP1Batch(sql) }
-if (process.argv.includes('--digest=daily')) digests.daily = await generateDailyDigest(sql)
-if (process.argv.includes('--digest=premarket')) digests.premarket = await generateUsPremarketDigest(sql)
-const maintenance = slot % 72 === 0 ? await cleanupRetention(sql) : null
-const metrics = await recordDailyMetrics(sql)
-console.log(JSON.stringify({ slot, group: group.key, results, reactions, digests, maintenance, metrics }))
-await releaseWorkerLease(workerLease)
+
+const lockResult = await withRadarDatabaseLock({ databaseUrl }, runWorker)
+console.log(JSON.stringify(lockResult.acquired
+  ? lockResult.value
+  : { skipped: true, reason: 'radar_database_lock_held' }))

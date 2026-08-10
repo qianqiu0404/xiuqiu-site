@@ -45,7 +45,6 @@ export interface MarketRadarEvent {
   slug: string
   market: MarketRadarMarket
   priority: MarketRadarPriority
-  score: number
   titleZh: string
   summaryZh: string
   whyItMattersZh: string
@@ -61,6 +60,20 @@ export interface MarketRadarEvent {
   sources: Array<{ name: string; url: string }>
   assets: MarketRadarAsset[]
   reaction: MarketRadarReaction | null
+}
+
+export interface MarketRadarReport {
+  id: string
+  sourceName: string
+  sourceUrl: string
+  title: string
+  excerpt: string | null
+  publishedAt: string | null
+  isPrimary: boolean
+}
+
+export interface MarketRadarEventDetail extends MarketRadarEvent {
+  reports: MarketRadarReport[]
 }
 
 export interface MarketRadarEventList {

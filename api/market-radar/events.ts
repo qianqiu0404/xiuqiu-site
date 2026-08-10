@@ -1,6 +1,6 @@
 import { listEvents } from '../../lib/market-radar/repository.js'
 import { parseEventCursor } from '../../src/market-radar/contracts.js'
-import { allowMethods, clampInteger, preparePublicResponse, queryValue, type MarketRadarRequest, type MarketRadarResponse } from '../../lib/market-radar/http.js'
+import { allowMethods, clampInteger, preparePublicResponse, queryValue, sendPublicError, type MarketRadarRequest, type MarketRadarResponse } from '../../lib/market-radar/http.js'
 
 const markets = new Set(['crypto', 'us_equity', 'macro'])
 const priorities = new Set(['P0', 'P1', 'P2'])
@@ -27,6 +27,6 @@ export default async function handler(req: MarketRadarRequest, res: MarketRadarR
       limit: clampInteger(queryValue(req, 'limit'), 20, 1, 50),
     }))
   } catch {
-    return res.status(200).json({ status: 'degraded', items: [], nextCursor: null, message: '交易雷达数据暂时不可用，请稍后再试。' })
+    return sendPublicError(res, 503, 'data_delayed', '交易雷达数据暂时不可用，请稍后再试。')
   }
 }

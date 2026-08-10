@@ -120,7 +120,7 @@ test('release DAG is migration, staged Vercel promotion, worker smoke, then acti
 test('manual and scheduled workers cannot bypass the deployed-SHA authorization boundary', () => {
   assert.equal(worker.on.workflow_dispatch.inputs.mode.default, 'dry-run')
   assert.deepEqual(worker.on.workflow_dispatch.inputs.mode.options, ['dry-run', 'ingest', 'daily', 'premarket'])
-  assert.equal(worker.concurrency.group, 'xiuqiu-production-release')
+  assert.equal(worker.concurrency.group, 'xiuqiu-market-radar-worker')
   assert.match(String(worker.jobs.authorize.if), /workflow_dispatch.*MARKET_RADAR_ENABLED/)
   assert.equal(worker.jobs.authorize.environment, undefined)
   assert.doesNotMatch(JSON.stringify(worker.jobs.authorize), /secrets\./)

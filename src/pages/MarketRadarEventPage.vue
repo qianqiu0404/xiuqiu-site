@@ -12,7 +12,6 @@ const route = useRoute()
 interface EventPresentation {
   origin: 'api' | 'static'
   priority: MarketRadarEvent['priority']
-  score?: number
   horizon?: MarketRadarEvent['horizon']
   status?: StaticMarketRadarEvent['status']
   category?: StaticMarketRadarEvent['category']
@@ -60,7 +59,6 @@ function fromApiEvent(value: MarketRadarEvent): EventPresentation {
   return {
     origin: 'api',
     priority: value.priority,
-    score: value.score,
     horizon: value.horizon,
     title: value.titleZh,
     summary: value.summaryZh,
@@ -152,7 +150,6 @@ watch(() => String(route.params.id || ''), async (id) => {
         <header class="trade-radar-event-detail-header">
           <div class="trade-event-classification">
             <strong>{{ event.priority }}</strong>
-            <span v-if="event.score !== undefined">Score {{ event.score }}</span>
             <span v-if="event.horizon">{{ horizonLabels[event.horizon] }}</span>
             <span v-if="event.status">{{ statusLabels[event.status] }}</span>
             <span v-if="event.category">{{ categoryLabels[event.category] }}</span>
@@ -209,7 +206,7 @@ watch(() => String(route.params.id || ''), async (id) => {
           <header>
             <p class="trade-radar-kicker">Static record boundary</p>
             <h2 id="event-reaction-title">行情反应与系统判断尚未记录。</h2>
-            <p>静态快照没有 score、行情反应或系统判断字段；本页不会推测这些值。</p>
+            <p>静态快照没有行情反应或系统判断字段；本页不会推测这些值。</p>
           </header>
         </section>
 

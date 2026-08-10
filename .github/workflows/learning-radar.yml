@@ -1,0 +1,34 @@
+name: Learning Radar Worker
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: T0/T1 contract gate; ingest is added in T2
+        type: choice
+        options: [dry-run]
+        default: dry-run
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: xiuqiu-learning-radar-worker
+  cancel-in-progress: false
+
+jobs:
+  contract_gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Verify the T1 data contract without production access
+        run: node --test scripts/dual-timeline-contract.test.mjs

@@ -234,11 +234,12 @@ test('new events publish only with complete AI v2 verification boundaries', () =
 test('migrations hide stale backlog and the runner applies every numbered file', () => {
   const migration = read('market-radar/migrations/002_freshness_gate.sql')
   const runner = read('market-radar/worker/migrate.mjs')
+  const migrationLibrary = read('market-radar/worker/migrations.mjs')
   assert.match(migration, /occurred_at < now\(\) - interval '7 days'/)
   assert.match(migration, /id not like '%-v2-%'/)
   assert.match(migration, /occurred_at >= now\(\) - interval '7 days'/)
-  assert.match(runner, /readdir\(migrationsUrl\)/)
-  assert.match(runner, /files\.length/)
+  assert.match(migrationLibrary, /readdir\(migrationsUrl\)/)
+  assert.match(runner, /result\.value\.appliedFiles/)
 })
 
 test('verification-boundary migration is repeatable, private by default and preserves freshness', () => {
@@ -265,6 +266,9 @@ test('all worker modes share a crash-safe database lease', () => {
   assert.match(worker, /on conflict \(lock_key\) do update/)
   assert.match(worker, /worker_locks\.lease_until <= now\(\)/)
   assert.match(worker, /reason: 'worker_lease_held'/)
+  assert.match(worker, /finally \{[\s\S]*releaseWorkerLease\(workerLease\)/)
+  assert.match(worker, /withRadarDatabaseLock/)
+  assert.match(worker, /reason: 'radar_database_lock_held'/)
 })
 
 test('worker uses only registration-free upstream market sources', () => {

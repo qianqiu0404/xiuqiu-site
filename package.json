@@ -26,7 +26,7 @@
     "test:ai": "node --test scripts/ai-evidence-presentation.test.mjs",
     "test:assistant": "node --test scripts/ai-assistant.test.mjs",
     "test:radar": "node --test scripts/radar-pipeline.test.mjs scripts/radar-presentation.test.mjs scripts/researchops-ledger.test.mjs scripts/daily-radar-workflow.test.mjs",
-    "test:market-radar": "node --test scripts/market-radar.test.mjs scripts/market-radar-worker.test.mjs scripts/market-radar-event-contract.test.mjs scripts/static-market-radar-workflow.test.mjs",
+    "test:market-radar": "node --test scripts/market-radar.test.mjs scripts/market-radar-worker.test.mjs scripts/market-radar-event-contract.test.mjs scripts/dual-timeline-contract.test.mjs scripts/static-market-radar-workflow.test.mjs",
     "test:notifications": "node --test scripts/radar-notifications.test.mjs",
     "test:release": "node --test scripts/release-workflow.test.mjs",
     "test:article-shadow": "node --test scripts/article-catalog-shadow.test.mjs",
@@ -58,6 +58,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.3",
+    "pg": "^8.16.3",
     "typescript": "~5.7.3",
     "vite": "^6.4.3",
     "vue-tsc": "^3.3.8",
