@@ -7,7 +7,7 @@ const args = new Map(process.argv.slice(2).map(value => value.split('=')))
 const port = Number(args.get('--port') || 4176)
 if (!Number.isInteger(port)) throw new Error('Usage: node scripts/market-radar-browser-fixture.mjs --port=4176')
 let mode = 'live'
-const modes = new Set(['live', '503', 'unconfigured', 'degraded', 'summary-503', 'summary-unconfigured', 'summary-invalid', 'invalid'])
+const modes = new Set(['live', '503', 'unconfigured', 'degraded', 'summary-503', 'summary-unconfigured', 'summary-invalid', 'pagination-503', 'pagination-repeat', 'invalid'])
 
 const base = {
   ...publicEventRowV2,
@@ -22,6 +22,9 @@ const rows = [
   { ...base, id: 'fixture-p2-event', slug: 'fixture-p2-event', priority: 'P2', occurred_at: '2026-08-09T04:00:00.000Z',
     published_at: '2026-08-09T04:08:00.000Z', title_zh: '次要公开事件保留渐进披露', summary_zh: '公开来源已确认事件发生。',
     why_it_matters_zh: '保留来源和判断边界，避免把低优先级事件放大。' },
+  { ...base, id: 'fixture-older-event', slug: 'fixture-older-event', priority: 'P2', occurred_at: '2026-08-08T04:00:00.000Z',
+    published_at: '2026-08-08T04:08:00.000Z', title_zh: '更早事件通过游标按需载入', summary_zh: '该记录只在用户明确加载更多后出现。',
+    why_it_matters_zh: '它验证分页不会重复卡片或隐式扩大首屏窗口。' },
 ].map(mapPublicEventRow)
 
 const mappedReport = mapPublicEventReportRow(publicEventReportRow)
@@ -60,14 +63,19 @@ const server = createHttpServer((req, res) => {
     status: mode === 'degraded' ? 'degraded' : mode === 'unconfigured' || mode === 'summary-unconfigured' ? 'unconfigured' : 'healthy',
     generatedAt: '2026-08-11T02:10:00.000Z', latestEventAt: rows[1].occurredAt,
     freshnessMinutes: mode === 'degraded' ? 180 : 8, isDelayed: mode === 'degraded',
-    eventCount24h: 3, p0Count24h: 1, p1Count24h: 1,
+    eventCount24h: 4, p0Count24h: 1, p1Count24h: 1,
     sources: [{ source: 'fixture', health: mode === 'degraded' ? 'degraded' : mode === 'summary-unconfigured' ? 'unconfigured' : 'healthy', lastSuccessAt: rows[1].publishedAt }],
     message: mode === 'degraded' ? 'Fixture source is delayed.' : mode === 'summary-unconfigured' ? 'Fixture summary is unconfigured.' : null,
   })
   if (url.pathname === '/api/market-radar/events') {
     if (mode === 'unconfigured') return json(res, 200, { status: 'unconfigured', items: [], nextCursor: null, message: 'Fixture unconfigured.' })
     if (mode === 'invalid') return json(res, 200, { status: 'healthy', items: [{ ...rows[0], sourceCount: 0 }], nextCursor: null, message: null })
-    return json(res, 200, { status: mode === 'degraded' ? 'degraded' : 'healthy', items: rows, nextCursor: null,
+    const cursor = url.searchParams.get('cursor')
+    const firstCursor = `${rows[1].occurredAt}|${rows[1].id}`
+    if (cursor && mode === 'pagination-503') return json(res, 503, { code: 'page_delayed', message: 'Fixture page delayed.' })
+    if (cursor) return json(res, 200, { status: 'healthy', items: [rows[1], rows[2], rows[3]],
+      nextCursor: mode === 'pagination-repeat' ? cursor : null, message: null })
+    return json(res, 200, { status: mode === 'degraded' ? 'degraded' : 'healthy', items: rows.slice(0, 2), nextCursor: firstCursor,
       message: mode === 'degraded' ? 'Fixture source is delayed.' : null })
   }
   const id = decodeURIComponent(url.pathname.slice('/api/market-radar/events/'.length))

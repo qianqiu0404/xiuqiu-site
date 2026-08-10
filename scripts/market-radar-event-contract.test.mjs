@@ -68,6 +68,8 @@ test('the event reader keeps source, observation and invalidation visible withou
   assert.match(page, /event\.origin === 'api'/)
   assert.match(page, /来源报道时间线/)
   assert.match(page, /primaryReport/)
+  assert.match(page, /reports\.find\(report => report\.isPrimary\) \|\| null/)
+  assert.match(page, /report\.isPrimary/)
   assert.match(page, /event\.reports\.length/)
   assert.match(page, /暂无可展示的来源报道/)
   assert.match(page, /parseMarketEventDetail/)

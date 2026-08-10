@@ -7,6 +7,7 @@ import {
   buildStaticTradeTimeline,
   formatTradeTimelineTime,
   groupHistoricalTradeTimeline,
+  mergeTradeTimelinePage,
   parseMarketTimelineList,
   parseMarketTimelineSummary,
   partitionTradeTimeline,
@@ -21,9 +22,14 @@ const apiCards = ref<TradeTimelineCardViewModel[]>([])
 const summary = ref<MarketRadarSummary | null>(null)
 const origin = ref<'api' | 'static'>('static')
 const loading = ref(true)
+const loadingMore = ref(false)
 const statusMessage = ref('')
+const paginationMessage = ref('')
+const nextCursor = ref<string | null>(null)
+const requestedCursors = ref<string[]>([])
 let requestVersion = 0
 let activeRequest: AbortController | null = null
+let paginationRequest: AbortController | null = null
 
 const staticBaseCards = buildStaticTradeTimeline(latest)
 const committedScheduleCards = (() => {
@@ -49,11 +55,15 @@ const highPriorityCount = computed(() => origin.value === 'static'
   ? cards.value.filter(item => item.priority === 'P0' || item.priority === 'P1').length
   : summaryAvailable.value ? Number(summary.value?.p0Count24h || 0) + Number(summary.value?.p1Count24h || 0) : '—')
 const nextEvent = computed(() => futureCards.value[0])
-const updatedAt = computed(() => origin.value === 'static'
-  ? latest?.generatedAt || new Date(0).toISOString()
-  : (summaryAvailable.value ? summary.value?.latestEventAt : null) || apiCards.value.reduce<string | null>((latestValue, item) => (
-    !latestValue || item.publishedAt > latestValue ? item.publishedAt : latestValue
-  ), null) || new Date(0).toISOString())
+const snapshotUpdatedAt = computed(() => latest?.generatedAt || new Date(0).toISOString())
+const latestEventAt = computed(() => summaryAvailable.value && summary.value?.latestEventAt
+  ? summary.value.latestEventAt : partitioned.value.historical[0]?.occurredAt || null)
+const freshnessLabel = computed(() => {
+  if (origin.value !== 'api' || !summaryAvailable.value) return '不可用'
+  if (summary.value?.isDelayed) return summary.value.freshnessMinutes === null ? '延迟' : `延迟 · ${summary.value.freshnessMinutes} 分钟`
+  if (summary.value?.freshnessMinutes === null) return '不可用'
+  return `${summary.value?.freshnessMinutes} 分钟`
+})
 const scheduleUpdatedAt = computed(() => committedScheduleCards.reduce<string | null>((latestValue, item) => (
   !latestValue || item.publishedAt > latestValue ? item.publishedAt : latestValue
 ), null))
@@ -78,14 +88,19 @@ async function requestSummary(signal: AbortSignal): Promise<MarketRadarSummary |
 async function loadTimeline() {
   const version = ++requestVersion
   activeRequest?.abort()
+  paginationRequest?.abort()
   activeRequest = new AbortController()
   loading.value = true
+  loadingMore.value = false
   statusMessage.value = ''
+  paginationMessage.value = ''
   apiCards.value = []
   summary.value = null
+  nextCursor.value = null
+  requestedCursors.value = []
   try {
     const [itemsResponse, summaryPayload] = await Promise.all([
-      fetch('/api/market-radar/events?window=168&limit=50', { signal: activeRequest.signal }),
+      fetch('/api/market-radar/events?window=24&limit=30', { signal: activeRequest.signal }),
       requestSummary(activeRequest.signal),
     ])
     if (version !== requestVersion) return
@@ -93,6 +108,7 @@ async function loadTimeline() {
     const timeline = parseMarketTimelineList(await itemsResponse.json())
     if (!timeline || timeline.status === 'unconfigured') throw new Error('events-unconfigured')
     apiCards.value = timeline.items.map(toTradeTimelineCard)
+    nextCursor.value = timeline.nextCursor
     summary.value = summaryPayload
     origin.value = 'api'
     statusMessage.value = timeline.status === 'degraded'
@@ -111,6 +127,36 @@ async function loadTimeline() {
   }
 }
 
+async function loadMore() {
+  const requestedCursor = nextCursor.value
+  if (origin.value !== 'api' || !requestedCursor || loadingMore.value) return
+  const version = requestVersion
+  paginationRequest?.abort()
+  paginationRequest = new AbortController()
+  loadingMore.value = true
+  paginationMessage.value = ''
+  try {
+    const response = await fetch(`/api/market-radar/events?window=24&limit=30&cursor=${encodeURIComponent(requestedCursor)}`, {
+      signal: paginationRequest.signal,
+    })
+    if (version !== requestVersion) return
+    if (!response.ok || !response.headers.get('content-type')?.includes('application/json')) throw new Error('page-unavailable')
+    const page = parseMarketTimelineList(await response.json())
+    if (!page || page.status === 'unconfigured') throw new Error('invalid-page')
+    const merged = mergeTradeTimelinePage(apiCards.value, page, requestedCursor, requestedCursors.value)
+    apiCards.value = merged.cards
+    nextCursor.value = merged.nextCursor
+    requestedCursors.value = merged.requestedCursors
+    if (merged.stopped) paginationMessage.value = '分页游标没有继续前进；已安全停止加载。'
+  } catch (error) {
+    if (version !== requestVersion) return
+    if (error instanceof DOMException && error.name === 'AbortError') return
+    paginationMessage.value = '更多历史暂时无法读取；已显示事件保持不变，可稍后重试。'
+  } finally {
+    if (version === requestVersion) loadingMore.value = false
+  }
+}
+
 onMounted(() => {
   setSeoMeta({
     title: '交易研究雷达｜xiuqiu',
@@ -123,6 +169,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   requestVersion += 1
   activeRequest?.abort()
+  paginationRequest?.abort()
 })
 </script>
 
@@ -149,13 +196,13 @@ onBeforeUnmount(() => {
           <div><dt>总事件</dt><dd>{{ totalEventCount }}</dd></div>
           <div class="is-urgent"><dt>P0 + P1</dt><dd>{{ highPriorityCount }}</dd></div>
           <div><dt>下一事件</dt><dd>{{ nextEvent ? formatTradeTimelineTime(nextEvent.occurredAt) : '持续观察' }}</dd></div>
-          <div><dt>更新于</dt><dd>{{ formatGeneratedAt(updatedAt) }} CST</dd></div>
+          <div :class="{ 'is-delayed': summary?.isDelayed }"><dt>数据新鲜度</dt><dd>{{ freshnessLabel }}</dd></div>
         </dl>
       </section>
 
       <div class="container trade-radar-shell trade-radar-runtime-status">
         <div v-if="origin === 'static'" class="trade-radar-static-notice" role="status">
-          <strong>静态快照</strong><p>{{ statusMessage || '正在读取数据库时间线。' }} 快照更新时间 {{ formatGeneratedAt(updatedAt) }} CST，不代表实时状态。</p>
+          <strong>静态快照</strong><p>{{ statusMessage || '正在读取数据库时间线。' }} 快照更新时间 {{ formatGeneratedAt(snapshotUpdatedAt) }} CST，不代表实时状态。</p>
           <router-link v-if="latest" :to="`/market-radar/${latest.slug}`">查看日期快照</router-link>
         </div>
         <p v-else-if="statusMessage" class="trade-radar-api-notice" role="status">{{ statusMessage }}</p>
@@ -177,7 +224,7 @@ onBeforeUnmount(() => {
       <section class="container trade-radar-shell trade-radar-brief trade-radar-occurred" aria-labelledby="trade-occurred-title">
         <header class="trade-radar-section-heading">
           <div><p class="trade-radar-kicker">Occurred / reverse chronological</p><h2 id="trade-occurred-title">已发生。</h2></div>
-          <time :datetime="updatedAt">更新 {{ formatGeneratedAt(updatedAt) }} CST</time>
+          <time v-if="latestEventAt" :datetime="latestEventAt">最新事件 {{ formatGeneratedAt(latestEventAt) }} CST</time>
         </header>
         <template v-if="!loading && historicalGroups.length">
           <section v-for="group in historicalGroups" :key="group.date" class="trade-radar-date-group" :aria-labelledby="`trade-date-${group.date}`">
@@ -186,6 +233,10 @@ onBeforeUnmount(() => {
           </section>
         </template>
         <p v-else-if="!loading" class="trade-radar-timeline-state">当前没有通过公开门禁的已发生事件。</p>
+        <div v-if="origin === 'api' && (nextCursor || paginationMessage)" class="trade-radar-pagination" aria-live="polite">
+          <button v-if="nextCursor" type="button" :disabled="loadingMore" @click="loadMore">{{ loadingMore ? '正在加载…' : '加载更多历史' }}</button>
+          <p v-if="paginationMessage">{{ paginationMessage }}</p>
+        </div>
       </section>
 
       <section class="container trade-radar-shell trade-radar-archive" aria-labelledby="trade-archive-title">

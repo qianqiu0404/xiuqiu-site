@@ -7,6 +7,7 @@ import {
   groupHistoricalTradeTimeline,
   isSafePublicMarketUrl,
   isStrictMarketIso,
+  mergeTradeTimelinePage,
   parseMarketEventDetail,
   parseMarketTimelineList,
   parseMarketTimelineSummary,
@@ -64,6 +65,11 @@ test('summary health remains an independent strict contract for mixed list-summa
   assert.equal(parseMarketTimelineSummary({ ...healthySummary, generatedAt: '2026-02-30T08:00:00+08:00' }), null)
   assert.equal(parseMarketTimelineSummary({ ...healthySummary, message: { leaked: true } }), null)
   assert.equal(parseMarketTimelineSummary({ ...healthySummary, sources: [{ ...healthySummary.sources[0], lastSuccessAt: 'not-a-date' }] }), null)
+  assert.equal(parseMarketTimelineSummary({ ...healthySummary, eventCount24h: 1, p0Count24h: 1, p1Count24h: 1 }), null)
+  for (const key of ['eventCount24h', 'p0Count24h', 'p1Count24h']) {
+    assert.equal(parseMarketTimelineSummary({ ...healthySummary, [key]: -1 }), null)
+    assert.equal(parseMarketTimelineSummary({ ...healthySummary, [key]: 1.5 }), null)
+  }
   assert.ok(parseMarketTimelineList(healthyList), 'a bad summary must not invalidate an independently healthy DB list')
 })
 
@@ -76,6 +82,34 @@ test('detail is the only contract that accepts reports and validates every repor
   assert.equal(parseMarketEventDetail({ ...detail, reports: [{ ...report, publishedAt: '2026-02-30T08:00:00+08:00' }] }), null)
   assert.equal(parseMarketEventDetail({ ...detail, reports: [report, report] }), null)
   assert.ok(parseMarketEventDetail({ ...productionEvent, reports: [] }), 'empty reports are an explicit valid detail state')
+  assert.equal(parseMarketEventDetail({ ...productionEvent, reports: [{ ...report, isPrimary: false }] }), null)
+  const secondary = { ...report, id: 'report-secondary', isPrimary: false }
+  assert.ok(parseMarketEventDetail({ ...productionEvent, reports: [report, secondary] }))
+  assert.equal(parseMarketEventDetail({ ...productionEvent, reports: [report, { ...secondary, isPrimary: true }] }), null)
+})
+
+test('pagination deduplicates IDs, requires a descending cursor and stops cursor replay', () => {
+  const firstCard = toTradeTimelineCard(productionEvent)
+  const requested = `${productionEvent.occurredAt}|${productionEvent.id}`
+  const olderEvent = { ...productionEvent, id: 'older-event', slug: 'older-event', occurredAt: '2026-08-09T01:00:00.000Z' }
+  const olderCursor = `${olderEvent.occurredAt}|${olderEvent.id}`
+  const page = { ...healthyList, items: [productionEvent, olderEvent], nextCursor: olderCursor }
+  const merged = mergeTradeTimelinePage([firstCard], page, requested, [])
+  assert.deepEqual(merged.cards.map(card => card.id), [productionEvent.id, olderEvent.id])
+  assert.equal(merged.nextCursor, olderCursor)
+  assert.deepEqual(merged.requestedCursors, [requested])
+  assert.equal(merged.stopped, false)
+
+  const untrustedReplayItem = { ...olderEvent, id: 'must-not-append', slug: 'must-not-append' }
+  const replay = mergeTradeTimelinePage(merged.cards, { ...healthyList, items: [untrustedReplayItem], nextCursor: requested }, olderCursor, merged.requestedCursors)
+  assert.equal(replay.nextCursor, null)
+  assert.equal(replay.stopped, true)
+  assert.deepEqual(replay.cards.map(card => card.id), merged.cards.map(card => card.id))
+
+  const forwardCursor = '2026-08-11T01:00:00.000Z|future-event'
+  const failedProgress = mergeTradeTimelinePage(merged.cards, { ...healthyList, items: [], nextCursor: forwardCursor }, olderCursor, merged.requestedCursors)
+  assert.equal(failedProgress.nextCursor, null)
+  assert.equal(failedProgress.stopped, true)
 })
 
 test('future is ascending, occurred is descending and grouped by stable Shanghai date', () => {
@@ -121,7 +155,15 @@ test('overview, card, detail, routing and deployment keep the T6 evidence bounda
     readFile(new URL('../src/router/index.ts', import.meta.url), 'utf8'),
     readFile(new URL('../vercel.json', import.meta.url), 'utf8'),
   ])
-  assert.match(overview, /events\?window=168&limit=50/)
+  assert.match(overview, /events\?window=24&limit=30/)
+  assert.doesNotMatch(overview, /window=168/)
+  assert.match(overview, /cursor=\$\{encodeURIComponent\(requestedCursor\)\}/)
+  assert.match(overview, /mergeTradeTimelinePage/)
+  assert.match(overview, /更多历史暂时无法读取；已显示事件保持不变/)
+  assert.match(overview, /paginationRequest\?\.abort/)
+  assert.match(overview, /<dt>数据新鲜度<\/dt>/)
+  assert.match(overview, /summary\.value\?\.isDelayed/)
+  assert.match(overview, /最新事件/)
   assert.doesNotMatch(overview, /\/reports|events\/\$\{|events\/\${/)
   assert.match(overview, /静态排期快照/)
   assert.match(overview, /较远预定事件不来自数据库 live 时间线/)
@@ -133,6 +175,9 @@ test('overview, card, detail, routing and deployment keep the T6 evidence bounda
   assert.match(card, /:to="item\.detailHref"/)
   assert.doesNotMatch(`${overview}\n${card}\n${detail}`, /v-html|innerHTML/)
   assert.match(detail, /parseMarketEventDetail/)
+  assert.match(detail, /reports\.find\(report => report\.isPrimary\) \|\| null/)
+  assert.doesNotMatch(detail, /\|\| event\.value\?\.reports\[0\]/)
+  assert.match(detail, /report\.isPrimary/)
   assert.match(detail, /payload\.id !== id && payload\.slug !== id/)
   assert.match(detail, /来源报道时间线/)
   assert.match(detail, /暂无可展示的来源报道/)

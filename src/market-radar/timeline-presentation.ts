@@ -34,6 +34,13 @@ export interface TradeTimelineDateGroup {
   items: TradeTimelineCardViewModel[]
 }
 
+export interface TradeTimelinePaginationState {
+  cards: TradeTimelineCardViewModel[]
+  nextCursor: string | null
+  requestedCursors: string[]
+  stopped: boolean
+}
+
 const marketLabels = { crypto: '加密', us_equity: '美股', macro: '宏观' } as const
 const staticCategoryLabels = { macro: '宏观', crypto: '加密', equity: '美股', regulation: '政策' } as const
 const priorityValues = new Set(['P0', 'P1', 'P2'])
@@ -172,6 +179,7 @@ export function parseMarketTimelineSummary(value: unknown): MarketRadarSummary |
     || !Number.isInteger(summary.eventCount24h) || Number(summary.eventCount24h) < 0
     || !Number.isInteger(summary.p0Count24h) || Number(summary.p0Count24h) < 0
     || !Number.isInteger(summary.p1Count24h) || Number(summary.p1Count24h) < 0
+    || Number(summary.p0Count24h) + Number(summary.p1Count24h) > Number(summary.eventCount24h)
     || !Array.isArray(summary.sources) || !summary.sources.every(source => source && hasValidMessage(source)
       && isText(source.source) && healthValues.has(String(source.health))
       && (source.lastSuccessAt === null || isStrictMarketIso(source.lastSuccessAt)))) return null
@@ -185,7 +193,8 @@ export function parseMarketEventDetail(value: unknown): MarketRadarEventDetail |
     && isText(report.sourceName) && isSafePublicMarketUrl(report.sourceUrl)
     && (report.title === null || isText(report.title)) && (report.excerpt === null || typeof report.excerpt === 'string')
     && (report.publishedAt === null || isStrictMarketIso(report.publishedAt)) && typeof report.isPrimary === 'boolean')
-    || new Set(detail.reports.map(report => report.id)).size !== detail.reports.length) return null
+    || new Set(detail.reports.map(report => report.id)).size !== detail.reports.length
+    || (detail.reports.length > 0 && detail.reports.filter(report => report.isPrimary).length !== 1)) return null
   return detail
 }
 
@@ -205,6 +214,44 @@ export function toTradeTimelineCard(event: MarketRadarEvent): TradeTimelineCardV
     invalidation: event.invalidation || '当前数据库记录尚未提供独立失效条件。',
     assets: event.assets.map(asset => asset.symbol), sourceCount: event.sourceCount,
     sourceName: source.name, sourceUrl: source.url, detailHref: `/market-radar/events/${encodeURIComponent(event.id)}`,
+  }
+}
+
+function cursorMovesBackward(nextCursor: string, requestedCursor: string): boolean {
+  const next = parseEventCursor(nextCursor)
+  const requested = parseEventCursor(requestedCursor)
+  if (!next || !requested) return false
+  const nextTime = Date.parse(next.publishedAt)
+  const requestedTime = Date.parse(requested.publishedAt)
+  return nextTime < requestedTime || nextTime === requestedTime && next.id < requested.id
+}
+
+export function mergeTradeTimelinePage(
+  cards: TradeTimelineCardViewModel[],
+  page: MarketRadarEventList,
+  requestedCursor: string | null,
+  requestedCursors: string[],
+): TradeTimelinePaginationState {
+  const completedCursors = requestedCursor && !requestedCursors.includes(requestedCursor)
+    ? [...requestedCursors, requestedCursor] : [...requestedCursors]
+  const repeated = page.nextCursor !== null && (page.nextCursor === requestedCursor || completedCursors.includes(page.nextCursor))
+  const failedToAdvance = page.nextCursor !== null && requestedCursor !== null
+    && !cursorMovesBackward(page.nextCursor, requestedCursor)
+  if (repeated || failedToAdvance) {
+    return { cards: [...cards], nextCursor: null, requestedCursors: completedCursors, stopped: true }
+  }
+  const seenIds = new Set(cards.map(card => card.id))
+  const merged = [...cards]
+  for (const event of page.items) {
+    if (seenIds.has(event.id)) continue
+    seenIds.add(event.id)
+    merged.push(toTradeTimelineCard(event))
+  }
+  return {
+    cards: merged,
+    nextCursor: page.nextCursor,
+    requestedCursors: completedCursors,
+    stopped: false,
   }
 }
 

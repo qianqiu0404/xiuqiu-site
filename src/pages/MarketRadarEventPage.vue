@@ -48,7 +48,7 @@ const statusLabels = { scheduled: '已排期', released: '已发布', monitoring
 const categoryLabels = { macro: '宏观', crypto: '加密', equity: '美股', regulation: '政策' }
 const legacyWatchFor = '历史记录未提供独立观察条件。'
 const legacyInvalidation = '历史记录未提供独立失效条件。'
-const primaryReport = computed(() => event.value?.reports.find(report => report.isPrimary) || event.value?.reports[0] || null)
+const primaryReport = computed(() => event.value?.reports.find(report => report.isPrimary) || null)
 
 function percent(value: number | null | undefined) {
   if (value == null) return '待观察'
@@ -195,7 +195,7 @@ onBeforeUnmount(() => {
           <ol v-if="event.reports.length">
             <li v-for="report in event.reports" :key="report.id">
               <time v-if="report.publishedAt" :datetime="report.publishedAt">{{ formatDateTime(report.publishedAt) }} CST</time><span v-else>时间未记录</span>
-              <div><strong>{{ report.title || report.sourceName }}</strong><p v-if="report.excerpt">{{ report.excerpt }}</p><a :href="report.sourceUrl" target="_blank" rel="noopener noreferrer">{{ report.sourceName }} · 核对原文 ↗</a></div>
+              <div><span v-if="report.isPrimary" class="trade-radar-report-primary">主来源</span><strong>{{ report.title || report.sourceName }}</strong><p v-if="report.excerpt">{{ report.excerpt }}</p><a :href="report.sourceUrl" target="_blank" rel="noopener noreferrer">{{ report.sourceName }} · 核对原文 ↗</a></div>
             </li>
           </ol>
           <p v-else class="trade-radar-reports-empty">暂无可展示的来源报道。</p>

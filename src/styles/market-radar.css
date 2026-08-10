@@ -26,7 +26,7 @@
   min-width: 0;
 }
 
-.trade-radar-page :where(a, summary, [tabindex='-1']):focus-visible {
+.trade-radar-page :where(a, button, summary, [tabindex='-1']):focus-visible {
   outline: 2px solid #146b63;
   outline-offset: 4px;
 }
@@ -267,6 +267,11 @@
 .trade-radar-api-notice { grid-template-columns: minmax(0, 1fr); border-color: #9b7b49; }
 .trade-radar-schedule-note { margin: 1.3rem 0 1rem; color: var(--trade-muted); font: 620 0.68rem/1.6 var(--mono); }
 .trade-radar-timeline-state { margin: 0; padding: 3rem 0; color: var(--trade-muted); line-height: 1.7; }
+.trade-radar-pagination { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem 1rem; padding-top: 1.5rem; }
+.trade-radar-pagination button { min-height: 44px; border: 1px solid var(--trade-line); padding: 0.65rem 1rem; background: transparent; color: var(--trade-ink); font: 680 0.72rem/1 var(--mono); cursor: pointer; }
+.trade-radar-pagination button:disabled { cursor: wait; opacity: 0.58; }
+.trade-radar-pagination p { margin: 0; color: var(--trade-muted); font-size: 0.76rem; line-height: 1.6; }
+.trade-radar-metrics .is-delayed dd { color: var(--trade-p0); }
 .trade-radar-occurred { padding-top: clamp(4rem, 8vw, 7rem); }
 .trade-radar-occurred .trade-radar-section-heading > time { color: var(--trade-muted); font: 620 0.68rem/1.5 var(--mono); }
 .trade-radar-date-group > h3 { margin: 2.8rem 0 0.7rem; color: var(--trade-muted); font: 650 0.68rem/1.5 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; }
@@ -996,6 +1001,7 @@
 .trade-radar-event-reports li strong { color: #edf1f5; font-size: 1.08rem; }
 .trade-radar-event-reports li p { margin: 0.65rem 0 0; color: #98a2ae; line-height: 1.7; }
 .trade-radar-event-reports li a { min-height: 44px; display: inline-flex; align-items: center; color: var(--trade-market); font-size: 0.78rem; overflow-wrap: anywhere; }
+.trade-radar-report-primary { display: block; width: fit-content; margin-bottom: 0.45rem; border: 1px solid rgba(90, 215, 199, 0.4); padding: 0.2rem 0.4rem; color: var(--trade-market); font: 680 0.62rem/1 var(--mono); letter-spacing: 0.05em; }
 .trade-radar-reports-empty { margin: 2rem 0 0; padding: 1.4rem 0; border-block: 1px solid var(--trade-line-dark); color: #98a2ae; }
 
 .trade-radar-event-evidence > div {
