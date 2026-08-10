@@ -8,6 +8,32 @@ export interface RadarIndexEntry { date: string; slug: string; title: string; su
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-08-10",
+    "slug": "2026-08-10",
+    "title": "每日研究雷达 · 2026-08-10",
+    "summary": "先验证再执行：从机密代币解析、签名降级防线，到 Agent 会话门禁、插件权限与实时系统关键路径。",
+    "marketSignals": [
+      {
+        "title": "Agave 4.2.0 · 机密代币意图开始进入节点可观测面"
+      },
+      {
+        "title": "OpenZeppelin 5.7.0 · 签名与权限不能静默降级"
+      }
+    ],
+    "aiTip": {
+      "title": "OpenChamber 1.18.1 · 在创建 Agent 会话前先验证依赖"
+    },
+    "web3Design": {
+      "title": "ERC-7902 · 把账户抽象的高风险能力变成显式协商"
+    },
+    "vibeProject": {
+      "title": "Codex 0.147.0 · 插件可移植之后，权限边界更要可验证"
+    },
+    "readingPick": {
+      "title": "GPT-Live 复盘 · 实时系统先保护关键路径，再异步做聪明的事"
+    }
+  },
+  {
     "date": "2026-08-09",
     "slug": "2026-08-09",
     "title": "每日研究雷达 · 2026-08-09",
@@ -799,6 +825,66 @@ export const radarIndex: RadarIndexEntry[] = [
 
 export const latestRadars: DailyRadar[] = [
   {
+    "date": "2026-08-10",
+    "slug": "2026-08-10",
+    "title": "每日研究雷达 · 2026-08-10",
+    "summary": "先验证再执行：从机密代币解析、签名降级防线，到 Agent 会话门禁、插件权限与实时系统关键路径。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-08-10T09:51:22+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "Agave 4.2.0 · 机密代币意图开始进入节点可观测面",
+        "summary": "官方将 4.2.0 标为可用于 Testnet、Devnet 与 Mainnet Beta 的稳定版，新增 Token-2022 PermissionedBurn、ConfidentialBurn 与 Batch 指令解析，并把增量快照默认间隔改为 200 slots。关键价值是钱包和索引器能还原更完整的机密代币意图；上线前仍要回放交易状态、快照与资源占用，稳定标签不等于你的节点组合已经兼容。",
+        "sourceUrl": "https://github.com/anza-xyz/agave/releases/tag/v4.2.0"
+      },
+      {
+        "title": "OpenZeppelin 5.7.0 · 签名与权限不能静默降级",
+        "summary": "本版阻断 AccessManager 借 execute 绕过 authority 更新、拒绝 ERC-7739 畸形描述退化为不绑定消息内容的验证，并修复跨链地址静默误解析；同时 EIP-712 长 name/version 改为超过 31 字节即回退失败。升级动作应先盘点代理域、导入路径和自定义权限流，再用畸形签名、跨链地址与权限绕过向量做回归，不能把依赖升级当成已部署合约自动获修复。",
+        "sourceUrl": "https://github.com/OpenZeppelin/openzeppelin-contracts/releases/tag/v5.7.0"
+      }
+    ],
+    "aiTip": {
+      "title": "OpenChamber 1.18.1 · 在创建 Agent 会话前先验证依赖",
+      "summary": "AI Hot 发现线索后，官方 release 证实它把 OAuth 登录状态落盘、未登录模型隐藏，并在创建会话前拒绝不可用的模型、Agent 或 variant；未真正送达 session 的提示也会明确失败。这个模式可直接用于自动化：先验证来源、写权限、GitHub 与通知通道，再产生副作用，并给每一步终态；但本地强工具、隧道和继承凭据仍扩大攻击面，需固定版本、隔离目录和最小权限。",
+      "sourceUrl": "https://github.com/openchamber/openchamber/releases/tag/v1.18.1"
+    },
+    "web3Design": {
+      "title": "ERC-7902 · 把账户抽象的高风险能力变成显式协商",
+      "summary": "该 Draft 让 dApp 与钱包通过 EIP-5792 capabilities 协商 EIP-7702 授权、静态 paymaster、有效期、多维 nonce 与 gas 覆盖。设计重点不是多传几个字段，而是把 delegation、付款方和时间窗绑定到链、账户、用户确认与策略日志；错误 delegation 可清空账户，恶意 paymaster 数据也可能利用既有授权。实现时应只允许审计过的 delegation、展示有效期与覆盖项，并拒绝冲突配置。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-7902"
+    },
+    "vibeProject": {
+      "title": "Codex 0.147.0 · 插件可移植之后，权限边界更要可验证",
+      "summary": "版本加入可安装 Agent Plugins、跨目录插件搜索和 MCP 2026-07-28 分页发现，同时补上命令与历史中的密钥脱敏、陌生项目显式信任，以及策略更新失败时默认拒绝网络。试用建议先在无凭据 worktree 固定 0.147.0，检查插件 manifest、文件与网络权限和卸载差异；自动审批能降低摩擦，但不能替代来源审查、沙箱和回归测试。",
+      "sourceUrl": "https://github.com/openai/codex/releases/tag/rust-v0.147.0"
+    },
+    "readingPick": {
+      "title": "GPT-Live 复盘 · 实时系统先保护关键路径，再异步做聪明的事",
+      "summary": "OpenAI 把音频放进独立快路径，把推理、工具和持久化移到异步边界；模型热切换与上下文压缩在后台预热替代实例，WARP 又把媒体启动从六次网络往返压到一次。更重要的生产教训来自只读影子流量：容量要按持续并发与每帧准时率计算，而非只看 GPU 请求吞吐。它是内部系统复盘而非通用基准，但可迁移的动作是隔离关键路径、保存可恢复状态，并用真实生命周期逐步放量。",
+      "sourceUrl": "https://openai.com/index/continuous-voice-interaction-with-gpt-live/"
+    },
+    "sourceUrls": [
+      "https://github.com/anza-xyz/agave/releases/tag/v4.2.0",
+      "https://github.com/OpenZeppelin/openzeppelin-contracts/releases/tag/v5.7.0",
+      "https://github.com/openchamber/openchamber/releases/tag/v1.18.1",
+      "https://eips.ethereum.org/EIPS/eip-7902",
+      "https://github.com/openai/codex/releases/tag/rust-v0.147.0",
+      "https://openai.com/index/continuous-voice-interaction-with-gpt-live/"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
     "date": "2026-08-09",
     "slug": "2026-08-09",
     "title": "每日研究雷达 · 2026-08-09",
@@ -1202,76 +1288,6 @@ export const latestRadars: DailyRadar[] = [
       "https://github.com/google-gemini/gemini-cli/blob/v0.53.1/docs/cli/sandbox.md",
       "https://github.com/google-gemini/gemini-cli/blob/v0.53.1/LICENSE",
       "https://cloud.google.com/blog/topics/developers-practitioners/generosity-under-conditions-hardening-google-cloud-access-management/"
-    ],
-    "relatedProjectSlugs": [
-      "wallet-core",
-      "exchange-wallet-system",
-      "web3-wallet-engineer-lab"
-    ]
-  },
-  {
-    "date": "2026-08-03",
-    "slug": "2026-08-03",
-    "title": "每日研究雷达 · 2026-08-03",
-    "summary": "聚焦 Coinbase 资金工作流事故、以太坊 agent 安全分诊、SEC 加密监管议程、stacked PR 迁移、模块化智能账户、Cline，以及依赖更新信噪比分流。",
-    "reviewStatus": "automated",
-    "generatedAt": "2026-08-03T10:14:03+08:00",
-    "sourceSections": [
-      "crypto",
-      "radar",
-      "vibe",
-      "reading"
-    ],
-    "missingSections": [],
-    "marketSignals": [
-      {
-        "title": "Coinbase 共享入口故障暂停多类资金工作流",
-        "summary": "资源名称冲突使共享 Istio ingress gateway 不可用，充提、卡、链上和结算工作流同时受影响，标准回滚又依赖故障入口。公司称资金未受风险，但改进项仍需后续运行证据验证。",
-        "sourceUrl": "https://www.coinbase.com/fr-fr/blog/a-postmortem-of-our-july-14-2026-incident"
-      },
-      {
-        "title": "以太坊协议安全 agent 的瓶颈是可复现分诊",
-        "summary": "Ethereum Foundation 将 agent 视为安全搜索工具，要求候选用真实代码 PoC、调用链、影响边界和维护者复核转成有效漏洞；已确认一项公开 CVE，但未披露完整误报率。",
-        "sourceUrl": "https://blog.ethereum.org/2026/07/09/triage-is-the-product"
-      },
-      {
-        "title": "SEC 议程覆盖加密融资、托管与链上代币化证券",
-        "summary": "SEC 主席声明拟为加密资产融资、托管和链上代币化证券提供更清晰路径，同时保留投资者保护和执法；这是政策议程，不是已生效规则或产品豁免。",
-        "sourceUrl": "https://www.sec.gov/newsroom/speeches-statements/atkins-statement-2026-regulatory-agenda-070726"
-      }
-    ],
-    "aiTip": {
-      "title": "把大型迁移拆成有依赖关系的短会话与小 PR 栈",
-      "summary": "先提交可独立测试的基础层，后续会话从前一分支派生并只承担一个目标；每层记录前置提交、局部测试和回滚。stacked PR 缩小审阅面，但最终仍需在合并基线做完整回归。",
-      "sourceUrl": "https://github.blog/ai-and-ml/github-copilot/stacked-sessions-and-pull-requests-in-the-github-copilot-app/"
-    },
-    "web3Design": {
-      "title": "把账户验证、执行与约束拆成可清点模块",
-      "summary": "ERC-6900 用 validation、execution 和 hook 模块描述智能账户能力。钱包系统可迁移 manifest、selector、hook 顺序和安装审计，但恶意模块仍可拒绝服务或转走资金，卸载残留也必须显式清理。",
-      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-6900"
-    },
-    "vibeProject": {
-      "title": "Cline · 多客户端开源 coding agent",
-      "summary": "Cline 在编辑器、CLI 与 SDK 中提供项目编辑、命令、checkpoint 和扩展能力。公开发布与 issue 显示活跃维护；试用应固定 CLI 版本、使用无凭据示例仓库，并保留命令审批与独立测试。",
-      "sourceUrl": "https://github.com/cline/cline"
-    },
-    "readingPick": {
-      "title": "分组普通依赖更新，同时保留安全修复快车道",
-      "summary": "文章建议按生态分组普通版本更新、降低 cadence，并确认安全更新独立即时触发。可用 15 分钟画出普通升级与安全修复两条路径，验证冷却不会拖延已有修复的高危漏洞。",
-      "sourceUrl": "https://github.blog/security/supply-chain-security/tame-dependabot-group-your-updates-slow-the-cadence-keep-security-fast/"
-    },
-    "sourceUrls": [
-      "https://www.coinbase.com/fr-fr/blog/a-postmortem-of-our-july-14-2026-incident",
-      "https://blog.ethereum.org/2026/07/09/triage-is-the-product",
-      "https://www.sec.gov/newsroom/speeches-statements/atkins-statement-2026-regulatory-agenda-070726",
-      "https://github.blog/ai-and-ml/github-copilot/stacked-sessions-and-pull-requests-in-the-github-copilot-app/",
-      "https://eips.ethereum.org/EIPS/eip-6900",
-      "https://github.com/cline/cline",
-      "https://github.com/cline/cline/releases/tag/cli-v3.0.49",
-      "https://www.npmjs.com/package/cline/v/3.0.49",
-      "https://docs.cline.bot/",
-      "https://github.com/cline/cline/blob/main/LICENSE",
-      "https://github.blog/security/supply-chain-security/tame-dependabot-group-your-updates-slow-the-cadence-keep-security-fast/"
     ],
     "relatedProjectSlugs": [
       "wallet-core",
