@@ -8,6 +8,8 @@ import { spawnSync } from 'node:child_process'
 import test from 'node:test'
 import { Pool as PgPool } from 'pg'
 import { parse } from 'yaml'
+import { createMarketEventsHandler } from '../api/market-radar/events-handler.ts'
+import { allowMethods, clampInteger, preparePublicResponse, queryValue, sendPublicError } from '../lib/market-radar/http.ts'
 import { withRadarDatabaseLock, RADAR_DATABASE_LOCK_KEY, RadarDatabaseLockTimeoutError } from '../market-radar/worker/advisory-lock.mjs'
 import { applyRadarMigrations, loadRadarMigrations } from '../market-radar/worker/migrations.mjs'
 import { mapPublicEventReportRow, mapPublicEventRow } from '../src/market-radar/public-event.ts'
@@ -17,6 +19,7 @@ import {
   mapPublicTimelineItemRow,
 } from '../src/learning-radar/public-story.ts'
 import { parseLearningRadarCursor } from '../src/learning-radar/contracts.ts'
+import { parseEventCursor } from '../src/market-radar/contracts.ts'
 import { publicEventReportRow, publicEventRowV2 } from './fixtures/market-radar-public-event-row.mjs'
 import {
   publicLearningReportRow,
@@ -119,9 +122,47 @@ test('public mappers allowlist safe timeline fields and split list from detail r
   })
 })
 
+test('market event validation errors are 400 no-store responses from the real handler', async () => {
+  const marketEventsHandler = createMarketEventsHandler({
+    listEvents: async () => { throw new Error('invalid filters must not query the repository') },
+    parseEventCursor,
+    allowMethods,
+    clampInteger,
+    preparePublicResponse,
+    queryValue,
+    sendPublicError,
+  })
+  const cases = [
+    [{ market: 'commodities' }, 'invalid_market'],
+    [{ priority: 'P9' }, 'invalid_priority'],
+    [{ reaction: 'guaranteed' }, 'invalid_reaction'],
+    [{ cursor: 'not-a-cursor' }, 'invalid_cursor'],
+  ]
+  for (const [query, expectedCode] of cases) {
+    const headers = new Map()
+    const result = { statusCode: 0, body: null }
+    const res = {
+      setHeader(name, value) { headers.set(name.toLowerCase(), String(value)) },
+      status(statusCode) {
+        result.statusCode = statusCode
+        return {
+          json(body) { result.body = body },
+          end() {},
+        }
+      },
+    }
+    await marketEventsHandler({ method: 'GET', query, headers: {} }, res)
+    assert.equal(result.statusCode, 400)
+    assert.equal(result.body?.code, expectedCode)
+    assert.equal(headers.get('cache-control'), 'no-store')
+    assert.equal(headers.get('x-content-type-options'), 'nosniff')
+  }
+})
+
 test('all public API failure paths are no-store and detail reports stay out of list queries', async () => {
-  const [marketEvents, marketSummary, marketDigests, marketDetail, marketRepository, learningRepository, learningItems] = await Promise.all([
+  const [marketEvents, marketEventsHandler, marketSummary, marketDigests, marketDetail, marketRepository, learningRepository, learningItems] = await Promise.all([
     read('api/market-radar/events.ts'),
+    read('api/market-radar/events-handler.ts'),
     read('api/market-radar/summary.ts'),
     read('api/market-radar/digests.ts'),
     read('api/market-radar/events/[id].ts'),
@@ -129,7 +170,8 @@ test('all public API failure paths are no-store and detail reports stay out of l
     read('lib/learning-radar/repository.ts'),
     read('api/learning-radar/items.ts'),
   ])
-  for (const source of [marketEvents, marketSummary, marketDigests, marketDetail, learningItems]) {
+  assert.match(marketEvents, /createMarketEventsHandler/)
+  for (const source of [marketEventsHandler, marketSummary, marketDigests, marketDetail, learningItems]) {
     assert.match(source, /sendPublicError\(res, (?:400|404|503)/)
   }
   const marketList = marketRepository.slice(marketRepository.indexOf('export async function listEvents'), marketRepository.indexOf('export async function getEvent'))
@@ -158,31 +200,82 @@ async function openPort() {
 }
 
 test('real PostgreSQL applies migrations twice, rolls back failures and enforces lock/checksum safety', {
-  skip: !commandAvailable('initdb') || !commandAvailable('pg_ctl'),
+  skip: process.env.RUN_RADAR_DB_TESTS !== 'true',
   timeout: 60_000,
 }, async (t) => {
-  const fixtureDir = mkdtempSync(join(tmpdir(), 'xiuqiu-radar-pg-'))
-  const dataDir = join(fixtureDir, 'data')
-  const port = await openPort()
-  const init = spawnSync('initdb', ['-D', dataDir, '-U', 'postgres', '--auth=trust', '--no-locale', '--encoding=UTF8', '--no-sync'], { encoding: 'utf8' })
-  assert.equal(init.status, 0, init.stderr)
-  const start = spawnSync('pg_ctl', ['-D', dataDir, '-o', `-F -h 127.0.0.1 -p ${port}`, '-w', 'start'], { stdio: 'ignore' })
-  assert.equal(start.status, 0)
+  let fixtureDir
+  let dataDir
+  let adminUrl = process.env.RADAR_TEST_DATABASE_URL
+  if (!adminUrl) {
+    assert.equal(commandAvailable('initdb') && commandAvailable('pg_ctl'), true,
+      'test:radar-db requires RADAR_TEST_DATABASE_URL or local initdb/pg_ctl binaries')
+    fixtureDir = mkdtempSync(join(tmpdir(), 'xiuqiu-radar-pg-'))
+    dataDir = join(fixtureDir, 'data')
+    const port = await openPort()
+    const init = spawnSync('initdb', ['-D', dataDir, '-U', 'postgres', '--auth=trust', '--no-locale', '--encoding=UTF8', '--no-sync'], { encoding: 'utf8' })
+    assert.equal(init.status, 0, init.stderr)
+    const start = spawnSync('pg_ctl', ['-D', dataDir, '-o', `-F -h 127.0.0.1 -p ${port}`, '-w', 'start'], { stdio: 'ignore' })
+    assert.equal(start.status, 0)
+    adminUrl = `postgresql://postgres@127.0.0.1:${port}/postgres`
+  }
+
+  const testDatabase = `radar_test_${process.pid}_${Date.now()}`
+  const readerRole = `radar_reader_${process.pid}_${Date.now()}`
+  const admin = new PgPool({ connectionString: adminUrl })
   let observer
+  let databaseCreated = false
+  let roleCreated = false
   t.after(async () => {
     if (observer) await observer.end()
-    spawnSync('pg_ctl', ['-D', dataDir, '-m', 'fast', '-w', 'stop'], { stdio: 'ignore' })
-    rmSync(fixtureDir, { recursive: true, force: true })
+    try {
+      if (databaseCreated) {
+        await admin.query('select pg_terminate_backend(pid) from pg_stat_activity where datname = $1', [testDatabase])
+        await admin.query(`drop database "${testDatabase}"`)
+      }
+      if (roleCreated) await admin.query(`drop role "${readerRole}"`)
+    } finally {
+      await admin.end()
+      if (dataDir) spawnSync('pg_ctl', ['-D', dataDir, '-m', 'fast', '-w', 'stop'], { stdio: 'ignore' })
+      if (fixtureDir) rmSync(fixtureDir, { recursive: true, force: true })
+    }
   })
 
-  const databaseUrl = `postgresql://postgres@127.0.0.1:${port}/postgres`
+  await admin.query(`create database "${testDatabase}"`)
+  databaseCreated = true
+  const databaseUrlValue = new URL(adminUrl)
+  databaseUrlValue.pathname = `/${testDatabase}`
+  const databaseUrl = databaseUrlValue.toString()
   const createPool = config => new PgPool(config)
   const migrations = await loadRadarMigrations()
-  const first = await withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => (
-    applyRadarMigrations((statement, values) => client.query(statement, values), migrations)
+  const foundationMigrations = migrations.slice(0, -1)
+  const finalMigration = migrations[migrations.length - 1]
+  assert.equal(finalMigration.file, '005_dual_timeline_contracts.sql')
+  const foundation = await withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => (
+    applyRadarMigrations((statement, values) => client.query(statement, values), foundationMigrations)
   ))
-  assert.equal(first.value.appliedFiles, migrations.length)
-  assert.equal(first.value.skippedFiles, 0)
+  assert.equal(foundation.value.appliedFiles, foundationMigrations.length)
+  assert.equal(foundation.value.skippedFiles, 0)
+
+  observer = new PgPool({ connectionString: databaseUrl })
+  await observer.query('create view market_radar.public_events_dependency as select id, score from market_radar.public_events')
+  await observer.query(`create role "${readerRole}" nologin`)
+  roleCreated = true
+  await observer.query(`grant select on market_radar.public_events to "${readerRole}"`)
+
+  const final = await withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => (
+    applyRadarMigrations((statement, values) => client.query(statement, values), [finalMigration])
+  ))
+  assert.equal(final.value.appliedFiles, 1)
+  assert.equal(final.value.skippedFiles, 0)
+
+  await observer.query('begin')
+  try {
+    for (const statement of finalMigration.statements) await observer.query(statement)
+    await observer.query('commit')
+  } catch (error) {
+    await observer.query('rollback')
+    throw error
+  }
 
   const second = await withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => (
     applyRadarMigrations((statement, values) => client.query(statement, values), migrations)
@@ -190,10 +283,65 @@ test('real PostgreSQL applies migrations twice, rolls back failures and enforces
   assert.equal(second.value.appliedFiles, 0)
   assert.equal(second.value.skippedFiles, migrations.length)
 
-  observer = new PgPool({ connectionString: databaseUrl })
   const marketColumns = await observer.query(`select column_name from information_schema.columns
     where table_schema = 'market_radar' and table_name = 'public_events' order by ordinal_position`)
-  assert.equal(marketColumns.rows.some(row => row.column_name === 'score'), false)
+  assert.deepEqual(marketColumns.rows.map(row => row.column_name), [
+    'id', 'slug', 'market', 'priority', 'score', 'title_zh', 'summary_zh', 'why_it_matters_zh',
+    'event_type', 'news_direction', 'system_judgment', 'horizon', 'occurred_at', 'published_at',
+    'source_count', 'sources', 'assets', 'reaction', 'watch_for', 'invalidation',
+  ])
+  const grants = await observer.query(`select privilege_type from information_schema.role_table_grants
+    where grantee = $1 and table_schema = 'market_radar' and table_name = 'public_events'`, [readerRole])
+  assert.deepEqual(grants.rows.map(row => row.privilege_type), ['SELECT'])
+  const dependencyColumns = await observer.query(`select column_name from information_schema.columns
+    where table_schema = 'market_radar' and table_name = 'public_events_dependency' order by ordinal_position`)
+  assert.deepEqual(dependencyColumns.rows.map(row => row.column_name), ['id', 'score'])
+
+  await observer.query(`insert into market_radar.events
+    (id, slug, cluster_key, market, status, priority, score, title_zh, summary_zh, why_it_matters_zh,
+      event_type, news_direction, system_judgment, horizon, ai_schema_version, occurred_at, published_at,
+      watch_for_zh, invalidation_zh)
+    values ('score-private', 'score-private', 'score-private', 'crypto', 'published', 'P1', 98,
+      '内部评分不公开', '公开摘要', '公开原因', 'test', 'neutral', '等待验证', 'days', 'v2', now(), now(),
+      '观察公开证据', '若公开证据撤回则失效')`)
+  const publicMarketEvent = await observer.query("select * from market_radar.public_events where id = 'score-private'")
+  assert.equal(publicMarketEvent.rows[0].score, null)
+  const mappedMarketEvent = mapPublicEventRow(publicMarketEvent.rows[0])
+  assert.equal(Object.hasOwn(mappedMarketEvent, 'score'), false)
+  assert.doesNotMatch(JSON.stringify(mappedMarketEvent), /"score"/)
+
+  await observer.query(`insert into learning_radar.stories
+    (id, slug, cluster_key, category, status, importance, internal_score, title_zh, summary_zh,
+      why_selected_zh, occurred_at, published_at)
+    values
+      ('story-zero', 'story-zero', 'story-zero', 'ai', 'published', 'watch', 40, '零来源', '零来源摘要', '测试', now(), now()),
+      ('story-unverified', 'story-unverified', 'story-unverified', 'reading', 'published', 'noteworthy', 60, '未验证来源', '未验证摘要', '测试', now(), now()),
+      ('story-verified', 'story-verified', 'story-verified', 'engineering_tools', 'published', 'key', 90, '已验证来源', '已验证摘要', '测试', now(), now())`)
+  await observer.query(`insert into learning_radar.raw_items
+    (id, provider, provider_id, source_url, source_domain, title, published_at, payload, origin_verified_at)
+    values
+      ('raw-unverified', 'fixture', 'raw-unverified', 'https://example.com/unverified', 'example.com', '未验证', now(), '{}'::jsonb, null),
+      ('raw-verified', 'fixture', 'raw-verified', 'https://www.postgresql.org/docs/current/explicit-locking.html', 'postgresql.org', '已验证', now(), '{}'::jsonb, now())`)
+  await observer.query(`insert into learning_radar.story_sources
+    (story_id, raw_item_id, source_name, source_url, title, published_at, is_primary, origin_verified_at)
+    values
+      ('story-unverified', 'raw-unverified', 'Unverified', 'https://example.com/unverified', '未验证', now(), true, null),
+      ('story-verified', 'raw-verified', 'PostgreSQL', 'https://www.postgresql.org/docs/current/explicit-locking.html', '已验证', now(), true, now())`)
+  await observer.query(`insert into learning_radar.story_updates (id, story_id, title_zh, body_zh, occurred_at)
+    values
+      ('update-zero', 'story-zero', '零来源更新', '不应公开', now()),
+      ('update-unverified', 'story-unverified', '未验证更新', '不应公开', now()),
+      ('update-verified', 'story-verified', '已验证更新', '可以公开', now())`)
+  const publicStories = await observer.query('select id from learning_radar.public_timeline_items order by id')
+  assert.deepEqual(publicStories.rows.map(row => row.id), ['story-verified'])
+  const publicReports = await observer.query('select story_id from learning_radar.public_story_reports order by story_id')
+  assert.deepEqual(publicReports.rows.map(row => row.story_id), ['story-verified'])
+  const publicUpdates = await observer.query('select story_id from learning_radar.public_story_updates order by story_id')
+  assert.deepEqual(publicUpdates.rows.map(row => row.story_id), ['story-verified'])
+  const detailRoots = await observer.query(`select id from learning_radar.public_timeline_items
+    where id in ('story-zero', 'story-unverified', 'story-verified') order by id`)
+  assert.deepEqual(detailRoots.rows.map(row => row.id), ['story-verified'])
+
   const learningColumns = await observer.query(`select table_name, column_name from information_schema.columns
     where table_schema = 'learning_radar' and table_name like 'public_%'`)
   for (const forbidden of ['payload', 'prompt', 'private_note', 'note', 'internal_score', 'ai_schema_version']) {

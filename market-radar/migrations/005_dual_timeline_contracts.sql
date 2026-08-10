@@ -10,11 +10,9 @@ alter table market_radar.event_sources
 alter table market_radar.event_sources
   add column if not exists is_primary boolean not null default false;
 
-drop view if exists market_radar.public_events;
-
-create view market_radar.public_events as
+create or replace view market_radar.public_events as
 select
-  e.id, e.slug, e.market, e.priority, e.title_zh, e.summary_zh, e.why_it_matters_zh,
+  e.id, e.slug, e.market, e.priority, null::integer as score, e.title_zh, e.summary_zh, e.why_it_matters_zh,
   e.event_type, e.news_direction, e.system_judgment, e.horizon, e.occurred_at, e.published_at,
   count(distinct es.raw_item_id)::integer as source_count,
   coalesce(jsonb_agg(distinct jsonb_build_object('name', es.source_name, 'url', es.source_url))
@@ -195,7 +193,9 @@ left join lateral (
   from learning_radar.story_sources ss
   where ss.story_id = s.id and ss.origin_verified_at is not null
 ) source_summary on true
-where s.status = 'published' and s.published_at is not null;
+where s.status = 'published'
+  and s.published_at is not null
+  and coalesce(source_summary.source_count, 0) > 0;
 
 create or replace view learning_radar.public_story_reports as
 select
@@ -222,7 +222,14 @@ select
   u.occurred_at
 from learning_radar.story_updates u
 join learning_radar.stories s on s.id = u.story_id
-where s.status = 'published' and s.published_at is not null;
+where s.status = 'published'
+  and s.published_at is not null
+  and exists (
+    select 1
+    from learning_radar.story_sources verified_source
+    where verified_source.story_id = s.id
+      and verified_source.origin_verified_at is not null
+  );
 
 create or replace view learning_radar.public_digests as
 select id, kind, title, body_zh, period_start, period_end, published_at

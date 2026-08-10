@@ -26,6 +26,18 @@ jobs:
   preflight:
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    services:
+      radar-postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     outputs:
       operation: ${{ steps.plan.outputs.operation }}
       release_sha: ${{ steps.plan.outputs.release_sha }}
@@ -36,6 +48,7 @@ jobs:
       REQUESTED_OPERATION: ${{ inputs.operation }}
       REQUESTED_SHA: ${{ inputs.release_sha }}
       MARKET_RADAR_ENABLED: ${{ vars.MARKET_RADAR_ENABLED }}
+      RADAR_TEST_DATABASE_URL: postgresql://postgres@127.0.0.1:5432/postgres
     steps:
       - name: Resolve an immutable release plan
         id: plan
@@ -85,6 +98,8 @@ jobs:
           cache: npm
 
       - run: npm ci
+      - name: Verify radar migrations and advisory locks
+        run: npm run test:radar-db
       - name: Audit release DAG and permission boundaries
         id: audit
         shell: bash
@@ -103,6 +118,9 @@ jobs:
           assert.equal(controller.on.workflow_dispatch.inputs.operation.default, 'dry-run')
           assert.equal(controller.jobs.preflight.environment, undefined)
           assert.doesNotMatch(JSON.stringify(controller.jobs.preflight), /secrets\./)
+          assert.equal(controller.jobs.preflight.services['radar-postgres'].image, 'postgres:16-alpine')
+          assert.equal(controller.jobs.preflight.env.RADAR_TEST_DATABASE_URL, 'postgresql://postgres@127.0.0.1:5432/postgres')
+          assert.equal(controller.jobs.preflight.steps.some(step => step.run === 'npm run test:radar-db'), true)
           assert.equal(controller.jobs.production_migration.needs, 'preflight')
           assert.deepEqual(controller.jobs.stage_vercel_candidate.needs, ['preflight', 'production_migration'])
           assert.deepEqual(controller.jobs.verify_vercel_candidate.needs, ['preflight', 'stage_vercel_candidate'])

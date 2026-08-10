@@ -8,6 +8,7 @@ const controllerSource = read('.github/workflows/release-controller.yml')
 const workerSource = read('.github/workflows/market-radar.yml')
 const controller = parse(controllerSource)
 const worker = parse(workerSource)
+const ci = parse(read('.github/workflows/ci.yml'))
 const vercel = JSON.parse(read('vercel.json'))
 
 const productionJobs = [
@@ -131,6 +132,18 @@ test('manual and scheduled workers cannot bypass the deployed-SHA authorization 
   assert.match(workerSource, /market-radar-production-authorized/)
   assert.match(workerSource, /release-controller\.yml/)
   assert.doesNotMatch(workerSource, /options: \[[^\]]*migrate/)
+})
+
+test('required CI and release preflight run the non-skippable disposable radar database gate', () => {
+  const ciDbStep = ci.jobs.verify.steps.find(step => step.run === 'npm run test:radar-db')
+  assert.ok(ciDbStep)
+  assert.equal(ciDbStep.env.RADAR_TEST_DATABASE_URL, 'postgresql://postgres@127.0.0.1:5432/postgres')
+  assert.equal(ci.jobs.verify.services['article-shadow-postgres'].image, 'postgres:16-alpine')
+
+  assert.equal(controller.jobs.preflight.services['radar-postgres'].image, 'postgres:16-alpine')
+  assert.equal(controller.jobs.preflight.env.RADAR_TEST_DATABASE_URL, 'postgresql://postgres@127.0.0.1:5432/postgres')
+  assert.equal(controller.jobs.preflight.steps.some(step => step.run === 'npm run test:radar-db'), true)
+  assert.doesNotMatch(JSON.stringify(controller.jobs.preflight), /RADAR_TEST_DATABASE_URL.*secrets\./)
 })
 
 test('Vercel disables every Git-triggered deployment until guarded Preview restoration', () => {
