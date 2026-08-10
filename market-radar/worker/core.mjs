@@ -37,6 +37,15 @@ const SOURCE_NAMED_ENTITIES = new Map([
   ['quot', '"'],
 ])
 
+function isStorableSourceCodePoint(codePoint) {
+  if (!Number.isInteger(codePoint) || codePoint < 0 || codePoint > 0x10ffff) return false
+  if (codePoint >= 0xd800 && codePoint <= 0xdfff) return false
+  if (codePoint >= 0xfdd0 && codePoint <= 0xfdef) return false
+  if ((codePoint & 0xffff) === 0xfffe || (codePoint & 0xffff) === 0xffff) return false
+  if (codePoint <= 0x1f && ![0x09, 0x0a, 0x0d].includes(codePoint)) return false
+  return !(codePoint >= 0x7f && codePoint <= 0x9f)
+}
+
 function decodeSourceEntitiesOnce(value) {
   return value.replace(/&(?:#(?:x[0-9a-f]+|[0-9]+)|[a-z]+);/gi, entity => {
     const token = entity.slice(1, -1)
@@ -44,8 +53,7 @@ function decodeSourceEntitiesOnce(value) {
     const numeric = token[1]?.toLowerCase() === 'x'
       ? Number.parseInt(token.slice(2), 16)
       : Number.parseInt(token.slice(1), 10)
-    if (!Number.isInteger(numeric) || numeric < 0 || numeric > 0x10ffff
-      || (numeric >= 0xd800 && numeric <= 0xdfff)) return ''
+    if (!isStorableSourceCodePoint(numeric)) return ' '
     return String.fromCodePoint(numeric)
   })
 }
@@ -60,9 +68,15 @@ function decodeSourceEntities(value) {
   return decoded
 }
 
+function removeUnsafeSourceCharacters(value) {
+  return [...value].map(character => (
+    isStorableSourceCodePoint(character.codePointAt(0)) ? character : ' '
+  )).join('')
+}
+
 function compactSourceText(value, maxLength) {
   if (value === null || value === undefined) return null
-  const text = decodeSourceEntities(String(value))
+  const text = removeUnsafeSourceCharacters(decodeSourceEntities(String(value)))
     .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
     .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
     .replace(/<[^>]+>/g, ' ')

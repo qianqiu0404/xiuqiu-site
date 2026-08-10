@@ -182,6 +182,13 @@ test('source reports strip markup, bound text and fail closed on missing or inva
   assert.doesNotMatch(encodedMarkup.excerpt, /<|>|script|style|img|bad|hidden/i)
   assert.equal(normalizeMarketSourceReport({ excerpt: 'Ordinary text stays stable.' }, { now }).excerpt,
     'Ordinary text stays stable.')
+
+  const controls = normalizeMarketSourceReport({
+    excerpt: 'A&#0;B&#x0;C&amp;#0;D&#1;E&#x1f;F&#127;G&#x80;H&#xD800;I&#xFDD0;J&#x10FFFF;K '
+      + ['L', String.fromCodePoint(1), String.fromCodePoint(9), 'M', String.fromCodePoint(10), 'N'].join(''),
+  }, { now })
+  assert.equal(controls.excerpt, 'A B C D E F G H I J K L M N')
+  assert.doesNotMatch(controls.excerpt, /[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F-\u009F\uD800-\uDFFF]/)
 })
 
 test('registration-free provider parsers fail closed and discard malformed records', () => {

@@ -57,16 +57,20 @@ async function upsertRawItem(client, item, serializedPayload) {
       payload_purged_at is not null and payload_fingerprint is null as needs_payload_baseline,
       source_url is distinct from $3
         or title is distinct from $4
-        or published_at is distinct from $5::timestamptz
-        or case
-          when payload_fingerprint is not null then payload_fingerprint is distinct from md5(($6::jsonb)::text)
-          when payload_purged_at is null then md5(payload::text) is distinct from md5(($6::jsonb)::text)
-          else false
-        end as content_changed
+        or published_at is distinct from $5::timestamptz as structure_changed,
+      case
+        when payload_fingerprint is not null then payload_fingerprint is distinct from md5(($6::jsonb)::text)
+        when payload_purged_at is null then md5(payload::text) is distinct from md5(($6::jsonb)::text)
+        else false
+      end as payload_changed
     from market_radar.raw_items where provider = $1 and provider_id = $2
     for update`, [
       item.provider, item.providerId, item.sourceUrl, item.title, item.publishedAt, serializedPayload,
     ])
+  const previousRow = previous[0]
+  const needsPayloadBaseline = previousRow?.needs_payload_baseline === true
+  const revisionDetected = previousRow?.structure_changed === true || previousRow?.payload_changed === true
+  const restorePayload = revisionDetected && !needsPayloadBaseline
   const id = previous[0]?.id || crypto.randomUUID()
   const saved = await query(client, `insert into market_radar.raw_items
     (id, provider, provider_id, market, source_url, title, published_at, payload, payload_fingerprint, normalized_at)
@@ -86,14 +90,13 @@ async function upsertRawItem(client, item, serializedPayload) {
       normalized_at = now()
     returning id`, [
       id, item.provider, item.providerId, item.market, item.sourceUrl, item.title,
-      item.publishedAt, serializedPayload, previous[0]?.content_changed === true,
-      previous[0]?.needs_payload_baseline === true,
+      item.publishedAt, serializedPayload, restorePayload, needsPayloadBaseline,
     ])
-  const old = previous[0]
+  const old = previousRow
   return {
     id: saved[0].id,
     inserted: !old,
-    revised: old?.content_changed === true,
+    revised: revisionDetected,
   }
 }
 

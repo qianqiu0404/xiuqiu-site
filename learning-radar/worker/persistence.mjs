@@ -68,17 +68,21 @@ async function upsertRawItem(client, item) {
       source_url is distinct from $3
         or title is distinct from $4
         or excerpt is distinct from $5
-        or published_at is distinct from $6::timestamptz
-        or case
-          when payload_fingerprint is not null then payload_fingerprint is distinct from md5(($7::jsonb)::text)
-          when payload_purged_at is null then md5(payload::text) is distinct from md5(($7::jsonb)::text)
-          else false
-        end as content_changed
+        or published_at is distinct from $6::timestamptz as structure_changed,
+      case
+        when payload_fingerprint is not null then payload_fingerprint is distinct from md5(($7::jsonb)::text)
+        when payload_purged_at is null then md5(payload::text) is distinct from md5(($7::jsonb)::text)
+        else false
+      end as payload_changed
     from learning_radar.raw_items
     where provider = $1 and provider_id = $2
     for update`, [
       item.provider, item.providerId, item.sourceUrl, item.title, item.excerpt, item.publishedAt, payloadJson,
     ])
+  const previousRow = previous[0]
+  const needsPayloadBaseline = previousRow?.needs_payload_baseline === true
+  const revisionDetected = previousRow?.structure_changed === true || previousRow?.payload_changed === true
+  const restorePayload = revisionDetected && !needsPayloadBaseline
   const id = previous[0]?.id || crypto.randomUUID()
   const result = await query(client, `insert into learning_radar.raw_items
     (id, provider, provider_id, source_url, source_domain, title, excerpt, published_at, payload,
@@ -106,13 +110,12 @@ async function upsertRawItem(client, item) {
     returning id`, [
       id, item.provider, item.providerId, item.sourceUrl, item.sourceDomain, item.title, item.excerpt,
       item.publishedAt, payloadJson, item.originVerifiedAt, item.isOfficial,
-      item.discoveredVia, item.verificationState, item.verificationError, previous[0]?.content_changed === true,
-      previous[0]?.needs_payload_baseline === true,
+      item.discoveredVia, item.verificationState, item.verificationError, restorePayload, needsPayloadBaseline,
     ])
   return {
     id: result[0].id,
-    inserted: !previous[0],
-    titleChanged: Boolean(previous[0] && previous[0].title !== item.title),
+    inserted: !previousRow,
+    titleChanged: Boolean(previousRow && previousRow.title !== item.title),
   }
 }
 
