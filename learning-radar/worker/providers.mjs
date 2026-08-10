@@ -146,7 +146,7 @@ export function assertSafeOriginUrl(input) {
   return normalized
 }
 
-async function resolveSafeHost(url, resolver) {
+export async function resolveSafeHost(url, resolver) {
   const hostname = new URL(url).hostname.replace(/^\[|\]$/g, '')
   if (isIP(hostname)) {
     if (isBlockedAddress(hostname)) throw new Error('origin_address_blocked')
@@ -179,8 +179,9 @@ export function createPinnedLookup(address, family) {
 export async function requestPinnedOrigin(urlValue, {
   pinnedAddress,
   family,
-  maxBytes,
-  timeoutMs,
+  maxBytes = 256 * 1024,
+  timeoutMs = 10_000,
+  accept = 'text/html,application/json,text/plain,application/xml;q=0.8',
   requestFactory = httpsRequest,
 } = {}) {
   const url = new URL(urlValue)
@@ -190,7 +191,7 @@ export async function requestPinnedOrigin(urlValue, {
       method: 'GET', servername: url.hostname, rejectUnauthorized: true,
       lookup: createPinnedLookup(pinnedAddress, family),
       headers: {
-        Accept: 'text/html,application/json,text/plain,application/xml;q=0.8',
+        Accept: accept,
         Range: `bytes=0-${maxBytes - 1}`,
         'User-Agent': 'xiuqiu-learning-radar/1.0',
       },
@@ -293,33 +294,108 @@ export async function verifyOriginUrl(input, {
   throw new Error('origin_redirect_limit')
 }
 
-async function fetchDefinition(definition, fetchImpl) {
+function configuredEndpoint(definition) {
   if (definition.kind === 'github_releases') {
-    const response = responseOk(await fetchImpl(`https://api.github.com/repos/${definition.repository}/releases?per_page=5`, {
-      signal: AbortSignal.timeout(10_000),
-      headers: { Accept: 'application/vnd.github+json', 'User-Agent': 'xiuqiu-learning-radar/1.0' },
-    }), definition.key)
-    return parseLearningGitHubReleases(await response.json(), definition)
+    return new URL(`https://api.github.com/repos/${definition.repository}/releases?per_page=5`)
   }
-  if (definition.kind === 'rss') {
-    const response = responseOk(await fetchImpl(definition.feedUrl, {
-      signal: AbortSignal.timeout(10_000), headers: { Accept: 'application/rss+xml,application/atom+xml,application/xml' },
-    }), definition.key)
-    return parseLearningRss(await response.text(), definition)
+  return new URL(definition.kind === 'rss' ? definition.feedUrl : definition.endpoint)
+}
+
+function configuredEndpointPolicy(definition) {
+  const configured = configuredEndpoint(definition)
+  const hostname = definition.kind === 'github_releases'
+    ? 'api.github.com'
+    : definition.kind === 'aihot'
+      ? 'aihot.virxact.com'
+      : definition.allowedHosts?.[0]
+  const pathname = definition.kind === 'github_releases'
+    ? `/repos/${definition.repository}/releases`
+    : definition.kind === 'aihot' ? '/api/v1/items' : configured.pathname
+  if (!hostname || !pathname) throw new Error(`${definition.key}_entry_policy_invalid`)
+  return {
+    hostname: hostname.toLowerCase(),
+    pathname: pathname.replace(/\/$/, ''),
+    contentType: definition.kind === 'rss'
+      ? /^(?:application\/(?:rss\+xml|atom\+xml|xml)|text\/xml)(?:;|$)/i
+      : /^application\/(?:json|[a-z0-9.+-]*\+json)(?:;|$)/i,
+    accept: definition.kind === 'rss'
+      ? 'application/rss+xml,application/atom+xml,application/xml,text/xml'
+      : definition.kind === 'github_releases' ? 'application/vnd.github+json' : 'application/json',
+    maxBytes: definition.kind === 'rss' ? 512 * 1024 : 1024 * 1024,
   }
-  const response = responseOk(await fetchImpl(definition.endpoint, {
-    signal: AbortSignal.timeout(10_000), headers: { Accept: 'application/json' },
-  }), definition.key)
-  return parseAihotPayload(await response.json())
+}
+
+export function assertConfiguredLearningEndpoint(definition, input) {
+  const normalized = normalizeLearningUrl(input)
+  const url = new URL(normalized)
+  const policy = configuredEndpointPolicy(definition)
+  if (url.port && url.port !== '443') throw new Error(`${definition.key}_entry_port_blocked`)
+  if (url.hostname.toLowerCase() !== policy.hostname) throw new Error(`${definition.key}_entry_host_blocked`)
+  if (url.pathname.replace(/\/$/, '') !== policy.pathname) throw new Error(`${definition.key}_entry_path_blocked`)
+  return normalized
+}
+
+export async function fetchConfiguredLearningEndpoint(definition, {
+  resolver = dnsLookup,
+  requestImpl = requestPinnedOrigin,
+  maxRedirects = 3,
+  timeoutMs = 10_000,
+} = {}) {
+  const policy = configuredEndpointPolicy(definition)
+  let current = assertConfiguredLearningEndpoint(definition, configuredEndpoint(definition).toString())
+  const seen = new Set()
+  for (let redirects = 0; redirects <= maxRedirects; redirects += 1) {
+    if (seen.has(current)) throw new Error(`${definition.key}_entry_redirect_loop`)
+    seen.add(current)
+    const addresses = await resolveSafeHost(current, resolver)
+    const pinned = addresses[0]
+    const response = await requestImpl(current, {
+      pinnedAddress: pinned.address,
+      family: pinned.family,
+      maxBytes: policy.maxBytes,
+      timeoutMs,
+      accept: policy.accept,
+    })
+    if ([301, 302, 303, 307, 308].includes(response.status)) {
+      if (redirects === maxRedirects) throw new Error(`${definition.key}_entry_redirect_limit`)
+      const location = response.headers?.get?.('location')
+      if (!location) throw new Error(`${definition.key}_entry_redirect_missing_location`)
+      current = assertConfiguredLearningEndpoint(definition, new URL(location, current).toString())
+      continue
+    }
+    responseOk(response, definition.key)
+    const contentType = response.headers?.get?.('content-type') || ''
+    if (!policy.contentType.test(contentType)) throw new Error(`${definition.key}_entry_content_type_blocked`)
+    const bodyText = response.bodyText || ''
+    if (Buffer.byteLength(bodyText, 'utf8') > policy.maxBytes) {
+      throw new Error(`${definition.key}_entry_response_too_large`)
+    }
+    return { bodyText, contentType, sourceUrl: current }
+  }
+  throw new Error(`${definition.key}_entry_redirect_limit`)
+}
+
+async function fetchDefinition(definition, dependencies) {
+  const response = await fetchConfiguredLearningEndpoint(definition, dependencies)
+  if (definition.kind === 'rss') return parseLearningRss(response.bodyText, definition)
+  let payload
+  try {
+    payload = JSON.parse(response.bodyText)
+  } catch {
+    throw new Error(`${definition.key}_invalid_json`)
+  }
+  return definition.kind === 'github_releases'
+    ? parseLearningGitHubReleases(payload, definition)
+    : parseAihotPayload(payload)
 }
 
 export async function collectLearningSource(definition, {
-  fetchImpl = fetch,
   resolver = dnsLookup,
+  entryRequestImpl = requestPinnedOrigin,
   originRequestImpl = requestPinnedOrigin,
   now = new Date(),
 } = {}) {
-  const candidates = await fetchDefinition(definition, fetchImpl)
+  const candidates = await fetchDefinition(definition, { resolver, requestImpl: entryRequestImpl })
   const items = []
   for (const candidate of candidates) {
     let verification = { sourceUrl: candidate.sourceUrl, originVerifiedAt: null }

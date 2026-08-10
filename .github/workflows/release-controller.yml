@@ -194,6 +194,11 @@ jobs:
           assert.doesNotMatch(JSON.stringify(learningWorker.jobs.authorize), /secrets\./)
           assert.equal(learningWorker.jobs.run.environment, undefined)
           assert.match(JSON.stringify(learningWorker.jobs.authorize), /learning-radar-production-authorized/)
+          const learningRunStep = learningWorker.jobs.run.steps.find(step => step.name === 'Run Learning Radar')
+          const legacyLearningDatabaseName = ['LEARNING', 'RADAR', 'DATABASE', 'URL'].join('_')
+          assert.equal(learningRunStep.env.MARKET_RADAR_DATABASE_URL, protectedTokenEnv.replace('VERCEL_TOKEN', 'MARKET_RADAR_DATABASE_URL'))
+          assert.equal(Object.hasOwn(learningRunStep.env, legacyLearningDatabaseName), false)
+          assert.doesNotMatch(`${controllerSource}\n${fs.readFileSync('.github/workflows/learning-radar.yml', 'utf8')}`, new RegExp(legacyLearningDatabaseName))
           console.log('Release DAG and inert dry-run boundary are valid')
           NODE
           echo 'dag_audit=passed' >> "$GITHUB_OUTPUT"
@@ -699,11 +704,11 @@ jobs:
       - run: npm ci
       - name: Promote the exact-SHA Learning Radar worker
         env:
-          LEARNING_RADAR_DATABASE_URL: ${{ secrets.LEARNING_RADAR_DATABASE_URL || secrets.MARKET_RADAR_DATABASE_URL }}
+          MARKET_RADAR_DATABASE_URL: ${{ secrets.MARKET_RADAR_DATABASE_URL }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           DEEPSEEK_MODEL: ${{ vars.DEEPSEEK_MODEL || 'deepseek-v4-flash' }}
         run: |
           set -euo pipefail
-          test -n "$LEARNING_RADAR_DATABASE_URL"
+          test -n "$MARKET_RADAR_DATABASE_URL"
           test -n "$DEEPSEEK_API_KEY"
           npm run learning-radar:worker

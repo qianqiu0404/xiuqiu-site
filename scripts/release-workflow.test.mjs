@@ -7,6 +7,8 @@ const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8'
 const controllerSource = read('.github/workflows/release-controller.yml')
 const workerSource = read('.github/workflows/market-radar.yml')
 const learningWorkerSource = read('.github/workflows/learning-radar.yml')
+const releaseGuideSource = read('docs/release-controller.md')
+const readmeSource = read('README.md')
 const controller = parse(controllerSource)
 const worker = parse(workerSource)
 const learningWorker = parse(learningWorkerSource)
@@ -147,6 +149,15 @@ test('manual and scheduled workers cannot bypass the deployed-SHA authorization 
   assert.equal(learningWorker.jobs.run.environment, undefined)
   assert.match(learningWorkerSource, /learning-radar-production-authorized/)
   assert.match(learningWorkerSource, /release-controller\.yml/)
+  const learningRunStep = learningWorker.jobs.run.steps.find(step => step.name === 'Run Learning Radar')
+  const legacyLearningDatabaseName = ['LEARNING', 'RADAR', 'DATABASE', 'URL'].join('_')
+  assert.equal(learningRunStep.env.MARKET_RADAR_DATABASE_URL, '${{ secrets.MARKET_RADAR_DATABASE_URL }}')
+  assert.equal(Object.hasOwn(learningRunStep.env, legacyLearningDatabaseName), false)
+  assert.doesNotMatch(`${learningWorkerSource}\n${controllerSource}\n${readmeSource}\n${releaseGuideSource}`,
+    new RegExp(legacyLearningDatabaseName))
+  assert.match(releaseGuideSource, /Repository- or organization-level Actions secrets: `MARKET_RADAR_DATABASE_URL` and `DEEPSEEK_API_KEY`/)
+  assert.match(releaseGuideSource, /hourly Learning worker never does/)
+  assert.match(releaseGuideSource, /verifies required secret \*\*names\*\*/)
 })
 
 test('required CI and release preflight run the non-skippable disposable radar database gate', () => {

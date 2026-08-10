@@ -64,7 +64,7 @@ MARKET_RADAR_DATABASE_URL=
 MARKET_RADAR_DISPATCH_TOKEN=
 ```
 
-Configure the optional scheduled Market Radar shadow worker in GitHub Actions secrets. The database URL must be the same Neon pooled connection string used by Vercel:
+Configure the scheduled Radar workers with repository- or organization-level GitHub Actions secrets. Learn Radar intentionally does not enter the reviewer-protected release Environment on hourly runs, so these two names must be available without Environment approval. Both Radar schemas use the same current Neon pooled connection string that Vercel and the release migration use; there is no separate Learning Radar database variable:
 
 ```env
 MARKET_RADAR_DATABASE_URL=
@@ -72,7 +72,7 @@ DEEPSEEK_API_KEY=
 SEC_USER_AGENT=
 ```
 
-Keep `MARKET_RADAR_ENABLED` as a GitHub Actions variable set to `false` until migrations and the manual ingestion smoke test pass. Hermes stores `MARKET_RADAR_DISPATCH_TOKEN` and `WEIXIN_HOME_CHANNEL` only in its local secret environment; Weixin credentials never belong in Vercel or GitHub.
+Keep `MARKET_RADAR_ENABLED` and `LEARNING_RADAR_ENABLED` as GitHub Actions variables set to `false` until migrations and the corresponding manual ingestion smoke pass. T7 release preflight may verify that required secret names exist using read-only metadata, but must never copy, print, rotate, or inspect secret values. Hermes stores `MARKET_RADAR_DISPATCH_TOKEN` and `WEIXIN_HOME_CHANNEL` only in its local secret environment; Weixin credentials never belong in Vercel or GitHub.
 
 The right-side assistant is part of the public site. It uses the reviewed public knowledge graph, sends visitor questions to the DeepSeek API, and fails closed when the provider key is unavailable. The in-memory limiter is a best-effort per-instance guard, not a persistent production quota. Never commit a real API key. `.env.example` contains names and safe defaults only.
 

@@ -11,8 +11,8 @@ import { cleanupLearningRetention } from './maintenance.mjs'
 import { withRadarDatabaseLock } from '../../market-radar/worker/advisory-lock.mjs'
 
 const env = process.env
-const databaseUrl = env.LEARNING_RADAR_DATABASE_URL || env.MARKET_RADAR_DATABASE_URL
-if (!databaseUrl) throw new Error('LEARNING_RADAR_DATABASE_URL or MARKET_RADAR_DATABASE_URL is required')
+const databaseUrl = env.MARKET_RADAR_DATABASE_URL
+if (!databaseUrl) throw new Error('MARKET_RADAR_DATABASE_URL is required')
 
 const now = new Date()
 const mode = process.argv.includes('--digest=daily') || env.REQUESTED_MODE === 'daily' ? 'daily' : 'ingest'

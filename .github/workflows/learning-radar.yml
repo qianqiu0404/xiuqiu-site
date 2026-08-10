@@ -158,12 +158,12 @@ jobs:
       - name: Run Learning Radar
         env:
           REQUESTED_MODE: ${{ needs.authorize.outputs.mode }}
-          LEARNING_RADAR_DATABASE_URL: ${{ secrets.LEARNING_RADAR_DATABASE_URL || secrets.MARKET_RADAR_DATABASE_URL }}
+          MARKET_RADAR_DATABASE_URL: ${{ secrets.MARKET_RADAR_DATABASE_URL }}
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           DEEPSEEK_MODEL: ${{ vars.DEEPSEEK_MODEL || 'deepseek-v4-flash' }}
         run: |
           set -euo pipefail
-          test -n "$LEARNING_RADAR_DATABASE_URL"
+          test -n "$MARKET_RADAR_DATABASE_URL"
           test -n "$DEEPSEEK_API_KEY"
           if [ "$REQUESTED_MODE" = 'daily' ]; then npm run learning-radar:worker -- --digest=daily; exit 0; fi
           npm run learning-radar:worker

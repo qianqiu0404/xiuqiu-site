@@ -20,9 +20,11 @@ import {
 } from '../learning-radar/worker/core.mjs'
 import {
   analyzeLearningItem,
+  assertConfiguredLearningEndpoint,
   assertSafeOriginUrl,
   collectLearningSource,
   extractOriginMetadata,
+  fetchConfiguredLearningEndpoint,
   isBlockedAddress,
   parseAihotPayload,
   parseLearningGitHubReleases,
@@ -86,6 +88,85 @@ test('source registry binds official status to exact repo, host and category', (
   assert.equal(sourceMatchesRegistry(release, definition), true)
   assert.equal(sourceMatchesRegistry({ ...release, sourceUrl: 'https://github.com/attacker/openai-node/releases/tag/v6' }, definition), false)
   assert.equal(sourceMatchesRegistry({ ...release, category: 'reading' }, definition), false)
+})
+
+test('configured feed entrypoints pin public DNS and reject redirect, host, type and size escapes', async () => {
+  const github = LEARNING_SOURCES.find(source => source.key === 'openai_node_releases')
+  const rss = LEARNING_SOURCES.find(source => source.kind === 'rss')
+  assert.throws(() => assertConfiguredLearningEndpoint(AIHOT_SOURCE,
+    'https://sub.aihot.virxact.com/api/v1/items'), /entry_host_blocked/)
+  assert.throws(() => assertConfiguredLearningEndpoint(AIHOT_SOURCE,
+    'https://aihot.virxact.com.attacker.invalid/api/v1/items'), /entry_host_blocked/)
+  assert.throws(() => assertConfiguredLearningEndpoint(AIHOT_SOURCE,
+    'https://aihot.virxact.com/api/v1/items-evil'), /entry_path_blocked/)
+
+  let dnsPass = 0
+  await assert.rejects(fetchConfiguredLearningEndpoint(github, {
+    resolver: async () => (++dnsPass === 1
+      ? [{ address: '93.184.216.34', family: 4 }]
+      : [{ address: '192.168.1.9', family: 4 }]),
+    requestImpl: async () => originResponse('', {
+      status: 302, headers: { location: 'https://api.github.com/repos/openai/openai-node/releases?page=2' },
+    }),
+  }), /origin_dns_blocked/)
+
+  await assert.rejects(fetchConfiguredLearningEndpoint(AIHOT_SOURCE, {
+    resolver: publicResolver,
+    requestImpl: async () => originResponse('x'.repeat(1024 * 1024 + 1), {
+      headers: { 'content-type': 'application/json' },
+    }),
+  }), /entry_response_too_large/)
+  await assert.rejects(fetchConfiguredLearningEndpoint(rss, {
+    resolver: publicResolver,
+    requestImpl: async () => originResponse('x'.repeat(512 * 1024 + 1), {
+      headers: { 'content-type': 'application/rss+xml' },
+    }),
+  }), /entry_response_too_large/)
+  await assert.rejects(fetchConfiguredLearningEndpoint(github, {
+    resolver: publicResolver,
+    requestImpl: async () => originResponse('<html>not JSON</html>', {
+      headers: { 'content-type': 'text/html' },
+    }),
+  }), /entry_content_type_blocked/)
+
+  await assert.rejects(fetchConfiguredLearningEndpoint(AIHOT_SOURCE, {
+    resolver: publicResolver,
+    requestImpl: async url => originResponse('', { status: 302, headers: { location: url } }),
+  }), /entry_redirect_loop/)
+  let redirectStep = 0
+  await assert.rejects(fetchConfiguredLearningEndpoint(AIHOT_SOURCE, {
+    resolver: publicResolver,
+    requestImpl: async () => originResponse('', {
+      status: 302,
+      headers: { location: `https://aihot.virxact.com/api/v1/items?step=${++redirectStep}` },
+    }),
+  }), /entry_redirect_limit/)
+
+  let socketLookupAddress
+  const requestFactory = (options, onResponse) => {
+    const request = new EventEmitter()
+    request.setTimeout = () => request
+    request.end = () => options.lookup(options.hostname, {}, (error, address) => {
+      if (error) return request.emit('error', error)
+      socketLookupAddress = address
+      const response = new EventEmitter()
+      response.statusCode = 200
+      response.headers = { 'content-type': 'application/json' }
+      response.destroy = errorValue => { if (errorValue) response.emit('error', errorValue) }
+      onResponse(response)
+      queueMicrotask(() => {
+        response.emit('data', Buffer.from('{"schemaVersion":"1","query":{},"items":[]}'))
+        response.emit('end')
+      })
+    })
+    return request
+  }
+  const pinned = await fetchConfiguredLearningEndpoint(AIHOT_SOURCE, {
+    resolver: publicResolver,
+    requestImpl: (url, options) => requestPinnedOrigin(url, { ...options, requestFactory }),
+  })
+  assert.equal(socketLookupAddress, '93.184.216.34')
+  assert.match(pinned.bodyText, /schemaVersion/)
 })
 
 test('normalization strips trackers, uses PSL domains and clusters title rewrites across midnight', () => {
@@ -187,14 +268,10 @@ test('AIHOT collection replaces discovery text with verified origin metadata', a
       category: 'ai-products', score: 100, selected: true,
     }],
   }
-  const fetchImpl = async url => {
-    if (String(url).startsWith('https://aihot.virxact.com/api/')) {
-      return new Response(JSON.stringify(payload), { status: 200, headers: { 'content-type': 'application/json' } })
-    }
-    throw new Error('unexpected feed request')
-  }
   const [item] = await collectLearningSource(AIHOT_SOURCE, {
-    fetchImpl,
+    entryRequestImpl: async url => originResponse(JSON.stringify(payload), {
+      headers: { 'content-type': 'application/json' }, url,
+    }),
     resolver: publicResolver,
     originRequestImpl: async url => originResponse(
       '<html><head><title>Mozilla Origin Update</title><meta name="description" content="Origin-owned description for the update."></head></html>',
@@ -221,7 +298,9 @@ test('final canonical URL controls official status and blocked AIHOT redirects s
   const [redirected] = await collectLearningSource(definition, {
     now,
     resolver: publicResolver,
-    fetchImpl: async () => new Response(JSON.stringify(releasePayload), { status: 200, headers: { 'content-type': 'application/json' } }),
+    entryRequestImpl: async url => originResponse(JSON.stringify(releasePayload), {
+      headers: { 'content-type': 'application/json' }, url,
+    }),
     originRequestImpl: async url => {
       if (redirects++ === 0) return originResponse('', { status: 302, headers: { location: 'https://blog.mozilla.org/redirected-release' } })
       return originResponse('<title>Third-party mirror</title><meta name="description" content="Mirrored release notes">', { url })
@@ -240,7 +319,9 @@ test('final canonical URL controls official status and blocked AIHOT redirects s
   const [blocked] = await collectLearningSource(AIHOT_SOURCE, {
     now,
     resolver: publicResolver,
-    fetchImpl: async () => new Response(JSON.stringify(aihotPayload), { status: 200, headers: { 'content-type': 'application/json' } }),
+    entryRequestImpl: async url => originResponse(JSON.stringify(aihotPayload), {
+      headers: { 'content-type': 'application/json' }, url,
+    }),
     originRequestImpl: async () => originResponse('', { status: 302, headers: { location: 'https://sub.aihot.virxact.com/items/blocked' } }),
   })
   assert.equal(blocked.verificationState, 'unverified')
@@ -369,7 +450,7 @@ test('origin metadata extractor and AI request use only verified public source m
 test('bad dates and source failures fail closed while cursor and hourly slots remain idempotent', async () => {
   assert.throws(() => normalized({ publishedAt: 'not-a-date' }), /published_at_invalid/)
   await assert.rejects(collectLearningSource(LEARNING_SOURCES[0], {
-    fetchImpl: async () => { throw new Error('source_timeout') }, resolver: publicResolver, now,
+    entryRequestImpl: async () => { throw new Error('source_timeout') }, resolver: publicResolver, now,
   }), /source_timeout/)
   const first = normalized({ providerId: 'same-second-a' })
   const second = normalized({ providerId: 'same-second-b' })
