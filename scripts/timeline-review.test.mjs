@@ -24,12 +24,13 @@ const read = path => readFile(new URL(path, root), 'utf8')
 const releaseSha = 'a'.repeat(40)
 
 test('timeline review workflow is manual, exact-SHA bound and protected by the real approver', async () => {
-  const [source, runCommand, command, migration, safetyMigration, guide] = await Promise.all([
+  const [source, runCommand, command, migration, safetyMigration, compatibilityMigration, guide] = await Promise.all([
     read('.github/workflows/timeline-review.yml'),
     read('timeline-review/run.mjs'),
     read('timeline-review/command.mjs'),
     read('market-radar/migrations/009_timeline_review.sql'),
     read('market-radar/migrations/010_timeline_review_safety.sql'),
+    read('market-radar/migrations/011_public_boundary_predicate.sql'),
     read('docs/timeline-review.md'),
   ])
   const workflow = parse(source)
@@ -70,6 +71,11 @@ test('timeline review workflow is manual, exact-SHA bound and protected by the r
   assert.match(safetyMigration, /meaningful_timeline_boundary\(e\.watch_for_zh\)/i)
   assert.match(safetyMigration, /ss\.published_at >= v_now - interval '30 days'/i)
   assert.match(safetyMigration, /pg_advisory_xact_lock\(hashtextextended\('timeline-review-run:'/i)
+  assert.match(compatibilityMigration,
+    /grant execute on function radar_system\.meaningful_timeline_boundary\(text\) to public/i)
+  assert.doesNotMatch(compatibilityMigration,
+    /manual_source\.published_at\s*[<>]=?\s*statement_timestamp/i)
+  assert.doesNotMatch(compatibilityMigration, /review_timeline/i)
   assert.match(guide, /same Neon database/)
   assert.match(guide, /must have no direct access/)
   assert.doesNotMatch(guide, /postgres(?:ql)?:\/\//i)
@@ -251,7 +257,9 @@ test('real PostgreSQL protects timeline review transitions, audit privacy and ex
   database = new PgPool({ connectionString: databaseUrl })
 
   const reviewMigration = migrations.find(migration => migration.file === '010_timeline_review_safety.sql')
+  const compatibilityMigration = migrations.find(migration => migration.file === '011_public_boundary_predicate.sql')
   assert.ok(reviewMigration)
+  assert.ok(compatibilityMigration)
   assert.equal(reviewMigration.statements.filter(statement => statement.includes('create or replace function radar_system.review_timeline')).length, 1)
   await database.query('create view learning_radar.timeline_review_dependency as select id from learning_radar.public_timeline_items')
   await database.query('create view market_radar.timeline_review_dependency as select id from market_radar.public_events')
@@ -263,6 +271,7 @@ test('real PostgreSQL protects timeline review transitions, audit privacy and ex
     await database.query('begin')
     try {
       for (const statement of reviewMigration.statements) await database.query(statement)
+      for (const statement of compatibilityMigration.statements) await database.query(statement)
       await database.query('commit')
     } catch (error) {
       await database.query('rollback')
@@ -305,6 +314,7 @@ test('real PostgreSQL protects timeline review transitions, audit privacy and ex
 
   const learningVersion = await insertLearningFixture(database, 'learning-approve', {
     discoveredVia: 'https://aihot.virxact.com/items/discovery-only',
+    sourceHoursAgo: 20 * 24,
   })
   const learningReview = reviewInput('learning', 'learning-approve', learningVersion, '1001', 'approve',
     `Reviewed\u0000 safely; '; drop table learning_radar.stories; --`)
@@ -323,6 +333,16 @@ test('real PostgreSQL protects timeline review transitions, audit privacy and ex
   assert.deepEqual([learningAudit.previous_status, learningAudit.new_status], ['draft', 'published'])
   assert.equal((await database.query(`select count(*)::integer as count from learning_radar.public_timeline_items
     where id = 'learning-approve'`)).rows[0].count, 1)
+  await database.query(`update learning_radar.story_sources
+    set published_at = statement_timestamp() - interval '40 days'
+    where story_id = 'learning-approve'`)
+  await database.query(`update learning_radar.raw_items
+    set payload = '{"retained":false}'::jsonb, payload_purged_at = statement_timestamp()
+    where id = 'learning-approve-raw'`)
+  assert.equal((await database.query(`select count(*)::integer as count from learning_radar.public_timeline_items
+    where id = 'learning-approve'`)).rows[0].count, 1)
+  assert.equal((await database.query(`select count(*)::integer as count from learning_radar.public_story_reports
+    where story_id = 'learning-approve'`)).rows[0].count, 1)
   assert.equal(learningAudit.requested_by, learningAudit.requested_by.toLowerCase())
   assert.equal(learningAudit.approved_by, learningAudit.approved_by.toLowerCase())
   await assert.rejects(executor.query('select payload from learning_radar.raw_items limit 1'), /permission denied/)

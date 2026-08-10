@@ -276,6 +276,7 @@ test('real PostgreSQL applies migrations twice, rolls back failures and enforces
   await observer.query('create view market_radar.public_events_dependency as select id, score from market_radar.public_events')
   await observer.query(`create role "${readerRole}" nologin`)
   roleCreated = true
+  await observer.query(`grant usage on schema market_radar to "${readerRole}"`)
   await observer.query(`grant select on market_radar.public_events to "${readerRole}"`)
 
   const final = await withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => (
@@ -624,6 +625,26 @@ test('real PostgreSQL applies migrations twice, rolls back failures and enforces
   const mappedMarketEvent = mapPublicEventRow(publicMarketEvent.rows[0])
   assert.equal(Object.hasOwn(mappedMarketEvent, 'score'), false)
   assert.doesNotMatch(JSON.stringify(mappedMarketEvent), /"score"/)
+
+  assert.equal((await observer.query(`select has_function_privilege($1,
+    'radar_system.meaningful_timeline_boundary(text)','execute') as allowed`, [readerRole])).rows[0].allowed, true)
+  assert.equal((await observer.query(`select has_function_privilege($1,
+    'radar_system.review_timeline(text,text,text,text,text,text,text,timestamp with time zone,text)',
+    'execute') as allowed`, [readerRole])).rows[0].allowed, false)
+  const readerClient = await observer.connect()
+  await readerClient.query(`set role "${readerRole}"`)
+  try {
+    const readerEvent = await readerClient.query("select id from market_radar.public_events where id = 'score-private'")
+    assert.deepEqual(readerEvent.rows, [{ id: 'score-private' }])
+    await assert.rejects(readerClient.query('select payload from market_radar.raw_items limit 1'), /permission denied/)
+    await assert.rejects(readerClient.query('select note from market_radar.review_decisions limit 1'), /permission denied/)
+    await assert.rejects(readerClient.query(`select * from radar_system.review_timeline(
+      'market','score-private','reject',null,'reader','reviewer','999999',now(),repeat('a',40))`),
+    /permission denied/)
+  } finally {
+    await readerClient.query('reset role')
+    readerClient.release()
+  }
 
   await observer.query(`insert into market_radar.events
     (id, slug, cluster_key, market, status, priority, score, title_zh, summary_zh, why_it_matters_zh,
