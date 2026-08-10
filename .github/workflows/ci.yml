@@ -13,6 +13,18 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
+    services:
+      article-shadow-postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_HOST_AUTH_METHOD: trust
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -20,6 +32,12 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: Install PostgreSQL client for Article Catalog Shadow
+        run: sudo apt-get update && sudo apt-get install --yes postgresql-client
+      - name: Test Article Catalog Shadow against disposable PostgreSQL
+        run: npm run test:article-shadow
+        env:
+          ARTICLE_SHADOW_TEST_ADMIN_URL: postgresql://postgres@127.0.0.1:5432/postgres
       - run: npm run test:radar
       - run: npm run build
       - run: npm run check:public
