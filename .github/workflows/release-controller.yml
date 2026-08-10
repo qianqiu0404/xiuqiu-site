@@ -117,7 +117,7 @@ jobs:
             assert.equal(controller.jobs[jobName].environment, 'production-release')
           }
           assert.match(controllerSource, /VERCEL_CLI_VERSION: 58\.9\.0/)
-          const vercelCommandPattern = /\bvercel\s+(?:pull|build|deploy|promote|inspect|project\s+inspect|whoami)\b/
+          const vercelCommandPattern = /\bvercel\s+(?:pull|build|deploy|promote|inspect|project\s+inspect|whoami|curl)\b/
           const safeTokenFlag = '--token "$VERCEL_TOKEN"'
           for (const [jobName, job] of Object.entries(controller.jobs)) {
             for (const step of job.steps || []) {
@@ -135,9 +135,10 @@ jobs:
                   }
                 }
               }
-              if (step.run.includes('curl')) {
-                assert.equal(step.run.includes('VERCEL_TOKEN'), false)
-                assert.equal(step.run.includes('Authorization'), false)
+              for (const line of step.run.split('\n')) {
+                if (!/(^|\s)curl\b/.test(line) || /\bvercel\s+curl\b/.test(line)) continue
+                assert.equal(line.includes('VERCEL_TOKEN'), false)
+                assert.equal(line.includes('Authorization'), false)
               }
             }
           }
@@ -320,6 +321,7 @@ jobs:
       RELEASE_SHA: ${{ needs.preflight.outputs.release_sha }}
       DEPLOYMENT_URL: ${{ needs.stage_vercel_candidate.outputs.deployment_url }}
       DEPLOYMENT_ID: ${{ needs.stage_vercel_candidate.outputs.deployment_id }}
+      VERCEL_CLI_VERSION: 58.9.0
     steps:
       - uses: actions/checkout@v4
         with:
@@ -333,6 +335,16 @@ jobs:
           remote_main=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')
           test "$remote_main" = "$RELEASE_SHA"
           test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install the pinned Vercel CLI
+        run: |
+          set -euo pipefail
+          npm install --global "vercel@${VERCEL_CLI_VERSION}"
+          vercel --version | grep -Eq '(^| )58\.9\.0$'
 
       - name: Verify candidate READY, target, project and Git metadata
         id: ready
@@ -391,11 +403,13 @@ jobs:
       - name: Smoke the unaliased candidate before promotion
         env:
           SMOKE_URL: ${{ steps.ready.outputs.deployment_url }}
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
         run: |
           set -euo pipefail
-          curl --fail --silent --show-error --location --max-time 30 "$SMOKE_URL/" >/dev/null
-          curl --fail --silent --show-error --location --max-time 30 "$SMOKE_URL/market-radar" >/dev/null
-          events=$(curl --fail --silent --show-error --max-time 30 "$SMOKE_URL/api/market-radar/events?limit=1")
+          test -n "$VERCEL_TOKEN"
+          vercel curl "$SMOKE_URL/" --token "$VERCEL_TOKEN" -- --fail --silent --show-error --location --max-time 30 >/dev/null
+          vercel curl "$SMOKE_URL/market-radar" --token "$VERCEL_TOKEN" -- --fail --silent --show-error --location --max-time 30 >/dev/null
+          events=$(vercel curl "$SMOKE_URL/api/market-radar/events?limit=1" --token "$VERCEL_TOKEN" -- --fail --silent --show-error --max-time 30)
           jq -e '(.items | type) == "array"' <<< "$events" >/dev/null
 
   promote_vercel_production:
