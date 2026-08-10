@@ -3,6 +3,80 @@
 import type { MarketRadarDaily } from '../generatedMarketRadars.ts'
 export const monthlyMarketRadars: MarketRadarDaily[] = [
   {
+    "date": "2026-08-10",
+    "slug": "2026-08-10",
+    "title": "交易研究雷达 · 2026-08-10",
+    "summary": "本周先盯紧美国中长期国债连续拍卖与联储偏鹰分歧，再把 Agave 4.2.0 视为 Solana 客户端运行事件；只记录可验证条件，不预设资产方向。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-08-10T15:01:26+08:00",
+    "events": [
+      {
+        "id": "us-treasury-august-refunding-auctions-2026",
+        "priority": "P0",
+        "status": "scheduled",
+        "category": "macro",
+        "title": "美国 3 年、10 年与 30 年国债将在 8 月 11–13 日连续拍卖",
+        "fact": "美国财政部暂定拍卖日程列出：3 年期国债在 8 月 11 日拍卖，10 年期在 8 月 12 日拍卖，30 年期在 8 月 13 日拍卖，三者均计划于 8 月 17 日结算。",
+        "whyWatch": "连续的中长期期限供给会给出公开的需求与期限溢价观察窗口，可能影响美债收益率、美元与风险资产定价；日程本身不代表需求强弱或市场方向。",
+        "assets": [
+          "SPY",
+          "QQQ",
+          "DXY",
+          "BTC",
+          "ETH"
+        ],
+        "watchFor": "逐场核对财政部正式结果中的最高收益率、投标倍数与间接投标占比，再观察公开市场收益率和相关资产在结果公布后的变化。",
+        "invalidation": "若财政部更新拍卖或结算安排，以最新正式公告为准；在结果出现前，不把发行日程单独写成收益率或资产方向结论。",
+        "sourceName": "U.S. Department of the Treasury",
+        "sourceUrl": "https://home.treasury.gov/system/files/221/TentativeAuctionScheduleQ22026.pdf",
+        "sourcePublishedAt": "2026-05-06"
+      },
+      {
+        "id": "fomc-july-2026-hold-three-hike-dissents",
+        "priority": "P1",
+        "status": "monitoring",
+        "category": "macro",
+        "title": "联储维持 3.50%–3.75% 利率区间，三票异议倾向加息",
+        "fact": "7 月 29 日 FOMC 以 9 比 3 通过维持联邦基金利率目标区间在 3.50%–3.75%；三名反对者偏好上调 25 个基点，声明同时称通胀仍高于 2% 目标。",
+        "whyWatch": "利率不变与三票偏鹰异议同时存在，使后续官方经济数据和联储沟通更容易改变市场对政策路径的定价；本次表决不能直接外推下一次会议行动。",
+        "assets": [
+          "SPY",
+          "QQQ",
+          "DXY",
+          "BTC",
+          "ETH"
+        ],
+        "watchFor": "继续核对后续官方经济数据、FOMC 纪要与联储公开表态，观察偏鹰分歧是否扩大、收敛或被新的事实替代。",
+        "invalidation": "任何更新的 FOMC 决议或明确修正政策判断的官方材料都会取代本项；单一市场波动不证明政策路径已经改变。",
+        "sourceName": "Federal Reserve Board",
+        "sourceUrl": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
+        "sourcePublishedAt": "2026-07-29"
+      },
+      {
+        "id": "agave-4-2-0-stable-release",
+        "priority": "P2",
+        "status": "released",
+        "category": "crypto",
+        "title": "Agave 4.2.0 发布稳定版，覆盖主网 Beta 运行边界",
+        "fact": "Anza 将 Agave 4.2.0 标为适用于 Testnet、Devnet 与 Mainnet Beta 的稳定版；变更包括不再重写非活跃质押、账户哈希线程栈设置、Token-2022 指令解析与增量快照间隔调整。",
+        "whyWatch": "这是 Solana 验证节点客户端的运行与升级事件，值得关注节点采用、资源表现和后续修复；稳定版标签本身不等于网络已经全量升级，也不构成 SOL 方向信号。",
+        "assets": [
+          "SOL"
+        ],
+        "watchFor": "观察 Anza 的后续发布、验证节点采用信息、官方状态页以及是否出现快照、重放、质押或 Token-2022 解析相关的公开问题。",
+        "invalidation": "若后续补丁撤回或替代相关变更，或官方限制适用环境，应以新版本说明重写判断；没有运行证据时不外推性能或市场影响。",
+        "sourceName": "Anza Agave Releases",
+        "sourceUrl": "https://github.com/anza-xyz/agave/releases/tag/v4.2.0",
+        "sourcePublishedAt": "2026-08-07"
+      }
+    ],
+    "sourceUrls": [
+      "https://home.treasury.gov/system/files/221/TentativeAuctionScheduleQ22026.pdf",
+      "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
+      "https://github.com/anza-xyz/agave/releases/tag/v4.2.0"
+    ]
+  },
+  {
     "date": "2026-08-09",
     "slug": "2026-08-09",
     "title": "交易研究雷达 · 2026-08-09",
