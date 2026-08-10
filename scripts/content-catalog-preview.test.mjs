@@ -248,6 +248,7 @@ test('Content Catalog Preview security and fallback contracts', async t => {
     assert.doesNotMatch(sitemap, /content-catalog-preview/)
     assert.doesNotMatch(meta, /content-catalog-preview/)
     assert.doesNotMatch(page, /<main(?:\s|>)/)
+    assert.match(page, /document\.title = '内容目录状态｜xiuqiu'/)
     assert.match(page, /noindex, nofollow/)
     assert.match(page, /min-height:\s*44px/)
     assert.match(page, /prefers-reduced-motion:\s*reduce/)

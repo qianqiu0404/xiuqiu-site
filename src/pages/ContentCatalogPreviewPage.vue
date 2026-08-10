@@ -90,6 +90,7 @@ let previousRobotsContent: string | null = null
 let createdRobotsMeta = false
 
 onMounted(() => {
+  document.title = '内容目录状态｜xiuqiu'
   robotsMeta = document.querySelector('meta[name="robots"]')
   if (!robotsMeta) {
     robotsMeta = document.createElement('meta')
