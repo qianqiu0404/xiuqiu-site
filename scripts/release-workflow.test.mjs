@@ -16,6 +16,7 @@ const productionJobs = [
   'verify_vercel_candidate',
   'promote_vercel_production',
   'mark_deployed_sha',
+  'enqueue_radar_notifications',
   'promote_market_radar_worker',
 ]
 
@@ -83,7 +84,8 @@ test('release DAG is migration, staged Vercel promotion, worker smoke, then acti
   assert.deepEqual(controller.jobs.verify_vercel_candidate.needs, ['preflight', 'stage_vercel_candidate'])
   assert.deepEqual(controller.jobs.promote_vercel_production.needs, ['preflight', 'verify_vercel_candidate'])
   assert.deepEqual(controller.jobs.mark_deployed_sha.needs, ['preflight', 'promote_vercel_production'])
-  assert.deepEqual(controller.jobs.promote_market_radar_worker.needs, ['preflight', 'mark_deployed_sha'])
+  assert.deepEqual(controller.jobs.enqueue_radar_notifications.needs, ['preflight', 'mark_deployed_sha'])
+  assert.deepEqual(controller.jobs.promote_market_radar_worker.needs, ['preflight', 'mark_deployed_sha', 'enqueue_radar_notifications'])
 
   assert.equal(controller.jobs.stage_vercel_candidate.steps.find(step => step.uses === 'actions/setup-node@v4')?.with['node-version'], 24)
   assert.match(controllerSource, /VERCEL_CLI_VERSION: 58\.9\.0/)

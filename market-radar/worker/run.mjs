@@ -81,7 +81,7 @@ async function enqueueP0(eventId, payload) {
   await sql.query(`insert into market_radar.outbox
     (id, event_id, kind, idempotency_key, payload, available_at)
     values ($1,$2,'p0',$3,$4::jsonb,now()) on conflict (idempotency_key) do nothing`,
-  [crypto.randomUUID(), eventId, `p0:${eventId}`, JSON.stringify(payload)])
+  [crypto.randomUUID(), eventId, `market:p0:${eventId}`, JSON.stringify({ ...payload, pageUrl: `/market-radar/events/${eventId}` })])
 }
 
 async function persistItem(item) {

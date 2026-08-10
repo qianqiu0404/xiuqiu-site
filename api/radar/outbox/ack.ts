@@ -6,16 +6,15 @@ export default async function handler(req: MarketRadarRequest, res: MarketRadarR
   preparePrivateResponse(res)
   if (!allowMethods(req, res, ['POST'])) return
   if (!hasInternalToken(req)) return res.status(401).json({ code: 'unauthorized', error: 'Invalid dispatcher token.' })
-  const body = parseJsonBody(req.body)
   let ack: ReturnType<typeof ackFields>
   try {
-    ack = ackFields(body)
+    ack = ackFields(parseJsonBody(req.body))
   } catch (error) {
     return res.status(400).json({ code: 'invalid_ack', error: error instanceof Error ? error.message : 'Invalid acknowledgement.' })
   }
   try {
     const rows = await getMarketRadarDb().query(`with updated as (
-      update market_radar.outbox set
+      update learning_radar.outbox set
         attempts = attempts + 1,
         status = case when $3::boolean then 'sent' when attempts + 1 >= 5 then 'dead_letter' else 'pending' end,
         sent_at = case when $3::boolean then now() else sent_at end,
@@ -26,7 +25,7 @@ export default async function handler(req: MarketRadarRequest, res: MarketRadarR
       where id = $1 and lease_token = $2 and status = 'leased'
       returning id, idempotency_key, attempts, status
     ), logged as (
-      insert into market_radar.delivery_logs
+      insert into learning_radar.delivery_logs
         (id, outbox_id, idempotency_key, attempt, status, provider_message_id, error_code, error_message)
       select $5, id, idempotency_key, attempts, case when $3::boolean then 'sent' else 'failed' end, $6, $4, $7 from updated
       returning outbox_id
