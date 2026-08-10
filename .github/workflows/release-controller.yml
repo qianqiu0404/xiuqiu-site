@@ -134,7 +134,7 @@ jobs:
                   if (vercelCurlPattern.test(line)) {
                     assert.match(line, /\bvercel\s+--token\s+"\$VERCEL_TOKEN"\s+curl\b/)
                     assert.doesNotMatch(line, /\bcurl\b[^\n]*--token/)
-                    assert.match(line, /\s--\s/)
+                    assert.match(line, /\bcurl\b[^\n]*\s--yes\s+--\s/)
                   }
                   if (/\bvercel\s+project\s+inspect\b/.test(line)) {
                     assert.doesNotMatch(line, /--scope(?:=|\s+)/)
@@ -413,9 +413,9 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$VERCEL_TOKEN"
-          vercel --token "$VERCEL_TOKEN" curl "$SMOKE_URL/" -- --fail --silent --show-error --location --max-time 30 >/dev/null
-          vercel --token "$VERCEL_TOKEN" curl "$SMOKE_URL/market-radar" -- --fail --silent --show-error --location --max-time 30 >/dev/null
-          events=$(vercel --token "$VERCEL_TOKEN" curl "$SMOKE_URL/api/market-radar/events?limit=1" -- --fail --silent --show-error --max-time 30)
+          vercel --token "$VERCEL_TOKEN" curl "$SMOKE_URL/" --yes -- --fail --silent --show-error --location --max-time 30 >/dev/null
+          vercel --token "$VERCEL_TOKEN" curl "$SMOKE_URL/market-radar" --yes -- --fail --silent --show-error --location --max-time 30 >/dev/null
+          events=$(vercel --token "$VERCEL_TOKEN" curl "$SMOKE_URL/api/market-radar/events?limit=1" --yes -- --fail --silent --show-error --max-time 30)
           jq -e '(.items | type) == "array"' <<< "$events" >/dev/null
 
   promote_vercel_production:
