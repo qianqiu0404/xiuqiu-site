@@ -4,6 +4,21 @@
     "deploymentEnabled": false
   },
   "trailingSlash": false,
+  "headers": [
+    {
+      "source": "/content-catalog-preview",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        }
+      ]
+    }
+  ],
   "functions": {
     "api/chat.ts": {
       "includeFiles": "src/data/**"
