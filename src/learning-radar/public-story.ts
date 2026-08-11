@@ -94,7 +94,7 @@ export function mapPublicStoryUpdateRow(row: PublicLearningRadarRow): LearningRa
   const id = textOrNull(row.id)
   const titleZh = textOrNull(row.title_zh)
   const bodyZh = textOrNull(row.body_zh)
-  const occurredAt = textOrNull(row.occurred_at)
+  const occurredAt = isoOrNull(row.occurred_at)
   if (!id || !titleZh || !bodyZh || !occurredAt) return null
-  return { id, titleZh, bodyZh, occurredAt: isoOrEpoch(occurredAt) }
+  return { id, titleZh, bodyZh, occurredAt }
 }

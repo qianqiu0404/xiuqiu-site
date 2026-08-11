@@ -46,7 +46,13 @@ test('real public row flows through the production mapper, API parser and timeli
   assert.ok(dateBackedReport, 'Neon timestamptz Date objects must survive the production mapper')
   assert.equal(dateBackedReport.publishedAt, publicLearningReportRow.published_at)
   assert.equal([dateBackedReport].filter(item => item.isPrimary).length, 1)
-  assert.ok(parseLearningStory({ ...mapped, reports: [dateBackedReport], updates: [] }))
+  const dateBackedUpdate = mapPublicStoryUpdateRow({
+    ...publicLearningUpdateRow,
+    occurred_at: new Date(publicLearningUpdateRow.occurred_at),
+  })
+  assert.ok(dateBackedUpdate, 'Neon timestamptz Date objects must survive the update mapper')
+  assert.equal(dateBackedUpdate.occurredAt, publicLearningUpdateRow.occurred_at)
+  assert.ok(parseLearningStory({ ...mapped, reports: [dateBackedReport], updates: [dateBackedUpdate] }))
 })
 
 test('runtime API validation fails closed for malformed enums, dates, cursors, arrays and source URLs', () => {
@@ -74,6 +80,9 @@ test('runtime API validation fails closed for malformed enums, dates, cursors, a
   assert.equal(mapPublicStoryReportRow({ ...publicLearningReportRow, published_at: null }), null)
   assert.equal(mapPublicStoryReportRow({ ...publicLearningReportRow, published_at: 'not-a-date' }), null)
   assert.equal(mapPublicStoryReportRow({ ...publicLearningReportRow, published_at: new Date('not-a-date') }), null)
+  assert.equal(mapPublicStoryUpdateRow({ ...publicLearningUpdateRow, occurred_at: null }), null)
+  assert.equal(mapPublicStoryUpdateRow({ ...publicLearningUpdateRow, occurred_at: 'not-a-date' }), null)
+  assert.equal(mapPublicStoryUpdateRow({ ...publicLearningUpdateRow, occurred_at: new Date('not-a-date') }), null)
   assert.equal(parseLearningStory({ ...mapped, reports: [{ ...report, sourceUrl: 'http://[::1]/private' }], updates: [] }), null)
   assert.equal(parseLearningStory({ ...mapped, reports: [], updates: [publicLearningUpdateRow] }), null,
     'database rows must pass through their production camelCase mappers before reaching UI')
