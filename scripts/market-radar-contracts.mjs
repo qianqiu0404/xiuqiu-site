@@ -4,8 +4,10 @@ export const MARKET_RADAR_CATEGORIES = ['macro', 'crypto', 'equity', 'regulation
 export const MARKET_RADAR_PRIORITIES = ['P0', 'P1', 'P2']
 export const MARKET_RADAR_STATUSES = ['scheduled', 'released', 'monitoring']
 export const MARKET_QUANT_SYMBOLS = ['SPY', 'QQQ', 'BTC', 'ETH', 'GLD']
-export const MARKET_QUANT_STATUS = 'heuristic_unbacktested'
+export const MARKET_QUANT_STATUSES = ['heuristic_unbacktested', 'historical_samples_insufficient']
 const MARKET_QUANT_REQUIRED_FROM = '2026-08-10'
+const MARKET_QUANT_SAMPLE_GATE_FROM = '2026-08-11'
+const MARKET_SIGNAL_QUALITIES = ['strong', 'medium', 'weak']
 const MARKET_QUANT_GROUPS = {
   SPY: 'us_equity_etf',
   QQQ: 'us_equity_etf',
@@ -53,8 +55,11 @@ function validateQuantStrategy(strategy, entry, fileName) {
   if (!Number.isInteger(strategy.horizonTradingDays) || strategy.horizonTradingDays < 1 || strategy.horizonTradingDays > 10) {
     throw new Error(`${label}.horizonTradingDays must be an integer between 1 and 10.`)
   }
-  if (strategy.status !== MARKET_QUANT_STATUS) {
-    throw new Error(`${label}.status must be ${MARKET_QUANT_STATUS}.`)
+  if (!MARKET_QUANT_STATUSES.includes(strategy.status)) {
+    throw new Error(`${label}.status is unsupported.`)
+  }
+  if (entry.date >= MARKET_QUANT_SAMPLE_GATE_FROM && strategy.status !== 'historical_samples_insufficient') {
+    throw new Error(`${label}.status must be historical_samples_insufficient until backtested evidence is available.`)
   }
   for (const field of ['methodology', 'rationale', 'nextValidation', 'invalidation']) {
     assertText(strategy[field], `${label}.${field}`)
@@ -70,17 +75,29 @@ function validateQuantStrategy(strategy, entry, fileName) {
     if (symbols.has(asset.symbol)) throw new Error(`${label}.assets must not repeat symbols.`)
     symbols.add(asset.symbol)
     if (asset.group !== MARKET_QUANT_GROUPS[asset.symbol]) throw new Error(`${assetLabel}.group is invalid for ${asset.symbol}.`)
-    for (const field of ['up', 'sideways', 'down']) {
-      if (!Number.isInteger(asset[field]) || asset[field] < 0 || asset[field] > 100) {
-        throw new Error(`${assetLabel}.${field} must be an integer from 0 to 100.`)
+    if (strategy.status === 'heuristic_unbacktested') {
+      for (const field of ['up', 'sideways', 'down']) {
+        if (!Number.isInteger(asset[field]) || asset[field] < 0 || asset[field] > 100) {
+          throw new Error(`${assetLabel}.${field} must be an integer from 0 to 100.`)
+        }
       }
-    }
-    if (asset.up + asset.sideways + asset.down !== 100) {
-      throw new Error(`${assetLabel} probabilities must sum to 100.`)
+      if (asset.up + asset.sideways + asset.down !== 100) {
+        throw new Error(`${assetLabel} probabilities must sum to 100.`)
+      }
+    } else {
+      if (!MARKET_SIGNAL_QUALITIES.includes(asset.signalQuality)) throw new Error(`${assetLabel}.signalQuality is invalid.`)
+      if (['up', 'sideways', 'down'].some(field => Object.hasOwn(asset, field))) {
+        throw new Error(`${assetLabel} must not publish exact probabilities without backtested evidence.`)
+      }
     }
   })
   if (symbols.size !== MARKET_QUANT_SYMBOLS.length || MARKET_QUANT_SYMBOLS.some(symbol => !symbols.has(symbol))) {
     throw new Error(`${label}.assets must include ${MARKET_QUANT_SYMBOLS.join(', ')}.`)
+  }
+  if (strategy.status === 'historical_samples_insufficient') {
+    if (!Number.isInteger(strategy.sampleSize) || strategy.sampleSize < 0 || strategy.sampleSize >= 50) {
+      throw new Error(`${label}.sampleSize must be an integer from 0 to 49 while evidence is insufficient.`)
+    }
   }
   if (!Array.isArray(strategy.sourceUrls) || strategy.sourceUrls.length < 1 || strategy.sourceUrls.length > 8) {
     throw new Error(`${label}.sourceUrls must contain 1-8 items.`)

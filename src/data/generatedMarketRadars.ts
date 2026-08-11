@@ -5,8 +5,9 @@ export type MarketRadarStatus = 'scheduled' | 'released' | 'monitoring'
 export type MarketRadarCategory = 'macro' | 'crypto' | 'equity' | 'regulation'
 export interface MarketRadarEvent { id: string; priority: MarketRadarPriority; status: MarketRadarStatus; category: MarketRadarCategory; eventAt?: string; title: string; fact: string; whyWatch: string; assets: string[]; watchFor: string; invalidation: string; sourceName: string; sourceUrl: string; sourcePublishedAt: string }
 export type MarketQuantAssetGroup = 'us_equity_etf' | 'crypto' | 'gold_etf'
-export interface MarketQuantAsset { symbol: 'SPY' | 'QQQ' | 'BTC' | 'ETH' | 'GLD'; group: MarketQuantAssetGroup; up: number; sideways: number; down: number }
-export interface MarketQuantStrategy { horizonTradingDays: number; status: 'heuristic_unbacktested'; methodology: string; assets: MarketQuantAsset[]; rationale: string; nextValidation: string; invalidation: string; sourceUrls: string[] }
+export type MarketSignalQuality = 'strong' | 'medium' | 'weak'
+export interface MarketQuantAsset { symbol: 'SPY' | 'QQQ' | 'BTC' | 'ETH' | 'GLD'; group: MarketQuantAssetGroup; up?: number; sideways?: number; down?: number; signalQuality?: MarketSignalQuality }
+export interface MarketQuantStrategy { horizonTradingDays: number; status: 'heuristic_unbacktested' | 'historical_samples_insufficient'; methodology: string; assets: MarketQuantAsset[]; sampleSize?: number; rationale: string; nextValidation: string; invalidation: string; sourceUrls: string[] }
 export interface MarketRadarDaily { date: string; slug: string; title: string; summary: string; reviewStatus: 'automated'; generatedAt: string; events: MarketRadarEvent[]; sourceUrls: string[]; quantStrategy?: MarketQuantStrategy }
 export interface MarketRadarIndexEntry { date: string; slug: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
 export const marketRadarIndex: MarketRadarIndexEntry[] = [
