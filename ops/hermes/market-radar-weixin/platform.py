@@ -22,6 +22,7 @@ from .common import (
     read_ledger,
     remember_connection_test,
     remember_delivery,
+    remember_pending_failure,
     settings,
 )
 from .dispatcher import SPEC as MARKET_SPEC
@@ -47,7 +48,12 @@ def _secondary_credentials(profile_name: str) -> dict[str, str] | None:
     if not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,63}", profile_name):
         return None
     profile_home = Path.home() / ".hermes" / "profiles" / profile_name
-    account_files = sorted((profile_home / "weixin" / "accounts").glob("*.json"))
+    account_files = sorted(
+        path
+        for path in (profile_home / "weixin" / "accounts").glob("*.json")
+        if not path.name.endswith(".context-tokens.json")
+        and not path.name.endswith(".sync.json")
+    )
     if len(account_files) != 1:
         return None
     try:
@@ -138,7 +144,10 @@ class RadarWeixinAdapter(BasePlatformAdapter):
         try:
             envelope = json.loads(content)
         except json.JSONDecodeError:
-            return SendResult(success=False, error="radar_envelope_invalid")
+            plain_text = content.strip()
+            if not plain_text or plain_text == "[SILENT]":
+                return SendResult(success=True)
+            return await self._send_plain_text(plain_text)
         if not isinstance(envelope, dict) or envelope.get("version") != 1:
             return SendResult(success=False, error="radar_envelope_invalid")
 
@@ -161,6 +170,26 @@ class RadarWeixinAdapter(BasePlatformAdapter):
         error_code, error_message = classify_weixin_error(result.get("error"))
         return SendResult(success=False, error=f"{error_code}: {error_message}")
 
+    async def _send_plain_text(self, content: str) -> SendResult:
+        profile_name, _ = local_delivery_options()
+        credentials = _secondary_credentials(profile_name)
+        if credentials is None:
+            return SendResult(success=False, error="radar_recipient_not_configured")
+        result = await send_weixin_direct(
+            extra={
+                "account_id": credentials["account_id"],
+                "base_url": credentials["base_url"],
+                "cdn_base_url": "https://novac2c.cdn.weixin.qq.com/c2c",
+            },
+            token=credentials["token"],
+            chat_id=credentials["chat_id"],
+            message=content,
+        )
+        if result.get("success") and not result.get("error") and result.get("message_id"):
+            return SendResult(success=True, message_id=str(result["message_id"]))
+        error_code, error_message = classify_weixin_error(result.get("error"))
+        return SendResult(success=False, error=f"{error_code}: {error_message}")
+
     async def _deliver(self, chat_id: str, envelope: dict[str, Any]) -> SendResult:
         reference = str(envelope.get("deliveryRef") or "")
         if set(envelope) != {"version", "mode", "deliveryRef"}:
@@ -168,6 +197,9 @@ class RadarWeixinAdapter(BasePlatformAdapter):
         pending = load_pending_delivery(reference)
         if pending is None:
             return SendResult(success=False, error="radar_delivery_reference_missing")
+        terminal_error = str(pending.get("terminalError") or "").strip()
+        if terminal_error:
+            return SendResult(success=False, error=terminal_error)
         radar = str(pending.get("radar") or "")
         spec = SPECS.get(radar)
         item_id = str(pending.get("itemId") or "")
@@ -213,8 +245,9 @@ class RadarWeixinAdapter(BasePlatformAdapter):
                 })
             except Exception as exc:
                 return SendResult(success=False, error=f"radar_ack_failed:{type(exc).__name__}")
-            forget_pending_delivery(reference)
-            return SendResult(success=False, error=f"{error_code}: {error_message}")
+            terminal_error = f"{error_code}: {error_message}"
+            remember_pending_failure(reference, terminal_error)
+            return SendResult(success=False, error=terminal_error)
 
         final_message_id = receipts[-1] if receipts else ""
         if not final_message_id:

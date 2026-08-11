@@ -7,7 +7,7 @@ import {
   selectMarketItemsAfterCursor,
   hasCompleteAiV2Boundaries, isFreshForPublic, priorityForScore, scoreEvent, titleSimilarity, validateAiSummary,
 } from '../market-radar/worker/core.mjs'
-import { buildDigestBody, summarizeAttentionAssets } from '../market-radar/worker/digests.mjs'
+import { buildDigestBody, generateDailyDigest, summarizeAttentionAssets } from '../market-radar/worker/digests.mjs'
 import { isUsPremarketWindow, newYorkParts } from '../market-radar/worker/market-calendar.mjs'
 import { parseBinanceKlines, parseGitHubReleasePayload, parseRss, parseSecCompanyFeed } from '../market-radar/worker/providers.mjs'
 import {
@@ -98,6 +98,34 @@ test('digest states that no asset qualifies instead of forcing a direction', () 
   assert.deepEqual(digest.attentionAssets, [])
   assert.match(digest.body, /特别关注：暂无/)
   assert.match(digest.body, /不为凑结论而强行指定资产/)
+})
+
+test('market digest atomically repairs an outbox missing after a prior digest commit', async () => {
+  let outboxExists = false
+  const writeStatements = []
+  const sql = {
+    async query(statement) {
+      if (statement.includes('from market_radar.public_events')) return []
+      writeStatements.push(statement)
+      assert.match(statement, /^with inserted_digest as/i)
+      assert.match(statement, /insert into market_radar\.digests/i)
+      assert.match(statement, /union all[\s\S]*from market_radar\.digests where id = \$1/i)
+      assert.match(statement, /insert into market_radar\.outbox/i)
+      assert.match(statement, /jsonb_build_object/i)
+      if (outboxExists) return [{ digest_created: false, outbox_created: false }]
+      outboxExists = true
+      return [{ digest_created: false, outbox_created: true }]
+    },
+  }
+
+  const repaired = await generateDailyDigest(sql, new Date('2026-08-11T00:00:00Z'))
+  assert.equal(repaired.created, false)
+  assert.equal(repaired.outboxCreated, true)
+  assert.equal(repaired.repaired, true)
+  assert.equal(repaired.count, 0)
+  const repeated = await generateDailyDigest(sql, new Date('2026-08-11T00:00:00Z'))
+  assert.deepEqual(repeated, { created: false, reason: 'already_exists' })
+  assert.equal(writeStatements.length, 2, 'each invocation must use one atomic digest/outbox write statement')
 })
 
 test('AI summaries fail closed unless every public field and enum is valid', () => {

@@ -274,6 +274,20 @@ def load_pending_delivery(reference: str) -> dict[str, str] | None:
     return value if isinstance(value, dict) else None
 
 
+def remember_pending_failure(reference: str, error: str) -> None:
+    if not re.fullmatch(r"[A-Za-z0-9_-]{20,80}", reference):
+        return
+    path = pending_dir() / f"{reference}.json"
+    if not path.is_file():
+        return
+    value = {"terminalError": str(error).strip()[:320] or "radar_delivery_failed"}
+    with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as handle:
+        json.dump(value, handle, ensure_ascii=False, separators=(",", ":"))
+        temporary = Path(handle.name)
+    os.chmod(temporary, 0o600)
+    os.replace(temporary, path)
+
+
 def forget_pending_delivery(reference: str) -> None:
     if not re.fullmatch(r"[A-Za-z0-9_-]{20,80}", reference):
         return

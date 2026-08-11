@@ -2,7 +2,9 @@ name: Market Radar Worker
 
 on:
   schedule:
-    - cron: '*/20 * * * *'
+    - cron: '0 0 * * *'
+    - cron: '20,40 0 * * *'
+    - cron: '0,20,40 1-23 * * *'
     - cron: '45 12,13 * * 1-5'
   workflow_dispatch:
     inputs:
@@ -50,6 +52,7 @@ jobs:
           [[ "$release_sha" =~ ^[0-9a-f]{40}$ ]]
 
           mode="${REQUESTED_MODE:-ingest}"
+          if [ "$RUN_SCHEDULE" = '0 0 * * *' ]; then mode='daily'; fi
           if [ "$RUN_SCHEDULE" = '45 12,13 * * 1-5' ]; then mode='premarket'; fi
           case "$mode" in
             dry-run|ingest|daily|premarket) ;;

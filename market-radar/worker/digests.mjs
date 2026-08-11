@@ -167,18 +167,38 @@ export function buildDigestBody(events) {
 async function createDigest(sql, { id, kind, title, periodStart, periodEnd, events, outboxKind, idempotencyKey, pageUrl, allowQuiet = false }) {
   if (!events.length && !allowQuiet) return { created: false, reason: 'no_important_events' }
   const { body, attentionAssets } = buildDigestBody(events)
-  const digestRows = await sql.query(`insert into market_radar.digests
-    (id, kind, title, body_zh, visibility, period_start, period_end, published_at)
-    values ($1,$2,$3,$4,'public',$5,$6,now()) on conflict (id) do nothing returning id`,
-    [id, kind, title, body, periodStart, periodEnd])
-  if (!digestRows[0]) return { created: false, reason: 'already_exists' }
-  await sql.query(`insert into market_radar.outbox
-    (id, digest_id, kind, idempotency_key, payload) values ($1,$2,$3,$4,$5::jsonb)
-    on conflict (idempotency_key) do nothing`, [
-      crypto.randomUUID(), id, outboxKind, idempotencyKey || `digest:${id}`,
-      JSON.stringify({ digestId: id, title, body, pageUrl }),
-    ])
-  return { created: true, count: events.length, attentionAssets }
+  const rows = await sql.query(`with inserted_digest as (
+    insert into market_radar.digests
+      (id, kind, title, body_zh, visibility, period_start, period_end, published_at)
+    values ($1,$2,$3,$4,'public',$5,$6,now())
+    on conflict (id) do nothing returning id, title, body_zh
+  ), selected_digest as (
+    select id, title, body_zh from inserted_digest
+    union all
+    select id, title, body_zh from market_radar.digests where id = $1
+    limit 1
+  ), inserted_outbox as (
+    insert into market_radar.outbox (id, digest_id, kind, idempotency_key, payload)
+    select $7, id, $8, $9, jsonb_strip_nulls(jsonb_build_object(
+      'digestId', id, 'title', title, 'body', body_zh, 'pageUrl', $10::text
+    )) from selected_digest
+    on conflict (idempotency_key) do nothing returning id
+  )
+  select exists(select 1 from inserted_digest) as digest_created,
+    exists(select 1 from inserted_outbox) as outbox_created`, [
+    id, kind, title, body, periodStart, periodEnd, crypto.randomUUID(), outboxKind,
+    idempotencyKey || `digest:${id}`, pageUrl || null,
+  ])
+  const digestCreated = rows[0]?.digest_created === true
+  const outboxCreated = rows[0]?.outbox_created === true
+  if (!digestCreated && !outboxCreated) return { created: false, reason: 'already_exists' }
+  return {
+    created: digestCreated,
+    outboxCreated,
+    repaired: !digestCreated && outboxCreated,
+    count: events.length,
+    attentionAssets,
+  }
 }
 
 async function publicEvents(sql, start, end, priorities = ['P0', 'P1', 'P2']) {

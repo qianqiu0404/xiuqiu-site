@@ -6,7 +6,7 @@ import {
   persistLearningSourceBatch,
   releaseLearningWorkerLease,
 } from './persistence.mjs'
-import { generateLearningDailyDigest } from './digests.mjs'
+import { runLearningDailyDigest } from './digests.mjs'
 import { cleanupLearningRetention } from './maintenance.mjs'
 import { withRadarDatabaseLock } from '../../market-radar/worker/advisory-lock.mjs'
 
@@ -63,44 +63,6 @@ async function collectOutsideLock() {
   return results
 }
 
-async function runDailyDigest(client) {
-  const digestSlot = `learning:digest:daily:${new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit',
-  }).format(now)}`
-  await client.query('begin')
-  try {
-    const started = await client.query(`insert into learning_radar.job_runs
-      (id, slot_key, source, group_key, status, started_at)
-      values ($1,$2,'learning_digest','daily','running',now())
-      on conflict (slot_key) do nothing returning id`, [crypto.randomUUID(), digestSlot])
-    if (!started.rows[0]) {
-      await client.query('rollback')
-      return { created: false, reason: 'already_exists' }
-    }
-    const digest = await generateLearningDailyDigest(client, now)
-    await client.query(`update learning_radar.job_runs set status = 'succeeded', item_count = $2,
-      finished_at = now() where id = $1`, [started.rows[0].id, digest.count])
-    await client.query('commit')
-    return digest
-  } catch (error) {
-    await client.query('rollback').catch(() => undefined)
-    const errorCode = error instanceof Error ? error.message.slice(0, 160) : 'digest_failed'
-    await client.query('begin')
-    try {
-      await client.query(`insert into learning_radar.job_runs
-        (id, slot_key, source, group_key, status, error_code, started_at, finished_at)
-        values ($1,$2,'learning_digest','daily','failed',$3,now(),now())
-        on conflict (slot_key) do nothing`,
-      [crypto.randomUUID(), digestSlot, errorCode])
-      await client.query('commit')
-    } catch (recordError) {
-      await client.query('rollback').catch(() => undefined)
-      throw recordError
-    }
-    return { created: false, error: errorCode }
-  }
-}
-
 const collected = await collectOutsideLock()
 const lockResult = await withRadarDatabaseLock({ databaseUrl }, async ({ client }) => {
   const lease = await claimLearningWorkerLease(client)
@@ -117,7 +79,7 @@ const lockResult = await withRadarDatabaseLock({ databaseUrl }, async ({ client 
         now,
       }))
     }
-    const digest = mode === 'daily' ? await runDailyDigest(client) : null
+    const digest = mode === 'daily' ? await runLearningDailyDigest(client, now) : null
     const maintenance = now.getUTCHours() === 3 ? await cleanupLearningRetention(client) : null
     return { slot, mode, results, digest, maintenance }
   } finally {

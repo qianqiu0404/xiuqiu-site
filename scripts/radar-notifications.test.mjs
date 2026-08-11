@@ -110,6 +110,20 @@ test('release controller enqueues daily notifications only after production prom
   assert.match(enqueueStep.run, /npm run notifications:enqueue/)
 })
 
+test('Market worker reserves 00:00 UTC for the Shanghai 08:00 daily digest', () => {
+  const workflow = parse(read('.github/workflows/market-radar.yml'))
+  assert.deepEqual(workflow.on.schedule.map(entry => entry.cron), [
+    '0 0 * * *',
+    '20,40 0 * * *',
+    '0,20,40 1-23 * * *',
+    '45 12,13 * * 1-5',
+  ])
+  const gate = workflow.jobs.authorize.steps.find(step => step.name === 'Require deployed SHA marker and controller authorization')
+  assert.match(gate.run, /RUN_SCHEDULE" = '0 0 \* \* \*'[^\n]*mode='daily'/)
+  const run = workflow.jobs.run.steps.find(step => step.name === 'Run market radar')
+  assert.match(run.run, /REQUESTED_MODE" = "daily"[^\n]*--digest=daily/)
+})
+
 test('Hermes dispatchers are model-free, one-at-a-time and keep the radar lanes isolated', () => {
   const common = read('ops/hermes/market-radar-weixin/common.py')
   const market = read('ops/hermes/market-radar-weixin/dispatcher.py')
@@ -122,6 +136,7 @@ test('Hermes dispatchers are model-free, one-at-a-time and keep the radar lanes 
   assert.match(common, /market:quant/)
   assert.match(common, /\[SILENT\]/)
   assert.match(common, /remember_delivery/)
+  assert.match(common, /remember_pending_failure/)
   assert.match(common, /page_date_missing/)
   assert.match(common, /weixin_rate_limited/)
   assert.doesNotMatch(common, /send_weixin_direct/)
@@ -130,6 +145,9 @@ test('Hermes dispatchers are model-free, one-at-a-time and keep the radar lanes 
   assert.match(common, /secondary_profile/)
   assert.match(platform, /recipientAlias/)
   assert.match(platform, /forget_pending_delivery/)
+  assert.match(platform, /terminalError/)
+  assert.match(platform, /\.context-tokens\.json/)
+  assert.match(platform, /plain_text == "\[SILENT\]"/)
   assert.match(registration, /name="radar_weixin"/)
   assert.match(registration, /cron_deliver_env_var="WEIXIN_HOME_CHANNEL"/)
   assert.match(market, /kinds=\("p0", "daily"\)/)
@@ -141,6 +159,101 @@ test('Hermes dispatchers are model-free, one-at-a-time and keep the radar lanes 
   assert.match(marketScript, /market-radar prepare/)
   assert.match(learningScript, /learning-radar prepare/)
   assert.doesNotMatch(`${common}\n${marketScript}\n${learningScript}`, /leaseToken.*print|dispatch_token.*print/i)
+})
+
+test('Hermes platform suppresses sentinels, passes real text to secondary and preserves fallback errors', () => {
+  const root = mkdtempSync(join(tmpdir(), 'xiuqiu-radar-platform-'))
+  const platform = new URL('../ops/hermes/market-radar-weixin/platform.py', import.meta.url).pathname
+  const python = String.raw`
+import asyncio, importlib.util, json, sys, types
+from pathlib import Path
+
+calls = []
+pending = {"value": None}
+
+class Platform:
+    def __init__(self, name): self.name = name
+
+class BasePlatformAdapter:
+    def __init__(self, config, platform):
+        self.config = config
+        self.platform = platform
+
+class SendResult:
+    def __init__(self, success, error=None, message_id=None):
+        self.success = success
+        self.error = error
+        self.message_id = message_id
+
+async def send_weixin_direct(**kwargs):
+    calls.append(kwargs)
+    return {"success": True, "message_id": "fixture-message"}
+
+gateway = types.ModuleType("gateway"); gateway.__path__ = []
+gateway_config = types.ModuleType("gateway.config"); gateway_config.Platform = Platform
+gateway_platforms = types.ModuleType("gateway.platforms"); gateway_platforms.__path__ = []
+gateway_base = types.ModuleType("gateway.platforms.base")
+gateway_base.BasePlatformAdapter = BasePlatformAdapter; gateway_base.SendResult = SendResult
+gateway_weixin = types.ModuleType("gateway.platforms.weixin"); gateway_weixin.send_weixin_direct = send_weixin_direct
+for name, module in {
+    "gateway": gateway, "gateway.config": gateway_config, "gateway.platforms": gateway_platforms,
+    "gateway.platforms.base": gateway_base, "gateway.platforms.weixin": gateway_weixin,
+}.items(): sys.modules[name] = module
+
+package = types.ModuleType("radar_plugin"); package.__path__ = []
+common = types.ModuleType("radar_plugin.common")
+common.classify_weixin_error = lambda value: ("weixin_send_failed", "safe failure")
+common.forget_pending_delivery = lambda reference: None
+common.load_pending_delivery = lambda reference: pending["value"]
+common.local_delivery_options = lambda: ("radar-secondary", 35.0)
+common.post = lambda *args, **kwargs: {}
+common.read_ledger = lambda spec: {}
+common.remember_connection_test = lambda message_id: None
+common.remember_delivery = lambda *args: None
+common.remember_pending_failure = lambda *args: None
+common.settings = lambda: ("https://example.invalid", "fixture-token", "fixture-chat", False)
+market = types.ModuleType("radar_plugin.dispatcher")
+market.SPEC = types.SimpleNamespace(name="market-radar", recipient_aliases=("primary", "secondary"), ack_path="/ack")
+learning = types.ModuleType("radar_plugin.learning_dispatcher")
+learning.SPEC = types.SimpleNamespace(name="learning-radar", recipient_aliases=("primary",), ack_path="/ack")
+for name, module in {
+    "radar_plugin": package, "radar_plugin.common": common,
+    "radar_plugin.dispatcher": market, "radar_plugin.learning_dispatcher": learning,
+}.items(): sys.modules[name] = module
+
+spec = importlib.util.spec_from_file_location("radar_plugin.platform", sys.argv[1])
+module = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = module
+spec.loader.exec_module(module)
+
+account_dir = Path.home() / ".hermes" / "profiles" / "radar-secondary" / "weixin" / "accounts"
+account_dir.mkdir(parents=True)
+(account_dir / "primary.json").write_text(json.dumps({
+    "token": "fixture-secondary-token", "user_id": "fixture-secondary-user",
+}), encoding="utf-8")
+(account_dir / "primary.context-tokens.json").write_text("{}", encoding="utf-8")
+(account_dir / "primary.sync.json").write_text("{}", encoding="utf-8")
+assert module._secondary_credentials("radar-secondary")["account_id"] == "primary"
+
+config = types.SimpleNamespace()
+adapter = module.RadarWeixinAdapter(config)
+
+async def verify():
+    before = len(calls)
+    silent = await adapter.send("fixture-primary", "[SILENT]")
+    blank = await adapter.send("fixture-primary", "   ")
+    assert silent.success and blank.success and len(calls) == before
+    plain = await adapter.send("fixture-primary", "真实晨报")
+    assert plain.success and calls[-1]["message"] == "真实晨报"
+    pending["value"] = {"terminalError": "weixin_rate_limited: safe retry"}
+    failed = await adapter.send("fixture-primary", json.dumps({
+        "version": 1, "mode": "deliver", "deliveryRef": "fixture_reference_1234567890",
+    }))
+    assert not failed.success and failed.error == "weixin_rate_limited: safe retry"
+
+asyncio.run(verify())
+`
+  execFileSync('python3', ['-c', python, platform], { env: { ...process.env, HOME: root } })
 })
 
 test('gateway watchdog cross-notifies once after two failures and once on recovery', () => {

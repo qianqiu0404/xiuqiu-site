@@ -32,7 +32,11 @@ import {
   sourceMatchesRegistry,
   verifyOriginUrl,
 } from '../learning-radar/worker/providers.mjs'
-import { buildLearningDailyDigest } from '../learning-radar/worker/digests.mjs'
+import {
+  buildLearningDailyDigest,
+  generateLearningDailyDigest,
+  runLearningDailyDigest,
+} from '../learning-radar/worker/digests.mjs'
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8')
 const publicResolver = async () => [{ address: '93.184.216.34', family: 4 }]
@@ -466,6 +470,96 @@ test('daily digest is bounded and truthful on quiet days', () => {
   assert.match(body, /今日精选 1 条/)
   assert.match(body, /关键 1/)
   assert.match(buildLearningDailyDigest([], '2026-08-11'), /暂无满足来源验证和发布门/)
+})
+
+test('an existing learning digest can idempotently repair its missing outbox item', async () => {
+  const persisted = {
+    id: 'learning-daily-2026-08-11',
+    title: '学习情报日报 · 2026-08-11',
+    body_zh: '已持久化的学习日报正文',
+  }
+  let outboxExists = false
+  const statements = []
+  const client = {
+    async query(statement, values = []) {
+      statements.push(statement)
+      if (statement.includes('from learning_radar.public_timeline_items')) {
+        return { rows: [{ importance: 'key', title_zh: 'fixture', why_selected_zh: 'verified' }] }
+      }
+      if (statement.includes('insert into learning_radar.digests')) return { rows: [] }
+      if (statement.includes('select id, title, body_zh from learning_radar.digests')) return { rows: [persisted] }
+      if (statement.includes('insert into learning_radar.outbox')) {
+        assert.equal(values[1], 'learning:daily:2026-08-11')
+        const payload = JSON.parse(values[2])
+        assert.equal(payload.digestId, persisted.id)
+        assert.equal(payload.body, persisted.body_zh)
+        assert.equal(payload.pageUrl, '/radar/2026-08-11')
+        if (outboxExists) return { rows: [] }
+        outboxExists = true
+        return { rows: [{ id: 'learning-outbox-fixture' }] }
+      }
+      throw new Error(`Unexpected learning digest query: ${statement}`)
+    },
+  }
+
+  const repaired = await generateLearningDailyDigest(client, new Date('2026-08-11T00:00:00Z'))
+  assert.deepEqual(repaired, {
+    created: false,
+    outboxCreated: true,
+    repaired: true,
+    id: persisted.id,
+    count: 1,
+  })
+  const repeated = await generateLearningDailyDigest(client, new Date('2026-08-11T00:00:00Z'))
+  assert.equal(repeated.created, false)
+  assert.equal(repeated.outboxCreated, false)
+  assert.equal(repeated.repaired, false)
+  assert.equal(statements.filter(statement => statement.includes('insert into learning_radar.outbox')).length, 2)
+
+  const worker = read('learning-radar/worker/digests.mjs')
+  const transaction = worker.slice(worker.indexOf('export async function runLearningDailyDigest'))
+  assert.ok(transaction.indexOf("client.query('begin')") < transaction.indexOf('generateLearningDailyDigest'))
+  assert.ok(transaction.indexOf('generateLearningDailyDigest') < transaction.indexOf("client.query('commit')"))
+})
+
+test('a successful digest job run still repairs a missing learning outbox item', async () => {
+  const persisted = {
+    id: 'learning-daily-2026-08-11',
+    title: '学习情报日报 · 2026-08-11',
+    body_zh: '已持久化的学习日报正文',
+  }
+  const statements = []
+  let outboxExists = false
+  const client = {
+    async query(statement, values = []) {
+      statements.push(statement)
+      if (statement === 'begin' || statement === 'commit' || statement === 'rollback') return { rows: [] }
+      if (statement.includes('insert into learning_radar.job_runs')) return { rows: [] }
+      if (statement.includes('from learning_radar.public_timeline_items')) return { rows: [] }
+      if (statement.includes('insert into learning_radar.digests')) return { rows: [] }
+      if (statement.includes('select id, title, body_zh from learning_radar.digests')) return { rows: [persisted] }
+      if (statement.includes('insert into learning_radar.outbox')) {
+        assert.equal(values[1], 'learning:daily:2026-08-11')
+        outboxExists = true
+        return { rows: [{ id: 'learning-outbox-fixture' }] }
+      }
+      throw new Error(`Unexpected learning digest job query: ${statement}`)
+    },
+  }
+
+  const repaired = await runLearningDailyDigest(client, new Date('2026-08-11T00:00:00Z'))
+  assert.equal(outboxExists, true)
+  assert.deepEqual(repaired, {
+    created: false,
+    outboxCreated: true,
+    repaired: true,
+    id: persisted.id,
+    count: 0,
+    reason: 'repaired_missing_outbox',
+  })
+  assert.deepEqual(statements[0], 'begin')
+  assert.equal(statements.at(-1), 'commit')
+  assert.equal(statements.includes('rollback'), false)
 })
 
 test('Learning workflow keeps exact-SHA marker authorization and release DAG ordering', () => {
