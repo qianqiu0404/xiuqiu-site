@@ -204,8 +204,8 @@
 }
 
 @media (max-width: 520px) {
-  .learn-timeline-hero { padding: 68px 0 18px; }
-  .learn-timeline-hero__grid { gap: 14px; }
+  .learn-timeline-hero { padding: 60px 0 16px; }
+  .learn-timeline-hero__grid { gap: 10px; }
   .learn-timeline-hero h1 { margin: 10px 0 10px; font-size: clamp(32px, 10.2vw, 39px); line-height: .95; letter-spacing: -.06em; }
   .learn-timeline-lead { margin: 0; font-size: 14px; line-height: 1.5; }
   .learn-timeline-status { display: grid; grid-template-columns: minmax(0, 1fr) auto; }
@@ -214,11 +214,11 @@
   .learn-timeline-status time { font-size: 12px; }
   .learn-timeline-status strong { font-size: 30px; }
   .learn-timeline-status > p { grid-column: 1 / -1; margin: 0; padding: 7px 0 0; }
-  .learn-ledger { padding-block: 24px 56px; }
-  .learn-section-heading { gap: 6px; padding-bottom: 12px; }
+  .learn-ledger { padding-block: 18px 56px; }
+  .learn-section-heading { gap: 6px; padding-bottom: 8px; }
   .learn-section-heading h2 { margin-top: 5px; font-size: 27px; line-height: 1.05; }
   .learn-section-heading > p { display: none; }
-  .learn-category-filter { flex-wrap: nowrap; gap: 6px; overflow-x: auto; padding: 12px 0 6px; scrollbar-width: none; }
+  .learn-category-filter { flex-wrap: nowrap; gap: 6px; overflow-x: auto; padding: 8px 0 4px; scrollbar-width: none; }
   .learn-category-filter::-webkit-scrollbar { display: none; }
   .learn-category-filter button { flex: 0 0 auto; padding-inline: 14px; }
   .learn-filter-count { margin-bottom: 10px; }

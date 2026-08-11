@@ -191,6 +191,8 @@ test('learning UI keeps API contracts, abort/cursor safety, vertical timeline st
   assert.match(css, /\.learn-timeline-hero \{\s*padding: 104px 0 48px;/)
   assert.match(css, /\.learn-ledger \{ padding: clamp\(48px, 5vw, 64px\) 0 82px;/)
   assert.match(css, /font-size: clamp\(32px, 10\.2vw, 39px\)/)
+  assert.match(css, /\.learn-timeline-hero \{ padding: 60px 0 16px; \}/)
+  assert.match(css, /\.learn-ledger \{ padding-block: 18px 56px; \}/)
   assert.match(css, /\.learn-category-filter \{ flex-wrap: nowrap;[\s\S]*overflow-x: auto;/)
   assert.match(css, /\.learn-filter-count \{ margin-bottom: 10px;/)
   assert.match(css, /prefers-reduced-motion: reduce/)
