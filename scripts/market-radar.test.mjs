@@ -57,6 +57,28 @@ test('quant strategies require five assets, probability sums and source-subset e
   assert.throws(() => validateMarketRadar({ ...current, quantStrategy: { ...strategy, sourceUrls: ['https://www.federalreserve.gov/unlisted'] } }), /subset/)
 })
 
+test('new quant briefs suppress exact probabilities until historical samples reach the gate', () => {
+  const sourceUrl = 'https://github.com/example/project/releases/tag/v1.0.0'
+  const strategy = {
+    horizonTradingDays: 3,
+    status: 'historical_samples_insufficient',
+    methodology: '固定规则的历史样本尚未达到展示精确概率的门槛。',
+    sampleSize: 0,
+    assets: [
+      ['SPY', 'us_equity_etf'], ['QQQ', 'us_equity_etf'], ['BTC', 'crypto'],
+      ['ETH', 'crypto'], ['GLD', 'gold_etf'],
+    ].map(([symbol, group]) => ({ symbol, group, signalQuality: 'weak' })),
+    rationale: '公开事件存在，但量价、衍生品和跨资产确认尚不完整。',
+    nextValidation: '等待官方结果并记录固定窗口内的确认数据。',
+    invalidation: '规则、窗口或来源变化后重新建立样本。',
+    sourceUrls: [sourceUrl],
+  }
+  const current = radar({ date: '2026-08-11', slug: '2026-08-11', quantStrategy: strategy })
+  assert.doesNotThrow(() => validateMarketRadar(current))
+  assert.throws(() => validateMarketRadar({ ...current, quantStrategy: { ...strategy, assets: strategy.assets.map((item, index) => index ? item : { ...item, up: 60 }) } }), /must not publish exact probabilities/)
+  assert.throws(() => validateMarketRadar({ ...current, quantStrategy: { ...strategy, sampleSize: 50 } }), /0 to 49/)
+})
+
 test('generated index, recent records and monthly loader remain aligned', async () => {
   assert.deepEqual(marketRadarIndex.map(item => item.slug), allMarketRadars.map(item => item.slug))
   assert.deepEqual(latestMarketRadars, allMarketRadars.slice(0, 7))
@@ -88,6 +110,7 @@ test('the public page is static and contains no runtime API dependency', async (
   assert.match(detail, /name: 'market-radar-event'/)
   assert.match(detail, /entry\.quantStrategy/)
   assert.match(detail, /未回测情景权重/)
+  assert.match(detail, /历史样本不足/)
   assert.match(detail, /name: 'market-radar-detail'[\s\S]*hash: `#\$\{event\.id\}`/)
   assert.match(router, /to\.name === 'market-radar-detail'\) return false/)
   assert.match(styles, /--trade-market: #5ad7c7/)
