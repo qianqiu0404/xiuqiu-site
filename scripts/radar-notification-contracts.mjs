@@ -90,10 +90,16 @@ export function buildMarketQuantNotification(radar) {
   const formatAsset = symbol => {
     const asset = bySymbol.get(symbol)
     if (!asset) throw new Error(`Market quant strategy is missing ${symbol}.`)
+    if (strategy.status === 'historical_samples_insufficient') {
+      const quality = { strong: '强', medium: '中', weak: '弱' }[asset.signalQuality] || '弱'
+      return `• ${symbol}：信号质量 ${quality}｜历史样本不足｜不显示精确概率`
+    }
     return `• ${symbol}：上涨 ${asset.up}%｜震荡 ${asset.sideways}%｜下跌 ${asset.down}%`
   }
   const lines = [
-    `口径：未来 ${strategy.horizonTradingDays} 个交易日，上涨／震荡／下跌情景权重。${strategy.methodology}`,
+    strategy.status === 'historical_samples_insufficient'
+      ? `口径：未来 ${strategy.horizonTradingDays} 个交易日的量化验证状态。${strategy.methodology}`
+      : `口径：未来 ${strategy.horizonTradingDays} 个交易日，上涨／震荡／下跌情景权重。${strategy.methodology}`,
     '',
     '美股 ETF',
     formatAsset('SPY'),
@@ -117,7 +123,7 @@ export function buildMarketQuantNotification(radar) {
     idempotencyKey: `market:quant:${radar.date}`,
     payload: {
       date: radar.date,
-      title: `交易雷达概率简报 · ${radar.date}`,
+      title: `${strategy.status === 'historical_samples_insufficient' ? '交易雷达量化简报' : '交易雷达概率简报'} · ${radar.date}`,
       body: lines.join('\n'),
       pageUrl: `/market-radar/${radar.date}`,
       sourceUrls: [...strategy.sourceUrls],

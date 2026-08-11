@@ -63,6 +63,28 @@ test('market quant follow-up uses bounded three-way weights and a separate idemp
   assert.equal(daily.payload.followUp.kind, 'quant')
 })
 
+test('sample-gated quant follow-up reports strength without exact probabilities', () => {
+  const quantStrategy = {
+    horizonTradingDays: 3,
+    status: 'historical_samples_insufficient',
+    methodology: '固定规则的历史样本不足。',
+    sampleSize: 0,
+    assets: [
+      ['SPY', 'us_equity_etf'], ['QQQ', 'us_equity_etf'], ['BTC', 'crypto'],
+      ['ETH', 'crypto'], ['GLD', 'gold_etf'],
+    ].map(([symbol, group]) => ({ symbol, group, signalQuality: 'weak' })),
+    rationale: '市场确认不足。',
+    nextValidation: '等待公开结果。',
+    invalidation: '窗口结束后重算。',
+    sourceUrls: ['https://www.treasurydirect.gov/example'],
+  }
+  const quant = buildMarketQuantNotification({ date: '2026-08-11', quantStrategy })
+  assert.equal(quant.payload.probabilityStatus, 'historical_samples_insufficient')
+  assert.match(quant.payload.title, /量化简报/)
+  assert.match(quant.payload.body, /SPY：信号质量 弱｜历史样本不足｜不显示精确概率/)
+  assert.doesNotMatch(quant.payload.body, /上涨 \d+%/)
+})
+
 test('two outboxes have isolated schemas, idempotency keys and delivery evidence', () => {
   const migration = read('market-radar/migrations/004_dual_radar_notifications.sql')
   const marketClaim = read('api/market-radar/outbox/claim.ts')

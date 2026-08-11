@@ -5,11 +5,21 @@ export type MarketRadarStatus = 'scheduled' | 'released' | 'monitoring'
 export type MarketRadarCategory = 'macro' | 'crypto' | 'equity' | 'regulation'
 export interface MarketRadarEvent { id: string; priority: MarketRadarPriority; status: MarketRadarStatus; category: MarketRadarCategory; eventAt?: string; title: string; fact: string; whyWatch: string; assets: string[]; watchFor: string; invalidation: string; sourceName: string; sourceUrl: string; sourcePublishedAt: string }
 export type MarketQuantAssetGroup = 'us_equity_etf' | 'crypto' | 'gold_etf'
-export interface MarketQuantAsset { symbol: 'SPY' | 'QQQ' | 'BTC' | 'ETH' | 'GLD'; group: MarketQuantAssetGroup; up: number; sideways: number; down: number }
-export interface MarketQuantStrategy { horizonTradingDays: number; status: 'heuristic_unbacktested'; methodology: string; assets: MarketQuantAsset[]; rationale: string; nextValidation: string; invalidation: string; sourceUrls: string[] }
+export type MarketSignalQuality = 'strong' | 'medium' | 'weak'
+export interface MarketQuantAsset { symbol: 'SPY' | 'QQQ' | 'BTC' | 'ETH' | 'GLD'; group: MarketQuantAssetGroup; up?: number; sideways?: number; down?: number; signalQuality?: MarketSignalQuality }
+export interface MarketQuantStrategy { horizonTradingDays: number; status: 'heuristic_unbacktested' | 'historical_samples_insufficient'; methodology: string; assets: MarketQuantAsset[]; sampleSize?: number; rationale: string; nextValidation: string; invalidation: string; sourceUrls: string[] }
 export interface MarketRadarDaily { date: string; slug: string; title: string; summary: string; reviewStatus: 'automated'; generatedAt: string; events: MarketRadarEvent[]; sourceUrls: string[]; quantStrategy?: MarketQuantStrategy }
 export interface MarketRadarIndexEntry { date: string; slug: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
 export const marketRadarIndex: MarketRadarIndexEntry[] = [
+  {
+    "date": "2026-08-11",
+    "slug": "2026-08-11",
+    "title": "交易研究雷达 · 2026-08-11",
+    "summary": "今天只保留一项可核验的宏观日程：美国财政部 580 亿美元 3 年期国债拍卖。结果公布前不预设资产方向，量化简报因历史样本不足仅显示信号质量。",
+    "eventCount": 1,
+    "assetCount": 6,
+    "leadTitle": "美国财政部将在 8 月 11 日拍卖 580 亿美元 3 年期国债"
+  },
   {
     "date": "2026-08-10",
     "slug": "2026-08-10",
@@ -30,6 +40,81 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
   }
 ]
 export const latestMarketRadars: MarketRadarDaily[] = [
+  {
+    "date": "2026-08-11",
+    "slug": "2026-08-11",
+    "title": "交易研究雷达 · 2026-08-11",
+    "summary": "今天只保留一项可核验的宏观日程：美国财政部 580 亿美元 3 年期国债拍卖。结果公布前不预设资产方向，量化简报因历史样本不足仅显示信号质量。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-08-11T11:14:15+08:00",
+    "events": [
+      {
+        "id": "us-treasury-3-year-note-auction-2026-08-11",
+        "priority": "P0",
+        "status": "scheduled",
+        "category": "macro",
+        "eventAt": "2026-08-12T01:00:00+08:00",
+        "title": "美国财政部将在 8 月 11 日拍卖 580 亿美元 3 年期国债",
+        "fact": "美国财政部 8 月 5 日公告显示，CUSIP 91282CRG8 的 3 年期国债计划于美东时间 8 月 11 日 13:00 截止竞争性投标，发行规模 580 亿美元，8 月 17 日结算，2029 年 8 月 15 日到期。",
+        "whyWatch": "拍卖结果会提供公开的国债需求与期限溢价观察窗口，可能改变美债收益率、美元及相关风险资产的短期定价；拍卖日程本身不代表需求强弱，也不能单独推导资产方向。",
+        "assets": [
+          "SPY",
+          "QQQ",
+          "DXY",
+          "GLD",
+          "BTC",
+          "ETH"
+        ],
+        "watchFor": "结果发布后核对最高收益率、投标倍数、间接投标与直接投标占比，并记录美债收益率、美元、SPY、QQQ、GLD、BTC 与 ETH 在固定窗口内的公开市场反应。",
+        "invalidation": "若财政部更新发行规模、截止时间、结算安排或撤回公告，以最新正式材料为准；结果发布前不把市场波动归因于本次拍卖。",
+        "sourceName": "TreasuryDirect",
+        "sourceUrl": "https://www.treasurydirect.gov/instit/annceresult/press/preanre/2026/A_20260805_3.pdf",
+        "sourcePublishedAt": "2026-08-05"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.treasurydirect.gov/instit/annceresult/press/preanre/2026/A_20260805_3.pdf"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "固定规则尚未积累到 50 个已完成且可复核的样本；当前不发布上涨、震荡或下跌的精确概率，只报告证据完整度对应的信号质量。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "目前只确认了拍卖安排，尚未获得拍卖结果、利率与美元反应以及跨资产同步确认。对 SPY、QQQ、BTC、ETH 和 GLD 均不足以形成可复核的方向概率，因此统一标记为弱信号。",
+      "nextValidation": "拍卖结果公布后，按固定字段记录最高收益率、投标倍数、投标人结构及相关资产的固定窗口反应；样本只做前瞻登记，不回填或挑选有利案例。",
+      "invalidation": "财政部更新公告、固定规则或观察窗口发生变化，或者未来 3 个交易日验证窗口结束后，必须重新评估；在累计 50 个合格样本前继续隐藏精确概率。",
+      "sourceUrls": [
+        "https://www.treasurydirect.gov/instit/annceresult/press/preanre/2026/A_20260805_3.pdf"
+      ]
+    }
+  },
   {
     "date": "2026-08-10",
     "slug": "2026-08-10",
