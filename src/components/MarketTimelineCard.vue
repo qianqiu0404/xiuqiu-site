@@ -1,19 +1,27 @@
 <script setup lang="ts">
 import { formatTradeTimelineTime, type TradeTimelineCardViewModel } from '../market-radar/timeline-presentation'
 
-defineProps<{ item: TradeTimelineCardViewModel; index: number }>()
+defineProps<{ item: TradeTimelineCardViewModel }>()
+
+function formatRailTime(value: string): string {
+  return new Intl.DateTimeFormat('zh-CN', {
+    timeZone: 'Asia/Shanghai', hour: '2-digit', minute: '2-digit', hour12: false,
+  }).format(new Date(value))
+}
 </script>
 
 <template>
   <article class="trade-event-card" :class="`priority-${item.priority.toLowerCase()}`">
-    <div class="trade-event-signal" aria-hidden="true"><span>{{ String(index + 1).padStart(2, '0') }}</span></div>
+    <div class="trade-event-signal">
+      <time :datetime="item.occurredAt">{{ formatRailTime(item.occurredAt) }}</time>
+      <span aria-hidden="true"></span>
+    </div>
     <div class="trade-event-content">
       <header class="trade-event-header">
         <div class="trade-event-classification">
-          <strong>{{ item.priority }}</strong><span>{{ item.categoryLabel }}</span><span>{{ item.statusLabel }}</span>
+          <span>{{ item.sourceName }}</span><span>{{ item.categoryLabel }}</span><strong>{{ item.priority }}</strong><span>{{ item.statusLabel }}</span>
           <span v-if="item.origin === 'static'">静态快照</span>
         </div>
-        <time :datetime="item.occurredAt">{{ formatTradeTimelineTime(item.occurredAt) }} CST</time>
       </header>
 
       <h3><router-link :to="item.detailHref">{{ item.title }}</router-link></h3>

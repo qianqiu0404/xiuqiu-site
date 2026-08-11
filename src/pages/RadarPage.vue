@@ -10,7 +10,6 @@ import {
   parseLearningSummary,
   parseLearningTimelineList,
   partitionTimelineByOccurrence,
-  rankFeaturedTimeline,
   toTimelineCardViewModel,
   type TimelineCardViewModel,
 } from '../learning-radar/timeline-presentation'
@@ -37,8 +36,10 @@ const filteredStaticCards = computed(() => category.value === 'all'
 const partitionedCards = computed(() => partitionTimelineByOccurrence(cards.value))
 const futureCards = computed(() => partitionedCards.value.future)
 const historicalCards = computed(() => partitionedCards.value.historical)
+const futureGroups = computed(() => groupHistoricalTimeline(futureCards.value)
+  .reverse()
+  .map(group => ({ ...group, items: [...group.items].reverse() })))
 const historicalGroups = computed(() => groupHistoricalTimeline(historicalCards.value))
-const featuredCards = computed(() => rankFeaturedTimeline(historicalCards.value))
 const heroCount = computed(() => origin.value === 'static' ? staticCards.length
   : summary.value && summary.value.status !== 'unconfigured' ? summary.value.todayCount : '—')
 const heroCountLabel = computed(() => origin.value === 'static' ? '快照条目' : '今日已发生')
@@ -165,24 +166,10 @@ onMounted(() => {
       </div>
     </header>
 
-    <section class="learn-featured" aria-labelledby="learn-featured-title">
-      <div class="container learn-timeline-shell">
-        <header class="learn-section-heading">
-          <div><p class="learn-timeline-kicker">01 / Highest value now</p><h2 id="learn-featured-title">{{ origin === 'api' ? '当前最值得理解的内容。' : '最近的静态学习条目。' }}</h2></div>
-          <p>{{ origin === 'api' ? '按重要性与发生时间排序，不按热度排序。' : '只按发生时间排序，不推断重要性。' }}</p>
-        </header>
-        <div v-if="loading" class="learn-timeline-state" aria-live="polite" aria-busy="true">正在读取学习情报…</div>
-        <div v-else-if="featuredCards.length" class="learn-featured__grid">
-          <TimelineCard v-for="item in featuredCards" :key="`featured-${item.id}`" :item="item" featured />
-        </div>
-        <div v-else class="learn-timeline-state">当前筛选下没有可展示的公开内容。</div>
-      </div>
-    </section>
-
     <section class="learn-ledger" aria-labelledby="learn-ledger-title">
       <div class="container learn-timeline-shell">
         <header class="learn-section-heading">
-          <div><p class="learn-timeline-kicker">02 / Occurred timeline</p><h2 id="learn-ledger-title">已发生，按日期倒序。</h2></div>
+          <div><p class="learn-timeline-kicker">01 / Curated timeline</p><h2 id="learn-ledger-title">按发生时间，读懂每天最重要的变化。</h2></div>
           <time :datetime="updatedAt">更新 {{ formatUpdatedAt(updatedAt) }}</time>
         </header>
 
@@ -199,13 +186,22 @@ onMounted(() => {
         </div>
         <p v-else-if="statusMessage" class="learn-api-notice" role="status">{{ statusMessage }}</p>
 
-        <section v-if="!loading && futureCards.length" class="learn-future" aria-labelledby="learn-future-title">
+        <div v-if="loading" class="learn-timeline-state" aria-live="polite" aria-busy="true">正在读取学习情报…</div>
+        <section v-else-if="futureGroups.length" class="learn-future" aria-labelledby="learn-future-title">
           <header><p class="learn-timeline-kicker">Scheduled / Future</p><h3 id="learn-future-title">未来事项，按时间正序。</h3></header>
-          <div class="learn-timeline-list"><TimelineCard v-for="item in futureCards" :key="item.id" :item="item" /></div>
+          <section v-for="group in futureGroups" :key="group.date" class="learn-date-group learn-date-group--future"
+            :aria-labelledby="`learn-future-date-${group.date}`">
+            <h3 :id="`learn-future-date-${group.date}`">
+              <time :datetime="group.date">{{ group.label }}</time><span>{{ group.items.length }} 条</span>
+            </h3>
+            <div class="learn-timeline-list"><TimelineCard v-for="item in group.items" :key="item.id" :item="item" /></div>
+          </section>
         </section>
         <div v-if="!loading && historicalGroups.length" class="learn-history-groups">
           <section v-for="group in historicalGroups" :key="group.date" class="learn-date-group" :aria-labelledby="`learn-date-${group.date}`">
-            <h3 :id="`learn-date-${group.date}`"><time :datetime="group.date">{{ group.label }}</time></h3>
+            <h3 :id="`learn-date-${group.date}`">
+              <time :datetime="group.date">{{ group.label }}</time><span>{{ group.items.length }} 条</span>
+            </h3>
             <div class="learn-timeline-list"><TimelineCard v-for="item in group.items" :key="item.id" :item="item" /></div>
           </section>
         </div>

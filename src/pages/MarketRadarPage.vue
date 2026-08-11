@@ -46,6 +46,9 @@ const cards = computed(() => {
 })
 const partitioned = computed(() => partitionTradeTimeline(cards.value))
 const futureCards = computed(() => partitioned.value.future)
+const futureGroups = computed(() => groupHistoricalTradeTimeline(futureCards.value)
+  .reverse()
+  .map(group => ({ ...group, items: [...group.items].reverse() })))
 const historicalGroups = computed(() => groupHistoricalTradeTimeline(partitioned.value.historical))
 const hasStaticSchedule = computed(() => futureCards.value.some(item => item.origin === 'static'))
 const summaryAvailable = computed(() => Boolean(summary.value && summary.value.status !== 'unconfigured'))
@@ -215,8 +218,16 @@ onBeforeUnmount(() => {
         </header>
         <p v-if="hasStaticSchedule" class="trade-radar-schedule-note">静态排期快照 · 更新于 {{ scheduleUpdatedAt ? formatGeneratedAt(scheduleUpdatedAt) : '未知' }} CST；较远预定事件不来自数据库 live 时间线。</p>
         <div v-if="loading" class="trade-radar-timeline-state" aria-busy="true" aria-live="polite">正在读取交易事件…</div>
-        <div v-else-if="futureCards.length" class="trade-event-list trade-event-list--future">
-          <MarketTimelineCard v-for="(item, index) in futureCards" :key="item.id" :item="item" :index="index" />
+        <div v-else-if="futureGroups.length" class="trade-radar-future-groups">
+          <section v-for="group in futureGroups" :key="group.date" class="trade-radar-date-group trade-radar-date-group--future"
+            :aria-labelledby="`trade-future-date-${group.date}`">
+            <h3 :id="`trade-future-date-${group.date}`">
+              <time :datetime="group.date">{{ group.label }}</time><span>{{ group.items.length }} 条</span>
+            </h3>
+            <div class="trade-event-list trade-event-list--future">
+              <MarketTimelineCard v-for="item in group.items" :key="item.id" :item="item" />
+            </div>
+          </section>
         </div>
         <p v-else class="trade-radar-timeline-state">当前没有已确认的未来排期；持续观察不等于没有风险。</p>
       </section>
@@ -228,8 +239,10 @@ onBeforeUnmount(() => {
         </header>
         <template v-if="!loading && historicalGroups.length">
           <section v-for="group in historicalGroups" :key="group.date" class="trade-radar-date-group" :aria-labelledby="`trade-date-${group.date}`">
-            <h3 :id="`trade-date-${group.date}`"><time :datetime="group.date">{{ group.label }}</time></h3>
-            <div class="trade-event-list"><MarketTimelineCard v-for="(item, index) in group.items" :key="item.id" :item="item" :index="index" /></div>
+            <h3 :id="`trade-date-${group.date}`">
+              <time :datetime="group.date">{{ group.label }}</time><span>{{ group.items.length }} 条</span>
+            </h3>
+            <div class="trade-event-list"><MarketTimelineCard v-for="item in group.items" :key="item.id" :item="item" /></div>
           </section>
         </template>
         <p v-else-if="!loading" class="trade-radar-timeline-state">当前没有通过公开门禁的已发生事件。</p>
