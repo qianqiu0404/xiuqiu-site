@@ -23,6 +23,16 @@ function isoOrEpoch(value: unknown): string {
   return Number.isNaN(date.getTime()) ? new Date(0).toISOString() : date.toISOString()
 }
 
+function isoOrNull(value: unknown): string | null {
+  if (value === null || value === undefined || value === '') return null
+  const date = value instanceof Date
+    ? value
+    : typeof value === 'string' || typeof value === 'number'
+      ? new Date(value)
+      : null
+  return date && !Number.isNaN(date.getTime()) ? date.toISOString() : null
+}
+
 function parseObject(value: unknown): PublicLearningRadarRow | null {
   if (value && typeof value === 'object' && !Array.isArray(value)) return value as PublicLearningRadarRow
   if (typeof value !== 'string') return null
@@ -67,7 +77,7 @@ export function mapPublicStoryReportRow(row: PublicLearningRadarRow): LearningRa
   const sourceName = textOrNull(row.source_name)
   const sourceUrl = textOrNull(row.source_url)
   const title = textOrNull(row.title)
-  const publishedAt = textOrNull(row.published_at)
+  const publishedAt = isoOrNull(row.published_at)
   if (!id || !sourceName || !sourceUrl || !title || !publishedAt) return null
   return {
     id,
@@ -75,7 +85,7 @@ export function mapPublicStoryReportRow(row: PublicLearningRadarRow): LearningRa
     sourceUrl,
     title,
     excerpt: textOrNull(row.excerpt),
-    publishedAt: isoOrEpoch(publishedAt),
+    publishedAt,
     isPrimary: row.is_primary === true,
   }
 }

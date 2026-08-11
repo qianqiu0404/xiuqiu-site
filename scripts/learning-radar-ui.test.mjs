@@ -38,6 +38,15 @@ test('real public row flows through the production mapper, API parser and timeli
   const update = mapPublicStoryUpdateRow(publicLearningUpdateRow)
   assert.ok(report && update)
   assert.ok(parseLearningStory({ ...mapped, reports: [report], updates: [update] }))
+
+  const dateBackedReport = mapPublicStoryReportRow({
+    ...publicLearningReportRow,
+    published_at: new Date(publicLearningReportRow.published_at),
+  })
+  assert.ok(dateBackedReport, 'Neon timestamptz Date objects must survive the production mapper')
+  assert.equal(dateBackedReport.publishedAt, publicLearningReportRow.published_at)
+  assert.equal([dateBackedReport].filter(item => item.isPrimary).length, 1)
+  assert.ok(parseLearningStory({ ...mapped, reports: [dateBackedReport], updates: [] }))
 })
 
 test('runtime API validation fails closed for malformed enums, dates, cursors, arrays and source URLs', () => {
@@ -62,6 +71,9 @@ test('runtime API validation fails closed for malformed enums, dates, cursors, a
   assert.equal(parseLearningTimelineList({ status: 'healthy', items: [mapped, { ...mapped }], nextCursor: null }), null)
   const report = mapPublicStoryReportRow(publicLearningReportRow)
   assert.ok(report)
+  assert.equal(mapPublicStoryReportRow({ ...publicLearningReportRow, published_at: null }), null)
+  assert.equal(mapPublicStoryReportRow({ ...publicLearningReportRow, published_at: 'not-a-date' }), null)
+  assert.equal(mapPublicStoryReportRow({ ...publicLearningReportRow, published_at: new Date('not-a-date') }), null)
   assert.equal(parseLearningStory({ ...mapped, reports: [{ ...report, sourceUrl: 'http://[::1]/private' }], updates: [] }), null)
   assert.equal(parseLearningStory({ ...mapped, reports: [], updates: [publicLearningUpdateRow] }), null,
     'database rows must pass through their production camelCase mappers before reaching UI')
