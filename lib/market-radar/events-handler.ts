@@ -58,6 +58,8 @@ export function createMarketEventsHandler(dependencies: MarketEventsHandlerDepen
         limit: clampInteger(queryValue(req, 'limit'), 20, 1, 50),
       }))
     } catch {
+      preparePublicResponse(res)
+      res.setHeader('Cache-Control', 'no-store')
       return res.status(200).json({
         status: 'degraded',
         snapshotId: null,

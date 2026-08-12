@@ -249,16 +249,17 @@ test('US premarket scheduling follows New York wall time and excludes weekends',
 
 test('public SQL view and APIs preserve privacy and outbox delivery semantics', () => {
   const migration = read('market-radar/migrations/001_initial.sql')
-  const claim = read('api/market-radar/outbox/claim.ts')
-  const ack = read('api/market-radar/outbox/ack.ts')
+  const localOutbox = read('ops/local-backend/repository.mjs')
+  const externalOutbox = `${read('api/market-radar/outbox/claim.ts')}\n${read('api/market-radar/outbox/ack.ts')}`
   const repository = read('lib/market-radar/repository.ts')
   const publicView = migration.slice(migration.indexOf('create or replace view market_radar.public_events'))
   assert.doesNotMatch(publicView, /payload|prompt|private_note/i)
-  assert.match(claim, /for update skip locked/i)
-  assert.match(claim, /lease_until/i)
-  assert.match(ack, /attempts \+ 1 >= 5/i)
-  assert.match(ack, /dead_letter/i)
-  assert.match(ack, /power\(2, attempts \+ 1\)/i)
+  assert.match(localOutbox, /for update skip locked/i)
+  assert.match(localOutbox, /lease_until/i)
+  assert.match(localOutbox, /attempts\+1>=5/i)
+  assert.match(localOutbox, /dead_letter/i)
+  assert.match(localOutbox, /power\(2,attempts\+1\)/i)
+  assert.doesNotMatch(externalOutbox, /getMarketRadarDb|MARKET_RADAR_DATABASE_URL/)
   assert.doesNotMatch(repository, /raw_items\.payload|ai_response|prompt/i)
 })
 

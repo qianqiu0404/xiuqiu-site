@@ -1,4 +1,4 @@
-import { Pool } from '@neondatabase/serverless'
+import { createRadarPool } from './database-pool.mjs'
 import { MARKET_GROUPS } from './config.mjs'
 import {
   mapAssets,
@@ -11,6 +11,7 @@ import { isUsPremarketWindow } from './market-calendar.mjs'
 import { cleanupRetention, recordDailyMetrics } from './maintenance.mjs'
 import { withRadarDatabaseLock } from './advisory-lock.mjs'
 import { findMarketEventCandidate, persistMarketItem } from './persistence.mjs'
+import { qiuMarketEnabled } from './local-policy.mjs'
 import {
   collectMarketSourceOutsideLock,
   persistCollectedWithLock,
@@ -21,6 +22,7 @@ import {
 const env = process.env
 const databaseUrl = env.MARKET_RADAR_DATABASE_URL
 if (!databaseUrl) throw new Error('MARKET_RADAR_DATABASE_URL is required')
+const useQiuMarket = qiuMarketEnabled(env)
 
 if (process.argv.includes('--digest=premarket') && !isUsPremarketWindow()) {
   console.log(JSON.stringify({ skipped: true, reason: 'outside_us_premarket_window' }))
@@ -154,7 +156,7 @@ async function releaseWorkerLeaseState(state) {
 }
 
 async function withMarketReadClient(work) {
-  const pool = new Pool({ connectionString: databaseUrl, max: 1 })
+  const pool = createRadarPool({ connectionString: databaseUrl, max: 1 })
   let client
   try {
     client = await pool.connect()
@@ -205,7 +207,7 @@ async function runWorker(state) {
   // Provider, AI, health and price network calls deliberately happen without the shared database lock.
   const collections = []
   for (const definition of definitions) collections.push(await collectSource(definition, slot))
-  const health = await checkQiuMarketHealth(env.QIU_MARKET_BASE_URL)
+  const health = useQiuMarket ? await checkQiuMarketHealth(env.QIU_MARKET_BASE_URL) : null
   const collectedReactions = await collectReactionUpdates(state.reactionInputs)
 
   const results = []
@@ -216,17 +218,19 @@ async function runWorker(state) {
     }))
   }
 
-  results.push(await persistCollectedWithLock({
-    withLock: work => withRadarDatabaseLock({ databaseUrl }, work),
-    work: async ({ client }) => {
-      const sql = asArraySql(client)
-      const qiuRun = await startRun(sql, 'qiu_market', 'health', slot)
-      if (!qiuRun) return { source: 'qiu_market', skipped: true }
-      await finishRun(sql, qiuRun, health.healthy ? 'succeeded' : 'failed', 0,
-        health.healthy ? null : `http_${health.status || 'unavailable'}`)
-      return { source: 'qiu_market', ...health }
-    },
-  }))
+  if (useQiuMarket) {
+    results.push(await persistCollectedWithLock({
+      withLock: work => withRadarDatabaseLock({ databaseUrl }, work),
+      work: async ({ client }) => {
+        const sql = asArraySql(client)
+        const qiuRun = await startRun(sql, 'qiu_market', 'health', slot)
+        if (!qiuRun) return { source: 'qiu_market', skipped: true }
+        await finishRun(sql, qiuRun, health.healthy ? 'succeeded' : 'failed', 0,
+          health.healthy ? null : `http_${health.status || 'unavailable'}`)
+        return { source: 'qiu_market', ...health }
+      },
+    }))
+  }
 
   const reactions = await persistCollectedWithLock({
     withLock: work => withRadarDatabaseLock({ databaseUrl }, work),

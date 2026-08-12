@@ -208,8 +208,8 @@ class RadarWeixinAdapter(BasePlatformAdapter):
         if spec is None or not item_id or not lease_token or not isinstance(deliveries, list) or not deliveries:
             return SendResult(success=False, error="radar_envelope_invalid")
 
-        base_url, dispatch_token, _, _ = settings()
-        if not dispatch_token:
+        base_url, _, key_id, dispatch_token, _, _ = settings()
+        if not dispatch_token or not key_id:
             return SendResult(success=False, error="radar_dispatch_token_missing")
 
         _, delivery_interval = local_delivery_options()
@@ -239,7 +239,7 @@ class RadarWeixinAdapter(BasePlatformAdapter):
 
             error_code, error_message = classify_weixin_error(result.get("error"))
             try:
-                await asyncio.to_thread(post, f"{base_url}{spec.ack_path}", dispatch_token, {
+                await asyncio.to_thread(post, f"{base_url}{spec.ack_path}", key_id, dispatch_token, {
                     "id": item_id, "leaseToken": lease_token, "success": False,
                     "errorCode": error_code, "errorMessage": error_message,
                 })
@@ -253,7 +253,7 @@ class RadarWeixinAdapter(BasePlatformAdapter):
         if not final_message_id:
             return SendResult(success=False, error="radar_delivery_receipt_missing")
         try:
-            await asyncio.to_thread(post, f"{base_url}{spec.ack_path}", dispatch_token, {
+            await asyncio.to_thread(post, f"{base_url}{spec.ack_path}", key_id, dispatch_token, {
                 "id": item_id, "leaseToken": lease_token, "success": True,
                 "providerMessageId": final_message_id,
             })

@@ -31,7 +31,8 @@
     "test:market-radar": "node --test scripts/market-radar.test.mjs scripts/market-radar-ui.test.mjs scripts/market-radar-worker.test.mjs scripts/market-radar-event-contract.test.mjs scripts/dual-timeline-contract.test.mjs scripts/static-market-radar-workflow.test.mjs",
     "test:timeline-review": "node --test scripts/timeline-review.test.mjs",
     "test:radar-db": "RUN_RADAR_DB_TESTS=true node --test --test-name-pattern='real PostgreSQL' scripts/dual-timeline-contract.test.mjs scripts/timeline-review.test.mjs",
-    "test:notifications": "node --test scripts/radar-notifications.test.mjs",
+    "test:notifications": "PYTHONDONTWRITEBYTECODE=1 node --test scripts/radar-notifications.test.mjs",
+    "test:local-backend": "PYTHONDONTWRITEBYTECODE=1 node --test scripts/local-backend.test.mjs",
     "test:release": "node --test scripts/release-workflow.test.mjs",
     "test:article-shadow": "node --test scripts/article-catalog-shadow.test.mjs",
     "test:content-preview": "node --test scripts/content-catalog-preview.test.mjs",
@@ -62,13 +63,13 @@
   "dependencies": {
     "@neondatabase/serverless": "^1.1.0",
     "ipaddr.js": "^2.5.0",
+    "pg": "^8.16.3",
     "tldts": "^7.4.10",
     "vue": "^3.5.13",
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.3",
-    "pg": "^8.16.3",
     "typescript": "~5.7.3",
     "vite": "^6.4.3",
     "vue-tsc": "^3.3.8",

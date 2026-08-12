@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import asyncio
+import hashlib
+import hmac
 import json
 import os
 import re
@@ -20,7 +22,8 @@ from typing import Any
 from hermes_cli.config import cfg_get, load_config
 
 
-DEFAULT_BASE_URL = "https://xiuqiu-site.vercel.app"
+DEFAULT_PAGE_BASE_URL = "https://xiuqiu-site.vercel.app"
+DEFAULT_API_BASE_URL = "http://127.0.0.1:4321"
 MAX_BODY_CHARS = 2800
 PLUGIN_NAME = "market-radar-weixin"
 
@@ -45,17 +48,34 @@ class DeliveryBlocked(RuntimeError):
         self.safe_message = message
 
 
-def settings() -> tuple[str, str, str, bool]:
+def validate_runtime_origins(api_base_url: str, page_base_url: str) -> None:
+    api_origin = urllib.parse.urlparse(api_base_url)
+    page_origin = urllib.parse.urlparse(page_base_url)
+    if not (api_origin.scheme == "http" and api_origin.hostname == "127.0.0.1" and api_origin.port == 4321
+            and not api_origin.username and not api_origin.password and api_origin.path in {"", "/"}
+            and not api_origin.params and not api_origin.query and not api_origin.fragment):
+        raise RuntimeError("Hermes internal API must remain on loopback.")
+    if not (page_origin.scheme == "https" and page_origin.hostname and not page_origin.username
+            and not page_origin.password and page_origin.path in {"", "/"} and not page_origin.params
+            and not page_origin.query and not page_origin.fragment):
+        raise RuntimeError("Radar page base URL must be a clean HTTPS origin.")
+
+
+def settings() -> tuple[str, str, str, str, str, bool]:
     config = load_config()
-    base_url = str(cfg_get(
-        config, "plugins", "entries", PLUGIN_NAME, "config", "base_url", default=DEFAULT_BASE_URL,
+    api_base_url = str(cfg_get(
+        config, "plugins", "entries", PLUGIN_NAME, "config", "api_base_url", default=DEFAULT_API_BASE_URL,
+    )).rstrip("/")
+    page_base_url = str(cfg_get(
+        config, "plugins", "entries", PLUGIN_NAME, "config", "page_base_url", default=DEFAULT_PAGE_BASE_URL,
     )).rstrip("/")
     shadow_mode = bool(cfg_get(
         config, "plugins", "entries", PLUGIN_NAME, "config", "shadow_mode", default=True,
     ))
-    dispatch_token = (os.getenv("RADAR_DISPATCH_TOKEN") or os.getenv("MARKET_RADAR_DISPATCH_TOKEN") or "").strip()
+    dispatch_token = (os.getenv("RADAR_INTERNAL_HMAC_SECRET") or os.getenv("RADAR_DISPATCH_TOKEN") or "").strip()
+    key_id = os.getenv("RADAR_INTERNAL_HMAC_KEY_ID", "").strip()
     chat_id = os.getenv("WEIXIN_HOME_CHANNEL", "").strip()
-    return base_url, dispatch_token, chat_id, shadow_mode
+    return api_base_url, page_base_url, key_id, dispatch_token, chat_id, shadow_mode
 
 
 def local_delivery_options() -> tuple[str, float]:
@@ -73,11 +93,24 @@ def local_delivery_options() -> tuple[str, float]:
     return secondary_profile, min(300.0, max(35.0, interval))
 
 
-def post(url: str, token: str, payload: dict[str, Any]) -> dict[str, Any]:
+def signed_headers(method: str, url: str, key_id: str, secret: str, body: bytes = b"") -> dict[str, str]:
+    timestamp = str(int(time.time() * 1000))
+    nonce = secrets.token_hex(16)
+    parsed = urllib.parse.urlsplit(url)
+    target = parsed.path + (f"?{parsed.query}" if parsed.query else "")
+    body_hash = hashlib.sha256(body).hexdigest()
+    canonical = "\n".join(["article-catalog-v1", key_id, method.upper(), target, timestamp, nonce, body_hash])
+    signature = hmac.new(secret.encode(), canonical.encode(), hashlib.sha256).hexdigest()
+    return {"x-content-key-id": key_id, "x-content-timestamp": timestamp, "x-content-nonce": nonce,
+            "x-content-body-sha256": body_hash, "x-content-signature": signature}
+
+
+def post(url: str, key_id: str, secret: str, payload: dict[str, Any]) -> dict[str, Any]:
+    encoded = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     request = urllib.request.Request(
         url,
-        data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
-        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+        data=encoded,
+        headers={**signed_headers("POST", url, key_id, secret, encoded), "Content-Type": "application/json"},
         method="POST",
     )
     try:
@@ -87,10 +120,10 @@ def post(url: str, token: str, payload: dict[str, Any]) -> dict[str, Any]:
         raise RuntimeError(f"Radar API returned HTTP {exc.code}.") from exc
 
 
-def check_health(base_url: str, path: str) -> None:
+def check_health(base_url: str, path: str, key_id: str, secret: str) -> None:
+    url = urllib.parse.urljoin(f"{base_url}/", path.lstrip("/"))
     request = urllib.request.Request(
-        urllib.parse.urljoin(f"{base_url}/", path.lstrip("/")),
-        headers={"Accept": "application/json,text/html", "User-Agent": "xiuqiu-hermes-radar/0.2"},
+        url, headers={**signed_headers("GET", url, key_id, secret), "Accept": "application/json", "User-Agent": "xiuqiu-hermes-radar/0.3"},
         method="GET",
     )
     with urllib.request.urlopen(request, timeout=15) as response:
@@ -114,7 +147,10 @@ def safe_page_url(payload: dict[str, Any], base_url: str, page_prefix: str) -> s
         raise DeliveryBlocked("page_url_missing", "Published page URL is missing.")
     base = urllib.parse.urlparse(base_url)
     target = urllib.parse.urlparse(urllib.parse.urljoin(f"{base_url}/", value))
-    if target.scheme != "https" or target.netloc != base.netloc or not target.path.startswith(page_prefix):
+    route_root = "/" + page_prefix.strip("/")
+    if target.scheme != "https" or target.netloc != base.netloc or not (
+        target.path == route_root or target.path.startswith(f"{route_root}/")
+    ):
         raise DeliveryBlocked("page_url_invalid", "Published page URL is outside the configured radar boundary.")
     return urllib.parse.urlunparse(target)
 
@@ -162,7 +198,7 @@ def normalized_payload(item: dict[str, Any], spec: RadarSpec) -> dict[str, Any]:
             payload["date"] = date
     kind = str(item.get("kind") or "")
     if not payload.get("pageUrl") and kind == "daily" and date:
-        payload["pageUrl"] = f"{spec.page_prefix}{date}"
+        payload["pageUrl"] = f"{spec.page_prefix.rstrip('/')}/{date}"
     if not payload.get("pageUrl") and spec.name == "market-radar" and payload.get("eventId"):
         payload["pageUrl"] = f"/market-radar/events/{payload['eventId']}"
     return payload
@@ -337,17 +373,18 @@ def connection_test_envelope() -> str:
 
 async def prepare(spec: RadarSpec, dry_run: bool) -> int:
     """Claim at most one item and emit a credential-free gateway envelope."""
-    base_url, dispatch_token, chat_id, shadow_mode = settings()
-    if not dispatch_token:
-        raise RuntimeError("RADAR_DISPATCH_TOKEN or MARKET_RADAR_DISPATCH_TOKEN is missing.")
+    api_base_url, page_base_url, key_id, dispatch_token, chat_id, shadow_mode = settings()
+    if not dispatch_token or not key_id:
+        raise RuntimeError("Radar internal HMAC key id or secret is missing.")
+    validate_runtime_origins(api_base_url, page_base_url)
     if not chat_id:
         raise RuntimeError("WEIXIN_HOME_CHANNEL is not configured.")
     if dry_run:
-        await asyncio.to_thread(check_health, base_url, spec.health_path)
+        await asyncio.to_thread(check_health, api_base_url, "/healthz", key_id, dispatch_token)
         print(json.dumps({"ready": True, "radar": spec.name, "outboxClaimed": False}, ensure_ascii=False))
         return 0
     claim = await asyncio.to_thread(
-        post, f"{base_url}{spec.claim_path}", dispatch_token,
+        post, f"{api_base_url}{spec.claim_path}", key_id, dispatch_token,
         {"leaseSeconds": 300, "kinds": list(spec.kinds)},
     )
     item = claim.get("item")
@@ -357,9 +394,9 @@ async def prepare(spec: RadarSpec, dry_run: bool) -> int:
 
     payload = normalized_payload(item, spec)
     try:
-        page_url = await asyncio.to_thread(check_page, payload, base_url, spec.page_prefix)
+        page_url = await asyncio.to_thread(check_page, payload, page_base_url, spec.page_prefix)
     except DeliveryBlocked as exc:
-        await asyncio.to_thread(post, f"{base_url}{spec.ack_path}", dispatch_token, {
+        await asyncio.to_thread(post, f"{api_base_url}{spec.ack_path}", key_id, dispatch_token, {
             "id": item["id"], "leaseToken": lease_token(item), "success": False,
             "errorCode": exc.code, "errorMessage": exc.safe_message,
         })
@@ -382,7 +419,7 @@ async def prepare(spec: RadarSpec, dry_run: bool) -> int:
         expected_key = f"market:quant:{payload.get('date', '')}"
         if spec.name != "market-radar" or follow_up.get("kind") != "quant" or follow_key != expected_key:
             raise RuntimeError("Market quant follow-up failed its idempotency boundary.")
-        follow_page_url = await asyncio.to_thread(check_page, follow_up, base_url, spec.page_prefix)
+        follow_page_url = await asyncio.to_thread(check_page, follow_up, page_base_url, spec.page_prefix)
         for alias in spec.recipient_aliases:
             deliveries.append({
                 "recipientAlias": alias,

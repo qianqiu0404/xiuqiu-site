@@ -1,4 +1,4 @@
-import { Pool } from '@neondatabase/serverless'
+import { createRadarPool } from './database-pool.mjs'
 
 export const RADAR_DATABASE_LOCK_KEY = 'xiuqiu-site:radar:database-write:v1'
 
@@ -16,7 +16,7 @@ export async function withRadarDatabaseLock(options, work) {
     timeoutMs = 120_000,
     pollIntervalMs = 500,
     sleep = milliseconds => new Promise(resolve => setTimeout(resolve, milliseconds)),
-    createPool = config => new Pool(config),
+    createPool = createRadarPool,
   } = options
   if (!databaseUrl) throw new Error('A radar database URL is required for the advisory lock')
 

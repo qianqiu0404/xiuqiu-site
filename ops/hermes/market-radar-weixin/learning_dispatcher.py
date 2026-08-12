@@ -10,9 +10,9 @@ from .common import RadarSpec, prepare
 
 SPEC = RadarSpec(
     name="learning-radar",
-    claim_path="/api/radar/outbox/claim",
-    ack_path="/api/radar/outbox/ack",
-    health_path="/radar",
+    claim_path="/v1/internal/learning-radar/outbox/claim",
+    ack_path="/v1/internal/learning-radar/outbox/ack",
+    health_path="/healthz",
     page_prefix="/radar/",
     default_title="学习雷达",
     footer="公开来源驱动，仅供学习与研究。",
