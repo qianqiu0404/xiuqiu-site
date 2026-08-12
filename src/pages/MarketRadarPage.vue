@@ -47,14 +47,14 @@ onMounted(() => setSeoMeta({
     <header class="trade-radar-hero">
       <div class="container trade-radar-shell trade-radar-hero-grid">
         <div class="trade-radar-hero-copy">
-          <p class="trade-radar-kicker">Trade Radar / Verified event intelligence</p>
-          <h1>先看发生了什么。<span>再判断市场怎么走。</span></h1>
-          <p class="trade-radar-lead">每天只保留少量值得验证的事件，把事实、影响资产、观察条件与失效边界拆开。它不告诉你买什么。</p>
+          <p class="trade-radar-kicker">Trade Radar / Verified events</p>
+          <h1>市场雷达</h1>
+          <p class="trade-radar-lead">重要事件 → 影响资产 → 验证与失效。只做研究，不给买卖指令。</p>
         </div>
         <aside class="trade-radar-boundary" aria-label="研究与执行边界">
           <span>Research boundary</span>
           <strong>不接账户 · 不自动下单</strong>
-          <p>当前页面读取构建时静态快照。原始来源可回查，市场反应需要在事件发生后另行验证。</p>
+          <p>只读公开来源；市场反应在事件发生后验证。</p>
         </aside>
       </div>
     </header>
