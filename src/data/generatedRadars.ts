@@ -8,6 +8,32 @@ export interface RadarIndexEntry { date: string; slug: string; title: string; su
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-08-12",
+    "slug": "2026-08-12",
+    "title": "每日研究雷达 · 2026-08-12",
+    "summary": "先把权力边界做成结构：从钱包风险提示、Agent 沙箱，到可恢复会话、协议回归与不会被模型轻易击穿的评测。",
+    "marketSignals": [
+      {
+        "title": "Ledger Live Desktop 4.15.0 · 隐私与资产路径要同时门禁"
+      },
+      {
+        "title": "MetaMask 13.43.0 · 风险提示必须绑定真实链路"
+      }
+    ],
+    "aiTip": {
+      "title": "Managed Agents · 把会话、推理循环和执行环境拆开"
+    },
+    "web3Design": {
+      "title": "EIP-8130 · 把账户认证从任意钱包代码中拆出来"
+    },
+    "vibeProject": {
+      "title": "MCP Inspector 2.1.0 · 协议头透传也要进入回归测试"
+    },
+    "readingPick": {
+      "title": "AI-resistant evaluations · 当模型追平旧考题，评测必须重建信号"
+    }
+  },
+  {
     "date": "2026-08-10",
     "slug": "2026-08-10",
     "title": "每日研究雷达 · 2026-08-10",
@@ -825,6 +851,66 @@ export const radarIndex: RadarIndexEntry[] = [
 
 export const latestRadars: DailyRadar[] = [
   {
+    "date": "2026-08-12",
+    "slug": "2026-08-12",
+    "title": "每日研究雷达 · 2026-08-12",
+    "summary": "先把权力边界做成结构：从钱包风险提示、Agent 沙箱，到可恢复会话、协议回归与不会被模型轻易击穿的评测。",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-08-12T07:56:14+08:00",
+    "sourceSections": [
+      "crypto",
+      "radar",
+      "vibe",
+      "reading"
+    ],
+    "missingSections": [],
+    "marketSignals": [
+      {
+        "title": "Ledger Live Desktop 4.15.0 · 隐私与资产路径要同时门禁",
+        "summary": "官方把 Zcash 的透明与屏蔽转账收进独立 coin-module，由原生引擎构造、签名和广播 PCZT，并用默认关闭的 zcashShielded 开关及双桥差分测试控制迁移；同版还从 Datadog RUM 清除钱包地址和账户 ID，并在联系人入口拦截受制裁地址。关键机制是把隐私、路由和合规约束放进真实执行路径，而不是只改界面；但 NU6.3 下 z→z 与 V6 finalizer 仍未完成。试用前应回放四种转账、遥测脱敏和开关回退，不能把 4.15.0 当成所有 Zcash 路径已齐备。",
+        "sourceUrl": "https://github.com/LedgerHQ/ledger-live/releases/tag/%40ledgerhq/live-desktop%404.15.0"
+      },
+      {
+        "title": "MetaMask 13.43.0 · 风险提示必须绑定真实链路",
+        "summary": "13.43.0 在代币详情页加入已验证标记、风险横幅和高风险兑换前确认，并上线新的硬件钱包签名页；同时修复批量处理时按全局网络误判智能交易、受保护深链仅凭路径绕过安全中间页，以及设备无响应导致连接卡死。值得关注的是安全信号、链上下文与签名状态开始在同一流程内互相校验。边界是远端信任信号可能滞后，清晰提示也不等于资产安全；应测试风险元数据缺失、跨链切换、硬件断连与恶意深链四组失败向量。",
+        "sourceUrl": "https://github.com/MetaMask/metamask-extension/releases/tag/v13.43.0"
+      }
+    ],
+    "aiTip": {
+      "title": "Managed Agents · 把会话、推理循环和执行环境拆开",
+      "summary": "Anthropic 将长任务拆成持久 session、可替换 harness 与按需 sandbox：事件先写入追加式日志，harness 崩溃后可用 wake(sessionId) 恢复，执行环境只作为 execute 工具被调用；Git 与 MCP 凭据留在初始化器或外部 vault，不进入生成代码可读的沙箱。官方称该解耦让 p50 首 token 延迟下降约 60%、p95 下降逾 90%，但这是其托管系统内部数据，不是通用基准。可执行动作是让每日雷达 ledger 独立于采集进程持久化，把文件、网络和凭据授权下沉到执行边界，并验证崩溃续跑不会重复发布。",
+      "sourceUrl": "https://www.anthropic.com/engineering/managed-agents"
+    },
+    "web3Design": {
+      "title": "EIP-8130 · 把账户认证从任意钱包代码中拆出来",
+      "summary": "EIP-8130 的当日更新把 keystore、交易有效期和精简后的协议边界对齐：新交易显式声明 canonical authenticator，节点可在执行任意钱包代码前按小型允许集过滤；账户把 actor、过期时间和 scope 放进链上配置，并用 POLICY manager、2D nonce 与本地 epoch 控制会话键和并行交易。关键价值是让认证成本可预期、权限读取默认拒绝未知位。它仍是 Core Draft，canonical 合约仓库才是内部布局权威，跨链配置与 nonce-free 环形缓冲也扩大共识复杂度；原型必须逐字节对照实现并测试撤权、过期、重放和错误 scope。",
+      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-8130"
+    },
+    "vibeProject": {
+      "title": "MCP Inspector 2.1.0 · 协议头透传也要进入回归测试",
+      "summary": "稳定版 2.1.0 修复 tools/call 时把 SEP-2243 的 x-mcp-header 参数映射到 Mcp-Param-*，并等待打包校验子进程退出后才清理工作目录；同版恢复在 v2 分支切换中丢失的 SECURITY.md，并升级依赖以清除两项公告。它适合做 MCP server 的协议与权限验收，但 Inspector 本身不证明服务端安全。采用时固定 2.1.0，在无生产凭据环境验证 header、工具参数、取消与错误路径，保存请求轨迹，并把任何意外的认证头透传视为失败。",
+      "sourceUrl": "https://github.com/modelcontextprotocol/inspector/releases/tag/2.1.0"
+    },
+    "readingPick": {
+      "title": "AI-resistant evaluations · 当模型追平旧考题，评测必须重建信号",
+      "summary": "Anthropic 复盘了三轮性能工程作业：原题服务过逾千名候选，随后 Opus 4 和 4.5 在固定时限内追平或超过大多数人；仅把旧题加深仍会被更长推理预算攻克，团队最终改成多个陌生、受约束的小问题，并把理解、调试工具和跨题稳定性重新变成信号。核心教训不是制造永远难倒模型的题，而是持续检查评测是否仍区分目标能力。边界是内部招聘样本不能外推到所有 Agent；学习雷达可建立冻结测试集、隐藏近期样本与人工复核集，按模型版本监控门禁失效率而不是只看一次通过。",
+      "sourceUrl": "https://www.anthropic.com/engineering/AI-resistant-technical-evaluations"
+    },
+    "sourceUrls": [
+      "https://github.com/LedgerHQ/ledger-live/releases/tag/%40ledgerhq/live-desktop%404.15.0",
+      "https://github.com/MetaMask/metamask-extension/releases/tag/v13.43.0",
+      "https://www.anthropic.com/engineering/managed-agents",
+      "https://eips.ethereum.org/EIPS/eip-8130",
+      "https://github.com/modelcontextprotocol/inspector/releases/tag/2.1.0",
+      "https://www.anthropic.com/engineering/AI-resistant-technical-evaluations"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ]
+  },
+  {
     "date": "2026-08-10",
     "slug": "2026-08-10",
     "title": "每日研究雷达 · 2026-08-10",
@@ -1217,77 +1303,6 @@ export const latestRadars: DailyRadar[] = [
       "https://github.com/charmbracelet/crush/issues/3461",
       "https://github.com/charmbracelet/crush/blob/v0.88.0/LICENSE.md",
       "https://github.blog/ai-and-ml/github-copilot/the-harness-is-all-you-need-mostly/"
-    ],
-    "relatedProjectSlugs": [
-      "wallet-core",
-      "exchange-wallet-system",
-      "web3-wallet-engineer-lab"
-    ]
-  },
-  {
-    "date": "2026-08-04",
-    "slug": "2026-08-04",
-    "title": "每日研究雷达 · 2026-08-04",
-    "summary": "聚焦 Chainlink 遥测与批处理、Polkadot collator 信誉修复、Celestia CheckTx 限制、受限 agent 写入、沙箱钱包、Gemini CLI，以及条件化最小权限。",
-    "reviewStatus": "automated",
-    "generatedAt": "2026-08-04T09:46:53+08:00",
-    "sourceSections": [
-      "crypto",
-      "radar",
-      "vibe",
-      "reading"
-    ],
-    "missingSections": [],
-    "marketSignals": [
-      {
-        "title": "Chainlink Node v2.58.0 调整遥测与批量发送默认值",
-        "summary": "版本新增指标属性丢弃配置，并依据容量分析扩大 Chip ingress 缓冲与批量、延长发送窗口；这是节点配置更新，生产使用仍需按负载验证并固定镜像 digest。",
-        "sourceUrl": "https://github.com/smartcontractkit/chainlink/releases/tag/v2.58.0"
-      },
-      {
-        "title": "Polkadot SDK 补丁修正 collator 信誉归因",
-        "summary": "stable2603-5 修正 ApprovedPeer 携带错误 PeerId 导致诚实 collator 无法累积信誉的问题，并缓解持久化请求拥塞；该发布仅含 crates，不提供 binary 或镜像。",
-        "sourceUrl": "https://github.com/paritytech/polkadot-sdk/releases/tag/polkadot-stable2603-5"
-      },
-      {
-        "title": "Celestia Corto 版本在 CheckTx 限制消息数量",
-        "summary": "v9.0.5-corto 为 CheckTx 增加 SDK message 上限并升级 celestia-core；它是仅面向 Corto 的 prerelease，不能外推为主网稳定版本。",
-        "sourceUrl": "https://github.com/celestiaorg/celestia-app/releases/tag/v9.0.5-corto"
-      }
-    ],
-    "aiTip": {
-      "title": "让模型产出结构化意图，由确定性 handler 执行写入",
-      "summary": "先用代码固定仓库、分支和文件边界，再让 agent 只输出变更意图；独立 handler 用窄权限、白名单、draft PR 与失败回退执行。模型判断仍需内容审阅，安全来自权限分离和可验证动作面。",
-      "sourceUrl": "https://github.blog/ai-and-ml/github-copilot/automating-cross-repo-documentation-with-github-agentic-workflows/"
-    },
-    "web3Design": {
-      "title": "把 agent 资产与 owner 账户做单向隔离",
-      "summary": "ERC-8199 用独立沙箱钱包、agent 有效期、前后置 checker 与 owner 恢复路径限制自动执行。钱包服务可迁移独立资金边界和显式策略，但草案未补齐 nonce、升级、checker 信任与跨链恢复，不能直接用于生产。",
-      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-8199"
-    },
-    "vibeProject": {
-      "title": "Gemini CLI · 终端开源 coding agent",
-      "summary": "Gemini CLI 面向终端代码与工具工作流；固定版 0.53.1 已在无凭据临时目录复现版本输出。公开仓库与 npm 数据显示广泛关注和分发，但工具权限、提示注入和供应链风险仍需沙箱、审批与独立测试约束。",
-      "sourceUrl": "https://github.com/google-gemini/gemini-cli"
-    },
-    "readingPick": {
-      "title": "用条件把最小权限收紧到服务、工具与时间",
-      "summary": "Google Cloud 展示用 IAM Conditions 限定可授予角色、MCP 服务、具体工具和时间窗。思考题：为只读研究 agent 写出三条允许、三条拒绝案例，并检查属性缺失或新工具上线时是否默认拒绝。",
-      "sourceUrl": "https://cloud.google.com/blog/topics/developers-practitioners/generosity-under-conditions-hardening-google-cloud-access-management/"
-    },
-    "sourceUrls": [
-      "https://github.com/smartcontractkit/chainlink/releases/tag/v2.58.0",
-      "https://github.com/paritytech/polkadot-sdk/releases/tag/polkadot-stable2603-5",
-      "https://github.com/celestiaorg/celestia-app/releases/tag/v9.0.5-corto",
-      "https://github.blog/ai-and-ml/github-copilot/automating-cross-repo-documentation-with-github-agentic-workflows/",
-      "https://eips.ethereum.org/EIPS/eip-8199",
-      "https://github.com/google-gemini/gemini-cli",
-      "https://github.com/google-gemini/gemini-cli/releases/tag/v0.53.1",
-      "https://registry.npmjs.org/@google/gemini-cli/0.53.1",
-      "https://api.npmjs.org/downloads/point/2026-07-05:2026-08-03/@google/gemini-cli",
-      "https://github.com/google-gemini/gemini-cli/blob/v0.53.1/docs/cli/sandbox.md",
-      "https://github.com/google-gemini/gemini-cli/blob/v0.53.1/LICENSE",
-      "https://cloud.google.com/blog/topics/developers-practitioners/generosity-under-conditions-hardening-google-cloud-access-management/"
     ],
     "relatedProjectSlugs": [
       "wallet-core",
