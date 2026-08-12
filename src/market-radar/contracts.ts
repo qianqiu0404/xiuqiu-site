@@ -12,6 +12,8 @@ export interface MarketRadarSourceStatus {
 
 export interface MarketRadarSummary {
   status: MarketRadarHealth
+  snapshotId: string | null
+  asOf: string | null
   generatedAt: string
   latestEventAt: string | null
   freshnessMinutes: number | null
@@ -61,10 +63,14 @@ export interface MarketRadarEvent {
   sources: Array<{ name: string; url: string }>
   assets: MarketRadarAsset[]
   reaction: MarketRadarReaction | null
+  snapshotId: string
+  snapshotAsOf: string
 }
 
 export interface MarketRadarEventList {
   status: MarketRadarHealth
+  snapshotId: string | null
+  asOf: string | null
   items: MarketRadarEvent[]
   nextCursor: string | null
   message?: string
@@ -88,10 +94,14 @@ export interface MarketRadarDigest {
   periodStart: string
   periodEnd: string
   publishedAt: string
+  snapshotId: string
+  snapshotAsOf: string
 }
 
 export interface MarketRadarDigestList {
   status: MarketRadarHealth
+  snapshotId: string | null
+  asOf: string | null
   items: MarketRadarDigest[]
   message?: string
 }

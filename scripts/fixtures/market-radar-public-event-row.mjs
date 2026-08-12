@@ -22,6 +22,8 @@ export const publicEventRowV2 = {
   },
   watch_for: '继续观察签名发布物、节点运营者反馈与后续公开修复说明。',
   invalidation: '若没有节点运行证据或正式修复说明，不把版本发布外推为网络异常或市场方向。',
+  snapshot_id: 'market-2026-08-10-0000000000000000',
+  snapshot_as_of: '2026-08-10T02:08:00.000Z',
 }
 
 export const publicEventRowLegacy = {

@@ -9,6 +9,7 @@ import { buildDigestBody, summarizeAttentionAssets } from '../market-radar/worke
 import { isUsPremarketWindow, newYorkParts } from '../market-radar/worker/market-calendar.mjs'
 import { parseBinanceKlines, parseGitHubReleasePayload, parseRss, parseSecCompanyFeed } from '../market-radar/worker/providers.mjs'
 import { parseEventCursor } from '../src/market-radar/contracts.ts'
+import { splitRadarMigrationStatements } from '../market-radar/worker/migrations.mjs'
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8')
 
@@ -234,11 +235,39 @@ test('new events publish only with complete AI v2 verification boundaries', () =
 test('migrations hide stale backlog and the runner applies every numbered file', () => {
   const migration = read('market-radar/migrations/002_freshness_gate.sql')
   const runner = read('market-radar/worker/migrate.mjs')
+  const migrations = read('market-radar/worker/migrations.mjs')
   assert.match(migration, /occurred_at < now\(\) - interval '7 days'/)
   assert.match(migration, /id not like '%-v2-%'/)
   assert.match(migration, /occurred_at >= now\(\) - interval '7 days'/)
-  assert.match(runner, /readdir\(migrationsUrl\)/)
-  assert.match(runner, /files\.length/)
+  assert.match(migrations, /readdir\(migrationsUrl\)/)
+  assert.match(runner, /result\.appliedFiles/)
+})
+
+test('migration runner checksums files and keeps each file atomic', () => {
+  const runner = read('market-radar/worker/migrate.mjs')
+  const migrations = read('market-radar/worker/migrations.mjs')
+  const statements = splitRadarMigrationStatements("select ';' as value; do $block$ begin perform 1; end $block$; select 2;")
+  assert.equal(statements.length, 3)
+  assert.match(runner, /applyRadarMigrations/)
+  assert.match(migrations, /schema_migrations/)
+  assert.match(migrations, /Migration checksum mismatch/)
+  assert.match(migrations, /sql\.transaction/)
+})
+
+test('M0 migration isolates QA and publishes only snapshot-bound research', () => {
+  const migration = read('market-radar/migrations/012_publication_content_boundary.sql')
+  const repository = read('lib/market-radar/repository.ts')
+  assert.match(migration, /create schema if not exists radar_qa/)
+  assert.match(migration, /revoke all on schema radar_qa from public/)
+  assert.match(migration, /insert into radar_qa\.fixtures/)
+  assert.match(migration, /delete from learning_radar\.stories/)
+  assert.match(migration, /delete from market_radar\.events/)
+  assert.match(migration, /e\.origin = 'research'/)
+  assert.match(migration, /e\.publication_state = 'published'/)
+  assert.match(migration, /publication\.publication_state = 'published'/)
+  assert.match(migration, /join radar_system\.publication_snapshots/)
+  assert.match(repository, /where radar_kind = \$1 and origin = 'research' and publication_state = 'published'/)
+  assert.match(repository, /snapshot_id = \$2/)
 })
 
 test('verification-boundary migration is repeatable, private by default and preserves freshness', () => {

@@ -27,6 +27,6 @@ export default async function handler(req: MarketRadarRequest, res: MarketRadarR
       limit: clampInteger(queryValue(req, 'limit'), 20, 1, 50),
     }))
   } catch {
-    return res.status(200).json({ status: 'degraded', items: [], nextCursor: null, message: '交易雷达数据暂时不可用，请稍后再试。' })
+    return res.status(200).json({ status: 'degraded', snapshotId: null, asOf: null, items: [], nextCursor: null, message: '交易雷达数据暂时不可用，请稍后再试。' })
   }
 }

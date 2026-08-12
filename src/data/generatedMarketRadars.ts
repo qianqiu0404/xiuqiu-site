@@ -8,14 +8,16 @@ export type MarketQuantAssetGroup = 'us_equity_etf' | 'crypto' | 'gold_etf'
 export type MarketSignalQuality = 'strong' | 'medium' | 'weak'
 export interface MarketQuantAsset { symbol: 'SPY' | 'QQQ' | 'BTC' | 'ETH' | 'GLD'; group: MarketQuantAssetGroup; up?: number; sideways?: number; down?: number; signalQuality?: MarketSignalQuality }
 export interface MarketQuantStrategy { horizonTradingDays: number; status: 'heuristic_unbacktested' | 'historical_samples_insufficient'; methodology: string; assets: MarketQuantAsset[]; sampleSize?: number; rationale: string; nextValidation: string; invalidation: string; sourceUrls: string[] }
-export interface MarketRadarDaily { date: string; slug: string; title: string; summary: string; reviewStatus: 'automated'; generatedAt: string; events: MarketRadarEvent[]; sourceUrls: string[]; quantStrategy?: MarketQuantStrategy }
-export interface MarketRadarIndexEntry { date: string; slug: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
+export interface MarketRadarDaily { date: string; slug: string; snapshotId: string; asOf: string; origin: 'research'; publicationState: 'published'; title: string; summary: string; reviewStatus: 'automated'; generatedAt: string; events: MarketRadarEvent[]; sourceUrls: string[]; quantStrategy?: MarketQuantStrategy }
+export interface MarketRadarIndexEntry { date: string; slug: string; snapshotId: string; asOf: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
 export const marketRadarIndex: MarketRadarIndexEntry[] = [
   {
     "date": "2026-08-12",
     "slug": "2026-08-12",
     "title": "交易研究雷达 · 2026-08-12",
     "summary": "今天只保留一项可核验宏观事件：美国 7 月 CPI 将于北京时间 20:30 发布。结果公布前不预设方向，样本门禁继续隐藏精确概率。",
+    "snapshotId": "market-2026-08-12-fb04ceda9b0ac52e",
+    "asOf": "2026-08-11T23:56:14.000Z",
     "eventCount": 1,
     "assetCount": 6,
     "leadTitle": "美国劳工统计局将发布 2026 年 7 月消费者价格指数"
@@ -25,6 +27,8 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
     "slug": "2026-08-11",
     "title": "交易研究雷达 · 2026-08-11",
     "summary": "今天只保留一项可核验的宏观日程：美国财政部 580 亿美元 3 年期国债拍卖。结果公布前不预设资产方向，量化简报因历史样本不足仅显示信号质量。",
+    "snapshotId": "market-2026-08-11-4335d8df5e9828b3",
+    "asOf": "2026-08-11T03:14:15.000Z",
     "eventCount": 1,
     "assetCount": 6,
     "leadTitle": "美国财政部将在 8 月 11 日拍卖 580 亿美元 3 年期国债"
@@ -34,6 +38,8 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
     "slug": "2026-08-10",
     "title": "交易研究雷达 · 2026-08-10",
     "summary": "本周先盯紧美国中长期国债连续拍卖与联储偏鹰分歧，再把 Agave 4.2.0 视为 Solana 客户端运行事件；只记录可验证条件，不预设资产方向。",
+    "snapshotId": "market-2026-08-10-37041a045d9c65e0",
+    "asOf": "2026-08-10T07:01:26.000Z",
     "eventCount": 3,
     "assetCount": 6,
     "leadTitle": "美国 3 年、10 年与 30 年国债将在 8 月 11–13 日连续拍卖"
@@ -43,6 +49,8 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
     "slug": "2026-08-09",
     "title": "交易研究雷达 · 2026-08-09",
     "summary": "先锁定本周通胀双节点，再观察 Aptos 热修复透明度与 lnd 候选版迁移风险；只记录可验证事件，不输出仓位指令。",
+    "snapshotId": "market-2026-08-09-f1e87e6fb078dc86",
+    "asOf": "2026-08-09T04:30:00.000Z",
     "eventCount": 3,
     "assetCount": 5,
     "leadTitle": "美国 CPI 与 PPI 将在 8 月 12–13 日连续发布"
@@ -54,6 +62,10 @@ export const latestMarketRadars: MarketRadarDaily[] = [
     "slug": "2026-08-12",
     "title": "交易研究雷达 · 2026-08-12",
     "summary": "今天只保留一项可核验宏观事件：美国 7 月 CPI 将于北京时间 20:30 发布。结果公布前不预设方向，样本门禁继续隐藏精确概率。",
+    "snapshotId": "market-2026-08-12-fb04ceda9b0ac52e",
+    "asOf": "2026-08-11T23:56:14.000Z",
+    "origin": "research",
+    "publicationState": "published",
     "reviewStatus": "automated",
     "generatedAt": "2026-08-12T07:56:14+08:00",
     "events": [
@@ -129,6 +141,10 @@ export const latestMarketRadars: MarketRadarDaily[] = [
     "slug": "2026-08-11",
     "title": "交易研究雷达 · 2026-08-11",
     "summary": "今天只保留一项可核验的宏观日程：美国财政部 580 亿美元 3 年期国债拍卖。结果公布前不预设资产方向，量化简报因历史样本不足仅显示信号质量。",
+    "snapshotId": "market-2026-08-11-4335d8df5e9828b3",
+    "asOf": "2026-08-11T03:14:15.000Z",
+    "origin": "research",
+    "publicationState": "published",
     "reviewStatus": "automated",
     "generatedAt": "2026-08-11T11:14:15+08:00",
     "events": [
@@ -204,6 +220,10 @@ export const latestMarketRadars: MarketRadarDaily[] = [
     "slug": "2026-08-10",
     "title": "交易研究雷达 · 2026-08-10",
     "summary": "本周先盯紧美国中长期国债连续拍卖与联储偏鹰分歧，再把 Agave 4.2.0 视为 Solana 客户端运行事件；只记录可验证条件，不预设资产方向。",
+    "snapshotId": "market-2026-08-10-37041a045d9c65e0",
+    "asOf": "2026-08-10T07:01:26.000Z",
+    "origin": "research",
+    "publicationState": "published",
     "reviewStatus": "automated",
     "generatedAt": "2026-08-10T15:01:26+08:00",
     "events": [
@@ -327,6 +347,10 @@ export const latestMarketRadars: MarketRadarDaily[] = [
     "slug": "2026-08-09",
     "title": "交易研究雷达 · 2026-08-09",
     "summary": "先锁定本周通胀双节点，再观察 Aptos 热修复透明度与 lnd 候选版迁移风险；只记录可验证事件，不输出仓位指令。",
+    "snapshotId": "market-2026-08-09-f1e87e6fb078dc86",
+    "asOf": "2026-08-09T04:30:00.000Z",
+    "origin": "research",
+    "publicationState": "published",
     "reviewStatus": "automated",
     "generatedAt": "2026-08-09T12:30:00+08:00",
     "events": [

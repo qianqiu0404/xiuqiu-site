@@ -14,6 +14,11 @@ type QueryRow = Record<string, unknown>
 
 const knownSources = ['github_releases', 'sec_edgar', 'federal_reserve', 'binance_market_data', 'qiu_market']
 
+interface PublicationPointer {
+  snapshotId: string
+  asOf: string
+}
+
 function iso(value: unknown): string | null {
   if (!value) return null
   const date = value instanceof Date ? value : new Date(String(value))
@@ -26,11 +31,21 @@ function numberOrNull(value: unknown): number | null {
   return Number.isFinite(parsed) ? parsed : null
 }
 
+async function getCurrentPublication(kind: 'market' | 'learning'): Promise<PublicationPointer | null> {
+  const rows = await getMarketRadarDb().query(`select snapshot_id, as_of
+    from radar_system.publication_snapshots
+    where radar_kind = $1 and origin = 'research' and publication_state = 'published'
+    order by as_of desc, snapshot_id desc limit 1`, [kind]) as QueryRow[]
+  const row = rows[0]
+  const asOf = iso(row?.as_of)
+  return row?.snapshot_id && asOf ? { snapshotId: String(row.snapshot_id), asOf } : null
+}
+
 export async function getSummary(): Promise<MarketRadarSummary> {
   const generatedAt = new Date().toISOString()
   if (!isMarketRadarConfigured()) {
     return {
-      status: 'unconfigured', generatedAt, latestEventAt: null, freshnessMinutes: null, isDelayed: true,
+      status: 'unconfigured', snapshotId: null, asOf: null, generatedAt, latestEventAt: null, freshnessMinutes: null, isDelayed: true,
       eventCount24h: 0, p0Count24h: 0, p1Count24h: 0,
       sources: knownSources.map(source => ({ source, health: 'unconfigured', lastSuccessAt: null })),
       message: '交易雷达数据库尚未配置，当前没有可验证的实时数据。',
@@ -38,12 +53,13 @@ export async function getSummary(): Promise<MarketRadarSummary> {
   }
 
   const sql = getMarketRadarDb()
+  const publication = await getCurrentPublication('market')
   const [counts, sourceRows] = await Promise.all([
     sql.query(`select max(occurred_at) as latest_event_at,
       count(*) filter (where occurred_at >= now() - interval '24 hours') as event_count_24h,
       count(*) filter (where occurred_at >= now() - interval '24 hours' and priority = 'P0') as p0_count_24h,
       count(*) filter (where occurred_at >= now() - interval '24 hours' and priority = 'P1') as p1_count_24h
-      from market_radar.public_events`, []),
+      from market_radar.public_events where snapshot_id = $1`, [publication?.snapshotId || '']),
     sql.query(`select distinct on (source) source, status, finished_at, error_code
       from market_radar.job_runs order by source, started_at desc`, []),
   ])
@@ -63,9 +79,11 @@ export async function getSummary(): Promise<MarketRadarSummary> {
   const freshnessMinutes = latestSourceSuccessAt
     ? Math.max(0, Math.round((Date.now() - new Date(latestSourceSuccessAt).getTime()) / 60_000))
     : null
-  const isDelayed = freshnessMinutes === null || freshnessMinutes > 90
+  const isDelayed = !publication || freshnessMinutes === null || freshnessMinutes > 90
   return {
-    status: sources.some(source => source.health === 'healthy') ? (isDelayed ? 'degraded' : 'healthy') : 'degraded',
+    status: publication && sources.some(source => source.health === 'healthy') ? (isDelayed ? 'degraded' : 'healthy') : 'degraded',
+    snapshotId: publication?.snapshotId || null,
+    asOf: publication?.asOf || null,
     generatedAt,
     latestEventAt,
     freshnessMinutes,
@@ -74,7 +92,9 @@ export async function getSummary(): Promise<MarketRadarSummary> {
     p0Count24h: Number(first.p0_count_24h || 0),
     p1Count24h: Number(first.p1_count_24h || 0),
     sources,
-    message: isDelayed ? '数据超过 90 分钟未更新，请把它视为延迟，而不是没有事件。' : undefined,
+    message: !publication
+      ? '当前没有通过发布门禁的交易快照。'
+      : isDelayed ? '数据超过 90 分钟未更新，请把它视为延迟，而不是没有事件。' : undefined,
   }
 }
 
@@ -94,9 +114,11 @@ function encodeEventCursor(row: QueryRow | undefined): string | null {
 }
 
 export async function listEvents(filters: EventFilters): Promise<MarketRadarEventList> {
-  if (!isMarketRadarConfigured()) return { status: 'unconfigured', items: [], nextCursor: null, message: '交易雷达数据库尚未配置。' }
-  const values: unknown[] = [filters.windowHours]
-  const where = [`occurred_at >= now() - ($1::text || ' hours')::interval`]
+  if (!isMarketRadarConfigured()) return { status: 'unconfigured', snapshotId: null, asOf: null, items: [], nextCursor: null, message: '交易雷达数据库尚未配置。' }
+  const publication = await getCurrentPublication('market')
+  if (!publication) return { status: 'degraded', snapshotId: null, asOf: null, items: [], nextCursor: null, message: '当前没有通过发布门禁的交易快照。' }
+  const values: unknown[] = [filters.windowHours, publication.snapshotId]
+  const where = [`occurred_at >= now() - ($1::text || ' hours')::interval`, `snapshot_id = $2`]
   const add = (clause: string, value: unknown) => { values.push(value); where.push(clause.replace('?', `$${values.length}`)) }
   if (filters.market) add('market = ?', filters.market)
   if (filters.priority) add('priority = ?', filters.priority)
@@ -114,7 +136,7 @@ export async function listEvents(filters: EventFilters): Promise<MarketRadarEven
   ) as QueryRow[]
   const hasMore = rows.length > filters.limit
   const selected = hasMore ? rows.slice(0, filters.limit) : rows
-  return { status: 'healthy', items: selected.map(mapPublicEventRow), nextCursor: hasMore ? encodeEventCursor(selected[selected.length - 1]) : null }
+  return { status: 'healthy', snapshotId: publication.snapshotId, asOf: publication.asOf, items: selected.map(mapPublicEventRow), nextCursor: hasMore ? encodeEventCursor(selected[selected.length - 1]) : null }
 }
 
 export async function getEvent(id: string): Promise<MarketRadarEvent | null> {
@@ -124,15 +146,18 @@ export async function getEvent(id: string): Promise<MarketRadarEvent | null> {
 }
 
 export async function listDigests(limit: number): Promise<MarketRadarDigestList> {
-  if (!isMarketRadarConfigured()) return { status: 'unconfigured', items: [], message: '交易雷达数据库尚未配置。' }
-  const rows = await getMarketRadarDb().query(`select id, kind, title, body_zh, period_start, period_end, published_at
-    from market_radar.digests where visibility = 'public' order by published_at desc limit $1`, [limit]) as QueryRow[]
+  if (!isMarketRadarConfigured()) return { status: 'unconfigured', snapshotId: null, asOf: null, items: [], message: '交易雷达数据库尚未配置。' }
+  const publication = await getCurrentPublication('market')
+  if (!publication) return { status: 'degraded', snapshotId: null, asOf: null, items: [], message: '当前没有通过发布门禁的交易快照。' }
+  const rows = await getMarketRadarDb().query(`select id, kind, title, body_zh, period_start, period_end, published_at, snapshot_id, snapshot_as_of
+    from market_radar.public_digests where snapshot_id = $1 order by published_at desc limit $2`, [publication.snapshotId, limit]) as QueryRow[]
   const items: MarketRadarDigest[] = rows.map(row => ({
     id: String(row.id), kind: row.kind as MarketRadarDigest['kind'], title: String(row.title), bodyZh: String(row.body_zh),
     periodStart: iso(row.period_start) || new Date(0).toISOString(), periodEnd: iso(row.period_end) || new Date(0).toISOString(),
     publishedAt: iso(row.published_at) || new Date(0).toISOString(),
+    snapshotId: String(row.snapshot_id), snapshotAsOf: iso(row.snapshot_as_of) || new Date(0).toISOString(),
   }))
-  return { status: 'healthy', items }
+  return { status: 'healthy', snapshotId: publication.snapshotId, asOf: publication.asOf, items }
 }
 
 export async function recordFeedback(input: { eventId: string; value: string; note?: string; idempotencyKey: string; clientHash: string }): Promise<void> {

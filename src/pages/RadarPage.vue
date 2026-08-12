@@ -122,7 +122,12 @@ onMounted(() =>
 </script>
 
 <template>
-  <div class="radar-intelligence-page" lang="zh-CN">
+  <div
+    class="radar-intelligence-page"
+    lang="zh-CN"
+    :data-snapshot-id="latestRadar?.snapshotId"
+    :data-snapshot-as-of="latestRadar?.asOf"
+  >
     <section class="radar-intelligence-hero" aria-labelledby="radar-title">
       <div class="container radar-intelligence-shell radar-hero-layout">
         <div class="radar-hero-copy">

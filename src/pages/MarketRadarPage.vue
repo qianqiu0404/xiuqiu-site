@@ -38,7 +38,12 @@ onMounted(() => setSeoMeta({
 </script>
 
 <template>
-  <div class="trade-radar-page" lang="zh-CN">
+  <div
+    class="trade-radar-page"
+    lang="zh-CN"
+    :data-snapshot-id="latest?.snapshotId"
+    :data-snapshot-as-of="latest?.asOf"
+  >
     <header class="trade-radar-hero">
       <div class="container trade-radar-shell trade-radar-hero-grid">
         <div class="trade-radar-hero-copy">
