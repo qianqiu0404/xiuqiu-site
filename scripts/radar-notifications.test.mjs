@@ -8,6 +8,14 @@ import { parse } from 'yaml'
 import { buildLearningDailyNotification, buildMarketDailyNotification, buildMarketQuantNotification } from './radar-notification-contracts.mjs'
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8')
+const hasJq = (() => {
+  try {
+    execFileSync('jq', ['--version'], { stdio: 'ignore' })
+    return true
+  } catch {
+    return false
+  }
+})()
 const published = kind => ({
   snapshotId: `${kind}-2026-08-10-0000000000000000`,
   asOf: '2026-08-10T00:00:00.000Z',
@@ -163,7 +171,7 @@ test('Hermes dispatchers are model-free, one-at-a-time and keep the radar lanes 
   assert.doesNotMatch(`${common}\n${marketScript}\n${learningScript}`, /leaseToken.*print|dispatch_token.*print/i)
 })
 
-test('gateway watchdog cross-notifies once after two failures and once on recovery', () => {
+test('gateway watchdog cross-notifies once after two failures and once on recovery', { skip: !hasJq && 'jq is required for the local Hermes watchdog integration test' }, () => {
   const root = mkdtempSync(join(tmpdir(), 'xiuqiu-gateway-watchdog-'))
   const primaryHome = join(root, '.hermes')
   const secondaryHome = join(primaryHome, 'profiles', 'radar-secondary')
