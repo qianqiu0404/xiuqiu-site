@@ -224,9 +224,12 @@ test('real PostgreSQL protects timeline review transitions, audit privacy and ex
     fixtureDir = mkdtempSync(join(tmpdir(), 'xiuqiu-review-pg-'))
     dataDir = join(fixtureDir, 'data')
     const port = 5432
-    const init = spawnSync('initdb', ['-D', dataDir, '-U', 'postgres', '--auth=trust', '--no-locale', '--encoding=UTF8', '--no-sync'], { encoding: 'utf8' })
+    const init = spawnSync('initdb', [
+      '-D', dataDir, '-U', 'postgres', '--auth=trust', '--no-locale', '--encoding=UTF8', '--no-sync',
+      '--set', 'shared_memory_type=mmap', '--set', 'dynamic_shared_memory_type=mmap',
+    ], { encoding: 'utf8' })
     assert.equal(init.status, 0, init.stderr)
-    const startOptions = `-F -c listen_addresses='' -c unix_socket_directories='${fixtureDir}' -p ${port}`
+    const startOptions = `-F -c listen_addresses='' -c shared_memory_type=mmap -c dynamic_shared_memory_type=mmap -c unix_socket_directories='${fixtureDir}' -p ${port}`
     const start = spawnSync('pg_ctl', ['-D', dataDir, '-o', startOptions, '-w', 'start'], { stdio: 'ignore' })
     assert.equal(start.status, 0)
     adminUrl = `postgresql://postgres@localhost:${port}/postgres?host=${encodeURIComponent(fixtureDir)}`
