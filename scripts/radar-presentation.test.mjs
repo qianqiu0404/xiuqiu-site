@@ -134,6 +134,11 @@ test('Learn Radar exposes generated, review, loading, empty and error boundaries
   assert.match(radarWeeklySource, /reviewBoundary\.nextReviewLabel/)
 })
 
+test('Learn Radar exposes the immutable publication snapshot in the rendered DOM', () => {
+  assert.match(radarPageSource, /:data-snapshot-id="latestRadar\?\.snapshotId"/)
+  assert.match(radarPageSource, /:data-snapshot-as-of="latestRadar\?\.asOf"/)
+})
+
 test('generated radar layers keep the compact archive and recent full records aligned', () => {
   assert.deepEqual(
     radarIndex.map(item => item.slug),
@@ -146,6 +151,8 @@ test('generated radar layers keep the compact archive and recent full records al
     dailyRadars[0].marketSignals.map(item => item.title),
   )
   assert.equal('summary' in radarIndex[0].marketSignals[0], false)
+  assert.ok(dailyRadars.every(radar => radar.origin === 'research' && radar.publicationState === 'published'))
+  assert.ok(dailyRadars.every(radar => radar.snapshotId.startsWith(`learning-${radar.date}-`) && radar.asOf === new Date(radar.generatedAt).toISOString()))
 })
 
 test('historical radar detail loads by month and rejects invalid routes', async () => {

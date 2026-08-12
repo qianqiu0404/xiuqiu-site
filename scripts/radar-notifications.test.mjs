@@ -8,9 +8,16 @@ import { parse } from 'yaml'
 import { buildLearningDailyNotification, buildMarketDailyNotification, buildMarketQuantNotification } from './radar-notification-contracts.mjs'
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8')
+const published = kind => ({
+  snapshotId: `${kind}-2026-08-10-0000000000000000`,
+  asOf: '2026-08-10T00:00:00.000Z',
+  origin: 'research',
+  publicationState: 'published',
+})
 
 test('learning notification highlights at most three items and has one daily key', () => {
   const notification = buildLearningDailyNotification({
+    ...published('learning'),
     date: '2026-08-10',
     marketSignals: [
       { title: '钱包信号一', summary: '一号摘要' },
@@ -30,12 +37,12 @@ test('learning notification highlights at most three items and has one daily key
 
 test('market daily is bounded and quiet days remain observable', () => {
   const event = priority => ({ priority, title: `${priority} 事件`, whyWatch: `${priority} 观察边界` })
-  const notification = buildMarketDailyNotification({ date: '2026-08-10', events: [event('P2'), event('P0'), event('P1'), event('P2')] })
+  const notification = buildMarketDailyNotification({ ...published('market'), date: '2026-08-10', events: [event('P2'), event('P0'), event('P1'), event('P2')] })
   assert.equal(notification.idempotencyKey, 'market:daily:2026-08-10')
   assert.equal(notification.payload.pageUrl, '/market-radar/2026-08-10')
   assert.equal((notification.payload.body.match(/^\d+\./gm) || []).length, 3)
   assert.ok(notification.payload.body.indexOf('P0') < notification.payload.body.indexOf('P1'))
-  const quiet = buildMarketDailyNotification({ date: '2026-08-10', events: [] })
+  const quiet = buildMarketDailyNotification({ ...published('market'), date: '2026-08-10', events: [] })
   assert.match(quiet.payload.body, /暂无达到公开门槛的重要事件/)
 })
 
@@ -53,12 +60,12 @@ test('market quant follow-up uses bounded three-way weights and a separate idemp
     invalidation: '窗口结束或来源更新后重新计算。',
     sourceUrls: ['https://www.federalreserve.gov/example'],
   }
-  const quant = buildMarketQuantNotification({ date: '2026-08-10', quantStrategy })
+  const quant = buildMarketQuantNotification({ ...published('market'), date: '2026-08-10', quantStrategy })
   assert.equal(quant.idempotencyKey, 'market:quant:2026-08-10')
   assert.equal(quant.payload.probabilityStatus, 'heuristic_unbacktested')
   assert.match(quant.payload.body, /SPY：上涨 34%｜震荡 41%｜下跌 25%/)
   assert.match(quant.payload.body, /尚未历史回测/)
-  const daily = buildMarketDailyNotification({ date: '2026-08-10', events: [], quantStrategy })
+  const daily = buildMarketDailyNotification({ ...published('market'), date: '2026-08-10', events: [], quantStrategy })
   assert.equal(daily.payload.followUp.idempotencyKey, 'market:quant:2026-08-10')
   assert.equal(daily.payload.followUp.kind, 'quant')
 })
@@ -78,7 +85,12 @@ test('sample-gated quant follow-up reports strength without exact probabilities'
     invalidation: '窗口结束后重算。',
     sourceUrls: ['https://www.treasurydirect.gov/example'],
   }
-  const quant = buildMarketQuantNotification({ date: '2026-08-11', quantStrategy })
+  const quant = buildMarketQuantNotification({
+    ...published('market'),
+    snapshotId: 'market-2026-08-11-0000000000000000',
+    date: '2026-08-11',
+    quantStrategy,
+  })
   assert.equal(quant.payload.probabilityStatus, 'historical_samples_insufficient')
   assert.match(quant.payload.title, /量化简报/)
   assert.match(quant.payload.body, /SPY：信号质量 弱｜历史样本不足｜不显示精确概率/)
@@ -96,9 +108,17 @@ test('two outboxes have isolated schemas, idempotency keys and delivery evidence
   assert.match(migration, /learning_radar\.delivery_logs/)
   assert.match(marketClaim, /kind = any\(\$3::text\[\]\)/)
   assert.match(learningClaim, /LEARNING_NOTIFICATION_KINDS/)
+  assert.match(`${marketClaim}\n${learningClaim}`, /publication_state = 'published'/)
+  assert.match(`${marketClaim}\n${learningClaim}`, /snapshot_id is not null/)
+  assert.match(`${marketClaim}\n${learningClaim}`, /payload::text !~\*/)
   assert.match(`${marketAck}\n${learningAck}`, /providerMessageId/)
   assert.match(`${marketAck}\n${learningAck}`, /error_message/)
   assert.match(`${marketAck}\n${learningAck}`, /attempts \+ 1 >= 5/)
+})
+
+test('notifications fail closed without the published research snapshot boundary', () => {
+  assert.throws(() => buildLearningDailyNotification({ date: '2026-08-10' }), /snapshotId/)
+  assert.throws(() => buildMarketDailyNotification({ ...published('market'), origin: 'preview', date: '2026-08-10', events: [] }), /published research/)
 })
 
 test('release controller enqueues daily notifications only after production promotion', () => {

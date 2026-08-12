@@ -84,6 +84,8 @@ test('generated index, recent records and monthly loader remain aligned', async 
   assert.deepEqual(latestMarketRadars, allMarketRadars.slice(0, 7))
   assert.deepEqual(await loadMarketRadarBySlug(allMarketRadars[0].slug), allMarketRadars[0])
   assert.equal(await loadMarketRadarBySlug('not-a-date'), undefined)
+  assert.ok(allMarketRadars.every(radar => radar.origin === 'research' && radar.publicationState === 'published'))
+  assert.ok(allMarketRadars.every(radar => radar.snapshotId.startsWith(`market-${radar.date}-`) && radar.asOf === new Date(radar.generatedAt).toISOString()))
 })
 
 test('the public page is static and contains no runtime API dependency', async () => {
@@ -93,9 +95,11 @@ test('the public page is static and contains no runtime API dependency', async (
   const styles = await readFile(new URL('../src/styles/market-radar.css', import.meta.url), 'utf8')
   const router = await readFile(new URL('../src/router/index.ts', import.meta.url), 'utf8')
   assert.doesNotMatch(`${overview}\n${detail}`, /fetch\(|\/api\/market-radar/)
+  assert.match(overview, /:data-snapshot-id="latest\?\.snapshotId"/)
+  assert.match(overview, /:data-snapshot-as-of="latest\?\.asOf"/)
   assert.match(overview, /不接账户 · 不自动下单/)
-  assert.match(overview, /<h1>先看发生了什么。<span>再判断市场怎么走。<\/span><\/h1>/)
-  assert.match(overview, /它不告诉你买什么。/)
+  assert.match(overview, /<h1>市场雷达<\/h1>/)
+  assert.match(overview, /重要事件 → 影响资产 → 验证与失效。只做研究，不给买卖指令。/)
   assert.match(overview, /<dt>总事件<\/dt>/)
   assert.match(overview, /<dt>P0 \+ P1<\/dt>/)
   assert.match(overview, /<dt>下一事件<\/dt>/)

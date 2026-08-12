@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { assertPublicHttpUrl } from './public-data-contracts.mjs'
+import { assertResearchPublication } from './radar-publication-boundary.mjs'
 
 export const PUBLIC_RADAR_SECTIONS = ['crypto', 'radar', 'vibe', 'reading']
 export const MIN_RADAR_SECTIONS = 3
@@ -60,6 +61,7 @@ export function validateRadarCandidate(candidate, source) {
 export function assertPublicRadarContent(candidate) {
   const serialized = JSON.stringify(candidate)
   const errors = []
+  try { assertResearchPublication(candidate, 'learning radar') } catch (error) { errors.push(error instanceof Error ? error.message : String(error)) }
   if (ABSOLUTE_PATH_RE.test(serialized)) errors.push('Output contains a local absolute path.')
   if (SECRET_RE.test(serialized)) errors.push('Output may contain credentials or secret material.')
   PRIVATE_TERMS.forEach(term => { if (serialized.toLowerCase().includes(term.toLowerCase())) errors.push(`Output contains private term: ${term}`) })

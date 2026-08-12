@@ -103,5 +103,7 @@ export function mapPublicEventRow(row: PublicEventRow): MarketRadarEvent {
     sources: mapSources(row.sources),
     assets: mapAssets(row.assets),
     reaction: mapReaction(row.reaction),
+    snapshotId: requiredText(row.snapshot_id),
+    snapshotAsOf: isoOrEpoch(row.snapshot_as_of),
   }
 }
