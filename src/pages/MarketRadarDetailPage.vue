@@ -14,9 +14,11 @@ const allAssets = computed(() => entry.value ? [...new Set(entry.value.events.fl
 const categoryLabels = { macro: '宏观', crypto: '加密', equity: '美股', regulation: '政策' }
 const statusLabels = { scheduled: '已排期', released: '已发布', monitoring: '观察中' }
 const priorityLabels = { P0: '关键', P1: '重要', P2: '跟踪' }
+const researchLensLabels = { transmission: '传导链', falsification: '反证验证', scenario: '情景失效' }
 const quantGroupLabels = { us_equity_etf: '美股 ETF', crypto: '币圈', gold_etf: '黄金 ETF' }
 const quantGroups = ['us_equity_etf', 'crypto', 'gold_etf'] as const
 const quantQualityLabels = { strong: '强', medium: '中', weak: '弱' }
+const copiedQuestionId = ref<string>()
 
 function formatEventTime(value?: string) {
   if (!value) return '持续观察'
@@ -41,12 +43,39 @@ async function focusEventHash(hash: string, version: number) {
   let id = hash.slice(1)
   try { id = decodeURIComponent(id) } catch { return }
   const target = document.getElementById(id)
-  if (!target?.classList.contains('trade-radar-detail-event')) return
-  const heading = target.querySelector<HTMLElement>(':scope > h2')
+  const isEvent = target?.classList.contains('trade-radar-detail-event')
+  const isResearch = target?.classList.contains('trade-radar-research-card')
+  if (!target || (!isEvent && !isResearch)) return
+  if (isResearch) target.querySelector<HTMLDetailsElement>('details')?.setAttribute('open', '')
+  const heading = target.querySelector<HTMLElement>(isEvent ? ':scope > h2' : ':scope h3')
   if (!target || !heading) return
 
   target.scrollIntoView({ block: 'start' })
   heading.focus({ preventScroll: true })
+}
+
+async function copyResearchPrompt(question: { id: string; prompt: string }) {
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(question.prompt)
+    } else {
+      const textarea = document.createElement('textarea')
+      textarea.value = question.prompt
+      textarea.setAttribute('readonly', '')
+      textarea.style.position = 'fixed'
+      textarea.style.opacity = '0'
+      document.body.appendChild(textarea)
+      textarea.select()
+      if (!document.execCommand('copy')) throw new Error('copy unavailable')
+      textarea.remove()
+    }
+    copiedQuestionId.value = question.id
+    window.setTimeout(() => {
+      if (copiedQuestionId.value === question.id) copiedQuestionId.value = undefined
+    }, 2400)
+  } catch {
+    copiedQuestionId.value = undefined
+  }
 }
 
 watch(() => ({ slug: String(route.params.date || ''), hash: route.hash }), async ({ slug, hash }, previous) => {
@@ -70,7 +99,10 @@ watch(() => ({ slug: String(route.params.date || ''), hash: route.hash }), async
 watchEffect(() => {
   if (loading.value) return
   setSeoMeta(entry.value
-    ? { title: `${entry.value.title}｜xiuqiu`, description: entry.value.summary, path: `/market-radar/${entry.value.slug}`, type: 'article' }
+    ? {
+        title: `${entry.value.title}｜xiuqiu`, description: entry.value.summary,
+        path: `/market-radar/${entry.value.slug}`, type: 'article', marketRadarSnapshotId: entry.value.snapshotId,
+      }
     : { title: '交易雷达快照不存在｜xiuqiu', path: route.fullPath, indexable: false })
 })
 </script>
@@ -139,6 +171,45 @@ watchEffect(() => {
             </div>
           </footer>
         </article>
+
+        <section v-if="entry.researchPack" id="deep-research" class="trade-radar-research" aria-labelledby="trade-radar-research-title">
+          <header>
+            <div>
+              <p class="trade-radar-kicker">Evidence handoff / immutable snapshot</p>
+              <h2 id="trade-radar-research-title">强模型深研包</h2>
+            </div>
+            <p>ResearchOps 已把事实、来源、反证和失效条件封装为三个通用问题。复制后可交给任意强模型继续研究，不需要共享微信记录。</p>
+          </header>
+
+          <dl class="trade-radar-research-meta">
+            <div><dt>证据时间</dt><dd>{{ formatGeneratedAt(entry.researchPack.asOf) }} CST</dd></div>
+            <div><dt>快照</dt><dd>{{ entry.researchPack.snapshotId }}</dd></div>
+            <div><dt>门禁</dt><dd>来源、日期与提示词校验和一致</dd></div>
+          </dl>
+
+          <div class="trade-radar-research-grid">
+            <article
+              v-for="question in entry.researchPack.questions"
+              :id="`deep-dive-${question.id}`"
+              :key="question.id"
+              class="trade-radar-research-card"
+            >
+              <p><span>Question {{ question.id }}</span>{{ researchLensLabels[question.lens] }}</p>
+              <h3 tabindex="-1">{{ question.shortQuestion }}</h3>
+              <details>
+                <summary>展开可复制研究提示词</summary>
+                <pre>{{ question.prompt }}</pre>
+              </details>
+              <footer>
+                <button type="button" @click="copyResearchPrompt(question)">
+                  {{ copiedQuestionId === question.id ? '已复制' : '复制研究提示词' }}
+                </button>
+                <span aria-live="polite">{{ copiedQuestionId === question.id ? '提示词已复制到剪贴板' : `SHA-256 ${question.promptChecksum.slice(0, 12)}…` }}</span>
+              </footer>
+            </article>
+          </div>
+          <p class="trade-radar-research-boundary">强模型仍需重新核验原始来源和时间。快照之后的新信息必须单列；证据不足时不得补数字、概率或交易建议。</p>
+        </section>
 
         <section v-if="entry.quantStrategy" class="trade-radar-quant" aria-labelledby="trade-radar-quant-title">
           <header>

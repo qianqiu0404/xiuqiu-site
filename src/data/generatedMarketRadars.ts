@@ -4,11 +4,15 @@ export type MarketRadarPriority = 'P0' | 'P1' | 'P2'
 export type MarketRadarStatus = 'scheduled' | 'released' | 'monitoring'
 export type MarketRadarCategory = 'macro' | 'crypto' | 'equity' | 'regulation'
 export interface MarketRadarEvent { id: string; priority: MarketRadarPriority; status: MarketRadarStatus; category: MarketRadarCategory; eventAt?: string; title: string; fact: string; whyWatch: string; assets: string[]; watchFor: string; invalidation: string; sourceName: string; sourceUrl: string; sourcePublishedAt: string }
+export type MarketResearchLens = 'transmission' | 'falsification' | 'scenario'
+export interface MarketResearchQuestion { id: '1' | '2' | '3'; lens: MarketResearchLens; shortQuestion: string; focusEventIds: string[] }
+export interface MarketResearchPrompt extends MarketResearchQuestion { prompt: string; promptChecksum: string; sourceUrls: string[] }
+export interface MarketResearchPack { schemaVersion: 2; date: string; snapshotId: string; asOf: string; origin: 'research'; publicationState: 'published'; pageUrl: string; questions: MarketResearchPrompt[] }
 export type MarketQuantAssetGroup = 'us_equity_etf' | 'crypto' | 'gold_etf'
 export type MarketSignalQuality = 'strong' | 'medium' | 'weak'
 export interface MarketQuantAsset { symbol: 'SPY' | 'QQQ' | 'BTC' | 'ETH' | 'GLD'; group: MarketQuantAssetGroup; up?: number; sideways?: number; down?: number; signalQuality?: MarketSignalQuality }
 export interface MarketQuantStrategy { horizonTradingDays: number; status: 'heuristic_unbacktested' | 'historical_samples_insufficient'; methodology: string; assets: MarketQuantAsset[]; sampleSize?: number; rationale: string; nextValidation: string; invalidation: string; sourceUrls: string[] }
-export interface MarketRadarDaily { date: string; slug: string; snapshotId: string; asOf: string; origin: 'research'; publicationState: 'published'; title: string; summary: string; reviewStatus: 'automated'; generatedAt: string; events: MarketRadarEvent[]; sourceUrls: string[]; quantStrategy?: MarketQuantStrategy }
+export interface MarketRadarDaily { schemaVersion?: 2; date: string; slug: string; snapshotId: string; asOf: string; origin: 'research'; publicationState: 'published'; title: string; summary: string; reviewStatus: 'automated'; generatedAt: string; events: MarketRadarEvent[]; sourceUrls: string[]; researchQuestions?: MarketResearchQuestion[]; researchPack?: MarketResearchPack; quantStrategy?: MarketQuantStrategy }
 export interface MarketRadarIndexEntry { date: string; slug: string; snapshotId: string; asOf: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
 export const marketRadarIndex: MarketRadarIndexEntry[] = [
   {

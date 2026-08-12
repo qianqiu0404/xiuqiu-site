@@ -12,6 +12,14 @@ test('static market radar only runs for its unique ready PR branch', () => {
   assert.match(String(job.if), /draft == false/)
   assert.equal(workflow.permissions.contents, 'write')
   assert.equal(workflow.permissions['pull-requests'], 'write')
+  const restrict = job.steps.find(step => step.name === 'Restrict changed files')
+  assert.match(restrict.run, /RADAR_DATE="\$\{HEAD_REF#automation\/market-radar-\}"/)
+  assert.match(restrict.run, /content\/market-radar\/\$RADAR_DATE\.md/)
+  assert.match(restrict.run, /public\/data\/market-radar-packs\/\$RADAR_DATE\.json/)
+  assert.match(restrict.run, /RADAR_MONTH="\$\{RADAR_DATE%\*-\*\}"/)
+  assert.match(restrict.run, /generatedMarketRadarMonths\/\$RADAR_MONTH\.ts/)
+  assert.match(restrict.run, /non-allowlisted or historical file/)
+  assert.match(restrict.run, /grep -Fxq "public\/data\/market-radar-packs\/\$RADAR_DATE\.json"/)
 })
 
 test('verified static market radar requests auto-merge after protected checks pass', () => {
@@ -20,4 +28,9 @@ test('verified static market radar requests auto-merge after protected checks pa
   assert.match(mergeStep.run, /--squash/)
   assert.match(mergeStep.run, /--delete-branch/)
   assert.match(mergeStep.run, /--auto/)
+})
+
+test('static generation must commit the public research pack directory', () => {
+  const generated = job.steps.find(step => step.name === 'Ensure generated public data is committed')
+  assert.match(generated.run, /public\/data\/market-radar-packs/)
 })

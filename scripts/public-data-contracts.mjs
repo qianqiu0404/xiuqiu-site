@@ -52,6 +52,7 @@ export function assertPublicHttpUrl(value, label = 'source URL') {
     hostname === 'localhost'
     || hostname.endsWith('.localhost')
     || hostname.endsWith('.local')
+    || hostname.endsWith('.internal')
     || hostname === '0.0.0.0'
     || hostname.startsWith('127.')
     || hostname === '[::1]'
