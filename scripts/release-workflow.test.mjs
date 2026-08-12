@@ -95,6 +95,11 @@ test('release DAG is migration, staged Vercel promotion, worker smoke, then acti
   assert.match(controllerSource, /value\.meta\?\.githubCommitSha === process\.env\.RELEASE_SHA/)
   assert.match(controllerSource, /value\.aliasError == null/)
   assert.match(controllerSource, /vercel promote "\$DEPLOYMENT_URL" --yes --token "\$VERCEL_TOKEN"/)
+  const promoteSteps = controller.jobs.promote_vercel_production.steps
+  const promoteIndex = promoteSteps.findIndex(step => step.name === 'Promote the verified candidate to production aliases')
+  const verifyIndex = promoteSteps.findIndex(step => step.name === 'Verify promoted Market Radar research handoff before notification')
+  assert.ok(promoteIndex >= 0 && verifyIndex > promoteIndex)
+  assert.match(promoteSteps[verifyIndex].run, /npm run verify:market-radar-production/)
   assert.match(controllerSource, /vercel whoami --token "\$VERCEL_TOKEN"/)
   assert.match(controllerSource, /vercel project inspect "\$VERCEL_PROJECT_ID" --token "\$VERCEL_TOKEN"/)
   assert.match(controllerSource, /vercel pull --yes --environment=production --token "\$VERCEL_TOKEN"/)

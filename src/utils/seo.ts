@@ -9,6 +9,7 @@ interface SeoOptions {
   path?: string
   type?: 'website' | 'article'
   indexable?: boolean
+  marketRadarSnapshotId?: string
 }
 
 function upsertMeta(selector: string, attrs: Record<string, string>) {
@@ -52,5 +53,14 @@ export function setSeoMeta(options: SeoOptions = {}) {
   upsertMeta('meta[name="twitter:card"]', { name: 'twitter:card', content: 'summary' })
   upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: title })
   upsertMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: description })
+  const snapshotMeta = document.head.querySelector<HTMLMetaElement>('meta[name="xiuqiu:market-radar-snapshot"]')
+  if (options.marketRadarSnapshotId) {
+    upsertMeta('meta[name="xiuqiu:market-radar-snapshot"]', {
+      name: 'xiuqiu:market-radar-snapshot',
+      content: options.marketRadarSnapshotId,
+    })
+  } else {
+    snapshotMeta?.remove()
+  }
   upsertCanonical(url)
 }

@@ -5,7 +5,8 @@ import { join } from 'node:path'
 import { execFileSync } from 'node:child_process'
 import test from 'node:test'
 import { parse } from 'yaml'
-import { buildLearningDailyNotification, buildMarketDailyNotification, buildMarketQuantNotification } from './radar-notification-contracts.mjs'
+import { buildLearningDailyNotification, buildMarketDailyNotification, buildMarketQuantNotification, renderMarketNotificationMessage } from './radar-notification-contracts.mjs'
+import { buildMarketResearchPack } from './market-radar-contracts.mjs'
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8')
 const published = kind => ({
@@ -46,6 +47,48 @@ test('market daily is bounded and quiet days remain observable', () => {
   assert.match(quiet.payload.body, /暂无达到公开门槛的重要事件/)
 })
 
+test('schema v2 market daily adds the three immutable research handoff questions within one message', () => {
+  const event = {
+    id: 'official-event', priority: 'P0', title: '官方事件', fact: '官方确认了待验证事件。',
+    whyWatch: '它可能改变公开市场的观察边界。', watchFor: '核对正式结果与跨资产反应。',
+    invalidation: '官方更新或观察窗口结束后重新评估。', sourceUrl: 'https://www.federalreserve.gov/example',
+  }
+  const notification = buildMarketDailyNotification({
+    ...published('market'), schemaVersion: 2, date: '2026-08-10', summary: '先核对官方事件，再区分事实、推断和仍未知。',
+    events: [event],
+    researchQuestions: [
+      { id: '1', lens: 'transmission', shortQuestion: '事件通过什么传导链影响相关资产？', focusEventIds: [event.id] },
+      { id: '2', lens: 'falsification', shortQuestion: '哪些跨资产证据会推翻当前解释？', focusEventIds: [event.id] },
+      { id: '3', lens: 'scenario', shortQuestion: '最强反方情景与失效条件是什么？', focusEventIds: [event.id] },
+    ],
+  })
+  assert.equal(notification.idempotencyKey, 'market:daily:2026-08-10')
+  assert.match(notification.payload.body, /【30秒结论】/)
+  assert.match(notification.payload.body, /【继续问强模型】/)
+  assert.match(notification.payload.body, /1\. 事件通过什么传导链/)
+  assert.match(notification.payload.body, /2\. 哪些跨资产证据/)
+  assert.match(notification.payload.body, /3\. 最强反方情景/)
+  assert.match(notification.payload.body, /深挖1\/2\/3/)
+  const expectedPack = buildMarketResearchPack({
+    ...published('market'), schemaVersion: 2, date: '2026-08-10', events: [event],
+    researchQuestions: [
+      { id: '1', lens: 'transmission', shortQuestion: '事件通过什么传导链影响相关资产？', focusEventIds: [event.id] },
+      { id: '2', lens: 'falsification', shortQuestion: '哪些跨资产证据会推翻当前解释？', focusEventIds: [event.id] },
+      { id: '3', lens: 'scenario', shortQuestion: '最强反方情景与失效条件是什么？', focusEventIds: [event.id] },
+    ],
+  }, published('market'))
+  assert.deepEqual(notification.payload.researchPackManifest, {
+    schemaVersion: 2,
+    date: expectedPack.date,
+    snapshotId: expectedPack.snapshotId,
+    asOf: expectedPack.asOf,
+    pageUrl: expectedPack.pageUrl,
+    questions: expectedPack.questions.map(({ id, promptChecksum }) => ({ id, promptChecksum })),
+  })
+  assert.ok(notification.payload.body.length <= 1800)
+  assert.ok(renderMarketNotificationMessage(notification.payload).length <= 1800)
+})
+
 test('market quant follow-up uses bounded three-way weights and a separate idempotency key', () => {
   const quantStrategy = {
     horizonTradingDays: 3,
@@ -58,16 +101,38 @@ test('market quant follow-up uses bounded three-way weights and a separate idemp
     rationale: '当前动量与公开事件共同提高不确定性。',
     nextValidation: '核对事件结果与资产反应。',
     invalidation: '窗口结束或来源更新后重新计算。',
-    sourceUrls: ['https://www.federalreserve.gov/example'],
+    sourceUrls: [
+      'https://www.federalreserve.gov/example',
+      'https://home.treasury.gov/example',
+      'https://www.bls.gov/example',
+    ],
   }
   const quant = buildMarketQuantNotification({ ...published('market'), date: '2026-08-10', quantStrategy })
   assert.equal(quant.idempotencyKey, 'market:quant:2026-08-10')
   assert.equal(quant.payload.probabilityStatus, 'heuristic_unbacktested')
   assert.match(quant.payload.body, /SPY：上涨 34%｜震荡 41%｜下跌 25%/)
   assert.match(quant.payload.body, /尚未历史回测/)
+  assert.ok(quant.payload.body.length <= 1600)
+  assert.equal(quant.payload.sourceUrls.length, 2)
+  assert.ok(renderMarketNotificationMessage(quant.payload).length <= 1600)
   const daily = buildMarketDailyNotification({ ...published('market'), date: '2026-08-10', events: [], quantStrategy })
   assert.equal(daily.payload.followUp.idempotencyKey, 'market:quant:2026-08-10')
   assert.equal(daily.payload.followUp.kind, 'quant')
+})
+
+test('market notification limits apply to the final Hermes-rendered message, not only its body', () => {
+  const strategy = {
+    horizonTradingDays: 3, status: 'historical_samples_insufficient', methodology: '固定规则样本不足。', sampleSize: 0,
+    assets: [
+      ['SPY', 'us_equity_etf'], ['QQQ', 'us_equity_etf'], ['BTC', 'crypto'], ['ETH', 'crypto'], ['GLD', 'gold_etf'],
+    ].map(([symbol, group]) => ({ symbol, group, signalQuality: 'weak' })),
+    rationale: '证据'.repeat(500), nextValidation: '等待公开结果。', invalidation: '窗口结束后重算。',
+    sourceUrls: [`https://example.com/${'a'.repeat(180)}`, `https://example.org/${'b'.repeat(180)}`],
+  }
+  assert.throws(
+    () => buildMarketQuantNotification({ ...published('market'), date: '2026-08-10', quantStrategy: strategy }),
+    /final rendered notification boundary/,
+  )
 })
 
 test('sample-gated quant follow-up reports strength without exact probabilities', () => {

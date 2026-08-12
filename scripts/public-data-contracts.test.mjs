@@ -35,6 +35,7 @@ test('public source URLs reject placeholders and malformed values', () => {
     'http://localhost:43127/api/health',
     'http://192.168.1.20:43127/api/health',
     'http://wallet-staging.local/api/health',
+    'https://research.internal/source',
     'http://[::1]:43127/api/health',
     'http://[fe80::1]:43127/api/health',
     'http://[fd00::1]:43127/api/health',

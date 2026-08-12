@@ -29,13 +29,30 @@ jobs:
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
         run: |
-          git diff --name-only "$BASE_SHA" "$HEAD_SHA" > /tmp/market-radar-files.txt
-          if grep -Ev '^(content/market-radar/[0-9]{4}-[0-9]{2}-[0-9]{2}\.md|src/data/generatedMarketRadars\.ts|src/data/generatedMarketRadarAll\.ts|src/data/generatedMarketRadarLoader\.ts|src/data/generatedMarketRadarMonths/[0-9]{4}-[0-9]{2}\.ts|public/sitemap\.xml)$' /tmp/market-radar-files.txt; then
-            echo "Static market radar PR changed files outside the allowlist."
+          RADAR_DATE="${HEAD_REF#automation/market-radar-}"
+          if ! [[ "$RADAR_DATE" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+            echo "Static market radar branch must end with YYYY-MM-DD."
             exit 1
           fi
+          RADAR_MONTH="${RADAR_DATE%*-*}"
+          git diff --name-only "$BASE_SHA" "$HEAD_SHA" > /tmp/market-radar-files.txt
           test -s /tmp/market-radar-files.txt
+          while IFS= read -r file; do
+            case "$file" in
+              "content/market-radar/$RADAR_DATE.md"|\
+              "public/data/market-radar-packs/$RADAR_DATE.json"|\
+              src/data/generatedMarketRadars.ts|\
+              src/data/generatedMarketRadarAll.ts|\
+              src/data/generatedMarketRadarLoader.ts|\
+              "src/data/generatedMarketRadarMonths/$RADAR_MONTH.ts"|\
+              public/sitemap.xml) ;;
+              *) echo "Static market radar PR changed a non-allowlisted or historical file: $file"; exit 1 ;;
+            esac
+          done < /tmp/market-radar-files.txt
+          grep -Fxq "content/market-radar/$RADAR_DATE.md" /tmp/market-radar-files.txt
+          grep -Fxq "public/data/market-radar-packs/$RADAR_DATE.json" /tmp/market-radar-files.txt
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -50,6 +67,7 @@ jobs:
           src/data/generatedMarketRadarAll.ts
           src/data/generatedMarketRadarLoader.ts
           src/data/generatedMarketRadarMonths
+          public/data/market-radar-packs
           public/sitemap.xml
       - name: Squash merge verified static market radar
         env:

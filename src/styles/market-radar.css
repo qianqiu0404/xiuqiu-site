@@ -711,6 +711,167 @@
 .trade-radar-fact h3 { font-size: 0.82rem; }
 .trade-radar-fact p { color: var(--trade-copy); line-height: 1.8; }
 
+.trade-radar-research {
+  margin-top: clamp(3rem, 6vw, 5rem);
+  border: 1px solid var(--trade-line);
+  background: var(--trade-paper-raised);
+}
+
+.trade-radar-research > header {
+  display: grid;
+  grid-template-columns: minmax(0, 0.78fr) minmax(18rem, 1fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  padding: clamp(1.7rem, 4vw, 3rem);
+  border-bottom: 1px solid var(--trade-line);
+  background:
+    radial-gradient(circle at 88% 10%, rgba(90, 215, 199, 0.16), transparent 19rem),
+    var(--trade-night-soft);
+  color: #f5f7fa;
+}
+
+.trade-radar-research > header h2 {
+  margin: 0.5rem 0 0;
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  font-weight: 630;
+  letter-spacing: -0.055em;
+}
+
+.trade-radar-research > header > p {
+  align-self: end;
+  margin: 0;
+  color: #abb5c0;
+  line-height: 1.75;
+}
+
+.trade-radar-research-meta {
+  display: grid;
+  grid-template-columns: 0.8fr 1.5fr 1fr;
+  margin: 0;
+  border-bottom: 1px solid var(--trade-line);
+}
+
+.trade-radar-research-meta div {
+  padding: 1.1rem 1.25rem;
+  border-right: 1px solid var(--trade-line);
+}
+
+.trade-radar-research-meta div:last-child { border-right: 0; }
+.trade-radar-research-meta dt {
+  color: var(--trade-muted);
+  font: 650 0.62rem/1.4 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.trade-radar-research-meta dd {
+  margin: 0.35rem 0 0;
+  overflow-wrap: anywhere;
+  font: 620 0.72rem/1.55 var(--mono);
+}
+
+.trade-radar-research-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.trade-radar-research-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 29rem;
+  padding: clamp(1.35rem, 3vw, 2rem);
+  border-right: 1px solid var(--trade-line);
+  scroll-margin-top: 5rem;
+}
+
+.trade-radar-research-card:last-child { border-right: 0; }
+.trade-radar-research-card > p {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0;
+  color: var(--trade-market-dark);
+  font: 650 0.66rem/1.4 var(--mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.trade-radar-research-card h3 {
+  margin: 1.1rem 0 1.4rem;
+  font-size: clamp(1.2rem, 2vw, 1.6rem);
+  line-height: 1.35;
+  letter-spacing: -0.025em;
+}
+.trade-radar-research-card details { margin-bottom: 1.25rem; }
+.trade-radar-research-card summary {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--trade-market-dark);
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 680;
+}
+.trade-radar-research-card pre {
+  max-height: 25rem;
+  margin: 0.8rem 0 0;
+  overflow: auto;
+  border: 1px solid var(--trade-line);
+  padding: 1rem;
+  background: #edf0eb;
+  color: #273039;
+  font: 500 0.72rem/1.65 var(--mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.trade-radar-research-card footer {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: auto;
+}
+.trade-radar-research-card button {
+  min-height: 44px;
+  border: 1px solid var(--trade-market-dark);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--trade-market-dark);
+  cursor: pointer;
+  font: 680 0.76rem/1 var(--sans);
+}
+.trade-radar-research-card button:hover { background: rgba(24, 125, 115, 0.08); }
+.trade-radar-research-card footer span {
+  color: var(--trade-muted);
+  font: 550 0.62rem/1.5 var(--mono);
+  overflow-wrap: anywhere;
+}
+.trade-radar-research-boundary {
+  margin: 0;
+  border-top: 1px solid var(--trade-line);
+  padding: 1rem 1.25rem;
+  color: var(--trade-copy);
+  font-size: 0.78rem;
+  line-height: 1.65;
+}
+
+@media (max-width: 900px) {
+  .trade-radar-research > header,
+  .trade-radar-research-meta,
+  .trade-radar-research-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .trade-radar-research-meta div,
+  .trade-radar-research-card {
+    border-right: 0;
+    border-bottom: 1px solid var(--trade-line);
+  }
+
+  .trade-radar-research-card {
+    min-height: auto;
+  }
+
+  .trade-radar-research-card:last-child {
+    border-bottom: 0;
+  }
+}
+
 .trade-radar-judgment-grid {
   margin-top: 1.4rem;
   border-bottom: 1px solid var(--trade-line);

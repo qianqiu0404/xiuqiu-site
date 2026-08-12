@@ -31,19 +31,23 @@ function jsonLdScript(data) {
   return `<script type="application/ld+json" data-site-meta>${json}</script>`
 }
 
-function replaceMeta(html, { title, description, path, type = 'website', structuredData, robots }) {
+function replaceMeta(html, { title, description, path, type = 'website', structuredData, robots, marketRadarSnapshotId }) {
   const escapedTitle = escapeHtml(title)
   const escapedDescription = escapeHtml(description)
   const escapedUrl = escapeHtml(`${SITE_URL}${path}`)
   const generatedHead = [
     structuredData ? jsonLdScript(structuredData) : '',
     robots ? `<meta name="robots" content="${escapeHtml(robots)}" data-site-meta />` : '',
+    marketRadarSnapshotId
+      ? `<meta name="xiuqiu:market-radar-snapshot" content="${escapeHtml(marketRadarSnapshotId)}" data-site-meta />`
+      : '',
   ].filter(Boolean)
   const robotsPattern = robots
     ? /\s*<meta\b(?=[^>]*\bname=["']robots["'])[^>]*\/?>/gi
     : /\s*<meta\b(?=[^>]*\bname=["']robots["'])(?=[^>]*\bdata-site-meta\b)[^>]*\/?>/gi
   const withoutGeneratedMeta = html
     .replace(/\s*<script type="application\/ld\+json" data-site-meta>[\s\S]*?<\/script>/g, '')
+    .replace(/\s*<meta\b(?=[^>]*\bname=["']xiuqiu:market-radar-snapshot["'])[^>]*\/?>/gi, '')
     .replace(robotsPattern, '')
   const withGeneratedMeta = generatedHead.length
     ? withoutGeneratedMeta.replace('</head>', `    ${generatedHead.join('\n    ')}\n  </head>`)
@@ -292,6 +296,7 @@ allMarketRadars.forEach(radar => {
     `/market-radar/${radar.slug}`,
     replaceMeta(baseHtml, {
       title: `${radar.title}｜xiuqiu`, description: radar.summary, path: `/market-radar/${radar.slug}`, type: 'article',
+      marketRadarSnapshotId: radar.snapshotId,
       structuredData: {
         '@context': 'https://schema.org', '@type': 'Article', headline: radar.title, description: radar.summary,
         datePublished: radar.date, author: { '@type': 'Person', name: 'xiuqiu' },

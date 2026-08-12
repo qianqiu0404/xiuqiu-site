@@ -1,4 +1,10 @@
+import { buildMarketResearchPack } from './market-radar-contracts.mjs'
+
 const PRIORITY_WEIGHT = { P0: 3, P1: 2, P2: 1 }
+const MARKET_DAILY_BODY_LIMIT = 1800
+const MARKET_QUANT_BODY_LIMIT = 1600
+const MARKET_SITE_URL = 'https://xiuqiu-site.vercel.app'
+const MARKET_FOOTER = '仅供研究，不构成投资建议。'
 
 function compact(value, max = 132) {
   const text = String(value || '').replace(/\s+/g, ' ').trim()
@@ -22,6 +28,33 @@ function publicationMetadata(radar) {
     origin: radar.origin,
     publicationState: radar.publicationState,
   }
+}
+
+function assertBodyLength(body, max, label) {
+  if (body.length > max) throw new Error(`${label} exceeds the ${max}-character notification boundary.`)
+  return body
+}
+
+export function renderMarketNotificationMessage(payload) {
+  const lines = [`# ${String(payload.title || '交易雷达')}`]
+  const body = String(payload.body || '').trim()
+  if (body) lines.push('', body)
+  const sourceUrl = String(payload.sourceUrl || '').trim()
+  if (sourceUrl) lines.push('', `原始来源：${sourceUrl}`)
+  const safeSources = Array.isArray(payload.sourceUrls)
+    ? payload.sourceUrls.filter(value => {
+        try { return new URL(String(value)).protocol === 'https:' } catch { return false }
+      })
+    : []
+  if (safeSources.length) lines.push('', '依据来源：', ...safeSources.slice(0, 8).map(value => `- ${value}`))
+  const pageUrl = new URL(String(payload.pageUrl || '/market-radar'), MARKET_SITE_URL).href
+  lines.push('', `完整页面：${pageUrl}`, '', MARKET_FOOTER)
+  return lines.join('\n')
+}
+
+function assertRenderedLength(payload, max, label) {
+  const rendered = renderMarketNotificationMessage(payload)
+  if (rendered.length > max) throw new Error(`${label} exceeds the ${max}-character final rendered notification boundary.`)
 }
 
 export function shanghaiDate(now = new Date()) {
@@ -71,10 +104,18 @@ export function buildLearningDailyNotification(radar) {
 
 export function buildMarketDailyNotification(radar) {
   const publication = publicationMetadata(radar)
+  let researchPack
   const events = [...(radar.events || [])]
     .sort((left, right) => (PRIORITY_WEIGHT[right.priority] || 0) - (PRIORITY_WEIGHT[left.priority] || 0))
     .slice(0, 3)
-  const lines = ['【结论先行】']
+  const lines = [radar.schemaVersion === 2 ? '【30秒结论】' : '【结论先行】']
+  if (radar.schemaVersion === 2) {
+    lines.push(`- ${compact(radar.summary, 220)}`)
+    const quantStatus = radar.quantStrategy?.status === 'historical_samples_insufficient'
+      ? '量化样本门禁关闭，不显示精确概率'
+      : radar.quantStrategy ? '量化状态见下一条独立简报' : '本期无量化简报'
+    lines.push(`- 证据截至 ${publication.asOf}；${quantStatus}。`)
+  }
   if (!events.length) {
     lines.push('- 今日暂无达到公开门槛的重要事件。系统正常运行，不为凑数强行指定方向。')
   } else {
@@ -86,24 +127,44 @@ export function buildMarketDailyNotification(radar) {
       )
     })
   }
+  if (radar.schemaVersion === 2) {
+    researchPack = buildMarketResearchPack(radar, publication)
+    lines.push('', '【继续问强模型】')
+    researchPack.questions.forEach(question => lines.push(`${question.id}. ${compact(question.shortQuestion, 180)}`))
+    lines.push('', '回复“深挖1/2/3”获取可复制研究提示词。')
+  }
   lines.push('', '【边界】', '- 公开事实与系统观察分开；不接账户、不自动下单。')
+  const body = assertBodyLength(lines.join('\n'), MARKET_DAILY_BODY_LIMIT, 'Market daily body')
   const quant = radar.quantStrategy ? buildMarketQuantNotification(radar) : null
+  const payload = {
+    ...publication,
+    date: radar.date,
+    title: `交易雷达早报 · ${radar.date}`,
+    body,
+    pageUrl: `/market-radar/${radar.date}`,
+    eventCount: radar.events?.length || 0,
+    researchPackManifest: researchPack ? {
+      schemaVersion: researchPack.schemaVersion,
+      date: researchPack.date,
+      snapshotId: researchPack.snapshotId,
+      asOf: researchPack.asOf,
+      pageUrl: researchPack.pageUrl,
+      questions: researchPack.questions.map(question => ({
+        id: question.id,
+        promptChecksum: question.promptChecksum,
+      })),
+    } : null,
+    followUp: quant ? {
+      kind: quant.kind,
+      idempotencyKey: quant.idempotencyKey,
+      ...quant.payload,
+    } : null,
+  }
+  assertRenderedLength(payload, MARKET_DAILY_BODY_LIMIT, 'Market daily message')
   return {
     kind: 'daily',
     idempotencyKey: `market:daily:${radar.date}`,
-    payload: {
-      ...publication,
-      date: radar.date,
-      title: `交易雷达早报 · ${radar.date}`,
-      body: lines.join('\n'),
-      pageUrl: `/market-radar/${radar.date}`,
-      eventCount: radar.events?.length || 0,
-      followUp: quant ? {
-        kind: quant.kind,
-        idempotencyKey: quant.idempotencyKey,
-        ...quant.payload,
-      } : null,
-    },
+    payload,
   }
 }
 
@@ -143,18 +204,21 @@ export function buildMarketQuantNotification(radar) {
     '',
     `失效条件：${strategy.invalidation}`,
   ]
+  const body = assertBodyLength(lines.join('\n'), MARKET_QUANT_BODY_LIMIT, 'Market quant body')
+  const payload = {
+    ...publication,
+    date: radar.date,
+    title: `${strategy.status === 'historical_samples_insufficient' ? '交易雷达量化简报' : '交易雷达概率简报'} · ${radar.date}`,
+    body,
+    pageUrl: `/market-radar/${radar.date}`,
+    sourceUrls: [...strategy.sourceUrls].slice(0, 2),
+    horizonTradingDays: strategy.horizonTradingDays,
+    probabilityStatus: strategy.status,
+  }
+  assertRenderedLength(payload, MARKET_QUANT_BODY_LIMIT, 'Market quant message')
   return {
     kind: 'quant',
     idempotencyKey: `market:quant:${radar.date}`,
-    payload: {
-      ...publication,
-      date: radar.date,
-      title: `${strategy.status === 'historical_samples_insufficient' ? '交易雷达量化简报' : '交易雷达概率简报'} · ${radar.date}`,
-      body: lines.join('\n'),
-      pageUrl: `/market-radar/${radar.date}`,
-      sourceUrls: [...strategy.sourceUrls],
-      horizonTradingDays: strategy.horizonTradingDays,
-      probabilityStatus: strategy.status,
-    },
+    payload,
   }
 }
