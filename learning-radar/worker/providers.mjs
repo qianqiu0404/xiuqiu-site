@@ -154,10 +154,9 @@ export async function resolveSafeHost(url, resolver) {
   }
   const addresses = await resolver(hostname, { all: true, verbatim: true })
   if (!Array.isArray(addresses) || !addresses.length) throw new Error('origin_dns_empty')
-  if (addresses.some(entry => isBlockedAddress(typeof entry === 'string' ? entry : entry.address))) {
-    throw new Error('origin_dns_blocked')
-  }
-  return addresses.map(entry => typeof entry === 'string'
+  const safeAddresses = addresses.filter(entry => !isBlockedAddress(typeof entry === 'string' ? entry : entry.address))
+  if (!safeAddresses.length) throw new Error('origin_dns_blocked')
+  return safeAddresses.map(entry => typeof entry === 'string'
     ? { address: entry, family: isIP(entry) }
     : { address: entry.address, family: entry.family || isIP(entry.address) })
 }

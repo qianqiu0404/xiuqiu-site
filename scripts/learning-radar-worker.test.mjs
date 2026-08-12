@@ -29,6 +29,7 @@ import {
   parseAihotPayload,
   parseLearningGitHubReleases,
   requestPinnedOrigin,
+  resolveSafeHost,
   sourceMatchesRegistry,
   verifyOriginUrl,
 } from '../learning-radar/worker/providers.mjs'
@@ -361,6 +362,14 @@ test('origin verifier rejects userinfo, reserved DNS, private redirects, loops, 
   ]) assert.equal(isBlockedAddress(address), true, address)
   assert.equal(isBlockedAddress('93.184.216.34'), false)
   assert.equal(isBlockedAddress('2606:4700:4700::1111'), false)
+  assert.deepEqual(await resolveSafeHost('https://news.mozilla.org/post', async () => [
+    { address: '93.184.216.34', family: 4 },
+    { address: 'fd00::1234', family: 6 },
+  ]), [{ address: '93.184.216.34', family: 4 }])
+  await assert.rejects(resolveSafeHost('https://news.mozilla.org/post', async () => [
+    { address: '192.168.1.5', family: 4 },
+    { address: 'fd00::1234', family: 6 },
+  ]), /origin_dns_blocked/)
   assert.throws(() => assertSafeOriginUrl('https://user:pass@news.mozilla.org/post'), /not_public_https/)
   assert.throws(() => assertSafeOriginUrl('https://metadata.google.internal/latest'), /host_blocked/)
   assert.throws(() => assertSafeOriginUrl('https://sub.aihot.virxact.com/item'), /host_blocked/)
