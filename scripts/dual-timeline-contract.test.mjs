@@ -622,6 +622,7 @@ test('real PostgreSQL applies migrations twice, rolls back failures and enforces
     'id', 'slug', 'market', 'priority', 'score', 'title_zh', 'summary_zh', 'why_it_matters_zh',
     'event_type', 'news_direction', 'system_judgment', 'horizon', 'occurred_at', 'published_at',
     'source_count', 'sources', 'assets', 'reaction', 'watch_for', 'invalidation',
+    'snapshot_id', 'snapshot_as_of',
   ])
   const grants = await observer.query(`select privilege_type from information_schema.role_table_grants
     where grantee = $1 and table_schema = 'market_radar' and table_name = 'public_events'`, [readerRole])

@@ -22,6 +22,15 @@ import {
 const root = new URL('../', import.meta.url)
 const read = path => readFile(new URL(path, root), 'utf8')
 const releaseSha = 'a'.repeat(40)
+const isPublicTimelineView = statement => /create or replace view\s+(?:learning_radar\.public_timeline_items|market_radar\.public_events)\s+as/i.test(statement)
+
+function selectTimelineReviewReplayStatements(reviewMigration, compatibilityMigration, publicationMigration) {
+  return {
+    reviewStatements: reviewMigration.statements.filter(statement => !isPublicTimelineView(statement)),
+    compatibilityStatements: compatibilityMigration.statements.filter(statement => !isPublicTimelineView(statement)),
+    currentPublicViewStatements: publicationMigration.statements.filter(isPublicTimelineView),
+  }
+}
 
 test('timeline review workflow is manual, exact-SHA bound and protected by the real approver', async () => {
   const [source, runCommand, command, migration, safetyMigration, compatibilityMigration, guide] = await Promise.all([
@@ -97,6 +106,26 @@ test('timeline review validates identities, versions and private notes before SQ
   assert.throws(() => validateTimelineReviewInput({ ...valid, requestedBy: 'CaseUser', approvedBy: 'caseuser' }), /must be different users/i)
   assert.throws(() => validateTimelineReviewInput({ ...valid, expectedVersion: 'yesterday' }), /Expected version/i)
   assert.throws(() => validateTimelineReviewInput({ ...valid, releaseSha: releaseSha.toUpperCase() }), /lowercase/i)
+})
+
+test('timeline review replays 010/011 behavior with the current 012 public views', async () => {
+  const migrations = await loadRadarMigrations()
+  const reviewMigration = migrations.find(migration => migration.file === '010_timeline_review_safety.sql')
+  const compatibilityMigration = migrations.find(migration => migration.file === '011_public_boundary_predicate.sql')
+  const publicationMigration = migrations.find(migration => migration.file === '012_publication_content_boundary.sql')
+  assert.ok(reviewMigration)
+  assert.ok(compatibilityMigration)
+  assert.ok(publicationMigration)
+
+  const { reviewStatements, compatibilityStatements, currentPublicViewStatements } =
+    selectTimelineReviewReplayStatements(reviewMigration, compatibilityMigration, publicationMigration)
+  assert.equal(reviewMigration.statements.length - reviewStatements.length, 2)
+  assert.equal(compatibilityMigration.statements.length - compatibilityStatements.length, 1)
+  assert.equal(reviewStatements.some(statement => statement.includes('create or replace function radar_system.review_timeline')), true)
+  assert.equal(compatibilityStatements.some(statement => /grant execute on function radar_system\.meaningful_timeline_boundary\(text\) to public/i.test(statement)), true)
+  assert.equal([...reviewStatements, ...compatibilityStatements].some(isPublicTimelineView), false)
+  assert.equal(currentPublicViewStatements.length, 2)
+  assert.equal(currentPublicViewStatements.every(statement => /snapshot_id[\s\S]*snapshot_as_of/i.test(statement)), true)
 })
 
 function commandAvailable(command) {
@@ -258,9 +287,17 @@ test('real PostgreSQL protects timeline review transitions, audit privacy and ex
 
   const reviewMigration = migrations.find(migration => migration.file === '010_timeline_review_safety.sql')
   const compatibilityMigration = migrations.find(migration => migration.file === '011_public_boundary_predicate.sql')
+  const publicationMigration = migrations.find(migration => migration.file === '012_publication_content_boundary.sql')
   assert.ok(reviewMigration)
   assert.ok(compatibilityMigration)
+  assert.ok(publicationMigration)
   assert.equal(reviewMigration.statements.filter(statement => statement.includes('create or replace function radar_system.review_timeline')).length, 1)
+  const { reviewStatements, compatibilityStatements, currentPublicViewStatements } =
+    selectTimelineReviewReplayStatements(reviewMigration, compatibilityMigration, publicationMigration)
+  assert.equal(reviewMigration.statements.length - reviewStatements.length, 2)
+  assert.equal(compatibilityMigration.statements.length - compatibilityStatements.length, 1)
+  assert.equal(currentPublicViewStatements.length, 2)
+  assert.ok(currentPublicViewStatements.every(statement => /snapshot_id[\s\S]*snapshot_as_of/i.test(statement)))
   await database.query('create view learning_radar.timeline_review_dependency as select id from learning_radar.public_timeline_items')
   await database.query('create view market_radar.timeline_review_dependency as select id from market_radar.public_events')
   await database.query('grant select on learning_radar.public_timeline_items to pg_monitor')
@@ -270,8 +307,9 @@ test('real PostgreSQL protects timeline review transitions, audit privacy and ex
   for (let replay = 0; replay < 2; replay += 1) {
     await database.query('begin')
     try {
-      for (const statement of reviewMigration.statements) await database.query(statement)
-      for (const statement of compatibilityMigration.statements) await database.query(statement)
+      for (const statement of reviewStatements) await database.query(statement)
+      for (const statement of compatibilityStatements) await database.query(statement)
+      for (const statement of currentPublicViewStatements) await database.query(statement)
       await database.query('commit')
     } catch (error) {
       await database.query('rollback')
