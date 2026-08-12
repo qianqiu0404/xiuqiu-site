@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { chmodSync, mkdirSync, mkdtempSync, readFileSync, utimesSync, writeFileSync } from 'node:fs'
+import { chmodSync, mkdirSync, mkdtempSync, readFileSync, rmSync, utimesSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { execFileSync } from 'node:child_process'
@@ -223,6 +223,9 @@ test('Hermes dispatchers are model-free, one-at-a-time and keep the radar lanes 
   assert.match(common, /remember_pending_failure/)
   assert.match(common, /page_date_missing/)
   assert.match(common, /weixin_rate_limited/)
+  assert.match(common, /get_hermes_home/)
+  assert.match(common, /fcntl\.flock/)
+  assert.match(common, /TRANSIENT_HTTP_CODES/)
   assert.doesNotMatch(common, /send_weixin_direct/)
   assert.match(platform, /send_weixin_direct/)
   assert.match(platform, /providerMessageId/)
@@ -231,6 +234,8 @@ test('Hermes dispatchers are model-free, one-at-a-time and keep the radar lanes 
   assert.match(platform, /forget_pending_delivery/)
   assert.match(platform, /terminalError/)
   assert.match(platform, /\.context-tokens\.json/)
+  assert.match(platform, /idempotency_key=idempotency_key/)
+  assert.match(platform, /cooldown_home/)
   assert.match(platform, /plain_text == "\[SILENT\]"/)
   assert.match(registration, /name="radar_weixin"/)
   assert.match(registration, /cron_deliver_env_var="WEIXIN_HOME_CHANNEL"/)
@@ -243,6 +248,129 @@ test('Hermes dispatchers are model-free, one-at-a-time and keep the radar lanes 
   assert.match(marketScript, /market-radar prepare/)
   assert.match(learningScript, /learning-radar prepare/)
   assert.doesNotMatch(`${common}\n${marketScript}\n${learningScript}`, /leaseToken.*print|dispatch_token.*print/i)
+})
+
+test('Hermes retries with fresh HMAC signatures and keeps a locked profile-local ledger', () => {
+  const root = mkdtempSync(join(tmpdir(), 'xiuqiu-radar-common-'))
+  const commonPath = new URL('../ops/hermes/market-radar-weixin/common.py', import.meta.url).pathname
+  const python = String.raw`
+import importlib.util, json, multiprocessing, os, pathlib, stat, sys, types, urllib.error
+
+root = pathlib.Path(sys.argv[2])
+hermes_constants = types.ModuleType("hermes_constants")
+hermes_constants.get_hermes_home = lambda: root
+hermes_config = types.ModuleType("hermes_cli.config")
+hermes_config.cfg_get = lambda *args, **kwargs: kwargs.get("default")
+hermes_config.load_config = lambda: {}
+sys.modules["hermes_constants"] = hermes_constants
+sys.modules["hermes_cli"] = types.ModuleType("hermes_cli")
+sys.modules["hermes_cli.config"] = hermes_config
+spec = importlib.util.spec_from_file_location("radar_common", sys.argv[1])
+common = importlib.util.module_from_spec(spec)
+sys.modules[spec.name] = common
+spec.loader.exec_module(common)
+common.HTTP_RETRY_DELAYS = (0, 0)
+
+class Response:
+    status = 200
+    def __init__(self, body): self.body = body
+    def __enter__(self): return self
+    def __exit__(self, *args): return False
+    def read(self, _limit=None): return self.body
+
+post_requests = []
+def retry_post(request, timeout):
+    del timeout
+    post_requests.append(request)
+    if len(post_requests) == 1:
+        raise urllib.error.HTTPError(request.full_url, 503, "busy", {}, None)
+    return Response(b'{"ok":true}')
+common.urllib.request.urlopen = retry_post
+assert common.post("http://127.0.0.1:4321/internal/test", "fixture-key", "fixture-secret", {"a":1}) == {"ok": True}
+assert len(post_requests) == 2
+headers = [{k.lower(): v for k, v in request.header_items()} for request in post_requests]
+assert headers[0]["x-content-nonce"] != headers[1]["x-content-nonce"]
+assert headers[0]["x-content-signature"] != headers[1]["x-content-signature"]
+assert headers[0]["x-content-body-sha256"] == headers[1]["x-content-body-sha256"]
+assert post_requests[0].data == post_requests[1].data
+
+bad_requests = []
+def bad_post(request, timeout):
+    del timeout
+    bad_requests.append(request)
+    raise urllib.error.HTTPError(request.full_url, 400, "bad", {}, None)
+common.urllib.request.urlopen = bad_post
+try:
+    common.post("http://127.0.0.1:4321/internal/test", "fixture-key", "fixture-secret", {})
+    raise AssertionError("400 must fail")
+except RuntimeError:
+    pass
+assert len(bad_requests) == 1
+
+transport_attempts = []
+def transport_post(request, timeout):
+    del timeout
+    transport_attempts.append(request)
+    if len(transport_attempts) < 3:
+        raise urllib.error.URLError("offline")
+    return Response(b'{"ok":true}')
+common.urllib.request.urlopen = transport_post
+assert common.post("http://127.0.0.1:4321/internal/test", "fixture-key", "fixture-secret", {}) == {"ok": True}
+assert len(transport_attempts) == 3
+
+page_attempts = []
+def retry_page(request, timeout):
+    del timeout
+    page_attempts.append(request)
+    if len(page_attempts) == 1:
+        raise urllib.error.HTTPError(request.full_url, 503, "busy", {}, None)
+    return Response(b'<html>2026-08-12</html>')
+common.urllib.request.urlopen = retry_page
+assert common.check_page({"pageUrl":"/radar/2026-08-12","date":"2026-08-12"}, "https://xiuqiu.example", "/radar") == "https://xiuqiu.example/radar/2026-08-12"
+assert len(page_attempts) == 2
+
+assert common.classify_weixin_error({"errorCode":"weixin_auth_failed","error":"secret token"}) == ("weixin_auth_failed", "Weixin authentication failed.")
+rate_code, rate_message = common.classify_weixin_error({"errorCode":"weixin_rate_limited","retryAfterSeconds":45})
+assert rate_code == "weixin_rate_limited" and "45" in rate_message
+unknown_code, unknown_message = common.classify_weixin_error({"errorCode":"unknown","error":"secret token"})
+assert unknown_code == "weixin_send_failed" and "secret" not in unknown_message
+
+radar_spec = common.RadarSpec("fixture", "/claim", "/ack", "/health", "/radar", "title", "footer", ("daily",), ("primary",))
+def write_ledger(index):
+    common.remember_delivery(radar_spec, f"delivery:{index}", f"message:{index}")
+
+context = multiprocessing.get_context("fork")
+processes = [context.Process(target=write_ledger, args=(index,)) for index in range(12)]
+for process in processes: process.start()
+for process in processes:
+    process.join(10)
+    assert process.exitcode == 0
+ledger = common.read_ledger(radar_spec)
+assert len(ledger) == 12
+ledger_path = common.ledger_path(radar_spec)
+assert ledger_path.parent == root / "state"
+assert stat.S_IMODE(ledger_path.stat().st_mode) == 0o600
+assert stat.S_IMODE(ledger_path.with_suffix(ledger_path.suffix + ".lock").stat().st_mode) == 0o600
+assert common.pending_dir() == root / "state" / "radar-weixin-pending"
+common.remember_connection_test("fixture-message")
+assert (root / "state" / "radar-weixin-connection-test.json").is_file()
+ledger_path.write_text("{", encoding="utf-8")
+try:
+    common.read_ledger(radar_spec)
+    raise AssertionError("corrupt ledger must fail closed")
+except RuntimeError:
+    pass
+print("ok")
+`
+  try {
+    const output = execFileSync('python3', ['-c', python, commonPath, root], {
+      encoding: 'utf8',
+      env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' },
+    })
+    assert.equal(output.trim(), 'ok')
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
 })
 
 test('Hermes platform suppresses sentinels, passes real text to secondary and preserves fallback errors', () => {
@@ -289,13 +417,13 @@ common = types.ModuleType("radar_plugin.common")
 common.classify_weixin_error = lambda value: ("weixin_send_failed", "safe failure")
 common.forget_pending_delivery = lambda reference: None
 common.load_pending_delivery = lambda reference: pending["value"]
-common.local_delivery_options = lambda: ("radar-secondary", 35.0)
+common.local_delivery_options = lambda: ("radar-secondary", 0.0)
 common.post = lambda *args, **kwargs: {}
 common.read_ledger = lambda spec: {}
 common.remember_connection_test = lambda message_id: None
 common.remember_delivery = lambda *args: None
 common.remember_pending_failure = lambda *args: None
-common.settings = lambda: ("https://example.invalid", "fixture-token", "fixture-chat", False)
+common.settings = lambda: ("http://127.0.0.1:4321", "https://example.invalid", "fixture-key", "fixture-token", "fixture-chat", False)
 market = types.ModuleType("radar_plugin.dispatcher")
 market.SPEC = types.SimpleNamespace(name="market-radar", recipient_aliases=("primary", "secondary"), ack_path="/ack")
 learning = types.ModuleType("radar_plugin.learning_dispatcher")
@@ -329,15 +457,35 @@ async def verify():
     assert silent.success and blank.success and len(calls) == before
     plain = await adapter.send("fixture-primary", "真实晨报")
     assert plain.success and calls[-1]["message"] == "真实晨报"
+    assert calls[-1]["extra"]["cooldown_home"] == str(Path.home() / ".hermes" / "profiles" / "radar-secondary")
     pending["value"] = {"terminalError": "weixin_rate_limited: safe retry"}
     failed = await adapter.send("fixture-primary", json.dumps({
         "version": 1, "mode": "deliver", "deliveryRef": "fixture_reference_1234567890",
     }))
     assert not failed.success and failed.error == "weixin_rate_limited: safe retry"
+    calls.clear()
+    pending["value"] = {
+        "radar": "market-radar", "itemId": "fixture-item", "leaseToken": "fixture-lease",
+        "deliveries": [
+            {"recipientAlias":"primary", "idempotencyKey":"market:daily:fixture:primary", "message":"primary message"},
+            {"recipientAlias":"secondary", "idempotencyKey":"market:daily:fixture:secondary", "message":"secondary message"},
+        ],
+    }
+    delivered = await adapter.send("fixture-primary", json.dumps({
+        "version": 1, "mode": "deliver", "deliveryRef": "fixture_reference_1234567890",
+    }))
+    assert delivered.success and len(calls) == 2
+    assert calls[0]["idempotency_key"] == "market:daily:fixture:primary"
+    assert calls[1]["idempotency_key"] == "market:daily:fixture:secondary"
+    assert calls[1]["extra"]["cooldown_home"] == str(Path.home() / ".hermes" / "profiles" / "radar-secondary")
 
 asyncio.run(verify())
 `
-  execFileSync('python3', ['-c', python, platform], { env: { ...process.env, HOME: root } })
+  try {
+    execFileSync('python3', ['-c', python, platform], { env: { ...process.env, HOME: root, HERMES_HOME: join(root, '.hermes'), PYTHONDONTWRITEBYTECODE: '1' } })
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
 })
 
 test('gateway watchdog cross-notifies once after two failures and once on recovery', () => {

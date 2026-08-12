@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import fcntl
 import hashlib
 import hmac
 import json
@@ -10,6 +11,7 @@ import os
 import re
 import secrets
 import tempfile
+import threading
 import time
 import urllib.error
 import urllib.parse
@@ -19,6 +21,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from hermes_constants import get_hermes_home
 from hermes_cli.config import cfg_get, load_config
 
 
@@ -26,6 +29,9 @@ DEFAULT_PAGE_BASE_URL = "https://xiuqiu-site.vercel.app"
 DEFAULT_API_BASE_URL = "http://127.0.0.1:4321"
 MAX_BODY_CHARS = 2800
 PLUGIN_NAME = "market-radar-weixin"
+HTTP_RETRY_DELAYS = (0.5, 1.5)
+TRANSIENT_HTTP_CODES = {408, 425, 429, 500, 502, 503, 504}
+_LEDGER_LOCK = threading.RLock()
 
 
 @dataclass(frozen=True)
@@ -105,30 +111,65 @@ def signed_headers(method: str, url: str, key_id: str, secret: str, body: bytes 
             "x-content-body-sha256": body_hash, "x-content-signature": signature}
 
 
+def _retry_delay(attempt: int) -> bool:
+    if attempt >= len(HTTP_RETRY_DELAYS):
+        return False
+    time.sleep(HTTP_RETRY_DELAYS[attempt])
+    return True
+
+
 def post(url: str, key_id: str, secret: str, payload: dict[str, Any]) -> dict[str, Any]:
     encoded = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
-    request = urllib.request.Request(
-        url,
-        data=encoded,
-        headers={**signed_headers("POST", url, key_id, secret, encoded), "Content-Type": "application/json"},
-        method="POST",
-    )
-    try:
-        with urllib.request.urlopen(request, timeout=15) as response:
-            return json.loads(response.read().decode("utf-8"))
-    except urllib.error.HTTPError as exc:
-        raise RuntimeError(f"Radar API returned HTTP {exc.code}.") from exc
+    for attempt in range(len(HTTP_RETRY_DELAYS) + 1):
+        request = urllib.request.Request(
+            url,
+            data=encoded,
+            headers={
+                **signed_headers("POST", url, key_id, secret, encoded),
+                "Content-Type": "application/json",
+                "User-Agent": "xiuqiu-hermes-radar/0.4",
+            },
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=15) as response:
+                return json.loads(response.read().decode("utf-8"))
+        except urllib.error.HTTPError as exc:
+            if exc.code in TRANSIENT_HTTP_CODES and _retry_delay(attempt):
+                continue
+            raise RuntimeError(f"Radar API returned HTTP {exc.code}.") from None
+        except (urllib.error.URLError, TimeoutError, ConnectionError, OSError, json.JSONDecodeError):
+            if _retry_delay(attempt):
+                continue
+            raise RuntimeError("Radar API transport unavailable after retries.") from None
+    raise RuntimeError("Radar API transport unavailable after retries.")
 
 
 def check_health(base_url: str, path: str, key_id: str, secret: str) -> None:
     url = urllib.parse.urljoin(f"{base_url}/", path.lstrip("/"))
-    request = urllib.request.Request(
-        url, headers={**signed_headers("GET", url, key_id, secret), "Accept": "application/json", "User-Agent": "xiuqiu-hermes-radar/0.3"},
-        method="GET",
-    )
-    with urllib.request.urlopen(request, timeout=15) as response:
-        if response.status != 200:
-            raise RuntimeError(f"Radar health check returned HTTP {response.status}.")
+    for attempt in range(len(HTTP_RETRY_DELAYS) + 1):
+        request = urllib.request.Request(
+            url,
+            headers={
+                **signed_headers("GET", url, key_id, secret),
+                "Accept": "application/json",
+                "User-Agent": "xiuqiu-hermes-radar/0.4",
+            },
+            method="GET",
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=15) as response:
+                if response.status != 200:
+                    raise RuntimeError(f"Radar health check returned HTTP {response.status}.")
+                return
+        except urllib.error.HTTPError as exc:
+            if exc.code in TRANSIENT_HTTP_CODES and _retry_delay(attempt):
+                continue
+            raise RuntimeError(f"Radar health check returned HTTP {exc.code}.") from None
+        except (urllib.error.URLError, TimeoutError, ConnectionError, OSError):
+            if _retry_delay(attempt):
+                continue
+            raise RuntimeError("Radar health check transport unavailable after retries.") from None
 
 
 def payload_for(item: dict[str, Any]) -> dict[str, Any]:
@@ -157,20 +198,27 @@ def safe_page_url(payload: dict[str, Any], base_url: str, page_prefix: str) -> s
 
 def check_page(payload: dict[str, Any], base_url: str, page_prefix: str) -> str:
     page_url = safe_page_url(payload, base_url, page_prefix)
-    request = urllib.request.Request(
-        page_url,
-        headers={"Accept": "text/html", "User-Agent": "xiuqiu-hermes-radar/0.2"},
-        method="GET",
-    )
-    try:
-        with urllib.request.urlopen(request, timeout=15) as response:
-            html = response.read(250_000).decode("utf-8", errors="replace")
-            if response.status != 200:
-                raise DeliveryBlocked("page_not_ready", f"Published page returned HTTP {response.status}.")
-    except urllib.error.HTTPError as exc:
-        raise DeliveryBlocked("page_not_ready", f"Published page returned HTTP {exc.code}.") from exc
-    except urllib.error.URLError as exc:
-        raise DeliveryBlocked("page_network_error", "Published page could not be reached.") from exc
+    html = ""
+    for attempt in range(len(HTTP_RETRY_DELAYS) + 1):
+        request = urllib.request.Request(
+            page_url,
+            headers={"Accept": "text/html", "User-Agent": "xiuqiu-hermes-radar/0.4"},
+            method="GET",
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=15) as response:
+                html = response.read(250_000).decode("utf-8", errors="replace")
+                if response.status != 200:
+                    raise DeliveryBlocked("page_not_ready", f"Published page returned HTTP {response.status}.")
+                break
+        except urllib.error.HTTPError as exc:
+            if exc.code in TRANSIENT_HTTP_CODES and _retry_delay(attempt):
+                continue
+            raise DeliveryBlocked("page_not_ready", f"Published page returned HTTP {exc.code}.") from None
+        except (urllib.error.URLError, TimeoutError, ConnectionError, OSError):
+            if _retry_delay(attempt):
+                continue
+            raise DeliveryBlocked("page_network_error", "Published page could not be reached.") from None
     date = str(payload.get("date") or "").strip()
     if date and date not in html:
         raise DeliveryBlocked("page_date_missing", "Published page does not contain the expected date marker.")
@@ -230,33 +278,60 @@ def message(payload: dict[str, Any], page_url: str, spec: RadarSpec, shadow_mode
 
 
 def ledger_path(spec: RadarSpec) -> Path:
-    return Path.home() / ".hermes" / "state" / f"{spec.name}-deliveries.json"
+    return get_hermes_home() / "state" / f"{spec.name}-deliveries.json"
+
+
+def _load_ledger_unlocked(path: Path) -> dict[str, dict[str, str]]:
+    try:
+        raw = path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return {}
+    except OSError:
+        raise RuntimeError("Radar delivery ledger is unavailable.") from None
+    try:
+        value = json.loads(raw)
+    except json.JSONDecodeError:
+        raise RuntimeError("Radar delivery ledger is invalid.") from None
+    if not isinstance(value, dict):
+        raise RuntimeError("Radar delivery ledger is invalid.")
+    return value
 
 
 def read_ledger(spec: RadarSpec) -> dict[str, dict[str, str]]:
     path = ledger_path(spec)
-    try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-        return value if isinstance(value, dict) else {}
-    except (FileNotFoundError, json.JSONDecodeError, OSError):
-        return {}
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    lock_path = path.with_suffix(path.suffix + ".lock")
+    with _LEDGER_LOCK, lock_path.open("a+", encoding="utf-8") as lock_handle:
+        os.chmod(lock_path, 0o600)
+        fcntl.flock(lock_handle.fileno(), fcntl.LOCK_SH)
+        try:
+            return _load_ledger_unlocked(path)
+        finally:
+            fcntl.flock(lock_handle.fileno(), fcntl.LOCK_UN)
 
 
 def remember_delivery(spec: RadarSpec, key: str, message_id: str) -> None:
     path = ledger_path(spec)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    ledger = read_ledger(spec)
-    ledger[key] = {"providerMessageId": message_id, "sentAt": datetime.now(timezone.utc).isoformat()}
-    with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as handle:
-        json.dump(ledger, handle, ensure_ascii=False, separators=(",", ":"))
-        temporary = Path(handle.name)
-    os.chmod(temporary, 0o600)
-    os.replace(temporary, path)
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    lock_path = path.with_suffix(path.suffix + ".lock")
+    with _LEDGER_LOCK, lock_path.open("a+", encoding="utf-8") as lock_handle:
+        os.chmod(lock_path, 0o600)
+        fcntl.flock(lock_handle.fileno(), fcntl.LOCK_EX)
+        try:
+            ledger = _load_ledger_unlocked(path)
+            ledger[key] = {"providerMessageId": message_id, "sentAt": datetime.now(timezone.utc).isoformat()}
+            with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as handle:
+                json.dump(ledger, handle, ensure_ascii=False, separators=(",", ":"))
+                temporary = Path(handle.name)
+            os.chmod(temporary, 0o600)
+            os.replace(temporary, path)
+        finally:
+            fcntl.flock(lock_handle.fileno(), fcntl.LOCK_UN)
 
 
 def remember_connection_test(message_id: str) -> None:
-    path = Path.home() / ".hermes" / "state" / "radar-weixin-connection-test.json"
-    path.parent.mkdir(parents=True, exist_ok=True)
+    path = get_hermes_home() / "state" / "radar-weixin-connection-test.json"
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     value = {"confirmed": True, "providerMessageId": message_id, "sentAt": datetime.now(timezone.utc).isoformat()}
     with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as handle:
         json.dump(value, handle, ensure_ascii=False, separators=(",", ":"))
@@ -266,7 +341,7 @@ def remember_connection_test(message_id: str) -> None:
 
 
 def pending_dir() -> Path:
-    return Path.home() / ".hermes" / "state" / "radar-weixin-pending"
+    return get_hermes_home() / "state" / "radar-weixin-pending"
 
 
 def store_pending_delivery(
@@ -275,7 +350,7 @@ def store_pending_delivery(
     deliveries: list[dict[str, str]],
 ) -> str:
     directory = pending_dir()
-    directory.mkdir(parents=True, exist_ok=True)
+    directory.mkdir(parents=True, exist_ok=True, mode=0o700)
     now = time.time()
     for stale in directory.glob("*.json"):
         try:
@@ -356,6 +431,30 @@ def lease_token(item: dict[str, Any]) -> str:
 
 
 def classify_weixin_error(value: Any) -> tuple[str, str]:
+    if isinstance(value, dict):
+        explicit = str(value.get("errorCode") or "").strip()
+        safe_messages = {
+            "recipient_not_configured": "Configured Weixin recipient is unavailable.",
+            "weixin_rate_limited": "Weixin adapter reported rate limiting.",
+            "weixin_cooldown_active": "Weixin adapter cooldown is active.",
+            "weixin_not_configured": "Weixin credentials are not configured.",
+            "weixin_auth_failed": "Weixin authentication failed.",
+            "weixin_credentials_missing": "Weixin credentials are missing.",
+            "weixin_not_connected": "Weixin adapter is not connected.",
+            "provider_authentication_failed": "Weixin provider authentication failed.",
+            "provider_auth_failed": "Weixin provider authentication failed.",
+            "weixin_send_failed": "Weixin adapter did not confirm delivery.",
+        }
+        if explicit in safe_messages:
+            message = safe_messages[explicit]
+            try:
+                retry_after = max(1, min(int(value.get("retryAfterSeconds")), 1800))
+            except (TypeError, ValueError):
+                retry_after = 0
+            if retry_after and explicit in {"weixin_rate_limited", "weixin_cooldown_active"}:
+                message = f"{message} Retry after {retry_after} seconds."
+            return explicit, message
+        value = value.get("error")
     lowered = str(value or "").lower()
     if "recipient_not_configured" in lowered:
         return "recipient_not_configured", "Configured Weixin recipient is unavailable."

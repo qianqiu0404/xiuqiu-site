@@ -44,10 +44,17 @@ def _known_message_id(spec, key: str) -> str:
     return ""
 
 
+def _secondary_profile_home(profile_name: str) -> Path:
+    process_home = Path(os.getenv("HERMES_HOME", "").strip() or (Path.home() / ".hermes"))
+    if process_home.name == profile_name and process_home.parent.name == "profiles":
+        return process_home
+    return process_home / "profiles" / profile_name
+
+
 def _secondary_credentials(profile_name: str) -> dict[str, str] | None:
     if not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,63}", profile_name):
         return None
-    profile_home = Path.home() / ".hermes" / "profiles" / profile_name
+    profile_home = _secondary_profile_home(profile_name)
     account_files = sorted(
         path
         for path in (profile_home / "weixin" / "accounts").glob("*.json")
@@ -69,12 +76,24 @@ def _secondary_credentials(profile_name: str) -> dict[str, str] | None:
         "token": token,
         "chat_id": user_id,
         "base_url": str(account.get("base_url") or "https://ilinkai.weixin.qq.com").rstrip("/"),
+        "cooldown_home": str(profile_home),
     }
 
 
-async def _send_to_recipient(alias: str, primary_chat_id: str, content: str) -> dict[str, Any]:
+async def _send_to_recipient(
+    alias: str,
+    primary_chat_id: str,
+    content: str,
+    idempotency_key: str,
+) -> dict[str, Any]:
     if alias == "primary":
-        return await send_weixin_direct(extra={}, token=None, chat_id=primary_chat_id, message=content)
+        return await send_weixin_direct(
+            extra={},
+            token=None,
+            chat_id=primary_chat_id,
+            message=content,
+            idempotency_key=idempotency_key,
+        )
     if alias != "secondary":
         return {"error": "recipient_not_configured"}
     profile_name, _ = local_delivery_options()
@@ -86,17 +105,21 @@ async def _send_to_recipient(alias: str, primary_chat_id: str, content: str) -> 
             "account_id": credentials["account_id"],
             "base_url": credentials["base_url"],
             "cdn_base_url": "https://novac2c.cdn.weixin.qq.com/c2c",
+            "cooldown_home": credentials["cooldown_home"],
         },
         token=credentials["token"],
         chat_id=credentials["chat_id"],
         message=content,
+        idempotency_key=idempotency_key,
     )
 
 
 def validate_config(_config: Any) -> bool:
-    return bool(os.getenv("WEIXIN_HOME_CHANNEL", "").strip()) and bool(
-        (os.getenv("RADAR_DISPATCH_TOKEN") or os.getenv("MARKET_RADAR_DISPATCH_TOKEN") or "").strip()
-    )
+    return all((
+        os.getenv("WEIXIN_HOME_CHANNEL", "").strip(),
+        os.getenv("RADAR_INTERNAL_HMAC_KEY_ID", "").strip(),
+        (os.getenv("RADAR_INTERNAL_HMAC_SECRET") or os.getenv("RADAR_DISPATCH_TOKEN") or "").strip(),
+    ))
 
 
 def is_connected(_config: Any) -> bool:
@@ -167,7 +190,7 @@ class RadarWeixinAdapter(BasePlatformAdapter):
             message_id = str(result["message_id"])
             remember_connection_test(message_id)
             return SendResult(success=True, message_id=message_id)
-        error_code, error_message = classify_weixin_error(result.get("error"))
+        error_code, error_message = classify_weixin_error(result)
         return SendResult(success=False, error=f"{error_code}: {error_message}")
 
     async def _send_plain_text(self, content: str) -> SendResult:
@@ -180,6 +203,7 @@ class RadarWeixinAdapter(BasePlatformAdapter):
                 "account_id": credentials["account_id"],
                 "base_url": credentials["base_url"],
                 "cdn_base_url": "https://novac2c.cdn.weixin.qq.com/c2c",
+                "cooldown_home": credentials["cooldown_home"],
             },
             token=credentials["token"],
             chat_id=credentials["chat_id"],
@@ -187,7 +211,7 @@ class RadarWeixinAdapter(BasePlatformAdapter):
         )
         if result.get("success") and not result.get("error") and result.get("message_id"):
             return SendResult(success=True, message_id=str(result["message_id"]))
-        error_code, error_message = classify_weixin_error(result.get("error"))
+        error_code, error_message = classify_weixin_error(result)
         return SendResult(success=False, error=f"{error_code}: {error_message}")
 
     async def _deliver(self, chat_id: str, envelope: dict[str, Any]) -> SendResult:
@@ -229,7 +253,7 @@ class RadarWeixinAdapter(BasePlatformAdapter):
                 continue
             if sent_now:
                 await asyncio.sleep(delivery_interval)
-            result = await _send_to_recipient(alias, chat_id, prepared_message)
+            result = await _send_to_recipient(alias, chat_id, prepared_message, key)
             if result.get("success") and not result.get("error") and result.get("message_id"):
                 message_id = str(result["message_id"])
                 remember_delivery(spec, key, message_id)
@@ -237,7 +261,7 @@ class RadarWeixinAdapter(BasePlatformAdapter):
                 sent_now += 1
                 continue
 
-            error_code, error_message = classify_weixin_error(result.get("error"))
+            error_code, error_message = classify_weixin_error(result)
             try:
                 await asyncio.to_thread(post, f"{base_url}{spec.ack_path}", key_id, dispatch_token, {
                     "id": item_id, "leaseToken": lease_token, "success": False,
