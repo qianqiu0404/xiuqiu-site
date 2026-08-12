@@ -1,7 +1,6 @@
 import assert from 'node:assert/strict'
 import { mkdtempSync, rmSync } from 'node:fs'
 import { readFile } from 'node:fs/promises'
-import { createServer } from 'node:net'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { spawnSync } from 'node:child_process'
@@ -203,19 +202,6 @@ function commandAvailable(command) {
   return spawnSync(command, ['--version'], { encoding: 'utf8' }).status === 0
 }
 
-async function openPort() {
-  return new Promise((resolve, reject) => {
-    const server = createServer()
-    server.unref()
-    server.on('error', reject)
-    server.listen(0, '127.0.0.1', () => {
-      const address = server.address()
-      const port = typeof address === 'object' && address ? address.port : 0
-      server.close(error => error ? reject(error) : resolve(port))
-    })
-  })
-}
-
 test('real PostgreSQL applies migrations twice, rolls back failures and enforces lock/checksum safety', {
   skip: process.env.RUN_RADAR_DB_TESTS !== 'true',
   timeout: 60_000,
@@ -228,12 +214,13 @@ test('real PostgreSQL applies migrations twice, rolls back failures and enforces
       'test:radar-db requires RADAR_TEST_DATABASE_URL or local initdb/pg_ctl binaries')
     fixtureDir = mkdtempSync(join(tmpdir(), 'xiuqiu-radar-pg-'))
     dataDir = join(fixtureDir, 'data')
-    const port = await openPort()
+    const port = 5432
     const init = spawnSync('initdb', ['-D', dataDir, '-U', 'postgres', '--auth=trust', '--no-locale', '--encoding=UTF8', '--no-sync'], { encoding: 'utf8' })
     assert.equal(init.status, 0, init.stderr)
-    const start = spawnSync('pg_ctl', ['-D', dataDir, '-o', `-F -h 127.0.0.1 -p ${port}`, '-w', 'start'], { stdio: 'ignore' })
+    const startOptions = `-F -c listen_addresses='' -c unix_socket_directories='${fixtureDir}' -p ${port}`
+    const start = spawnSync('pg_ctl', ['-D', dataDir, '-o', startOptions, '-w', 'start'], { stdio: 'ignore' })
     assert.equal(start.status, 0)
-    adminUrl = `postgresql://postgres@127.0.0.1:${port}/postgres`
+    adminUrl = `postgresql://postgres@localhost:${port}/postgres?host=${encodeURIComponent(fixtureDir)}`
   }
 
   const testDatabase = `radar_test_${process.pid}_${Date.now()}`
