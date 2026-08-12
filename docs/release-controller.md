@@ -19,8 +19,8 @@ The controller is inert by default. It prevents a Vercel Git deployment or a man
 3. A Vercel production candidate built from the exact SHA with `--skip-domain`.
 4. READY, project, target, SHA, ref, and alias-error validation plus candidate smoke tests.
 5. Promotion of that verified candidate to the production domains.
-6. A controller deployment marker and one exact-SHA worker smoke.
-7. Completion of the controller run, which—together with the exact-SHA deployment marker and the operator-managed `MARKET_RADAR_ENABLED` kill switch—authorizes later schedules.
+6. Controller deployment markers and exact-SHA worker smokes.
+7. Completion of the controller run, which—together with each exact-SHA deployment marker and the operator-managed Radar kill switch—authorizes later schedules.
 
 Any failed job prevents every downstream job from running. `vercel.json` disables every Git-triggered Vercel deployment, including pull-request Previews, so the controller is the only active production path.
 
@@ -28,12 +28,17 @@ Do not restore Preview deployments until both safeguards are verified: Vercel Da
 
 ## Required repository settings
 
-Create a protected GitHub Environment named `production-release` and restrict it to protected branches. The production jobs are the only jobs that reference its secrets.
+Create a protected GitHub Environment named `production-release` and restrict it to protected branches. Only release jobs and the existing Market worker reference it; the hourly Learning worker never does, so it cannot pause for a reviewer.
 
 - Environment secret: `VERCEL_TOKEN` (project-scoped, minimum practical lifetime and permissions).
 - Environment variables: `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`.
-- Existing production secrets used inside Environment jobs: `MARKET_RADAR_DATABASE_URL`, `DEEPSEEK_API_KEY`, `SEC_USER_AGENT`.
-- Repository variable: `MARKET_RADAR_ENABLED`. Keep it `false` for R0. Set it to `true` immediately before an approved controller release; the exact-SHA deployment marker still prevents worker execution until the controller completes. Set it back to `false` to stop schedules.
+- Repository- or organization-level Actions secrets: `MARKET_RADAR_DATABASE_URL` and `DEEPSEEK_API_KEY`. The former is the single current Neon connection string used by Vercel APIs, migrations, Market Radar and Learning Radar; do not create or fall back to a second Learning database variable. Repository/organization scope is required so unattended Learning schedules can run without entering the reviewer-protected Environment.
+- Existing protected secret used by Market release/worker jobs: `SEC_USER_AGENT`.
+- Repository variables: `MARKET_RADAR_ENABLED` and `LEARNING_RADAR_ENABLED`. Keep both `false` until their migration and manual smoke gates pass. Each exact-SHA deployment marker still prevents its worker from running until the controller completes; set the corresponding variable back to `false` to stop schedules.
+
+T7 may add a read-only preflight that verifies required secret **names** are configured. It must not retrieve, print, copy, rotate, or otherwise inspect secret values.
+
+Timeline review uses a separate protected Environment named `timeline-review`. Its `TIMELINE_REVIEW_DATABASE_URL` must point to the same Neon database through a least-privilege role that can only use the review schema and execute `radar_system.review_timeline`; it must not receive direct table access. T7 is responsible for creating the Environment, configuring that secret name, and granting the database role. Do not place secret values, review notes, source payloads, or reviewer personal data in repository documentation, workflow summaries, or logs.
 
 Protect `main` with pull requests and the existing `verify` and `secrets` Site CI checks. Do not add a required check name that has not already succeeded in this repository.
 

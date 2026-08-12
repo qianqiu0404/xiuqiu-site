@@ -33,3 +33,14 @@ export const publicEventRowLegacy = {
   watch_for: null,
   invalidation: null,
 }
+
+export const publicEventReportRow = {
+  id: 'report-fixture-1',
+  event_id: publicEventRowV2.id,
+  source_name: 'Bitcoin Core Releases',
+  source_url: 'https://github.com/bitcoin/bitcoin/releases/tag/v30.0',
+  title: 'Bitcoin Core v30.0',
+  excerpt: 'Official release notes for the tagged client version.',
+  published_at: '2026-08-10T02:00:00.000Z',
+  is_primary: true,
+}

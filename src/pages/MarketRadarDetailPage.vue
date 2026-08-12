@@ -166,7 +166,7 @@ watchEffect(() => {
             </div>
             <div class="trade-radar-source-block">
               <span>来源发布 {{ event.sourcePublishedAt }}</span>
-              <a :href="event.sourceUrl" target="_blank" rel="noopener">核对 {{ event.sourceName }} <i aria-hidden="true">↗</i></a>
+              <a :href="event.sourceUrl" target="_blank" rel="noopener noreferrer">核对 {{ event.sourceName }} <i aria-hidden="true">↗</i></a>
               <router-link :to="{ name: 'market-radar-event', params: { id: event.id } }">查看事件详情 <i aria-hidden="true">→</i></router-link>
             </div>
           </footer>
@@ -238,7 +238,7 @@ watchEffect(() => {
           <footer>
             <strong v-if="entry.quantStrategy.status === 'historical_samples_insufficient'">历史样本不足，当前只显示信号质量，不显示精确概率。</strong>
             <strong v-else>未回测情景权重，不是统计胜率。</strong>
-            <a v-for="(source, index) in entry.quantStrategy.sourceUrls" :key="source" :href="source" target="_blank" rel="noopener">核对依据 {{ index + 1 }} ↗</a>
+            <a v-for="(source, index) in entry.quantStrategy.sourceUrls" :key="source" :href="source" target="_blank" rel="noopener noreferrer">核对依据 {{ index + 1 }} ↗</a>
           </footer>
         </section>
 

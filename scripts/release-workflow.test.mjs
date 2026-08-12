@@ -6,8 +6,13 @@ import { parse } from 'yaml'
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8')
 const controllerSource = read('.github/workflows/release-controller.yml')
 const workerSource = read('.github/workflows/market-radar.yml')
+const learningWorkerSource = read('.github/workflows/learning-radar.yml')
+const releaseGuideSource = read('docs/release-controller.md')
+const readmeSource = read('README.md')
 const controller = parse(controllerSource)
 const worker = parse(workerSource)
+const learningWorker = parse(learningWorkerSource)
+const ci = parse(read('.github/workflows/ci.yml'))
 const vercel = JSON.parse(read('vercel.json'))
 
 const productionJobs = [
@@ -18,6 +23,7 @@ const productionJobs = [
   'mark_deployed_sha',
   'enqueue_radar_notifications',
   'promote_market_radar_worker',
+  'promote_learning_radar_worker',
 ]
 
 const vercelCommandPattern = /\bvercel\s+(?:--token\s+"\$VERCEL_TOKEN"\s+)?(?:pull|build|deploy|promote|inspect|project\s+inspect|whoami|curl)\b/
@@ -86,6 +92,7 @@ test('release DAG is migration, staged Vercel promotion, worker smoke, then acti
   assert.deepEqual(controller.jobs.mark_deployed_sha.needs, ['preflight', 'promote_vercel_production'])
   assert.deepEqual(controller.jobs.enqueue_radar_notifications.needs, ['preflight', 'mark_deployed_sha'])
   assert.deepEqual(controller.jobs.promote_market_radar_worker.needs, ['preflight', 'mark_deployed_sha', 'enqueue_radar_notifications'])
+  assert.deepEqual(controller.jobs.promote_learning_radar_worker.needs, ['preflight', 'mark_deployed_sha', 'enqueue_radar_notifications'])
 
   assert.equal(controller.jobs.stage_vercel_candidate.steps.find(step => step.uses === 'actions/setup-node@v4')?.with['node-version'], 24)
   assert.match(controllerSource, /VERCEL_CLI_VERSION: 58\.9\.0/)
@@ -125,7 +132,7 @@ test('release DAG is migration, staged Vercel promotion, worker smoke, then acti
 test('manual and scheduled workers cannot bypass the deployed-SHA authorization boundary', () => {
   assert.equal(worker.on.workflow_dispatch.inputs.mode.default, 'dry-run')
   assert.deepEqual(worker.on.workflow_dispatch.inputs.mode.options, ['dry-run', 'ingest', 'daily', 'premarket'])
-  assert.equal(worker.concurrency.group, 'xiuqiu-production-release')
+  assert.equal(worker.concurrency.group, 'xiuqiu-market-radar-worker')
   assert.match(String(worker.jobs.authorize.if), /workflow_dispatch.*MARKET_RADAR_ENABLED/)
   assert.equal(worker.jobs.authorize.environment, undefined)
   assert.doesNotMatch(JSON.stringify(worker.jobs.authorize), /secrets\./)
@@ -136,6 +143,38 @@ test('manual and scheduled workers cannot bypass the deployed-SHA authorization 
   assert.match(workerSource, /market-radar-production-authorized/)
   assert.match(workerSource, /release-controller\.yml/)
   assert.doesNotMatch(workerSource, /options: \[[^\]]*migrate/)
+
+  assert.deepEqual(learningWorker.on.schedule.map(item => item.cron), ['0 * * * *', '0 0 * * *'])
+  assert.deepEqual(learningWorker.on.workflow_dispatch.inputs.mode.options, ['dry-run', 'ingest', 'daily'])
+  assert.equal(learningWorker.concurrency.group, 'xiuqiu-learning-radar-worker')
+  assert.notEqual(learningWorker.concurrency.group, worker.concurrency.group)
+  assert.match(String(learningWorker.jobs.authorize.if), /LEARNING_RADAR_ENABLED/)
+  assert.equal(learningWorker.jobs.authorize.environment, undefined)
+  assert.doesNotMatch(JSON.stringify(learningWorker.jobs.authorize), /secrets\./)
+  assert.equal(learningWorker.jobs.run.environment, undefined)
+  assert.match(learningWorkerSource, /learning-radar-production-authorized/)
+  assert.match(learningWorkerSource, /release-controller\.yml/)
+  const learningRunStep = learningWorker.jobs.run.steps.find(step => step.name === 'Run Learning Radar')
+  const legacyLearningDatabaseName = ['LEARNING', 'RADAR', 'DATABASE', 'URL'].join('_')
+  assert.equal(learningRunStep.env.MARKET_RADAR_DATABASE_URL, '${{ secrets.MARKET_RADAR_DATABASE_URL }}')
+  assert.equal(Object.hasOwn(learningRunStep.env, legacyLearningDatabaseName), false)
+  assert.doesNotMatch(`${learningWorkerSource}\n${controllerSource}\n${readmeSource}\n${releaseGuideSource}`,
+    new RegExp(legacyLearningDatabaseName))
+  assert.match(releaseGuideSource, /Repository- or organization-level Actions secrets: `MARKET_RADAR_DATABASE_URL` and `DEEPSEEK_API_KEY`/)
+  assert.match(releaseGuideSource, /hourly Learning worker never does/)
+  assert.match(releaseGuideSource, /verifies required secret \*\*names\*\*/)
+})
+
+test('required CI and release preflight run the non-skippable disposable radar database gate', () => {
+  const ciDbStep = ci.jobs.verify.steps.find(step => step.run === 'npm run test:radar-db')
+  assert.ok(ciDbStep)
+  assert.equal(ciDbStep.env.RADAR_TEST_DATABASE_URL, 'postgresql://postgres@127.0.0.1:5432/postgres')
+  assert.equal(ci.jobs.verify.services['article-shadow-postgres'].image, 'postgres:16-alpine')
+
+  assert.equal(controller.jobs.preflight.services['radar-postgres'].image, 'postgres:16-alpine')
+  assert.equal(controller.jobs.preflight.env.RADAR_TEST_DATABASE_URL, 'postgresql://postgres@127.0.0.1:5432/postgres')
+  assert.equal(controller.jobs.preflight.steps.some(step => step.run === 'npm run test:radar-db'), true)
+  assert.doesNotMatch(JSON.stringify(controller.jobs.preflight), /RADAR_TEST_DATABASE_URL.*secrets\./)
 })
 
 test('Vercel disables every Git-triggered deployment until guarded Preview restoration', () => {

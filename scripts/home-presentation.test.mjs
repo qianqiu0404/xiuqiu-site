@@ -421,11 +421,12 @@ test('cinematic evidence pages preserve their source-backed interaction contract
 })
 
 test('radar uses one intelligence system across overview, daily and weekly readers', () => {
-  assert.match(radarPageSource, /radar-intelligence-hero/)
-  assert.match(radarPageSource, /radar-signal-ledger/)
-  assert.match(radarPageSource, /radar-convergence-stage/)
-  assert.match(radarPageSource, /radar-archive-ledger/)
-  assert.match(radarPageSource, /archiveLimit = 10/)
+  assert.match(radarPageSource, /latestRadars, radarIndex/)
+  assert.match(radarPageSource, /isLearningEditionV2/)
+  assert.match(radarPageSource, /getLearningBriefs/)
+  assert.match(radarPageSource, /data-snapshot-id="latestRadar\?\.snapshotId"/)
+  assert.match(radarPageSource, /learning-edition-grid/)
+  assert.doesNotMatch(radarPageSource, /fetch\(|parseLearningTimelineList|RADAR_PUBLIC_API/)
   assert.match(radarDetailSource, /radar-daily-reader-page/)
   assert.match(radarDetailSource, /radar-reader-articles/)
   assert.match(radarWeeklySource, /radar-weekly-reader-page/)

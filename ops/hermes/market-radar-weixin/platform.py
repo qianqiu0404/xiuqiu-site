@@ -22,6 +22,7 @@ from .common import (
     read_ledger,
     remember_connection_test,
     remember_delivery,
+    remember_pending_failure,
     settings,
 )
 from .dispatcher import SPEC as MARKET_SPEC
@@ -43,11 +44,23 @@ def _known_message_id(spec, key: str) -> str:
     return ""
 
 
+def _secondary_profile_home(profile_name: str) -> Path:
+    process_home = Path(os.getenv("HERMES_HOME", "").strip() or (Path.home() / ".hermes"))
+    if process_home.name == profile_name and process_home.parent.name == "profiles":
+        return process_home
+    return process_home / "profiles" / profile_name
+
+
 def _secondary_credentials(profile_name: str) -> dict[str, str] | None:
     if not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,63}", profile_name):
         return None
-    profile_home = Path.home() / ".hermes" / "profiles" / profile_name
-    account_files = sorted((profile_home / "weixin" / "accounts").glob("*.json"))
+    profile_home = _secondary_profile_home(profile_name)
+    account_files = sorted(
+        path
+        for path in (profile_home / "weixin" / "accounts").glob("*.json")
+        if not path.name.endswith(".context-tokens.json")
+        and not path.name.endswith(".sync.json")
+    )
     if len(account_files) != 1:
         return None
     try:
@@ -63,12 +76,24 @@ def _secondary_credentials(profile_name: str) -> dict[str, str] | None:
         "token": token,
         "chat_id": user_id,
         "base_url": str(account.get("base_url") or "https://ilinkai.weixin.qq.com").rstrip("/"),
+        "cooldown_home": str(profile_home),
     }
 
 
-async def _send_to_recipient(alias: str, primary_chat_id: str, content: str) -> dict[str, Any]:
+async def _send_to_recipient(
+    alias: str,
+    primary_chat_id: str,
+    content: str,
+    idempotency_key: str,
+) -> dict[str, Any]:
     if alias == "primary":
-        return await send_weixin_direct(extra={}, token=None, chat_id=primary_chat_id, message=content)
+        return await send_weixin_direct(
+            extra={},
+            token=None,
+            chat_id=primary_chat_id,
+            message=content,
+            idempotency_key=idempotency_key,
+        )
     if alias != "secondary":
         return {"error": "recipient_not_configured"}
     profile_name, _ = local_delivery_options()
@@ -80,17 +105,21 @@ async def _send_to_recipient(alias: str, primary_chat_id: str, content: str) -> 
             "account_id": credentials["account_id"],
             "base_url": credentials["base_url"],
             "cdn_base_url": "https://novac2c.cdn.weixin.qq.com/c2c",
+            "cooldown_home": credentials["cooldown_home"],
         },
         token=credentials["token"],
         chat_id=credentials["chat_id"],
         message=content,
+        idempotency_key=idempotency_key,
     )
 
 
 def validate_config(_config: Any) -> bool:
-    return bool(os.getenv("WEIXIN_HOME_CHANNEL", "").strip()) and bool(
-        (os.getenv("RADAR_DISPATCH_TOKEN") or os.getenv("MARKET_RADAR_DISPATCH_TOKEN") or "").strip()
-    )
+    return all((
+        os.getenv("WEIXIN_HOME_CHANNEL", "").strip(),
+        os.getenv("RADAR_INTERNAL_HMAC_KEY_ID", "").strip(),
+        (os.getenv("RADAR_INTERNAL_HMAC_SECRET") or os.getenv("RADAR_DISPATCH_TOKEN") or "").strip(),
+    ))
 
 
 def is_connected(_config: Any) -> bool:
@@ -138,7 +167,10 @@ class RadarWeixinAdapter(BasePlatformAdapter):
         try:
             envelope = json.loads(content)
         except json.JSONDecodeError:
-            return SendResult(success=False, error="radar_envelope_invalid")
+            plain_text = content.strip()
+            if not plain_text or plain_text == "[SILENT]":
+                return SendResult(success=True)
+            return await self._send_plain_text(plain_text)
         if not isinstance(envelope, dict) or envelope.get("version") != 1:
             return SendResult(success=False, error="radar_envelope_invalid")
 
@@ -158,7 +190,28 @@ class RadarWeixinAdapter(BasePlatformAdapter):
             message_id = str(result["message_id"])
             remember_connection_test(message_id)
             return SendResult(success=True, message_id=message_id)
-        error_code, error_message = classify_weixin_error(result.get("error"))
+        error_code, error_message = classify_weixin_error(result)
+        return SendResult(success=False, error=f"{error_code}: {error_message}")
+
+    async def _send_plain_text(self, content: str) -> SendResult:
+        profile_name, _ = local_delivery_options()
+        credentials = _secondary_credentials(profile_name)
+        if credentials is None:
+            return SendResult(success=False, error="radar_recipient_not_configured")
+        result = await send_weixin_direct(
+            extra={
+                "account_id": credentials["account_id"],
+                "base_url": credentials["base_url"],
+                "cdn_base_url": "https://novac2c.cdn.weixin.qq.com/c2c",
+                "cooldown_home": credentials["cooldown_home"],
+            },
+            token=credentials["token"],
+            chat_id=credentials["chat_id"],
+            message=content,
+        )
+        if result.get("success") and not result.get("error") and result.get("message_id"):
+            return SendResult(success=True, message_id=str(result["message_id"]))
+        error_code, error_message = classify_weixin_error(result)
         return SendResult(success=False, error=f"{error_code}: {error_message}")
 
     async def _deliver(self, chat_id: str, envelope: dict[str, Any]) -> SendResult:
@@ -168,6 +221,9 @@ class RadarWeixinAdapter(BasePlatformAdapter):
         pending = load_pending_delivery(reference)
         if pending is None:
             return SendResult(success=False, error="radar_delivery_reference_missing")
+        terminal_error = str(pending.get("terminalError") or "").strip()
+        if terminal_error:
+            return SendResult(success=False, error=terminal_error)
         radar = str(pending.get("radar") or "")
         spec = SPECS.get(radar)
         item_id = str(pending.get("itemId") or "")
@@ -176,8 +232,8 @@ class RadarWeixinAdapter(BasePlatformAdapter):
         if spec is None or not item_id or not lease_token or not isinstance(deliveries, list) or not deliveries:
             return SendResult(success=False, error="radar_envelope_invalid")
 
-        base_url, dispatch_token, _, _ = settings()
-        if not dispatch_token:
+        base_url, _, key_id, dispatch_token, _, _ = settings()
+        if not dispatch_token or not key_id:
             return SendResult(success=False, error="radar_dispatch_token_missing")
 
         _, delivery_interval = local_delivery_options()
@@ -197,7 +253,7 @@ class RadarWeixinAdapter(BasePlatformAdapter):
                 continue
             if sent_now:
                 await asyncio.sleep(delivery_interval)
-            result = await _send_to_recipient(alias, chat_id, prepared_message)
+            result = await _send_to_recipient(alias, chat_id, prepared_message, key)
             if result.get("success") and not result.get("error") and result.get("message_id"):
                 message_id = str(result["message_id"])
                 remember_delivery(spec, key, message_id)
@@ -205,22 +261,23 @@ class RadarWeixinAdapter(BasePlatformAdapter):
                 sent_now += 1
                 continue
 
-            error_code, error_message = classify_weixin_error(result.get("error"))
+            error_code, error_message = classify_weixin_error(result)
             try:
-                await asyncio.to_thread(post, f"{base_url}{spec.ack_path}", dispatch_token, {
+                await asyncio.to_thread(post, f"{base_url}{spec.ack_path}", key_id, dispatch_token, {
                     "id": item_id, "leaseToken": lease_token, "success": False,
                     "errorCode": error_code, "errorMessage": error_message,
                 })
             except Exception as exc:
                 return SendResult(success=False, error=f"radar_ack_failed:{type(exc).__name__}")
-            forget_pending_delivery(reference)
-            return SendResult(success=False, error=f"{error_code}: {error_message}")
+            terminal_error = f"{error_code}: {error_message}"
+            remember_pending_failure(reference, terminal_error)
+            return SendResult(success=False, error=terminal_error)
 
         final_message_id = receipts[-1] if receipts else ""
         if not final_message_id:
             return SendResult(success=False, error="radar_delivery_receipt_missing")
         try:
-            await asyncio.to_thread(post, f"{base_url}{spec.ack_path}", dispatch_token, {
+            await asyncio.to_thread(post, f"{base_url}{spec.ack_path}", key_id, dispatch_token, {
                 "id": item_id, "leaseToken": lease_token, "success": True,
                 "providerMessageId": final_message_id,
             })

@@ -10,9 +10,9 @@ from .common import RadarSpec, connection_test_envelope, prepare
 
 SPEC = RadarSpec(
     name="market-radar",
-    claim_path="/api/market-radar/outbox/claim",
-    ack_path="/api/market-radar/outbox/ack",
-    health_path="/api/market-radar/summary",
+    claim_path="/v1/internal/market-radar/outbox/claim",
+    ack_path="/v1/internal/market-radar/outbox/ack",
+    health_path="/healthz",
     page_prefix="/market-radar/",
     default_title="交易雷达",
     footer="仅供研究，不构成投资建议。",

@@ -28,6 +28,118 @@ export function normalizeTitle(input) {
     .replace(/\s+/g, ' ').trim()
 }
 
+const SOURCE_NAMED_ENTITIES = new Map([
+  ['amp', '&'],
+  ['apos', "'"],
+  ['gt', '>'],
+  ['lt', '<'],
+  ['nbsp', ' '],
+  ['quot', '"'],
+])
+
+function isStorableSourceCodePoint(codePoint) {
+  if (!Number.isInteger(codePoint) || codePoint < 0 || codePoint > 0x10ffff) return false
+  if (codePoint >= 0xd800 && codePoint <= 0xdfff) return false
+  if (codePoint >= 0xfdd0 && codePoint <= 0xfdef) return false
+  if ((codePoint & 0xffff) === 0xfffe || (codePoint & 0xffff) === 0xffff) return false
+  if (codePoint <= 0x1f && ![0x09, 0x0a, 0x0d].includes(codePoint)) return false
+  return !(codePoint >= 0x7f && codePoint <= 0x9f)
+}
+
+function decodeSourceEntitiesOnce(value) {
+  return value.replace(/&(?:#(?:x[0-9a-f]+|[0-9]+)|[a-z]+);/gi, entity => {
+    const token = entity.slice(1, -1)
+    if (token[0] !== '#') return SOURCE_NAMED_ENTITIES.get(token.toLowerCase()) ?? entity
+    const numeric = token[1]?.toLowerCase() === 'x'
+      ? Number.parseInt(token.slice(2), 16)
+      : Number.parseInt(token.slice(1), 10)
+    if (!isStorableSourceCodePoint(numeric)) return ' '
+    return String.fromCodePoint(numeric)
+  })
+}
+
+function decodeSourceEntities(value) {
+  let decoded = value
+  for (let round = 0; round < 3; round += 1) {
+    const next = decodeSourceEntitiesOnce(decoded)
+    if (next === decoded) break
+    decoded = next
+  }
+  return decoded
+}
+
+function removeUnsafeSourceCharacters(value) {
+  return [...value].map(character => (
+    isStorableSourceCodePoint(character.codePointAt(0)) ? character : ' '
+  )).join('')
+}
+
+function compactSourceText(value, maxLength) {
+  if (value === null || value === undefined) return null
+  const text = removeUnsafeSourceCharacters(decodeSourceEntities(String(value)))
+    .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')
+    .replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+  if (!text) return null
+  return [...text].slice(0, maxLength).join('')
+}
+
+export function normalizeMarketSourceReport(value, { now = new Date() } = {}) {
+  const title = compactSourceText(value?.title, 500)
+  const excerpt = compactSourceText(value?.excerpt, 4_000)
+  const published = value?.publishedAt ? new Date(value.publishedAt) : null
+  const publishedAt = published && Number.isFinite(published.getTime())
+    && published.getTime() >= Date.UTC(2000, 0, 1)
+    && published.getTime() <= now.getTime() + 60 * 60_000
+    ? published.toISOString()
+    : null
+  return { title, excerpt, publishedAt }
+}
+
+export function parseMarketSourceCursor(value) {
+  if (!value) return null
+  try {
+    const parsed = JSON.parse(value)
+    const publishedAt = new Date(parsed?.publishedAt)
+    const providerId = typeof parsed?.providerId === 'string' ? parsed.providerId.trim() : ''
+    if (!Number.isFinite(publishedAt.getTime()) || !providerId) return null
+    return { publishedAt: publishedAt.toISOString(), providerId }
+  } catch {
+    const publishedAt = new Date(value)
+    return Number.isFinite(publishedAt.getTime())
+      ? { publishedAt: publishedAt.toISOString(), providerId: '' }
+      : null
+  }
+}
+
+export function encodeMarketSourceCursor(value) {
+  return value ? JSON.stringify({ publishedAt: value.publishedAt, providerId: value.providerId }) : null
+}
+
+function compareMarketCursor(left, right) {
+  const timestampDifference = Date.parse(left.publishedAt) - Date.parse(right.publishedAt)
+  return timestampDifference || left.providerId.localeCompare(right.providerId)
+}
+
+export function newestMarketSourceCursor(items, previous = null) {
+  return items.reduce((latest, item) => {
+    const candidate = { publishedAt: item.publishedAt, providerId: String(item.providerId || '') }
+    if (!Number.isFinite(Date.parse(candidate.publishedAt)) || !candidate.providerId) return latest
+    return !latest || compareMarketCursor(candidate, latest) > 0 ? candidate : latest
+  }, previous)
+}
+
+export function selectMarketItemsAfterCursor(items, cursor, overlapMs = 30 * 24 * 60 * 60_000) {
+  if (!cursor) return items
+  const floor = Date.parse(cursor.publishedAt) - overlapMs
+  return items.filter(item => {
+    const timestamp = Date.parse(item.publishedAt)
+    return Number.isFinite(timestamp) && timestamp >= floor
+  })
+}
+
 function tokens(input) {
   return new Set(normalizeTitle(input).split(' ').filter(token => token.length > 1).map(token => {
     if (/^[a-z]{5,}$/.test(token)) return token.replace(/(?:ed|es|s)$/, '')
@@ -101,10 +213,31 @@ const boundaryPlaceholders = new Set([
 ])
 const boundaryPlaceholderPattern = /(?:待补充|占位|稍后补充|todo|tbd|placeholder)/i
 
+function decodeBoundaryEntities(value) {
+  let decoded = value
+  for (let pass = 0; pass < 2; pass += 1) {
+    decoded = decoded
+      .replace(/&amp;/gi, '&')
+      .replace(/&(?:nbsp|ensp|emsp|thinsp);/gi, ' ')
+      .replace(/&lt;/gi, '<')
+      .replace(/&gt;/gi, '>')
+      .replace(/&quot;/gi, '"')
+      .replace(/&apos;/gi, "'")
+      .replace(/&#(?:x([0-9a-f]{1,6})|(\d{1,7}));/gi, (entity, hex, decimal) => {
+        const codePoint = Number.parseInt(hex || decimal, hex ? 16 : 10)
+        return Number.isInteger(codePoint) && codePoint > 0 && codePoint <= 0x10ffff
+          && !(codePoint >= 0xd800 && codePoint <= 0xdfff)
+          ? String.fromCodePoint(codePoint) : entity
+      })
+  }
+  return decoded
+}
+
 function validateBoundary(value) {
   if (typeof value !== 'string') return null
   const normalized = value.trim()
-  const meaningful = normalized.replace(/[\p{White_Space}\p{Cf}\p{P}\p{S}]/gu, '').toLowerCase()
+  const meaningful = decodeBoundaryEntities(normalized)
+    .replace(/[^\p{L}\p{N}]/gu, '').toLowerCase()
   if (!meaningful || [...normalized].length > 600
     || boundaryPlaceholders.has(meaningful) || boundaryPlaceholderPattern.test(meaningful)) return null
   return normalized

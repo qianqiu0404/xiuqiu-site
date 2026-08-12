@@ -1,0 +1,8 @@
+tunnel: __NAMED_TUNNEL_ID__
+credentials-file: __NAMED_TUNNEL_CREDENTIALS__
+ingress:
+  - hostname: __FIXED_RADAR_PUBLIC_HOSTNAME__
+    service: http://127.0.0.1:4320
+    originRequest:
+      connectTimeout: 5s
+  - service: http_status:404
