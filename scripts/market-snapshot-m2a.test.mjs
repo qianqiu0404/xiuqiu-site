@@ -124,7 +124,16 @@ test('GitHub login is pinned to the Preview callback and immutable numeric accou
 
 test('M2 stays within the existing Vercel function budget while preserving fixed routes', async () => {
   const vercel = JSON.parse(await readFile(new URL('../vercel.json', import.meta.url), 'utf8'))
-  assert.equal(vercel.rewrites, undefined)
+  const fixedRoutes = [
+    '/api/internal/market-snapshots',
+    '/api/market-radar/market-status',
+    '/api/private-market/auth/github/login',
+    '/api/private-market/auth/github/callback',
+    '/api/private-market/snapshot',
+    '/api/private-market/logout',
+  ]
+  assert.deepEqual(vercel.rewrites.map(rewrite => rewrite.source), fixedRoutes)
+  assert.ok(vercel.rewrites.every(rewrite => rewrite.destination === '/api/%5B...m2%5D'))
   const api = await readFile(new URL('../api/[...m2].ts', import.meta.url), 'utf8')
   assert.match(api, /path === 'private-market\/auth\/github\/callback'/)
   assert.match(api, /path === 'internal\/market-snapshots'/)

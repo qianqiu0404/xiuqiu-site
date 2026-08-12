@@ -4,6 +4,14 @@
     "deploymentEnabled": false
   },
   "trailingSlash": false,
+  "rewrites": [
+    { "source": "/api/internal/market-snapshots", "destination": "/api/%5B...m2%5D" },
+    { "source": "/api/market-radar/market-status", "destination": "/api/%5B...m2%5D" },
+    { "source": "/api/private-market/auth/github/login", "destination": "/api/%5B...m2%5D" },
+    { "source": "/api/private-market/auth/github/callback", "destination": "/api/%5B...m2%5D" },
+    { "source": "/api/private-market/snapshot", "destination": "/api/%5B...m2%5D" },
+    { "source": "/api/private-market/logout", "destination": "/api/%5B...m2%5D" }
+  ],
   "headers": [
     {
       "source": "/content-catalog-preview",
