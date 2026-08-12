@@ -82,6 +82,8 @@ xiuqiu AI receives only the most relevant records from the generated public know
 
 `/market-radar` is a static, source-backed research snapshot, not an account or execution system. It never connects to positions, wallets or broker accounts and cannot place orders. Its public page is generated from reviewed `content/market-radar/` files and does not depend on the database or an upstream provider at request time.
 
+Daily authoring, schema v2 research-question rules, deterministic strong-model packs, and publication gates are documented in [`docs/market-radar-researchops.md`](docs/market-radar-researchops.md).
+
 The optional GitHub Actions shadow worker runs independently from the static website build, writes to the dedicated Neon `market_radar` schema, and prepares auditable Hermes outbox messages. Its read API is backed only by a reviewed SQL view; raw provider payloads, model prompts, credentials and private notes are not selected by those endpoints. Shadow-engine failure cannot erase or replace the reviewed static snapshot.
 
 The worker is disabled until the GitHub variable `MARKET_RADAR_ENABLED=true` and all required secrets are configured. Run `npm run market-radar:migrate` once before enabling ingestion. Raw provider payloads are purged after 14 days while event source links remain auditable; events, reactions, digests, feedback and trial metrics expire after one year.

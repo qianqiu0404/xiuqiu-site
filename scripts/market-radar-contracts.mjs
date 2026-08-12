@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { assertPublicHttpUrl } from './public-data-contracts.mjs'
 import { assertResearchPublication } from './radar-publication-boundary.mjs'
 
@@ -6,8 +7,10 @@ export const MARKET_RADAR_PRIORITIES = ['P0', 'P1', 'P2']
 export const MARKET_RADAR_STATUSES = ['scheduled', 'released', 'monitoring']
 export const MARKET_QUANT_SYMBOLS = ['SPY', 'QQQ', 'BTC', 'ETH', 'GLD']
 export const MARKET_QUANT_STATUSES = ['heuristic_unbacktested', 'historical_samples_insufficient']
+export const MARKET_RESEARCH_LENSES = ['transmission', 'falsification', 'scenario']
 const MARKET_QUANT_REQUIRED_FROM = '2026-08-10'
 const MARKET_QUANT_SAMPLE_GATE_FROM = '2026-08-11'
+const MARKET_RESEARCH_REQUIRED_FROM = '2026-08-13'
 const MARKET_SIGNAL_QUALITIES = ['strong', 'medium', 'weak']
 const MARKET_QUANT_GROUPS = {
   SPY: 'us_equity_etf',
@@ -18,6 +21,9 @@ const MARKET_QUANT_GROUPS = {
 }
 const TRADE_CALL_RE = /(?:买入|卖出|做多|做空|止损|止盈|目标价|\b(?:buy|sell|long|short|entry|stop[- ]?loss|take[- ]?profit)\b)/i
 const PLACEHOLDER_RE = /(?:待补充|占位|稍后补充|\b(?:todo|tbd|placeholder)\b)/i
+const RESEARCH_QUESTION_IDS = ['1', '2', '3']
+const RESEARCH_PROMPT_MAX_LENGTH = 1500
+const SITE_URL = 'https://xiuqiu-site.vercel.app'
 
 function assertText(value, label) {
   if (typeof value !== 'string' || !value.trim() || value !== value.trim()) {
@@ -114,6 +120,111 @@ function validateQuantStrategy(strategy, entry, fileName) {
   }
 }
 
+function validateResearchQuestions(entry, eventIds, fileName) {
+  if (entry.date >= MARKET_RESEARCH_REQUIRED_FROM && entry.schemaVersion !== 2) {
+    throw new Error(`${fileName}: schemaVersion 2 researchQuestions are required from ${MARKET_RESEARCH_REQUIRED_FROM}.`)
+  }
+  if (entry.schemaVersion == null || entry.schemaVersion === 1) {
+    if (entry.researchQuestions != null) throw new Error(`${fileName}: researchQuestions require schemaVersion 2.`)
+    return
+  }
+  if (entry.schemaVersion !== 2) throw new Error(`${fileName}: schemaVersion must be 1 or 2.`)
+  if (!Array.isArray(entry.researchQuestions) || entry.researchQuestions.length !== 3) {
+    throw new Error(`${fileName}: schemaVersion 2 requires exactly 3 researchQuestions.`)
+  }
+
+  const shortQuestions = new Set()
+  entry.researchQuestions.forEach((question, index) => {
+    const label = `${fileName}: researchQuestions[${index}]`
+    if (!question || typeof question !== 'object' || Array.isArray(question)) throw new Error(`${label} must be an object.`)
+    if (question.id !== RESEARCH_QUESTION_IDS[index]) throw new Error(`${label}.id must be ${RESEARCH_QUESTION_IDS[index]}.`)
+    if (question.lens !== MARKET_RESEARCH_LENSES[index]) throw new Error(`${label}.lens must be ${MARKET_RESEARCH_LENSES[index]}.`)
+    assertText(question.shortQuestion, `${label}.shortQuestion`)
+    if (question.shortQuestion.length > 180) throw new Error(`${label}.shortQuestion must not exceed 180 characters.`)
+    if (shortQuestions.has(question.shortQuestion)) throw new Error(`${fileName}: researchQuestions must use distinct shortQuestion values.`)
+    shortQuestions.add(question.shortQuestion)
+    if (!Array.isArray(question.focusEventIds) || question.focusEventIds.length < 1 || question.focusEventIds.length > 2) {
+      throw new Error(`${label}.focusEventIds must contain 1-2 event ids.`)
+    }
+    const focused = new Set(question.focusEventIds)
+    if (focused.size !== question.focusEventIds.length) throw new Error(`${label}.focusEventIds must not contain duplicates.`)
+    for (const eventId of focused) {
+      if (typeof eventId !== 'string' || !eventIds.has(eventId)) throw new Error(`${label}.focusEventIds must reference a daily event.`)
+      const focusedEvent = entry.events.find(event => event.id === eventId)
+      if (new URL(focusedEvent.sourceUrl).protocol !== 'https:') {
+        throw new Error(`${label}.focusEventIds must reference HTTPS primary sources.`)
+      }
+    }
+  })
+}
+
+function lensInstruction(lens) {
+  if (lens === 'transmission') return '解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。'
+  if (lens === 'falsification') return '提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。'
+  return '建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。'
+}
+
+export function buildMarketResearchPack(entry, publication = entry) {
+  const eventIds = new Set((entry.events || []).map(event => event.id))
+  validateResearchQuestions(entry, eventIds, 'market research pack')
+  if (entry.schemaVersion !== 2) return undefined
+  if (typeof publication.snapshotId !== 'string' || !publication.snapshotId.startsWith(`market-${entry.date}-`)) {
+    throw new Error('market research pack requires the matching market snapshotId.')
+  }
+  if (typeof publication.asOf !== 'string' || Number.isNaN(Date.parse(publication.asOf))) {
+    throw new Error('market research pack requires a valid asOf.')
+  }
+  if (publication.origin !== 'research' || publication.publicationState !== 'published') {
+    throw new Error('market research pack requires a published research snapshot.')
+  }
+
+  const questions = entry.researchQuestions.map(question => {
+    const focusedEvents = question.focusEventIds.map(eventId => entry.events.find(event => event.id === eventId))
+    const evidence = focusedEvents.map((event, index) => [
+      `材料 ${index + 1}｜${event.title}`,
+      `已确认事实：${event.fact}`,
+      `关注机制：${event.whyWatch}`,
+      `接下来验证：${event.watchFor}`,
+      `失效条件：${event.invalidation}`,
+      `一手来源：${event.sourceUrl}`,
+    ].join('\n')).join('\n\n')
+    const prompt = [
+      `研究任务：${question.shortQuestion}`,
+      `证据快照：${entry.date}；asOf=${new Date(publication.asOf).toISOString()}；snapshotId=${publication.snapshotId}`,
+      '',
+      evidence,
+      '',
+      `分析镜头：${lensInstruction(question.lens)}`,
+      '输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。',
+      '证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。',
+      '边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。',
+    ].join('\n')
+    if (prompt.length > RESEARCH_PROMPT_MAX_LENGTH) {
+      throw new Error(`market research question ${question.id} prompt exceeds ${RESEARCH_PROMPT_MAX_LENGTH} characters.`)
+    }
+    return {
+      id: question.id,
+      lens: question.lens,
+      shortQuestion: question.shortQuestion,
+      focusEventIds: [...question.focusEventIds],
+      prompt,
+      promptChecksum: createHash('sha256').update(prompt).digest('hex'),
+      sourceUrls: focusedEvents.map(event => event.sourceUrl),
+    }
+  })
+
+  return {
+    schemaVersion: 2,
+    date: entry.date,
+    snapshotId: publication.snapshotId,
+    asOf: new Date(publication.asOf).toISOString(),
+    origin: 'research',
+    publicationState: 'published',
+    pageUrl: `${SITE_URL}/market-radar/${entry.date}`,
+    questions,
+  }
+}
+
 export function validateMarketRadar(entry, fileName = 'market radar') {
   if (!entry || typeof entry !== 'object' || Array.isArray(entry)) throw new Error(`${fileName}: entry must be an object.`)
   assertResearchPublication(entry, fileName)
@@ -153,6 +264,7 @@ export function validateMarketRadar(entry, fileName = 'market radar') {
     return new URL(url).href
   }))
   if (declaredUrls.size !== eventUrls.size || [...eventUrls].some(url => !declaredUrls.has(url))) throw new Error(`${fileName}: sourceUrls must exactly match event sources.`)
+  validateResearchQuestions(entry, eventIds, fileName)
   if (entry.date >= MARKET_QUANT_REQUIRED_FROM && !entry.quantStrategy) {
     throw new Error(`${fileName}: quantStrategy is required from ${MARKET_QUANT_REQUIRED_FROM}.`)
   }

@@ -33,7 +33,7 @@
     "test:radar-db": "RUN_RADAR_DB_TESTS=true node --test --test-name-pattern='real PostgreSQL' scripts/dual-timeline-contract.test.mjs scripts/timeline-review.test.mjs",
     "test:notifications": "PYTHONDONTWRITEBYTECODE=1 node --test scripts/radar-notifications.test.mjs",
     "test:local-backend": "PYTHONDONTWRITEBYTECODE=1 node --test scripts/local-backend.test.mjs",
-    "test:release": "node --test scripts/release-workflow.test.mjs",
+    "test:release": "node --test scripts/release-workflow.test.mjs scripts/market-research-production.test.mjs",
     "test:article-shadow": "node --test scripts/article-catalog-shadow.test.mjs",
     "test:content-preview": "node --test scripts/content-catalog-preview.test.mjs",
     "test:quality": "node --test scripts/site-quality.test.mjs",
@@ -59,6 +59,7 @@
     "radar:publish-snapshots": "node scripts/publish-radar-snapshots.mjs",
     "radar:publish-local-git-snapshots": "node ops/local-backend/publish-git-snapshots.mjs",
     "notifications:enqueue": "node scripts/enqueue-radar-notifications.mjs",
+    "verify:market-radar-production": "node scripts/verify-market-research-production.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
