@@ -502,7 +502,11 @@ test('an existing learning digest can idempotently repair its missing outbox ite
   const client = {
     async query(statement, values = []) {
       statements.push(statement)
-      if (statement.includes('from radar_system.publication_snapshots')) return { rows: [{ snapshot_id: 'learning-snapshot-1' }] }
+      if (statement.includes('from radar_system.publication_snapshots')) {
+        assert.match(statement, /as_of at time zone 'Asia\/Shanghai'/)
+        assert.equal(values[0], '2026-08-11')
+        return { rows: [{ snapshot_id: 'learning-snapshot-1' }] }
+      }
       if (statement.includes('from learning_radar.public_timeline_items')) {
         return { rows: [{ importance: 'key', title_zh: 'fixture', why_selected_zh: 'verified' }] }
       }
@@ -586,10 +590,12 @@ test('a successful digest job run still repairs a missing learning outbox item',
   assert.equal(statements.includes('rollback'), false)
 })
 
-test('learning digest fails closed before any write without a published research snapshot',async()=>{
-  const statements=[];const client={query:async(statement)=>{statements.push(statement);return{rows:[]}}}
+test('learning digest fails closed before any write without a same-day published research snapshot',async()=>{
+  const statements=[];const client={query:async(statement,values=[])=>{statements.push({statement,values});return{rows:[]}}}
   await assert.rejects(generateLearningDailyDigest(client,new Date('2026-08-11T00:00:00Z')),/learning_published_snapshot_missing/)
-  assert.equal(statements.some(statement=>/insert into learning_radar\.(?:digests|outbox)/.test(statement)),false)
+  assert.match(statements[0].statement,/as_of at time zone 'Asia\/Shanghai'/)
+  assert.equal(statements[0].values[0],'2026-08-11')
+  assert.equal(statements.some(({statement})=>/insert into learning_radar\.(?:digests|outbox)/.test(statement)),false)
 })
 
 test('Learning workflow keeps exact-SHA marker authorization and release DAG ordering', () => {

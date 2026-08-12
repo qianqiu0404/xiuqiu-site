@@ -1290,16 +1290,24 @@ test('real PostgreSQL applies migrations twice, rolls back failures and enforces
     from learning_radar.story_sources where story_id = $1`, [approvedPipelineStory.rows[0].id])
   assert.equal(retainedLearningStructure.rows[0].sources, 1)
 
+  const digestNow = new Date(`${learningPublication.snapshotId.slice(9, 19)}T15:59:00.000Z`)
   const firstDigest = await withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => (
-    generateLearningDailyDigest(client, pipelineNow)
+    generateLearningDailyDigest(client, digestNow)
   ))
   const repeatedDigest = await withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => (
-    generateLearningDailyDigest(client, pipelineNow)
+    generateLearningDailyDigest(client, digestNow)
   ))
   assert.equal(firstDigest.value.created, true)
   assert.equal(repeatedDigest.value.created, false)
-  const marketDigest=await withRadarDatabaseLock({databaseUrl,wait:true,createPool},({client})=>generateDailyDigest({query:async(statement,values)=>(await client.query(statement,values)).rows},pipelineNow))
+  const marketDigest=await withRadarDatabaseLock({databaseUrl,wait:true,createPool},({client})=>generateDailyDigest({query:async(statement,values)=>(await client.query(statement,values)).rows},digestNow))
   assert.equal(marketDigest.value.created,true)
+  const nextShanghaiDate = new Date(digestNow.getTime() + 24 * 60 * 60_000)
+  await assert.rejects(withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => (
+    generateLearningDailyDigest(client, nextShanghaiDate)
+  )), /learning_published_snapshot_missing_for_date/)
+  await assert.rejects(withRadarDatabaseLock({ databaseUrl, wait: true, createPool }, ({ client }) => (
+    generateDailyDigest({ query: async (statement, values) => (await client.query(statement, values)).rows }, nextShanghaiDate)
+  )), /market_published_snapshot_missing_for_date/)
   const learningDigestBoundary=await observer.query(`select d.origin digest_origin,d.publication_state digest_state,
       d.snapshot_id digest_snapshot,o.origin outbox_origin,o.publication_state outbox_state,o.snapshot_id outbox_snapshot
     from learning_radar.digests d join learning_radar.outbox o on o.payload->>'digestId'=d.id

@@ -30,8 +30,9 @@ export async function generateLearningDailyDigest(client, now = new Date()) {
   const periodStart = new Date(periodEnd.getTime() - 24 * 60 * 60_000)
   const publication = (await client.query(`select snapshot_id from radar_system.publication_snapshots
     where radar_kind = 'learning' and origin = 'research' and publication_state = 'published'
-    order by as_of desc, snapshot_id desc limit 1 for share`)).rows[0]
-  if (!publication) throw new Error('learning_published_snapshot_missing')
+      and (as_of at time zone 'Asia/Shanghai')::date = $1::date
+    order by as_of desc, snapshot_id desc limit 1 for share`, [date])).rows[0]
+  if (!publication) throw new Error('learning_published_snapshot_missing_for_date')
   const rows = (await client.query(`select id, importance, title_zh, why_selected_zh, occurred_at
     from learning_radar.public_timeline_items
     where occurred_at >= $1 and occurred_at < $2 and snapshot_id = $3

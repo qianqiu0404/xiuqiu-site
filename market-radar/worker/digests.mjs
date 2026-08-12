@@ -227,13 +227,16 @@ async function publicEvents(sql, start, end, snapshotId, priorities = ['P0', 'P1
     order by score desc, occurred_at desc limit 20`, [start, end, priorities, snapshotId])
 }
 
-async function withPublishedMarketSnapshot(sql, work) {
+async function withPublishedMarketSnapshot(sql, work, expectedShanghaiDate = null) {
   await sql.query('begin')
   try {
     const publication = (await sql.query(`select snapshot_id from radar_system.publication_snapshots
       where radar_kind = 'market' and origin = 'research' and publication_state = 'published'
-      order by as_of desc, snapshot_id desc limit 1 for share`))[0]
-    if (!publication) throw new Error('market_published_snapshot_missing')
+        and ($1::date is null or (as_of at time zone 'Asia/Shanghai')::date = $1::date)
+      order by as_of desc, snapshot_id desc limit 1 for share`, [expectedShanghaiDate]))[0]
+    if (!publication) throw new Error(expectedShanghaiDate
+      ? 'market_published_snapshot_missing_for_date'
+      : 'market_published_snapshot_missing')
     const result = await work(publication.snapshot_id)
     await sql.query('commit')
     return result
@@ -262,7 +265,7 @@ export async function generateDailyDigest(sql, now = new Date()) {
     periodStart, periodEnd, events: await publicEvents(sql, periodStart, periodEnd, snapshotId), outboxKind: 'daily',
     idempotencyKey: `market:daily:${shanghaiDate}`, pageUrl: `/market-radar/${shanghaiDate}`, allowQuiet: true,
     snapshotId,
-  }))
+  }), shanghaiDate)
 }
 
 export async function generateUsPremarketDigest(sql, now = new Date()) {
