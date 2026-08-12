@@ -110,6 +110,8 @@ async function loadTimeline() {
     if (!itemsResponse.ok || !itemsResponse.headers.get('content-type')?.includes('application/json')) throw new Error('events-unavailable')
     const timeline = parseMarketTimelineList(await itemsResponse.json())
     if (!timeline || timeline.status === 'unconfigured') throw new Error('events-unconfigured')
+    if (!latest || timeline.snapshotId !== latest.snapshotId
+      || !summaryPayload || summaryPayload.snapshotId !== latest.snapshotId) throw new Error('snapshot-mismatch')
     apiCards.value = timeline.items.map(toTradeTimelineCard)
     nextCursor.value = timeline.nextCursor
     summary.value = summaryPayload
@@ -146,6 +148,7 @@ async function loadMore() {
     if (!response.ok || !response.headers.get('content-type')?.includes('application/json')) throw new Error('page-unavailable')
     const page = parseMarketTimelineList(await response.json())
     if (!page || page.status === 'unconfigured') throw new Error('invalid-page')
+    if (!latest || page.snapshotId !== latest.snapshotId) throw new Error('snapshot-mismatch')
     const merged = mergeTradeTimelinePage(apiCards.value, page, requestedCursor, requestedCursors.value)
     apiCards.value = merged.cards
     nextCursor.value = merged.nextCursor

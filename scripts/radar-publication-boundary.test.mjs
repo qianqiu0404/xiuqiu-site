@@ -45,6 +45,11 @@ test('static and API datasets are never merged across snapshot ids', () => {
 test('snapshot publishing is separate from notification delivery', () => {
   const publisher = readFileSync(new URL('./publish-radar-snapshots.mjs', import.meta.url), 'utf8')
   const store = readFileSync(new URL('./radar-publication-store.mjs', import.meta.url), 'utf8')
+  const notifications = readFileSync(new URL('./enqueue-radar-notifications.mjs', import.meta.url), 'utf8')
   assert.match(`${publisher}\n${store}`, /publication_snapshots/)
   assert.doesNotMatch(`${publisher}\n${store}`, /\.outbox|build\w*Notification|enqueue/i)
+  assert.doesNotMatch(notifications, /publishRadarSnapshot|radar-publication-store/)
+  assert.match(notifications, /requirePublishedSnapshot/)
+  assert.match(notifications, /source_revision=\$6/)
+  assert.match(notifications, /verifyExactGitPublication/)
 })

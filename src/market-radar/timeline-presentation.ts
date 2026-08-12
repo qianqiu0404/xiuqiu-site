@@ -135,6 +135,8 @@ function isMarketEvent(value: unknown, allowReports: boolean): value is MarketRa
     || !isText(event.eventType) || !directionValues.has(String(event.newsDirection))
     || !isText(event.systemJudgment) || !horizonValues.has(String(event.horizon))
     || !isStrictMarketIso(event.occurredAt) || !isStrictMarketIso(event.publishedAt)
+    || !isText(event.snapshotId) || !/^market-\d{4}-\d{2}-\d{2}-[0-9a-f]{16}$/.test(event.snapshotId)
+    || !isStrictMarketIso(event.snapshotAsOf)
     || !Number.isInteger(event.sourceCount) || Number(event.sourceCount) < 1
     || !Array.isArray(event.sources) || event.sources.length < 1
     || !event.sources.every(source => source && isText(source.name) && isSafePublicMarketUrl(source.url))
@@ -161,6 +163,9 @@ export function parseMarketTimelineList(value: unknown): MarketRadarEventList | 
   const ids = Array.isArray(payload.items) ? payload.items.map(item => item?.id) : []
   if (!healthValues.has(String(payload.status)) || !hasValidMessage(payload)
     || !Array.isArray(payload.items) || !payload.items.every(item => isMarketEvent(item, false))
+    || (payload.snapshotId === null ? payload.asOf !== null || payload.items.length > 0
+      : !isText(payload.snapshotId) || !/^market-\d{4}-\d{2}-\d{2}-[0-9a-f]{16}$/.test(payload.snapshotId)
+        || !isStrictMarketIso(payload.asOf) || payload.items.some(item => item.snapshotId !== payload.snapshotId))
     || new Set(ids).size !== ids.length
     || (payload.nextCursor !== null && (!isText(payload.nextCursor) || cursorSeparator < 1
       || !isStrictMarketIso(payload.nextCursor.slice(0, cursorSeparator))
@@ -172,6 +177,9 @@ export function parseMarketTimelineSummary(value: unknown): MarketRadarSummary |
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null
   const summary = value as Partial<MarketRadarSummary>
   if (!healthValues.has(String(summary.status)) || !hasValidMessage(summary)
+    || (summary.snapshotId === null ? summary.asOf !== null
+      : !isText(summary.snapshotId) || !/^market-\d{4}-\d{2}-\d{2}-[0-9a-f]{16}$/.test(summary.snapshotId)
+        || !isStrictMarketIso(summary.asOf))
     || !isStrictMarketIso(summary.generatedAt)
     || (summary.latestEventAt !== null && !isStrictMarketIso(summary.latestEventAt))
     || (summary.freshnessMinutes !== null && (!Number.isInteger(summary.freshnessMinutes) || Number(summary.freshnessMinutes) < 0))

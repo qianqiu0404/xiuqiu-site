@@ -43,17 +43,19 @@ export async function persistMarketSourceBatch({
       entry,
     ]))
     let inserted = 0
-    let published = 0
+    let approved = 0
+    let replayed = 0
     for (const item of items) {
       const summary = prepared.get(`${item.provider}:${item.providerId}`)?.summary || null
       const result = await persistItem(item, summary)
       if (result.inserted) inserted += 1
-      if (result.published) published += 1
+      if (result.approved) approved += 1
+      if (result.replayed) replayed += 1
     }
     const newest = newestMarketSourceCursor(fetchedItems, cursor)
     await saveCursor(encodeMarketSourceCursor(newest))
     await finishRun(runId, 'succeeded', items.length)
-    return { source, fetched: fetchedItems.length, items: items.length, inserted, published }
+    return { source, fetched: fetchedItems.length, items: items.length, inserted, approved, replayed, published: 0 }
   } catch (error) {
     const code = error instanceof Error ? error.message.slice(0, 120) : 'unknown_error'
     await finishRun(runId, 'failed', 0, code)

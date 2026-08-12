@@ -18,6 +18,7 @@ import {
 } from '../market-radar/worker/orchestration.mjs'
 import { parseEventCursor } from '../src/market-radar/contracts.ts'
 import { splitRadarMigrationStatements } from '../market-radar/worker/migrations.mjs'
+import { persistMarketItem } from '../market-radar/worker/persistence.mjs'
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8')
 
@@ -396,13 +397,38 @@ test('event pagination cursor keeps timestamp and id together', () => {
   assert.match(repository, /occurred_at >= now\(\) - /)
 })
 
-test('a confirmed draft can publish and enqueue P0 exactly once', () => {
+test('a confirmed draft becomes a private approved candidate without an outbox write', () => {
   const persistence = read('market-radar/worker/persistence.mjs')
-  assert.match(persistence, /existing\.status !== 'rejected'[\s\S]*hasCompleteAiV2Boundaries\(existing\) && score >= 50 && isFreshForPublic/)
-  assert.match(persistence, /when status = 'rejected' then 'rejected'[\s\S]*when \$4::boolean then 'published'/)
-  assert.match(persistence, /published_at = case[\s\S]*when status = 'rejected' then null[\s\S]*when \$4::boolean then coalesce\(published_at, now\(\)\)/)
-  assert.match(persistence, /existing\.priority !== 'P0'/)
-  assert.match(persistence, /on conflict \(idempotency_key\) do nothing/)
+  assert.match(persistence, /hasCompleteAiV2Boundaries\(existing\) && score >= 50 && isFreshForPublic/)
+  assert.match(persistence, /when \$4::boolean then 'approved'/)
+  assert.match(persistence, /approved_at = case when \$4::boolean then coalesce\(approved_at, now\(\)\)/)
+  assert.match(persistence, /published_at = null/)
+  assert.doesNotMatch(persistence, /insert into market_radar\.outbox/)
+})
+
+test('locked Market candidate exact replay is zero-write while changed evidence gets a new draft revision id', async()=>{
+  const item={provider:'github_releases',providerId:'bitcoin:release-1',market:'crypto',sourceUrl:'https://github.com/bitcoin/bitcoin/releases/tag/v1',title:'Bitcoin Core release',summary:'A release summary.',sourceReport:{title:'Bitcoin Core release notes',excerpt:'Original notes.',publishedAt:'2026-08-12T00:00:00Z'},publishedAt:'2026-08-12T00:00:00Z',explicitSymbols:['BTC'],payload:{tag:'v1'}}
+  const replayStatements=[]
+  const replayClient={query:async(statement)=>{replayStatements.push(statement);if(statement.includes('from market_radar.events e')&&statement.includes('exact_replay'))return{rows:[{id:'locked',exact_replay:true}]};return{rows:[]}}}
+  const replay=await persistMarketItem(replayClient,item,{now:new Date('2026-08-12T00:01:00Z')})
+  assert.equal(replay.replayed,true);assert.deepEqual(replayStatements.filter(statement=>/insert|update/i.test(statement)),[])
+
+  let revisedProviderId=null;const changedStatements=[]
+  const changedClient={query:async(statement,values=[])=>{changedStatements.push(statement)
+    if(statement.includes('from market_radar.events e')&&statement.includes('exact_replay'))return{rows:[{id:'locked',exact_replay:false}]}
+    if(statement.includes('from market_radar.events e')&&statement.includes('join market_radar.event_sources'))return{rows:[]}
+    if(statement.includes('from market_radar.events e')&&statement.includes('left join market_radar.event_sources'))return{rows:[]}
+    if(statement.includes('from market_radar.raw_items where provider'))return{rows:[]}
+    if(statement.includes('insert into market_radar.raw_items')){revisedProviderId=values[2];return{rows:[{id:'raw-revision'}]}}
+    if(statement.includes('insert into market_radar.events')){assert.equal(values[4],'draft');return{rows:[]}}
+    if(statement.includes('select raw_item_id, is_primary'))return{rows:[]}
+    if(statement.includes('insert into market_radar.event_sources'))return{rows:[]}
+    if(statement.includes('select es.raw_item_id'))return{rows:[{raw_item_id:'raw-revision'}]}
+    return{rows:[]}
+  }}
+  const changed=await persistMarketItem(changedClient,{...item,sourceReport:{...item.sourceReport,excerpt:'Corrected notes.'}},{now:new Date('2026-08-12T00:02:00Z')})
+  assert.match(revisedProviderId,/^bitcoin:release-1:revision:[0-9a-f]{16}$/);assert.equal(changed.approved,false);assert.equal(changed.published,false)
+  assert.equal(changedStatements.some(statement=>statement.includes('insert into market_radar.outbox')),false)
 })
 
 test('new events publish only with complete AI v2 verification boundaries', () => {
@@ -414,7 +440,7 @@ test('new events publish only with complete AI v2 verification boundaries', () =
   assert.match(summarizer, /max_tokens: 900/)
   assert.match(summarizer, /JSON\.stringify\(\{ title: item\.title, summary: item\.summary, provider: item\.provider, assets \}\)/)
   assert.doesNotMatch(summarizer, /item\.(?:payload|sourceUrl|providerId|explicitSymbols)/)
-  assert.match(persistence, /const publishable = Boolean\(summary\) && score >= 50 && isFreshForPublic/)
+  assert.match(persistence, /const approvable = !revision && Boolean\(summary\) && score >= 50 && isFreshForPublic/)
   assert.match(persistence, /summary \? 'v2' : null/)
   assert.match(persistence, /summary\?\.watchFor \|\| null, summary\?\.invalidation \|\| null/)
   assert.doesNotMatch(persistence, /summary \? 'v1' : null/)

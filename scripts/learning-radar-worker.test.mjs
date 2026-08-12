@@ -37,6 +37,7 @@ import {
   generateLearningDailyDigest,
   runLearningDailyDigest,
 } from '../learning-radar/worker/digests.mjs'
+import { persistPreparedLearningItem } from '../learning-radar/worker/persistence.mjs'
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8')
 const publicResolver = async () => [{ address: '93.184.216.34', family: 4 }]
@@ -69,6 +70,23 @@ function normalized(overrides = {}) {
     ...overrides,
   }, { now })
 }
+
+test('locked Learning candidate exact replay is zero-write and changed evidence uses a distinct revision provider id',async()=>{
+  const item=normalized();const prepared={item,analysis:null}
+  const replayStatements=[];const replayClient={query:async statement=>{replayStatements.push(statement);if(statement.includes('from learning_radar.stories s')&&statement.includes('exact_replay'))return{rows:[{id:'locked',exact_replay:true}]};return{rows:[]}}}
+  const replay=await persistPreparedLearningItem(replayClient,prepared,{now});assert.equal(replay.replayed,true);assert.deepEqual(replayStatements.filter(statement=>/insert|update/i.test(statement)),[])
+  let revisionProviderId=null
+  const changedClient={query:async(statement,values=[])=>{
+    if(statement.includes('from learning_radar.stories s')&&statement.includes('exact_replay'))return{rows:[{id:'locked',exact_replay:false}]}
+    if(statement.includes('from learning_radar.stories s')&&statement.includes('join learning_radar.story_sources'))return{rows:[]}
+    if(statement.includes('from learning_radar.stories s')&&statement.includes('left join learning_radar.story_sources'))return{rows:[]}
+    if(statement.includes('from learning_radar.raw_items'))return{rows:[]}
+    if(statement.includes('insert into learning_radar.raw_items')){revisionProviderId=values[2];throw new Error('revision_probe')}
+    return{rows:[]}
+  }}
+  await assert.rejects(persistPreparedLearningItem(changedClient,{...prepared,item:{...item,excerpt:'Corrected official excerpt.'}},{now}),/revision_probe/)
+  assert.match(revisionProviderId,/^openai\/openai-node:101:revision:[0-9a-f]{16}$/)
+})
 
 function validAnalysis(overrides = {}) {
   return validateLearningAiOutput({

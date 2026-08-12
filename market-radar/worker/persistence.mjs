@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import {
   clusterKey,
   hasCompleteAiV2Boundaries,
@@ -18,6 +19,14 @@ async function query(client, statement, values = []) {
   return rows(await client.query(statement, values))
 }
 
+function canonicalJson(value) {
+  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(',')}]`
+  if (value && typeof value === 'object') {
+    return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(',')}}`
+  }
+  return JSON.stringify(value)
+}
+
 export async function findMarketEventCandidate(client, item) {
   const attached = await query(client, `select e.id, e.title_zh, e.score, e.priority, e.status,
       e.ai_schema_version, e.watch_for_zh, e.invalidation_zh
@@ -25,6 +34,7 @@ export async function findMarketEventCandidate(client, item) {
     join market_radar.event_sources es on es.event_id = e.id
     join market_radar.raw_items r on r.id = es.raw_item_id
     where r.provider = $1 and r.provider_id = $2
+      and e.status = 'draft' and e.snapshot_id is null and e.publication_state = 'draft'
     limit 1`, [item.provider, item.providerId])
   if (attached[0]) return attached[0]
 
@@ -37,6 +47,7 @@ export async function findMarketEventCandidate(client, item) {
     left join market_radar.event_sources es on es.event_id = e.id
     left join market_radar.raw_items r on r.id = es.raw_item_id
     where e.market = $2
+      and e.status = 'draft' and e.snapshot_id is null and e.publication_state = 'draft'
       and e.occurred_at >= $3::timestamptz - interval '48 hours'
       and e.occurred_at <= $3::timestamptz + interval '48 hours'
     group by e.id
@@ -50,6 +61,54 @@ export async function findMarketEventCandidate(client, item) {
     )
     return candidate.exact_cluster === true || similarity >= 0.45
   }) || null
+}
+
+function marketRevisionFingerprint(item, serializedPayload, report) {
+  return canonicalJson({
+    provider: item.provider, providerId: item.providerId, market: item.market, sourceUrl: item.sourceUrl,
+    title: item.title, summary: item.summary, publishedAt: item.publishedAt,
+    explicitSymbols: item.explicitSymbols || [], payload: JSON.parse(serializedPayload), report,
+  })
+}
+
+async function marketProviderState(client, item, serializedPayload, report) {
+  const locked = await query(client, `select e.id
+      , r.market = $3 and r.source_url = $4 and r.title = $5
+        and r.published_at = $6::timestamptz
+        and coalesce(r.payload_fingerprint,md5(r.payload::text)) = md5(($7::jsonb)::text)
+        and es.source_name=$8 and es.source_url=$4 and es.title is not distinct from $9
+        and es.excerpt is not distinct from $10 and es.published_at is not distinct from $11::timestamptz
+        as exact_replay
+    from market_radar.events e
+    join market_radar.event_sources es on es.event_id = e.id
+    join market_radar.raw_items r on r.id = es.raw_item_id
+    where r.provider = $1 and r.provider_id = $2
+      and (e.status <> 'draft' or e.snapshot_id is not null or e.publication_state <> 'draft')
+    limit 1`, [item.provider, item.providerId, item.market, item.sourceUrl, item.title, item.publishedAt,
+    serializedPayload, item.provider, report.title, report.excerpt, report.publishedAt])
+  return locked[0] || null
+}
+
+async function marketExactProviderState(client, item, serializedPayload, report) {
+  const attached = await query(client, `select e.id
+      , r.market = $3 and r.source_url = $4 and r.title = $5
+        and r.published_at = $6::timestamptz
+        and coalesce(r.payload_fingerprint,md5(r.payload::text)) = md5(($7::jsonb)::text)
+        and es.source_name=$8 and es.source_url=$4 and es.title is not distinct from $9
+        and es.excerpt is not distinct from $10 and es.published_at is not distinct from $11::timestamptz
+        as exact_replay
+    from market_radar.events e
+    join market_radar.event_sources es on es.event_id = e.id
+    join market_radar.raw_items r on r.id = es.raw_item_id
+    where r.provider = $1 and r.provider_id = $2
+    limit 1`, [item.provider, item.providerId, item.market, item.sourceUrl, item.title, item.publishedAt,
+    serializedPayload, item.provider, report.title, report.excerpt, report.publishedAt])
+  return attached[0] || null
+}
+
+function marketRevisionItem(item, serializedPayload, report) {
+  const revision = createHash('sha256').update(marketRevisionFingerprint(item, serializedPayload, report)).digest('hex').slice(0, 16)
+  return { ...item, providerId: `${item.providerId}:revision:${revision}` }
 }
 
 async function upsertRawItem(client, item, serializedPayload) {
@@ -145,15 +204,6 @@ async function upsertAssets(client, eventId, assets) {
   }
 }
 
-async function enqueueP0(client, eventId, payload) {
-  await query(client, `insert into market_radar.outbox
-    (id, event_id, kind, idempotency_key, payload, available_at)
-    values ($1,$2,'p0',$3,$4::jsonb,now()) on conflict (idempotency_key) do nothing`, [
-    crypto.randomUUID(), eventId, `market:p0:${eventId}`,
-    JSON.stringify({ ...payload, pageUrl: `/market-radar/events/${eventId}` }),
-  ])
-}
-
 export async function persistMarketItem(client, item, {
   summary = null,
   now = new Date(),
@@ -163,98 +213,98 @@ export async function persistMarketItem(client, item, {
   const key = clusterKey(item.title, item.publishedAt)
   await client.query('begin')
   try {
-    const raw = await upsertRawItem(client, item, serializedPayload)
-    const existing = await findMarketEventCandidate(client, item)
+    const report = normalizeMarketSourceReport(item.sourceReport, { now })
+    const providerState = await marketProviderState(client, item, serializedPayload, report)
+    if (providerState?.exact_replay === true) {
+      await client.query('commit')
+      return { eventId: providerState.id, inserted: false, published: false, approved: false, replayed: true, locked: true }
+    }
+    const revision = Boolean(providerState)
+    const workingItem = revision ? marketRevisionItem(item, serializedPayload, report) : item
+    if (revision) {
+      const revisionState = await marketExactProviderState(client, workingItem, serializedPayload, report)
+      if (revisionState?.exact_replay === true) {
+        await client.query('commit')
+        return {
+          eventId: revisionState.id, inserted: false, published: false, approved: false,
+          replayed: true, locked: false,
+        }
+      }
+    }
+    const existing = await findMarketEventCandidate(client, workingItem)
+    const raw = await upsertRawItem(client, workingItem, serializedPayload)
     if (existing) {
-      const source = await upsertEventSource(client, { eventId: existing.id, rawId: raw.id, item, now })
+      const source = await upsertEventSource(client, { eventId: existing.id, rawId: raw.id, item: workingItem, now })
       const countRows = await query(client, `select count(*)::integer as count
         from market_radar.event_sources where event_id = $1`, [existing.id])
       const scored = scoreEvent({
-        source: item.provider,
+        source: workingItem.provider,
         assets,
-        occurredAt: item.publishedAt,
+        occurredAt: workingItem.publishedAt,
         sourceCount: countRows[0]?.count || 1,
-        text: `${item.title} ${item.summary}`,
+        text: `${workingItem.title} ${workingItem.summary}`,
       })
       const score = Math.max(Number(existing.score), scored)
       const priority = priorityForScore(score)
-      const publishable = existing.status !== 'rejected'
-        && hasCompleteAiV2Boundaries(existing) && score >= 50 && isFreshForPublic(item.publishedAt, now)
+      const approvable = !revision && hasCompleteAiV2Boundaries(existing) && score >= 50 && isFreshForPublic(workingItem.publishedAt, now)
       await upsertAssets(client, existing.id, assets)
-      await query(client, `update market_radar.events set score = $2, priority = $3,
+      const updated = await query(client, `update market_radar.events set score = $2, priority = $3,
         status = case
-          when status = 'rejected' then 'rejected'
-          when $4::boolean then 'published'
+          when $4::boolean then 'approved'
           else status
         end,
-        published_at = case
-          when status = 'rejected' then null
-          when $4::boolean then coalesce(published_at, now())
-          else published_at
-        end,
+        approved_at = case when $4::boolean then coalesce(approved_at, now()) else approved_at end,
+        published_at = null,
         occurred_at = least(occurred_at, $5::timestamptz),
-        updated_at = now() where id = $1`, [existing.id, score, priority, publishable, item.publishedAt])
-      if (publishable && priority === 'P0' && existing.priority !== 'P0') {
-        await enqueueP0(client, existing.id, {
-          eventId: existing.id,
-          priority,
-          title: existing.title_zh,
-          summary: item.summary,
-          sourceUrl: item.sourceUrl,
-        })
-      }
+        updated_at = now() where id = $1 and status = 'draft'
+          and snapshot_id is null and publication_state = 'draft'
+        returning id`, [existing.id, score, priority, approvable, workingItem.publishedAt])
+      if (!updated[0]) throw new Error('market_candidate_locked')
       await client.query('commit')
       return {
         eventId: existing.id,
         inserted: raw.inserted,
         revised: raw.revised,
         sourceAdded: source.added,
-        published: publishable,
+        published: false,
+        approved: approvable,
       }
     }
 
     const score = scoreEvent({
-      source: item.provider,
+      source: workingItem.provider,
       assets,
-      occurredAt: item.publishedAt,
-      text: `${item.title} ${item.summary}`,
+      occurredAt: workingItem.publishedAt,
+      text: `${workingItem.title} ${workingItem.summary}`,
     })
     const priority = priorityForScore(score)
-    const publishable = Boolean(summary) && score >= 50 && isFreshForPublic(item.publishedAt, now)
+    const approvable = !revision && Boolean(summary) && score >= 50 && isFreshForPublic(workingItem.publishedAt, now)
     const id = crypto.randomUUID()
-    const slug = `${new Date(item.publishedAt).toISOString().slice(0, 10)}-${normalizeTitle(item.title).replace(/ /g, '-').slice(0, 90)}-${id.slice(0, 6)}`
+    const slug = `${new Date(workingItem.publishedAt).toISOString().slice(0, 10)}-${normalizeTitle(workingItem.title).replace(/ /g, '-').slice(0, 90)}-${id.slice(0, 6)}`
     await query(client, `insert into market_radar.events
       (id, slug, cluster_key, market, status, priority, score, title_zh, summary_zh, why_it_matters_zh,
        event_type, news_direction, system_judgment, horizon, ai_schema_version, occurred_at, published_at,
-       watch_for_zh, invalidation_zh)
-      values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19)`, [
-      id, slug, key, item.market, publishable ? 'published' : (score < 30 ? 'rejected' : 'draft'),
+       approved_at, watch_for_zh, invalidation_zh)
+      values ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20)`, [
+      id, slug, key, workingItem.market, approvable ? 'approved' : revision ? 'draft' : (score < 30 ? 'rejected' : 'draft'),
       priority === 'rejected' ? null : priority, score,
-      summary?.titleZh || item.title.slice(0, 160), summary?.summaryZh || '', summary?.whyItMattersZh || '',
+      summary?.titleZh || workingItem.title.slice(0, 160), summary?.summaryZh || '', summary?.whyItMattersZh || '',
       summary?.eventType || 'unclassified', summary?.direction || 'neutral', summary?.systemJudgment || '等待结构化验证',
-      summary?.horizon || 'days', summary ? 'v2' : null, item.publishedAt, publishable ? now.toISOString() : null,
+      summary?.horizon || 'days', summary ? 'v2' : null, workingItem.publishedAt, null, approvable ? now.toISOString() : null,
       summary?.watchFor || null, summary?.invalidation || null,
     ])
-    const source = await upsertEventSource(client, { eventId: id, rawId: raw.id, item, now })
+    const source = await upsertEventSource(client, { eventId: id, rawId: raw.id, item: workingItem, now })
     await upsertAssets(client, id, assets)
     await query(client, `insert into market_radar.market_reactions (event_id, status)
       values ($1, 'pending')`, [id])
-    if (publishable && priority === 'P0') {
-      await enqueueP0(client, id, {
-        eventId: id,
-        priority,
-        title: summary.titleZh,
-        summary: summary.summaryZh,
-        sourceUrl: item.sourceUrl,
-      })
-    }
     await client.query('commit')
     return {
       eventId: id,
       inserted: raw.inserted,
       revised: raw.revised,
       sourceAdded: source.added,
-      published: publishable,
+      published: false,
+      approved: approvable,
     }
   } catch (error) {
     await client.query('rollback').catch(() => undefined)

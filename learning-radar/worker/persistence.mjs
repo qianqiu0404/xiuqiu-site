@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import {
   areLearningItemsInSameCluster,
   decideLearningPublication,
@@ -15,6 +16,14 @@ function rows(result) {
 
 async function query(client, statement, values = []) {
   return rows(await client.query(statement, values))
+}
+
+function canonicalJson(value) {
+  if (Array.isArray(value)) return `[${value.map(canonicalJson).join(',')}]`
+  if (value && typeof value === 'object') {
+    return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${canonicalJson(value[key])}`).join(',')}}`
+  }
+  return JSON.stringify(value)
 }
 
 export async function claimLearningWorkerLease(client, {
@@ -38,14 +47,16 @@ export async function releaseLearningWorkerLease(client, token) {
     where lock_key = 'learning-radar-worker' and lease_token = $1`, [token])
 }
 
-async function findStory(client, item, rawId) {
+async function findStory(client, item) {
   const attached = await query(client, `select s.*, jsonb_agg(jsonb_build_object(
       'title', ss.title, 'category', s.category, 'publishedAt', ss.published_at
     )) as source_items
     from learning_radar.stories s
     join learning_radar.story_sources ss on ss.story_id = s.id
-    where ss.raw_item_id = $1
-    group by s.id limit 1`, [rawId])
+    join learning_radar.raw_items r on r.id = ss.raw_item_id
+    where r.provider = $1 and r.provider_id = $2
+      and s.status = 'draft' and s.snapshot_id is null and s.publication_state = 'draft'
+    group by s.id limit 1`, [item.provider, item.providerId])
   if (attached[0]) return attached[0]
   const candidates = await query(client, `select s.*, coalesce(jsonb_agg(jsonb_build_object(
       'title', ss.title, 'category', s.category, 'publishedAt', ss.published_at
@@ -53,12 +64,63 @@ async function findStory(client, item, rawId) {
     from learning_radar.stories s
     left join learning_radar.story_sources ss on ss.story_id = s.id
     where s.category = $1
+      and s.status = 'draft' and s.snapshot_id is null and s.publication_state = 'draft'
       and s.occurred_at >= $2::timestamptz - interval '48 hours'
       and s.occurred_at <= $2::timestamptz + interval '48 hours'
     group by s.id order by s.occurred_at desc limit 30`, [item.category, item.publishedAt])
   return candidates.find(candidate => (candidate.source_items || []).some(source => (
     areLearningItemsInSameCluster(item, source)
   ))) || null
+}
+
+async function learningProviderState(client, item, payloadJson) {
+  const locked = await query(client, `select s.id
+      , r.source_url = $3 and r.source_domain = $4 and r.title = $5
+        and r.excerpt is not distinct from $6 and r.published_at = $7::timestamptz
+        and coalesce(r.payload_fingerprint,md5(r.payload::text)) = md5(($8::jsonb)::text)
+        and r.origin_verified_at is not distinct from $9::timestamptz and r.is_official = $10
+        and r.discovered_via = $11 and r.verification_state = $12
+        and r.verification_error is not distinct from $13 as exact_replay
+    from learning_radar.stories s
+    join learning_radar.story_sources ss on ss.story_id = s.id
+    join learning_radar.raw_items r on r.id = ss.raw_item_id
+    where r.provider = $1 and r.provider_id = $2
+      and (s.status <> 'draft' or s.snapshot_id is not null or s.publication_state <> 'draft')
+    limit 1`, [item.provider, item.providerId, item.sourceUrl, item.sourceDomain, item.title, item.excerpt,
+    item.publishedAt, payloadJson, item.originVerifiedAt, item.isOfficial, item.discoveredVia,
+    item.verificationState, item.verificationError])
+  return locked[0] || null
+}
+
+async function learningExactProviderState(client, item, payloadJson) {
+  const attached = await query(client, `select s.id
+      , r.source_url = $3 and r.source_domain = $4 and r.title = $5
+        and r.excerpt is not distinct from $6 and r.published_at = $7::timestamptz
+        and coalesce(r.payload_fingerprint,md5(r.payload::text)) = md5(($8::jsonb)::text)
+        and r.origin_verified_at is not distinct from $9::timestamptz and r.is_official = $10
+        and r.discovered_via = $11 and r.verification_state = $12
+        and r.verification_error is not distinct from $13 as exact_replay
+    from learning_radar.stories s
+    join learning_radar.story_sources ss on ss.story_id = s.id
+    join learning_radar.raw_items r on r.id = ss.raw_item_id
+    where r.provider = $1 and r.provider_id = $2
+    limit 1`, [item.provider, item.providerId, item.sourceUrl, item.sourceDomain, item.title, item.excerpt,
+    item.publishedAt, payloadJson, item.originVerifiedAt, item.isOfficial, item.discoveredVia,
+    item.verificationState, item.verificationError])
+  return attached[0] || null
+}
+
+function learningRevisionItem(item, payloadJson) {
+  const fingerprint = canonicalJson({
+    provider: item.provider, providerId: item.providerId, sourceUrl: item.sourceUrl,
+    sourceDomain: item.sourceDomain, title: item.title, excerpt: item.excerpt,
+    publishedAt: item.publishedAt, originVerifiedAt: item.originVerifiedAt,
+    isOfficial: item.isOfficial, discoveredVia: item.discoveredVia,
+    verificationState: item.verificationState, verificationError: item.verificationError,
+    rawPayload: JSON.parse(payloadJson),
+  })
+  const revision = createHash('sha256').update(fingerprint).digest('hex').slice(0, 16)
+  return { ...item, providerId: `${item.providerId}:revision:${revision}` }
 }
 
 async function upsertRawItem(client, item) {
@@ -130,28 +192,44 @@ async function storySources(client, storyId) {
 
 export async function persistPreparedLearningItem(client, prepared, { now = new Date() } = {}) {
   const { item } = prepared
-  const raw = await upsertRawItem(client, item)
-  let story = await findStory(client, item, raw.id)
+  const payloadJson = JSON.stringify(item.rawPayload)
+  const providerState = await learningProviderState(client, item, payloadJson)
+  if (providerState?.exact_replay === true) {
+    return { storyId: providerState.id, inserted: false, published: false, approved: false, visible: false, replayed: true, locked: true, conflictEvidence: [] }
+  }
+  const revision = Boolean(providerState)
+  const workingItem = revision ? learningRevisionItem(item, payloadJson) : item
+  if (revision) {
+    const revisionState = await learningExactProviderState(client, workingItem, payloadJson)
+    if (revisionState?.exact_replay === true) {
+      return {
+        storyId: revisionState.id, inserted: false, published: false, approved: false,
+        visible: false, replayed: true, locked: false, conflictEvidence: [],
+      }
+    }
+  }
+  let story = await findStory(client, workingItem)
+  const raw = await upsertRawItem(client, workingItem)
   const isNewStory = !story
   if (!story) {
     const id = crypto.randomUUID()
-    const slugStem = learningClusterKey(item).replace(/[^a-z0-9\u4e00-\u9fff-]+/g, '-').slice(0, 90)
+    const slugStem = learningClusterKey(workingItem).replace(/[^a-z0-9\u4e00-\u9fff-]+/g, '-').slice(0, 90)
     const analysis = prepared.analysis
     await query(client, `insert into learning_radar.stories
       (id, slug, cluster_key, category, status, importance, internal_score, title_zh, summary_zh,
         why_selected_zh, ai_schema_version, occurred_at, verification_state, has_conflict)
       values ($1,$2,$3,$4,'draft',$5,$6,$7,$8,$9,$10,$11,'pending',$12)`, [
-        id, `${new Date(item.publishedAt).toISOString().slice(0, 10)}-${slugStem}-${id.slice(0, 6)}`,
-        learningClusterKey(item), item.category,
+        id, `${new Date(workingItem.publishedAt).toISOString().slice(0, 10)}-${slugStem}-${id.slice(0, 6)}`,
+        learningClusterKey(workingItem), workingItem.category,
         analysis?.importance || 'watch', analysis?.internalScore ?? null,
-        analysis?.titleZh || item.title.slice(0, 160), analysis?.summaryZh || '', analysis?.whySelectedZh || '',
-        analysis ? 'learning-v1' : null, item.publishedAt, analysis?.hasConflict === true,
+        analysis?.titleZh || workingItem.title.slice(0, 160), analysis?.summaryZh || '', analysis?.whySelectedZh || '',
+        analysis ? 'learning-v1' : null, workingItem.publishedAt, analysis?.hasConflict === true,
       ])
     story = (await query(client, 'select * from learning_radar.stories where id = $1', [id]))[0]
   }
 
   const currentSources = await storySources(client, story.id)
-  const isPrimary = currentSources.length === 0 || item.isOfficial
+  const isPrimary = currentSources.length === 0 || workingItem.isOfficial
   await query(client, `insert into learning_radar.story_sources
     (story_id, raw_item_id, source_name, source_url, title, excerpt, published_at, is_primary,
       origin_verified_at, source_domain, registrable_domain, is_official, discovered_via, verification_state)
@@ -169,16 +247,16 @@ export async function persistPreparedLearningItem(client, prepared, { now = new 
       is_official = excluded.is_official,
       discovered_via = excluded.discovered_via,
       verification_state = excluded.verification_state`, [
-        story.id, raw.id, item.sourceName, item.sourceUrl, item.title, item.excerpt, item.publishedAt,
-        isPrimary, item.originVerifiedAt, item.sourceDomain, item.registrableDomain, item.isOfficial,
-        item.discoveredVia, item.verificationState,
+        story.id, raw.id, workingItem.sourceName, workingItem.sourceUrl, workingItem.title, workingItem.excerpt, workingItem.publishedAt,
+        isPrimary, workingItem.originVerifiedAt, workingItem.sourceDomain, workingItem.registrableDomain, workingItem.isOfficial,
+        workingItem.discoveredVia, workingItem.verificationState,
       ])
 
   const sources = await storySources(client, story.id)
   const deterministicConflict = detectLearningSourceConflicts(sources)
   const newEvidence = [...deterministicConflict.evidence]
   if (prepared.analysis?.hasConflict === true) {
-    newEvidence.push({ kind: 'ai_reported_conflict', sourceUrl: item.sourceUrl })
+    newEvidence.push({ kind: 'ai_reported_conflict', sourceUrl: workingItem.sourceUrl })
   }
   const existingEvidence = Array.isArray(story.conflict_evidence) ? story.conflict_evidence : []
   const conflictEvidence = [...new Map([...existingEvidence, ...newEvidence]
@@ -188,12 +266,21 @@ export async function persistPreparedLearningItem(client, prepared, { now = new 
     ? { ...prepared.analysis, hasConflict: conflict }
     : null
   const decision = decideLearningPublication({ analysis: publicationAnalysis, sources, now })
-  const shouldPublish = story.status !== 'rejected'
-    && (decision.publish || story.status === 'published') && !conflict
-  await query(client, `update learning_radar.stories set
+  const shouldApprove = !revision && decision.publish && !conflict
+  if (!isNewStory && (raw.inserted || raw.titleChanged)) {
+    await query(client, `insert into learning_radar.story_updates
+      (id, story_id, title_zh, body_zh, occurred_at)
+      values ($1,$2,$3,$4,$5) on conflict (id) do nothing`, [
+        `source-update:${story.id}:${raw.id}`,
+        story.id,
+        raw.titleChanged ? '来源标题已修正' : '新增交叉来源',
+        workingItem.excerpt || workingItem.title,
+        workingItem.publishedAt,
+      ])
+  }
+  const updated = await query(client, `update learning_radar.stories set
       status = case
-        when status = 'rejected' then 'rejected'
-        when status = 'published' or $2::boolean then 'published'
+        when $2::boolean then 'approved'
         else status
       end,
       importance = coalesce($3, importance),
@@ -210,35 +297,23 @@ export async function persistPreparedLearningItem(client, prepared, { now = new 
       end,
       has_conflict = has_conflict or $10::boolean,
       conflict_evidence = $12::jsonb,
-      published_at = case
-        when status = 'rejected' then null
-        when $2::boolean then coalesce(published_at, now())
-        else published_at
-      end,
+      approved_at = case when $2::boolean then coalesce(approved_at, now()) else approved_at end,
+      published_at = null,
       occurred_at = least(occurred_at, $11::timestamptz),
       updated_at = now()
-    where id = $1`, [
-      story.id, decision.publish, prepared.analysis?.importance ?? null, prepared.analysis?.internalScore ?? null,
+    where id = $1 and status = 'draft' and snapshot_id is null and publication_state = 'draft'
+    returning id`, [
+      story.id, shouldApprove, prepared.analysis?.importance ?? null, prepared.analysis?.internalScore ?? null,
       prepared.analysis?.titleZh ?? null, prepared.analysis?.summaryZh ?? null,
-      prepared.analysis?.whySelectedZh ?? null, Boolean(prepared.analysis), decision.basis, conflict, item.publishedAt,
+      prepared.analysis?.whySelectedZh ?? null, Boolean(prepared.analysis), decision.basis, conflict, workingItem.publishedAt,
       JSON.stringify(conflictEvidence),
     ])
+  if (!updated[0]) throw new Error('learning_candidate_locked')
 
-  if (!isNewStory && (raw.inserted || raw.titleChanged)) {
-    await query(client, `insert into learning_radar.story_updates
-      (id, story_id, title_zh, body_zh, occurred_at)
-      values ($1,$2,$3,$4,$5) on conflict (id) do nothing`, [
-        `source-update:${story.id}:${raw.id}`,
-        story.id,
-        raw.titleChanged ? '来源标题已修正' : '新增交叉来源',
-        item.excerpt || item.title,
-        item.publishedAt,
-      ])
-  }
   return {
     storyId: story.id, inserted: raw.inserted,
-    published: decision.publish && story.status !== 'rejected', basis: decision.basis,
-    reason: decision.reason, visible: shouldPublish, conflictEvidence,
+    published: false, approved: shouldApprove, basis: decision.basis,
+    reason: decision.reason, visible: false, conflictEvidence,
   }
 }
 
@@ -306,7 +381,9 @@ export async function persistLearningSourceBatch(client, {
       source,
       items: selected.length,
       inserted: outcomes.filter(outcome => outcome.inserted).length,
-      published: outcomes.filter(outcome => outcome.published).length,
+      approved: outcomes.filter(outcome => outcome.approved).length,
+      replayed: outcomes.filter(outcome => outcome.replayed).length,
+      published: 0,
       cursorAdvanced: Boolean(newest),
       partialErrors,
     }

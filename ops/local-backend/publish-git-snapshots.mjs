@@ -5,6 +5,7 @@ import { createRadarPool, localRadarDatabaseUrl } from '../../market-radar/worke
 import { readRadarPublication, radarPublicationPath } from '../../scripts/radar-publication-files.mjs'
 import { publishRadarSnapshot } from '../../scripts/radar-publication-store.mjs'
 import { materializeRadarPublication } from '../../scripts/radar-publication-materializer.mjs'
+import { verifyExactGitPublication } from '../../scripts/exact-git-publication.mjs'
 const exec=promisify(execFile)
 
 export async function publishLocalGitSnapshots({repo,databaseUrl,dates,kinds=['learning','market'],git=exec,poolFactory=createRadarPool}={}){
@@ -12,20 +13,15 @@ export async function publishLocalGitSnapshots({repo,databaseUrl,dates,kinds=['l
   localRadarDatabaseUrl(databaseUrl)
   if(!repo?.startsWith('/')||!Array.isArray(dates)||!dates.length||dates.some(date=>!/^\d{4}-\d{2}-\d{2}$/.test(date)))throw new Error('Exact repo and explicit YYYY-MM-DD dates are required')
   if(kinds.some(kind=>!['learning','market'].includes(kind)))throw new Error('Only learning and market snapshots are supported')
-  const [{stdout:sha},{stdout:dirty}]=await Promise.all([
-    git('/usr/bin/git',['-C',repo,'rev-parse','HEAD']),
-    git('/usr/bin/git',['-C',repo,'status','--porcelain','--untracked-files=all']),
-  ])
-  if(dirty.trim())throw new Error('Local snapshot publishing requires an exact clean Git commit')
-  const revision=sha.trim();if(!/^[0-9a-f]{40}$/.test(revision))throw new Error('Git revision is invalid')
   const publications=[];const repoUrl=pathToFileURL(`${repo}/`)
   for(const date of dates)for(const kind of kinds){
     const path=radarPublicationPath(repoUrl,kind,date)
-    await git('/usr/bin/git',['-C',repo,'ls-files','--error-unmatch',decodeURIComponent(path.pathname).slice(repo.length+1)])
     const publication=readRadarPublication(path,kind,date)
     if(!publication)throw new Error(`${kind} radar ${date} is missing`)
-    publications.push({date,kind,publication})
+    publications.push({date,kind,publication,path:decodeURIComponent(path.pathname).slice(repo.length+1)})
   }
+  const head=await git('/usr/bin/git',['-C',repo,'rev-parse','HEAD'])
+  const revision=await verifyExactGitPublication({repo,expectedSha:head.stdout.trim(),trackedFiles:publications.map(entry=>entry.path),git})
   const pool=poolFactory({connectionString:databaseUrl,max:1,idleTimeoutMillis:10_000,connectionTimeoutMillis:5_000,application_name:'xiuqiu-radar-local-snapshot-publisher'})
   let client
   try{

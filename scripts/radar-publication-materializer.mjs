@@ -4,6 +4,7 @@ import { registrableDomain } from '../learning-radar/worker/core.mjs'
 const id=(prefix,...values)=>`${prefix}-${createHash('sha256').update(values.join('\0')).digest('hex').slice(0,24)}`
 const dated=value=>{if(value instanceof Date&&!Number.isNaN(value.getTime()))return value.toISOString();if(typeof value!=='string')return null;const normalized=/^\d{4}-\d{2}-\d{2}$/.test(value)?`${value}T00:00:00Z`:value;return Number.isNaN(Date.parse(normalized))?null:new Date(normalized).toISOString()}
 const host=value=>new URL(value).hostname.toLowerCase()
+const rows=result=>Array.isArray(result)?result:result?.rows||[]
 const OFFICIAL_SOURCE_KINDS=/^(?:official(?:_|$)|protocol_commit$|protocol_specification$)/
 const OFFICIAL_HOSTS=new Set(['openai.com','anthropic.com','ledger.com','ethereum.org','eips.ethereum.org'])
 function officialSource(source){
@@ -45,12 +46,18 @@ async function materializeMarket(sql,publication){
         invalidation_zh,origin,publication_state,snapshot_id)
       values ($1,$2,$3,$4,'published',$5,$6,$7,$8,$9,$10,'neutral',$11,'days','v2',$12,$13,$14,$15,'research','published',$16)
       on conflict (id) do update set id=excluded.id where market_radar.events.slug=excluded.slug
-        and market_radar.events.market=excluded.market and market_radar.events.priority=excluded.priority
+        and market_radar.events.cluster_key=excluded.cluster_key and market_radar.events.market=excluded.market
+        and market_radar.events.status=excluded.status and market_radar.events.priority=excluded.priority
+        and market_radar.events.score=excluded.score
         and market_radar.events.title_zh=excluded.title_zh and market_radar.events.summary_zh=excluded.summary_zh
         and market_radar.events.why_it_matters_zh=excluded.why_it_matters_zh
+        and market_radar.events.event_type=excluded.event_type and market_radar.events.news_direction=excluded.news_direction
+        and market_radar.events.system_judgment=excluded.system_judgment and market_radar.events.horizon=excluded.horizon
+        and market_radar.events.ai_schema_version=excluded.ai_schema_version
         and market_radar.events.watch_for_zh=excluded.watch_for_zh and market_radar.events.invalidation_zh=excluded.invalidation_zh
-        and market_radar.events.occurred_at=excluded.occurred_at and market_radar.events.snapshot_id=excluded.snapshot_id
-        and market_radar.events.origin='research' and market_radar.events.publication_state='published' returning id`,
+        and market_radar.events.occurred_at=excluded.occurred_at and market_radar.events.published_at=excluded.published_at
+        and market_radar.events.snapshot_id=excluded.snapshot_id and market_radar.events.origin=excluded.origin
+        and market_radar.events.publication_state=excluded.publication_state returning id`,
     [eventId,eventId,eventId,market,event.priority,event.priority==='P0'?90:event.priority==='P1'?75:55,event.title,event.fact,event.whyWatch,event.category,event.whyWatch,occurredAt,publication.asOf,event.watchFor,event.invalidation,publication.snapshotId],'market_event')
     await exactInsert(sql,`insert into market_radar.event_sources
       (event_id,raw_item_id,source_name,source_url,title,excerpt,published_at,is_primary)
@@ -84,10 +91,18 @@ async function materializeLearning(sql,publication){
         conflict_evidence,origin,publication_state,snapshot_id)
       values ($1,$2,$3,$4,'published',$5,80,$6,$7,$8,'learning-v2-git',$9,$10,$11,'verified',false,'[]'::jsonb,'research','published',$12)
       on conflict (id) do update set id=excluded.id where learning_radar.stories.slug=excluded.slug
-        and learning_radar.stories.category=excluded.category and learning_radar.stories.title_zh=excluded.title_zh
+        and learning_radar.stories.cluster_key=excluded.cluster_key and learning_radar.stories.category=excluded.category
+        and learning_radar.stories.status=excluded.status and learning_radar.stories.importance=excluded.importance
+        and learning_radar.stories.internal_score=excluded.internal_score and learning_radar.stories.title_zh=excluded.title_zh
         and learning_radar.stories.summary_zh=excluded.summary_zh and learning_radar.stories.why_selected_zh=excluded.why_selected_zh
-        and learning_radar.stories.occurred_at=excluded.occurred_at and learning_radar.stories.snapshot_id=excluded.snapshot_id
-        and learning_radar.stories.origin='research' and learning_radar.stories.publication_state='published' returning id`,
+        and learning_radar.stories.ai_schema_version=excluded.ai_schema_version
+        and learning_radar.stories.occurred_at=excluded.occurred_at and learning_radar.stories.published_at=excluded.published_at
+        and learning_radar.stories.publication_basis=excluded.publication_basis
+        and learning_radar.stories.verification_state=excluded.verification_state
+        and learning_radar.stories.has_conflict=excluded.has_conflict
+        and learning_radar.stories.conflict_evidence=excluded.conflict_evidence
+        and learning_radar.stories.snapshot_id=excluded.snapshot_id and learning_radar.stories.origin=excluded.origin
+        and learning_radar.stories.publication_state=excluded.publication_state returning id`,
     [storyId,storyId,storyId,learningCategory(brief),briefIndex<2?'key':'noteworthy',brief.title,learningSummary(brief),brief.whyItMatters,occurredAt,publication.asOf,basis,publication.snapshotId],'learning_story')
     for(const [sourceIndex,source] of datedSources.entries()){
       const rawId=id('gitlr',publication.snapshotId,brief.id,source.url);const sourceAt=dated(source.publishedAt);const sourceHost=host(source.url);const domain=registrableDomain(source.url)
@@ -98,8 +113,13 @@ async function materializeLearning(sql,publication){
         values ($1,'git_research_snapshot',$2,$3,$4,$5,$6,$7,$8::jsonb,$9,$9,$10,'git_research_snapshot','verified')
         on conflict (id) do update set id=excluded.id where learning_radar.raw_items.provider=excluded.provider
           and learning_radar.raw_items.provider_id=excluded.provider_id and learning_radar.raw_items.source_url=excluded.source_url
-          and learning_radar.raw_items.title=excluded.title and learning_radar.raw_items.published_at=excluded.published_at
-          and learning_radar.raw_items.payload=excluded.payload and learning_radar.raw_items.verification_state='verified' returning id`,
+          and learning_radar.raw_items.source_domain=excluded.source_domain and learning_radar.raw_items.title=excluded.title
+          and learning_radar.raw_items.excerpt=excluded.excerpt and learning_radar.raw_items.published_at=excluded.published_at
+          and learning_radar.raw_items.payload=excluded.payload and learning_radar.raw_items.normalized_at=excluded.normalized_at
+          and learning_radar.raw_items.origin_verified_at=excluded.origin_verified_at
+          and learning_radar.raw_items.is_official=excluded.is_official
+          and learning_radar.raw_items.discovered_via=excluded.discovered_via
+          and learning_radar.raw_items.verification_state=excluded.verification_state returning id`,
       [rawId,rawId,source.url,sourceHost,source.name,brief.whatHappened,sourceAt,JSON.stringify(rawPayload),publication.asOf,officialSource(source)],'learning_raw')
       await exactInsert(sql,`insert into learning_radar.story_sources
         (story_id,raw_item_id,source_name,source_url,title,excerpt,published_at,is_primary,origin_verified_at,
@@ -109,7 +129,12 @@ async function materializeLearning(sql,publication){
           learning_radar.story_sources.source_name=excluded.source_name and learning_radar.story_sources.source_url=excluded.source_url
           and learning_radar.story_sources.title=excluded.title and learning_radar.story_sources.excerpt=excluded.excerpt
           and learning_radar.story_sources.published_at=excluded.published_at and learning_radar.story_sources.is_primary=excluded.is_primary
-          and learning_radar.story_sources.verification_state='verified' returning story_id`,
+          and learning_radar.story_sources.origin_verified_at=excluded.origin_verified_at
+          and learning_radar.story_sources.source_domain=excluded.source_domain
+          and learning_radar.story_sources.registrable_domain=excluded.registrable_domain
+          and learning_radar.story_sources.is_official=excluded.is_official
+          and learning_radar.story_sources.discovered_via=excluded.discovered_via
+          and learning_radar.story_sources.verification_state=excluded.verification_state returning story_id`,
       [storyId,rawId,source.name,source.url,brief.title,brief.whatHappened,sourceAt,sourceIndex===0,publication.asOf,sourceHost,domain,officialSource(source)],'learning_source')
     }
     const updateId=id('gitlu',publication.snapshotId,brief.id);const body=[brief.mechanism,brief.workedExample,...brief.risksAndLimits,...brief.nextQuestions].join('\n')
@@ -121,9 +146,42 @@ async function materializeLearning(sql,publication){
   }
 }
 
+async function assertMaterializedCohort(sql,kind,publication){
+  if(kind==='market'){
+    const expectedEvents=publication.payload.events.length
+    const expectedSources=expectedEvents
+    const expectedAssets=publication.payload.events.reduce((count,event)=>count+new Set(event.assets.map(symbol=>`${marketNamespace(String(symbol).toUpperCase())}:${String(symbol).toUpperCase()}`)).size,0)
+    const cohort=rows(await sql.query(`select count(distinct e.id)::integer as member_count,
+        count(distinct (es.event_id,es.raw_item_id))::integer as source_count,
+        count(distinct (es.event_id,es.raw_item_id)) filter (where es.is_primary)::integer as primary_count,
+        count(distinct (ea.event_id,ea.namespace,ea.symbol))::integer as asset_count
+      from market_radar.events e
+      left join market_radar.event_sources es on es.event_id=e.id
+      left join market_radar.event_assets ea on ea.event_id=e.id
+      where e.snapshot_id=$1 and e.status='published' and e.origin='research' and e.publication_state='published'`,[publication.snapshotId]))[0]
+    if(!cohort||Number(cohort.member_count)!==expectedEvents||Number(cohort.source_count)!==expectedSources
+      ||Number(cohort.primary_count)!==expectedEvents||Number(cohort.asset_count)!==expectedAssets)throw new Error('market_materialization_cohort_incomplete')
+    return
+  }
+  const members=[...publication.payload.briefs,publication.payload.deepDive]
+  const expectedStories=members.length
+  const expectedSources=members.reduce((count,brief)=>count+brief.sources.filter(source=>dated(source.publishedAt)).length,0)
+  const cohort=rows(await sql.query(`select count(distinct s.id)::integer as member_count,
+        count(distinct (ss.story_id,ss.raw_item_id))::integer as source_count,
+        count(distinct ss.story_id) filter (where ss.is_primary)::integer as primary_count,
+        count(distinct u.id)::integer as update_count
+      from learning_radar.stories s
+      left join learning_radar.story_sources ss on ss.story_id=s.id
+      left join learning_radar.story_updates u on u.story_id=s.id
+      where s.snapshot_id=$1 and s.status='published' and s.origin='research' and s.publication_state='published'`,[publication.snapshotId]))[0]
+  if(!cohort||Number(cohort.member_count)!==expectedStories||Number(cohort.source_count)!==expectedSources
+    ||Number(cohort.primary_count)!==expectedStories||Number(cohort.update_count)!==expectedStories)throw new Error('learning_materialization_cohort_incomplete')
+}
+
 export async function materializeRadarPublication(sql,kind,publication){
   if(publication?.origin!=='research'||publication?.publicationState!=='published')throw new Error('Only published research may be materialized')
-  if(kind==='market')return materializeMarket(sql,publication)
-  if(kind==='learning')return materializeLearning(sql,publication)
-  throw new Error(`Unsupported radar kind: ${kind}`)
+  if(kind==='market')await materializeMarket(sql,publication)
+  else if(kind==='learning')await materializeLearning(sql,publication)
+  else throw new Error(`Unsupported radar kind: ${kind}`)
+  await assertMaterializedCohort(sql,kind,publication)
 }

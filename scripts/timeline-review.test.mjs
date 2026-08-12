@@ -23,12 +23,21 @@ const root = new URL('../', import.meta.url)
 const read = path => readFile(new URL(path, root), 'utf8')
 const releaseSha = 'a'.repeat(40)
 const isPublicTimelineView = statement => /create or replace view\s+(?:learning_radar\.public_timeline_items|market_radar\.public_events)\s+as/i.test(statement)
+const isLearningPublicView = statement => /create or replace view\s+learning_radar\.public_timeline_items\s+as/i.test(statement)
+const isMarketPublicView = statement => /create or replace view\s+market_radar\.public_events\s+as/i.test(statement)
+const isReviewFunction = statement => /create or replace function\s+radar_system\.review_timeline/i.test(statement)
 
-function selectTimelineReviewReplayStatements(reviewMigration, compatibilityMigration, publicationMigration) {
+function selectTimelineReviewReplayStatements(reviewMigration, compatibilityMigration, publicationMigration, candidateMigration) {
   return {
-    reviewStatements: reviewMigration.statements.filter(statement => !isPublicTimelineView(statement)),
+    reviewStatements: [
+      ...reviewMigration.statements.filter(statement => !isPublicTimelineView(statement)),
+      ...candidateMigration.statements.filter(isReviewFunction),
+    ],
     compatibilityStatements: compatibilityMigration.statements.filter(statement => !isPublicTimelineView(statement)),
-    currentPublicViewStatements: publicationMigration.statements.filter(isPublicTimelineView),
+    currentPublicViewStatements: [
+      ...publicationMigration.statements.filter(isLearningPublicView),
+      ...candidateMigration.statements.filter(isMarketPublicView),
+    ],
   }
 }
 
@@ -108,18 +117,20 @@ test('timeline review validates identities, versions and private notes before SQ
   assert.throws(() => validateTimelineReviewInput({ ...valid, releaseSha: releaseSha.toUpperCase() }), /lowercase/i)
 })
 
-test('timeline review replays 010/011 behavior with the current 012 public views', async () => {
+test('timeline review replays 010/011 functions with the current 013 review and public views', async () => {
   const migrations = await loadRadarMigrations()
   const reviewMigration = migrations.find(migration => migration.file === '010_timeline_review_safety.sql')
   const compatibilityMigration = migrations.find(migration => migration.file === '011_public_boundary_predicate.sql')
   const publicationMigration = migrations.find(migration => migration.file === '012_publication_content_boundary.sql')
+  const candidateMigration = migrations.find(migration => migration.file === '013_candidate_publication_state.sql')
   assert.ok(reviewMigration)
   assert.ok(compatibilityMigration)
   assert.ok(publicationMigration)
+  assert.ok(candidateMigration)
 
   const { reviewStatements, compatibilityStatements, currentPublicViewStatements } =
-    selectTimelineReviewReplayStatements(reviewMigration, compatibilityMigration, publicationMigration)
-  assert.equal(reviewMigration.statements.length - reviewStatements.length, 2)
+    selectTimelineReviewReplayStatements(reviewMigration, compatibilityMigration, publicationMigration, candidateMigration)
+  assert.equal(reviewMigration.statements.length + 1 - reviewStatements.length, 2)
   assert.equal(compatibilityMigration.statements.length - compatibilityStatements.length, 1)
   assert.equal(reviewStatements.some(statement => statement.includes('create or replace function radar_system.review_timeline')), true)
   assert.equal(compatibilityStatements.some(statement => /grant execute on function radar_system\.meaningful_timeline_boundary\(text\) to public/i.test(statement)), true)
@@ -288,13 +299,15 @@ test('real PostgreSQL protects timeline review transitions, audit privacy and ex
   const reviewMigration = migrations.find(migration => migration.file === '010_timeline_review_safety.sql')
   const compatibilityMigration = migrations.find(migration => migration.file === '011_public_boundary_predicate.sql')
   const publicationMigration = migrations.find(migration => migration.file === '012_publication_content_boundary.sql')
+  const candidateMigration = migrations.find(migration => migration.file === '013_candidate_publication_state.sql')
   assert.ok(reviewMigration)
   assert.ok(compatibilityMigration)
   assert.ok(publicationMigration)
+  assert.ok(candidateMigration)
   assert.equal(reviewMigration.statements.filter(statement => statement.includes('create or replace function radar_system.review_timeline')).length, 1)
   const { reviewStatements, compatibilityStatements, currentPublicViewStatements } =
-    selectTimelineReviewReplayStatements(reviewMigration, compatibilityMigration, publicationMigration)
-  assert.equal(reviewMigration.statements.length - reviewStatements.length, 2)
+    selectTimelineReviewReplayStatements(reviewMigration, compatibilityMigration, publicationMigration, candidateMigration)
+  assert.equal(reviewMigration.statements.length + 1 - reviewStatements.length, 2)
   assert.equal(compatibilityMigration.statements.length - compatibilityStatements.length, 1)
   assert.equal(currentPublicViewStatements.length, 2)
   assert.ok(currentPublicViewStatements.every(statement => /snapshot_id[\s\S]*snapshot_as_of/i.test(statement)))
@@ -357,7 +370,7 @@ test('real PostgreSQL protects timeline review transitions, audit privacy and ex
   const learningReview = reviewInput('learning', 'learning-approve', learningVersion, '1001', 'approve',
     `Reviewed\u0000 safely; '; drop table learning_radar.stories; --`)
   const approvedLearning = await reviewTimelineTarget(executor, learningReview)
-  assert.equal(approvedLearning.newStatus, 'published')
+  assert.equal(approvedLearning.newStatus, 'approved')
   assert.equal(approvedLearning.replayed, false)
   const learningReplay = await reviewTimelineTarget(executor, learningReview)
   assert.equal(learningReplay.replayed, true)
@@ -368,9 +381,9 @@ test('real PostgreSQL protects timeline review transitions, audit privacy and ex
   assert.equal(learningAudit.approved_by, 'reviewer-2')
   assert.equal(learningAudit.note, "Reviewed safely; '; drop table learning_radar.stories; --")
   assert.match(learningAudit.input_hash, /^[0-9a-f]{64}$/)
-  assert.deepEqual([learningAudit.previous_status, learningAudit.new_status], ['draft', 'published'])
+  assert.deepEqual([learningAudit.previous_status, learningAudit.new_status], ['draft', 'approved'])
   assert.equal((await database.query(`select count(*)::integer as count from learning_radar.public_timeline_items
-    where id = 'learning-approve'`)).rows[0].count, 1)
+    where id = 'learning-approve'`)).rows[0].count, 0)
   await database.query(`update learning_radar.story_sources
     set published_at = statement_timestamp() - interval '40 days'
     where story_id = 'learning-approve'`)
@@ -378,9 +391,9 @@ test('real PostgreSQL protects timeline review transitions, audit privacy and ex
     set payload = '{"retained":false}'::jsonb, payload_purged_at = statement_timestamp()
     where id = 'learning-approve-raw'`)
   assert.equal((await database.query(`select count(*)::integer as count from learning_radar.public_timeline_items
-    where id = 'learning-approve'`)).rows[0].count, 1)
+    where id = 'learning-approve'`)).rows[0].count, 0)
   assert.equal((await database.query(`select count(*)::integer as count from learning_radar.public_story_reports
-    where story_id = 'learning-approve'`)).rows[0].count, 1)
+    where story_id = 'learning-approve'`)).rows[0].count, 0)
   assert.equal(learningAudit.requested_by, learningAudit.requested_by.toLowerCase())
   assert.equal(learningAudit.approved_by, learningAudit.approved_by.toLowerCase())
   await assert.rejects(executor.query('select payload from learning_radar.raw_items limit 1'), /permission denied/)
@@ -464,9 +477,9 @@ test('real PostgreSQL protects timeline review transitions, audit privacy and ex
   const marketVersion = await insertMarketFixture(database, 'market-approve')
   const approvedMarket = await reviewTimelineTarget(executor,
     reviewInput('market', 'market-approve', marketVersion, '2001'))
-  assert.equal(approvedMarket.newStatus, 'published')
+  assert.equal(approvedMarket.newStatus, 'approved')
   assert.equal((await database.query(`select count(*)::integer as count from market_radar.public_events
-    where id = 'market-approve'`)).rows[0].count, 1)
+    where id = 'market-approve'`)).rows[0].count, 0)
 
   for (const [id, boundary, run] of [
     ['market-boundary-placeholder', '待补充', '2010'],
@@ -489,7 +502,7 @@ test('real PostgreSQL protects timeline review transitions, audit privacy and ex
   }
   const sixDayVersion = await insertMarketFixture(database, 'market-six-days', { occurredHoursAgo: 144 })
   assert.equal((await reviewTimelineTarget(executor,
-    reviewInput('market', 'market-six-days', sixDayVersion, '2008'))).newStatus, 'published')
+    reviewInput('market', 'market-six-days', sixDayVersion, '2008'))).newStatus, 'approved')
 
   const marketRejectVersion = await insertMarketFixture(database, 'market-reject')
   await reviewTimelineTarget(executor, reviewInput('market', 'market-reject', marketRejectVersion, '2002', 'reject'))

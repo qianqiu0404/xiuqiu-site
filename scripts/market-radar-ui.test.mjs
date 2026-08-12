@@ -18,9 +18,11 @@ import { mapPublicEventReportRow, mapPublicEventRow } from '../src/market-radar/
 import { publicEventReportRow, publicEventRowV2 } from './fixtures/market-radar-public-event-row.mjs'
 
 const productionEvent = mapPublicEventRow(publicEventRowV2)
-const healthyList = { status: 'healthy', items: [productionEvent], nextCursor: null, message: null }
+const healthyList = { status: 'healthy', snapshotId: productionEvent.snapshotId, asOf: productionEvent.snapshotAsOf,
+  items: [productionEvent], nextCursor: null, message: null }
 const healthySummary = {
-  status: 'healthy', generatedAt: '2026-08-11T02:10:00.000Z', latestEventAt: productionEvent.occurredAt,
+  status: 'healthy', snapshotId: productionEvent.snapshotId, asOf: productionEvent.snapshotAsOf,
+  generatedAt: '2026-08-11T02:10:00.000Z', latestEventAt: productionEvent.occurredAt,
   freshnessMinutes: 8, isDelayed: false, eventCount24h: 3, p0Count24h: 1, p1Count24h: 1,
   sources: [{ source: 'official', health: 'healthy', lastSuccessAt: '2026-08-11T02:08:00.000Z', message: null }],
   message: null,
@@ -58,6 +60,8 @@ test('runtime list parser fails closed on invalid calendars, unsafe evidence, mi
   assert.equal(parseMarketTimelineList({ ...healthyList, items: [productionEvent, productionEvent] }), null)
   assert.equal(parseMarketTimelineList({ ...healthyList, nextCursor: '2026-02-30T08:00:00+08:00|event-id' }), null)
   assert.equal(parseMarketTimelineList(listWith({ ...productionEvent, reports: [] })), null)
+  assert.equal(parseMarketTimelineList({ ...healthyList, snapshotId: 'market-2026-08-11-1111111111111111' }), null)
+  assert.equal(parseMarketTimelineList({ ...healthyList, snapshotId: null, asOf: null }), null)
 })
 
 test('summary health remains an independent strict contract for mixed list-summary results', () => {
@@ -66,6 +70,7 @@ test('summary health remains an independent strict contract for mixed list-summa
   assert.equal(parseMarketTimelineSummary({ ...healthySummary, message: { leaked: true } }), null)
   assert.equal(parseMarketTimelineSummary({ ...healthySummary, sources: [{ ...healthySummary.sources[0], lastSuccessAt: 'not-a-date' }] }), null)
   assert.equal(parseMarketTimelineSummary({ ...healthySummary, eventCount24h: 1, p0Count24h: 1, p1Count24h: 1 }), null)
+  assert.equal(parseMarketTimelineSummary({ ...healthySummary, snapshotId: null }), null)
   for (const key of ['eventCount24h', 'p0Count24h', 'p1Count24h']) {
     assert.equal(parseMarketTimelineSummary({ ...healthySummary, [key]: -1 }), null)
     assert.equal(parseMarketTimelineSummary({ ...healthySummary, [key]: 1.5 }), null)

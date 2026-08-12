@@ -18,6 +18,7 @@ import { cleanupTestProcesses } from '../ops/local-backend/cleanup-test-processe
 import { renderInstall } from '../ops/local-backend/render-install.mjs'
 import { publishLocalGitSnapshots } from '../ops/local-backend/publish-git-snapshots.mjs'
 import { materializeRadarPublication } from './radar-publication-materializer.mjs'
+import { publishRadarSnapshot } from './radar-publication-store.mjs'
 
 const root=new URL('../',import.meta.url)
 const read=path=>readFile(new URL(path,root),'utf8')
@@ -172,15 +173,26 @@ test('install renderer creates a new 0600 tree with independent secrets and neve
 
 test('local Git snapshot publisher uses pg, exact clean HEAD and parameterized publication writes',async()=>{
   const before={local:process.env.RADAR_LOCAL_BACKEND,driver:process.env.RADAR_DATABASE_DRIVER};process.env.RADAR_LOCAL_BACKEND='true';process.env.RADAR_DATABASE_DRIVER='pg'
-  const statements=[];const client={query:async(statement,values=[])=>{statements.push({statement,values});return{rows:[],rowCount:/insert into (?:market_radar|learning_radar)\./.test(statement)?1:0}}};const pool={connect:async()=>client,end:async()=>{},};client.release=()=>{}
+  const statements=[];const client={query:async(statement,values=[])=>{statements.push({statement,values});if(statement.includes('from market_radar.events e')&&statement.includes('member_count'))return{rows:[{member_count:1,source_count:1,primary_count:1,asset_count:6}],rowCount:1};if(statement.includes('from learning_radar.stories s')&&statement.includes('member_count'))return{rows:[{member_count:5,source_count:5,primary_count:5,update_count:5}],rowCount:1};return{rows:/insert into radar_system\.publication_snapshots/.test(statement)?[{snapshot_id:values[0]}]:[],rowCount:/insert into (?:radar_system\.publication_snapshots|market_radar\.|learning_radar\.)/.test(statement)?1:0}}};const pool={connect:async()=>client,end:async()=>{},};client.release=()=>{}
   const repo=new URL('../',import.meta.url).pathname.replace(/\/$/,'');const sha='b'.repeat(40)
   const git=async(_command,args)=>({stdout:args.includes('rev-parse')?`${sha}\n`:''})
   try{
     const result=await publishLocalGitSnapshots({repo,databaseUrl:'postgresql://xiuqiu_radar_app@localhost/xiuqiu_radar?host=%2Fprivate%2Ftmp%2Fsocket&port=55432',dates:['2026-08-12'],git,poolFactory:options=>{assert.equal(options.max,1);assert.equal(options.connectionTimeoutMillis,5_000);return pool}})
     assert.equal(result.gitSha,sha);assert.equal(result.driver,'pg');assert.equal(result.fixtures,false);assert.equal(result.snapshots.length,2)
-    const inserts=statements.filter(entry=>entry.statement.includes('insert into radar_system.publication_snapshots'));assert.equal(inserts.length,2);assert.ok(inserts.every(entry=>entry.values[7]===sha));assert.ok(inserts.every(entry=>entry.values.length===8));assert.ok(statements.some(entry=>entry.statement.includes('insert into market_radar.events')));assert.ok(statements.some(entry=>entry.statement.includes('insert into learning_radar.stories')));assert.ok(statements.filter(entry=>entry.statement.includes('insert into market_radar.event_sources')).every(entry=>entry.values.at(-1) instanceof Date||entry.values.at(-1)));assert.equal(statements[0].statement,'begin');assert.equal(statements.at(-1).statement,'commit')
-    await assert.rejects(publishLocalGitSnapshots({repo,databaseUrl:'postgresql://xiuqiu_radar_app@localhost/xiuqiu_radar?host=%2Fprivate%2Ftmp%2Fsocket&port=55432',dates:['2026-08-12'],git:async(_command,args)=>({stdout:args.includes('status')?'?? untracked\n':args.includes('rev-parse')?`${sha}\n`:''}),poolFactory:()=>pool}),/exact clean Git commit/)
+    const inserts=statements.filter(entry=>entry.statement.includes('insert into radar_system.publication_snapshots'));assert.equal(inserts.length,2);assert.ok(inserts.every(entry=>entry.values[7]===sha));assert.ok(inserts.every(entry=>entry.values.length===8));assert.ok(statements.some(entry=>entry.statement.includes('insert into market_radar.events')));assert.ok(statements.some(entry=>entry.statement.includes('insert into learning_radar.stories')));const learningSources=statements.filter(entry=>entry.statement.includes('insert into learning_radar.story_sources'));assert.equal(learningSources.length,5);assert.ok(learningSources.every(entry=>entry.values[6]));assert.equal(statements[0].statement,'begin');assert.equal(statements.at(-1).statement,'commit')
+    await assert.rejects(publishLocalGitSnapshots({repo,databaseUrl:'postgresql://xiuqiu_radar_app@localhost/xiuqiu_radar?host=%2Fprivate%2Ftmp%2Fsocket&port=55432',dates:['2026-08-12'],git:async(_command,args)=>({stdout:args.includes('status')?'?? untracked\n':args.includes('rev-parse')?`${sha}\n`:''}),poolFactory:()=>pool}),/clean Git worktree/)
   }finally{if(before.local===undefined)delete process.env.RADAR_LOCAL_BACKEND;else process.env.RADAR_LOCAL_BACKEND=before.local;if(before.driver===undefined)delete process.env.RADAR_DATABASE_DRIVER;else process.env.RADAR_DATABASE_DRIVER=before.driver}
+})
+
+test('snapshot store requires exact source SHA and supports pg and Neon result shapes',async()=>{
+  const publication={snapshotId:'market-2026-08-12-0123456789abcdef',asOf:'2026-08-12T00:00:00Z',origin:'research',publicationState:'published',payloadChecksum:'a'.repeat(64),payload:{events:[]}}
+  await assert.rejects(publishRadarSnapshot({query:async()=>({rowCount:1,rows:[{}]})},'market',publication),/exact lowercase Git SHA/)
+  assert.equal((await publishRadarSnapshot({query:async()=>({rowCount:1,rows:[{snapshot_id:publication.snapshotId}]})},'market',publication,'a'.repeat(40))).inserted,true)
+  assert.equal((await publishRadarSnapshot({query:async()=>[{snapshot_id:publication.snapshotId}]},'market',publication,'b'.repeat(40))).inserted,true)
+  let calls=0
+  const replay={query:async()=>++calls===1?{rowCount:0,rows:[]}:{rowCount:1,rows:[{snapshot_id:publication.snapshotId}]}}
+  assert.equal((await publishRadarSnapshot(replay,'market',publication,'c'.repeat(40))).inserted,false)
+  await assert.rejects(publishRadarSnapshot({query:async()=>[]},'market',publication,'d'.repeat(40)),/content_conflict/)
 })
 
 test('Learning materialization rejects a non-official single Tier 1 source',async()=>{
