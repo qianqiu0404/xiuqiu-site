@@ -1,45 +1,36 @@
 {
-  "version": 1,
+  "version": 2,
   "timezone": "Asia/Shanghai",
-  "startTime": "05:30",
+  "schedule": {
+    "start": "05:30",
+    "editorialCutoff": "07:20",
+    "gateCutoff": "07:35",
+    "immutableSnapshot": "07:45"
+  },
   "dedupDays": 30,
-  "minimumPublicSections": 3,
-  "maximumItems": 7,
+  "requiredBriefs": {
+    "ai": 2,
+    "web3": 2
+  },
+  "requiredDeepDives": 1,
   "discoverySources": {
     "aiHot": {
       "endpoint": "https://aihot.virxact.com/api/v1/items?mode=selected&window=24h&by=timeline",
-      "allowedFor": ["aiEngineering"],
+      "allowedFor": ["ai"],
       "role": "discovery-only"
     }
   },
   "blockedFinalSourceHosts": [
-    "aihot.virxact.com"
+    "aihot.virxact.com",
+    "x.com",
+    "twitter.com",
+    "reddit.com",
+    "www.reddit.com",
+    "discord.com",
+    "discord.gg"
   ],
-  "lanes": {
-    "marketSignals": {
-      "publicSection": "crypto",
-      "maximumItems": 3,
-      "label": "行业与钱包信号"
-    },
-    "aiEngineering": {
-      "publicSection": "radar",
-      "maximumItems": 1,
-      "label": "AI Engineering"
-    },
-    "web3Design": {
-      "publicSection": "radar",
-      "maximumItems": 1,
-      "label": "Web3 Design"
-    },
-    "toolProject": {
-      "publicSection": "vibe",
-      "maximumItems": 1,
-      "label": "工具项目"
-    },
-    "longReading": {
-      "publicSection": "reading",
-      "maximumItems": 1,
-      "label": "长文阅读"
-    }
+  "topics": {
+    "ai": ["model_inference", "agent", "evaluation", "safety", "data", "infrastructure"],
+    "web3": ["wallet_cex", "mpc", "security", "protocol", "l2", "cross_chain", "onchain_infrastructure"]
   }
 }

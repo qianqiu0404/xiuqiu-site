@@ -1,4 +1,4 @@
-import type { DailyRadar, RadarItem } from './generatedRadars'
+import type { DailyRadar, LearningBrief, RadarItem } from './generatedRadars'
 
 export type RadarPresentationKey = 'industry' | 'ai' | 'web3' | 'tools' | 'reading'
 
@@ -84,11 +84,25 @@ export function getRadarDetailSections(radar: DailyRadar): RadarDetailSection[] 
   ].filter((section): section is RadarDetailSection => Boolean(section))
 }
 
+export function isLearningEditionV2(radar: DailyRadar): boolean {
+  return radar.schemaVersion === 2 && Array.isArray(radar.briefs) && Boolean(radar.deepDive)
+}
+
+export function getLearningBriefs(radar: DailyRadar, domain?: LearningBrief['domain']): LearningBrief[] {
+  const briefs = isLearningEditionV2(radar) ? [...(radar.briefs || [])] : []
+  return domain ? briefs.filter(brief => brief.domain === domain) : briefs
+}
+
+export function learningBriefSummary(brief: LearningBrief): string {
+  return brief.mechanism
+}
+
 export function getVisibleRadarArchive<T>(radars: readonly T[], expanded: boolean, limit = 7): T[] {
   return expanded ? [...radars] : radars.slice(0, limit)
 }
 
 export function radarSourceStatus(radar: DailyRadar): string {
+  if (isLearningEditionV2(radar)) return `${radar.sourceUrls.length} 个分级来源 · 2 AI / 2 Web3 / 1 专题`
   return `${radar.sourceSections.length}/4 来源已汇总`
 }
 

@@ -4,7 +4,9 @@ import { latestRadars, radarIndex, type RadarIndexEntry } from '../data/generate
 import { radarWeeklies } from '../data/generatedRadarWeeklies'
 import {
   getRadarReviewBoundary,
+  getLearningBriefs,
   getSupportingRadarItems,
+  isLearningEditionV2,
   radarSignalCountLabel,
   radarSourceStatus,
 } from '../data/radarPresentation'
@@ -40,6 +42,9 @@ const archiveFilters: ArchiveFilterOption[] = [
 const supportingSignals = computed(() =>
   latestRadar ? getSupportingRadarItems(latestRadar) : [],
 )
+const latestIsV2 = computed(() => Boolean(latestRadar && isLearningEditionV2(latestRadar)))
+const aiBriefs = computed(() => latestRadar ? getLearningBriefs(latestRadar, 'ai') : [])
+const web3Briefs = computed(() => latestRadar ? getLearningBriefs(latestRadar, 'web3') : [])
 const latestSignalLabel = computed(() => radarSignalCountLabel(latestRadar?.marketSignals.length ?? 0))
 const latestReviewBoundary = computed(() =>
   latestWeekly
@@ -49,19 +54,19 @@ const latestReviewBoundary = computed(() =>
 
 function radarMatchesFilter(radar: RadarIndexEntry, filter: ArchiveFilter): boolean {
   if (filter === 'all') return true
-  if (filter === 'crypto') return radar.marketSignals.length > 0
-  if (filter === 'ai') return Boolean(radar.aiTip)
-  if (filter === 'web3') return Boolean(radar.web3Design)
+  if (filter === 'crypto') return radar.marketSignals.length > 0 || Boolean(radar.briefs?.some(brief => brief.domain === 'web3'))
+  if (filter === 'ai') return Boolean(radar.aiTip) || Boolean(radar.briefs?.some(brief => brief.domain === 'ai'))
+  if (filter === 'web3') return Boolean(radar.web3Design) || Boolean(radar.briefs?.some(brief => brief.domain === 'web3'))
   if (filter === 'tools') return Boolean(radar.vibeProject)
   return Boolean(radar.readingPick)
 }
 
 function radarArchiveTitle(radar: RadarIndexEntry): string {
-  if (archiveFilter.value === 'ai') return radar.aiTip?.title || radar.summary
-  if (archiveFilter.value === 'web3') return radar.web3Design?.title || radar.summary
+  if (archiveFilter.value === 'ai') return radar.briefs?.find(brief => brief.domain === 'ai')?.title || radar.aiTip?.title || radar.summary
+  if (archiveFilter.value === 'web3') return radar.briefs?.find(brief => brief.domain === 'web3')?.title || radar.web3Design?.title || radar.summary
   if (archiveFilter.value === 'tools') return radar.vibeProject?.title || radar.summary
   if (archiveFilter.value === 'reading') return radar.readingPick?.title || radar.summary
-  return radar.marketSignals[0]?.title || radar.summary
+  return radar.deepDive?.title || radar.briefs?.[0]?.title || radar.marketSignals[0]?.title || radar.summary
 }
 
 function getIsoWeek(dateValue: string): { key: string; label: string } {
@@ -132,9 +137,9 @@ onMounted(() =>
       <div class="container radar-intelligence-shell radar-hero-layout">
         <div class="radar-hero-copy">
           <p class="radar-kicker">Industry Intelligence / Human Convergence</p>
-          <h1 id="radar-title">把行业信号，<br /><span>压缩成<br />工程判断。</span></h1>
+          <h1 id="radar-title">每天学懂<br /><span>AI 与 Web3。</span></h1>
           <p>
-            日报负责保留公开事实与待验证线索，周报负责决定哪些进入 Wallet、Market 与 AI Engineering。
+            每天 2 条 AI、2 条 Web3，再选择一个问题做专题。先讲机制，再给例子和边界。
           </p>
         </div>
 
@@ -145,15 +150,15 @@ onMounted(() =>
           </div>
           <dl>
             <div>
-              <dt>Signals</dt>
-              <dd>{{ latestRadar.marketSignals.length }}</dd>
+              <dt>{{ latestIsV2 ? 'Briefs' : 'Signals' }}</dt>
+              <dd>{{ latestIsV2 ? latestRadar.briefs?.length : latestRadar.marketSignals.length }}</dd>
             </div>
             <div>
               <dt>Archive</dt>
               <dd>{{ radarIndex.length }}</dd>
             </div>
           </dl>
-          <p>AI 自动汇总 · {{ radarSourceStatus(latestRadar) }}</p>
+          <p>ResearchOps 门禁通过 · {{ radarSourceStatus(latestRadar) }}</p>
         </aside>
         <aside v-else class="radar-hero-status" aria-label="最新情报状态">
           <div>
@@ -170,7 +175,7 @@ onMounted(() =>
         <header class="radar-stage-heading">
           <div>
             <p class="radar-kicker">01 / Daily Brief</p>
-            <h2 id="radar-daily-title">{{ latestSignalLabel }}</h2>
+            <h2 id="radar-daily-title">{{ latestIsV2 ? '今天：4 条快报 + 1 篇专题。' : latestSignalLabel }}</h2>
           </div>
           <router-link :to="`/radar/${latestRadar.slug}`">阅读完整简报 <span aria-hidden="true">↗</span></router-link>
         </header>
@@ -182,7 +187,33 @@ onMounted(() =>
               <p>{{ latestRadar.summary }}</p>
             </header>
 
-            <ol v-if="latestRadar.marketSignals.length" class="radar-signal-ledger">
+            <div v-if="latestIsV2" class="learning-edition-grid">
+              <section class="learning-domain-column" aria-labelledby="learning-ai-title">
+                <header><span>02 BRIEFS</span><h3 id="learning-ai-title">AI</h3></header>
+                <router-link v-for="brief in aiBriefs" :key="brief.id" :to="`/radar/${latestRadar.slug}#${brief.id}`">
+                  <small>{{ brief.topic.replaceAll('_', ' ') }}</small>
+                  <strong>{{ brief.title }}</strong>
+                  <p>{{ brief.mechanism }}</p>
+                  <span aria-hidden="true">→</span>
+                </router-link>
+              </section>
+              <section class="learning-domain-column" aria-labelledby="learning-web3-title">
+                <header><span>02 BRIEFS</span><h3 id="learning-web3-title">Web3</h3></header>
+                <router-link v-for="brief in web3Briefs" :key="brief.id" :to="`/radar/${latestRadar.slug}#${brief.id}`">
+                  <small>{{ brief.topic.replaceAll('_', ' ') }}</small>
+                  <strong>{{ brief.title }}</strong>
+                  <p>{{ brief.mechanism }}</p>
+                  <span aria-hidden="true">→</span>
+                </router-link>
+              </section>
+              <router-link v-if="latestRadar.deepDive" class="learning-deep-dive-card" :to="`/radar/${latestRadar.slug}#deep-dive`">
+                <small>DEEP DIVE · {{ latestRadar.deepDive.domain.toUpperCase() }}</small>
+                <strong>{{ latestRadar.deepDive.title }}</strong>
+                <p>{{ latestRadar.deepDive.whyItMatters }}</p>
+                <span>进入专题 ↗</span>
+              </router-link>
+            </div>
+            <ol v-else-if="latestRadar.marketSignals.length" class="radar-signal-ledger">
               <li v-for="(signal, index) in latestRadar.marketSignals" :key="signal.title">
                 <span>{{ String(index + 1).padStart(2, '0') }}</span>
                 <article>
@@ -205,7 +236,7 @@ onMounted(() =>
             </div>
           </div>
 
-          <aside v-if="supportingSignals.length" class="radar-research-index" aria-label="本期研究分支">
+          <aside v-if="!latestIsV2 && supportingSignals.length" class="radar-research-index" aria-label="本期研究分支">
             <header>
               <p class="radar-kicker">Research Index</p>
               <span>推断与观察</span>

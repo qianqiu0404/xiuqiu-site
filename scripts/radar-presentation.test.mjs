@@ -150,7 +150,10 @@ test('generated radar layers keep the compact archive and recent full records al
     radarIndex[0].marketSignals.map(item => item.title),
     dailyRadars[0].marketSignals.map(item => item.title),
   )
-  assert.equal('summary' in radarIndex[0].marketSignals[0], false)
+  if (radarIndex[0].marketSignals[0]) assert.equal('summary' in radarIndex[0].marketSignals[0], false)
+  assert.equal(radarIndex[0].schemaVersion, 2)
+  assert.deepEqual(radarIndex[0].briefs?.map(item => item.title), dailyRadars[0].briefs?.map(item => item.title))
+  assert.equal(radarIndex[0].briefs?.every(item => !('mechanism' in item)), true)
   assert.ok(dailyRadars.every(radar => radar.origin === 'research' && radar.publicationState === 'published'))
   assert.ok(dailyRadars.every(radar => radar.snapshotId.startsWith(`learning-${radar.date}-`) && radar.asOf === new Date(radar.generatedAt).toISOString()))
 })

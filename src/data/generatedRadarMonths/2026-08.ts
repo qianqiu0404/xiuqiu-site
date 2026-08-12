@@ -7,130 +7,557 @@ export const monthlyRadars: DailyRadar[] = [
   {
     "date": "2026-08-12",
     "slug": "2026-08-12",
-    "title": "每日研究雷达 · 2026-08-12",
-    "summary": "先把权力边界做成结构：从钱包风险提示、Agent 沙箱，到可恢复会话、协议回归与不会被模型轻易击穿的评测。",
-    "snapshotId": "learning-2026-08-12-fc5bdb614f4f7b13",
-    "asOf": "2026-08-11T23:56:14.000Z",
-    "origin": "research",
-    "publicationState": "published",
+    "title": "学习雷达 · 2026-08-12",
+    "summary": "AI 关注生成器—评估器闭环与长任务使用边界；Web3 关注隐私资产执行路径和账户认证协议。",
+    "publish": true,
     "reviewStatus": "automated",
-    "generatedAt": "2026-08-12T07:56:14+08:00",
+    "schemaVersion": 2,
+    "editionMode": "backfill",
+    "researchedAt": "2026-08-12T05:27:51.000Z",
+    "generatedAt": "2026-08-12T05:27:51.000Z",
     "sourceSections": [
-      "crypto",
-      "radar",
-      "vibe",
-      "reading"
+      "ai",
+      "web3",
+      "deepDive"
     ],
     "missingSections": [],
-    "marketSignals": [
+    "briefs": [
       {
-        "title": "Ledger Live Desktop 4.15.0 · 隐私与资产路径要同时门禁",
-        "summary": "官方把 Zcash 的透明与屏蔽转账收进独立 coin-module，由原生引擎构造、签名和广播 PCZT，并用默认关闭的 zcashShielded 开关及双桥差分测试控制迁移；同版还从 Datadog RUM 清除钱包地址和账户 ID，并在联系人入口拦截受制裁地址。关键机制是把隐私、路由和合规约束放进真实执行路径，而不是只改界面；但 NU6.3 下 z→z 与 V6 finalizer 仍未完成。试用前应回放四种转账、遥测脱敏和开关回退，不能把 4.15.0 当成所有 Zcash 路径已齐备。",
-        "sourceUrl": "https://github.com/LedgerHQ/ledger-live/releases/tag/%40ledgerhq/live-desktop%404.15.0"
+        "id": "ai-generator-evaluator-loop",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "长任务 Harness：生成器与评估器要分工",
+        "whatHappened": "Anthropic 在 2026-03-24 公开长任务应用开发 harness 设计，说明生成器、评估器与结构化交接如何提升前端和可验证软件任务的完成质量。",
+        "mechanism": "生成器负责推进实现，独立评估器按可检查标准寻找缺口；阶段结果写入结构化工件，在上下文重置后恢复目标、已完成项、失败证据和下一步。",
+        "workedExample": "实现网页时，生成器提交页面后不自行宣称完成；评估器按可用性、视觉层级和浏览器错误逐项检查，把失败项写入下一轮任务，直到门禁满足或明确停止。",
+        "whyItMatters": "它帮助你理解 Agent 不是一次长提示，而是角色、状态和评测组成的控制系统；同样适用于研究内容的采集—编辑—门禁链路。",
+        "risksAndLimits": [
+          "生成器和评估器可能共享同一盲点，角色分离不等于真正独立证据。",
+          "更多循环会增加延迟与 token，必须有停止条件和失败上限。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_engineering",
+            "name": "Anthropic · Harness design for long-running application development",
+            "url": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+            "publishedAt": "2026-03-24T00:00:00.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "什么情况下应使用独立模型评估器，什么情况下确定性测试更可靠？",
+          "结构化交接最少需要保存哪些字段才能跨上下文恢复？"
+        ]
       },
       {
-        "title": "MetaMask 13.43.0 · 风险提示必须绑定真实链路",
-        "summary": "13.43.0 在代币详情页加入已验证标记、风险横幅和高风险兑换前确认，并上线新的硬件钱包签名页；同时修复批量处理时按全局网络误判智能交易、受保护深链仅凭路径绕过安全中间页，以及设备无响应导致连接卡死。值得关注的是安全信号、链上下文与签名状态开始在同一流程内互相校验。边界是远端信任信号可能滞后，清晰提示也不等于资产安全；应测试风险元数据缺失、跨链切换、硬件断连与恶意深链四组失败向量。",
-        "sourceUrl": "https://github.com/MetaMask/metamask-extension/releases/tag/v13.43.0"
+        "id": "ai-long-horizon-adoption",
+        "domain": "ai",
+        "topic": "data",
+        "title": "Agent 使用研究：任务时长只是方向性估计",
+        "whatHappened": "OpenAI 在 2026-06-25 发布 Codex 使用研究，报告样本用户越来越多地委派长时、跨工具任务，并明确任务时长由模型根据 transcript 估计。",
+        "mechanism": "研究从匿名样本中推断任务类别与人类完成时间，再观察不同时间阈值和岗位的采用变化；这些指标衡量使用模式，不直接证明生产率或输出正确性。",
+        "workedExample": "一个被估计为八小时的人类任务可能由 Agent 在并行环境中更快完成，但验收仍要看可用产物、返工和失败成本，不能把估计时长直接当作节省工时。",
+        "whyItMatters": "它训练你区分产品使用指标与因果结论，也提醒学习 Agent 系统时应关注验收率、返工和边界，而不是只看运行时长或 token。",
+        "risksAndLimits": [
+          "样本只覆盖特定用户群，且人类任务时长来自模型估计而非逐项实测。",
+          "使用量增长可能来自产品可用性和组织政策，不能单独归因于能力提升。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_research",
+            "name": "OpenAI · How agents are transforming work",
+            "url": "https://openai.com/index/how-agents-are-transforming-work/",
+            "publishedAt": "2026-06-25T00:00:00.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "如何用交付验收率与返工成本校准模型估计的人类任务时长？",
+          "并行 Agent 的总计算量与真实生产率应该如何同时报告？"
+        ]
+      },
+      {
+        "id": "web3-zcash-execution-boundary",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "Ledger Live 4.15：隐私资产路径要单独门禁",
+        "whatHappened": "Ledger 在 2026-08-11 发布 Live Desktop 4.15.0，将 Zcash 屏蔽转账纳入独立 coin-module，并加入功能开关、原生构造签名路径和遥测脱敏修复。",
+        "mechanism": "隐私币执行不复用普通 token 路径，而由专用模块处理 PCZT 构造、硬件签名与广播；功能开关和双实现差分测试控制迁移，地址与账户标识从 RUM 中移除。",
+        "workedExample": "上线前分别回放 t→t、t→z、z→t、z→z，比较旧桥与新模块的交易字节、费用和广播结果；关闭开关时必须能回到已知路径且不残留敏感遥测。",
+        "whyItMatters": "它把钱包隐私、签名和发布控制放在同一个具体案例中，适合学习 coin adapter、硬件边界和敏感数据最小化。",
+        "risksAndLimits": [
+          "发布说明明确仍有未完成路径，不能把版本号理解为所有 Zcash 流程已齐备。",
+          "遥测字段移除需要验证历史日志、第三方采集器和错误消息是否仍泄露标识。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Ledger Live Desktop 4.15.0",
+            "url": "https://github.com/LedgerHQ/ledger-live/releases/tag/%40ledgerhq/live-desktop%404.15.0",
+            "publishedAt": "2026-08-11T08:57:07.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "隐私币模块的差分测试应比较哪些字节级和状态级不变量？",
+          "钱包遥测如何证明地址与账户标识没有通过间接字段泄露？"
+        ]
+      },
+      {
+        "id": "web3-canonical-authenticator",
+        "domain": "web3",
+        "topic": "protocol",
+        "title": "EIP-8130：把账户认证从任意代码中拆出",
+        "whatHappened": "Ethereum EIPs 仓库在 2026-08-11 更新 EIP-8130，对齐 keystore 合约、交易有效期与精简协议边界，继续定义 canonical authenticator。",
+        "mechanism": "交易显式声明受协议认可的认证器，节点可在执行任意账户代码前完成有界认证；账户策略再用 actor、scope、有效期、二维 nonce 与 epoch 管理会话权限。",
+        "workedExample": "会话键只获准在一小时内调用特定合约的 transfer，交易携带 actor 与 scope；节点先验证认证器和有效期，再由账户策略检查额度，撤权时提升 epoch 使旧会话立即失效。",
+        "whyItMatters": "它把账户抽象最难的认证、并发 nonce 与会话权限集中到可讨论协议中，适合训练从交易格式到钱包策略的全链路思考。",
+        "risksAndLimits": [
+          "该提案仍是 Draft，字段、交易类型与共识成本都可能继续变化。",
+          "更复杂的 nonce、epoch 和跨链配置扩大实现与审计面积。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "protocol_commit",
+            "name": "EIP-8130 keystore and validity update",
+            "url": "https://github.com/ethereum/EIPs/commit/054078969965674643d7cf4e22460c438d09dd07",
+            "publishedAt": "2026-08-11T17:12:36.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "canonical authenticator 的允许集如何升级而不破坏旧账户？",
+          "二维 nonce 与 epoch 撤权在并发交易中有哪些竞态？"
+        ]
       }
     ],
-    "aiTip": {
-      "title": "Managed Agents · 把会话、推理循环和执行环境拆开",
-      "summary": "Anthropic 将长任务拆成持久 session、可替换 harness 与按需 sandbox：事件先写入追加式日志，harness 崩溃后可用 wake(sessionId) 恢复，执行环境只作为 execute 工具被调用；Git 与 MCP 凭据留在初始化器或外部 vault，不进入生成代码可读的沙箱。官方称该解耦让 p50 首 token 延迟下降约 60%、p95 下降逾 90%，但这是其托管系统内部数据，不是通用基准。可执行动作是让每日雷达 ledger 独立于采集进程持久化，把文件、网络和凭据授权下沉到执行边界，并验证崩溃续跑不会重复发布。",
-      "sourceUrl": "https://www.anthropic.com/engineering/managed-agents"
-    },
-    "web3Design": {
-      "title": "EIP-8130 · 把账户认证从任意钱包代码中拆出来",
-      "summary": "EIP-8130 的当日更新把 keystore、交易有效期和精简后的协议边界对齐：新交易显式声明 canonical authenticator，节点可在执行任意钱包代码前按小型允许集过滤；账户把 actor、过期时间和 scope 放进链上配置，并用 POLICY manager、2D nonce 与本地 epoch 控制会话键和并行交易。关键价值是让认证成本可预期、权限读取默认拒绝未知位。它仍是 Core Draft，canonical 合约仓库才是内部布局权威，跨链配置与 nonce-free 环形缓冲也扩大共识复杂度；原型必须逐字节对照实现并测试撤权、过期、重放和错误 scope。",
-      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-8130"
-    },
-    "vibeProject": {
-      "title": "MCP Inspector 2.1.0 · 协议头透传也要进入回归测试",
-      "summary": "稳定版 2.1.0 修复 tools/call 时把 SEP-2243 的 x-mcp-header 参数映射到 Mcp-Param-*，并等待打包校验子进程退出后才清理工作目录；同版恢复在 v2 分支切换中丢失的 SECURITY.md，并升级依赖以清除两项公告。它适合做 MCP server 的协议与权限验收，但 Inspector 本身不证明服务端安全。采用时固定 2.1.0，在无生产凭据环境验证 header、工具参数、取消与错误路径，保存请求轨迹，并把任何意外的认证头透传视为失败。",
-      "sourceUrl": "https://github.com/modelcontextprotocol/inspector/releases/tag/2.1.0"
-    },
-    "readingPick": {
-      "title": "AI-resistant evaluations · 当模型追平旧考题，评测必须重建信号",
-      "summary": "Anthropic 复盘了三轮性能工程作业：原题服务过逾千名候选，随后 Opus 4 和 4.5 在固定时限内追平或超过大多数人；仅把旧题加深仍会被更长推理预算攻克，团队最终改成多个陌生、受约束的小问题，并把理解、调试工具和跨题稳定性重新变成信号。核心教训不是制造永远难倒模型的题，而是持续检查评测是否仍区分目标能力。边界是内部招聘样本不能外推到所有 Agent；学习雷达可建立冻结测试集、隐藏近期样本与人工复核集，按模型版本监控门禁失效率而不是只看一次通过。",
-      "sourceUrl": "https://www.anthropic.com/engineering/AI-resistant-technical-evaluations"
+    "deepDive": {
+      "id": "deep-web3-eip8130-auth",
+      "domain": "web3",
+      "topic": "protocol",
+      "title": "专题：从认证器到会话权限的完整状态机",
+      "whatHappened": "EIP-8130 的最新提交与规范页面把交易认证前置、账户策略读取、会话有效期、scope 和 nonce 组合成一套可验证账户认证框架。",
+      "mechanism": "协议层先用 canonical authenticator 验证签名与交易外壳，账户层再读取 actor 配置并检查 scope、有效期和策略；nonce 维度允许并发，epoch 为整组会话提供快速撤权。",
+      "workedExample": "用户给交易机器人创建 session actor：只允许调用 DEX A、单笔不超过 100 USDC、08:00 前有效。机器人并发发两笔不同 nonce 的交易；用户提升 epoch 后，未上链旧交易全部失效。",
+      "whyItMatters": "这个状态机能把会话键从模糊的‘临时授权’变成可枚举条件，连接钱包 UI、签名服务、节点验证和链上策略四个学习层次。",
+      "risksAndLimits": [
+        "前端若省略 scope、额度或失效时间，协议安全性无法转化为用户可理解的授权。",
+        "跨链复制 actor 配置可能造成不同链上 epoch 与 nonce 状态分叉。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "protocol_commit",
+          "name": "EIP-8130 keystore and validity update",
+          "url": "https://github.com/ethereum/EIPs/commit/054078969965674643d7cf4e22460c438d09dd07",
+          "publishedAt": "2026-08-11T17:12:36.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "protocol_specification",
+          "name": "EIP-8130 canonical transaction authentication",
+          "url": "https://eips.ethereum.org/EIPS/eip-8130"
+        }
+      ],
+      "nextQuestions": [
+        "钱包确认页如何把 actor、scope、额度、有效期和撤权入口压缩成可理解交互？",
+        "需要哪些属性测试覆盖过期、撤权、重放、并发 nonce 和错误 scope？"
+      ],
+      "basedOnBriefId": "web3-canonical-authenticator"
     },
     "sourceUrls": [
+      "https://www.anthropic.com/engineering/harness-design-long-running-apps",
+      "https://openai.com/index/how-agents-are-transforming-work/",
       "https://github.com/LedgerHQ/ledger-live/releases/tag/%40ledgerhq/live-desktop%404.15.0",
-      "https://github.com/MetaMask/metamask-extension/releases/tag/v13.43.0",
-      "https://www.anthropic.com/engineering/managed-agents",
-      "https://eips.ethereum.org/EIPS/eip-8130",
-      "https://github.com/modelcontextprotocol/inspector/releases/tag/2.1.0",
-      "https://www.anthropic.com/engineering/AI-resistant-technical-evaluations"
+      "https://github.com/ethereum/EIPs/commit/054078969965674643d7cf4e22460c438d09dd07",
+      "https://eips.ethereum.org/EIPS/eip-8130"
     ],
     "relatedProjectSlugs": [
       "wallet-core",
       "exchange-wallet-system",
       "web3-wallet-engineer-lab"
-    ]
+    ],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-08-12-802ca3adfabc99c8",
+    "asOf": "2026-08-12T05:27:51.000Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
+  {
+    "date": "2026-08-11",
+    "slug": "2026-08-11",
+    "title": "学习雷达 · 2026-08-11",
+    "summary": "AI 关注可恢复 Agent 与评测失效；Web3 关注机密代币可观测性和 Lightning 迁移边界。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "backfill",
+    "researchedAt": "2026-08-12T05:27:51.000Z",
+    "generatedAt": "2026-08-12T05:27:51.000Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-managed-agent-boundaries",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "Managed Agents：把大脑、双手与会话拆开",
+        "whatHappened": "Anthropic 在 2026-04-08 公开 Managed Agents 架构，说明长任务如何把持久 session、可替换 harness 与按需 sandbox 分成独立接口。",
+        "mechanism": "事件先追加到外部 session 日志；harness 只负责模型循环和工具路由，崩溃后用 sessionId 恢复；sandbox 作为 execute 工具按需创建，凭据留在初始化器或外部 vault。",
+        "workedExample": "代码 Agent 修改仓库时，初始化器用短期 token 完成 clone 并配置 remote，生成代码所在沙箱只能执行 git 命令但读不到 token；harness 崩溃后从最后事件继续。",
+        "whyItMatters": "它把 Agent 可靠性与安全从提示词问题变成结构问题，适合用来学习会话持久化、工具权限、故障恢复和凭据隔离。",
+        "risksAndLimits": [
+          "Managed Agents 仍处于 beta，接口、数据保留和功能可用性可能变化。",
+          "持久会话提高可恢复性，也扩大数据保留与删除治理责任。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_engineering",
+            "name": "Anthropic · Scaling Managed Agents",
+            "url": "https://www.anthropic.com/engineering/managed-agents",
+            "publishedAt": "2026-04-08T00:00:00.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "session 日志中哪些事件必须不可变，哪些可以压缩或派生？",
+          "如何证明沙箱中的生成代码永远无法读取长期凭据？"
+        ]
+      },
+      {
+        "id": "ai-evaluation-signal-decay",
+        "domain": "ai",
+        "topic": "evaluation",
+        "title": "AI-resistant Eval：旧考题会失去区分能力",
+        "whatHappened": "Anthropic 在 2026-01-21 复盘三轮性能工程作业：模型逐步追平固定时限内的优秀候选人，迫使团队重建题目与评分信号。",
+        "mechanism": "评测不是固定题库，而是对目标能力的测量仪器；模型能力、推理预算或训练暴露改变后，必须重新检查分数分布、作弊路径和人与模型的区分度。",
+        "workedExample": "当模型在旧优化题上达到通过线，团队不只提高分数门槛，而是换成多个陌生且受约束的小问题，并把理解、调试工具和跨题稳定性重新纳入信号。",
+        "whyItMatters": "学习雷达未来若用模型评估内容，也要监控门禁是否仍能区分真实机制研究与流畅复述，不能迷信一次建立的测试集。",
+        "risksAndLimits": [
+          "招聘作业样本不能代表所有 Agent 任务或真实软件工程绩效。",
+          "为了难倒模型而过度偏离真实工作，会降低评测的岗位相关性。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_engineering",
+            "name": "Anthropic · Designing AI-resistant technical evaluations",
+            "url": "https://www.anthropic.com/engineering/AI-resistant-technical-evaluations",
+            "publishedAt": "2026-01-21T00:00:00.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "如何检测学习雷达内容门禁已经被新模型轻易游戏化？",
+          "哪些隐藏评测能保持新鲜，同时又有稳定的人工基准？"
+        ]
+      },
+      {
+        "id": "web3-confidential-token-observability",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Agave 4.2：机密代币意图进入节点可观测面",
+        "whatHappened": "Anza 在 2026-08-07 发布 Agave 4.2.0，加入 Token-2022 PermissionedBurn、ConfidentialBurn 与 Batch 指令解析，并调整增量快照默认间隔。",
+        "mechanism": "节点和解析器识别新的机密代币指令形状，使索引器能记录操作类型与状态变化；但隐私字段仍受协议约束，解析意图不等于解密资产细节。",
+        "workedExample": "索引器遇到 ConfidentialBurn 时可以标记燃烧流程并关联交易状态，而不是把未知指令丢进 generic bucket；升级前需回放旧账本和新指令混合数据。",
+        "whyItMatters": "钱包、交易所和风控系统依赖节点解析结果；理解协议升级如何改变可观测面，有助于避免把‘无法解析’误判为‘没有发生’。",
+        "risksAndLimits": [
+          "稳定版本标签不等于你的插件、索引器和快照组合已经兼容。",
+          "增加解析能力不能突破机密交易设计本身的隐私边界。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Anza Agave v4.2.0",
+            "url": "https://github.com/anza-xyz/agave/releases/tag/v4.2.0",
+            "publishedAt": "2026-08-07T20:29:04.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "新解析器对历史账本回放和索引 schema 有哪些兼容性要求？",
+          "钱包可以展示哪些机密代币意图，而不泄露受保护信息？"
+        ]
+      },
+      {
+        "id": "web3-lightning-migration-recovery",
+        "domain": "web3",
+        "topic": "l2",
+        "title": "lnd 0.21.2 RC：迁移失败必须可恢复",
+        "whatHappened": "Lightning Labs 在 2026-08-08 发布 lnd 0.21.2-beta.rc1，修复历史支付迁移启动失败、缺失版本键处理和通道图同步内存增长。",
+        "mechanism": "节点启动时按版本键执行数据库迁移；修复让缺失或部分状态不再把节点困在不可启动状态，同时约束图同步数据结构的增长。",
+        "workedExample": "升级前复制 channel.db，在离线节点执行迁移并重启两次，确认版本键稳定、历史支付可读且图同步内存不持续增长，再决定是否进入更高环境。",
+        "whyItMatters": "Lightning 节点承载真实通道状态，迁移错误与普通应用回滚不同；学习恢复顺序能建立对不可逆状态和候选版本边界的直觉。",
+        "risksAndLimits": [
+          "这是 release candidate，不应因修复描述充分就直接替换生产稳定版本。",
+          "数据库备份必须与节点停机点一致，复制运行中的文件可能得到不一致快照。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "lnd v0.21.2-beta.rc1",
+            "url": "https://github.com/lightningnetwork/lnd/releases/tag/v0.21.2-beta.rc1",
+            "publishedAt": "2026-08-08T22:12:50.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "Lightning 节点数据库迁移需要哪些停机、备份与回滚证据？",
+          "如何用长期指标区分图同步峰值与真正的内存泄漏？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-ai-recoverable-agents",
+      "domain": "ai",
+      "topic": "infrastructure",
+      "title": "专题：可恢复 Agent 的最小结构",
+      "whatHappened": "Managed Agents 的公开架构与产品文档共同给出一个可操作模型：Agent 定义、执行环境、session 和事件彼此独立，长任务通过持久事件恢复。",
+      "mechanism": "不可变事件日志保存事实顺序，stateless harness 从日志构造模型上下文，sandbox 只暴露必要执行接口，外部 vault 代持凭据；幂等动作键阻止恢复时重复产生副作用。",
+      "workedExample": "研究任务完成两条来源后 harness 崩溃，新实例读取 session 事件，发现 source-1 与 source-2 已核验，只继续第三条；发布动作使用 edition/date 幂等键，因此不会重复写快照。",
+      "whyItMatters": "这可以直接转成 Agent 系统设计练习：分别画出事实存储、推理循环、执行权限和恢复边界，再验证每一层单独失败时会发生什么。",
+      "risksAndLimits": [
+        "日志可恢复不代表决策正确，错误事件仍会被后续 harness 当作事实读取。",
+        "压缩上下文可能删除未来需要的细节，因此原始事件与模型上下文不能混为一体。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_engineering",
+          "name": "Anthropic · Scaling Managed Agents",
+          "url": "https://www.anthropic.com/engineering/managed-agents",
+          "publishedAt": "2026-04-08T00:00:00.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_documentation",
+          "name": "Claude Managed Agents overview",
+          "url": "https://platform.claude.com/docs/en/managed-agents/overview"
+        }
+      ],
+      "nextQuestions": [
+        "恢复流程如何区分可以安全重试的工具与必须人工确认的副作用？",
+        "事件日志、工作文件和模型上下文分别应该保留多久？"
+      ],
+      "basedOnBriefId": "ai-managed-agent-boundaries"
+    },
+    "sourceUrls": [
+      "https://www.anthropic.com/engineering/managed-agents",
+      "https://www.anthropic.com/engineering/AI-resistant-technical-evaluations",
+      "https://github.com/anza-xyz/agave/releases/tag/v4.2.0",
+      "https://github.com/lightningnetwork/lnd/releases/tag/v0.21.2-beta.rc1",
+      "https://platform.claude.com/docs/en/managed-agents/overview"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-08-11-1b2e89b6a2014ce0",
+    "asOf": "2026-08-12T05:27:51.000Z",
+    "origin": "research",
+    "publicationState": "published"
   },
   {
     "date": "2026-08-10",
     "slug": "2026-08-10",
-    "title": "每日研究雷达 · 2026-08-10",
-    "summary": "先验证再执行：从机密代币解析、签名降级防线，到 Agent 会话门禁、插件权限与实时系统关键路径。",
-    "snapshotId": "learning-2026-08-10-1c99f14dd528d945",
-    "asOf": "2026-08-10T01:51:22.000Z",
-    "origin": "research",
-    "publicationState": "published",
+    "title": "学习雷达 · 2026-08-10",
+    "summary": "AI 关注实时推理关键路径与可证据化改进闭环；Web3 关注签名降级防线与清晰签名上下文。",
+    "publish": true,
     "reviewStatus": "automated",
-    "generatedAt": "2026-08-10T09:51:22+08:00",
+    "schemaVersion": 2,
+    "editionMode": "backfill",
+    "researchedAt": "2026-08-12T05:27:51.000Z",
+    "generatedAt": "2026-08-12T05:27:51.000Z",
     "sourceSections": [
-      "crypto",
-      "radar",
-      "vibe",
-      "reading"
+      "ai",
+      "web3",
+      "deepDive"
     ],
     "missingSections": [],
-    "marketSignals": [
+    "briefs": [
       {
-        "title": "Agave 4.2.0 · 机密代币意图开始进入节点可观测面",
-        "summary": "官方将 4.2.0 标为可用于 Testnet、Devnet 与 Mainnet Beta 的稳定版，新增 Token-2022 PermissionedBurn、ConfidentialBurn 与 Batch 指令解析，并把增量快照默认间隔改为 200 slots。关键价值是钱包和索引器能还原更完整的机密代币意图；上线前仍要回放交易状态、快照与资源占用，稳定标签不等于你的节点组合已经兼容。",
-        "sourceUrl": "https://github.com/anza-xyz/agave/releases/tag/v4.2.0"
+        "id": "ai-realtime-critical-path",
+        "domain": "ai",
+        "topic": "model_inference",
+        "title": "实时语音 AI：先保护连续媒体关键路径",
+        "whatHappened": "OpenAI 在 2026-08-03 公开 GPT-Live 的实时系统复盘，说明团队如何把连续音频、推理、工具委派与会话恢复拆成不同延迟路径。",
+        "mechanism": "音频走独立快路径，较慢的推理、工具调用和持久化跨异步边界运行；替代实例提前预热，媒体握手通过 WARP 减少网络往返，避免所有工作阻塞同一条链。",
+        "workedExample": "如果语音助手需要查订单，前台音频流继续接收并给出短确认，订单工具在后台执行；工具返回后再把结果注入会话，而不是暂停音频等待数据库。",
+        "whyItMatters": "它给 AI 工程学习提供了可迁移的系统设计范式：先定义用户真正感知的关键路径，再把可重试、可恢复、可降级的工作移出该路径。",
+        "risksAndLimits": [
+          "文中的延迟与容量结果来自 OpenAI 自有系统，不能直接外推到其他网络、模型和并发规模。",
+          "异步拆分增加状态同步与故障定位复杂度，必须保存可恢复事件而不是只保留内存状态。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_engineering",
+            "name": "OpenAI · Continuous voice interaction with GPT-Live",
+            "url": "https://openai.com/index/continuous-voice-interaction-with-gpt-live/",
+            "publishedAt": "2026-08-03T00:00:00.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "如何用每帧准时率而不是平均请求延迟衡量实时 AI 的用户体验？",
+          "哪些会话状态必须同步持久化，哪些可以在故障后重新计算？"
+        ]
       },
       {
-        "title": "OpenZeppelin 5.7.0 · 签名与权限不能静默降级",
-        "summary": "本版阻断 AccessManager 借 execute 绕过 authority 更新、拒绝 ERC-7739 畸形描述退化为不绑定消息内容的验证，并修复跨链地址静默误解析；同时 EIP-712 长 name/version 改为超过 31 字节即回退失败。升级动作应先盘点代理域、导入路径和自定义权限流，再用畸形签名、跨链地址与权限绕过向量做回归，不能把依赖升级当成已部署合约自动获修复。",
-        "sourceUrl": "https://github.com/OpenZeppelin/openzeppelin-contracts/releases/tag/v5.7.0"
+        "id": "ai-evidence-improvement-loop",
+        "domain": "ai",
+        "topic": "evaluation",
+        "title": "Agent 改进闭环：先把专家纠错变成证据",
+        "whatHappened": "OpenAI 与 Thrive Holdings 在 2026-05-27 公开 Tax AI 案例，展示专家纠错、生产 trace、定向 eval 与 Codex 修复任务如何组成持续改进闭环。",
+        "mechanism": "系统先保存来源、预测、专家修改和最终提交的完整路径，再把重复且经审阅的差异聚类为失败模式；只有可行动模式才进入定向评测与有边界的工程任务。",
+        "workedExample": "当多个税表都漏掉 fair rental days，团队不会直接改提示词，而是先确认这不是流程噪声，再构建代表性样本、预期输出和回归集，让修复同时通过定向与全量评测。",
+        "whyItMatters": "学习雷达也需要同样的证据闭环：保留来源与拒绝原因，区分偶发误差和重复模式，再决定 ResearchOps 门禁是否需要修改。",
+        "risksAndLimits": [
+          "税务案例依赖专业人员和结构化流程，其准确率不能外推到开放网络研究。",
+          "如果专家判断或 grader 本身错误，闭环会稳定强化错误目标。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_engineering",
+            "name": "OpenAI · Building self-improving tax agents with Codex",
+            "url": "https://openai.com/index/building-self-improving-tax-agents-with-codex/",
+            "publishedAt": "2026-05-27T00:00:00.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "学习雷达应记录哪些拒绝原因，才能把编辑判断转成可复用评测？",
+          "如何避免把来源稀缺误判成模型生成质量问题？"
+        ]
+      },
+      {
+        "id": "web3-signature-fail-closed",
+        "domain": "web3",
+        "topic": "security",
+        "title": "OpenZeppelin 5.7：签名与权限不能静默降级",
+        "whatHappened": "OpenZeppelin 在 2026-07-29 发布 Contracts 5.7.0，修复 AccessManager 权限绕过、ERC-7739 畸形描述降级和跨链地址静默误解析等安全边界。",
+        "mechanism": "关键策略是 fail closed：无法正确绑定消息内容、域或目标链时直接拒绝，而不是退回一个表面可用但语义更弱的验证路径。",
+        "workedExample": "一个 EIP-712 域的 name 超过内联边界时，调用方必须显式处理失败并重新编码；测试还要提交畸形 ERC-7739 描述，确认验证不会退化为与消息无关的签名检查。",
+        "whyItMatters": "钱包与交易所后端经常组合代理、权限和签名库；理解静默降级能帮助你把安全不变量写进依赖升级与回归测试。",
+        "risksAndLimits": [
+          "升级 npm 依赖不会自动修复已经部署且未升级的代理合约。",
+          "新版本仍需与自定义扩展、存储布局和既有签名域做兼容性回放。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "OpenZeppelin Contracts v5.7.0",
+            "url": "https://github.com/OpenZeppelin/openzeppelin-contracts/releases/tag/v5.7.0",
+            "publishedAt": "2026-07-29T16:43:07.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "哪些钱包签名流程仍在错误时自动回退到更弱的验证模式？",
+          "如何为代理升级建立可重复的权限绕过回归向量？"
+        ]
+      },
+      {
+        "id": "web3-clear-signing-context",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "ERC-7730：清晰签名必须绑定链与合约上下文",
+        "whatHappened": "Ethereum ERCs 仓库在 2026-07-22 更新 ERC-7730，继续收敛清晰签名元数据的版本与所有者字段，使钱包能按明确上下文解释调用数据。",
+        "mechanism": "钱包先匹配链、合约地址、函数 selector 与元数据版本，再把原始 calldata 映射成人类可读动作；任一上下文不匹配都应展示原始字段或拒绝，而不是套用相似模板。",
+        "workedExample": "同一个 transfer selector 出现在两条链的不同合约时，钱包不能只显示‘转账 100’，而要确认 chainId、合约和 token decimals 后显示资产与接收方。",
+        "whyItMatters": "这直接关联钱包确认页、交易所提币审核和钓鱼防护：用户看到的意图必须与真正签名的字节属于同一上下文。",
+        "risksAndLimits": [
+          "清晰展示不能替代交易模拟，恶意合约仍可能在执行期产生不同效果。",
+          "元数据发布者、版本和更新机制本身也需要信任与撤销策略。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "protocol_commit",
+            "name": "ERC-7730 owner field update",
+            "url": "https://github.com/ethereum/ERCs/commit/73672565aeb10e615905663ad457d75a19eae0c2",
+            "publishedAt": "2026-07-22T13:23:46.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "钱包如何在元数据缺失时清楚展示不确定性而不是制造安全感？",
+          "清晰签名元数据的发布、审核和撤销应由谁负责？"
+        ]
       }
     ],
-    "aiTip": {
-      "title": "OpenChamber 1.18.1 · 在创建 Agent 会话前先验证依赖",
-      "summary": "AI Hot 发现线索后，官方 release 证实它把 OAuth 登录状态落盘、未登录模型隐藏，并在创建会话前拒绝不可用的模型、Agent 或 variant；未真正送达 session 的提示也会明确失败。这个模式可直接用于自动化：先验证来源、写权限、GitHub 与通知通道，再产生副作用，并给每一步终态；但本地强工具、隧道和继承凭据仍扩大攻击面，需固定版本、隔离目录和最小权限。",
-      "sourceUrl": "https://github.com/openchamber/openchamber/releases/tag/v1.18.1"
-    },
-    "web3Design": {
-      "title": "ERC-7902 · 把账户抽象的高风险能力变成显式协商",
-      "summary": "该 Draft 让 dApp 与钱包通过 EIP-5792 capabilities 协商 EIP-7702 授权、静态 paymaster、有效期、多维 nonce 与 gas 覆盖。设计重点不是多传几个字段，而是把 delegation、付款方和时间窗绑定到链、账户、用户确认与策略日志；错误 delegation 可清空账户，恶意 paymaster 数据也可能利用既有授权。实现时应只允许审计过的 delegation、展示有效期与覆盖项，并拒绝冲突配置。",
-      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-7902"
-    },
-    "vibeProject": {
-      "title": "Codex 0.147.0 · 插件可移植之后，权限边界更要可验证",
-      "summary": "版本加入可安装 Agent Plugins、跨目录插件搜索和 MCP 2026-07-28 分页发现，同时补上命令与历史中的密钥脱敏、陌生项目显式信任，以及策略更新失败时默认拒绝网络。试用建议先在无凭据 worktree 固定 0.147.0，检查插件 manifest、文件与网络权限和卸载差异；自动审批能降低摩擦，但不能替代来源审查、沙箱和回归测试。",
-      "sourceUrl": "https://github.com/openai/codex/releases/tag/rust-v0.147.0"
-    },
-    "readingPick": {
-      "title": "GPT-Live 复盘 · 实时系统先保护关键路径，再异步做聪明的事",
-      "summary": "OpenAI 把音频放进独立快路径，把推理、工具和持久化移到异步边界；模型热切换与上下文压缩在后台预热替代实例，WARP 又把媒体启动从六次网络往返压到一次。更重要的生产教训来自只读影子流量：容量要按持续并发与每帧准时率计算，而非只看 GPU 请求吞吐。它是内部系统复盘而非通用基准，但可迁移的动作是隔离关键路径、保存可恢复状态，并用真实生命周期逐步放量。",
-      "sourceUrl": "https://openai.com/index/continuous-voice-interaction-with-gpt-live/"
+    "deepDive": {
+      "id": "deep-ai-realtime-architecture",
+      "domain": "ai",
+      "topic": "infrastructure",
+      "title": "专题：把实时 AI 拆成快路径、异步工作与可恢复状态",
+      "whatHappened": "GPT-Live 的工程复盘把实时体验从单一模型延迟问题，扩展成媒体传输、连续推理、工具委派、状态恢复与影子验证的完整系统问题。",
+      "mechanism": "先画出端到端关键路径并定义每段预算；媒体与最低限度响应留在快路径，工具和重计算通过事件边界异步执行，持久会话保存恢复点，影子流量只读验证新实现。",
+      "workedExample": "构建一个语音研究助手时，可让 WebRTC 音轨持续流动，模型先确认收到问题；检索任务写入事件日志并异步执行，断线后按 sessionId 从最后事件恢复，避免重复发起外部动作。",
+      "whyItMatters": "这个专题把模型、网络和分布式系统知识连成一个可练习的架构题，也能用于判断所谓‘低延迟模型’是否真的改善用户感知。",
+      "risksAndLimits": [
+        "快慢路径共享状态时容易出现乱序、重复执行和旧结果覆盖，需要幂等键与版本检查。",
+        "影子流量必须只读并去除敏感数据，否则性能验证会扩大隐私与副作用风险。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_engineering",
+          "name": "OpenAI · Continuous voice interaction with GPT-Live",
+          "url": "https://openai.com/index/continuous-voice-interaction-with-gpt-live/",
+          "publishedAt": "2026-08-03T00:00:00.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "web_standard",
+          "name": "W3C WebRTC 1.0 specification",
+          "url": "https://www.w3.org/TR/webrtc/"
+        }
+      ],
+      "nextQuestions": [
+        "如何为音频、首 token、工具完成和恢复分别定义 SLO？",
+        "什么样的事件日志足以支持恢复，同时不会无限放大会话存储？"
+      ],
+      "basedOnBriefId": "ai-realtime-critical-path"
     },
     "sourceUrls": [
-      "https://github.com/anza-xyz/agave/releases/tag/v4.2.0",
+      "https://openai.com/index/continuous-voice-interaction-with-gpt-live/",
+      "https://openai.com/index/building-self-improving-tax-agents-with-codex/",
       "https://github.com/OpenZeppelin/openzeppelin-contracts/releases/tag/v5.7.0",
-      "https://github.com/openchamber/openchamber/releases/tag/v1.18.1",
-      "https://eips.ethereum.org/EIPS/eip-7902",
-      "https://github.com/openai/codex/releases/tag/rust-v0.147.0",
-      "https://openai.com/index/continuous-voice-interaction-with-gpt-live/"
+      "https://github.com/ethereum/ERCs/commit/73672565aeb10e615905663ad457d75a19eae0c2",
+      "https://www.w3.org/TR/webrtc/"
     ],
     "relatedProjectSlugs": [
       "wallet-core",
       "exchange-wallet-system",
       "web3-wallet-engineer-lab"
-    ]
+    ],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-08-10-2e30ddbe6dfe7ed5",
+    "asOf": "2026-08-12T05:27:51.000Z",
+    "origin": "research",
+    "publicationState": "published"
   },
   {
     "date": "2026-08-09",
