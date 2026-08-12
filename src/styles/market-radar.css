@@ -70,7 +70,7 @@
 .trade-radar-hero {
   position: relative;
   overflow: hidden;
-  padding: clamp(8rem, 13vw, 11rem) 0 clamp(6.8rem, 9vw, 8.8rem);
+  padding: clamp(4.75rem, 7vw, 6.5rem) 0 clamp(3.5rem, 5vw, 4.75rem);
   background:
     radial-gradient(circle at 80% 28%, rgba(90, 215, 199, 0.13), transparent 24rem),
     radial-gradient(circle at 16% 88%, rgba(91, 130, 255, 0.07), transparent 28rem),
@@ -93,32 +93,27 @@
   position: relative;
   z-index: 1;
   display: grid;
-  grid-template-columns: minmax(0, 1.25fr) minmax(17rem, 0.55fr);
-  gap: clamp(3.5rem, 8vw, 8rem);
-  align-items: end;
+  grid-template-columns: minmax(0, 1fr) minmax(22rem, 0.8fr);
+  gap: clamp(3rem, 7vw, 7rem);
+  align-items: center;
 }
 
 .trade-radar-hero-copy h1 {
-  max-width: 13ch;
-  margin: 1.25rem 0 1.8rem;
-  font-size: clamp(3.65rem, 7.4vw, 6.6rem);
+  max-width: none;
+  margin: 0.85rem 0 1.15rem;
+  font-size: clamp(3.5rem, 6vw, 5.75rem);
   font-weight: 640;
-  letter-spacing: -0.068em;
-  line-height: 0.96;
+  letter-spacing: -0.06em;
+  line-height: 0.95;
   text-wrap: balance;
 }
 
-.trade-radar-hero-copy h1 span {
-  display: block;
-  color: #8f99a6;
-}
-
 .trade-radar-lead {
-  max-width: 43rem;
+  max-width: 36rem;
   margin: 0;
   color: #b9c1cb;
   font-size: clamp(1rem, 1.4vw, 1.15rem);
-  line-height: 1.8;
+  line-height: 1.65;
 }
 
 .trade-radar-boundary {
@@ -169,7 +164,7 @@
   position: relative;
   z-index: 2;
   display: block;
-  margin-top: -2.6rem;
+  margin-top: -2rem;
   border: 1px solid var(--trade-line-dark);
   background: rgba(9, 12, 17, 0.98);
   color: #f4f6f9;
@@ -242,7 +237,10 @@
   color: #ffaaa6;
 }
 
-.trade-radar-brief,
+.trade-radar-brief {
+  padding-top: clamp(2.5rem, 4vw, 4rem);
+}
+
 .trade-radar-archive {
   padding-top: clamp(5.5rem, 10vw, 9rem);
 }
@@ -325,7 +323,7 @@
 
 .trade-radar-summary {
   max-width: 49rem;
-  margin: 1.8rem 0 clamp(3rem, 6vw, 5rem);
+  margin: 1.35rem 0 clamp(1.75rem, 3vw, 2.5rem);
   color: var(--trade-copy);
   font-size: clamp(1rem, 1.4vw, 1.13rem);
   line-height: 1.8;
@@ -1208,7 +1206,6 @@
   .trade-radar-hero { padding: 4.25rem 0 2rem; }
   .trade-radar-hero-grid { gap: 0.8rem; }
   .trade-radar-hero-copy h1 { margin: 0.6rem 0 0.75rem; font-size: clamp(2rem, 9vw, 2.3rem); line-height: 0.98; }
-  .trade-radar-hero-copy h1 span { display: inline; }
   .trade-radar-lead { font-size: 0.82rem; line-height: 1.55; }
   .trade-radar-boundary { grid-template-columns: minmax(0, 1fr); gap: 0.25rem; padding-top: 0.7rem; }
   .trade-radar-boundary strong { font-size: 0.92rem; }

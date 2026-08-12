@@ -1,5 +1,5 @@
 import { getSummary } from '../../lib/market-radar/repository.js'
-import { allowMethods, preparePublicResponse, sendPublicError, type MarketRadarRequest, type MarketRadarResponse } from '../../lib/market-radar/http.js'
+import { allowMethods, preparePublicResponse, type MarketRadarRequest, type MarketRadarResponse } from '../../lib/market-radar/http.js'
 
 export default async function handler(req: MarketRadarRequest, res: MarketRadarResponse) {
   preparePublicResponse(res)
@@ -7,6 +7,10 @@ export default async function handler(req: MarketRadarRequest, res: MarketRadarR
   try {
     return res.status(200).json(await getSummary())
   } catch {
-    return sendPublicError(res, 503, 'data_delayed', '交易雷达数据暂时不可用，请把它视为数据延迟。')
+    return res.status(200).json({
+      status: 'degraded', snapshotId: null, asOf: null, generatedAt: new Date().toISOString(), latestEventAt: null, freshnessMinutes: null,
+      isDelayed: true, eventCount24h: 0, p0Count24h: 0, p1Count24h: 0, sources: [],
+      message: '交易雷达数据暂时不可用，请把它视为数据延迟。',
+    })
   }
 }

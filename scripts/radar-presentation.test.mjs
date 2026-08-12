@@ -124,15 +124,19 @@ test('Learn Radar routes rely on the single application main landmark', () => {
 })
 
 test('Learn Radar exposes generated, review, loading, empty and error boundaries', () => {
-  assert.match(radarPageSource, /parseLearningTimelineList/)
-  assert.match(radarPageSource, /useStaticFallback/)
-  assert.match(radarPageSource, /实时学习时间线暂时不可用/)
+  assert.match(radarPageSource, /radarSignalCountLabel\(latestRadar\?\.marketSignals\.length \?\? 0\)/)
+  assert.match(radarPageSource, /latestRadar\.date[\s\S]*latestWeekly\.reviewedAt|latestWeekly\.reviewedAt[\s\S]*latestRadar\?\.date/)
   assert.match(radarDetailSource, /aria-busy="true"/)
   assert.match(radarDetailSource, /role="alert"/)
   assert.match(radarDetailSource, /AI 自动汇总 · 未经人工复核/)
   assert.match(radarDetailSource, /@click="loadRadar\(/)
   assert.match(radarWeeklySource, /reviewBoundary\.statusLabel/)
   assert.match(radarWeeklySource, /reviewBoundary\.nextReviewLabel/)
+})
+
+test('Learn Radar exposes the immutable publication snapshot in the rendered DOM', () => {
+  assert.match(radarPageSource, /:data-snapshot-id="latestRadar\?\.snapshotId"/)
+  assert.match(radarPageSource, /:data-snapshot-as-of="latestRadar\?\.asOf"/)
 })
 
 test('generated radar layers keep the compact archive and recent full records aligned', () => {
@@ -146,7 +150,12 @@ test('generated radar layers keep the compact archive and recent full records al
     radarIndex[0].marketSignals.map(item => item.title),
     dailyRadars[0].marketSignals.map(item => item.title),
   )
-  assert.equal('summary' in radarIndex[0].marketSignals[0], false)
+  if (radarIndex[0].marketSignals[0]) assert.equal('summary' in radarIndex[0].marketSignals[0], false)
+  assert.equal(radarIndex[0].schemaVersion, 2)
+  assert.deepEqual(radarIndex[0].briefs?.map(item => item.title), dailyRadars[0].briefs?.map(item => item.title))
+  assert.equal(radarIndex[0].briefs?.every(item => !('mechanism' in item)), true)
+  assert.ok(dailyRadars.every(radar => radar.origin === 'research' && radar.publicationState === 'published'))
+  assert.ok(dailyRadars.every(radar => radar.snapshotId.startsWith(`learning-${radar.date}-`) && radar.asOf === new Date(radar.generatedAt).toISOString()))
 })
 
 test('historical radar detail loads by month and rejects invalid routes', async () => {

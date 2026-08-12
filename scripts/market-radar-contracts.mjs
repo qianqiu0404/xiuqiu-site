@@ -1,4 +1,5 @@
 import { assertPublicHttpUrl } from './public-data-contracts.mjs'
+import { assertResearchPublication } from './radar-publication-boundary.mjs'
 
 export const MARKET_RADAR_CATEGORIES = ['macro', 'crypto', 'equity', 'regulation']
 export const MARKET_RADAR_PRIORITIES = ['P0', 'P1', 'P2']
@@ -115,6 +116,7 @@ function validateQuantStrategy(strategy, entry, fileName) {
 
 export function validateMarketRadar(entry, fileName = 'market radar') {
   if (!entry || typeof entry !== 'object' || Array.isArray(entry)) throw new Error(`${fileName}: entry must be an object.`)
+  assertResearchPublication(entry, fileName)
   assertDate(entry.date, `${fileName}: date`)
   if (entry.slug !== entry.date) throw new Error(`${fileName}: slug must equal date.`)
   assertText(entry.title, `${fileName}: title`)

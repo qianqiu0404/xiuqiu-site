@@ -8,14 +8,27 @@ export type MarketQuantAssetGroup = 'us_equity_etf' | 'crypto' | 'gold_etf'
 export type MarketSignalQuality = 'strong' | 'medium' | 'weak'
 export interface MarketQuantAsset { symbol: 'SPY' | 'QQQ' | 'BTC' | 'ETH' | 'GLD'; group: MarketQuantAssetGroup; up?: number; sideways?: number; down?: number; signalQuality?: MarketSignalQuality }
 export interface MarketQuantStrategy { horizonTradingDays: number; status: 'heuristic_unbacktested' | 'historical_samples_insufficient'; methodology: string; assets: MarketQuantAsset[]; sampleSize?: number; rationale: string; nextValidation: string; invalidation: string; sourceUrls: string[] }
-export interface MarketRadarDaily { date: string; slug: string; title: string; summary: string; reviewStatus: 'automated'; generatedAt: string; events: MarketRadarEvent[]; sourceUrls: string[]; quantStrategy?: MarketQuantStrategy }
-export interface MarketRadarIndexEntry { date: string; slug: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
+export interface MarketRadarDaily { date: string; slug: string; snapshotId: string; asOf: string; origin: 'research'; publicationState: 'published'; title: string; summary: string; reviewStatus: 'automated'; generatedAt: string; events: MarketRadarEvent[]; sourceUrls: string[]; quantStrategy?: MarketQuantStrategy }
+export interface MarketRadarIndexEntry { date: string; slug: string; snapshotId: string; asOf: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
 export const marketRadarIndex: MarketRadarIndexEntry[] = [
+  {
+    "date": "2026-08-12",
+    "slug": "2026-08-12",
+    "title": "交易研究雷达 · 2026-08-12",
+    "summary": "今天只保留一项可核验宏观事件：美国 7 月 CPI 将于北京时间 20:30 发布。结果公布前不预设方向，样本门禁继续隐藏精确概率。",
+    "snapshotId": "market-2026-08-12-fb04ceda9b0ac52e",
+    "asOf": "2026-08-11T23:56:14.000Z",
+    "eventCount": 1,
+    "assetCount": 6,
+    "leadTitle": "美国劳工统计局将发布 2026 年 7 月消费者价格指数"
+  },
   {
     "date": "2026-08-11",
     "slug": "2026-08-11",
     "title": "交易研究雷达 · 2026-08-11",
     "summary": "今天只保留一项可核验的宏观日程：美国财政部 580 亿美元 3 年期国债拍卖。结果公布前不预设资产方向，量化简报因历史样本不足仅显示信号质量。",
+    "snapshotId": "market-2026-08-11-4335d8df5e9828b3",
+    "asOf": "2026-08-11T03:14:15.000Z",
     "eventCount": 1,
     "assetCount": 6,
     "leadTitle": "美国财政部将在 8 月 11 日拍卖 580 亿美元 3 年期国债"
@@ -25,6 +38,8 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
     "slug": "2026-08-10",
     "title": "交易研究雷达 · 2026-08-10",
     "summary": "本周先盯紧美国中长期国债连续拍卖与联储偏鹰分歧，再把 Agave 4.2.0 视为 Solana 客户端运行事件；只记录可验证条件，不预设资产方向。",
+    "snapshotId": "market-2026-08-10-37041a045d9c65e0",
+    "asOf": "2026-08-10T07:01:26.000Z",
     "eventCount": 3,
     "assetCount": 6,
     "leadTitle": "美国 3 年、10 年与 30 年国债将在 8 月 11–13 日连续拍卖"
@@ -34,6 +49,8 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
     "slug": "2026-08-09",
     "title": "交易研究雷达 · 2026-08-09",
     "summary": "先锁定本周通胀双节点，再观察 Aptos 热修复透明度与 lnd 候选版迁移风险；只记录可验证事件，不输出仓位指令。",
+    "snapshotId": "market-2026-08-09-f1e87e6fb078dc86",
+    "asOf": "2026-08-09T04:30:00.000Z",
     "eventCount": 3,
     "assetCount": 5,
     "leadTitle": "美国 CPI 与 PPI 将在 8 月 12–13 日连续发布"
@@ -41,10 +58,93 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
 ]
 export const latestMarketRadars: MarketRadarDaily[] = [
   {
+    "date": "2026-08-12",
+    "slug": "2026-08-12",
+    "title": "交易研究雷达 · 2026-08-12",
+    "summary": "今天只保留一项可核验宏观事件：美国 7 月 CPI 将于北京时间 20:30 发布。结果公布前不预设方向，样本门禁继续隐藏精确概率。",
+    "snapshotId": "market-2026-08-12-fb04ceda9b0ac52e",
+    "asOf": "2026-08-11T23:56:14.000Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-08-12T07:56:14+08:00",
+    "events": [
+      {
+        "id": "us-cpi-july-2026-release-2026-08-12",
+        "priority": "P0",
+        "status": "scheduled",
+        "category": "macro",
+        "eventAt": "2026-08-12T20:30:00+08:00",
+        "title": "美国劳工统计局将发布 2026 年 7 月消费者价格指数",
+        "fact": "美国劳工统计局 2026 年发布日程列明，7 月消费者价格指数与实际收入数据定于美东时间 8 月 12 日 08:30 发布，对应北京时间 8 月 12 日 20:30。",
+        "whyWatch": "CPI 的总项、核心项和分项变化是通胀路径的公开观察点，公布后可能同时改变利率预期、美债收益率、美元及高久期和高波动资产的定价；日程本身不提供数值，也不能预先推导资产方向。",
+        "assets": [
+          "SPY",
+          "QQQ",
+          "DXY",
+          "GLD",
+          "BTC",
+          "ETH"
+        ],
+        "watchFor": "发布后按固定字段记录总项与核心 CPI 的月率、年率，住房、服务、食品与能源分项，并观察美债收益率、美元、SPY、QQQ、GLD、BTC 与 ETH 在固定窗口内的公开反应。",
+        "invalidation": "若美国劳工统计局调整发布时间、延后发布或修订数据，以其最新正式页面为准；发布前的市场波动不得归因于尚未公布的 CPI 数值。",
+        "sourceName": "U.S. Bureau of Labor Statistics",
+        "sourceUrl": "https://www.bls.gov/schedule/2026/home.htm",
+        "sourcePublishedAt": "2026-06-10"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.bls.gov/schedule/2026/home.htm"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "固定规则尚未积累到 50 个已完成且可复核的样本；当前不发布上涨、震荡或下跌的精确概率，只报告证据完整度对应的信号质量。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "当前只确认了 CPI 发布时间，尚未获得 7 月数值、分项结构、利率与美元反应以及跨资产同步确认。对 SPY、QQQ、BTC、ETH 和 GLD 均不足以形成可复核的方向概率，因此统一标记为弱信号。",
+      "nextValidation": "数据发布后，按固定字段记录总项、核心项和关键分项，并保存美债收益率、美元及相关资产的固定窗口反应；样本只做前瞻登记，不回填或挑选有利案例。",
+      "invalidation": "美国劳工统计局更新日程、固定规则或观察窗口发生变化，或者未来 3 个交易日验证窗口结束后，必须重新评估；在累计 50 个合格样本前继续隐藏精确概率。",
+      "sourceUrls": [
+        "https://www.bls.gov/schedule/2026/home.htm"
+      ]
+    }
+  },
+  {
     "date": "2026-08-11",
     "slug": "2026-08-11",
     "title": "交易研究雷达 · 2026-08-11",
     "summary": "今天只保留一项可核验的宏观日程：美国财政部 580 亿美元 3 年期国债拍卖。结果公布前不预设资产方向，量化简报因历史样本不足仅显示信号质量。",
+    "snapshotId": "market-2026-08-11-4335d8df5e9828b3",
+    "asOf": "2026-08-11T03:14:15.000Z",
+    "origin": "research",
+    "publicationState": "published",
     "reviewStatus": "automated",
     "generatedAt": "2026-08-11T11:14:15+08:00",
     "events": [
@@ -120,6 +220,10 @@ export const latestMarketRadars: MarketRadarDaily[] = [
     "slug": "2026-08-10",
     "title": "交易研究雷达 · 2026-08-10",
     "summary": "本周先盯紧美国中长期国债连续拍卖与联储偏鹰分歧，再把 Agave 4.2.0 视为 Solana 客户端运行事件；只记录可验证条件，不预设资产方向。",
+    "snapshotId": "market-2026-08-10-37041a045d9c65e0",
+    "asOf": "2026-08-10T07:01:26.000Z",
+    "origin": "research",
+    "publicationState": "published",
     "reviewStatus": "automated",
     "generatedAt": "2026-08-10T15:01:26+08:00",
     "events": [
@@ -243,6 +347,10 @@ export const latestMarketRadars: MarketRadarDaily[] = [
     "slug": "2026-08-09",
     "title": "交易研究雷达 · 2026-08-09",
     "summary": "先锁定本周通胀双节点，再观察 Aptos 热修复透明度与 lnd 候选版迁移风险；只记录可验证事件，不输出仓位指令。",
+    "snapshotId": "market-2026-08-09-f1e87e6fb078dc86",
+    "asOf": "2026-08-09T04:30:00.000Z",
+    "origin": "research",
+    "publicationState": "published",
     "reviewStatus": "automated",
     "generatedAt": "2026-08-09T12:30:00+08:00",
     "events": [

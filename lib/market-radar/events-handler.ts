@@ -58,7 +58,14 @@ export function createMarketEventsHandler(dependencies: MarketEventsHandlerDepen
         limit: clampInteger(queryValue(req, 'limit'), 20, 1, 50),
       }))
     } catch {
-      return sendPublicError(res, 503, 'data_delayed', '交易雷达数据暂时不可用，请稍后再试。')
+      return res.status(200).json({
+        status: 'degraded',
+        snapshotId: null,
+        asOf: null,
+        items: [],
+        nextCursor: null,
+        message: '交易雷达数据暂时不可用，请稍后再试。',
+      })
     }
   }
 }

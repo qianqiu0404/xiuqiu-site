@@ -177,16 +177,22 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="trade-radar-page" lang="zh-CN">
+  <div
+    class="trade-radar-page"
+    lang="zh-CN"
+    :data-snapshot-id="latest?.snapshotId"
+    :data-snapshot-as-of="latest?.asOf"
+  >
     <header class="trade-radar-hero">
       <div class="container trade-radar-shell trade-radar-hero-grid">
         <div class="trade-radar-hero-copy">
-          <p class="trade-radar-kicker">Trade Radar / Verified event intelligence</p>
-          <h1>先看发生了什么。<span>再判断市场怎么走。</span></h1>
-          <p class="trade-radar-lead">事实、影响资产、观察条件与失效边界分开记录；较远预定事件只来自已提交静态排期。它不告诉你买什么。</p>
+          <p class="trade-radar-kicker">Trade Radar / Verified events</p>
+          <h1>市场雷达</h1>
+          <p class="trade-radar-lead">重要事件 → 影响资产 → 验证与失效。只做研究，不给买卖指令。</p>
         </div>
         <aside class="trade-radar-boundary" aria-label="研究与执行边界">
-          <span>Research boundary</span><strong>不接账户 · 不自动下单</strong>
+          <span>Research boundary</span>
+          <strong>不接账户 · 不自动下单</strong>
           <p>数据库时间线只承载已发生或临近事件；未来排期明确标注静态快照，市场反应仍需发生后验证。</p>
         </aside>
       </div>

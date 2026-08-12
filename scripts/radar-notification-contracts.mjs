@@ -5,6 +5,25 @@ function compact(value, max = 132) {
   return text.length <= max ? text : `${text.slice(0, max - 1)}…`
 }
 
+function publicationMetadata(radar) {
+  const snapshot = typeof radar?.snapshotId === 'string'
+    ? radar.snapshotId.match(/^(learning|market)-(\d{4}-\d{2}-\d{2})-[0-9a-f]{16}$/)
+    : null
+  if (!snapshot || snapshot[2] !== radar.date) {
+    throw new Error('Radar notification requires a valid snapshotId.')
+  }
+  if (typeof radar.asOf !== 'string' || Number.isNaN(Date.parse(radar.asOf))) throw new Error('Radar notification requires a valid asOf.')
+  if (radar.origin !== 'research' || radar.publicationState !== 'published') {
+    throw new Error('Radar notification requires published research content.')
+  }
+  return {
+    snapshotId: radar.snapshotId,
+    asOf: new Date(radar.asOf).toISOString(),
+    origin: radar.origin,
+    publicationState: radar.publicationState,
+  }
+}
+
 export function shanghaiDate(now = new Date()) {
   return new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit',
@@ -12,6 +31,8 @@ export function shanghaiDate(now = new Date()) {
 }
 
 export function buildLearningDailyNotification(radar) {
+  if (radar?.schemaVersion === 2) throw new Error('Learning Radar v2 notifications are disabled until M4.')
+  const publication = publicationMetadata(radar)
   const ordered = [
     radar.marketSignals?.[0], radar.aiTip, radar.web3Design, radar.vibeProject, radar.readingPick,
     ...(radar.marketSignals || []).slice(1),
@@ -38,6 +59,7 @@ export function buildLearningDailyNotification(radar) {
     kind: 'daily',
     idempotencyKey: `learning:daily:${radar.date}`,
     payload: {
+      ...publication,
       date: radar.date,
       title: `学习雷达早报 · ${radar.date}`,
       body: lines.join('\n'),
@@ -48,6 +70,7 @@ export function buildLearningDailyNotification(radar) {
 }
 
 export function buildMarketDailyNotification(radar) {
+  const publication = publicationMetadata(radar)
   const events = [...(radar.events || [])]
     .sort((left, right) => (PRIORITY_WEIGHT[right.priority] || 0) - (PRIORITY_WEIGHT[left.priority] || 0))
     .slice(0, 3)
@@ -69,6 +92,7 @@ export function buildMarketDailyNotification(radar) {
     kind: 'daily',
     idempotencyKey: `market:daily:${radar.date}`,
     payload: {
+      ...publication,
       date: radar.date,
       title: `交易雷达早报 · ${radar.date}`,
       body: lines.join('\n'),
@@ -84,6 +108,7 @@ export function buildMarketDailyNotification(radar) {
 }
 
 export function buildMarketQuantNotification(radar) {
+  const publication = publicationMetadata(radar)
   const strategy = radar.quantStrategy
   if (!strategy) throw new Error(`Market radar ${radar.date} has no quantStrategy.`)
   const bySymbol = new Map(strategy.assets.map(asset => [asset.symbol, asset]))
@@ -122,6 +147,7 @@ export function buildMarketQuantNotification(radar) {
     kind: 'quant',
     idempotencyKey: `market:quant:${radar.date}`,
     payload: {
+      ...publication,
       date: radar.date,
       title: `${strategy.status === 'historical_samples_insufficient' ? '交易雷达量化简报' : '交易雷达概率简报'} · ${radar.date}`,
       body: lines.join('\n'),

@@ -1,8 +1,11 @@
 import { readFileSync } from 'node:fs'
 import { assertPublicHttpUrl } from './public-data-contracts.mjs'
+import { assertResearchPublication } from './radar-publication-boundary.mjs'
+import { collectLearningSourceUrls, validateLearningEditionV2 } from './learning-radar-v2.mjs'
 
 export const PUBLIC_RADAR_SECTIONS = ['crypto', 'radar', 'vibe', 'reading']
 export const MIN_RADAR_SECTIONS = 3
+export const V2_RADAR_SECTIONS = ['ai', 'web3', 'deepDive']
 
 const PRIVATE_MARKERS = ['briefing', 'practice']
 const PRIVATE_TERMS = ['晚间复盘', '求职计划', '个人日记', '助记词', '私钥', 'briefing', 'practice']
@@ -26,6 +29,17 @@ export function parseDailyResearchSource(source) {
   }
 }
 
+export function parseLearningV2ResearchSource(source) {
+  const sections = Object.fromEntries(V2_RADAR_SECTIONS.map(name => [name, extractMarkerBlock(source, name)]))
+  const succeeded = V2_RADAR_SECTIONS.filter(name => sections[name].length > 0)
+  return {
+    sections,
+    succeeded,
+    missing: V2_RADAR_SECTIONS.filter(name => !succeeded.includes(name)),
+    sourceUrls: extractUrls(succeeded.map(name => sections[name]).join('\n')),
+  }
+}
+
 export function extractUrls(value) {
   const urls = [...new Set((value.match(URL_RE) || []).map(url => url.replace(/[.,;，。；]+$/, '')))]
   urls.forEach((url, index) => assertPublicHttpUrl(url, `source URL ${index + 1}`))
@@ -37,6 +51,18 @@ export function assertSafeSource(source) {
 }
 
 export function validateRadarCandidate(candidate, source) {
+  if (candidate?.schemaVersion === 2) {
+    const parsed = parseLearningV2ResearchSource(source)
+    validateLearningEditionV2(candidate)
+    const sourceUrlSet = new Set(parsed.sourceUrls)
+    const candidateUrls = collectLearningSourceUrls(candidate)
+    if (parsed.succeeded.length !== V2_RADAR_SECTIONS.length) {
+      throw new Error(`Only ${parsed.succeeded.length} v2 research sections succeeded; all 3 are required.`)
+    }
+    const missing = candidateUrls.filter(url => !sourceUrlSet.has(url))
+    if (missing.length) throw new Error(`Output URL does not exist in the source: ${missing[0]}`)
+    return { ...parsed, candidateUrls }
+  }
   const errors = []
   const parsed = parseDailyResearchSource(source)
   const serialized = JSON.stringify(candidate)
@@ -60,6 +86,12 @@ export function validateRadarCandidate(candidate, source) {
 export function assertPublicRadarContent(candidate) {
   const serialized = JSON.stringify(candidate)
   const errors = []
+  try { assertResearchPublication(candidate, 'learning radar') } catch (error) { errors.push(error instanceof Error ? error.message : String(error)) }
+  if (candidate?.schemaVersion === 2) {
+    try { validateLearningEditionV2(candidate) } catch (error) { errors.push(error instanceof Error ? error.message : String(error)) }
+    if (errors.length) throw new Error(errors.join('\n'))
+    return
+  }
   if (ABSOLUTE_PATH_RE.test(serialized)) errors.push('Output contains a local absolute path.')
   if (SECRET_RE.test(serialized)) errors.push('Output may contain credentials or secret material.')
   PRIVATE_TERMS.forEach(term => { if (serialized.toLowerCase().includes(term.toLowerCase())) errors.push(`Output contains private term: ${term}`) })

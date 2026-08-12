@@ -1,5 +1,5 @@
-import { readdir, readFile } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
+import { readdir, readFile } from 'node:fs/promises'
 
 export const migrationsUrl = new URL('../migrations/', import.meta.url)
 

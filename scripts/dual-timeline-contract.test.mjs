@@ -181,9 +181,10 @@ test('all public API failure paths are no-store and detail reports stay out of l
     read('lib/learning-radar/http-handlers.ts'),
   ])
   assert.match(marketEvents, /createMarketEventsHandler/)
-  for (const source of [marketEventsHandler, marketSummary, marketDigests, marketDetail]) {
-    assert.match(source, /sendPublicError\(res, (?:400|404|503)/)
-  }
+  assert.match(marketEventsHandler, /status\(200\)\.json\(\{[\s\S]*status: 'degraded'/)
+  assert.match(marketSummary, /status\(200\)\.json\(\{[\s\S]*status: 'degraded'/)
+  assert.match(marketDigests, /status\(200\)\.json\(\{[\s\S]*status: 'degraded'/)
+  assert.match(marketDetail, /sendPublicError\(res, (?:400|404|503)/)
   assert.match(learningItems, /sendError\(res, (?:400|404|503)/)
   const marketList = marketRepository.slice(marketRepository.indexOf('export async function listEvents'), marketRepository.indexOf('export async function getEvent'))
   const learningList = learningRepository.slice(learningRepository.indexOf('export async function listLearningRadarItems'), learningRepository.indexOf('export async function getLearningRadarStory'))
