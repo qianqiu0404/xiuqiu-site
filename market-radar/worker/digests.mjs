@@ -164,31 +164,49 @@ export function buildDigestBody(events) {
   return { body: lines.join('\n'), attentionAssets: attention.map(asset => asset.symbol) }
 }
 
-async function createDigest(sql, { id, kind, title, periodStart, periodEnd, events, outboxKind, idempotencyKey, pageUrl, allowQuiet = false }) {
+async function createDigest(sql, { id, kind, title, periodStart, periodEnd, events, outboxKind, idempotencyKey, pageUrl, snapshotId, allowQuiet = false }) {
   if (!events.length && !allowQuiet) return { created: false, reason: 'no_important_events' }
   const { body, attentionAssets } = buildDigestBody(events)
   const rows = await sql.query(`with inserted_digest as (
     insert into market_radar.digests
-      (id, kind, title, body_zh, visibility, period_start, period_end, published_at)
-    values ($1,$2,$3,$4,'public',$5,$6,now())
-    on conflict (id) do nothing returning id, title, body_zh
+      (id, kind, title, body_zh, visibility, period_start, period_end, published_at,
+        origin, publication_state, snapshot_id)
+    values ($1,$2,$3,$4,'public',$5,$6,now(),'research','published',$11)
+    on conflict (id) do nothing returning id, title, body_zh, snapshot_id
   ), selected_digest as (
-    select id, title, body_zh from inserted_digest
+    select id, title, body_zh, snapshot_id from inserted_digest
     union all
-    select id, title, body_zh from market_radar.digests where id = $1
+    select id, title, body_zh, snapshot_id from market_radar.digests where id = $1
+      and kind = $2 and visibility = 'public' and origin = 'research'
+      and publication_state = 'published' and snapshot_id = $11 and title = $3 and body_zh = $4
     limit 1
   ), inserted_outbox as (
-    insert into market_radar.outbox (id, digest_id, kind, idempotency_key, payload)
+    insert into market_radar.outbox
+      (id, digest_id, kind, idempotency_key, payload, origin, publication_state, snapshot_id)
     select $7, id, $8, $9, jsonb_strip_nulls(jsonb_build_object(
       'digestId', id, 'title', title, 'body', body_zh, 'pageUrl', $10::text
-    )) from selected_digest
+    )), 'research', 'published', snapshot_id from selected_digest
     on conflict (idempotency_key) do nothing returning id
+  ), selected_outbox as (
+    select id from inserted_outbox
+    union all
+    select existing.id from market_radar.outbox existing join selected_digest digest on true
+    where existing.idempotency_key = $9 and existing.kind = $8 and existing.digest_id = digest.id
+      and existing.origin = 'research' and existing.publication_state = 'published'
+      and existing.snapshot_id = $11 and existing.payload->>'digestId' = digest.id
+      and existing.payload->>'title' = digest.title and existing.payload->>'body' = digest.body_zh
+      and existing.payload->>'pageUrl' is not distinct from $10::text
+    limit 1
   )
   select exists(select 1 from inserted_digest) as digest_created,
-    exists(select 1 from inserted_outbox) as outbox_created`, [
+    exists(select 1 from inserted_outbox) as outbox_created,
+    exists(select 1 from market_radar.digests where id = $1) and not exists(select 1 from selected_digest) as digest_conflict,
+    exists(select 1 from market_radar.outbox where idempotency_key = $9) and not exists(select 1 from selected_outbox) as outbox_conflict`, [
     id, kind, title, body, periodStart, periodEnd, crypto.randomUUID(), outboxKind,
-    idempotencyKey || `digest:${id}`, pageUrl || null,
+    idempotencyKey || `digest:${id}`, pageUrl || null, snapshotId,
   ])
+  if (rows[0]?.digest_conflict === true) throw new Error('market_digest_metadata_conflict')
+  if (rows[0]?.outbox_conflict === true) throw new Error('market_outbox_metadata_conflict')
   const digestCreated = rows[0]?.digest_created === true
   const outboxCreated = rows[0]?.outbox_created === true
   if (!digestCreated && !outboxCreated) return { created: false, reason: 'already_exists' }
@@ -201,39 +219,57 @@ async function createDigest(sql, { id, kind, title, periodStart, periodEnd, even
   }
 }
 
-async function publicEvents(sql, start, end, priorities = ['P0', 'P1', 'P2']) {
+async function publicEvents(sql, start, end, snapshotId, priorities = ['P0', 'P1', 'P2']) {
   return sql.query(`select id, market, priority, score, title_zh, summary_zh, system_judgment,
       news_direction, horizon, source_count, assets, reaction, occurred_at
     from market_radar.public_events where occurred_at >= $1 and occurred_at < $2
-    and priority = any($3::text[]) order by score desc, occurred_at desc limit 20`, [start, end, priorities])
+    and priority = any($3::text[]) and snapshot_id = $4
+    order by score desc, occurred_at desc limit 20`, [start, end, priorities, snapshotId])
+}
+
+async function withPublishedMarketSnapshot(sql, work) {
+  await sql.query('begin')
+  try {
+    const publication = (await sql.query(`select snapshot_id from radar_system.publication_snapshots
+      where radar_kind = 'market' and origin = 'research' and publication_state = 'published'
+      order by as_of desc, snapshot_id desc limit 1 for share`))[0]
+    if (!publication) throw new Error('market_published_snapshot_missing')
+    const result = await work(publication.snapshot_id)
+    await sql.query('commit')
+    return result
+  } catch (error) {
+    await sql.query('rollback').catch(() => undefined)
+    throw error
+  }
 }
 
 export async function generateP1Batch(sql, now = new Date()) {
   const bucketEnd = new Date(Math.floor(now.getTime() / (30 * 60_000)) * 30 * 60_000)
   const bucketStart = new Date(bucketEnd.getTime() - 30 * 60_000)
   const id = `p1-v2-${bucketStart.toISOString().slice(0, 16).replace(/[:T]/g, '-')}`
-  return createDigest(sql, {
+  return withPublishedMarketSnapshot(sql, async snapshotId => createDigest(sql, {
     id, kind: 'p1_batch', title: '交易雷达 · P1 事件聚合', periodStart: bucketStart, periodEnd: bucketEnd,
-    events: await publicEvents(sql, bucketStart, bucketEnd, ['P1']), outboxKind: 'p1_batch',
-  })
+    events: await publicEvents(sql, bucketStart, bucketEnd, snapshotId, ['P1']), outboxKind: 'p1_batch', snapshotId,
+  }))
 }
 
 export async function generateDailyDigest(sql, now = new Date()) {
   const periodEnd = now
   const periodStart = new Date(now.getTime() - 24 * 60 * 60_000)
   const shanghaiDate = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now)
-  return createDigest(sql, {
+  return withPublishedMarketSnapshot(sql, async snapshotId => createDigest(sql, {
     id: `daily-v2-${shanghaiDate}`, kind: 'daily', title: `交易雷达早报 · ${shanghaiDate}`,
-    periodStart, periodEnd, events: await publicEvents(sql, periodStart, periodEnd), outboxKind: 'daily',
+    periodStart, periodEnd, events: await publicEvents(sql, periodStart, periodEnd, snapshotId), outboxKind: 'daily',
     idempotencyKey: `market:daily:${shanghaiDate}`, pageUrl: `/market-radar/${shanghaiDate}`, allowQuiet: true,
-  })
+    snapshotId,
+  }))
 }
 
 export async function generateUsPremarketDigest(sql, now = new Date()) {
   const periodStart = new Date(now.getTime() - 16 * 60 * 60_000)
   const date = new Intl.DateTimeFormat('en-CA', { timeZone: 'America/New_York', year: 'numeric', month: '2-digit', day: '2-digit' }).format(now)
-  return createDigest(sql, {
+  return withPublishedMarketSnapshot(sql, async snapshotId => createDigest(sql, {
     id: `us-premarket-v2-${date}`, kind: 'us_premarket', title: `美股盘前 45 分钟 · ${date}`,
-    periodStart, periodEnd: now, events: await publicEvents(sql, periodStart, now, ['P0', 'P1']), outboxKind: 'us_premarket',
-  })
+    periodStart, periodEnd: now, events: await publicEvents(sql, periodStart, now, snapshotId, ['P0', 'P1']), outboxKind: 'us_premarket', snapshotId,
+  }))
 }

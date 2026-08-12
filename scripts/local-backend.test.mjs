@@ -16,6 +16,8 @@ import { writeDigestHandoff } from '../ops/local-backend/digest-handoff.mjs'
 import { rotateLogs } from '../ops/local-backend/rotate-logs.mjs'
 import { cleanupTestProcesses } from '../ops/local-backend/cleanup-test-processes.mjs'
 import { renderInstall } from '../ops/local-backend/render-install.mjs'
+import { publishLocalGitSnapshots } from '../ops/local-backend/publish-git-snapshots.mjs'
+import { materializeRadarPublication } from './radar-publication-materializer.mjs'
 
 const root=new URL('../',import.meta.url)
 const read=path=>readFile(new URL(path,root),'utf8')
@@ -166,6 +168,30 @@ test('install renderer creates a new 0600 tree with independent secrets and neve
   await assert.rejects(renderInstall(options),error=>error.code==='EEXIST')
   await assert.rejects(renderInstall({...options,target:join(parent,'partial-tunnel'),hostname:'radar.example.com'}),/must be complete/)
   await rm(parent,{recursive:true,force:true})
+})
+
+test('local Git snapshot publisher uses pg, exact clean HEAD and parameterized publication writes',async()=>{
+  const before={local:process.env.RADAR_LOCAL_BACKEND,driver:process.env.RADAR_DATABASE_DRIVER};process.env.RADAR_LOCAL_BACKEND='true';process.env.RADAR_DATABASE_DRIVER='pg'
+  const statements=[];const client={query:async(statement,values=[])=>{statements.push({statement,values});return{rows:[],rowCount:/insert into (?:market_radar|learning_radar)\./.test(statement)?1:0}}};const pool={connect:async()=>client,end:async()=>{},};client.release=()=>{}
+  const repo=new URL('../',import.meta.url).pathname.replace(/\/$/,'');const sha='b'.repeat(40)
+  const git=async(_command,args)=>({stdout:args.includes('rev-parse')?`${sha}\n`:''})
+  try{
+    const result=await publishLocalGitSnapshots({repo,databaseUrl:'postgresql://xiuqiu_radar_app@localhost/xiuqiu_radar?host=%2Fprivate%2Ftmp%2Fsocket&port=55432',dates:['2026-08-12'],git,poolFactory:options=>{assert.equal(options.max,1);assert.equal(options.connectionTimeoutMillis,5_000);return pool}})
+    assert.equal(result.gitSha,sha);assert.equal(result.driver,'pg');assert.equal(result.fixtures,false);assert.equal(result.snapshots.length,2)
+    const inserts=statements.filter(entry=>entry.statement.includes('insert into radar_system.publication_snapshots'));assert.equal(inserts.length,2);assert.ok(inserts.every(entry=>entry.values[7]===sha));assert.ok(inserts.every(entry=>entry.values.length===8));assert.ok(statements.some(entry=>entry.statement.includes('insert into market_radar.events')));assert.ok(statements.some(entry=>entry.statement.includes('insert into learning_radar.stories')));assert.ok(statements.filter(entry=>entry.statement.includes('insert into market_radar.event_sources')).every(entry=>entry.values.at(-1) instanceof Date||entry.values.at(-1)));assert.equal(statements[0].statement,'begin');assert.equal(statements.at(-1).statement,'commit')
+    await assert.rejects(publishLocalGitSnapshots({repo,databaseUrl:'postgresql://xiuqiu_radar_app@localhost/xiuqiu_radar?host=%2Fprivate%2Ftmp%2Fsocket&port=55432',dates:['2026-08-12'],git:async(_command,args)=>({stdout:args.includes('status')?'?? untracked\n':args.includes('rev-parse')?`${sha}\n`:''}),poolFactory:()=>pool}),/exact clean Git commit/)
+  }finally{if(before.local===undefined)delete process.env.RADAR_LOCAL_BACKEND;else process.env.RADAR_LOCAL_BACKEND=before.local;if(before.driver===undefined)delete process.env.RADAR_DATABASE_DRIVER;else process.env.RADAR_DATABASE_DRIVER=before.driver}
+})
+
+test('Learning materialization rejects a non-official single Tier 1 source',async()=>{
+  const publication={origin:'research',publicationState:'published',snapshotId:'learning-2026-08-12-0123456789abcdef',asOf:'2026-08-12T00:00:00Z',payload:{briefs:[{id:'unofficial',domain:'ai',title:'Unofficial source brief',whatHappened:'A sufficiently detailed event description from a non-official publisher.',whyItMatters:'This should not pass the official single-source publication gate.',mechanism:'Mechanism text long enough for the materializer.',workedExample:'Worked example text long enough for the materializer.',risksAndLimits:['A bounded risk description.'],nextQuestions:['A bounded follow-up question?'],sources:[{tier:'tier1',role:'event',kind:'news_report',name:'Example News',url:'https://example.com/report',publishedAt:'2026-08-11'}]}],deepDive:{id:'deep',basedOnBriefId:'unofficial',domain:'ai',title:'Deep dive',whatHappened:'Deep dive event description.',whyItMatters:'Deep dive relevance.',mechanism:'Deep mechanism.',workedExample:'Deep example.',risksAndLimits:['Risk.'],nextQuestions:['Question?'],sources:[{tier:'tier1',role:'event',kind:'news_report',name:'Example News',url:'https://example.com/deep',publishedAt:'2026-08-11'}]}}}
+  await assert.rejects(materializeRadarPublication({query:async()=>({rows:[],rowCount:1})},'learning',publication),/publication_basis_missing/)
+})
+
+test('Learning materialization never treats an arbitrary GitHub protocol commit as official',async()=>{
+  const brief={id:'attacker',domain:'web3',title:'Unowned protocol claim',whatHappened:'An arbitrary repository presents a protocol commit as if it were official.',whyItMatters:'Repository ownership must be checked before single-source publication.',mechanism:'Owner and path are verified together.',workedExample:'An attacker path must fail closed.',risksAndLimits:['Owner names can be deceptive.'],nextQuestions:['Is the owner explicitly allowlisted?'],sources:[{tier:'tier1',role:'event',kind:'protocol_commit',name:'Unowned commit',url:'https://github.com/attacker/repo/commit/0123456789abcdef',publishedAt:'2026-08-11T00:00:00Z'}]}
+  const publication={origin:'research',publicationState:'published',snapshotId:'learning-2026-08-12-fedcba9876543210',asOf:'2026-08-12T00:00:00Z',payload:{briefs:[brief],deepDive:{...brief,id:'attacker-deep',basedOnBriefId:'attacker'}}}
+  await assert.rejects(materializeRadarPublication({query:async()=>({rows:[],rowCount:1})},'learning',publication),/publication_basis_missing/)
 })
 
 test('log rotation refuses a symlink even when its name is allowlisted',async()=>{

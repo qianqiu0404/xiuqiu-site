@@ -25,7 +25,12 @@ import { persistLearningSourceBatch } from '../learning-radar/worker/persistence
 import { persistMarketItem } from '../market-radar/worker/persistence.mjs'
 import { cleanupRetention as cleanupMarketRetention } from '../market-radar/worker/maintenance.mjs'
 import { generateLearningDailyDigest } from '../learning-radar/worker/digests.mjs'
+import { generateDailyDigest } from '../market-radar/worker/digests.mjs'
 import { cleanupLearningRetention } from '../learning-radar/worker/maintenance.mjs'
+import { readRadarPublication } from './radar-publication-files.mjs'
+import { publishRadarSnapshot } from './radar-publication-store.mjs'
+import { materializeRadarPublication } from './radar-publication-materializer.mjs'
+import { createOutboxRepository, createPublicRepository } from '../ops/local-backend/repository.mjs'
 import { publicEventReportRow, publicEventRowV2 } from './fixtures/market-radar-public-event-row.mjs'
 import {
   publicLearningReportRow,
@@ -380,6 +385,25 @@ test('real PostgreSQL applies migrations twice, rolls back failures and enforces
     { kind: 'learning', payload_fingerprint: null },
     { kind: 'market', payload_fingerprint: null },
   ])
+
+  const learningPublication=readRadarPublication(new URL('../content/radar/2026-08-12.md',import.meta.url),'learning','2026-08-12')
+  const marketPublication=readRadarPublication(new URL('../content/market-radar/2026-08-12.md',import.meta.url),'market','2026-08-12')
+  await observer.query('begin')
+  try{
+    for(const [kind,publication] of [['learning',learningPublication],['market',marketPublication]]){
+      await publishRadarSnapshot(observer,kind,publication,'a'.repeat(40));await materializeRadarPublication(observer,kind,publication)
+    }
+    await observer.query('commit')
+  }catch(error){await observer.query('rollback');throw error}
+  const materializedMarket=await observer.query('select id,snapshot_id from market_radar.public_events where snapshot_id=$1',[marketPublication.snapshotId])
+  const materializedLearning=await observer.query('select id,snapshot_id from learning_radar.public_timeline_items where snapshot_id=$1',[learningPublication.snapshotId])
+  assert.ok(materializedMarket.rowCount>=1);assert.ok(materializedLearning.rowCount>=1)
+  const primaryMarket=await observer.query('select count(*)::integer count from market_radar.public_event_reports where event_id=$1 and is_primary=true',[materializedMarket.rows[0].id])
+  const primaryLearning=await observer.query('select count(*)::integer count from learning_radar.public_story_reports where story_id=$1 and is_primary=true',[materializedLearning.rows[0].id])
+  assert.equal(primaryMarket.rows[0].count,1);assert.equal(primaryLearning.rows[0].count,1)
+  const publicRepository=createPublicRepository(async(statement,values)=>(await observer.query(statement,values)).rows)
+  assert.equal((await publicRepository.marketEvent(materializedMarket.rows[0].id)).reports.length,1)
+  assert.ok((await publicRepository.learningStory(materializedLearning.rows[0].id)).reports.length>=1)
 
   const legacyMarketMetadata = (await observer.query(`select source_url, title, published_at,
       payload_expires_at, payload_purged_at
@@ -1073,6 +1097,13 @@ test('real PostgreSQL applies migrations twice, rolls back failures and enforces
   ))
   assert.equal(firstDigest.value.created, true)
   assert.equal(repeatedDigest.value.created, false)
+  const marketDigest=await withRadarDatabaseLock({databaseUrl,wait:true,createPool},({client})=>generateDailyDigest({query:async(statement,values)=>(await client.query(statement,values)).rows},pipelineNow))
+  assert.equal(marketDigest.value.created,true)
+  const outboxRepository=createOutboxRepository(async(statement,values)=>(await observer.query(statement,values)).rows)
+  for(const kind of ['learning','market']){
+    const claim=await outboxRepository.claim(kind,{kinds:['daily'],leaseSeconds:90});assert.ok(claim.item)
+    const ack=await outboxRepository.ack(kind,{id:claim.item.id,leaseToken:claim.item.leaseToken,success:true,providerMessageId:`isolated-pg-${kind}`});assert.equal(ack.status,'sent')
+  }
 
   const learningColumns = await observer.query(`select table_name, column_name from information_schema.columns
     where table_schema = 'learning_radar' and table_name like 'public_%'`)

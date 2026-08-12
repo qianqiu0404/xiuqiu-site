@@ -106,6 +106,8 @@ test('market digest atomically repairs an outbox missing after a prior digest co
   const writeStatements = []
   const sql = {
     async query(statement) {
+      if (['begin','commit','rollback'].includes(statement)) return []
+      if (statement.includes('from radar_system.publication_snapshots')) return [{ snapshot_id: 'market-snapshot-1' }]
       if (statement.includes('from market_radar.public_events')) return []
       writeStatements.push(statement)
       assert.match(statement, /^with inserted_digest as/i)
@@ -113,9 +115,10 @@ test('market digest atomically repairs an outbox missing after a prior digest co
       assert.match(statement, /union all[\s\S]*from market_radar\.digests where id = \$1/i)
       assert.match(statement, /insert into market_radar\.outbox/i)
       assert.match(statement, /jsonb_build_object/i)
-      if (outboxExists) return [{ digest_created: false, outbox_created: false }]
+      assert.match(statement,/origin, publication_state, snapshot_id/)
+      if (outboxExists) return [{ digest_created: false, outbox_created: false, digest_conflict:false, outbox_conflict:false }]
       outboxExists = true
-      return [{ digest_created: false, outbox_created: true }]
+      return [{ digest_created: false, outbox_created: true, digest_conflict:false, outbox_conflict:false }]
     },
   }
 
@@ -127,6 +130,13 @@ test('market digest atomically repairs an outbox missing after a prior digest co
   const repeated = await generateDailyDigest(sql, new Date('2026-08-11T00:00:00Z'))
   assert.deepEqual(repeated, { created: false, reason: 'already_exists' })
   assert.equal(writeStatements.length, 2, 'each invocation must use one atomic digest/outbox write statement')
+})
+
+test('market digest rolls back without writes when no published research snapshot exists',async()=>{
+  const statements=[];const sql={query:async statement=>{statements.push(statement);return[]}}
+  await assert.rejects(generateDailyDigest(sql,new Date('2026-08-11T00:00:00Z')),/market_published_snapshot_missing/)
+  assert.equal(statements[0],'begin');assert.match(statements[1],/from radar_system\.publication_snapshots/);assert.equal(statements[2],'rollback')
+  assert.equal(statements.some(statement=>/insert into market_radar\.(?:digests|outbox)/.test(statement)),false)
 })
 
 test('AI summaries fail closed unless every public field and enum is valid', () => {

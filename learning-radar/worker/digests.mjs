@@ -28,26 +28,35 @@ export async function generateLearningDailyDigest(client, now = new Date()) {
   const date = shanghaiDate(now)
   const periodEnd = new Date(now)
   const periodStart = new Date(periodEnd.getTime() - 24 * 60 * 60_000)
+  const publication = (await client.query(`select snapshot_id from radar_system.publication_snapshots
+    where radar_kind = 'learning' and origin = 'research' and publication_state = 'published'
+    order by as_of desc, snapshot_id desc limit 1 for share`)).rows[0]
+  if (!publication) throw new Error('learning_published_snapshot_missing')
   const rows = (await client.query(`select id, importance, title_zh, why_selected_zh, occurred_at
     from learning_radar.public_timeline_items
-    where occurred_at >= $1 and occurred_at < $2
+    where occurred_at >= $1 and occurred_at < $2 and snapshot_id = $3
     order by case importance when 'key' then 1 when 'noteworthy' then 2 else 3 end,
-      occurred_at desc limit 30`, [periodStart, periodEnd])).rows
+      occurred_at desc limit 30`, [periodStart, periodEnd, publication.snapshot_id])).rows
   const digestId = `learning-daily-${date}`
   const title = `学习情报日报 · ${date}`
   const body = buildLearningDailyDigest(rows, date)
   const result = await client.query(`insert into learning_radar.digests
-    (id, kind, title, body_zh, visibility, period_start, period_end, published_at)
-    values ($1,'daily',$2,$3,'public',$4,$5,now()) on conflict (id) do nothing returning id`, [
-      digestId, title, body, periodStart, periodEnd,
+    (id, kind, title, body_zh, visibility, period_start, period_end, published_at,
+      origin, publication_state, snapshot_id)
+    values ($1,'daily',$2,$3,'public',$4,$5,now(),'research','published',$6)
+    on conflict (id) do nothing returning id`, [
+      digestId, title, body, periodStart, periodEnd, publication.snapshot_id,
     ])
   const created = result.rows.length === 1
   let stored = created ? { id: digestId, title, body_zh: body } : null
   if (!stored) {
     stored = (await client.query(`select id, title, body_zh from learning_radar.digests
-      where id = $1 and kind = 'daily' and visibility = 'public'`, [digestId])).rows[0] || null
+      where id = $1 and kind = 'daily' and visibility = 'public'
+        and origin = 'research' and publication_state = 'published' and snapshot_id = $2
+        and title = $3 and body_zh = $4`,
+    [digestId, publication.snapshot_id, title, body])).rows[0] || null
   }
-  if (!stored) throw new Error('learning_digest_missing_after_insert')
+  if (!stored) throw new Error('learning_digest_metadata_conflict')
 
   const payload = {
     digestId: stored.id,
@@ -58,12 +67,21 @@ export async function generateLearningDailyDigest(client, now = new Date()) {
     itemCount: rows.length,
   }
   const outbox = await client.query(`insert into learning_radar.outbox
-    (id, kind, idempotency_key, payload, available_at)
-    values ($1,'daily',$2,$3::jsonb,now())
+    (id, kind, idempotency_key, payload, available_at, origin, publication_state, snapshot_id)
+    values ($1,'daily',$2,$3::jsonb,now(),'research','published',$4)
     on conflict (idempotency_key) do nothing returning id`, [
-      crypto.randomUUID(), `learning:daily:${date}`, JSON.stringify(payload),
+      crypto.randomUUID(), `learning:daily:${date}`, JSON.stringify(payload), publication.snapshot_id,
     ])
   const outboxCreated = outbox.rows.length === 1
+  if (!outboxCreated) {
+    const existing = (await client.query(`select id from learning_radar.outbox
+      where idempotency_key = $1 and kind = 'daily' and origin = 'research'
+        and publication_state = 'published' and snapshot_id = $2
+        and payload->>'digestId' = $3 and payload->>'title' = $4 and payload->>'body' = $5
+        and payload->>'pageUrl' = $6 and payload->>'date' = $7`,
+    [`learning:daily:${date}`, publication.snapshot_id, stored.id, stored.title, stored.body_zh, `/radar/${date}`, date])).rows[0]
+    if (!existing) throw new Error('learning_outbox_metadata_conflict')
+  }
   return {
     created,
     outboxCreated,

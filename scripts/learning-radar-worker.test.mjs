@@ -476,13 +476,15 @@ test('an existing learning digest can idempotently repair its missing outbox ite
   const persisted = {
     id: 'learning-daily-2026-08-11',
     title: '学习情报日报 · 2026-08-11',
-    body_zh: '已持久化的学习日报正文',
+    body_zh: buildLearningDailyDigest([{ importance: 'key', title_zh: 'fixture', why_selected_zh: 'verified' }],'2026-08-11'),
+    origin: 'research', publication_state: 'published', snapshot_id: 'learning-snapshot-1',
   }
   let outboxExists = false
   const statements = []
   const client = {
     async query(statement, values = []) {
       statements.push(statement)
+      if (statement.includes('from radar_system.publication_snapshots')) return { rows: [{ snapshot_id: 'learning-snapshot-1' }] }
       if (statement.includes('from learning_radar.public_timeline_items')) {
         return { rows: [{ importance: 'key', title_zh: 'fixture', why_selected_zh: 'verified' }] }
       }
@@ -498,6 +500,7 @@ test('an existing learning digest can idempotently repair its missing outbox ite
         outboxExists = true
         return { rows: [{ id: 'learning-outbox-fixture' }] }
       }
+      if (statement.includes('select id from learning_radar.outbox')) return { rows: outboxExists ? [{ id: 'learning-outbox-fixture' }] : [] }
       throw new Error(`Unexpected learning digest query: ${statement}`)
     },
   }
@@ -526,7 +529,8 @@ test('a successful digest job run still repairs a missing learning outbox item',
   const persisted = {
     id: 'learning-daily-2026-08-11',
     title: '学习情报日报 · 2026-08-11',
-    body_zh: '已持久化的学习日报正文',
+    body_zh: buildLearningDailyDigest([],'2026-08-11'),
+    origin: 'research', publication_state: 'published', snapshot_id: 'learning-snapshot-1',
   }
   const statements = []
   let outboxExists = false
@@ -535,6 +539,7 @@ test('a successful digest job run still repairs a missing learning outbox item',
       statements.push(statement)
       if (statement === 'begin' || statement === 'commit' || statement === 'rollback') return { rows: [] }
       if (statement.includes('insert into learning_radar.job_runs')) return { rows: [] }
+      if (statement.includes('from radar_system.publication_snapshots')) return { rows: [{ snapshot_id: 'learning-snapshot-1' }] }
       if (statement.includes('from learning_radar.public_timeline_items')) return { rows: [] }
       if (statement.includes('insert into learning_radar.digests')) return { rows: [] }
       if (statement.includes('select id, title, body_zh from learning_radar.digests')) return { rows: [persisted] }
@@ -543,6 +548,7 @@ test('a successful digest job run still repairs a missing learning outbox item',
         outboxExists = true
         return { rows: [{ id: 'learning-outbox-fixture' }] }
       }
+      if (statement.includes('select id from learning_radar.outbox')) return { rows: outboxExists ? [{ id: 'learning-outbox-fixture' }] : [] }
       throw new Error(`Unexpected learning digest job query: ${statement}`)
     },
   }
@@ -560,6 +566,12 @@ test('a successful digest job run still repairs a missing learning outbox item',
   assert.deepEqual(statements[0], 'begin')
   assert.equal(statements.at(-1), 'commit')
   assert.equal(statements.includes('rollback'), false)
+})
+
+test('learning digest fails closed before any write without a published research snapshot',async()=>{
+  const statements=[];const client={query:async(statement)=>{statements.push(statement);return{rows:[]}}}
+  await assert.rejects(generateLearningDailyDigest(client,new Date('2026-08-11T00:00:00Z')),/learning_published_snapshot_missing/)
+  assert.equal(statements.some(statement=>/insert into learning_radar\.(?:digests|outbox)/.test(statement)),false)
 })
 
 test('Learning workflow keeps exact-SHA marker authorization and release DAG ordering', () => {

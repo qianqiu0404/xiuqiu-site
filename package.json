@@ -57,6 +57,7 @@
     "learning-radar:worker": "node learning-radar/worker/run.mjs",
     "timeline-review": "node timeline-review/run.mjs",
     "radar:publish-snapshots": "node scripts/publish-radar-snapshots.mjs",
+    "radar:publish-local-git-snapshots": "node ops/local-backend/publish-git-snapshots.mjs",
     "notifications:enqueue": "node scripts/enqueue-radar-notifications.mjs",
     "preview": "vite preview"
   },

@@ -80,6 +80,7 @@ const lockResult = await withRadarDatabaseLock({ databaseUrl }, async ({ client 
       }))
     }
     const digest = mode === 'daily' ? await runLearningDailyDigest(client, now) : null
+    if (digest?.error) throw new Error(digest.error)
     const maintenance = now.getUTCHours() === 3 ? await cleanupLearningRetention(client) : null
     return { slot, mode, results, digest, maintenance }
   } finally {
