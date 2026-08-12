@@ -56,10 +56,10 @@
 
 .radar-intelligence-hero {
   position: relative;
-  min-height: min(760px, 86svh);
+  min-height: min(580px, 68svh);
   display: grid;
   align-items: center;
-  padding: 132px 0 92px;
+  padding: 96px 0 62px;
   background:
     radial-gradient(circle at 78% 34%, rgba(94, 126, 244, 0.15), transparent 28%),
     radial-gradient(circle at 83% 69%, rgba(79, 197, 183, 0.06), transparent 30%),
@@ -87,7 +87,7 @@
 .radar-hero-copy h1 {
   max-width: 880px;
   margin: 22px 0 0;
-  font-size: clamp(58px, 6.5vw, 92px);
+  font-size: clamp(50px, 5.2vw, 72px);
   font-weight: 660;
   letter-spacing: -0.072em;
   line-height: 0.94;
@@ -243,6 +243,104 @@
   grid-template-columns: minmax(0, 1.58fr) minmax(280px, 0.62fr);
   gap: clamp(42px, 7vw, 90px);
   padding-top: clamp(48px, 6vw, 76px);
+}
+
+.radar-daily-layout:has(.learning-edition-grid) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.learning-edition-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 34px;
+}
+
+.learning-domain-column {
+  border-top: 1px solid var(--radar-line);
+}
+
+.learning-domain-column > header {
+  min-height: 74px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border-bottom: 1px solid var(--radar-line);
+}
+
+.learning-domain-column > header span,
+.learning-domain-column small,
+.learning-deep-dive-card small,
+.learning-brief-article > small {
+  color: #66717f;
+  font: 650 9px/1.5 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.learning-domain-column > header h3 {
+  font-size: 28px;
+  font-weight: 630;
+  letter-spacing: -0.04em;
+}
+
+.learning-domain-column > a {
+  position: relative;
+  min-height: 244px;
+  display: grid;
+  align-content: start;
+  border-bottom: 1px solid var(--radar-line);
+  color: inherit;
+  padding: 28px 48px 28px 0;
+}
+
+.learning-domain-column > a strong,
+.learning-deep-dive-card strong {
+  display: block;
+  margin-top: 10px;
+  font-size: clamp(22px, 2.7vw, 31px);
+  font-weight: 620;
+  letter-spacing: -0.04em;
+  line-height: 1.22;
+}
+
+.learning-domain-column > a p,
+.learning-deep-dive-card p {
+  margin-top: 15px;
+  color: var(--radar-muted);
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.learning-domain-column > a > span {
+  position: absolute;
+  top: 28px;
+  right: 0;
+  color: #4762b0;
+}
+
+.learning-deep-dive-card {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: minmax(0, 0.25fr) minmax(0, 0.75fr) minmax(160px, 0.35fr) auto;
+  align-items: start;
+  gap: 28px;
+  border-top: 1px solid var(--radar-line);
+  border-bottom: 1px solid var(--radar-line);
+  color: inherit;
+  padding: 32px 0;
+}
+
+.learning-deep-dive-card strong,
+.learning-deep-dive-card p {
+  margin: 0;
+}
+
+.learning-deep-dive-card > span {
+  color: #3559bb;
+  font-size: 12px;
+  font-weight: 680;
+  white-space: nowrap;
 }
 
 .radar-daily-primary > header {
@@ -894,6 +992,66 @@
   font-weight: 680;
 }
 
+.learning-brief-article {
+  scroll-margin-top: 92px;
+}
+
+.learning-answer-grid {
+  margin-top: 28px;
+  border-top: 1px solid var(--radar-line);
+}
+
+.learning-answer-grid > div {
+  display: grid;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 30px;
+  border-bottom: 1px solid var(--radar-line);
+  padding: 22px 0;
+}
+
+.learning-answer-grid dt {
+  color: #5b6fa5;
+  font: 650 10px/1.6 var(--mono);
+}
+
+.learning-answer-grid dd {
+  color: var(--radar-copy);
+  font-size: 14px;
+  line-height: 1.82;
+}
+
+.learning-answer-grid ul {
+  display: grid;
+  gap: 8px;
+  list-style-position: inside;
+}
+
+.learning-source-list {
+  display: grid;
+  gap: 10px;
+}
+
+.learning-source-list a {
+  min-height: 44px;
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--radar-line);
+  color: var(--radar-ink);
+  padding: 8px 12px;
+}
+
+.learning-source-list b,
+.learning-source-list time {
+  color: #4f67aa;
+  font: 650 9px/1.4 var(--mono);
+}
+
+.learning-source-list time {
+  color: var(--radar-muted);
+}
+
 .radar-reader-projects {
   display: grid;
   grid-template-columns: minmax(230px, 0.48fr) minmax(0, 1fr);
@@ -1304,6 +1462,21 @@
     padding-top: 38px;
   }
 
+  .learning-edition-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 44px;
+  }
+
+  .learning-domain-column > a {
+    min-height: auto;
+  }
+
+  .learning-deep-dive-card {
+    grid-column: 1;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 14px;
+  }
+
   .radar-daily-primary > header {
     grid-template-columns: minmax(0, 1fr);
     gap: 12px;
@@ -1406,6 +1579,19 @@
 
   .radar-reader-articles h2 {
     font-size: 26px;
+  }
+
+  .learning-answer-grid > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+
+  .learning-source-list a {
+    grid-template-columns: 50px minmax(0, 1fr);
+  }
+
+  .learning-source-list time {
+    grid-column: 2;
   }
 
   .radar-weekly-boundary {

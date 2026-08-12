@@ -31,6 +31,7 @@ export function shanghaiDate(now = new Date()) {
 }
 
 export function buildLearningDailyNotification(radar) {
+  if (radar?.schemaVersion === 2) throw new Error('Learning Radar v2 notifications are disabled until M4.')
   const publication = publicationMetadata(radar)
   const ordered = [
     radar.marketSignals?.[0], radar.aiTip, radar.web3Design, radar.vibeProject, radar.readingPick,

@@ -3,7 +3,7 @@ import { computed, ref, watch, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import type { DailyRadar } from '../data/generatedRadars'
 import { loadRadarBySlug } from '../data/generatedRadarLoader'
-import { getRadarDetailSections, radarSourceStatus } from '../data/radarPresentation'
+import { getLearningBriefs, getRadarDetailSections, isLearningEditionV2, radarSourceStatus } from '../data/radarPresentation'
 import { getProjectByKey } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
 import '../styles/radar.css'
@@ -38,6 +38,9 @@ watch(
 )
 
 const sections = computed(() => radar.value ? getRadarDetailSections(radar.value) : [])
+const isV2 = computed(() => Boolean(radar.value && isLearningEditionV2(radar.value)))
+const aiBriefs = computed(() => radar.value ? getLearningBriefs(radar.value, 'ai') : [])
+const web3Briefs = computed(() => radar.value ? getLearningBriefs(radar.value, 'web3') : [])
 const relatedProjects = computed(() => radar.value?.relatedProjectSlugs.map(getProjectByKey).filter(Boolean) || [])
 
 watchEffect(() => {
@@ -68,8 +71,8 @@ watchEffect(() => {
             <p>{{ radar.summary }}</p>
             <dl>
               <div><dt>Date</dt><dd><time :datetime="radar.date">{{ radar.date }}</time></dd></div>
-              <div><dt>Generated</dt><dd><time :datetime="radar.generatedAt">{{ radar.generatedAt }}</time></dd></div>
-              <div><dt>Review</dt><dd>AI 自动汇总 · 未经人工复核</dd></div>
+              <div><dt>{{ isV2 ? 'Researched' : 'Generated' }}</dt><dd><time :datetime="radar.researchedAt || radar.generatedAt">{{ radar.researchedAt || radar.generatedAt }}</time></dd></div>
+              <div><dt>Review</dt><dd>{{ isV2 ? 'ResearchOps v2 门禁通过' : 'AI 自动汇总 · 未经人工复核' }}</dd></div>
               <div><dt>Sources</dt><dd>{{ radarSourceStatus(radar) }}</dd></div>
             </dl>
           </div>
@@ -79,15 +82,73 @@ watchEffect(() => {
 
     <div class="radar-reader-body">
       <div class="container radar-reader-shell">
-        <nav class="radar-reader-index" aria-label="本期简报栏目">
+        <nav v-if="isV2" class="radar-reader-index" aria-label="本期简报栏目">
+          <span>Read by section</span>
+          <a href="#ai-briefs">01 · AI</a>
+          <a href="#web3-briefs">02 · Web3</a>
+          <a href="#deep-dive">03 · 专题</a>
+        </nav>
+        <nav v-else class="radar-reader-index" aria-label="本期简报栏目">
           <span>Read by section</span>
           <a v-for="(section, index) in sections" :key="section.id" :href="`#${section.id}`">
             {{ String(index + 1).padStart(2, '0') }} · {{ section.label }}
           </a>
         </nav>
 
+        <template v-if="isV2">
+          <section
+            v-for="(group, groupIndex) in [{ id: 'ai-briefs', label: 'AI', items: aiBriefs }, { id: 'web3-briefs', label: 'Web3', items: web3Briefs }]"
+            :id="group.id"
+            :key="group.id"
+            class="radar-reader-section learning-v2-section"
+          >
+            <header>
+              <span>{{ String(groupIndex + 1).padStart(2, '0') }}</span>
+              <div><p class="radar-kicker">{{ group.label }}</p><strong>2 briefs · 机制、例子与边界</strong></div>
+            </header>
+            <div class="radar-reader-articles">
+              <article v-for="brief in group.items" :id="brief.id" :key="brief.id" class="learning-brief-article">
+                <small>{{ brief.topic.replaceAll('_', ' ') }}</small>
+                <h2>{{ brief.title }}</h2>
+                <dl class="learning-answer-grid">
+                  <div><dt>01 · 发生了什么</dt><dd>{{ brief.whatHappened }}</dd></div>
+                  <div><dt>02 · 核心机制</dt><dd>{{ brief.mechanism }}</dd></div>
+                  <div><dt>03 · 工作示例</dt><dd>{{ brief.workedExample }}</dd></div>
+                  <div><dt>04 · 为什么与你有关</dt><dd>{{ brief.whyItMatters }}</dd></div>
+                  <div><dt>05 · 风险与限制</dt><dd><ul><li v-for="risk in brief.risksAndLimits" :key="risk">{{ risk }}</li></ul></dd></div>
+                  <div><dt>06 · 一手来源与精选研究</dt><dd class="learning-source-list">
+                    <a v-for="source in brief.sources" :key="source.url" :href="source.url" target="_blank" rel="noopener">
+                      <b>{{ source.tier.toUpperCase() }}</b><span>{{ source.name }}</span><time v-if="source.publishedAt" :datetime="source.publishedAt">{{ source.publishedAt.slice(0, 10) }}</time>
+                    </a>
+                  </dd></div>
+                  <div><dt>07 · 下一步问题</dt><dd><ul><li v-for="question in brief.nextQuestions" :key="question">{{ question }}</li></ul></dd></div>
+                </dl>
+              </article>
+            </div>
+          </section>
+
+          <section v-if="radar.deepDive" id="deep-dive" class="radar-reader-section learning-v2-section learning-deep-dive-section">
+            <header><span>03</span><div><p class="radar-kicker">Deep Dive</p><strong>基于 {{ radar.deepDive.basedOnBriefId }}</strong></div></header>
+            <div class="radar-reader-articles">
+              <article class="learning-brief-article">
+                <small>{{ radar.deepDive.domain.toUpperCase() }} · {{ radar.deepDive.topic.replaceAll('_', ' ') }}</small>
+                <h2>{{ radar.deepDive.title }}</h2>
+                <dl class="learning-answer-grid">
+                  <div><dt>01 · 发生了什么</dt><dd>{{ radar.deepDive.whatHappened }}</dd></div>
+                  <div><dt>02 · 核心机制</dt><dd>{{ radar.deepDive.mechanism }}</dd></div>
+                  <div><dt>03 · 工作示例</dt><dd>{{ radar.deepDive.workedExample }}</dd></div>
+                  <div><dt>04 · 为什么与你有关</dt><dd>{{ radar.deepDive.whyItMatters }}</dd></div>
+                  <div><dt>05 · 风险与限制</dt><dd><ul><li v-for="risk in radar.deepDive.risksAndLimits" :key="risk">{{ risk }}</li></ul></dd></div>
+                  <div><dt>06 · 一手来源与精选研究</dt><dd class="learning-source-list"><a v-for="source in radar.deepDive.sources" :key="source.url" :href="source.url" target="_blank" rel="noopener"><b>{{ source.tier.toUpperCase() }}</b><span>{{ source.name }}</span><time v-if="source.publishedAt" :datetime="source.publishedAt">{{ source.publishedAt.slice(0, 10) }}</time></a></dd></div>
+                  <div><dt>07 · 下一步问题</dt><dd><ul><li v-for="question in radar.deepDive.nextQuestions" :key="question">{{ question }}</li></ul></dd></div>
+                </dl>
+              </article>
+            </div>
+          </section>
+        </template>
+
         <section
-          v-for="(group, groupIndex) in sections"
+          v-for="(group, groupIndex) in isV2 ? [] : sections"
           :id="group.id"
           :key="group.id"
           class="radar-reader-section"
@@ -126,12 +187,12 @@ watchEffect(() => {
         <details class="radar-reader-disclosure">
           <summary>来源、自动化与发布边界 <span aria-hidden="true">＋</span></summary>
           <div>
-            <p>本期由 AI 从允许公开的研究输入整理；少于三类来源、隐私校验失败或构建门禁不通过时停止发布。摘要中的推断和待验证边界不等同于来源方结论，市场内容仅供研究与教育，不构成投资建议。</p>
+            <p>{{ isV2 ? '本期按 Learning Radar v2 合同发布：恰好 2 条 AI、2 条 Web3 与 1 篇专题；每条都必须有带发布时间的 Tier 1 事件来源，并逐项说明机制、示例与风险。任一栏目不足时整期停止发布。' : '本期由 AI 从允许公开的研究输入整理；少于三类来源、隐私校验失败或构建门禁不通过时停止发布。摘要中的推断和待验证边界不等同于来源方结论，市场内容仅供研究与教育，不构成投资建议。' }}</p>
             <div class="radar-source-status">
               <span v-for="source in radar.sourceSections" :key="source">{{ source }} / succeeded</span>
               <span v-for="source in radar.missingSections" :key="source" class="missing">{{ source }} / missing</span>
             </div>
-            <small>Generated {{ radar.generatedAt }}</small>
+            <small>{{ isV2 ? 'Researched' : 'Generated' }} {{ radar.researchedAt || radar.generatedAt }}</small>
           </div>
         </details>
       </div>

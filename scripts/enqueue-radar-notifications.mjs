@@ -6,6 +6,7 @@ import { assertPublicRadarContent } from './radar-pipeline.mjs'
 import { buildLearningDailyNotification, buildMarketDailyNotification, shanghaiDate } from './radar-notification-contracts.mjs'
 import { buildRadarPublication } from './radar-publication-boundary.mjs'
 import { publishRadarSnapshot } from './radar-publication-store.mjs'
+import { normalizeLearningEditionV2 } from './learning-radar-v2.mjs'
 
 const databaseUrl = process.env.MARKET_RADAR_DATABASE_URL
 if (!databaseUrl) throw new Error('MARKET_RADAR_DATABASE_URL is required')
@@ -39,10 +40,11 @@ const result = { date, learning: 'missing', market: 'missing' }
 const learning = readRadar(learningPath, 'learning')
 if (learning) {
   assertPublicRadarContent(learning)
+  if (learning.schemaVersion === 2) throw new Error('Learning Radar v2 notifications are disabled until M4.')
   const itemCount = (learning.marketSignals || []).length
     + [learning.aiTip, learning.web3Design, learning.vibeProject, learning.readingPick].filter(Boolean).length
   if (itemCount > 7) throw new Error(`Learning radar ${date} exceeds the seven-item notification boundary.`)
-  const publication = buildRadarPublication('learning', learning)
+  const publication = buildRadarPublication('learning', learning.schemaVersion === 2 ? normalizeLearningEditionV2(learning) : learning)
   await publishRadarSnapshot(sql, 'learning', publication)
   const publishedLearning = { ...learning, ...publication, payload: undefined, payloadChecksum: undefined }
   result.learning = await enqueue('learning_radar', buildLearningDailyNotification(publishedLearning), publication)
