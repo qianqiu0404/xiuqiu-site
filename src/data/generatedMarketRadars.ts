@@ -16,6 +16,17 @@ export interface MarketRadarDaily { schemaVersion?: 2; date: string; slug: strin
 export interface MarketRadarIndexEntry { date: string; slug: string; snapshotId: string; asOf: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
 export const marketRadarIndex: MarketRadarIndexEntry[] = [
   {
+    "date": "2026-08-13",
+    "slug": "2026-08-13",
+    "title": "交易研究雷达 · 2026-08-13",
+    "summary": "美国 10 年期国债拍卖结果已提供可复核的需求结构，Aptos 1.48.6 则恢复公开源码发布；两者仍需后续数据验证，样本门禁继续隐藏精确概率。",
+    "snapshotId": "market-2026-08-13-887df3b1b2a56753",
+    "asOf": "2026-08-13T00:04:41.000Z",
+    "eventCount": 2,
+    "assetCount": 7,
+    "leadTitle": "美国 10 年期国债拍卖结果：最高收益率 4.683%，投标倍数 2.53"
+  },
+  {
     "date": "2026-08-12",
     "slug": "2026-08-12",
     "title": "交易研究雷达 · 2026-08-12",
@@ -61,6 +72,181 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
   }
 ]
 export const latestMarketRadars: MarketRadarDaily[] = [
+  {
+    "date": "2026-08-13",
+    "slug": "2026-08-13",
+    "title": "交易研究雷达 · 2026-08-13",
+    "summary": "美国 10 年期国债拍卖结果已提供可复核的需求结构，Aptos 1.48.6 则恢复公开源码发布；两者仍需后续数据验证，样本门禁继续隐藏精确概率。",
+    "snapshotId": "market-2026-08-13-887df3b1b2a56753",
+    "asOf": "2026-08-13T00:04:41.000Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-08-13T08:04:41+08:00",
+    "events": [
+      {
+        "id": "us-treasury-10-year-note-auction-result-2026-08-12",
+        "priority": "P0",
+        "status": "released",
+        "category": "macro",
+        "eventAt": "2026-08-13T01:00:00+08:00",
+        "title": "美国 10 年期国债拍卖结果：最高收益率 4.683%，投标倍数 2.53",
+        "fact": "美国财政部 8 月 12 日公布，CUSIP 91282CRF0 的 10 年期国债拍卖规模为 420 亿美元，最高收益率为 4.683%，投标倍数为 2.53；竞争性投标获配 418.216136 亿美元，其中间接投标人获配 320.87936 亿美元。",
+        "whyWatch": "最高收益率、覆盖倍数与投标人结构共同构成长期国债需求的公开证据，可用于核对期限溢价与跨资产反应；单场结果仍不足以证明后续收益率或相关资产的方向。",
+        "assets": [
+          "SPY",
+          "QQQ",
+          "DXY",
+          "GLD",
+          "BTC",
+          "ETH"
+        ],
+        "watchFor": "在固定窗口记录 10 年期美债收益率、美元、SPY、QQQ、GLD、BTC 与 ETH 的公开反应，并等待下一场长期国债拍卖结果中的最高收益率、投标倍数及投标人结构作交叉核对。",
+        "invalidation": "若财政部修订本次结果或投标分类，以最新正式结果为准；没有固定窗口数据和下一场拍卖验证时，不把单场拍卖写成持续性市场结论。",
+        "sourceName": "TreasuryDirect",
+        "sourceUrl": "https://www.treasurydirect.gov/instit/annceresult/press/preanre/2026/R_20260812_2.pdf",
+        "sourcePublishedAt": "2026-08-12"
+      },
+      {
+        "id": "aptos-node-1-48-6-open-source-mainnet",
+        "priority": "P1",
+        "status": "released",
+        "category": "crypto",
+        "eventAt": "2026-08-13T07:12:11+08:00",
+        "title": "Aptos 1.48.6 恢复开源主网发布并要求验证节点与全节点升级",
+        "fact": "Aptos 官方于北京时间 8 月 13 日 07:12 发布主网节点 1.48.6，要求验证节点与全节点升级，并称存取款不受影响；发布说明将其定义为自 1.48.2 之后、经历数次热修复后的首个开源版本。",
+        "whyWatch": "公开源码重新出现，为此前不可审查热修复增加了可核对的代码与变更记录，也开启节点采用和运行反馈的新验证阶段；版本发布不能直接外推为网络状态或 APT 市场方向。",
+        "assets": [
+          "APT"
+        ],
+        "watchFor": "核对官方状态页、节点运营反馈、后续补丁与公开变更记录，重点观察验证节点和全节点升级是否出现兼容性、索引、Move VM 或资源使用问题。",
+        "invalidation": "若 Aptos 发布替代版本、撤回升级要求或修订存取款影响说明，以最新官方材料为准；在公开运行证据出现前，不推断全网升级比例或故障范围。",
+        "sourceName": "Aptos Core Releases",
+        "sourceUrl": "https://github.com/aptos-labs/aptos-core/releases/tag/aptos-node-v1.48.6",
+        "sourcePublishedAt": "2026-08-12"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.treasurydirect.gov/instit/annceresult/press/preanre/2026/R_20260812_2.pdf",
+      "https://github.com/aptos-labs/aptos-core/releases/tag/aptos-node-v1.48.6"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "固定规则尚未积累到 50 个已完成且可复核的样本；当前不发布上涨、震荡或下跌的精确概率，只报告证据完整度对应的信号质量。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "当前已确认 10 年期国债拍卖结果，但尚未获得下一场长期国债正式结果、固定窗口利率与美元反应以及跨资产同步确认；Aptos 节点发布也不构成五个观察标的的方向证据。",
+      "nextValidation": "下一场长期国债结果公布后，按固定字段记录最高收益率、投标倍数、投标人结构及相关资产的固定窗口反应；样本只做前瞻登记，不回填或挑选有利案例。",
+      "invalidation": "财政部修订结果或公告、固定规则或观察窗口发生变化，或者未来 3 个交易日验证窗口结束后，必须重新评估；在累计 50 个合格样本前继续隐藏精确概率。",
+      "sourceUrls": [
+        "https://www.treasurydirect.gov/instit/annceresult/press/preanre/2026/R_20260812_2.pdf"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "10 年期国债拍卖结果通过哪些可验证环节影响期限溢价及相关资产？",
+        "focusEventIds": [
+          "us-treasury-10-year-note-auction-result-2026-08-12"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些投标结构与跨资产数据最可能支持或推翻国债需求变化的解释？",
+        "focusEventIds": [
+          "us-treasury-10-year-note-auction-result-2026-08-12"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "Aptos 恢复开源发布后，哪些运行证据会确认升级有效，哪些情况会使判断失效？",
+        "focusEventIds": [
+          "aptos-node-1-48-6-open-source-mainnet"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-08-13",
+      "snapshotId": "market-2026-08-13-887df3b1b2a56753",
+      "asOf": "2026-08-13T00:04:41.000Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-08-13",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "10 年期国债拍卖结果通过哪些可验证环节影响期限溢价及相关资产？",
+          "focusEventIds": [
+            "us-treasury-10-year-note-auction-result-2026-08-12"
+          ],
+          "prompt": "研究任务：10 年期国债拍卖结果通过哪些可验证环节影响期限溢价及相关资产？\n证据快照：2026-08-13；asOf=2026-08-13T00:04:41.000Z；snapshotId=market-2026-08-13-887df3b1b2a56753\n\n材料 1｜美国 10 年期国债拍卖结果：最高收益率 4.683%，投标倍数 2.53\n已确认事实：美国财政部 8 月 12 日公布，CUSIP 91282CRF0 的 10 年期国债拍卖规模为 420 亿美元，最高收益率为 4.683%，投标倍数为 2.53；竞争性投标获配 418.216136 亿美元，其中间接投标人获配 320.87936 亿美元。\n关注机制：最高收益率、覆盖倍数与投标人结构共同构成长期国债需求的公开证据，可用于核对期限溢价与跨资产反应；单场结果仍不足以证明后续收益率或相关资产的方向。\n接下来验证：在固定窗口记录 10 年期美债收益率、美元、SPY、QQQ、GLD、BTC 与 ETH 的公开反应，并等待下一场长期国债拍卖结果中的最高收益率、投标倍数及投标人结构作交叉核对。\n失效条件：若财政部修订本次结果或投标分类，以最新正式结果为准；没有固定窗口数据和下一场拍卖验证时，不把单场拍卖写成持续性市场结论。\n一手来源：https://www.treasurydirect.gov/instit/annceresult/press/preanre/2026/R_20260812_2.pdf\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "54179566c3930fd4aa5ca2170971b18549833e636526a8b6ed08dff0e14f512b",
+          "sourceUrls": [
+            "https://www.treasurydirect.gov/instit/annceresult/press/preanre/2026/R_20260812_2.pdf"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些投标结构与跨资产数据最可能支持或推翻国债需求变化的解释？",
+          "focusEventIds": [
+            "us-treasury-10-year-note-auction-result-2026-08-12"
+          ],
+          "prompt": "研究任务：哪些投标结构与跨资产数据最可能支持或推翻国债需求变化的解释？\n证据快照：2026-08-13；asOf=2026-08-13T00:04:41.000Z；snapshotId=market-2026-08-13-887df3b1b2a56753\n\n材料 1｜美国 10 年期国债拍卖结果：最高收益率 4.683%，投标倍数 2.53\n已确认事实：美国财政部 8 月 12 日公布，CUSIP 91282CRF0 的 10 年期国债拍卖规模为 420 亿美元，最高收益率为 4.683%，投标倍数为 2.53；竞争性投标获配 418.216136 亿美元，其中间接投标人获配 320.87936 亿美元。\n关注机制：最高收益率、覆盖倍数与投标人结构共同构成长期国债需求的公开证据，可用于核对期限溢价与跨资产反应；单场结果仍不足以证明后续收益率或相关资产的方向。\n接下来验证：在固定窗口记录 10 年期美债收益率、美元、SPY、QQQ、GLD、BTC 与 ETH 的公开反应，并等待下一场长期国债拍卖结果中的最高收益率、投标倍数及投标人结构作交叉核对。\n失效条件：若财政部修订本次结果或投标分类，以最新正式结果为准；没有固定窗口数据和下一场拍卖验证时，不把单场拍卖写成持续性市场结论。\n一手来源：https://www.treasurydirect.gov/instit/annceresult/press/preanre/2026/R_20260812_2.pdf\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "9a49eacbbbe6b1fdc9e5e755d86d34beadbc2c24c60b129ff393bc5de16b45eb",
+          "sourceUrls": [
+            "https://www.treasurydirect.gov/instit/annceresult/press/preanre/2026/R_20260812_2.pdf"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "Aptos 恢复开源发布后，哪些运行证据会确认升级有效，哪些情况会使判断失效？",
+          "focusEventIds": [
+            "aptos-node-1-48-6-open-source-mainnet"
+          ],
+          "prompt": "研究任务：Aptos 恢复开源发布后，哪些运行证据会确认升级有效，哪些情况会使判断失效？\n证据快照：2026-08-13；asOf=2026-08-13T00:04:41.000Z；snapshotId=market-2026-08-13-887df3b1b2a56753\n\n材料 1｜Aptos 1.48.6 恢复开源主网发布并要求验证节点与全节点升级\n已确认事实：Aptos 官方于北京时间 8 月 13 日 07:12 发布主网节点 1.48.6，要求验证节点与全节点升级，并称存取款不受影响；发布说明将其定义为自 1.48.2 之后、经历数次热修复后的首个开源版本。\n关注机制：公开源码重新出现，为此前不可审查热修复增加了可核对的代码与变更记录，也开启节点采用和运行反馈的新验证阶段；版本发布不能直接外推为网络状态或 APT 市场方向。\n接下来验证：核对官方状态页、节点运营反馈、后续补丁与公开变更记录，重点观察验证节点和全节点升级是否出现兼容性、索引、Move VM 或资源使用问题。\n失效条件：若 Aptos 发布替代版本、撤回升级要求或修订存取款影响说明，以最新官方材料为准；在公开运行证据出现前，不推断全网升级比例或故障范围。\n一手来源：https://github.com/aptos-labs/aptos-core/releases/tag/aptos-node-v1.48.6\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "e66cd2591d1d8c113bb8b7410a34addea924f5a93fe6489a34ab7a20c4bdfa58",
+          "sourceUrls": [
+            "https://github.com/aptos-labs/aptos-core/releases/tag/aptos-node-v1.48.6"
+          ]
+        }
+      ]
+    }
+  },
   {
     "date": "2026-08-12",
     "slug": "2026-08-12",
