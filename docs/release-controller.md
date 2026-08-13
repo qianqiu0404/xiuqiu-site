@@ -19,10 +19,10 @@ The controller is inert by default. It prevents a Vercel Git deployment or a man
 3. A Vercel production candidate built from the exact SHA with `--skip-domain`.
 4. READY, project, target, SHA, ref, and alias-error validation plus candidate smoke tests.
 5. Promotion of that verified candidate to the production domains.
-6. A controller deployment marker and one exact-SHA worker smoke.
-7. Completion of the controller run, which—together with the exact-SHA deployment marker and the operator-managed `MARKET_RADAR_ENABLED` kill switch—authorizes later schedules.
+6. Independent Learning and Market notification enqueue jobs. A Learning notification failure remains visible, but cannot block the Market lane.
+7. One exact-SHA Market worker smoke and a dedicated successful Market-lane deployment marker. This marker—together with the exact-SHA deployed marker and the operator-managed `MARKET_RADAR_ENABLED` kill switch—authorizes later schedules.
 
-Any failed job prevents every downstream job from running. `vercel.json` disables every Git-triggered Vercel deployment, including pull-request Previews, so the controller is the only active production path.
+Failures stop only their dependent lane: migration or deployment failures stop all production work, while a Learning notification failure does not authorize Learning delivery and does not block a successfully verified Market lane. The controller run itself still reports the Learning failure; Market worker authorization never treats that aggregate conclusion as evidence. `vercel.json` disables every Git-triggered Vercel deployment, including pull-request Previews, so the controller is the only active production path.
 
 Do not restore Preview deployments until both safeguards are verified: Vercel Dashboard automatic production-domain assignment (auto-assign) is disabled, and the controller has completed successfully for the same live `main` SHA. Restore Preview only with a reviewed, branch-scoped `deploymentEnabled` policy; never re-enable Git-triggered production deployments.
 
@@ -32,7 +32,8 @@ Create a protected GitHub Environment named `production-release` and restrict it
 
 - Environment secret: `VERCEL_TOKEN` (project-scoped, minimum practical lifetime and permissions).
 - Environment variables: `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`.
-- Existing production secrets used inside Environment jobs: `MARKET_RADAR_DATABASE_URL`, `DEEPSEEK_API_KEY`, `SEC_USER_AGENT`.
+- Learning notification Environment secret: `LEARNING_RADAR_DATABASE_URL`. It is never allowed to fall back to the Market database URL; while M4 is disabled, a missing secret keeps only the Learning notification lane failed/partial.
+- Market Environment secrets: `MARKET_RADAR_DATABASE_URL`, `DEEPSEEK_API_KEY`, `SEC_USER_AGENT`.
 - Repository variable: `MARKET_RADAR_ENABLED`. Keep it `false` for R0. Set it to `true` immediately before an approved controller release; the exact-SHA deployment marker still prevents worker execution until the controller completes. Set it back to `false` to stop schedules.
 
 Protect `main` with pull requests and the existing `verify` and `secrets` Site CI checks. Do not add a required check name that has not already succeeded in this repository.
@@ -53,6 +54,6 @@ The preflight summary records the exact SHA, DAG audit, and permission audit. Al
 
 ## Production release and rollback
 
-Only a reviewed main SHA may be released. Set `MARKET_RADAR_ENABLED=true`, then dispatch the controller with `operation=release` and the complete live main SHA. The controller preflight fails closed unless that kill switch is enabled; the worker still cannot run until the exact-SHA deployment marker and successful controller run exist. Never run migrations or workers separately.
+Only a reviewed main SHA may be released. Set `MARKET_RADAR_ENABLED=true`, then dispatch the controller with `operation=release` and the complete live main SHA. The controller preflight fails closed unless that kill switch is enabled; the worker still cannot run until both the exact-SHA deployed marker and the dedicated successful Market-lane marker exist. Never run migrations or workers separately.
 
 If migration, build, candidate verification, or smoke fails, the production alias remains on the prior deployment and the worker remains unauthorized. If promotion succeeds but a later check fails, stop the worker, use Vercel rollback to point the production domains to the previous READY deployment, and leave `watch_for_zh` and `invalidation_zh` in place. Set `MARKET_RADAR_ENABLED=false` to stop scheduled work; do not drop or rewrite the nullable columns.

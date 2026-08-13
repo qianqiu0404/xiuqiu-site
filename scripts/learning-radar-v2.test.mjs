@@ -4,6 +4,7 @@ import test from 'node:test'
 import { parseMarkdownFrontmatter } from './frontmatter.mjs'
 import { collectLearningSourceUrls, normalizeLearningEditionV2, validateLearningEditionV2 } from './learning-radar-v2.mjs'
 import { buildLearningDailyNotification } from './radar-notification-contracts.mjs'
+import { assertPublicRadarContent } from './radar-pipeline.mjs'
 
 const readEdition = date => parseMarkdownFrontmatter(
   readFileSync(new URL(`../content/radar/${date}.md`, import.meta.url), 'utf8'),
@@ -48,6 +49,16 @@ test('fails closed on local engineering content, missing fields and future evide
   const future = clone(valid)
   future.briefs[0].sources[0].publishedAt = '2026-08-13T00:00:00Z'
   assert.throws(() => validateLearningEditionV2(future), /later than the edition date/)
+})
+
+test('v2 privacy validation rejects local paths and credential-shaped content before notification', () => {
+  const pathLeak = clone(valid)
+  pathLeak.briefs[0].whatHappened += ' 调试证据位于 /Users/example/private/result.json。'
+  assert.throws(() => assertPublicRadarContent(pathLeak), /local absolute path/)
+
+  const secretLeak = clone(valid)
+  secretLeak.briefs[0].mechanism += ' api_key=not-a-real-key'
+  assert.throws(() => assertPublicRadarContent(secretLeak), /credentials or secret material/)
 })
 
 test('fails closed on duplicate sources and invalid deep-dive references', () => {

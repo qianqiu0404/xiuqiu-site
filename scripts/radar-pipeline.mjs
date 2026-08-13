@@ -87,14 +87,14 @@ export function assertPublicRadarContent(candidate) {
   const serialized = JSON.stringify(candidate)
   const errors = []
   try { assertResearchPublication(candidate, 'learning radar') } catch (error) { errors.push(error instanceof Error ? error.message : String(error)) }
+  if (ABSOLUTE_PATH_RE.test(serialized)) errors.push('Output contains a local absolute path.')
+  if (SECRET_RE.test(serialized)) errors.push('Output may contain credentials or secret material.')
+  PRIVATE_TERMS.forEach(term => { if (serialized.toLowerCase().includes(term.toLowerCase())) errors.push(`Output contains private term: ${term}`) })
   if (candidate?.schemaVersion === 2) {
     try { validateLearningEditionV2(candidate) } catch (error) { errors.push(error instanceof Error ? error.message : String(error)) }
     if (errors.length) throw new Error(errors.join('\n'))
     return
   }
-  if (ABSOLUTE_PATH_RE.test(serialized)) errors.push('Output contains a local absolute path.')
-  if (SECRET_RE.test(serialized)) errors.push('Output may contain credentials or secret material.')
-  PRIVATE_TERMS.forEach(term => { if (serialized.toLowerCase().includes(term.toLowerCase())) errors.push(`Output contains private term: ${term}`) })
   if (!Array.isArray(candidate.sourceUrls)) {
     errors.push('sourceUrls must be an array.')
   } else {

@@ -16,8 +16,10 @@ const productionJobs = [
   'verify_vercel_candidate',
   'promote_vercel_production',
   'mark_deployed_sha',
-  'enqueue_radar_notifications',
+  'enqueue_learning_radar_notifications',
+  'enqueue_market_radar_notifications',
   'promote_market_radar_worker',
+  'mark_market_radar_worker_authorized',
 ]
 
 const vercelCommandPattern = /\bvercel\s+(?:--token\s+"\$VERCEL_TOKEN"\s+)?(?:pull|build|deploy|promote|inspect|project\s+inspect|whoami|curl)\b/
@@ -84,8 +86,45 @@ test('release DAG is migration, staged Vercel promotion, worker smoke, then acti
   assert.deepEqual(controller.jobs.verify_vercel_candidate.needs, ['preflight', 'stage_vercel_candidate'])
   assert.deepEqual(controller.jobs.promote_vercel_production.needs, ['preflight', 'verify_vercel_candidate'])
   assert.deepEqual(controller.jobs.mark_deployed_sha.needs, ['preflight', 'promote_vercel_production'])
-  assert.deepEqual(controller.jobs.enqueue_radar_notifications.needs, ['preflight', 'mark_deployed_sha'])
-  assert.deepEqual(controller.jobs.promote_market_radar_worker.needs, ['preflight', 'mark_deployed_sha', 'enqueue_radar_notifications'])
+  assert.deepEqual(controller.jobs.enqueue_learning_radar_notifications.needs, ['preflight', 'mark_deployed_sha'])
+  assert.deepEqual(controller.jobs.enqueue_market_radar_notifications.needs, ['preflight', 'mark_deployed_sha'])
+  assert.deepEqual(controller.jobs.promote_market_radar_worker.needs, ['preflight', 'mark_deployed_sha', 'enqueue_market_radar_notifications'])
+  assert.deepEqual(controller.jobs.mark_market_radar_worker_authorized.needs, [
+    'preflight', 'mark_deployed_sha', 'enqueue_market_radar_notifications', 'promote_market_radar_worker',
+  ])
+  assert.equal(
+    controller.jobs.enqueue_learning_radar_notifications.steps
+      .find(step => step.name === 'Enqueue idempotent Learning Radar notification')?.env.RADAR_NOTIFICATION_KINDS,
+    'learning',
+  )
+  assert.equal(
+    controller.jobs.enqueue_learning_radar_notifications.steps
+      .find(step => step.name === 'Enqueue idempotent Learning Radar notification')?.env.LEARNING_RADAR_DATABASE_URL,
+    '${{ secrets.LEARNING_RADAR_DATABASE_URL }}',
+  )
+  assert.equal(
+    controller.jobs.enqueue_learning_radar_notifications.steps
+      .find(step => step.name === 'Enqueue idempotent Learning Radar notification')?.env.MARKET_RADAR_DATABASE_URL,
+    undefined,
+  )
+  assert.equal(
+    controller.jobs.enqueue_market_radar_notifications.steps
+      .find(step => step.name === 'Enqueue idempotent Market Radar notification')?.env.RADAR_NOTIFICATION_KINDS,
+    'market',
+  )
+  assert.equal(
+    controller.jobs.enqueue_market_radar_notifications.steps
+      .find(step => step.name === 'Enqueue idempotent Market Radar notification')?.env.MARKET_RADAR_DATABASE_URL,
+    '${{ secrets.MARKET_RADAR_DATABASE_URL }}',
+  )
+  assert.equal(
+    controller.jobs.enqueue_market_radar_notifications.steps
+      .find(step => step.name === 'Enqueue idempotent Market Radar notification')?.env.LEARNING_RADAR_DATABASE_URL,
+    undefined,
+  )
+  assert.equal(controller.jobs.mark_market_radar_worker_authorized.permissions.deployments, 'write')
+  assert.match(controllerSource, /market-radar-worker-authorized/)
+  assert.match(controllerSource, /release-controller-market-lane-authorized/)
 
   assert.equal(controller.jobs.stage_vercel_candidate.steps.find(step => step.uses === 'actions/setup-node@v4')?.with['node-version'], 24)
   assert.match(controllerSource, /VERCEL_CLI_VERSION: 58\.9\.0/)
@@ -134,7 +173,21 @@ test('manual and scheduled workers cannot bypass the deployed-SHA authorization 
   assert.match(workerSource, /MARKET_RADAR_ENABLED/)
   assert.doesNotMatch(workerSource, /MARKET_RADAR_DEPLOYED_SHA/)
   assert.match(workerSource, /market-radar-production-authorized/)
+  assert.match(workerSource, /market-radar-worker-authorized/)
+  assert.match(workerSource, /release-controller-market-lane-authorized/)
   assert.match(workerSource, /release-controller\.yml/)
+  assert.doesNotMatch(workerSource, /actions\/workflows\/release-controller\.yml\/runs/)
+  assert.match(workerSource, /actions\/runs\/\$\{controller_run_id\}/)
+  assert.match(workerSource, /actions\/runs\/\$\{controller_run_id\}\/jobs/)
+  assert.match(workerSource, /\.event == "workflow_dispatch"/)
+  assert.match(workerSource, /\.head_sha == \$sha/)
+  assert.match(workerSource, /\.head_branch == "main"/)
+  assert.match(workerSource, /\.path == "\.github\/workflows\/release-controller\.yml"/)
+  assert.match(workerSource, /\.display_title == \$title/)
+  for (const job of [
+    'enqueue_market_radar_notifications', 'promote_market_radar_worker', 'mark_market_radar_worker_authorized',
+  ]) assert.match(workerSource, new RegExp(job))
+  assert.equal(worker.jobs.authorize.permissions.actions, 'read')
   assert.doesNotMatch(workerSource, /options: \[[^\]]*migrate/)
 })
 

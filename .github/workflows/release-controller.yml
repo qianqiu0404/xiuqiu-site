@@ -107,13 +107,39 @@ jobs:
           assert.deepEqual(controller.jobs.verify_vercel_candidate.needs, ['preflight', 'stage_vercel_candidate'])
           assert.deepEqual(controller.jobs.promote_vercel_production.needs, ['preflight', 'verify_vercel_candidate'])
           assert.deepEqual(controller.jobs.mark_deployed_sha.needs, ['preflight', 'promote_vercel_production'])
-          assert.deepEqual(controller.jobs.enqueue_radar_notifications.needs, ['preflight', 'mark_deployed_sha'])
-          assert.deepEqual(controller.jobs.promote_market_radar_worker.needs, ['preflight', 'mark_deployed_sha', 'enqueue_radar_notifications'])
+          assert.deepEqual(controller.jobs.enqueue_learning_radar_notifications.needs, ['preflight', 'mark_deployed_sha'])
+          assert.deepEqual(controller.jobs.enqueue_market_radar_notifications.needs, ['preflight', 'mark_deployed_sha'])
+          assert.deepEqual(controller.jobs.promote_market_radar_worker.needs, ['preflight', 'mark_deployed_sha', 'enqueue_market_radar_notifications'])
+          assert.deepEqual(controller.jobs.mark_market_radar_worker_authorized.needs, [
+            'preflight', 'mark_deployed_sha', 'enqueue_market_radar_notifications', 'promote_market_radar_worker',
+          ])
+          const learningEnqueue = controller.jobs.enqueue_learning_radar_notifications.steps
+            .find(step => step.name === 'Enqueue idempotent Learning Radar notification')
+          const marketEnqueue = controller.jobs.enqueue_market_radar_notifications.steps
+            .find(step => step.name === 'Enqueue idempotent Market Radar notification')
+          const learningDbSecretEnv = String.fromCharCode(36, 123, 123)
+            + ' ' + 'secrets' + '.LEARNING_RADAR_DATABASE_URL ' + String.fromCharCode(125, 125)
+          const marketDbSecretEnv = String.fromCharCode(36, 123, 123)
+            + ' ' + 'secrets' + '.MARKET_RADAR_DATABASE_URL ' + String.fromCharCode(125, 125)
+          assert.equal(learningEnqueue.env.RADAR_NOTIFICATION_KINDS, 'learning')
+          assert.equal(learningEnqueue.env.LEARNING_RADAR_DATABASE_URL, learningDbSecretEnv)
+          assert.equal(learningEnqueue.env.MARKET_RADAR_DATABASE_URL, undefined)
+          assert.equal(marketEnqueue.env.RADAR_NOTIFICATION_KINDS, 'market')
+          assert.equal(marketEnqueue.env.MARKET_RADAR_DATABASE_URL, marketDbSecretEnv)
+          assert.equal(marketEnqueue.env.LEARNING_RADAR_DATABASE_URL, undefined)
+          assert.equal(worker.jobs.authorize.permissions.actions, 'read')
+          assert.match(JSON.stringify(worker.jobs.authorize), /actions\/runs\/\$\{controller_run_id\}/)
+          assert.match(JSON.stringify(worker.jobs.authorize), /head_branch.*main/)
+          assert.match(JSON.stringify(worker.jobs.authorize), /path.*release-controller\.yml/)
+          assert.match(JSON.stringify(worker.jobs.authorize), /enqueue_market_radar_notifications/)
+          assert.match(JSON.stringify(worker.jobs.authorize), /promote_market_radar_worker/)
+          assert.match(JSON.stringify(worker.jobs.authorize), /mark_market_radar_worker_authorized/)
           assert.match(controller.concurrency.group, /xiuqiu-production-release/)
           const productionJobNames = [
             'production_migration', 'stage_vercel_candidate', 'verify_vercel_candidate',
-            'promote_vercel_production', 'mark_deployed_sha', 'enqueue_radar_notifications',
-            'promote_market_radar_worker',
+            'promote_vercel_production', 'mark_deployed_sha', 'enqueue_learning_radar_notifications',
+            'enqueue_market_radar_notifications', 'promote_market_radar_worker',
+            'mark_market_radar_worker_authorized',
           ]
           for (const jobName of productionJobNames) {
             assert.equal(controller.jobs[jobName].environment, 'production-release')
@@ -534,7 +560,7 @@ jobs:
               "repos/${GITHUB_REPOSITORY}/deployments/${deployment_id}/statuses" --input - >/dev/null
           echo "Recorded deployment marker $deployment_id for $RELEASE_SHA"
 
-  enqueue_radar_notifications:
+  enqueue_learning_radar_notifications:
     if: needs.preflight.outputs.operation == 'release'
     needs: [preflight, mark_deployed_sha]
     runs-on: ubuntu-latest
@@ -552,7 +578,7 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
-      - name: Revalidate notification release boundary
+      - name: Revalidate Learning Radar notification release boundary
         run: |
           set -euo pipefail
           remote_main=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')
@@ -565,9 +591,50 @@ jobs:
           cache: npm
 
       - run: npm ci
-      - name: Enqueue idempotent daily radar notifications
+      - name: Enqueue idempotent Learning Radar notification
+        env:
+          LEARNING_RADAR_DATABASE_URL: ${{ secrets.LEARNING_RADAR_DATABASE_URL }}
+          RADAR_NOTIFICATION_KINDS: learning
+        run: |
+          set -euo pipefail
+          test -n "$LEARNING_RADAR_DATABASE_URL"
+          npm run notifications:enqueue
+
+  enqueue_market_radar_notifications:
+    if: needs.preflight.outputs.operation == 'release'
+    needs: [preflight, mark_deployed_sha]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production-release
+    permissions:
+      contents: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_SHA: ${{ needs.preflight.outputs.release_sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.RELEASE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Revalidate Market Radar notification release boundary
+        run: |
+          set -euo pipefail
+          remote_main=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')
+          test "$remote_main" = "$RELEASE_SHA"
+          test "$(git rev-parse HEAD)" = "$RELEASE_SHA"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - name: Enqueue idempotent Market Radar notification
         env:
           MARKET_RADAR_DATABASE_URL: ${{ secrets.MARKET_RADAR_DATABASE_URL }}
+          RADAR_NOTIFICATION_KINDS: market
         run: |
           set -euo pipefail
           test -n "$MARKET_RADAR_DATABASE_URL"
@@ -575,7 +642,7 @@ jobs:
 
   promote_market_radar_worker:
     if: needs.preflight.outputs.operation == 'release'
-    needs: [preflight, mark_deployed_sha, enqueue_radar_notifications]
+    needs: [preflight, mark_deployed_sha, enqueue_market_radar_notifications]
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: production-release
@@ -617,3 +684,54 @@ jobs:
           test -n "$DEEPSEEK_API_KEY"
           test -n "$SEC_USER_AGENT"
           npm run market-radar:worker
+
+  mark_market_radar_worker_authorized:
+    if: needs.preflight.outputs.operation == 'release'
+    needs: [preflight, mark_deployed_sha, enqueue_market_radar_notifications, promote_market_radar_worker]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    environment: production-release
+    permissions:
+      contents: read
+      deployments: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RELEASE_SHA: ${{ needs.preflight.outputs.release_sha }}
+      CONTROLLER_RUN_ID: ${{ github.run_id }}
+    steps:
+      - name: Revalidate live main before Market Radar worker authorization
+        run: |
+          set -euo pipefail
+          remote_main=$(gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/main" --jq '.object.sha')
+          test "$remote_main" = "$RELEASE_SHA"
+
+      - name: Record successful Market Radar release lane
+        shell: bash
+        run: |
+          set -euo pipefail
+          deployment=$(jq -n \
+            --arg ref "$RELEASE_SHA" \
+            --arg controller_run_id "$CONTROLLER_RUN_ID" \
+            '{
+              ref: $ref,
+              environment: "market-radar-worker-authorized",
+              description: "release-controller-market-lane-authorized",
+              auto_merge: false,
+              required_contexts: [],
+              payload: {
+                controller: "release-controller.yml",
+                release_sha: $ref,
+                controller_run_id: $controller_run_id
+              }
+            }' | gh api --method POST "repos/${GITHUB_REPOSITORY}/deployments" --input -)
+          deployment_id=$(jq -r '.id' <<< "$deployment")
+          test -n "$deployment_id"
+
+          jq -n '{
+            state: "success",
+            environment: "market-radar-worker-authorized",
+            description: "Market enqueue and exact-SHA worker smoke succeeded",
+            auto_inactive: true
+          }' | gh api --method POST \
+            "repos/${GITHUB_REPOSITORY}/deployments/${deployment_id}/statuses" --input - >/dev/null
+          echo "Recorded Market Radar lane marker $deployment_id for $RELEASE_SHA"
