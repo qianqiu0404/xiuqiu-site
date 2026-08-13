@@ -1,5 +1,6 @@
 export interface MarketRadarRequest {
   method?: string
+  url?: string
   query?: Record<string, string | string[] | undefined>
   headers: Record<string, string | string[] | undefined>
   body?: unknown
@@ -69,6 +70,9 @@ export function parseJsonBody(body: unknown): Record<string, unknown> {
 }
 
 export function getClientId(req: MarketRadarRequest): string {
+  const vercelForwarded = req.headers['x-vercel-forwarded-for']
+  const vercelValue = Array.isArray(vercelForwarded) ? vercelForwarded[0] : vercelForwarded
+  if (vercelValue) return vercelValue.split(',')[0].trim().slice(0, 80)
   const forwarded = req.headers['x-forwarded-for']
   const value = Array.isArray(forwarded) ? forwarded[0] : forwarded
   return (value || 'unknown').split(',')[0].trim().slice(0, 80)

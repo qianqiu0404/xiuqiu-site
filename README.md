@@ -4,6 +4,8 @@
 
 Production releases follow the exact-SHA, DB-first process in [`docs/release-controller.md`](docs/release-controller.md).
 
+The Preview-only M2 atomic market snapshot and private market boundary are documented in [`docs/market-snapshot-m2.md`](docs/market-snapshot-m2.md).
+
 Vercel Git deployments, including pull-request Previews, are disabled while the release controller is the sole production path. Preview may be restored only after Dashboard auto-assign is confirmed off and the controller has succeeded for the same live `main` SHA; see the release guide for the guarded, branch-scoped policy.
 
 面向工程合作者的 Web3 钱包后端公开工程档案。网站用分层项目图谱区分旗舰系统、可验证作品和工程探索，并把行业雷达、异常恢复、测试证据和 AI 协作交付连接成一条可复核路径。

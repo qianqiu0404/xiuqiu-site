@@ -1,10 +1,29 @@
 import { execFileSync } from 'node:child_process'
-import { existsSync, lstatSync, readFileSync } from 'node:fs'
+import { existsSync, lstatSync, readFileSync, readdirSync } from 'node:fs'
+import { join } from 'node:path'
 
-const files = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard'], { encoding: 'utf8' })
-  .trim()
-  .split('\n')
-  .filter(Boolean)
+const ignoredDirectories = new Set(['.git', '.vercel', 'dist', 'node_modules'])
+
+function walkFiles(directory = '.') {
+  return readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
+    if (entry.isDirectory()) return ignoredDirectories.has(entry.name) ? [] : walkFiles(join(directory, entry.name))
+    return entry.isFile() ? [join(directory, entry.name).replace(/^\.\//, '')] : []
+  })
+}
+
+function listedFiles() {
+  try {
+    return execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard'], { encoding: 'utf8' })
+      .trim()
+      .split('\n')
+      .filter(Boolean)
+  } catch {
+    return walkFiles()
+  }
+}
+
+const files = listedFiles()
+  .filter(file => file !== '.git')
   .filter(file => !file.endsWith('package-lock.json'))
   .filter(file => !file.endsWith('.test.mjs'))
   .filter(file => existsSync(file) && lstatSync(file).isFile())

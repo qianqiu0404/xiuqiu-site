@@ -64,9 +64,14 @@ function routeFromSitemapUrl(value) {
 
 function expectedSitemapRoutes() {
   const routerSource = read('src/router/index.ts')
+  const nonIndexableRoutes = new Set(['/private/market'])
   const fixedRouterPaths = [...routerSource.matchAll(/\bpath:\s*['"`]([^'"`]+)['"`]/g)]
     .map(match => match[1])
-    .filter(path => !path.includes(':') && !path.includes('*') && path !== '/404')
+    .filter(path => !path.includes(':') && !path.includes('*') && path !== '/404' && !nonIndexableRoutes.has(path))
+
+  for (const route of nonIndexableRoutes) {
+    assert.ok(routerSource.includes(`path: '${route}'`), `router is missing non-indexable route ${route}`)
+  }
 
   for (const dynamicPath of [
     '/ai/deliveries/:slug',
@@ -284,6 +289,7 @@ test('sitemap exactly represents canonical public router routes and generated re
   assert.ok(entries.length > 0, 'sitemap must contain at least one URL')
   assertSameSet(actualRoutes, expectedRoutes, 'sitemap routes')
   assert.ok(!actualRoutes.includes('/404'), 'the noindex 404 page must not be indexed in the sitemap')
+  assert.ok(!actualRoutes.includes('/private/market'), 'the authenticated private market page must not be indexed in the sitemap')
 
   const legacyProjectRoutes = projects.flatMap(project =>
     [project.id, ...project.legacyIds].map(id => `/projects/${id}`),

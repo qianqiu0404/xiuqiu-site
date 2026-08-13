@@ -1,0 +1,28 @@
+.private-market-page {
+  min-height: 100vh;
+  padding: clamp(6rem, 9vw, 8rem) max(1rem, calc((100vw - 1160px) / 2)) 6rem;
+  overflow: clip;
+  background: #f3f4f1;
+  color: #11151b;
+}
+.private-market-page * { min-width: 0; box-sizing: border-box; }
+.private-market-header { display: flex; align-items: end; justify-content: space-between; gap: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid #c9ccc8; }
+.private-market-header p, .private-market-meta span { margin: 0; color: #5b6670; font: 650 .68rem/1.4 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
+.private-market-header h1 { margin: .45rem 0 .35rem; font-size: clamp(2.4rem, 6vw, 4.2rem); letter-spacing: -.06em; }
+.private-market-header > div > span { color: #606970; line-height: 1.6; }
+.private-market-page button, .private-market-page a { min-height: 44px; display: inline-flex; align-items: center; justify-content: center; border: 1px solid #272d32; border-radius: 999px; background: #11151b; color: #fff; padding: 0 1.1rem; cursor: pointer; font-weight: 650; }
+.private-market-state { margin-top: 2rem; border: 1px solid #d3d6d2; background: #fff; padding: clamp(2rem, 6vw, 4rem); }
+.private-market-state strong { display: block; font-size: 1.4rem; }.private-market-state p { color: #667079; line-height: 1.7; }
+.private-market-meta { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 1.5rem; border: 1px solid #242a2f; background: #0a0d10; color: #f4f6f7; }
+.private-market-meta div { display: grid; gap: .7rem; padding: 1.25rem; border-right: 1px solid #2a3035; }.private-market-meta div:last-child { border: 0; }
+.private-market-meta strong { overflow-wrap: anywhere; font: 650 .78rem/1.45 var(--mono); }
+.private-market-group { padding-top: 3rem; }.private-market-group > header { display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid #c9ccc8; }
+.private-market-group h2 { margin: 0 0 .8rem; font-size: 1.6rem; }.private-market-group > header span { color: #6c757d; font: 650 .7rem var(--mono); }
+.private-market-assets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.private-market-assets article { min-height: 15rem; border-right: 1px solid #d1d4d0; border-bottom: 1px solid #d1d4d0; padding: 1.25rem; }.private-market-assets article:nth-child(3n) { border-right: 0; }
+.private-market-assets article > div { display: flex; justify-content: space-between; gap: 1rem; }.private-market-assets h3 { margin: 0; }.private-market-assets article > div span { color: #677178; font: 650 .65rem var(--mono); text-transform: uppercase; }
+.private-market-assets article > p { margin: 2.25rem 0 1.5rem; font-size: 1.8rem; letter-spacing: -.04em; }.private-market-assets p small { font-size: .7rem; color: #667078; }
+.private-market-assets dl { display: grid; gap: .55rem; margin: 0; }.private-market-assets dl div { display: flex; justify-content: space-between; gap: 1rem; font-size: .72rem; }.private-market-assets dt { color: #717a82; }.private-market-assets dd { margin: 0; text-align: right; overflow-wrap: anywhere; }
+.private-market-assets .is-unavailable { color: #8b949a; }.private-market-assets article > small { color: #7b858c; overflow-wrap: anywhere; }
+@media (max-width: 760px) { .private-market-header { align-items: flex-start; flex-direction: column; }.private-market-meta { grid-template-columns: 1fr 1fr; }.private-market-meta div:nth-child(2) { border-right: 0; }.private-market-meta div:nth-child(-n+2) { border-bottom: 1px solid #2a3035; }.private-market-assets { grid-template-columns: 1fr; }.private-market-assets article, .private-market-assets article:nth-child(3n) { border-right: 0; } }
+@media (max-width: 360px) { .private-market-page { padding-top: 5rem; }.private-market-header h1 { font-size: 2.25rem; }.private-market-meta { grid-template-columns: 1fr 1fr; }.private-market-meta div { padding: .8rem; }.private-market-meta div:nth-child(odd) { border-right: 1px solid #2a3035; }.private-market-meta div:nth-child(-n+2) { border-bottom: 1px solid #2a3035; }.private-market-group { padding-top: 2rem; } }
