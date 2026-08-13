@@ -23,7 +23,7 @@ SPEC = RadarSpec(
 
 def register_cli(parser: argparse.ArgumentParser) -> None:
     subparsers = parser.add_subparsers(dest="learning_radar_action")
-    command = subparsers.add_parser("prepare", help="Claim one learning message for gateway delivery")
+    command = subparsers.add_parser("prepare", help="Run one model-free Learning Radar dispatch")
     command.add_argument("--dry-run", action="store_true")
     parser.set_defaults(func=dispatch_command)
 

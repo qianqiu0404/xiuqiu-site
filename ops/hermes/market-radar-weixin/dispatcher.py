@@ -23,7 +23,7 @@ SPEC = RadarSpec(
 
 def register_cli(parser: argparse.ArgumentParser) -> None:
     subparsers = parser.add_subparsers(dest="market_radar_action")
-    command = subparsers.add_parser("prepare", help="Claim one market message for gateway delivery")
+    command = subparsers.add_parser("prepare", help="Run one model-free Market Radar dispatch")
     command.add_argument("--dry-run", action="store_true")
     subparsers.add_parser("connection-test", help="Emit a gateway-only shadow test envelope")
     parser.set_defaults(func=dispatch_command)

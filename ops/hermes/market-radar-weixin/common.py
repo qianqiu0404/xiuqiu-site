@@ -3,11 +3,12 @@
 from __future__ import annotations
 
 import asyncio
+import fcntl
 import json
 import os
 import re
-import secrets
 import tempfile
+import threading
 import time
 import urllib.error
 import urllib.parse
@@ -17,12 +18,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
+from hermes_constants import get_hermes_home
 from hermes_cli.config import cfg_get, load_config
 
 
-DEFAULT_BASE_URL = "https://xiuqiu-site.vercel.app"
+PRODUCTION_BASE_URL = "https://xiuqiu-site.vercel.app"
 MAX_BODY_CHARS = 2800
 PLUGIN_NAME = "market-radar-weixin"
+HTTP_RETRY_DELAYS = (0.5, 1.5)
+TRANSIENT_HTTP_CODES = {408, 425, 429, 500, 502, 503, 504}
+_LEDGER_LOCK = threading.RLock()
 
 
 @dataclass(frozen=True)
@@ -47,15 +52,12 @@ class DeliveryBlocked(RuntimeError):
 
 def settings() -> tuple[str, str, str, bool]:
     config = load_config()
-    base_url = str(cfg_get(
-        config, "plugins", "entries", PLUGIN_NAME, "config", "base_url", default=DEFAULT_BASE_URL,
-    )).rstrip("/")
     shadow_mode = bool(cfg_get(
         config, "plugins", "entries", PLUGIN_NAME, "config", "shadow_mode", default=True,
     ))
     dispatch_token = (os.getenv("RADAR_DISPATCH_TOKEN") or os.getenv("MARKET_RADAR_DISPATCH_TOKEN") or "").strip()
     chat_id = os.getenv("WEIXIN_HOME_CHANNEL", "").strip()
-    return base_url, dispatch_token, chat_id, shadow_mode
+    return PRODUCTION_BASE_URL, dispatch_token, chat_id, shadow_mode
 
 
 def local_delivery_options() -> tuple[str, float]:
@@ -73,29 +75,68 @@ def local_delivery_options() -> tuple[str, float]:
     return secondary_profile, min(300.0, max(35.0, interval))
 
 
+def _retry_delay(attempt: int) -> bool:
+    if attempt >= len(HTTP_RETRY_DELAYS):
+        return False
+    time.sleep(HTTP_RETRY_DELAYS[attempt])
+    return True
+
+
 def post(url: str, token: str, payload: dict[str, Any]) -> dict[str, Any]:
+    """Perform one non-idempotent outbox mutation request.
+
+    Claim and ACK endpoints change lease/attempt state.  A transport failure is
+    therefore ambiguous and must never be retried by the client.  The server
+    lease makes a later cron invocation safe.
+    """
+    if not url.startswith(f"{PRODUCTION_BASE_URL}/api/"):
+        raise RuntimeError("Radar API URL is outside the production boundary.")
+    encoded = json.dumps(payload, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     request = urllib.request.Request(
         url,
-        data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
-        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+        data=encoded,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+            "User-Agent": "xiuqiu-hermes-radar/0.6",
+        },
         method="POST",
     )
     try:
         with urllib.request.urlopen(request, timeout=15) as response:
-            return json.loads(response.read().decode("utf-8"))
+            value = json.loads(response.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
-        raise RuntimeError(f"Radar API returned HTTP {exc.code}.") from exc
+        raise RuntimeError(f"Radar API returned HTTP {exc.code}.") from None
+    except (urllib.error.URLError, TimeoutError, ConnectionError, OSError, json.JSONDecodeError):
+        raise RuntimeError("Radar API transport unavailable.") from None
+    if not isinstance(value, dict):
+        raise RuntimeError("Radar API returned an invalid response.")
+    return value
 
 
 def check_health(base_url: str, path: str) -> None:
-    request = urllib.request.Request(
-        urllib.parse.urljoin(f"{base_url}/", path.lstrip("/")),
-        headers={"Accept": "application/json,text/html", "User-Agent": "xiuqiu-hermes-radar/0.2"},
-        method="GET",
-    )
-    with urllib.request.urlopen(request, timeout=15) as response:
-        if response.status != 200:
-            raise RuntimeError(f"Radar health check returned HTTP {response.status}.")
+    if base_url != PRODUCTION_BASE_URL:
+        raise RuntimeError("Radar health URL is outside the production boundary.")
+    url = urllib.parse.urljoin(f"{base_url}/", path.lstrip("/"))
+    for attempt in range(len(HTTP_RETRY_DELAYS) + 1):
+        request = urllib.request.Request(
+            url,
+            headers={"Accept": "application/json,text/html", "User-Agent": "xiuqiu-hermes-radar/0.5"},
+            method="GET",
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=15) as response:
+                if response.status != 200:
+                    raise RuntimeError(f"Radar health check returned HTTP {response.status}.")
+                return
+        except urllib.error.HTTPError as exc:
+            if exc.code in TRANSIENT_HTTP_CODES and _retry_delay(attempt):
+                continue
+            raise RuntimeError(f"Radar health check returned HTTP {exc.code}.") from None
+        except (urllib.error.URLError, TimeoutError, ConnectionError, OSError):
+            if _retry_delay(attempt):
+                continue
+            raise RuntimeError("Radar health check transport unavailable after retries.") from None
 
 
 def payload_for(item: dict[str, Any]) -> dict[str, Any]:
@@ -114,27 +155,37 @@ def safe_page_url(payload: dict[str, Any], base_url: str, page_prefix: str) -> s
         raise DeliveryBlocked("page_url_missing", "Published page URL is missing.")
     base = urllib.parse.urlparse(base_url)
     target = urllib.parse.urlparse(urllib.parse.urljoin(f"{base_url}/", value))
-    if target.scheme != "https" or target.netloc != base.netloc or not target.path.startswith(page_prefix):
+    route_root = "/" + page_prefix.strip("/")
+    if target.scheme != "https" or target.netloc != base.netloc or not (
+        target.path == route_root or target.path.startswith(f"{route_root}/")
+    ):
         raise DeliveryBlocked("page_url_invalid", "Published page URL is outside the configured radar boundary.")
     return urllib.parse.urlunparse(target)
 
 
 def check_page(payload: dict[str, Any], base_url: str, page_prefix: str) -> str:
     page_url = safe_page_url(payload, base_url, page_prefix)
-    request = urllib.request.Request(
-        page_url,
-        headers={"Accept": "text/html", "User-Agent": "xiuqiu-hermes-radar/0.2"},
-        method="GET",
-    )
-    try:
-        with urllib.request.urlopen(request, timeout=15) as response:
-            html = response.read(250_000).decode("utf-8", errors="replace")
-            if response.status != 200:
-                raise DeliveryBlocked("page_not_ready", f"Published page returned HTTP {response.status}.")
-    except urllib.error.HTTPError as exc:
-        raise DeliveryBlocked("page_not_ready", f"Published page returned HTTP {exc.code}.") from exc
-    except urllib.error.URLError as exc:
-        raise DeliveryBlocked("page_network_error", "Published page could not be reached.") from exc
+    html = ""
+    for attempt in range(len(HTTP_RETRY_DELAYS) + 1):
+        request = urllib.request.Request(
+            page_url,
+            headers={"Accept": "text/html", "User-Agent": "xiuqiu-hermes-radar/0.5"},
+            method="GET",
+        )
+        try:
+            with urllib.request.urlopen(request, timeout=15) as response:
+                html = response.read(250_000).decode("utf-8", errors="replace")
+                if response.status != 200:
+                    raise DeliveryBlocked("page_not_ready", f"Published page returned HTTP {response.status}.")
+                break
+        except urllib.error.HTTPError as exc:
+            if exc.code in TRANSIENT_HTTP_CODES and _retry_delay(attempt):
+                continue
+            raise DeliveryBlocked("page_not_ready", f"Published page returned HTTP {exc.code}.") from None
+        except (urllib.error.URLError, TimeoutError, ConnectionError, OSError):
+            if _retry_delay(attempt):
+                continue
+            raise DeliveryBlocked("page_network_error", "Published page could not be reached.") from None
     date = str(payload.get("date") or "").strip()
     if date and date not in html:
         raise DeliveryBlocked("page_date_missing", "Published page does not contain the expected date marker.")
@@ -162,7 +213,7 @@ def normalized_payload(item: dict[str, Any], spec: RadarSpec) -> dict[str, Any]:
             payload["date"] = date
     kind = str(item.get("kind") or "")
     if not payload.get("pageUrl") and kind == "daily" and date:
-        payload["pageUrl"] = f"{spec.page_prefix}{date}"
+        payload["pageUrl"] = f"{spec.page_prefix.rstrip('/')}/{date}"
     if not payload.get("pageUrl") and spec.name == "market-radar" and payload.get("eventId"):
         payload["pageUrl"] = f"/market-radar/events/{payload['eventId']}"
     return payload
@@ -194,93 +245,66 @@ def message(payload: dict[str, Any], page_url: str, spec: RadarSpec, shadow_mode
 
 
 def ledger_path(spec: RadarSpec) -> Path:
-    return Path.home() / ".hermes" / "state" / f"{spec.name}-deliveries.json"
+    return get_hermes_home() / "state" / f"{spec.name}-deliveries.json"
+
+
+def _load_ledger_unlocked(path: Path) -> dict[str, dict[str, str]]:
+    try:
+        raw = path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return {}
+    except OSError:
+        raise RuntimeError("Radar delivery ledger is unavailable.") from None
+    try:
+        value = json.loads(raw)
+    except json.JSONDecodeError:
+        raise RuntimeError("Radar delivery ledger is invalid.") from None
+    if not isinstance(value, dict):
+        raise RuntimeError("Radar delivery ledger is invalid.")
+    return value
 
 
 def read_ledger(spec: RadarSpec) -> dict[str, dict[str, str]]:
     path = ledger_path(spec)
-    try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-        return value if isinstance(value, dict) else {}
-    except (FileNotFoundError, json.JSONDecodeError, OSError):
-        return {}
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    lock_path = path.with_suffix(path.suffix + ".lock")
+    with _LEDGER_LOCK, lock_path.open("a+", encoding="utf-8") as lock_handle:
+        os.chmod(lock_path, 0o600)
+        fcntl.flock(lock_handle.fileno(), fcntl.LOCK_SH)
+        try:
+            return _load_ledger_unlocked(path)
+        finally:
+            fcntl.flock(lock_handle.fileno(), fcntl.LOCK_UN)
 
 
 def remember_delivery(spec: RadarSpec, key: str, message_id: str) -> None:
     path = ledger_path(spec)
-    path.parent.mkdir(parents=True, exist_ok=True)
-    ledger = read_ledger(spec)
-    ledger[key] = {"providerMessageId": message_id, "sentAt": datetime.now(timezone.utc).isoformat()}
-    with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as handle:
-        json.dump(ledger, handle, ensure_ascii=False, separators=(",", ":"))
-        temporary = Path(handle.name)
-    os.chmod(temporary, 0o600)
-    os.replace(temporary, path)
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    lock_path = path.with_suffix(path.suffix + ".lock")
+    with _LEDGER_LOCK, lock_path.open("a+", encoding="utf-8") as lock_handle:
+        os.chmod(lock_path, 0o600)
+        fcntl.flock(lock_handle.fileno(), fcntl.LOCK_EX)
+        try:
+            ledger = _load_ledger_unlocked(path)
+            ledger[key] = {"providerMessageId": message_id, "sentAt": datetime.now(timezone.utc).isoformat()}
+            with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as handle:
+                json.dump(ledger, handle, ensure_ascii=False, separators=(",", ":"))
+                temporary = Path(handle.name)
+            os.chmod(temporary, 0o600)
+            os.replace(temporary, path)
+        finally:
+            fcntl.flock(lock_handle.fileno(), fcntl.LOCK_UN)
 
 
 def remember_connection_test(message_id: str) -> None:
-    path = Path.home() / ".hermes" / "state" / "radar-weixin-connection-test.json"
-    path.parent.mkdir(parents=True, exist_ok=True)
+    path = get_hermes_home() / "state" / "radar-weixin-connection-test.json"
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     value = {"confirmed": True, "providerMessageId": message_id, "sentAt": datetime.now(timezone.utc).isoformat()}
     with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as handle:
         json.dump(value, handle, ensure_ascii=False, separators=(",", ":"))
         temporary = Path(handle.name)
     os.chmod(temporary, 0o600)
     os.replace(temporary, path)
-
-
-def pending_dir() -> Path:
-    return Path.home() / ".hermes" / "state" / "radar-weixin-pending"
-
-
-def store_pending_delivery(
-    spec: RadarSpec,
-    item: dict[str, Any],
-    deliveries: list[dict[str, str]],
-) -> str:
-    directory = pending_dir()
-    directory.mkdir(parents=True, exist_ok=True)
-    now = time.time()
-    for stale in directory.glob("*.json"):
-        try:
-            if now - stale.stat().st_mtime > 3600:
-                stale.unlink()
-        except OSError:
-            pass
-    reference = secrets.token_urlsafe(24)
-    value = {
-        "radar": spec.name,
-        "itemId": str(item["id"]),
-        "leaseToken": lease_token(item),
-        "deliveries": deliveries,
-    }
-    path = directory / f"{reference}.json"
-    with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=directory, delete=False) as handle:
-        json.dump(value, handle, ensure_ascii=False, separators=(",", ":"))
-        temporary = Path(handle.name)
-    os.chmod(temporary, 0o600)
-    os.replace(temporary, path)
-    return reference
-
-
-def load_pending_delivery(reference: str) -> dict[str, str] | None:
-    if not re.fullmatch(r"[A-Za-z0-9_-]{20,80}", reference):
-        return None
-    path = pending_dir() / f"{reference}.json"
-    try:
-        value = json.loads(path.read_text(encoding="utf-8"))
-    except (FileNotFoundError, json.JSONDecodeError, OSError):
-        return None
-    return value if isinstance(value, dict) else None
-
-
-def forget_pending_delivery(reference: str) -> None:
-    if not re.fullmatch(r"[A-Za-z0-9_-]{20,80}", reference):
-        return
-    try:
-        (pending_dir() / f"{reference}.json").unlink()
-    except FileNotFoundError:
-        pass
 
 
 def logical_delivery_key(spec: RadarSpec, item: dict[str, Any], payload: dict[str, Any]) -> str:
@@ -306,6 +330,30 @@ def lease_token(item: dict[str, Any]) -> str:
 
 
 def classify_weixin_error(value: Any) -> tuple[str, str]:
+    if isinstance(value, dict):
+        explicit = str(value.get("errorCode") or "").strip()
+        safe_messages = {
+            "recipient_not_configured": "Configured Weixin recipient is unavailable.",
+            "weixin_rate_limited": "Weixin adapter reported rate limiting.",
+            "weixin_cooldown_active": "Weixin adapter cooldown is active.",
+            "weixin_not_configured": "Weixin credentials are not configured.",
+            "weixin_auth_failed": "Weixin authentication failed.",
+            "weixin_credentials_missing": "Weixin credentials are missing.",
+            "weixin_not_connected": "Weixin adapter is not connected.",
+            "provider_authentication_failed": "Weixin provider authentication failed.",
+            "provider_auth_failed": "Weixin provider authentication failed.",
+            "weixin_send_failed": "Weixin adapter did not confirm delivery.",
+        }
+        if explicit in safe_messages:
+            message = safe_messages[explicit]
+            try:
+                retry_after = max(1, min(int(value.get("retryAfterSeconds")), 1800))
+            except (TypeError, ValueError):
+                retry_after = 0
+            if retry_after and explicit in {"weixin_rate_limited", "weixin_cooldown_active"}:
+                message = f"{message} Retry after {retry_after} seconds."
+            return explicit, message
+        value = value.get("error")
     lowered = str(value or "").lower()
     if "recipient_not_configured" in lowered:
         return "recipient_not_configured", "Configured Weixin recipient is unavailable."
@@ -322,8 +370,8 @@ def connection_test_envelope() -> str:
 
 
 async def prepare(spec: RadarSpec, dry_run: bool) -> int:
-    """Claim at most one item and emit a credential-free gateway envelope."""
-    base_url, dispatch_token, chat_id, shadow_mode = settings()
+    """Run one model-free dispatch entirely in this CLI process."""
+    base_url, dispatch_token, chat_id, _ = settings()
     if not dispatch_token:
         raise RuntimeError("RADAR_DISPATCH_TOKEN or MARKET_RADAR_DISPATCH_TOKEN is missing.")
     if not chat_id:
@@ -332,51 +380,8 @@ async def prepare(spec: RadarSpec, dry_run: bool) -> int:
         await asyncio.to_thread(check_health, base_url, spec.health_path)
         print(json.dumps({"ready": True, "radar": spec.name, "outboxClaimed": False}, ensure_ascii=False))
         return 0
-    claim = await asyncio.to_thread(
-        post, f"{base_url}{spec.claim_path}", dispatch_token,
-        {"leaseSeconds": 300, "kinds": list(spec.kinds)},
-    )
-    item = claim.get("item")
-    if not item:
-        print("[SILENT]")
-        return 0
+    from .transport import dispatch_once
 
-    payload = normalized_payload(item, spec)
-    try:
-        page_url = await asyncio.to_thread(check_page, payload, base_url, spec.page_prefix)
-    except DeliveryBlocked as exc:
-        await asyncio.to_thread(post, f"{base_url}{spec.ack_path}", dispatch_token, {
-            "id": item["id"], "leaseToken": lease_token(item), "success": False,
-            "errorCode": exc.code, "errorMessage": exc.safe_message,
-        })
-        print("[SILENT]")
-        return 0
-
-    key = logical_delivery_key(spec, item, payload)
-    deliveries = []
-    for alias in spec.recipient_aliases:
-        delivery_key = key if len(spec.recipient_aliases) == 1 else f"{key}:{alias}"
-        deliveries.append({
-            "recipientAlias": alias,
-            "idempotencyKey": delivery_key,
-            "message": message(payload, page_url, spec, shadow_mode),
-        })
-
-    follow_up = payload.get("followUp")
-    if str(item.get("kind") or "") == "daily" and isinstance(follow_up, dict):
-        follow_key = str(follow_up.get("idempotencyKey") or "").strip()
-        expected_key = f"market:quant:{payload.get('date', '')}"
-        if spec.name != "market-radar" or follow_up.get("kind") != "quant" or follow_key != expected_key:
-            raise RuntimeError("Market quant follow-up failed its idempotency boundary.")
-        follow_page_url = await asyncio.to_thread(check_page, follow_up, base_url, spec.page_prefix)
-        for alias in spec.recipient_aliases:
-            deliveries.append({
-                "recipientAlias": alias,
-                "idempotencyKey": f"{follow_key}:{alias}",
-                "message": message(follow_up, follow_page_url, spec, shadow_mode),
-            })
-
-    reference = store_pending_delivery(spec, item, deliveries)
-    envelope = {"version": 1, "mode": "deliver", "deliveryRef": reference}
-    print(json.dumps(envelope, ensure_ascii=False, separators=(",", ":")))
-    return 0
+    outcome = await dispatch_once(spec, chat_id)
+    print("[SILENT]")
+    return 1 if outcome.infrastructure_error else 0
