@@ -7,6 +7,7 @@ import test from 'node:test'
 import { parse } from 'yaml'
 import { buildLearningDailyNotification, buildMarketDailyNotification, buildMarketQuantNotification, renderMarketNotificationMessage } from './radar-notification-contracts.mjs'
 import { buildMarketResearchPack } from './market-radar-contracts.mjs'
+import { databaseUrlForNotificationKinds, enqueueRadarNotifications, learningNotificationSkipStatus, parseNotificationKinds } from './enqueue-radar-notifications.mjs'
 
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8')
 const published = kind => ({
@@ -34,6 +35,84 @@ test('learning notification highlights at most three items and has one daily key
   assert.equal(notification.payload.itemCount, 6)
   assert.equal((notification.payload.body.match(/^\d+\./gm) || []).length, 3)
   assert.doesNotMatch(notification.payload.body, /钱包信号二/)
+})
+
+test('learning v2 remains a visible lane failure while the isolated market lane can enqueue', async () => {
+  assert.equal(learningNotificationSkipStatus({ editionMode: 'backfill' }), 'skipped_backfill')
+  assert.equal(learningNotificationSkipStatus({}), null)
+
+  const queries = []
+  const sql = {
+    async query(statement) {
+      queries.push(statement)
+      return statement.includes('market_radar.outbox') ? [{ id: 'market-outbox-row' }] : []
+    },
+  }
+  await assert.rejects(
+    enqueueRadarNotifications({ date: '2026-08-12', kinds: parseNotificationKinds('learning'), sql }),
+    /Learning Radar v2 notifications are disabled until M4/,
+  )
+  const result = await enqueueRadarNotifications({ date: '2026-08-12', kinds: parseNotificationKinds('market'), sql })
+
+  assert.deepEqual(result, {
+    date: '2026-08-12',
+    learning: 'not_requested',
+    market: 'enqueued',
+  })
+  assert.equal(queries.filter(statement => statement.includes('market_radar.outbox')).length, 1)
+  assert.equal(queries.filter(statement => statement.includes('learning_radar.outbox')).length, 0)
+})
+
+test('notification lane selection keeps future learning failures independent from market enqueue', async () => {
+  assert.deepEqual([...parseNotificationKinds('market')], ['market'])
+  assert.throws(() => parseNotificationKinds('market,unknown'), /only supports learning and market/)
+  assert.equal(
+    databaseUrlForNotificationKinds(parseNotificationKinds('learning'), { LEARNING_RADAR_DATABASE_URL: 'postgres://learning' }),
+    'postgres://learning',
+  )
+  assert.equal(
+    databaseUrlForNotificationKinds(parseNotificationKinds('market'), { MARKET_RADAR_DATABASE_URL: 'postgres://market' }),
+    'postgres://market',
+  )
+  assert.throws(
+    () => databaseUrlForNotificationKinds(parseNotificationKinds('learning'), { MARKET_RADAR_DATABASE_URL: 'postgres://market' }),
+    /LEARNING_RADAR_DATABASE_URL is required/,
+  )
+  assert.throws(
+    () => databaseUrlForNotificationKinds(parseNotificationKinds(), {
+      LEARNING_RADAR_DATABASE_URL: 'postgres://learning', MARKET_RADAR_DATABASE_URL: 'postgres://market',
+    }),
+    /exactly one isolated radar lane/,
+  )
+
+  const invalidLearningPath = new URL(`file://${join(mkdtempSync(join(tmpdir(), 'learning-lane-failure-')), '2026-08-12.md')}`)
+  writeFileSync(invalidLearningPath, 'not valid frontmatter')
+  await assert.rejects(
+    enqueueRadarNotifications({
+      date: '2026-08-12',
+      kinds: parseNotificationKinds('learning'),
+      learningPath: invalidLearningPath,
+      sql: { query: async () => [] },
+    }),
+    /missing frontmatter block/,
+  )
+  const queries = []
+  const result = await enqueueRadarNotifications({
+    date: '2026-08-12',
+    kinds: parseNotificationKinds('market'),
+    learningPath: invalidLearningPath,
+    sql: {
+      async query(statement) {
+        queries.push(statement)
+        return statement.includes('market_radar.outbox') ? [{ id: 'market-outbox-row' }] : []
+      },
+    },
+  })
+
+  assert.equal(result.learning, 'not_requested')
+  assert.equal(result.market, 'enqueued')
+  assert.equal(queries.filter(statement => statement.includes('market_radar.outbox')).length, 1)
+  assert.equal(queries.filter(statement => statement.includes('learning_radar')).length, 0)
 })
 
 test('market daily is bounded and quiet days remain observable', () => {
@@ -188,11 +267,21 @@ test('notifications fail closed without the published research snapshot boundary
 
 test('release controller enqueues daily notifications only after production promotion', () => {
   const workflow = parse(read('.github/workflows/release-controller.yml'))
-  assert.deepEqual(workflow.jobs.enqueue_radar_notifications.needs, ['preflight', 'mark_deployed_sha'])
-  assert.equal(workflow.jobs.enqueue_radar_notifications.environment, 'production-release')
-  assert.deepEqual(workflow.jobs.promote_market_radar_worker.needs, ['preflight', 'mark_deployed_sha', 'enqueue_radar_notifications'])
-  const enqueueStep = workflow.jobs.enqueue_radar_notifications.steps.find(step => step.name === 'Enqueue idempotent daily radar notifications')
-  assert.match(enqueueStep.run, /npm run notifications:enqueue/)
+  assert.deepEqual(workflow.jobs.enqueue_learning_radar_notifications.needs, ['preflight', 'mark_deployed_sha'])
+  assert.deepEqual(workflow.jobs.enqueue_market_radar_notifications.needs, ['preflight', 'mark_deployed_sha'])
+  assert.equal(workflow.jobs.enqueue_learning_radar_notifications.environment, 'production-release')
+  assert.equal(workflow.jobs.enqueue_market_radar_notifications.environment, 'production-release')
+  assert.deepEqual(workflow.jobs.promote_market_radar_worker.needs, ['preflight', 'mark_deployed_sha', 'enqueue_market_radar_notifications'])
+  const learningStep = workflow.jobs.enqueue_learning_radar_notifications.steps.find(step => step.name === 'Enqueue idempotent Learning Radar notification')
+  const marketStep = workflow.jobs.enqueue_market_radar_notifications.steps.find(step => step.name === 'Enqueue idempotent Market Radar notification')
+  assert.equal(learningStep.env.RADAR_NOTIFICATION_KINDS, 'learning')
+  assert.equal(marketStep.env.RADAR_NOTIFICATION_KINDS, 'market')
+  assert.equal(learningStep.env.LEARNING_RADAR_DATABASE_URL, '${{ secrets.LEARNING_RADAR_DATABASE_URL }}')
+  assert.equal(learningStep.env.MARKET_RADAR_DATABASE_URL, undefined)
+  assert.equal(marketStep.env.MARKET_RADAR_DATABASE_URL, '${{ secrets.MARKET_RADAR_DATABASE_URL }}')
+  assert.equal(marketStep.env.LEARNING_RADAR_DATABASE_URL, undefined)
+  assert.match(learningStep.run, /npm run notifications:enqueue/)
+  assert.match(marketStep.run, /npm run notifications:enqueue/)
 })
 
 test('Hermes dispatchers are model-free, one-at-a-time and keep the radar lanes isolated', () => {

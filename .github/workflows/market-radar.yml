@@ -34,14 +34,14 @@ jobs:
       mode: ${{ steps.gate.outputs.mode }}
       authorized: ${{ steps.gate.outputs.authorized }}
       deployment_id: ${{ steps.gate.outputs.deployment_id }}
-      controller_run: ${{ steps.gate.outputs.controller_run }}
+      market_lane_deployment_id: ${{ steps.gate.outputs.market_lane_deployment_id }}
     env:
       GH_TOKEN: ${{ github.token }}
       REQUESTED_MODE: ${{ inputs.mode }}
       RUN_SCHEDULE: ${{ github.event.schedule }}
       MARKET_RADAR_ENABLED: ${{ vars.MARKET_RADAR_ENABLED }}
     steps:
-      - name: Require deployed SHA marker and controller authorization
+      - name: Require deployed SHA and successful Market Radar lane markers
         id: gate
         shell: bash
         run: |
@@ -75,29 +75,73 @@ jobs:
               --jq '.[0].state // empty')
           fi
 
-          runs=$(gh api --method GET \
-            "repos/${GITHUB_REPOSITORY}/actions/workflows/release-controller.yml/runs" \
-            -f event='workflow_dispatch' -f status='success' -f per_page=100)
-          expected_title="Release controller · release · $release_sha"
-          controller_run=$(jq -r --arg sha "$release_sha" --arg title "$expected_title" '
-            [.workflow_runs[] | select(
-              .conclusion == "success" and
+          market_lane_deployments=$(gh api --method GET "repos/${GITHUB_REPOSITORY}/deployments" \
+            -f sha="$release_sha" \
+            -f environment='market-radar-worker-authorized' \
+            -f per_page=100)
+          market_lane_evidence=$(jq -c --arg sha "$release_sha" '
+            [.[] | select(
+              .sha == $sha and
+              .description == "release-controller-market-lane-authorized" and
+              .payload.controller == "release-controller.yml" and
+              .payload.release_sha == $sha and
+              (.payload.controller_run_id | type == "string" and length > 0)
+            )][0] // {}
+          ' <<< "$market_lane_deployments")
+          market_lane_deployment_id=$(jq -r '.id // empty' <<< "$market_lane_evidence")
+          controller_run_id=$(jq -r '.payload.controller_run_id // empty' <<< "$market_lane_evidence")
+          market_lane_state='missing'
+          if [ -n "$market_lane_deployment_id" ]; then
+            market_lane_state=$(gh api \
+              "repos/${GITHUB_REPOSITORY}/deployments/${market_lane_deployment_id}/statuses" \
+              --jq '.[0].state // empty')
+          fi
+
+          controller_run_valid=false
+          market_jobs_valid=false
+          if [[ "$controller_run_id" =~ ^[0-9]+$ ]]; then
+            controller_run=$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${controller_run_id}")
+            expected_title="Release controller · release · $release_sha"
+            if jq -e --arg sha "$release_sha" --arg title "$expected_title" '
+              .event == "workflow_dispatch" and
               .head_sha == $sha and
+              .head_branch == "main" and
+              .path == ".github/workflows/release-controller.yml" and
               .display_title == $title
-            )][0].id // empty
-          ' <<< "$runs")
+            ' >/dev/null <<< "$controller_run"; then
+              controller_run_valid=true
+              controller_jobs=$(gh api --method GET \
+                "repos/${GITHUB_REPOSITORY}/actions/runs/${controller_run_id}/jobs" \
+                -f per_page=100)
+              market_jobs_valid=true
+              for required_job in \
+                enqueue_market_radar_notifications \
+                promote_market_radar_worker \
+                mark_market_radar_worker_authorized; do
+                if ! jq -e --arg job "$required_job" '
+                  [.jobs[] | select(.name == $job and .conclusion == "success")] | length == 1
+                ' >/dev/null <<< "$controller_jobs"; then
+                  market_jobs_valid=false
+                fi
+              done
+            fi
+          fi
 
           authorized=false
           if [ "$MARKET_RADAR_ENABLED" = 'true' ] \
             && [ "$deployment_state" = 'success' ] \
-            && [ -n "$controller_run" ]; then
+            && [ "$market_lane_state" = 'success' ] \
+            && [ "$controller_run_valid" = 'true' ] \
+            && [ "$market_jobs_valid" = 'true' ]; then
             authorized=true
           fi
 
           if [ "$mode" != 'dry-run' ]; then
             test "$MARKET_RADAR_ENABLED" = 'true'
             test "$deployment_state" = 'success'
-            test -n "$controller_run"
+            test "$market_lane_state" = 'success'
+            test "$controller_run_valid" = 'true'
+            test "$market_jobs_valid" = 'true'
             test "$authorized" = 'true'
           fi
 
@@ -105,14 +149,16 @@ jobs:
           echo "mode=$mode" >> "$GITHUB_OUTPUT"
           echo "authorized=$authorized" >> "$GITHUB_OUTPUT"
           echo "deployment_id=$deployment_id" >> "$GITHUB_OUTPUT"
-          echo "controller_run=$controller_run" >> "$GITHUB_OUTPUT"
+          echo "market_lane_deployment_id=$market_lane_deployment_id" >> "$GITHUB_OUTPUT"
           {
             echo '### Market Radar authorization evidence'
             echo "- Mode: $mode"
             echo "- Live main: $release_sha"
             echo "- Enabled: ${MARKET_RADAR_ENABLED:-false}"
             echo "- Deployment marker state: $deployment_state"
-            echo "- Successful controller run: $([ -n "$controller_run" ] && echo true || echo false)"
+            echo "- Market lane marker state: $market_lane_state"
+            echo "- Exact controller run verified: $controller_run_valid"
+            echo "- Required Market jobs successful: $market_jobs_valid"
             echo "- Authorized: $authorized"
           } >> "$GITHUB_STEP_SUMMARY"
 
