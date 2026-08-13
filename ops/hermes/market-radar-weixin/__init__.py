@@ -27,12 +27,12 @@ def register(ctx) -> None:
         help="Deliver xiuqiu Market Radar outbox messages through Weixin",
         setup_fn=register_market,
         handler_fn=market_dispatch,
-        description="Prepares only market daily/P0 envelopes for gateway-confirmed Weixin delivery.",
+        description="Runs one in-process market daily/P0 claim-to-ACK delivery.",
     )
     ctx.register_cli_command(
         name="learning-radar",
         help="Deliver xiuqiu Learning Radar outbox messages through Weixin",
         setup_fn=register_learning,
         handler_fn=learning_dispatch,
-        description="Prepares only learning daily envelopes for gateway-confirmed Weixin delivery.",
+        description="Runs one in-process learning daily claim-to-ACK delivery.",
     )

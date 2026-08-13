@@ -1,5 +1,5 @@
 name: market-radar-weixin
-version: 0.4.0
+version: 0.5.0
 description: "Two isolated, model-free radar outbox consumers with per-recipient Weixin receipts and market quant follow-ups."
 author: xiuqiu
 kind: standalone
