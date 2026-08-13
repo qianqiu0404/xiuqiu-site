@@ -12,6 +12,48 @@ export interface RadarIndexEntry { date: string; slug: string; snapshotId: strin
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-08-13",
+    "slug": "2026-08-13",
+    "snapshotId": "learning-2026-08-13-34d6285dd374d3b6",
+    "asOf": "2026-08-13T00:02:17.000Z",
+    "title": "学习雷达 · 2026-08-13",
+    "summary": "AI 关注可恢复审批与推理服务可靠性；Web3 关注源码复现边界和分布式数据可用性恢复。",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "briefs": [
+      {
+        "id": "ai-durable-runstate-input",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "Agents SDK 0.20：恢复任务前先恢复调用身份"
+      },
+      {
+        "id": "ai-vllm-serving-reliability",
+        "domain": "ai",
+        "topic": "model_inference",
+        "title": "vLLM 0.27：首请求延迟与故障恢复要分别门禁"
+      },
+      {
+        "id": "web3-sui-source-reproduction",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Sui testnet 1.77.2：源码验证要绑定发布工具链"
+      },
+      {
+        "id": "web3-rowdas-reconstruction",
+        "domain": "web3",
+        "topic": "protocol",
+        "title": "EIP-8371：把 Blob 重建从超级节点摊到行子网"
+      }
+    ],
+    "deepDive": {
+      "id": "deep-ai-durable-approval-state",
+      "title": "专题：可恢复审批必须绑定状态、调用与副作用",
+      "basedOnBriefId": "ai-durable-runstate-input"
+    },
+    "marketSignals": []
+  },
+  {
     "date": "2026-08-12",
     "slug": "2026-08-12",
     "snapshotId": "learning-2026-08-12-802ca3adfabc99c8",
@@ -985,6 +1027,199 @@ export const radarIndex: RadarIndexEntry[] = [
 
 export const latestRadars: DailyRadar[] = [
   {
+    "date": "2026-08-13",
+    "slug": "2026-08-13",
+    "title": "学习雷达 · 2026-08-13",
+    "summary": "AI 关注可恢复审批与推理服务可靠性；Web3 关注源码复现边界和分布式数据可用性恢复。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-08-13T00:02:17.000Z",
+    "generatedAt": "2026-08-13T00:02:17.000Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-durable-runstate-input",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "Agents SDK 0.20：恢复任务前先恢复调用身份",
+        "whatHappened": "OpenAI 在 2026-08-11 发布 Agents Python SDK 0.20.0，加入可持久化待处理输入的 RunState.add_input，并修复恢复流程中工具审批、Guardrail 结果和会话状态的身份绑定；发布说明同时提示 MCP v2 会影响自定义 HTTP transport。",
+        "mechanism": "暂停点被序列化为 RunState，待审批工具调用保留具体 call id；新输入先持久化并通过 Guardrail，再进入恢复后的模型调用。审批只对原调用生效，避免把旧决定套到参数相似但身份不同的新调用。",
+        "workedExample": "发布 Agent 在写入前暂停，把 RunState、调用 id 与业务幂等键保存；审阅者补充来源后通过 add_input 写入修订，再只批准该次调用。进程重启后恢复同一状态，不重新生成另一条发布动作。",
+        "whyItMatters": "它把长任务恢复从‘重放聊天记录’提升为可核验的状态机，适合用来审视 Hermes 接管、ResearchOps 发布和其他带外部副作用的 Agent 流程。",
+        "risksAndLimits": [
+          "RunState 可包含应用上下文与运行元数据，若把密钥放进 context，序列化会扩大泄露面。",
+          "0.20.0 改变隐式默认模型并迁移 MCP 依赖，自定义 transport 必须先做兼容测试或显式锁定版本。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "OpenAI Agents Python SDK v0.20.0",
+            "url": "https://github.com/openai/openai-agents-python/releases/tag/v0.20.0",
+            "publishedAt": "2026-08-11T03:12:14.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "恢复后的审批如何同时绑定调用 id、参数摘要和业务幂等键？",
+          "哪些 RunState 字段可以持久化，哪些必须在恢复时重新注入？"
+        ]
+      },
+      {
+        "id": "ai-vllm-serving-reliability",
+        "domain": "ai",
+        "topic": "model_inference",
+        "title": "vLLM 0.27：首请求延迟与故障恢复要分别门禁",
+        "whatHappened": "vLLM 在 2026-08-10 发布 0.27.0，加入 JIT 与 Triton kernel 预热、面向 DP+EP 外部负载均衡部署的简化容错框架，以及 Rust 前端的健康、终止和发现控制；同时升级到 PyTorch 2.13，属于需要重建环境的兼容变化。",
+        "mechanism": "预热把首次请求前的编译成本移到就绪阶段；健康与终止控制让外部负载均衡器识别不可服务实例；容错框架处理工作节点变化。三者分别约束冷启动、路由和执行状态，不能由一个平均延迟指标替代。",
+        "workedExample": "推理集群升级时先在隔离实例加载同一模型并完成 kernel 预热，再运行固定正确性与延迟样本；随后主动终止一个 worker，验证健康状态、请求改道和未完成请求的错误边界后才扩大流量。",
+        "whyItMatters": "它把‘模型快不快’拆成可部署的工程问题：首请求、稳态吞吐、故障转移和依赖兼容必须分别验收，才能避免只看单次 benchmark。",
+        "risksAndLimits": [
+          "发布说明中的性能改善来自特定模型、硬件和 kernel，不能直接外推到现有集群。",
+          "升级 PyTorch、Triton 与平台 wheel 会改变 ABI 和编译缓存，回滚必须保留完整旧环境而不只是旧配置。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "vLLM v0.27.0 release notes",
+            "url": "https://github.com/vllm-project/vllm/releases/tag/v0.27.0",
+            "publishedAt": "2026-08-10T21:18:11.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "推理服务的 ready 信号应等待哪些预热和正确性检查完成？",
+          "怎样把首请求延迟、稳态延迟与 worker 故障恢复写成独立 SLO？"
+        ]
+      },
+      {
+        "id": "web3-sui-source-reproduction",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Sui testnet 1.77.2：源码验证要绑定发布工具链",
+        "whatHappened": "Mysten Labs 在北京时间 2026-08-13 05:28 发布 Sui testnet-v1.77.2；该测试网版本让 verify-source 按合约发布时记录的工具链重建源码，从包的发布元数据读取链上地址并输出核验元数据，同时修复 fatal ingestion error 后 checkpoint broadcaster 未及时退出的问题。",
+        "mechanism": "验证器不再接受调用者单独传入 package id，而是把 original id、published-at、toolchain version 与重建二进制作为同一证据链；带注释的 Git tag 依赖也解析到其实际 commit，减少标签对象与源码提交混淆。",
+        "workedExample": "审计 Move 包时只向 verify-source 提交源码路径，并保存 JSON 输出中的 original id、发布位置、工具链版本和 binary path；若本地重建产物与链上元数据不一致就停止，而不是切换工具链直到通过。",
+        "whyItMatters": "钱包与交易所集成链上包时需要证明‘看到的源码’与‘实际发布字节’来自同一构建语境，这个变更提供了具体的供应链核验清单。",
+        "risksAndLimits": [
+          "这是 testnet 版本，不代表相同命令和协议变化已经进入 Sui mainnet。",
+          "自动下载历史工具链仍需要校验发布物来源；旧 Move.lock 的 tag-object SHA 不会自动改正，必须显式更新依赖。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Sui testnet-v1.77.2 release notes",
+            "url": "https://github.com/MystenLabs/sui/releases/tag/testnet-v1.77.2",
+            "publishedAt": "2026-08-12T21:28:28.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "链上包发布元数据最少应固定哪些编译器、依赖与地址字段？",
+          "历史工具链下载与缓存如何验证签名并支持离线复现？"
+        ]
+      },
+      {
+        "id": "web3-rowdas-reconstruction",
+        "domain": "web3",
+        "topic": "protocol",
+        "title": "EIP-8371：把 Blob 重建从超级节点摊到行子网",
+        "whatHappened": "Ethereum EIPs 仓库在 2026-08-11 更新 Draft EIP-8371，为 RowDAS 补充节点角色、分阶段重建与安全分析；提案希望在 PeerDAS 之上用行级 partial message 分摊 Blob 数据重建，而不是让每个超级节点重复完成全部恢复工作。",
+        "mechanism": "节点按身份进入固定行子网；只有持有某一行至少 64 个不同且通过 KZG 验证的 cell 才承担重建。行重建者、超级节点和普通订阅节点按延迟分阶段介入，若其他路径已经补全该行则取消待执行工作。",
+        "workedExample": "一个行重建者从列、行子网或 getBlobs 收齐 64 个已验证 cell 后重建对应行并广播 bitmap；若延迟窗口内已观察到该行完成，就取消本地重建，避免多个节点同时消耗 CPU。",
+        "whyItMatters": "它展示了数据可用性协议如何把恢复职责、传播网络和攻击成本写成显式状态机，也能帮助理解 L2 扩容为何不仅是提高 Blob 数量。",
+        "risksAndLimits": [
+          "EIP-8371 仍为 Draft，wire format 与多段延迟等参数尚未最终确定，不能写成主网已启用。",
+          "公开且固定的行子网分配允许攻击者磨取 node id；提案保留列主题和请求响应为权威可用性路径以限制影响。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "protocol_commit",
+            "name": "EIP-8371 role split and security analysis update",
+            "url": "https://github.com/ethereum/EIPs/commit/b325d33d61f18c8bc9f5f2b9b9c59f8bf702141a",
+            "publishedAt": "2026-08-11T01:55:30.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "protocol_specification",
+            "name": "Pinned EIP-8371 RowDAS specification",
+            "url": "https://github.com/ethereum/EIPs/blob/b325d33d61f18c8bc9f5f2b9b9c59f8bf702141a/EIPS/eip-8371.md"
+          }
+        ],
+        "nextQuestions": [
+          "行子网的延迟与 bitmap 频率怎样设置才能避免恢复风暴？",
+          "如何测试 node-id grinding、cell withholding 与重复重建的资源上界？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-ai-durable-approval-state",
+      "domain": "ai",
+      "topic": "infrastructure",
+      "title": "专题：可恢复审批必须绑定状态、调用与副作用",
+      "whatHappened": "Agents SDK 0.20.0 的持久输入能力与官方 HITL 文档共同给出一条完整边界：执行可在敏感工具前中断，RunState 可跨进程保存，审阅决定和补充输入再驱动同一任务恢复。",
+      "mechanism": "中断项保存 agent、tool、参数和调用身份；RunState 序列化上下文、用量、工具输入与审批状态。恢复时使用原顶层 Agent 和同一状态，新增输入先经过 Guardrail；外部写动作还需要独立业务幂等键。",
+      "workedExample": "消息派发器准备发送日报时先产生待审批调用并保存 RunState，不触达通道。人工检查页面与来源后补充回执要求，只批准该调用；恢复后发送器使用日期与收件人幂等键，进程再次重启也不会生成第二条消息。",
+      "whyItMatters": "这能直接转成 Hermes 与 ResearchOps 的检查表：推理状态决定‘继续想什么’，调用身份决定‘允许做哪一次’，幂等键决定‘副作用最多发生一次’，三者不能混用。",
+      "risksAndLimits": [
+        "序列化 RunState 会持久化应用 context 和运行元数据，必须在写入前排除密钥、正文之外的敏感身份与不必要 trace 凭据。",
+        "always_approve 等粘性决定会随状态恢复，若作用域过宽，旧授权可能覆盖后来出现的高风险调用。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "OpenAI Agents Python SDK v0.20.0",
+          "url": "https://github.com/openai/openai-agents-python/releases/tag/v0.20.0",
+          "publishedAt": "2026-08-11T03:12:14.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_documentation",
+          "name": "OpenAI Agents SDK human-in-the-loop guide",
+          "url": "https://openai.github.io/openai-agents-python/human_in_the_loop/"
+        }
+      ],
+      "nextQuestions": [
+        "审批记录怎样限定到一次调用，而不是整个工具的永久白名单？",
+        "RunState、审计日志与业务幂等表分别应该保存哪些最小字段？"
+      ],
+      "basedOnBriefId": "ai-durable-runstate-input"
+    },
+    "sourceUrls": [
+      "https://github.com/openai/openai-agents-python/releases/tag/v0.20.0",
+      "https://github.com/vllm-project/vllm/releases/tag/v0.27.0",
+      "https://github.com/MystenLabs/sui/releases/tag/testnet-v1.77.2",
+      "https://github.com/ethereum/EIPs/commit/b325d33d61f18c8bc9f5f2b9b9c59f8bf702141a",
+      "https://github.com/ethereum/EIPs/blob/b325d33d61f18c8bc9f5f2b9b9c59f8bf702141a/EIPS/eip-8371.md",
+      "https://openai.github.io/openai-agents-python/human_in_the_loop/"
+    ],
+    "relatedProjectSlugs": [
+      "wallet-core",
+      "exchange-wallet-system",
+      "web3-wallet-engineer-lab"
+    ],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-08-13-34d6285dd374d3b6",
+    "asOf": "2026-08-13T00:02:17.000Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
+  {
     "date": "2026-08-12",
     "slug": "2026-08-12",
     "title": "学习雷达 · 2026-08-12",
@@ -1729,89 +1964,6 @@ export const latestRadars: DailyRadar[] = [
       "https://github.com/earendil-works/pi/issues/7730",
       "https://github.com/earendil-works/pi/blob/v0.84.0/LICENSE",
       "https://openai.com/index/scientific-computing-agentic-ai/"
-    ],
-    "relatedProjectSlugs": [
-      "wallet-core",
-      "exchange-wallet-system",
-      "web3-wallet-engineer-lab"
-    ]
-  },
-  {
-    "date": "2026-08-06",
-    "slug": "2026-08-06",
-    "title": "每日研究雷达 · 2026-08-06",
-    "summary": "聚焦 Safe Guard 防误配、合约注册表控制面、Foundry Upgrades 编译器门槛、程序化工具调用、原生密钥迁移、OpenCode，以及数据湖在线点查。",
-    "snapshotId": "learning-2026-08-06-64d6b12d27f6b9af",
-    "asOf": "2026-08-05T23:04:21.000Z",
-    "origin": "research",
-    "publicationState": "published",
-    "reviewStatus": "automated",
-    "generatedAt": "2026-08-06T07:04:21+08:00",
-    "sourceSections": [
-      "crypto",
-      "radar",
-      "vibe",
-      "reading"
-    ],
-    "missingSections": [],
-    "marketSignals": [
-      {
-        "title": "Safe Wallet 为旧版 Safe 的 Guard 配置增加客户端检查",
-        "summary": "web-v1.97.0 会解析直接调用和 MultiSend 内的 setGuard，并对低于 v1.4.1 的 Safe 检查目标接口；这仍是可被用户继续确认的客户端提示，不是链上强制拒绝。",
-        "sourceUrl": "https://github.com/safe-global/safe-wallet-monorepo/releases/tag/web-v1.97.0"
-      },
-      {
-        "title": "Parity Contract Dependency Manager 明确注册表控制面",
-        "summary": "v0.12.0 用 EIP-1967 代理维持稳定地址，并显式提供实现升级、紧急冻结与 ABI 漂移测试；冻结不约束管理员，仍需独立审计实现、密钥和治理流程。",
-        "sourceUrl": "https://github.com/paritytech/contract-dependency-manager/releases/tag/v0.12.0"
-      },
-      {
-        "title": "OpenZeppelin Foundry Upgrades 补丁版提高 Solidity 下限",
-        "summary": "v0.4.2 为新版 memory-safe assembly 语法把最低 Solidity 提升到 0.8.13。官方标注其 potentially breaking，依赖升级前需要验证编译器矩阵，不能因 patch 版本而忽略兼容性。",
-        "sourceUrl": "https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades/releases/tag/v0.4.2"
-      }
-    ],
-    "aiTip": {
-      "title": "只把可判定的数据归并交给程序化工具调用",
-      "summary": "把过滤、连接、排序、去重或字段校验限定为固定 schema、只读工具、并发和停止条件明确的子流程，再由模型完成取舍。程序输出和最终回答都要回归验证，写入与授权仍走确定性门禁。",
-      "sourceUrl": "https://developers.openai.com/api/docs/guides/latest-model#programmatic-tool-calling"
-    },
-    "web3Design": {
-      "title": "把签名算法迁移建模为不可逆控制权切换",
-      "summary": "EIP-8164 草案会在账户写入 ML-DSA-44 公钥后永久关闭旧 ECDSA 路径。钱包服务应绑定链、账户、nonce、算法和公钥指纹，分离旧密钥迁移授权与新密钥签名；草案未激活且无链上恢复，不能用于生产。",
-      "sourceUrl": "https://eips.ethereum.org/EIPS/eip-8164"
-    },
-    "vibeProject": {
-      "title": "OpenCode · 多端可扩展 coding agent 运行时",
-      "summary": "OpenCode 把终端、桌面、LSP、MCP、权限审批、headless server 和 SDK 集成到同一运行时；固定版 1.18.14 已复现 CLI 与本地健康端点。默认开发权限、无认证 server 和长输出丢失风险要求隔离、明确 deny 与独立证据校验。",
-      "sourceUrl": "https://github.com/anomalyco/opencode"
-    },
-    "readingPick": {
-      "title": "Indexing the Data Lake for Online Point Queries",
-      "summary": "文章用外部 key-to-file/row 索引和精确 ranged read 让 Parquet 同时支持分析与在线点查，并写明分区、PageIndex、blob、列交错和 covering index 的代价。思考题：为真实单键查询列出读取预算，并比较只加索引与再加一种布局优化的副作用。",
-      "sourceUrl": "https://engineering.atspotify.com/2026/7/indexing-the-data-lake-for-online-point-queries"
-    },
-    "sourceUrls": [
-      "https://github.com/safe-global/safe-wallet-monorepo/releases/tag/web-v1.97.0",
-      "https://github.com/safe-global/safe-wallet-monorepo/pull/8364",
-      "https://github.com/paritytech/contract-dependency-manager/releases/tag/v0.12.0",
-      "https://github.com/paritytech/contract-dependency-manager/pull/71",
-      "https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades/releases/tag/v0.4.2",
-      "https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades/pull/128",
-      "https://developers.openai.com/api/docs/guides/latest-model#programmatic-tool-calling",
-      "https://eips.ethereum.org/EIPS/eip-8164",
-      "https://github.com/anomalyco/opencode",
-      "https://github.com/anomalyco/opencode/releases/tag/v1.18.14",
-      "https://github.com/anomalyco/opencode/blob/v1.18.14/README.md",
-      "https://api.github.com/repos/anomalyco/opencode",
-      "https://api.github.com/repos/anomalyco/opencode/releases/tags/v1.18.14",
-      "https://registry.npmjs.org/opencode-ai/1.18.14",
-      "https://api.npmjs.org/downloads/point/2026-07-06:2026-08-04/opencode-ai",
-      "https://opencode.ai/docs/permissions/",
-      "https://opencode.ai/docs/server/",
-      "https://github.com/anomalyco/opencode/issues/40728",
-      "https://github.com/anomalyco/opencode/blob/v1.18.14/LICENSE",
-      "https://engineering.atspotify.com/2026/7/indexing-the-data-lake-for-online-point-queries"
     ],
     "relatedProjectSlugs": [
       "wallet-core",
