@@ -17,8 +17,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: xiuqiu-production-release
-  cancel-in-progress: false
+  group: ${{ (inputs.mode == 'dry-run' || (github.event_name == 'schedule' && vars.MARKET_RADAR_AUTOMATION_READY != 'true')) && 'xiuqiu-market-radar-dry-run' || 'xiuqiu-production-release' }}
+  cancel-in-progress: ${{ inputs.mode == 'dry-run' || (github.event_name == 'schedule' && vars.MARKET_RADAR_AUTOMATION_READY != 'true') }}
 
 jobs:
   authorize:
@@ -39,7 +39,9 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       REQUESTED_MODE: ${{ inputs.mode }}
       RUN_SCHEDULE: ${{ github.event.schedule }}
+      EVENT_NAME: ${{ github.event_name }}
       MARKET_RADAR_ENABLED: ${{ vars.MARKET_RADAR_ENABLED }}
+      MARKET_RADAR_AUTOMATION_READY: ${{ vars.MARKET_RADAR_AUTOMATION_READY }}
     steps:
       - name: Require deployed SHA and successful Market Radar lane markers
         id: gate
@@ -51,6 +53,9 @@ jobs:
 
           mode="${REQUESTED_MODE:-ingest}"
           if [ "$RUN_SCHEDULE" = '45 12,13 * * 1-5' ]; then mode='premarket'; fi
+          if [ "$EVENT_NAME" = 'schedule' ] && [ "$MARKET_RADAR_AUTOMATION_READY" != 'true' ]; then
+            mode='dry-run'
+          fi
           case "$mode" in
             dry-run|ingest|daily|premarket) ;;
             *) echo "Unsupported worker mode: $mode" >&2; exit 1 ;;
@@ -155,6 +160,7 @@ jobs:
             echo "- Mode: $mode"
             echo "- Live main: $release_sha"
             echo "- Enabled: ${MARKET_RADAR_ENABLED:-false}"
+            echo "- Scheduled automation ready: ${MARKET_RADAR_AUTOMATION_READY:-false}"
             echo "- Deployment marker state: $deployment_state"
             echo "- Market lane marker state: $market_lane_state"
             echo "- Exact controller run verified: $controller_run_valid"

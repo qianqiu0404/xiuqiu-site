@@ -31,7 +31,7 @@
     "test:release": "node --test scripts/release-workflow.test.mjs scripts/market-research-production.test.mjs",
     "test:article-shadow": "node --test scripts/article-catalog-shadow.test.mjs",
     "test:content-preview": "node --test scripts/content-catalog-preview.test.mjs",
-    "test:quality": "node --test scripts/site-quality.test.mjs",
+    "test:quality": "node --test scripts/site-quality.test.mjs scripts/global-css-usage.test.mjs",
     "validate:radar": "node scripts/validate-radar-candidate.mjs",
     "prepare:researchops": "node scripts/prepare-researchops-source.mjs",
     "sync:learning": "node scripts/sync-learning-from-obsidian.mjs",
@@ -60,6 +60,7 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.3",
+    "postcss": "^8.5.23",
     "typescript": "~5.7.3",
     "vite": "^6.4.3",
     "vue-tsc": "^3.3.8",

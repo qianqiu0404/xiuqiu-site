@@ -19,6 +19,18 @@ const fallbackPublishedAt = gitValue(
 
 export default defineConfig({
   plugins: [vue()],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes('/node_modules/vue/') || id.includes('/node_modules/@vue/') || id.includes('/node_modules/vue-router/')) {
+            return 'vue-vendor'
+          }
+          return undefined
+        },
+      },
+    },
+  },
   define: {
     __CONTENT_CATALOG_FALLBACK_COMMIT__: JSON.stringify(fallbackCommit),
     __CONTENT_CATALOG_FALLBACK_PUBLISHED_AT__: JSON.stringify(fallbackPublishedAt),

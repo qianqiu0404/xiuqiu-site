@@ -10,7 +10,7 @@ import {
   radarSignalCountLabel,
   radarSourceStatus,
 } from '../data/radarPresentation'
-import { getSnapshotFreshness } from '../data/snapshotFreshness'
+import { getRadarCollectionSeo, getSnapshotFreshness } from '../data/snapshotFreshness'
 import { setSeoMeta } from '../utils/seo'
 import '../styles/radar.css'
 
@@ -48,6 +48,7 @@ const aiBriefs = computed(() => latestRadar ? getLearningBriefs(latestRadar, 'ai
 const web3Briefs = computed(() => latestRadar ? getLearningBriefs(latestRadar, 'web3') : [])
 const latestSignalLabel = computed(() => radarSignalCountLabel(latestRadar?.marketSignals.length ?? 0))
 const latestFreshness = computed(() => getSnapshotFreshness(latestRadar?.date))
+const radarSeo = computed(() => getRadarCollectionSeo('learning', latestRadar?.date))
 const latestDailyTitle = computed(() => {
   if (latestIsV2.value) {
     if (latestFreshness.value.isToday) return '今天：4 条快报 + 1 篇专题。'
@@ -133,8 +134,7 @@ watch(archiveFilter, () => {
 
 onMounted(() =>
   setSeoMeta({
-    title: '行业情报雷达｜xiuqiu',
-    description: '面向 Web3 钱包与 AI 工程的每日行业简报、人工复核周度收敛和可追溯历史档案。',
+    ...radarSeo.value,
     path: '/radar',
   }),
 )
@@ -152,8 +152,11 @@ onMounted(() =>
       <div class="container radar-intelligence-shell radar-hero-layout">
         <div class="radar-hero-copy">
           <p class="radar-kicker">Industry Intelligence / Human Convergence</p>
-          <h1 id="radar-title">每天学懂<br /><span>AI 与 Web3。</span></h1>
-          <p>
+          <h1 id="radar-title">{{ latestFreshness.isArchive ? '从归档学懂' : '每天学懂' }}<br /><span>AI 与 Web3。</span></h1>
+          <p v-if="latestFreshness.isArchive">
+            历史简报保留 2 条 AI、2 条 Web3 和一个专题；先讲机制，再给例子和边界。
+          </p>
+          <p v-else>
             每天 2 条 AI、2 条 Web3，再选择一个问题做专题。先讲机制，再给例子和边界。
           </p>
         </div>

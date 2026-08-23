@@ -8,6 +8,7 @@ import { radarWeeklies } from '../src/data/generatedRadarWeeklies.ts'
 import { deliveryRecords } from '../src/data/generatedDeliveries.ts'
 import { nowSnapshot } from '../src/data/generatedNow.ts'
 import { allMarketRadars } from '../src/data/generatedMarketRadarAll.ts'
+import { getRadarCollectionSeo } from '../src/data/snapshotFreshness.ts'
 
 const SITE_URL = 'https://xiuqiu-site.vercel.app'
 const distIndexUrl = new URL('../dist/index.html', import.meta.url)
@@ -17,6 +18,8 @@ if (!existsSync(distIndexUrl)) {
 }
 
 const baseHtml = readFileSync(distIndexUrl, 'utf8')
+const learningRadarSeo = getRadarCollectionSeo('learning', dailyRadars[0]?.date)
+const marketRadarSeo = getRadarCollectionSeo('market', allMarketRadars[0]?.date)
 
 function escapeHtml(value) {
   return value
@@ -187,11 +190,10 @@ writePage(
 writePage(
   '/radar',
   replaceMeta(baseHtml, {
-    title: '行业情报雷达｜xiuqiu',
-    description: '面向 Web3 钱包与 AI 工程的每日行业简报、人工复核周度收敛和可追溯历史档案。',
+    ...learningRadarSeo,
     path: '/radar',
     structuredData: {
-      '@context': 'https://schema.org', '@type': 'CollectionPage', name: '行业情报雷达｜xiuqiu',
+      '@context': 'https://schema.org', '@type': 'CollectionPage', name: learningRadarSeo.title,
       url: `${SITE_URL}/radar`, author: { '@type': 'Person', name: 'xiuqiu' },
     },
   }),
@@ -200,11 +202,10 @@ writePage(
 writePage(
   '/market-radar',
   replaceMeta(baseHtml, {
-    title: '交易研究雷达｜xiuqiu',
-    description: '基于公开来源的静态交易事件观察：事实、影响资产、观察条件和失效边界分开呈现，不调用实时行情 API。',
+    ...marketRadarSeo,
     path: '/market-radar',
     structuredData: {
-      '@context': 'https://schema.org', '@type': 'CollectionPage', name: '交易研究雷达｜xiuqiu',
+      '@context': 'https://schema.org', '@type': 'CollectionPage', name: marketRadarSeo.title,
       url: `${SITE_URL}/market-radar`, author: { '@type': 'Person', name: 'xiuqiu' },
     },
   }),

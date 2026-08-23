@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { latestMarketRadars, marketRadarIndex } from '../data/generatedMarketRadars'
-import { getSnapshotFreshness } from '../data/snapshotFreshness'
+import { getRadarCollectionSeo, getSnapshotFreshness } from '../data/snapshotFreshness'
 import { setSeoMeta } from '../utils/seo'
 import '../styles/market-radar.css'
 
 const latest = latestMarketRadars[0]
 const latestFreshness = computed(() => getSnapshotFreshness(latest?.date))
+const radarSeo = computed(() => getRadarCollectionSeo('market', latest?.date))
 const highPriorityCount = computed(() => latest?.events.filter(event => event.priority === 'P0' || event.priority === 'P1').length || 0)
 const nextEvent = computed(() => {
   if (!latest) return undefined
@@ -37,8 +38,7 @@ function formatGeneratedAt(value: string) {
 }
 
 onMounted(() => setSeoMeta({
-  title: '交易研究雷达｜xiuqiu',
-  description: '基于公开来源的静态交易事件观察：事实、影响资产、观察条件和失效边界分开呈现，不调用实时行情 API。',
+  ...radarSeo.value,
   path: '/market-radar',
 }))
 </script>

@@ -10,6 +10,7 @@ import { projects } from '../src/data/generatedProjects.ts'
 import { radarWeeklies } from '../src/data/generatedRadarWeeklies.ts'
 import { dailyRadars } from '../src/data/generatedRadarAll.ts'
 import { allMarketRadars } from '../src/data/generatedMarketRadarAll.ts'
+import { getRadarCollectionSeo } from '../src/data/snapshotFreshness.ts'
 import { parseMarkdownFrontmatter } from './frontmatter.mjs'
 
 const SITE_ORIGIN = 'https://xiuqiu-site.vercel.app'
@@ -185,12 +186,10 @@ function expectedMetadataByRoute() {
       description: '按阶段归档的 Web3 钱包工程学习结论、验证证据与下一步。',
     }],
     ['/radar', {
-      title: '行业情报雷达｜xiuqiu',
-      description: '面向 Web3 钱包与 AI 工程的每日行业简报、人工复核周度收敛和可追溯历史档案。',
+      ...getRadarCollectionSeo('learning', dailyRadars[0]?.date),
     }],
     ['/market-radar', {
-      title: '交易研究雷达｜xiuqiu',
-      description: '基于公开来源的静态交易事件观察：事实、影响资产、观察条件和失效边界分开呈现，不调用实时行情 API。',
+      ...getRadarCollectionSeo('market', allMarketRadars[0]?.date),
     }],
     ['/articles', {
       title: '工程笔记｜xiuqiu Web3 钱包学习档案',
