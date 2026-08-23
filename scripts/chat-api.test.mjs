@@ -60,7 +60,7 @@ test('chat endpoint fails closed when the provider key is missing', async () => 
   await chatHandler({
     method: 'POST',
     headers: { 'x-forwarded-for': 'test-missing-key' },
-    body: { messages: [{ role: 'user', content: '介绍 Wallet Launchpad' }] },
+    body: { messages: [{ role: 'user', content: '介绍 Qiu Market' }] },
   }, recorder.response)
 
   const result = recorder.result()
@@ -80,7 +80,7 @@ test('chat endpoint sends public context with low-latency model settings', async
       status: 200,
       async text() {
         return JSON.stringify({
-          choices: [{ message: { content: 'Wallet Launchpad 是钱包控制平面。' } }],
+          choices: [{ message: { content: 'Qiu Market 是使用虚拟资金的可恢复市场产品。' } }],
         })
       },
     }
@@ -91,26 +91,26 @@ test('chat endpoint sends public context with low-latency model settings', async
     method: 'POST',
     headers: { 'x-forwarded-for': 'test-success' },
     body: {
-      messages: [{ role: 'user', content: 'Wallet Launchpad 完成后是什么产品？' }],
+      messages: [{ role: 'user', content: 'Qiu Market 完成后是什么产品？' }],
       pageContext: {
         type: 'project',
-        title: 'Wallet Launchpad',
-        slug: 'wallet-launchpad',
+        title: 'Qiu Market Server',
+        slug: 's78-market-services',
       },
     },
   }, recorder.response)
 
   assert.equal(recorder.result().statusCode, 200)
-  assert.equal(recorder.result().body.answer, 'Wallet Launchpad 是钱包控制平面。')
+  assert.equal(recorder.result().body.answer, 'Qiu Market 是使用虚拟资金的可恢复市场产品。')
   assert.ok(Array.isArray(recorder.result().body.references))
   assert.equal(upstreamRequest.url, 'https://api.deepseek.com/chat/completions')
 
   const upstreamBody = JSON.parse(upstreamRequest.options.body)
   assert.equal(upstreamBody.model, 'deepseek-v4-flash')
   assert.deepEqual(upstreamBody.thinking, { type: 'disabled' })
-  assert.equal(upstreamBody.messages.at(-1).content, 'Wallet Launchpad 完成后是什么产品？')
-  assert.match(upstreamBody.messages[0].content, /Current page title: Wallet Launchpad/)
+  assert.equal(upstreamBody.messages.at(-1).content, 'Qiu Market 完成后是什么产品？')
+  assert.match(upstreamBody.messages[0].content, /Current page title: Qiu Market Server/)
   assert.match(upstreamBody.messages[0].content, /Relevant public website context:/)
-  assert.match(upstreamBody.messages[0].content, /Project: Wallet Launchpad/)
+  assert.match(upstreamBody.messages[0].content, /Project: Qiu Market Server/)
   assert.equal(upstreamRequest.options.headers.Authorization, 'Bearer test-only-key')
 })

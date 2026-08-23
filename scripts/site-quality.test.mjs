@@ -145,8 +145,8 @@ function expectedMetadataByRoute() {
     `${articleSummaries.length} 篇关于交易所钱包、多链模型、签名服务、Go 后端与 AI 工程工作流的学习笔记。`
   const metadata = new Map([
     ['/', {
-      title: 'xiuqiu｜Wallet Launchpad、Qiu Market 与 AI Engineering',
-      description: '构建 Wallet Launchpad 与 Qiu Market，并用 AI-native Engineering 工作流、自动化测试、失败恢复和公开证据说明 Web3 系统能力。',
+      title: 'xiuqiu｜Qiu Market、Wallet Infrastructure 与 AI Engineering',
+      description: '维护 Qiu Market，并用 Wallet Infrastructure 学习、AI-native Engineering、自动化测试与公开证据说明 Web3 工程能力。',
     }],
     ['/engineering', {
       title: '工程证据索引｜xiuqiu',
@@ -162,7 +162,7 @@ function expectedMetadataByRoute() {
     }],
     ['/projects', {
       title: '项目图谱｜xiuqiu',
-      description: '先进入 Wallet Launchpad 与 Qiu Market 两个产品主页，再按证据层级浏览其他 Web3 与 AI 工程项目。',
+      description: '先进入 Qiu Market 当前产品主页，再按证据层级浏览钱包基础设施、实验与其他 Web3 工程项目。',
     }],
     ['/ai', {
       title: 'AI Engineering OS｜xiuqiu',

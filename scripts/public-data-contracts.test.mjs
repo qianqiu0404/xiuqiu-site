@@ -101,7 +101,6 @@ test('refreshed project overlays stay aligned with their published source facts'
     's78-market-services',
     'wallet-reliability-lab',
     'web3-wallet-engineer-lab',
-    'wallet-launchpad',
   ]
 
   for (const slug of refreshedSlugs) {

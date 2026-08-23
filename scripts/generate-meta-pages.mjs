@@ -100,7 +100,7 @@ writePage(
   '/projects',
   replaceMeta(baseHtml, {
     title: '项目图谱｜xiuqiu',
-    description: '先进入 Wallet Launchpad 与 Qiu Market 两个产品主页，再按证据层级浏览其他 Web3 与 AI 工程项目。',
+    description: '先进入 Qiu Market 当前产品主页，再按证据层级浏览钱包基础设施、实验与其他 Web3 工程项目。',
     path: '/projects',
     structuredData: {
       '@context': 'https://schema.org',

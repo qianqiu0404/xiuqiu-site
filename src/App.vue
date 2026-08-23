@@ -13,7 +13,7 @@ const visualMode = computed(() => {
   const currentRoute = router.currentRoute.value
   if (
     currentRoute.name === 'project-detail'
-    && ['wallet-launchpad', 's78-market-services'].includes(String(currentRoute.params.project || ''))
+    && currentRoute.params.project === 's78-market-services'
   ) {
     return 'narrative'
   }
@@ -26,7 +26,6 @@ const currentNavSection = computed(() => {
   const project = String(currentRoute.params.project || '')
 
   if (currentRoute.name === 'project-detail') {
-    if (project === 'wallet-launchpad') return 'wallet'
     if (project === 's78-market-services') return 'qiu-market'
   }
   if (currentRoute.name === 'learning') return 'learn-radar'
@@ -54,7 +53,6 @@ const currentContextLabel = computed(() => {
 })
 const currentMobileContextLabel = computed(() => {
   const labels: Record<string, string> = {
-    wallet: 'Wallet',
     'qiu-market': 'Qiu Market',
     ai: 'AI',
     proof: 'Proof',
@@ -159,14 +157,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
         :class="{ open: navOpen }"
       >
         <div class="nav-primary-links" role="group" aria-label="核心入口">
-          <router-link
-            class="nav-link"
-            :class="{ 'is-current': isCurrentNavSection('wallet') }"
-            :aria-current="currentNavAria('wallet', '/projects/wallet-launchpad')"
-            to="/projects/wallet-launchpad"
-            @click="handleNavLinkActivation"
-            @keydown.space.prevent="activateLinkOnSpace"
-          >Wallet</router-link>
           <router-link
             class="nav-link"
             :class="{ 'is-current': isCurrentNavSection('qiu-market') }"

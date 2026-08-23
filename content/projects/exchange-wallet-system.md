@@ -3,115 +3,96 @@
   "id": 1,
   "legacyIds": [2],
   "slug": "exchange-wallet-system",
-  "name": "Exchange Wallet Infrastructure",
+  "name": "Wallet Infrastructure",
   "category": "钱包基础设施",
-  "featured": true,
+  "featured": false,
   "publish": true,
-  "portfolioTier": "flagship",
+  "portfolioTier": "exploration",
   "activityStatus": "active",
-  "stage": "building",
+  "stage": "exploring",
   "sourceType": "adapted",
   "visibility": "private",
-  "positioning": "面向交易所与稳定币支付的多链钱包基础设施：用统一资金状态承载充值、归集与提现，用独立风控、链适配和签名边界把业务权限、链上资源与资产控制权分开。",
-  "currentFocus": "以 Sepolia 测试网闭环为基线，把 Base、BNB、Bitcoin 的本地无资金门禁、V4 intent / attempt / resource、多资产费用预留和 exact-raw 结果未知恢复收敛到统一 release candidate；同时推进 Agent Payment 的依赖组合，但保持 profile 不上线。",
+  "positioning": "当前的钱包后端基础设施学习与证据建设方向，聚焦资金状态、链上事实、Ledger、签名边界、恢复与可观测性；私有基线审计已经完成，但尚未形成通过公开 Claim 门禁的新实现。",
+  "currentFocus": "围绕已核验的私有基线，继续验证单资产充值、Ledger、Outbox、余额投影和对账能否组成默认可运行的最小闭环。",
   "verifiedEvidence": [
-    "一键本地栈已串联 wallet-service、risk-server、wallet-api、wallet-sign、TSS 节点与 Wallet Launchpad，并执行仓库 test / build / vet、HTTP 冒烟和双租户隔离门禁",
-    "Sepolia ETH 已完成测试网充值、手动归集、2-of-3 MPC 提现、广播、两个确认、账本结算与通知，最终账实差额为零",
-    "wallet-sign 已收敛 local、HSM、TSS 与 FROST 后端；TSS 2-of-3 fail-closed / 恢复已通过本地栈验证，Solana FROST 链上 E2E 仍待验收",
-    "Base Sepolia 原生 ETH、Base / BNB WLT 与 Bitcoin Testnet4 已完成独立 clean 本地无资金 Gate，覆盖链身份、资产元数据、原生手续费、nonce / UTXO 资源、scanner finality 与幂等恢复",
-    "wallet-api 已验证 EVM、Bitcoin、Tron、Cosmos 与 Solana 的链级资源边界；当前没有 Sui adaptor",
-    "risk-server 会绑定审批 envelope 与交易字段、生成 Ed25519 risk proof，并在没有 AML provider 时明确 fail closed"
+    "已完成一个私有 canonical baseline 的只读审计与仓库级构建验证",
+    "充值、Ledger、Outbox、Projection 与 Reconciliation 存在相邻实现，但尚未形成默认可运行的完整 authority 闭环",
+    "当前对外 Claim 仍为 locked；私有路径、固定 SHA 与未通过发布门禁的实现细节不在网站公开"
   ],
-  "targetOutcome": "形成一套可配置、可恢复、可审计的多链钱包后端：新链和新资产通过 profile 接入，充值、归集、提现、风控、门限签名、广播确认、账本与通知共享统一状态语义，任何结果未知都能沿原交易身份恢复。",
-  "nextMilestone": "冻结统一多链 release candidate，完成一条非 Sepolia funded 测试网闭环，并完成 Agent Stablecoin Wallet 与 Wallet Launchpad 的版本化 risk / signer / delivery 依赖组合。",
+  "targetOutcome": "形成一个本人能够定位代码、运行测试、注入失败并讲清资金、链、账务、签名和恢复边界的最小钱包基础设施证据闭环。",
+  "nextMilestone": "在固定私有基线上完成一个可复现失败切片，独立验证 Deposit、Ledger 与 Outbox 的事务边界，再决定哪些结论可以通过公开 Claim 门禁。",
   "knownLimits": [
-    "当前仍是学习、工程验证和测试网验收项目，不代表生产钱包部署、真实业务规模或主网资金经历",
-    "只有 Sepolia ETH 已形成完整测试网证据；Base Sepolia、BNB Testnet 与 Bitcoin Testnet4 已完成本地无资金门禁，Tron、Cosmos 与 Solana 仍处于本地链路或待注资验收状态",
-    "risk-server 没有接入真实 AML、制裁名单、设备指纹或生产规则平台",
-    "真实 PKCS#11 设备、生产 TSS 集群、Solana Devnet FROST 链上 E2E 和数据库迁移回滚演练仍未验收",
-    "仓库暂按私有项目展示，不提供公开源码链接"
+    "私有 baseline 已审计，但默认运行路径与 dormant authority 路径仍不等价",
+    "当前页面只公开方向和证据等级，不公开未通过发布门禁的仓库路径、SHA 或私有实现细节",
+    "不会连接真实资金、签名或广播，也不会把 fixture、no-funds 或历史材料写成当前测试网或生产证据",
+    "本人掌握度仍处于 learning，公开材料和 AI 整理不能替代闭卷复现"
   ],
-  "updatedAt": "2026-08-04",
+  "updatedAt": "2026-08-24",
   "coreAbilities": [
-    "充值提现异步状态机",
-    "多链 RPC 与 Chain Adaptor",
-    "local / HSM / TSS / FROST 统一签名边界",
-    "提现风控、审批凭证与离线交易一致性校验",
-    "链级资源租约、幂等、确认数与失败补偿",
-    "Go、gRPC、PostgreSQL 与 Redis"
+    "充值扫描与地址归属",
+    "确认策略与链重组处理",
+    "双分录 Ledger 与余额投影",
+    "Outbox 原子性与幂等事件",
+    "签名边界与广播结果未知",
+    "固定高度对账与失败恢复"
   ],
   "talkingPoints": [
-    "为什么资金编排、链节点、签名和风控要分属不同信任边界",
-    "广播超时为什么不能直接重发第二笔交易",
-    "链上成功但本地失败时如何以链上事实幂等恢复",
-    "哪些生产化能力仍然没有完成"
+    "为什么链上托管余额不等于用户负债",
+    "为什么 Deposit、Ledger entry 与 Outbox 需要同一短事务",
+    "scanner cursor 为什么只能推进最高连续已提交高度",
+    "当前哪些是设计范围，哪些仍然是 Missing"
   ],
-  "techStack": ["Go", "gRPC", "PostgreSQL", "Redis", "LevelDB", "GORM", "Chain Adaptor", "EVM", "Bitcoin", "Solana", "Tron", "Cosmos", "TSS", "FROST"],
+  "techStack": ["Go", "PostgreSQL", "Ledger", "Outbox", "Chain Scanner", "Observability"],
   "engineering": {
-    "role": "钱包基础设施代码理解、增量实现、运行验证与异常路径梳理",
-    "systemBoundary": "wallet-service 维护业务资金状态与链资源租约，risk-server 校验交易内容并生成审批证明，wallet-api 负责链节点查询与交易构建/广播，wallet-sign 是 local、HSM、TSS 与 FROST 的唯一钱包侧签名入口；任何后端故障都不能自动切换托管身份。",
+    "role": "钱包基础设施学习、候选基线选择与最小证据闭环设计",
+    "systemBoundary": "目标边界是让 Scanner 负责链上观察，ownership 负责地址归属，Deposit 负责业务状态，Ledger 负责负债事实，Outbox 负责事务后交付；当前仍是设计范围，尚未绑定具体实现。",
     "callFlow": [
-      "业务请求进入 wallet-service 并持久化 request_id 与状态",
-      "risk-service 校验提现内容、幂等状态与风险放行条件",
-      "wallet-api 获取链资源并构建待签名交易",
-      "wallet-sign 在独立边界内完成签名",
-      "wallet-api 拼装并广播 raw transaction",
-      "wallet-service 根据链上确认推进账务与通知"
+      "Scanner 读取区块并产生候选链上事件",
+      "地址归属与链身份校验决定事件是否进入业务域",
+      "Finality 策略决定何时允许业务入账",
+      "Deposit、Ledger entry 与 Outbox 在同一短事务中提交",
+      "Balance Projection 从 Ledger 派生可用余额",
+      "Reconciliation 在固定高度比较 custody 与 liability"
     ],
     "failureScenarios": [
-      "广播请求超时但节点可能已经接受交易",
-      "链上成功后本地状态、账本或通知更新失败",
-      "服务重启后需要从持久化状态继续推进而不是重复出金"
+      "Deposit 已识别但 Ledger 或 Outbox 原子写失败",
+      "区块重组使已观察事件失去 canonical 身份",
+      "scanner cursor 越过未提交高度导致永久漏扫"
     ],
     "evidence": [
-      "Wallet Launchpad 一键栈、Sepolia 测试网充提记录，以及 Base、BNB、Bitcoin 的独立无资金验收 Gate",
-      "dispatcher、adaptor、RPC service、资金状态与链资源相关测试",
-      "risk-server envelope / proof 与 fail-closed 测试",
-      "TSS / FROST 阈值不足、恢复与后端身份绑定验证"
+      "私有 baseline 的仓库级测试、构建与静态检查已经通过",
+      "下一阶段证据必须来自同一固定基线上的可复现失败注入和默认运行路径"
     ],
     "knownLimits": [
-      "Sepolia 之外的链尚未形成同等级真实测试网验收证据；无资金 Gate 不等于 funded E2E",
-      "生产 HSM/TSS、主网写入、完整外部风控、长期可用性与容量仍属于外部验收或目标态"
+      "尚无默认启用的完整 authority 闭环、集成运行验收或公开 Claim",
+      "旧项目材料和公开实验不得自动升级为当前实现或本人贡献"
     ],
-    "overviewSummary": "这是我的 Web3 钱包后端主线：用 Exchange Wallet Infrastructure 拆开资金状态、多链节点、私钥签名和风险控制，并围绕幂等、确认数、风控放行、结果未知和补偿恢复理解资金系统。"
+    "overviewSummary": "这是当前的钱包后端基础设施学习与证据方向；私有 baseline 已审计，但网站继续保留 Partial、Missing 与公开 Claim 门禁边界。"
   },
   "learning": {
-    "goal": "能够不依赖背稿讲清四个服务的职责、充值提现状态机和关键异常恢复案例，并能回到代码和测试证明判断。",
-    "verified": [
-      "API 与 Sign 两套 adaptor 的职责差异",
-      "risk-server 的审批字段绑定、Ed25519 proof 与缺少 AML provider 时的失败关闭",
-      "充值与提现 worker、数据库状态和通知路径",
-      "Sepolia 测试网充值、归集、MPC 提现、确认、结算与通知链路",
-      "Base 原生 ETH、Base / BNB WLT 与 Bitcoin Testnet4 的本地无资金验收边界",
-      "广播超时与链上/本地状态不一致的处理原则"
-    ],
-    "verification": [
-      "go test ./chaindispatcher ./chain/ethereum ./chain/bitcoin",
-      "go test ./services/grpc",
-      "go test ./services/rpc",
-      "go test ./services ./common/bigint ./leveldb",
-      "./scripts/dev-stack.sh test"
-    ],
-    "verificationNote": "2026-08-04 在整合多链 Gate 的 clean release candidate 上重新通过完整 Go test / vet / build；Sepolia 与各链 Gate 结果来自私有仓库的去敏记录。它们证明当前本地或测试网范围，不证明生产部署或所有链均已 funded 验收。",
+    "goal": "能够在固定代码基线上解释充值、Ledger、Outbox、余额投影与对账的事实边界，并复现至少一个失败场景。",
+    "verified": [],
+    "verification": [],
+    "verificationNote": "私有 baseline 已完成仓库级验证，但命令、路径和 SHA 尚未通过公开发布门禁，因此本站不列出为公开项目证据。",
     "tradeoffs": [
-      "当前代码事实、设计理解和生产化建议分开表达",
-      "不使用线上规模、真实资金量或生产事故包装项目",
-      "优先完成可复现失败路径，而不是继续堆叠支持链数量"
+      "先建立一个可复现闭环，不先扩多链、微服务或新 UI",
+      "设计理解、历史材料和当前代码证据分开表达",
+      "不使用生产规模、真实资金或未复验的旧结果包装项目"
     ],
     "nextSteps": [
-      "固定统一多链 release candidate、启动顺序和验收矩阵",
-      "完成一条非 Sepolia 测试网充提归集链路",
-      "完成 Agent Payment 版本化依赖组合与跨进程本地门禁"
+      "在已选私有 baseline 上复现一个最小失败切片",
+      "验证 Deposit、Ledger 与 Outbox 是否进入同一默认运行路径",
+      "为 Ledger 与 Outbox 原子失败编写最小失败合同"
     ]
   },
-  "conceptTags": ["wallet-backend", "api-design", "multi-chain", "signer-service", "risk-control", "go-infra"],
-  "relatedArticleSlugs": ["evm-broadcast-unknown-canonical-recovery", "cex-evm-wallet-deposit-withdrawal-loop", "withdrawal-error-handling", "wallet-ledger-transaction-mq-consistency", "wallet-api-boundary", "wallet-sign-signer", "new-chain-integration-checklist"],
+  "conceptTags": ["wallet-backend", "ledger", "chain-scanner", "outbox", "reconciliation", "go-infra"],
+  "relatedArticleSlugs": ["cex-evm-wallet-deposit-withdrawal-loop", "wallet-ledger-transaction-mq-consistency", "wallet-api-boundary", "wallet-sign-signer"],
   "suggestedQuestions": [
-    "Exchange Wallet Infrastructure 为什么要拆成四个服务边界？",
-    "提现广播超时后应该如何恢复？",
-    "当前哪些是已实现事实，哪些仍是生产化方向？"
+    "当前钱包基础设施方向已经证明了什么？",
+    "充值、Ledger 与 Outbox 的事务边界应该怎样划分？",
+    "下一步如何从 Missing 走到可复现的实现证据？"
   ]
 }
 ---
 
-四个仓库在网站中作为一个基础设施案例表达，避免把同一条资金链路拆成互相竞争的独立项目。
+本页只表达当前方向、证据缺口和下一次验证，不把历史项目或学习材料改写成新的实现事实。
