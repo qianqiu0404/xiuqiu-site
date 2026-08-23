@@ -127,6 +127,14 @@ test('skip, homepage utility actions and 404 recovery keep 44px targets', () => 
   assert.match(notFoundStyleSource, /\.route-not-found-home\s*\{[\s\S]*?min-height: 44px;/)
 })
 
+test('missing project pages fail closed with a named heading and recovery path', () => {
+  assert.match(projectDetailSource, /title: '项目未公开或不存在｜xiuqiu'/)
+  assert.match(projectDetailSource, /indexable: false/)
+  assert.match(projectDetailSource, /v-else class="container not-found" aria-labelledby="project-not-found-title"/)
+  assert.match(projectDetailSource, /<h1 id="project-not-found-title" class="not-found-title">/)
+  assert.match(projectDetailSource, /<router-link to="\/projects" class="btn btn-primary">返回项目图谱<\/router-link>/)
+})
+
 test('homepage presentation keeps the intended cardinalities', () => {
   assert.equal(homeCapabilities.length, 4)
   assert.equal(homeServiceFlow.length, 4)

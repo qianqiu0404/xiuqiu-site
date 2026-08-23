@@ -15,7 +15,12 @@ const relatedArticles = computed(() => project.value ? getArticlesBySlugs(projec
 
 watchEffect(() => {
   if (!project.value) {
-    setSeoMeta({ title: 'Project not found | xiuqiu', path: route.fullPath, indexable: false })
+    setSeoMeta({
+      title: '项目未公开或不存在｜xiuqiu',
+      description: '这个项目页面不存在、已退役或尚未公开。请返回项目图谱查看当前产品与工程证据。',
+      path: route.fullPath,
+      indexable: false,
+    })
     return
   }
   setSeoMeta({
@@ -202,8 +207,9 @@ watchEffect(() => {
     </div>
   </section>
 
-  <div v-else class="container not-found">
-    <p class="not-found-title">项目未公开或不存在</p>
+  <div v-else class="container not-found" aria-labelledby="project-not-found-title">
+    <h1 id="project-not-found-title" class="not-found-title">项目未公开或不存在</h1>
+    <p class="not-found-desc">这个项目可能已退役、移动或尚未公开；项目图谱只保留当前产品与可核验的工程证据。</p>
     <router-link to="/projects" class="btn btn-primary">返回项目图谱</router-link>
   </div>
 </template>
