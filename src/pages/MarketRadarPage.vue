@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { latestMarketRadars, marketRadarIndex } from '../data/generatedMarketRadars'
+import { getSnapshotFreshness } from '../data/snapshotFreshness'
 import { setSeoMeta } from '../utils/seo'
 import '../styles/market-radar.css'
 
 const latest = latestMarketRadars[0]
+const latestFreshness = computed(() => getSnapshotFreshness(latest?.date))
 const highPriorityCount = computed(() => latest?.events.filter(event => event.priority === 'P0' || event.priority === 'P1').length || 0)
 const nextEvent = computed(() => {
   if (!latest) return undefined
@@ -12,6 +14,10 @@ const nextEvent = computed(() => {
   return [...latest.events]
     .filter(event => event.eventAt && Date.parse(event.eventAt) >= generatedAt)
     .sort((a, b) => Date.parse(a.eventAt!) - Date.parse(b.eventAt!))[0]
+})
+const nextEventLabel = computed(() => {
+  if (latestFreshness.value.isArchive) return '快照已归档'
+  return nextEvent.value ? formatEventTime(nextEvent.value.eventAt) : '持续观察'
 })
 const statusLabels = { scheduled: '已排期', released: '已发布', monitoring: '观察中' }
 const categoryLabels = { macro: '宏观', crypto: '加密', equity: '美股', regulation: '政策' }
@@ -43,11 +49,12 @@ onMounted(() => setSeoMeta({
     lang="zh-CN"
     :data-snapshot-id="latest?.snapshotId"
     :data-snapshot-as-of="latest?.asOf"
+    :data-snapshot-state="latestFreshness.state"
   >
     <header class="trade-radar-hero">
       <div class="container trade-radar-shell trade-radar-hero-grid">
         <div class="trade-radar-hero-copy">
-          <p class="trade-radar-kicker">Trade Radar / Verified events</p>
+          <p class="trade-radar-kicker">{{ latestFreshness.isArchive ? 'Trade Radar / Archived events' : 'Trade Radar / Verified events' }}</p>
           <h1>市场雷达</h1>
           <p class="trade-radar-lead">重要事件 → 影响资产 → 验证与失效。只做研究，不给买卖指令。</p>
         </div>
@@ -61,19 +68,24 @@ onMounted(() => setSeoMeta({
 
     <div v-if="latest" class="trade-radar-main">
       <section class="container trade-radar-shell trade-radar-status" aria-labelledby="radar-status-title">
-        <h2 id="radar-status-title" class="trade-radar-sr-only">今日雷达状态摘要</h2>
+        <h2 id="radar-status-title" class="trade-radar-sr-only">{{ latestFreshness.isArchive ? '归档雷达状态摘要' : '当前雷达状态摘要' }}</h2>
         <dl class="trade-radar-metrics">
           <div><dt>总事件</dt><dd>{{ latest.events.length }}</dd></div>
           <div class="is-urgent"><dt>P0 + P1</dt><dd>{{ highPriorityCount }}</dd></div>
-          <div><dt>下一事件</dt><dd>{{ nextEvent ? formatEventTime(nextEvent.eventAt) : '持续观察' }}</dd></div>
+          <div><dt>下一事件</dt><dd>{{ nextEventLabel }}</dd></div>
           <div><dt>更新于</dt><dd>{{ formatGeneratedAt(latest.generatedAt) }} CST</dd></div>
         </dl>
+      </section>
+
+      <section v-if="latestFreshness.isArchive" class="container trade-radar-shell trade-radar-snapshot-notice" role="status" aria-label="交易雷达归档状态">
+        <strong>{{ latestFreshness.label }}</strong>
+        <p>最新公开快照停留在 {{ latest.date }}。事件状态、排期和观察项均按当日冻结，不代表今天仍然有效。</p>
       </section>
 
       <section class="container trade-radar-shell trade-radar-brief" aria-labelledby="trade-radar-title">
         <header class="trade-radar-section-heading">
           <div>
-            <p class="trade-radar-kicker">Today's verification queue</p>
+            <p class="trade-radar-kicker">{{ latestFreshness.isArchive ? 'Archived verification queue' : "Today's verification queue" }}</p>
             <h2 id="trade-radar-title">{{ latest.title }}</h2>
           </div>
           <router-link class="trade-radar-text-link" :to="`/market-radar/${latest.slug}`">阅读完整快照 <span aria-hidden="true">↗</span></router-link>
@@ -94,7 +106,7 @@ onMounted(() => setSeoMeta({
                 <div class="trade-event-classification">
                   <strong>{{ event.priority }} · {{ priorityLabels[event.priority] }}</strong>
                   <span>{{ categoryLabels[event.category] }}</span>
-                  <span>{{ statusLabels[event.status] }}</span>
+                  <span>{{ latestFreshness.isArchive ? `快照时：${statusLabels[event.status]}` : statusLabels[event.status] }}</span>
                 </div>
                 <time v-if="event.eventAt" :datetime="event.eventAt">{{ formatEventTime(event.eventAt) }}</time>
                 <span v-else class="trade-event-continuous">持续观察</span>
@@ -152,7 +164,7 @@ onMounted(() => setSeoMeta({
     <section v-else class="trade-radar-state" aria-labelledby="radar-empty-title">
       <div class="container trade-radar-shell">
         <p class="trade-radar-kicker">No verified snapshot</p>
-        <h2 id="radar-empty-title">今天还没有通过发布门禁的雷达。</h2>
+        <h2 id="radar-empty-title">当前没有通过发布门禁的雷达。</h2>
         <p>新的静态快照通过来源、内容边界与重复事件检查后，会出现在这里。</p>
       </div>
     </section>

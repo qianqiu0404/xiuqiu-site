@@ -137,6 +137,9 @@ test('Learn Radar exposes generated, review, loading, empty and error boundaries
 test('Learn Radar exposes the immutable publication snapshot in the rendered DOM', () => {
   assert.match(radarPageSource, /:data-snapshot-id="latestRadar\?\.snapshotId"/)
   assert.match(radarPageSource, /:data-snapshot-as-of="latestRadar\?\.asOf"/)
+  assert.match(radarPageSource, /:data-snapshot-state="latestFreshness\.state"/)
+  assert.match(radarPageSource, /最新公开简报停留在/)
+  assert.match(radarDetailSource, /这是 \{\{ radar\.date \}\} 的冻结简报/)
 })
 
 test('generated radar layers keep the compact archive and recent full records aligned', () => {

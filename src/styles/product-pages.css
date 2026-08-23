@@ -586,6 +586,12 @@
   }
 }
 
+@media (max-width: 360px) {
+  .product-hero-copy h1 {
+    font-size: clamp(35px, 11vw, 40px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .product-button {
     transition: none;

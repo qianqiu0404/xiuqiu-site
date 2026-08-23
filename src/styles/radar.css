@@ -171,6 +171,34 @@
   padding: 17px 0;
 }
 
+.radar-snapshot-notice {
+  border-top: 1px solid rgba(115, 146, 255, 0.28);
+  border-bottom: 1px solid rgba(115, 146, 255, 0.22);
+  background: #0b1018;
+}
+
+.radar-snapshot-notice > div {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 18px;
+  padding-top: 18px;
+  padding-bottom: 18px;
+}
+
+.radar-snapshot-notice strong {
+  color: #b9c7ff;
+  font: 650 11px/1.45 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.radar-snapshot-notice p {
+  color: #9ba6b5;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
 .radar-review-status {
   display: grid;
   justify-items: end;
@@ -1440,6 +1468,11 @@
 
   .radar-hero-status > p {
     padding: 13px 0;
+  }
+
+  .radar-snapshot-notice > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
   }
 
   .radar-daily-stage,

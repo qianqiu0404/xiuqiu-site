@@ -69,6 +69,8 @@ test('the event reader keeps source, observation and invalidation visible withou
   assert.match(page, /event\.origin === 'api'/)
   assert.match(page, /静态快照没有 score、行情反应或系统判断字段/)
   assert.match(page, /event\.snapshotSlug/)
+  assert.match(page, /:data-snapshot-state="eventFreshness\.state"/)
+  assert.match(page, /这条记录来自历史快照/)
   assert.doesNotMatch(page, /v-html|innerHTML/)
   assert.match(styles, /\.trade-radar-event-boundaries dl \{[\s\S]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/)
   assert.match(styles, /\.trade-radar-event-boundaries a \{[\s\S]*min-height: 3\.25rem/)

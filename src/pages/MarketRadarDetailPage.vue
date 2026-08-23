@@ -3,6 +3,7 @@ import { computed, nextTick, ref, watch, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import type { MarketRadarDaily } from '../data/generatedMarketRadars'
 import { loadMarketRadarBySlug } from '../data/generatedMarketRadarLoader'
+import { getSnapshotFreshness } from '../data/snapshotFreshness'
 import { setSeoMeta } from '../utils/seo'
 import '../styles/market-radar.css'
 
@@ -11,6 +12,7 @@ const entry = ref<MarketRadarDaily>()
 const loading = ref(true)
 let requestVersion = 0
 const allAssets = computed(() => entry.value ? [...new Set(entry.value.events.flatMap(event => event.assets))] : [])
+const entryFreshness = computed(() => getSnapshotFreshness(entry.value?.date))
 const categoryLabels = { macro: '宏观', crypto: '加密', equity: '美股', regulation: '政策' }
 const statusLabels = { scheduled: '已排期', released: '已发布', monitoring: '观察中' }
 const priorityLabels = { P0: '关键', P1: '重要', P2: '跟踪' }
@@ -112,13 +114,17 @@ watchEffect(() => {
     <div class="container trade-radar-shell"><p class="trade-radar-kicker">Loading snapshot</p><h1>正在载入静态快照…</h1></div>
   </div>
 
-  <div v-else-if="entry" class="trade-radar-page trade-radar-detail" lang="zh-CN">
+  <div v-else-if="entry" class="trade-radar-page trade-radar-detail" lang="zh-CN" :data-snapshot-state="entryFreshness.state">
     <header class="trade-radar-detail-hero">
       <div class="container trade-radar-shell">
         <router-link class="trade-radar-back" to="/market-radar">← 返回 Trade Radar</router-link>
-        <p class="trade-radar-kicker">Dated verification snapshot / {{ entry.date }}</p>
+        <p class="trade-radar-kicker">{{ entryFreshness.isArchive ? 'Archived verification snapshot' : 'Dated verification snapshot' }} / {{ entry.date }}</p>
         <h1>{{ entry.title }}</h1>
         <p class="trade-radar-detail-lead">{{ entry.summary }}</p>
+        <div v-if="entryFreshness.isArchive" class="trade-radar-snapshot-notice" role="status">
+          <strong>{{ entryFreshness.label }}</strong>
+          <p>这是一份冻结于 {{ entry.date }} 的历史记录；事件状态与排期只描述当时，不代表今天仍然有效。</p>
+        </div>
         <dl class="trade-radar-snapshot-meta">
           <div><dt>事件</dt><dd>{{ entry.events.length }}</dd></div>
           <div><dt>影响资产</dt><dd>{{ allAssets.length }}</dd></div>
@@ -143,7 +149,7 @@ watchEffect(() => {
             <div class="trade-event-classification">
               <strong>{{ event.priority }} · {{ priorityLabels[event.priority] }}</strong>
               <span>{{ categoryLabels[event.category] }}</span>
-              <span>{{ statusLabels[event.status] }}</span>
+              <span>{{ entryFreshness.isArchive ? `快照时：${statusLabels[event.status]}` : statusLabels[event.status] }}</span>
             </div>
             <time v-if="event.eventAt" :datetime="event.eventAt">{{ formatEventTime(event.eventAt) }}</time>
             <span v-else class="trade-event-continuous">持续观察</span>
@@ -245,7 +251,7 @@ watchEffect(() => {
         <footer class="trade-radar-detail-footer">
           <span>Generated {{ entry.generatedAt }}</span>
           <p>静态研究记录，不接账户、不调用实时行情 API、不自动下单，不构成投资建议。</p>
-          <router-link to="/market-radar">返回今日雷达 →</router-link>
+          <router-link to="/market-radar">返回雷达档案 →</router-link>
         </footer>
       </div>
     </div>

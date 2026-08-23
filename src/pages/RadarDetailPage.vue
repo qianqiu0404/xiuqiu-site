@@ -5,6 +5,7 @@ import type { DailyRadar } from '../data/generatedRadars'
 import { loadRadarBySlug } from '../data/generatedRadarLoader'
 import { getLearningBriefs, getRadarDetailSections, isLearningEditionV2, radarSourceStatus } from '../data/radarPresentation'
 import { getProjectByKey } from '../data/siteKnowledge'
+import { getSnapshotFreshness } from '../data/snapshotFreshness'
 import { setSeoMeta } from '../utils/seo'
 import '../styles/radar.css'
 
@@ -42,6 +43,7 @@ const isV2 = computed(() => Boolean(radar.value && isLearningEditionV2(radar.val
 const aiBriefs = computed(() => radar.value ? getLearningBriefs(radar.value, 'ai') : [])
 const web3Briefs = computed(() => radar.value ? getLearningBriefs(radar.value, 'web3') : [])
 const relatedProjects = computed(() => radar.value?.relatedProjectSlugs.map(getProjectByKey).filter(Boolean) || [])
+const radarFreshness = computed(() => getSnapshotFreshness(radar.value?.date))
 
 watchEffect(() => {
   if (loading.value) return
@@ -58,13 +60,13 @@ watchEffect(() => {
     </div>
   </div>
 
-  <div v-else-if="radar" class="radar-daily-reader-page" lang="zh-CN">
+  <div v-else-if="radar" class="radar-daily-reader-page" lang="zh-CN" :data-snapshot-state="radarFreshness.state">
     <header class="radar-reader-hero">
       <div class="container radar-reader-shell">
         <router-link to="/radar" class="radar-reader-back">← Intelligence Radar</router-link>
         <div class="radar-reader-hero-grid">
           <div>
-            <p class="radar-kicker">Daily Industry Brief</p>
+            <p class="radar-kicker">{{ radarFreshness.isArchive ? 'Archived Industry Brief' : 'Daily Industry Brief' }}</p>
             <h1>{{ radar.title }}</h1>
           </div>
           <div class="radar-reader-summary">
@@ -75,6 +77,12 @@ watchEffect(() => {
               <div><dt>Review</dt><dd>{{ isV2 ? 'ResearchOps v2 门禁通过' : 'AI 自动汇总 · 未经人工复核' }}</dd></div>
               <div><dt>Sources</dt><dd>{{ radarSourceStatus(radar) }}</dd></div>
             </dl>
+          </div>
+        </div>
+        <div v-if="radarFreshness.isArchive" class="radar-snapshot-notice" role="status">
+          <div>
+            <strong>{{ radarFreshness.label }}</strong>
+            <p>这是 {{ radar.date }} 的冻结简报，不代表今天的新情报或当前项目状态。</p>
           </div>
         </div>
       </div>
