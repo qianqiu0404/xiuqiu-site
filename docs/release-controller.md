@@ -19,11 +19,11 @@ The controller is inert by default. It prevents a Vercel Git deployment or a man
 3. A Vercel production candidate built from the exact SHA with `--skip-domain`.
 4. READY, project, target, SHA, ref, and alias-error validation plus candidate smoke tests.
 5. Promotion of that verified candidate to the production domains.
-6. Independent Learning and Market notification enqueue jobs. A Learning notification failure remains visible, but cannot block the Market lane.
+6. Independent Learning and Market notification enqueue jobs. Learning stays visibly skipped while its repository switch is off; once enabled, a Learning notification failure remains visible but cannot block the Market lane.
 7. One exact-SHA Market worker smoke and a dedicated successful Market-lane deployment marker. This marker—together with the exact-SHA deployed marker and the operator-managed `MARKET_RADAR_ENABLED` kill switch—authorizes later schedules.
 8. An always-running, secret-free summary reports the result of every lane without changing or overriding any failed job.
 
-Failures stop only their dependent lane: migration or deployment failures stop all production work, while a Learning notification failure does not authorize Learning delivery and does not block a successfully verified Market lane. The controller run itself still reports the Learning failure; the terminal summary makes the partial outcome readable but never turns it green, and Market worker authorization never treats that aggregate conclusion as evidence. `vercel.json` disables every Git-triggered Vercel deployment, including pull-request Previews, so the controller is the only active production path.
+Failures stop only their dependent lane: migration or deployment failures stop all production work. When `LEARNING_RADAR_ENABLED=false`, the Learning notification job is skipped and the terminal summary records that result without making an unimplemented lane look failed. Once Learning is enabled, a Learning notification failure remains red, never authorizes Learning delivery, and does not block a successfully verified Market lane. Market worker authorization never treats the aggregate summary as evidence. `vercel.json` disables every Git-triggered Vercel deployment, including pull-request Previews, so the controller is the only active production path.
 
 Do not restore Preview deployments until both safeguards are verified: Vercel Dashboard automatic production-domain assignment (auto-assign) is disabled, and the controller has completed successfully for the same live `main` SHA. Restore Preview only with a reviewed, branch-scoped `deploymentEnabled` policy; never re-enable Git-triggered production deployments.
 
@@ -33,7 +33,8 @@ Create a protected GitHub Environment named `production-release` and restrict it
 
 - Environment secret: `VERCEL_TOKEN` (project-scoped, minimum practical lifetime and permissions).
 - Environment variables: `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`.
-- Learning notification Environment secret: `LEARNING_RADAR_DATABASE_URL`. It is never allowed to fall back to the Market database URL; while M4 is disabled, a missing secret keeps only the Learning notification lane failed/partial.
+- Repository variable: `LEARNING_RADAR_ENABLED`. Keep it `false` until M4 is implemented and approved; the Learning job is then visibly skipped instead of turning an otherwise healthy release red.
+- Learning notification Environment secret: `LEARNING_RADAR_DATABASE_URL`. It is never allowed to fall back to the Market database URL. Once `LEARNING_RADAR_ENABLED=true`, a missing or invalid secret fails only the Learning lane.
 - Market Environment secrets: `MARKET_RADAR_DATABASE_URL`, `DEEPSEEK_API_KEY`, `SEC_USER_AGENT`.
 - Repository variable: `MARKET_RADAR_ENABLED`. Keep it `false` for R0. Set it to `true` immediately before an approved controller release; the exact-SHA deployment marker still prevents worker execution until the controller completes. Set it back to `false` to stop schedules.
 
