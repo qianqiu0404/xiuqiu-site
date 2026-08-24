@@ -7,20 +7,23 @@ import {
 } from './frontmatter.mjs'
 import {
   applyProjectPublicOverlay,
+  assertProjectPublicOverlayMatches,
+  assertProjectPublicStatus,
   assertProjectRepositoryVisibility,
+  indexProjectPublicOverlays,
   isPublishable,
+  PROJECT_ACTIVITY_STATUSES,
+  PROJECT_PORTFOLIO_TIERS,
+  PROJECT_STAGES,
+  PROJECT_VISIBILITIES,
 } from './public-data-contracts.mjs'
 
 const CONTENT_DIR = new URL('../content/projects/', import.meta.url)
 const OUTPUT_URL = new URL('../src/data/generatedProjects.ts', import.meta.url)
 const OBSIDIAN_PUBLIC_URL = new URL('../content/obsidian-public/projects.json', import.meta.url)
-const STAGES = ['exploring', 'building', 'verified-local', 'showcase-ready']
 const SOURCE_TYPES = ['original', 'adapted', 'source-study']
-const VISIBILITIES = ['private', 'public', 'none']
-const PORTFOLIO_TIERS = ['flagship', 'verified', 'exploration', 'paused']
-const ACTIVITY_STATUSES = ['active', 'paused', 'completed']
 const REQUIRED_FIELDS = [
-  'id', 'slug', 'name', 'category', 'featured', 'publish', 'portfolioTier', 'activityStatus',
+  'id', 'slug', 'name', 'category', 'featured', 'publish', 'portfolioTier', 'activityStatus', 'publicRole', 'claimState',
   'stage', 'sourceType', 'visibility', 'positioning',
   'currentFocus', 'verifiedEvidence', 'targetOutcome', 'nextMilestone', 'knownLimits', 'updatedAt',
   'coreAbilities', 'talkingPoints', 'techStack', 'engineering', 'learning', 'conceptTags',
@@ -40,11 +43,16 @@ function assertProjectContract(project, fileName) {
   ARRAY_FIELDS.forEach(field => requireStringArray(project, field, fileName))
   requireDate(project.updatedAt, 'updatedAt', fileName)
 
-  if (!STAGES.includes(project.stage)) throw new Error(`${fileName}: unknown stage ${project.stage}.`)
+  if (!PROJECT_STAGES.includes(project.stage)) throw new Error(`${fileName}: unknown stage ${project.stage}.`)
   if (!SOURCE_TYPES.includes(project.sourceType)) throw new Error(`${fileName}: unknown sourceType ${project.sourceType}.`)
-  if (!VISIBILITIES.includes(project.visibility)) throw new Error(`${fileName}: unknown visibility ${project.visibility}.`)
-  if (!PORTFOLIO_TIERS.includes(project.portfolioTier)) throw new Error(`${fileName}: unknown portfolioTier ${project.portfolioTier}.`)
-  if (!ACTIVITY_STATUSES.includes(project.activityStatus)) throw new Error(`${fileName}: unknown activityStatus ${project.activityStatus}.`)
+  if (!PROJECT_VISIBILITIES.includes(project.visibility)) throw new Error(`${fileName}: unknown visibility ${project.visibility}.`)
+  if (!PROJECT_PORTFOLIO_TIERS.includes(project.portfolioTier)) throw new Error(`${fileName}: unknown portfolioTier ${project.portfolioTier}.`)
+  if (!PROJECT_ACTIVITY_STATUSES.includes(project.activityStatus)) throw new Error(`${fileName}: unknown activityStatus ${project.activityStatus}.`)
+  const sourceProjectId = project.sourceProjectId || project.slug
+  if (typeof sourceProjectId !== 'string' || !sourceProjectId.trim() || sourceProjectId !== sourceProjectId.trim()) {
+    throw new Error(`${fileName}: sourceProjectId must be a non-empty trimmed string.`)
+  }
+  assertProjectPublicStatus(project, fileName)
   if (project.publish !== true) throw new Error(`${fileName}: only publish: true projects may be exported.`)
   assertProjectRepositoryVisibility(project, fileName)
 
@@ -67,12 +75,15 @@ function parseProject(fileName) {
     id: Number(meta.id),
     legacyIds: Array.isArray(meta.legacyIds) ? meta.legacyIds.map(Number) : [],
     slug: String(meta.slug),
+    sourceProjectId: String(meta.sourceProjectId || meta.slug),
     name: String(meta.name),
     category: String(meta.category),
     featured: Boolean(meta.featured),
     publish: true,
     portfolioTier: String(meta.portfolioTier),
     activityStatus: String(meta.activityStatus),
+    publicRole: String(meta.publicRole),
+    claimState: String(meta.claimState),
     stage: String(meta.stage),
     sourceType: String(meta.sourceType),
     visibility: String(meta.visibility),
@@ -103,35 +114,45 @@ let projects = readdirSync(CONTENT_DIR)
 
 if (existsSync(OBSIDIAN_PUBLIC_URL)) {
   const snapshot = JSON.parse(readFileSync(OBSIDIAN_PUBLIC_URL, 'utf8'))
-  if (!snapshot || !Array.isArray(snapshot.projects)) throw new Error('Invalid Obsidian public project snapshot.')
-  const overlays = new Map(snapshot.projects.map(project => [project.siteSlug, project]))
+  const overlays = indexProjectPublicOverlays(snapshot, projects.map(project => ({
+    siteSlug: project.slug,
+    projectId: project.sourceProjectId,
+  })))
   projects = projects.map(project => {
     const overlay = overlays.get(project.slug)
-    if (!overlay) throw new Error(`Missing Obsidian public project: ${project.slug}`)
+    if (!overlay) return project
+    assertProjectPublicOverlayMatches(project, overlay, `Obsidian overlay for ${project.slug}`)
     return assertProjectContract(
       applyProjectPublicOverlay(project, overlay),
       `Obsidian overlay for ${project.slug}`,
     )
   })
-  for (const slug of overlays.keys()) {
-    if (!projects.some(project => project.slug === slug)) throw new Error(`Obsidian snapshot references unknown project: ${slug}`)
-  }
+}
+
+const currentProducts = projects.filter(project => project.publicRole === 'current-product')
+const currentDirections = projects.filter(project => project.publicRole === 'current-direction')
+if (currentProducts.length !== 1 || currentDirections.length !== 1) {
+  throw new Error('Public project registry must contain exactly one current-product and one current-direction.')
 }
 
 const ids = new Set()
 const slugs = new Set()
+const sourceProjectIds = new Set()
 projects.forEach(project => {
   if (ids.has(project.id)) throw new Error(`Duplicate project id: ${project.id}`)
   if (slugs.has(project.slug)) throw new Error(`Duplicate project slug: ${project.slug}`)
   ids.add(project.id)
   slugs.add(project.slug)
+  if (sourceProjectIds.has(project.sourceProjectId)) throw new Error(`Duplicate project source id: ${project.sourceProjectId}`)
+  sourceProjectIds.add(project.sourceProjectId)
   project.legacyIds.forEach(id => {
     if (ids.has(id)) throw new Error(`Duplicate project or legacy id: ${id}`)
     ids.add(id)
   })
 })
 
-const output = `/* eslint-disable */\n// Generated by scripts/generate-projects.mjs. Do not edit by hand.\n\nexport type ProjectStage = 'exploring' | 'building' | 'verified-local' | 'showcase-ready'\nexport type ProjectSourceType = 'original' | 'adapted' | 'source-study'\nexport type ProjectVisibility = 'private' | 'public' | 'none'\nexport type ProjectPortfolioTier = 'flagship' | 'verified' | 'exploration' | 'paused'\nexport type ProjectActivityStatus = 'active' | 'paused' | 'completed'\n\nexport interface Project {\n  id: number\n  legacyIds: number[]\n  slug: string\n  name: string\n  category: string\n  featured: boolean\n  publish: true\n  portfolioTier: ProjectPortfolioTier\n  activityStatus: ProjectActivityStatus\n  stage: ProjectStage\n  sourceType: ProjectSourceType\n  visibility: ProjectVisibility\n  repositoryUrl?: string\n  positioning: string\n  currentFocus: string\n  verifiedEvidence: string[]\n  targetOutcome: string\n  nextMilestone: string\n  knownLimits: string[]\n  updatedAt: string\n  coreAbilities: string[]\n  talkingPoints: string[]\n  techStack: string[]\n  engineering: { role: string; systemBoundary: string; callFlow: string[]; failureScenarios: string[]; evidence: string[]; knownLimits: string[]; overviewSummary: string }\n  learning: { goal: string; verified: string[]; verification: string[]; verificationNote?: string; tradeoffs: string[]; nextSteps: string[] }\n  conceptTags: string[]\n  relatedArticleSlugs: string[]\n  suggestedQuestions: string[]\n}\n\nexport const projects: Project[] = ${JSON.stringify(projects, null, 2)}\n`
+const generatedProjects = projects.map(({ sourceProjectId: _sourceProjectId, ...project }) => project)
+const output = `/* eslint-disable */\n// Generated by scripts/generate-projects.mjs. Do not edit by hand.\n\nexport type ProjectStage = 'exploring' | 'building' | 'verified-local' | 'showcase-ready'\nexport type ProjectSourceType = 'original' | 'adapted' | 'source-study'\nexport type ProjectVisibility = 'private' | 'public' | 'none'\nexport type ProjectPortfolioTier = 'flagship' | 'verified' | 'exploration' | 'paused'\nexport type ProjectActivityStatus = 'active' | 'paused' | 'completed'\nexport type ProjectPublicRole = 'current-product' | 'current-direction' | 'historical-evidence'\nexport type ProjectClaimState = 'locked' | 'evidence-ready' | 'publishable'\n\nexport interface Project {\n  id: number\n  legacyIds: number[]\n  slug: string\n  name: string\n  category: string\n  featured: boolean\n  publish: true\n  portfolioTier: ProjectPortfolioTier\n  activityStatus: ProjectActivityStatus\n  publicRole: ProjectPublicRole\n  claimState: ProjectClaimState\n  stage: ProjectStage\n  sourceType: ProjectSourceType\n  visibility: ProjectVisibility\n  repositoryUrl?: string\n  positioning: string\n  currentFocus: string\n  verifiedEvidence: string[]\n  targetOutcome: string\n  nextMilestone: string\n  knownLimits: string[]\n  updatedAt: string\n  coreAbilities: string[]\n  talkingPoints: string[]\n  techStack: string[]\n  engineering: { role: string; systemBoundary: string; callFlow: string[]; failureScenarios: string[]; evidence: string[]; knownLimits: string[]; overviewSummary: string }\n  learning: { goal: string; verified: string[]; verification: string[]; verificationNote?: string; tradeoffs: string[]; nextSteps: string[] }\n  conceptTags: string[]\n  relatedArticleSlugs: string[]\n  suggestedQuestions: string[]\n}\n\nexport const projects: Project[] = ${JSON.stringify(generatedProjects, null, 2)}\n`
 
 mkdirSync(new URL('../src/data/', import.meta.url), { recursive: true })
 writeFileSync(OUTPUT_URL, output)

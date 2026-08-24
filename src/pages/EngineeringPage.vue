@@ -5,6 +5,9 @@ import { evidenceRecords } from '../data/generatedEvidence'
 import { siteProjects } from '../data/siteKnowledge'
 import { setSeoMeta } from '../utils/seo'
 
+const currentProjectCount = siteProjects.filter(project => project.publicRole !== 'historical-evidence').length
+const historicalProjectCount = siteProjects.filter(project => project.publicRole === 'historical-evidence').length
+
 const proofPaths = [
   {
     index: '01',
@@ -28,8 +31,8 @@ const proofPaths = [
     index: '03',
     eyebrow: 'Project dossiers',
     title: '项目档案',
-    description: '按项目查看目标形态、当前阶段、已验证事实、已知限制与下一道完成门。',
-    meta: `${siteProjects.length} 个公开项目`,
+    description: '按 Current product、Current direction 与 Historical evidence 查看角色、Claim、已验证事实和边界。',
+    meta: `${currentProjectCount} 个当前 · ${historicalProjectCount} 个历史`,
     to: '/projects',
     action: '浏览项目图谱',
   },

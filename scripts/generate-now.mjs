@@ -1,8 +1,9 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { parseMarkdownFrontmatter, requireDate, requireFields, requireStringArray } from './frontmatter.mjs'
 
 const SOURCE_URL = new URL('../content/now/current.md', import.meta.url)
 const OUTPUT_URL = new URL('../src/data/generatedNow.ts', import.meta.url)
+const PROJECTS_URL = new URL('../content/projects/', import.meta.url)
 if (!existsSync(SOURCE_URL)) throw new Error('content/now/current.md does not exist.')
 
 const { meta } = parseMarkdownFrontmatter(readFileSync(SOURCE_URL, 'utf8'), 'content/now/current.md')
@@ -14,6 +15,23 @@ requireStringArray(meta, 'nextFocus', 'content/now/current.md')
 const snapshot = {
   updatedAt: String(meta.updatedAt), headline: String(meta.headline), summary: String(meta.summary),
   developmentProjectSlugs: meta.developmentProjectSlugs.map(String), nextFocus: meta.nextFocus.map(String),
+}
+
+const currentProjectSlugs = readdirSync(PROJECTS_URL)
+  .filter(fileName => fileName.endsWith('.md'))
+  .map(fileName => parseMarkdownFrontmatter(
+    readFileSync(new URL(fileName, PROJECTS_URL), 'utf8'),
+    `content/projects/${fileName}`,
+  ).meta)
+  .filter(project => ['current-product', 'current-direction'].includes(project.publicRole))
+  .map(project => String(project.slug))
+  .sort()
+const snapshotProjectSlugs = [...new Set(snapshot.developmentProjectSlugs)].sort()
+if (
+  snapshotProjectSlugs.length !== snapshot.developmentProjectSlugs.length
+  || JSON.stringify(snapshotProjectSlugs) !== JSON.stringify(currentProjectSlugs)
+) {
+  throw new Error('content/now/current.md developmentProjectSlugs must contain exactly the reviewed current product and current direction.')
 }
 const ageInDays = Math.floor((Date.now() - new Date(`${snapshot.updatedAt}T00:00:00Z`).getTime()) / 86_400_000)
 if (ageInDays > 7) {

@@ -1110,6 +1110,7 @@ img {
 
 /* ========== Back Link ========== */
 .back-link {
+  min-height: 44px;
   display: inline-flex;
   align-items: center;
   gap: 4px;

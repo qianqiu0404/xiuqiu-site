@@ -11,9 +11,14 @@ const route = useRoute()
 const delivery = computed(() => deliveryRecords.find(item => item.slug === String(route.params.slug || '')))
 const evidence = computed(() => delivery.value?.evidenceSlugs.map(evidenceBySlug).filter(Boolean) || [])
 const projects = computed(() => delivery.value?.projectSlugs.map(getProjectByKey).filter(Boolean) || [])
-const statusLabel = { 'in-progress': '进行中', partial: '部分完成', delivered: '已交付' }
+const statusLabel = { 'in-progress': '历史进行中', partial: '历史部分完成', delivered: '历史已交付' }
 
-watchEffect(() => setSeoMeta(delivery.value ? { title: `${delivery.value.title}｜AI 交付记录`, description: delivery.value.summary, path: `/ai/deliveries/${delivery.value.slug}`, type: 'article' } : { title: '交付记录不存在｜xiuqiu', path: route.fullPath, indexable: false }))
+watchEffect(() => setSeoMeta(delivery.value ? {
+  title: `${delivery.value.title}｜AI 历史公开交付`,
+  description: `历史公开交付证据：${delivery.value.summary}`,
+  path: `/ai/deliveries/${delivery.value.slug}`,
+  type: 'article',
+} : { title: '交付记录不存在｜xiuqiu', path: route.fullPath, indexable: false }))
 </script>
 
 <template>
@@ -21,10 +26,10 @@ watchEffect(() => setSeoMeta(delivery.value ? { title: `${delivery.value.title}�
     <template v-if="delivery">
       <header class="delivery-trace-hero cinematic-page-hero">
         <div class="container delivery-detail-container">
-          <router-link class="back-link" to="/ai/deliveries">&larr; 返回全部交付记录</router-link>
+          <router-link class="back-link" to="/ai/deliveries">&larr; 返回历史公开交付记录</router-link>
           <div class="delivery-detail-hero">
             <div class="card-status-row"><time>{{ delivery.date }}</time><strong :data-status="delivery.status">{{ statusLabel[delivery.status] }}</strong></div>
-            <p class="cinematic-page-kicker">Delivery Trace / {{ delivery.kind }}</p>
+            <p class="cinematic-page-kicker">Historical Delivery Trace / {{ delivery.kind }}</p>
             <h1>{{ delivery.title }}</h1>
             <p>{{ delivery.summary }}</p>
             <div class="delivery-project-links"><router-link v-for="project in projects" :key="project!.slug" :to="`/projects/${project!.slug}`">{{ project!.name }}</router-link></div>
@@ -57,8 +62,8 @@ watchEffect(() => setSeoMeta(delivery.value ? { title: `${delivery.value.title}�
           </section>
 
           <section class="delivery-limits">
-            <div><p class="delivery-trace-index">07 / CURRENT LIMITS</p><h2>当前限制</h2><ul><li v-for="item in delivery.knownLimits" :key="item">{{ item }}</li></ul></div>
-            <div><p class="delivery-trace-index">08 / NEXT STEP</p><h2>下一步</h2><p>{{ delivery.nextStep }}</p></div>
+            <div><p class="delivery-trace-index">07 / LAST RECORDED LIMITS</p><h2>最后记录的限制</h2><ul><li v-for="item in delivery.knownLimits" :key="item">{{ item }}</li></ul></div>
+            <div><p class="delivery-trace-index">08 / LAST RECORDED NEXT STEP / PAUSED</p><h2>最后记录的下一步（已暂停）</h2><p>{{ delivery.nextStep }}</p></div>
           </section>
         </div>
       </div>

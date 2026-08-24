@@ -1,7 +1,16 @@
 <script setup lang="ts">
 import { computed, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getArticlesBySlugs, getProjectByKey, projectSourceLabels, projectStageLabels, projectVisibilityLabels } from '../data/siteKnowledge'
+import {
+  getArticlesBySlugs,
+  getProjectByKey,
+  projectActivityLabels,
+  projectClaimStateLabels,
+  projectPublicRoleLabels,
+  projectSourceLabels,
+  projectStageLabels,
+  projectVisibilityLabels,
+} from '../data/siteKnowledge'
 import { productPresentationBySlug } from '../data/productPresentation'
 import { setSeoMeta } from '../utils/seo'
 import '../styles/product-pages.css'
@@ -12,6 +21,12 @@ const projectKey = computed(() => String(route.params.project || ''))
 const project = computed(() => getProjectByKey(projectKey.value))
 const presentation = computed(() => productPresentationBySlug.get(project.value?.slug as 's78-market-services'))
 const relatedArticles = computed(() => project.value ? getArticlesBySlugs(project.value.relatedArticleSlugs).slice(0, 3) : [])
+const isHistoricalEvidence = computed(() => project.value?.publicRole === 'historical-evidence')
+const projectMetaKinds = {
+  'current-product': '当前产品',
+  'current-direction': '当前工程方向',
+  'historical-evidence': '历史工程证据',
+} as const
 
 watchEffect(() => {
   if (!project.value) {
@@ -24,7 +39,7 @@ watchEffect(() => {
     return
   }
   setSeoMeta({
-    title: `${project.value.name}｜xiuqiu 工程项目`,
+    title: `${project.value.name}｜xiuqiu ${projectMetaKinds[project.value.publicRole]}`,
     description: project.value.positioning,
     path: `/projects/${project.value.slug}`,
   })
@@ -60,12 +75,12 @@ watchEffect(() => {
         <div class="product-status-object" aria-label="当前项目状态">
           <span class="product-status-index">{{ presentation.index }}</span>
           <div>
-            <small>PRODUCT</small>
-            <strong>{{ presentation.shortName }}</strong>
+            <small>PUBLIC ROLE</small>
+            <strong>{{ projectPublicRoleLabels[project.publicRole] }} · {{ presentation.shortName }}</strong>
           </div>
           <div>
-            <small>STAGE</small>
-            <strong>{{ projectStageLabels[project.stage] }}</strong>
+            <small>CLAIM / STAGE</small>
+            <strong>{{ projectClaimStateLabels[project.claimState] }} · {{ projectStageLabels[project.stage] }}</strong>
           </div>
           <div>
             <small>LAST VERIFIED</small>
@@ -113,10 +128,10 @@ watchEffect(() => {
       <div class="container">
         <header class="product-section-heading product-section-heading--light">
           <div>
-            <p class="cinematic-page-kicker">Verified now</p>
+            <p class="cinematic-page-kicker">Evidence ready</p>
             <h2 id="proof-title">{{ presentation.proofTitle }}</h2>
           </div>
-          <p>目标形态说明方向；下面的证据、限制和下一道 Gate 说明当前事实。</p>
+          <p>目标形态说明方向；下面只列已复核证据与当前边界。跨日 Owner Gate 尚未通过。</p>
         </header>
 
         <div class="product-proof-layout">
@@ -132,7 +147,7 @@ watchEffect(() => {
               <li v-for="item in project.knownLimits.slice(0, 3)" :key="item">{{ item }}</li>
             </ul>
             <div>
-              <span>NEXT GATE</span>
+              <span>OWNER GATE PENDING</span>
               <p>{{ project.nextMilestone }}</p>
             </div>
           </aside>
@@ -164,8 +179,11 @@ watchEffect(() => {
       <router-link to="/projects" class="back-link">&larr; 返回项目图谱</router-link>
       <article class="project-detail project-dossier">
         <header class="project-detail-header">
-          <p class="section-label">Proof dossier / {{ project.category }}</p>
+          <p class="section-label">{{ projectPublicRoleLabels[project.publicRole] }} / {{ project.category }}</p>
           <div class="project-state-tags">
+            <span>{{ projectPublicRoleLabels[project.publicRole] }}</span>
+            <span>{{ projectClaimStateLabels[project.claimState] }}</span>
+            <span>{{ projectActivityLabels[project.activityStatus] }}</span>
             <span>{{ projectStageLabels[project.stage] }}</span>
             <span>{{ projectSourceLabels[project.sourceType] }}</span>
             <span>{{ projectVisibilityLabels[project.visibility] }}</span>
@@ -173,23 +191,24 @@ watchEffect(() => {
           </div>
           <h1>{{ project.name }}</h1>
           <p>{{ project.positioning }}</p>
+          <p v-if="isHistoricalEvidence" class="verification-note project-role-boundary">该档案保留为历史工程证据，不代表当前产品、当前方向或现役优先级。</p>
           <a v-if="project.visibility === 'public' && project.repositoryUrl" :href="project.repositoryUrl" class="btn btn-primary" target="_blank" rel="noopener">查看公开仓库 &rarr;</a>
         </header>
 
         <div class="project-dossier-summary">
           <section><small>Target outcome</small><p>{{ project.targetOutcome }}</p></section>
-          <section><small>Next gate</small><p>{{ project.nextMilestone }}</p></section>
+          <section><small>{{ isHistoricalEvidence ? 'Last recorded evidence next step' : 'Next gate' }}</small><p>{{ project.nextMilestone }}</p></section>
         </div>
 
         <section class="learning-section">
           <p class="section-label">Verified evidence</p>
-          <h2>当前能被代码、测试或运行记录支持的事实</h2>
+          <h2>{{ isHistoricalEvidence ? '历史记录中由代码、测试或运行记录支持的事实' : '当前能被代码、测试或运行记录支持的事实' }}</h2>
           <ul class="learning-list evidence-detail-list"><li v-for="item in project.verifiedEvidence" :key="item">{{ item }}</li></ul>
         </section>
 
         <div class="learning-detail-grid">
           <section class="learning-section"><p class="section-label">System boundary</p><h2>负责什么，不负责什么</h2><p>{{ project.engineering.systemBoundary }}</p></section>
-          <section class="learning-section"><p class="section-label">Current limits</p><h2>仍未完成的边界</h2><ul class="learning-list"><li v-for="item in project.knownLimits" :key="item">{{ item }}</li></ul></section>
+          <section class="learning-section"><p class="section-label">Evidence limits</p><h2>仍未完成的边界</h2><ul class="learning-list"><li v-for="item in project.knownLimits" :key="item">{{ item }}</li></ul></section>
         </div>
 
         <details class="learning-section project-evidence-details">

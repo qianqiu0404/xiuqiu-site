@@ -8,9 +8,9 @@ const latestDelivery = [...deliveryRecords]
   .sort((a, b) => b.date.localeCompare(a.date) || a.title.localeCompare(b.title, 'zh-CN'))[0]
 
 const deliveryStatusLabels = {
-  'in-progress': '进行中',
-  partial: '部分完成',
-  delivered: '已交付',
+  'in-progress': '历史进行中',
+  partial: '历史部分完成',
+  delivered: '历史已交付',
 } as const
 
 const stale = computed(() => (
@@ -36,11 +36,11 @@ onMounted(() => setSeoMeta({
           <dl class="about-now-role">
             <div>
               <dt>Current role</dt>
-              <dd>Web3 钱包后端工程师 × AI 协作工程实践者</dd>
+              <dd>Qiu Market 维护者 × Wallet Infrastructure 学习与证据建设</dd>
             </div>
             <div>
               <dt>Build axis</dt>
-              <dd>Wallet Platform · Market Server · Human-verified AI Engineering</dd>
+              <dd>Qiu Market current product · Wallet Infrastructure current direction · Human-verified AI Engineering</dd>
             </div>
           </dl>
         </div>
@@ -69,7 +69,7 @@ onMounted(() => setSeoMeta({
 
       <section v-if="latestDelivery" class="about-now-delivery" aria-labelledby="latest-delivery-title">
         <div>
-          <p class="about-now-kicker">Latest shipped trace</p>
+          <p class="about-now-kicker">Latest historical delivery trace</p>
           <time :datetime="latestDelivery.date">{{ latestDelivery.date }}</time>
         </div>
         <div>

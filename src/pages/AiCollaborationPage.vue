@@ -16,7 +16,7 @@ const aiModules = aiSystemSurfaces
 
 onMounted(() => setSeoMeta({
   title: 'AI Engineering OS｜xiuqiu',
-  description: 'AI 参与定义、执行、审查与验证；真实交付、人工门禁和工程证据共同决定结果。',
+  description: 'AI 参与定义、执行、审查与验证；历史公开交付、人工门禁和工程证据共同决定可声明的结果。',
   path: '/ai',
 }))
 </script>
@@ -94,7 +94,7 @@ onMounted(() => setSeoMeta({
             <p class="aeo-kicker">Public Delivery Ledger</p>
             <h2 id="public-delivery-title">不展示 prompt 数量，展示被验证的结果。</h2>
           </div>
-          <p>每条公开记录把 AI 参与、人工决定、测试证据和已知限制分开保存。</p>
+          <p>这些是历史公开交付，不代表当前 Wallet Infrastructure 已实现；每条记录把 AI 参与、人工决定、测试证据和已知限制分开保存。</p>
         </header>
 
         <div class="aeo-delivery-list">
@@ -104,7 +104,7 @@ onMounted(() => setSeoMeta({
               <time :datetime="item.delivery.date">{{ item.delivery.date }}</time>
             </div>
             <div class="aeo-delivery-main">
-              <p>PUBLIC / {{ item.delivery.status.toUpperCase() }}</p>
+              <p>HISTORICAL EVIDENCE / PUBLIC / {{ item.delivery.status.toUpperCase() }}</p>
               <h3>{{ item.delivery.title }}</h3>
               <span>{{ item.delivery.summary }}</span>
             </div>
