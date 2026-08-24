@@ -159,23 +159,23 @@ function expectedMetadataByRoute() {
     }],
     ['/engineering/evidence', {
       title: '工程证据覆盖｜xiuqiu',
-      description: '按工程实现、自动化测试、可运行演示和公开说明查看钱包工程证据与当前边界。',
+      description: '按公开角色与 Claim 查看工程证据：Qiu Market 是当前产品，Wallet Infrastructure 是 locked 当前方向，其余钱包材料是历史证据。',
     }],
     ['/projects', {
       title: '项目图谱｜xiuqiu',
-      description: '先进入 Qiu Market 当前产品主页，再按证据层级浏览钱包基础设施、实验与其他 Web3 工程项目。',
+      description: '按 Current product、Current direction 与 Historical evidence 浏览经过审核的公开项目证据。',
     }],
     ['/ai', {
       title: 'AI Engineering OS｜xiuqiu',
-      description: 'AI 参与定义、执行、审查与验证；真实交付、人工门禁和工程证据共同决定结果。',
+      description: 'AI 参与定义、执行、审查与验证；历史公开交付、人工门禁和工程证据共同决定可声明的结果。',
     }],
     ['/ai/social-research', {
       title: 'Social Media Research Skill｜xiuqiu',
       description: 'MediaCrawler 本地采集与 TikHub 付费确认回退组成的双后端社交媒体研究工作流。',
     }],
     ['/ai/deliveries', {
-      title: 'AI 协作交付记录｜xiuqiu',
-      description: '真实任务中的 AI 参与、人工判断、审查纠正、验证结果与公开交付。',
+      title: 'AI 历史公开交付记录｜xiuqiu',
+      description: '历史工程任务中的 AI 参与、人工判断、审查纠正与公开验证；这些记录不代表当前 Wallet Infrastructure 已实现。',
     }],
     ['/now', {
       title: '当前动态｜xiuqiu',
@@ -198,8 +198,13 @@ function expectedMetadataByRoute() {
   ])
 
   for (const project of projects) {
+    const projectMetaKind = project.publicRole === 'historical-evidence'
+      ? '历史工程证据'
+      : project.publicRole === 'current-direction'
+        ? '当前工程方向'
+        : '当前产品'
     metadata.set(`/projects/${project.slug}`, {
-      title: `${project.name}｜xiuqiu 工程项目`,
+      title: `${project.name}｜xiuqiu ${projectMetaKind}`,
       description: project.positioning,
     })
   }
@@ -229,8 +234,8 @@ function expectedMetadataByRoute() {
   }
   for (const record of deliveryRecords) {
     metadata.set(`/ai/deliveries/${record.slug}`, {
-      title: `${record.title}｜AI 交付记录`,
-      description: record.summary,
+      title: `${record.title}｜AI 历史公开交付`,
+      description: `历史公开交付证据：${record.summary}`,
     })
   }
 

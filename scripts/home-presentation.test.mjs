@@ -3,16 +3,13 @@ import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import {
   aiEngineeringOutcomes,
-  flagshipProjectSlug,
   homeAiProofContexts,
   homeAiWorkflow,
   homeCapabilities,
   homeEvidenceHighlights,
-  homeProductGroups,
   homeProofMethods,
   homeSeo,
   homeServiceFlow,
-  representativeProjectSlugs,
 } from '../src/data/homePresentation.ts'
 import { evidenceRecords } from '../src/data/generatedEvidence.ts'
 import { evidenceLedgerRecords, evidenceLedgerStats } from '../src/data/evidenceLedger.ts'
@@ -25,6 +22,9 @@ const appSource = readFileSync(new URL('../src/App.vue', import.meta.url), 'utf8
 const chatWidgetSource = readFileSync(new URL('../src/components/AiChatWidget.vue', import.meta.url), 'utf8')
 const projectAtlasSource = readFileSync(new URL('../src/pages/ProjectAtlasPage.vue', import.meta.url), 'utf8')
 const projectDetailSource = readFileSync(new URL('../src/pages/ProjectDetailPage.vue', import.meta.url), 'utf8')
+const qiuProjectSource = readFileSync(new URL('../content/projects/s78-market-services.md', import.meta.url), 'utf8')
+const engineeringPageSource = readFileSync(new URL('../src/pages/EngineeringPage.vue', import.meta.url), 'utf8')
+const nowPageSource = readFileSync(new URL('../src/pages/NowPage.vue', import.meta.url), 'utf8')
 const evidencePageSource = readFileSync(new URL('../src/pages/EngineeringEvidencePage.vue', import.meta.url), 'utf8')
 const aiPageSource = readFileSync(new URL('../src/pages/AiCollaborationPage.vue', import.meta.url), 'utf8')
 const radarPageSource = readFileSync(new URL('../src/pages/RadarPage.vue', import.meta.url), 'utf8')
@@ -33,11 +33,14 @@ const radarWeeklySource = readFileSync(new URL('../src/pages/RadarWeeklyPage.vue
 const articlesPageSource = readFileSync(new URL('../src/pages/ArticlesPage.vue', import.meta.url), 'utf8')
 const articleDetailSource = readFileSync(new URL('../src/pages/ArticleDetailPage.vue', import.meta.url), 'utf8')
 const routerSource = readFileSync(new URL('../src/router/index.ts', import.meta.url), 'utf8')
+const deliveryListSource = readFileSync(new URL('../src/pages/DeliveryListPage.vue', import.meta.url), 'utf8')
 const deliveryDetailSource = readFileSync(new URL('../src/pages/DeliveryDetailPage.vue', import.meta.url), 'utf8')
 const indexHtml = readFileSync(new URL('../index.html', import.meta.url), 'utf8')
 const readmeSource = readFileSync(new URL('../README.md', import.meta.url), 'utf8')
 const globalStyleSource = readFileSync(new URL('../src/style.css', import.meta.url), 'utf8')
 const homeStyleSource = readFileSync(new URL('../src/styles/home.css', import.meta.url), 'utf8')
+const cinematicPagesCss = readFileSync(new URL('../src/styles/cinematic-pages.css', import.meta.url), 'utf8')
+const productPagesCss = readFileSync(new URL('../src/styles/product-pages.css', import.meta.url), 'utf8')
 const notFoundStyleSource = readFileSync(new URL('../src/styles/not-found.css', import.meta.url), 'utf8')
 const aiProofRailSource = readFileSync(new URL('../src/components/AiEngineeringProofRail.vue', import.meta.url), 'utf8')
 
@@ -114,6 +117,8 @@ test('article paper, touch, focus and long-content style contracts stay responsi
 
 test('skip, homepage utility actions and 404 recovery keep 44px targets', () => {
   assert.match(globalStyleSource, /\.skip-link\s*\{[\s\S]*?min-height: 44px;[\s\S]*?display: inline-flex;/)
+  assert.match(globalStyleSource, /\.back-link\s*\{[\s\S]*?min-height: 44px;[\s\S]*?display: inline-flex;/)
+  assert.match(productPagesCss, /\.product-back-link\s*\{[\s\S]*?min-height: 44px;[\s\S]*?display: inline-flex;/)
   for (const selector of [
     '.cinematic-hero-proof-link',
     '.cinematic-scroll-cue',
@@ -141,7 +146,6 @@ test('homepage presentation keeps the intended cardinalities', () => {
   assert.equal(homeServiceFlow.length, 4)
   assert.equal(homeProofMethods.length, 5)
   assert.equal(homeEvidenceHighlights.length, 3)
-  assert.equal(homeProductGroups.length, 2)
   assert.equal(aiEngineeringOutcomes.length, 8)
   assert.equal(homeAiProofContexts.length, 3)
   assert.equal(homeAiWorkflow.length, 7)
@@ -149,7 +153,6 @@ test('homepage presentation keeps the intended cardinalities', () => {
   assertUnique(homeServiceFlow.map(item => item.name), 'service names')
   assertUnique(homeProofMethods.map(item => item.id), 'proof ids')
   assertUnique(homeEvidenceHighlights.map(item => item.evidenceSlug), 'evidence highlight slugs')
-  assertUnique(homeProductGroups.map(item => item.id), 'product group ids')
   assertUnique(aiEngineeringOutcomes, 'AI outcomes')
   assertUnique(homeAiProofContexts.map(item => item.id), 'AI proof context ids')
   assertUnique(homeAiWorkflow, 'AI workflow steps')
@@ -167,37 +170,41 @@ test('every homepage action has one type-safe destination', () => {
   })
 })
 
-test('configured homepage projects separate the current product from wallet evidence', () => {
+test('generated projects separate the current product, current direction and historical evidence', () => {
   const projectsBySlug = new Map(projects.map(project => [project.slug, project]))
 
-  assert.equal(representativeProjectSlugs.length, 3)
-  assert.deepEqual([...representativeProjectSlugs], [
-    'exchange-wallet-system',
-    'wallet-reliability-lab',
-    's78-market-services',
-  ])
-  assert.deepEqual(
-    homeProductGroups.map(group => ({ id: group.id, projectSlugs: [...group.projectSlugs] })),
-    [
-      {
-        id: 'wallet-evidence',
-        projectSlugs: ['exchange-wallet-system', 'wallet-reliability-lab'],
-      },
-      {
-        id: 'market-server',
-        projectSlugs: ['s78-market-services'],
-      },
-    ],
-  )
-  assertUnique([...representativeProjectSlugs], 'homepage project slugs')
-  assert.ok(representativeProjectSlugs.includes('s78-market-services'))
-
-  representativeProjectSlugs.forEach(slug =>
-    assert.ok(projectsBySlug.has(slug), `Missing generated project: ${slug}`),
-  )
-  assert.equal(projectsBySlug.get(flagshipProjectSlug)?.portfolioTier, 'exploration')
+  assert.equal(projectsBySlug.get('exchange-wallet-system')?.portfolioTier, 'exploration')
+  assert.equal(projectsBySlug.get('exchange-wallet-system')?.publicRole, 'current-direction')
+  assert.equal(projectsBySlug.get('exchange-wallet-system')?.claimState, 'locked')
   assert.equal(projectsBySlug.get('wallet-reliability-lab')?.portfolioTier, 'verified')
+  assert.equal(projectsBySlug.get('wallet-reliability-lab')?.publicRole, 'historical-evidence')
+  assert.equal(projectsBySlug.get('wallet-reliability-lab')?.claimState, 'publishable')
   assert.equal(projectsBySlug.get('s78-market-services')?.portfolioTier, 'verified')
+  assert.equal(projectsBySlug.get('s78-market-services')?.publicRole, 'current-product')
+  assert.equal(projectsBySlug.get('s78-market-services')?.claimState, 'evidence-ready')
+})
+
+test('generated site registry has exactly one active product and one active direction', () => {
+  const currentProducts = projects.filter(project => project.publicRole === 'current-product')
+  const currentDirections = projects.filter(project => project.publicRole === 'current-direction')
+  const historicalProjects = projects.filter(project => project.publicRole === 'historical-evidence')
+
+  assert.deepEqual(currentProducts.map(project => project.slug), ['s78-market-services'])
+  assert.deepEqual(currentDirections.map(project => project.slug), ['exchange-wallet-system'])
+  assert.equal(currentProducts[0].activityStatus, 'active')
+  assert.equal(currentDirections[0].activityStatus, 'active')
+  assert.equal(historicalProjects.length, 6)
+  assert.ok(historicalProjects.every(project => project.activityStatus !== 'active'))
+})
+
+test('project details expose role, Claim and activity status without promoting historical evidence', () => {
+  assert.match(projectDetailSource, /projectPublicRoleLabels\[project\.publicRole\]/)
+  assert.match(projectDetailSource, /projectClaimStateLabels\[project\.claimState\]/)
+  assert.match(projectDetailSource, /projectActivityLabels\[project\.activityStatus\]/)
+  assert.match(projectDetailSource, /project\.value\?\.publicRole === 'historical-evidence'/)
+  assert.match(projectDetailSource, /不代表当前产品、当前方向或现役优先级/)
+  assert.match(projectDetailSource, /历史记录中由代码、测试或运行记录支持的事实/)
+  assert.match(projectDetailSource, /Last recorded evidence next step/)
 })
 
 test('repository and homepage keep historical wallet work out of the current-product frame', () => {
@@ -211,6 +218,37 @@ test('repository and homepage keep historical wallet work out of the current-pro
   assert.match(homeSource, /Historical AI delivery/)
   assert.match(homeSource, /Historical delivery/)
   assert.doesNotMatch(homeSource, /Featured delivery/)
+
+  assert.match(chatWidgetSource, /Qiu Market current product × Wallet Infrastructure current direction/)
+  assert.match(chatWidgetSource, /Qiu Market 是唯一 current product/)
+  assert.match(chatWidgetSource, /Wallet Infrastructure 只是 current direction/)
+  assert.match(chatWidgetSource, /Wallet Infrastructure 只是 locked current direction/)
+  assert.match(chatWidgetSource, /6 个历史项目/)
+  assert.doesNotMatch(chatWidgetSource, /Wallet Platform × Market Server/)
+
+  assert.match(qiuProjectSource, /Node 24.*submit→ledger→recovery/)
+  assert.match(qiuProjectSource, /跨日 Owner Gate 尚未通过/)
+  assert.match(projectDetailSource, /Evidence ready/)
+  assert.match(projectDetailSource, /OWNER GATE PENDING/)
+  assert.match(projectDetailSource, /跨日 Owner Gate 尚未通过/)
+
+  assert.match(nowPageSource, /Qiu Market 维护者 × Wallet Infrastructure 学习与证据建设/)
+  assert.match(nowPageSource, /Qiu Market current product · Wallet Infrastructure current direction/)
+  assert.match(nowPageSource, /Latest historical delivery trace/)
+  assert.doesNotMatch(nowPageSource, /Wallet Platform · Market Server/)
+
+  assert.match(engineeringPageSource, /Current product、Current direction 与 Historical evidence/)
+  assert.match(engineeringPageSource, /currentProjectCount.*historicalProjectCount/)
+  assert.match(evidencePageSource, /projectPublicRoleLabels\[project\.publicRole\]/)
+  assert.match(evidencePageSource, /projectClaimStateLabels\[project\.claimState\]/)
+  assert.match(evidencePageSource, /Historical delivery \/ run/)
+
+  assert.match(deliveryListSource, /AI 历史公开交付记录｜xiuqiu/)
+  assert.match(deliveryListSource, /不代表当前 Wallet Infrastructure 已实现/)
+  assert.match(deliveryDetailSource, /AI 历史公开交付/)
+  assert.match(deliveryDetailSource, /LAST RECORDED LIMITS/)
+  assert.match(deliveryDetailSource, /LAST RECORDED NEXT STEP \/ PAUSED/)
+  assert.doesNotMatch(deliveryDetailSource, /CURRENT LIMITS/)
 })
 
 test('homepage evidence highlights resolve to dated site evidence', () => {
@@ -366,11 +404,17 @@ test('route-driven visual modes keep shared chrome without hiding their desktop 
 })
 
 test('cinematic evidence pages preserve their source-backed interaction contracts', () => {
-  assert.match(projectAtlasSource, /:id="group\.tier"/)
-  assert.match(projectAtlasSource, /portfolioTier === tier/)
+  assert.match(projectAtlasSource, /id="current-product"/)
+  assert.match(projectAtlasSource, /project\.publicRole === group\.role/)
+  assert.match(projectAtlasSource, /Current product/)
+  assert.match(projectAtlasSource, /Current direction/)
+  assert.match(projectAtlasSource, /Historical evidence/)
+  assert.match(projectAtlasSource, /projectClaimStateLabels\[project\.claimState\]/)
   assert.match(projectAtlasSource, /project\.verifiedEvidence\[0\]/)
   assert.match(projectAtlasSource, /productPresentations/)
   assert.match(projectAtlasSource, /进入产品主页/)
+  assert.match(cinematicPagesCss, /\.project-atlas-product-grid footer a \{[\s\S]*?min-height: 44px/)
+  assert.match(cinematicPagesCss, /\.project-atlas-compact-list footer a \{[\s\S]*?min-height: 44px/)
   assert.match(projectAtlasSource, /target="_blank"/)
   assert.match(projectAtlasSource, /rel="noopener"/)
 

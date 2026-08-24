@@ -1,10 +1,11 @@
-import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { assertPublicHttpUrl, isPublishable } from './public-data-contracts.mjs'
+import { parseMarkdownFrontmatter } from './frontmatter.mjs'
 
 const SNAPSHOT_URL = new URL('../content/obsidian-public/radar-weeklies.json', import.meta.url)
-const PROJECT_SNAPSHOT_URL = new URL('../content/obsidian-public/projects.json', import.meta.url)
+const PROJECTS_URL = new URL('../content/projects/', import.meta.url)
 const OUTPUT_URL = new URL('../src/data/generatedRadarWeeklies.ts', import.meta.url)
 const WEEKLY_LIST_FIELDS = ['judgments', 'shipped', 'watch', 'stopped', 'nextFocus']
 const REQUIRED_WEEKLY_LIST_FIELDS = new Set(['judgments', 'nextFocus'])
@@ -174,19 +175,20 @@ function generateRadarWeeklies() {
   if (!existsSync(SNAPSHOT_URL)) {
     throw new Error('Missing Obsidian weekly radar snapshot. Run npm run sync:obsidian-public first.')
   }
-  if (!existsSync(PROJECT_SNAPSHOT_URL)) {
-    throw new Error('Missing Obsidian public project snapshot. Run npm run sync:obsidian-public first.')
-  }
-
   const snapshot = JSON.parse(readFileSync(SNAPSHOT_URL, 'utf8'))
   if (!snapshot || !Array.isArray(snapshot.radarWeeklies)) {
     throw new Error('Invalid Obsidian weekly radar snapshot.')
   }
-  const projectSnapshot = JSON.parse(readFileSync(PROJECT_SNAPSHOT_URL, 'utf8'))
-  if (!projectSnapshot || !Array.isArray(projectSnapshot.projects)) {
-    throw new Error('Invalid Obsidian public project snapshot.')
-  }
-  const projectSlugs = new Set(projectSnapshot.projects.map(project => project.siteSlug))
+  const projectSlugs = new Set(
+    readdirSync(PROJECTS_URL)
+      .filter(fileName => fileName.endsWith('.md'))
+      .map(fileName => parseMarkdownFrontmatter(
+        readFileSync(new URL(fileName, PROJECTS_URL), 'utf8'),
+        `content/projects/${fileName}`,
+      ).meta)
+      .filter(project => project.publish === true)
+      .map(project => String(project.slug)),
+  )
   const weeklies = selectPublishableRadarWeeklies(snapshot.radarWeeklies, projectSlugs)
 
   const output = `/* eslint-disable */

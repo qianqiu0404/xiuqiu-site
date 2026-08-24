@@ -112,5 +112,8 @@ test('chat endpoint sends public context with low-latency model settings', async
   assert.match(upstreamBody.messages[0].content, /Current page title: Qiu Market Server/)
   assert.match(upstreamBody.messages[0].content, /Relevant public website context:/)
   assert.match(upstreamBody.messages[0].content, /Project: Qiu Market Server/)
+  assert.match(upstreamBody.messages[0].content, /Qiu Market as the only current-product/)
+  assert.match(upstreamBody.messages[0].content, /current-direction with a locked public Claim/)
+  assert.match(upstreamBody.messages[0].content, /publishable historical evidence never becomes a current product/)
   assert.equal(upstreamRequest.options.headers.Authorization, 'Bearer test-only-key')
 })

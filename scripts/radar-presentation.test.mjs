@@ -302,11 +302,7 @@ test('the existing W29 reviewed snapshot satisfies the weekly publication contra
   const snapshot = JSON.parse(
     readFileSync(new URL('../content/obsidian-public/radar-weeklies.json', import.meta.url), 'utf8'),
   )
-  const projectSnapshot = JSON.parse(
-    readFileSync(new URL('../content/obsidian-public/projects.json', import.meta.url), 'utf8'),
-  )
-  const projectSlugs = new Set(projectSnapshot.projects.map(project => project.siteSlug))
-  const published = selectPublishableRadarWeeklies(snapshot.radarWeeklies, projectSlugs)
+  const published = selectPublishableRadarWeeklies(snapshot.radarWeeklies, publicProjectSlugs)
 
   assert.deepEqual(published.map(item => item.slug), ['2026-W29'])
   assert.equal(published[0].reviewedAt, '2026-07-24')

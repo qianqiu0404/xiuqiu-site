@@ -7,7 +7,9 @@ import {
   projects,
   type Project,
   type ProjectActivityStatus,
+  type ProjectClaimState,
   type ProjectPortfolioTier,
+  type ProjectPublicRole,
   type ProjectSourceType,
   type ProjectStage,
   type ProjectVisibility,
@@ -57,6 +59,18 @@ export const projectActivityLabels: Record<ProjectActivityStatus, string> = {
   active: '进行中',
   paused: '已暂停',
   completed: '已完成',
+}
+
+export const projectPublicRoleLabels: Record<ProjectPublicRole, string> = {
+  'current-product': 'Current product',
+  'current-direction': 'Current direction',
+  'historical-evidence': 'Historical evidence',
+}
+
+export const projectClaimStateLabels: Record<ProjectClaimState, string> = {
+  locked: 'Claim locked',
+  'evidence-ready': 'Evidence ready',
+  publishable: 'Publishable evidence',
 }
 
 export const aiStageLabels: Record<AiCase['stage'], string> = {
@@ -118,7 +132,7 @@ export const latestRadar: SiteRadar | undefined = siteRadars[0]
 export const engineeringMap: EngineeringMapNode[] = [
   {
     id: 'wallet-backend',
-    title: 'Exchange Wallet Infrastructure',
+    title: 'Wallet Infrastructure · Current direction',
     subtitle: '资金编排、风险控制、多链交互、签名边界和异常恢复。',
     projectIds: [1, 8],
     articleSlugs: ['cex-evm-wallet-deposit-withdrawal-loop', 'withdrawal-error-handling', 'wallet-ledger-transaction-mq-consistency', 'wallet-api-boundary'],
@@ -177,11 +191,12 @@ export const engineeringMap: EngineeringMapNode[] = [
 export const siteKnowledge: SiteKnowledge = {
   owner: {
     name: 'xiuqiu',
-    title: 'Web3 钱包后端工程 × AI 协作',
+    title: 'Qiu Market × Wallet Infrastructure 学习 × AI 协作',
     summary:
-      '我正在建设可运行、可解释、可验证的 Exchange Wallet Infrastructure，并用 AI 组织研发、验证、知识沉淀和持续复盘。',
+      '我维护 Qiu Market 当前产品；Wallet Infrastructure 保持在私有基线审计、学习与最小失败证据方向，公开 Claim 仍为 locked。AI 用于组织研发、验证、知识沉淀和持续复盘。',
     focus: [
-      'Exchange Wallet Infrastructure',
+      'Qiu Market 当前产品',
+      'Wallet Infrastructure 当前学习与证据方向',
       '交易风控与提现放行',
       '资金状态与异常恢复',
       '多链 RPC 与离线交易',
@@ -249,11 +264,12 @@ export function buildKnowledgeContext(): string {
     ...siteProjects.map(project =>
       [
         `- ${project.name}: ${project.positioning}`,
+        `  Public role: ${projectPublicRoleLabels[project.publicRole]}; Claim state: ${projectClaimStateLabels[project.claimState]}`,
         `  Status: ${projectStageLabels[project.stage]}; Source: ${projectSourceLabels[project.sourceType]}; Visibility: ${projectVisibilityLabels[project.visibility]}`,
-        `  Current focus: ${project.currentFocus}`,
+        `  ${project.publicRole === 'historical-evidence' ? 'Last recorded evidence context' : 'Current focus'}: ${project.currentFocus}`,
         `  Verified evidence: ${project.verifiedEvidence.join(' | ')}`,
         `  Target outcome: ${project.targetOutcome}`,
-        `  Next milestone: ${project.nextMilestone}`,
+        `  ${project.publicRole === 'historical-evidence' ? 'Last recorded evidence next step (paused)' : 'Next milestone'}: ${project.nextMilestone}`,
         `  System boundary: ${project.engineering.systemBoundary}`,
         `  Call flow: ${project.engineering.callFlow.join(' -> ')}`,
         `  Failure scenarios: ${project.engineering.failureScenarios.join(' | ')}`,
@@ -299,16 +315,16 @@ export function buildKnowledgeContext(): string {
       item.command ? `  Verification command: ${item.command}` : '',
     ].filter(Boolean).join('\n')),
     '',
-    'AI-assisted public deliveries:',
+    'Historical AI-assisted public deliveries (paused; not current implementation):',
     ...siteDeliveryRecords.map(item => [
       `- ${item.title}: ${item.summary}`,
-      `  Status: ${item.status}; Goal: ${item.goal}`,
+      `  Last recorded status: ${item.status}; Historical goal: ${item.goal}`,
       `  AI contribution: ${item.aiContribution.join(' | ')}`,
       `  Human decisions: ${item.humanDecisions.join(' | ')}`,
       `  Review findings: ${item.reviewFindings.join(' | ')}`,
       `  Corrections: ${item.corrections.join(' | ')}`,
-      `  Known limits: ${item.knownLimits.join(' | ')}`,
-      `  Next step: ${item.nextStep}`,
+      `  Last recorded limits: ${item.knownLimits.join(' | ')}`,
+      `  Last recorded next step (paused): ${item.nextStep}`,
     ].join('\n')),
     '',
     'Curated learning records:',
@@ -354,18 +370,36 @@ function scoreText(queryTokens: string[], value: string): number {
   }, 0)
 }
 
+function projectReference(project: SiteProject): SiteReference {
+  return {
+    type: 'project',
+    title: project.name,
+    href: `/projects/${project.slug}`,
+    summary: project.positioning,
+  }
+}
+
+function projectReferencesByRole(role: SiteProject['publicRole']): SiteReference[] {
+  return siteProjects
+    .filter(project => project.publicRole === role)
+    .sort((a, b) => {
+      if (role === 'historical-evidence' && a.claimState !== b.claimState) {
+        return a.claimState === 'publishable' ? -1 : 1
+      }
+      return b.updatedAt.localeCompare(a.updatedAt) || a.name.localeCompare(b.name)
+    })
+    .map(projectReference)
+}
+
 function defaultReferences(): SiteReference[] {
   const references: SiteReference[] = []
-  const flagship = siteProjects.find(project => project.portfolioTier === 'flagship')
+  const currentProjects = siteProjects
+    .filter(project => ['current-product', 'current-direction'].includes(project.publicRole))
+    .sort((a, b) => (a.publicRole === 'current-product' ? -1 : 1) - (b.publicRole === 'current-product' ? -1 : 1))
   const primaryCapability = engineeringMap.find(node => node.id === 'multi-chain') || engineeringMap[0]
 
-  if (flagship) {
-    references.push({
-      type: 'project',
-      title: flagship.name,
-      href: `/projects/${flagship.slug}`,
-      summary: flagship.positioning,
-    })
+  for (const project of currentProjects) {
+    references.push(projectReference(project))
   }
 
   if (primaryCapability) {
@@ -429,7 +463,7 @@ export function findRelevantReferences(query: string, pageTitle?: string, max = 
 
   const deliveryRefs = siteDeliveryRecords.map(item => ({
     score: scoreText(queryTokens, [item.title, item.summary, item.goal, item.aiContribution.join(' '), item.humanDecisions.join(' '), item.reviewFindings.join(' '), item.corrections.join(' ')].join(' ')) + exactTitleBoost(item.title) + (pageTitle === item.title ? 10 : 0),
-    ref: { type: 'delivery' as const, title: item.title, href: `/ai/deliveries/${item.slug}`, summary: item.summary },
+    ref: { type: 'delivery' as const, title: item.title, href: `/ai/deliveries/${item.slug}`, summary: `历史公开交付证据：${item.summary}` },
   }))
 
   const rankedReferences = [...articleRefs, ...projectRefs, ...aiRefs, ...radarRefs, ...capabilityRefs, ...failureRefs, ...evidenceRefs, ...deliveryRefs]
@@ -440,12 +474,7 @@ export function findRelevantReferences(query: string, pageTitle?: string, max = 
   const directlyNamedProjectReferences = siteProjects
     .filter(project => normalizedQuery.includes(project.name.toLowerCase()) || pageTitle === project.name)
     .flatMap(project => [
-      {
-        type: 'project' as const,
-        title: project.name,
-        href: `/projects/${project.slug}`,
-        summary: project.positioning,
-      },
+      projectReference(project),
       ...getArticlesBySlugs(project.relatedArticleSlugs.slice(0, 3)).map(article => ({
         type: 'article' as const,
         title: article.title,
@@ -453,11 +482,27 @@ export function findRelevantReferences(query: string, pageTitle?: string, max = 
         summary: article.summary,
       })),
     ])
-  const isOverviewQuestion = /工程主线|代表项目|当前在做|快速了解|哪些能力|已经验证|待验收/.test(query)
+  const asksCurrentProduct = /(?:当前|现役|现在的).{0,4}产品|current[-\s]?product/i.test(query)
+  const asksCurrentDirection = /(?:当前|现役|现在的).{0,4}(?:方向|主线)|current[-\s]?direction/i.test(query)
+  const asksHistoricalProjects = /历史(?:项目|证据|工程)|过往项目|historical(?: project| evidence)?/i.test(query)
+  const isOverviewQuestion = /工程主线|代表项目|当前在做|现在在做|目前在做|当前工作|当前项目|快速了解|哪些能力|已经验证|待验收/.test(query)
+  const currentRoleReferences = [
+    ...(asksCurrentProduct ? projectReferencesByRole('current-product') : []),
+    ...(asksCurrentDirection ? projectReferencesByRole('current-direction') : []),
+  ]
+  const intentReferences = currentRoleReferences.length > 0
+    ? currentRoleReferences
+    : asksHistoricalProjects
+      ? projectReferencesByRole('historical-evidence')
+      : isOverviewQuestion
+        ? defaultReferences()
+        : []
   const candidateReferences = directlyNamedProjectReferences.length > 0
     ? [...directlyNamedProjectReferences, ...rankedReferences, ...defaultReferences()]
-    : isOverviewQuestion
-      ? [...defaultReferences(), ...rankedReferences]
+    : intentReferences.length > 0
+      ? asksHistoricalProjects
+        ? [...intentReferences, ...rankedReferences, ...defaultReferences()]
+        : [...intentReferences, ...defaultReferences(), ...rankedReferences]
       : [...rankedReferences, ...defaultReferences()]
 
   const selected: SiteReference[] = []
@@ -481,11 +526,12 @@ function referenceContext(reference: SiteReference): string {
       return [
         `Project: ${project.name}`,
         `Positioning: ${project.positioning}`,
+        `Public role: ${projectPublicRoleLabels[project.publicRole]}; Claim state: ${projectClaimStateLabels[project.claimState]}`,
         `Stage: ${projectStageLabels[project.stage]}; Portfolio tier: ${projectPortfolioTierLabels[project.portfolioTier]}`,
-        `Current focus: ${project.currentFocus}`,
+        `${project.publicRole === 'historical-evidence' ? 'Last recorded evidence context' : 'Current focus'}: ${project.currentFocus}`,
         `Verified evidence: ${project.verifiedEvidence.join(' | ')}`,
         `Target outcome: ${project.targetOutcome}`,
-        `Next milestone: ${project.nextMilestone}`,
+        `${project.publicRole === 'historical-evidence' ? 'Last recorded evidence next step (paused)' : 'Next milestone'}: ${project.nextMilestone}`,
         `System boundary: ${project.engineering.systemBoundary}`,
         `Call flow: ${project.engineering.callFlow.join(' -> ')}`,
         `Known limits: ${project.knownLimits.join(' | ')}`,
@@ -582,14 +628,15 @@ function referenceContext(reference: SiteReference): string {
     const item = siteDeliveryRecords.find(candidate => `/ai/deliveries/${candidate.slug}` === reference.href)
     if (item) {
       return [
-        `AI-assisted delivery: ${item.title}`,
+        `Historical AI-assisted delivery (paused): ${item.title}`,
         `Summary: ${item.summary}`,
-        `Status: ${item.status}; Goal: ${item.goal}`,
+        `Last recorded status: ${item.status}; Historical goal: ${item.goal}`,
         `AI contribution: ${item.aiContribution.join(' | ')}`,
         `Human decisions: ${item.humanDecisions.join(' | ')}`,
         `Review findings: ${item.reviewFindings.join(' | ')}`,
         `Corrections: ${item.corrections.join(' | ')}`,
-        `Known limits: ${item.knownLimits.join(' | ')}`,
+        `Last recorded limits: ${item.knownLimits.join(' | ')}`,
+        `Last recorded next step (paused): ${item.nextStep}`,
         `Public link: ${reference.href}`,
       ].join('\n')
     }
@@ -603,11 +650,15 @@ export function buildRelevantKnowledgeContext(
   pageTitle?: string,
   references = findRelevantReferences(query, pageTitle, 6),
 ): string {
+  const currentProduct = siteProjects.find(project => project.publicRole === 'current-product')
+  const currentDirection = siteProjects.find(project => project.publicRole === 'current-direction')
+  const historicalProjects = siteProjects.filter(project => project.publicRole === 'historical-evidence')
   return [
     `${siteKnowledge.owner.name}: ${siteKnowledge.owner.title}.`,
     siteKnowledge.owner.summary,
     `Current public snapshot (${nowSnapshot.updatedAt}): ${nowSnapshot.headline}. ${nowSnapshot.summary}`,
     `Next focus: ${nowSnapshot.nextFocus.join(' | ')}`,
+    `Public project registry: current-product = ${currentProduct?.name || 'none'} [${currentProduct?.claimState || 'missing'}]; current-direction = ${currentDirection?.name || 'none'} [${currentDirection?.claimState || 'missing'}]; historical-evidence = ${historicalProjects.map(project => `${project.name} [${project.claimState}]`).join(' | ') || 'none'}.`,
     '',
     'Relevant public records:',
     ...references.map((reference, index) => `${index + 1}. ${referenceContext(reference)}`),

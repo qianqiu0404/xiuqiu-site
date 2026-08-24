@@ -44,9 +44,9 @@ export const evidenceVisibilityLabels: Record<EvidenceVisibility, string> = {
 }
 
 export const deliveryStatusLabels: Record<DeliveryStatus, string> = {
-  'in-progress': '进行中',
-  partial: '部分完成',
-  delivered: '已交付',
+  'in-progress': '历史进行中',
+  partial: '历史部分完成',
+  delivered: '历史已交付',
 }
 
 export const failureEvidenceStatusLabels: Record<FailureEvidenceStatus, string> = {

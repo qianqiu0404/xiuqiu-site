@@ -20,7 +20,7 @@
     "generate:deliveries": "node scripts/generate-deliveries.mjs",
     "generate:now": "node scripts/generate-now.mjs",
     "extract:radar": "node scripts/extract-radar-source.mjs",
-    "test:content": "node --test scripts/public-data-contracts.test.mjs",
+    "test:content": "node --test scripts/public-data-contracts.test.mjs scripts/obsidian-public-source-roots.test.mjs",
     "test:chat": "node --test scripts/chat-api.test.mjs",
     "test:home": "node --test scripts/home-presentation.test.mjs",
     "test:ai": "node --test scripts/ai-evidence-presentation.test.mjs",

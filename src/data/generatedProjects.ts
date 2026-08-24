@@ -6,6 +6,8 @@ export type ProjectSourceType = 'original' | 'adapted' | 'source-study'
 export type ProjectVisibility = 'private' | 'public' | 'none'
 export type ProjectPortfolioTier = 'flagship' | 'verified' | 'exploration' | 'paused'
 export type ProjectActivityStatus = 'active' | 'paused' | 'completed'
+export type ProjectPublicRole = 'current-product' | 'current-direction' | 'historical-evidence'
+export type ProjectClaimState = 'locked' | 'evidence-ready' | 'publishable'
 
 export interface Project {
   id: number
@@ -17,6 +19,8 @@ export interface Project {
   publish: true
   portfolioTier: ProjectPortfolioTier
   activityStatus: ProjectActivityStatus
+  publicRole: ProjectPublicRole
+  claimState: ProjectClaimState
   stage: ProjectStage
   sourceType: ProjectSourceType
   visibility: ProjectVisibility
@@ -51,6 +55,8 @@ export const projects: Project[] = [
     "publish": true,
     "portfolioTier": "exploration",
     "activityStatus": "active",
+    "publicRole": "current-direction",
+    "claimState": "locked",
     "stage": "exploring",
     "sourceType": "adapted",
     "visibility": "private",
@@ -163,7 +169,9 @@ export const projects: Project[] = [
     "featured": false,
     "publish": true,
     "portfolioTier": "exploration",
-    "activityStatus": "active",
+    "activityStatus": "paused",
+    "publicRole": "historical-evidence",
+    "claimState": "locked",
     "stage": "verified-local",
     "sourceType": "source-study",
     "visibility": "none",
@@ -285,6 +293,8 @@ export const projects: Project[] = [
     "publish": true,
     "portfolioTier": "verified",
     "activityStatus": "active",
+    "publicRole": "current-product",
+    "claimState": "evidence-ready",
     "stage": "verified-local",
     "sourceType": "adapted",
     "visibility": "private",
@@ -296,10 +306,11 @@ export const projects: Project[] = [
       "2026-08-04 在 release artifact 上重新通过完整 Go test；已有记录还覆盖 race / vet、前端测试与构建、隔离 PostgreSQL publisher/feed/cleanup 集成和二进制恢复演练"
     ],
     "targetOutcome": "完成后的 Qiu Market Server 是一套可独立部署的行情与虚拟交易后端：上游异常不会制造假价格，下游可以按统一市场身份读取报价、来源和健康状态；订单、余额、成交、事件和 WebSocket cursor 能在重启或提交结果未知后从 PostgreSQL 确定性恢复。",
-    "nextMilestone": "完成标准是固定同一 release artifact，通过生产迁移、受保护 Preview、OAuth、备份恢复、容量与连续七天稳定性门，并让浏览器展示的行情、订单、余额和系统状态都能追溯到同一后端事实。",
+    "nextMilestone": "在 Node 24 上重跑同一 full-stack golden；由 Owner 现场追踪 submit→ledger→recovery，修改一条失败测试并说明虚拟资金边界。通过这道跨日验收前，Q-01/Q-02 保持 evidence-ready。",
     "knownLimits": [
-      "当前 `verified-local` 证据不等于生产 migration、公开 Preview、容量或连续七天可用性验收",
+      "跨日 Owner Gate 尚未通过；Q-01/Q-02 只保持 evidence-ready，不升级为更高 Claim",
       "交易只使用虚拟资金，不接充值、提现、私钥、真实交易所下单或实盘资产",
+      "生产 migration、公开 Preview、OAuth、容量与 soak 仅在项目重启对应阶段后再验收，不计入当前完成门",
       "多场所资产数量、延迟和可用率都是时间点快照，不作为固定规模或 SLA 声明",
       "仓库暂按私有项目展示"
     ],
@@ -356,7 +367,8 @@ export const projects: Project[] = [
         "release artifact 72343ba 与恢复演练"
       ],
       "knownLimits": [
-        "生产 migration、Preview、OAuth、容量和七天滚动证据仍待验收",
+        "跨日 Owner Gate 尚未通过，当前 Claim 保持 evidence-ready",
+        "生产 migration、Preview、OAuth、容量和 soak 属于项目重启后的后续门，不是当前完成项",
         "虚拟资金边界不能包装成商业交易所或实盘经验"
       ],
       "overviewSummary": "Qiu Market Server 的产品形态是可信行情平面加可恢复的虚拟交易纵切片：它向上游治理来源与新鲜度，向下游提供一致的市场、订单、账本和事件事实。"
@@ -378,18 +390,18 @@ export const projects: Project[] = [
         "npm --prefix frontend run build",
         "git diff --check"
       ],
-      "verificationNote": "2026-08-04 在 release artifact 72343ba 上重新通过完整 Go test；PostgreSQL 集成、race / vet、前端构建与恢复演练来自已有去敏记录。生产迁移、Preview、容量和七天 soak 不计入已完成证据。",
+      "verificationNote": "2026-08-04 在 release artifact 72343ba 上重新通过完整 Go test；PostgreSQL 集成、race / vet、前端构建与恢复演练来自已有去敏记录。跨日 Owner Gate 尚未通过，生产迁移、Preview、容量和 soak 不计入已完成证据。",
       "tradeoffs": [
         "不使用假数据兜底",
         "真实行情与可执行路线价格分开",
         "教学可审计性优先于低延迟优化",
         "虚拟资金与真实交易严格隔离",
-        "未完成生产门继续保持 pending"
+        "Owner Gate 未通过前保持 evidence-ready"
       ],
       "nextSteps": [
-        "固定前后端和迁移使用同一 release artifact",
-        "执行生产 migration、受保护 Preview、OAuth 与备份恢复验收",
-        "积累完整七天滚动证据并补容量边界"
+        "在 Node 24 上重跑同一 full-stack golden",
+        "由 Owner 追踪 submit→ledger→recovery 并修改一条失败测试",
+        "明确说明虚拟资金边界；仅在项目重启对应阶段后再安排外部环境门"
       ]
     },
     "conceptTags": [
@@ -415,16 +427,18 @@ export const projects: Project[] = [
     "legacyIds": [],
     "slug": "stableflow",
     "name": "StableFlow",
-    "category": "当前开发副线",
+    "category": "历史稳定币结算实验",
     "featured": false,
     "publish": true,
     "portfolioTier": "exploration",
-    "activityStatus": "active",
+    "activityStatus": "paused",
+    "publicRole": "historical-evidence",
+    "claimState": "locked",
     "stage": "verified-local",
     "sourceType": "original",
     "visibility": "private",
     "positioning": "面向 B2B 稳定币发票结算的非托管工程沙盒，围绕 invoice 状态机、EIP-712 授权、签名边界、链上支付与 outbox 交付组织完整链路。",
-    "currentFocus": "在不改变钱包后端核心定位的前提下，验证稳定币业务如何复用资金状态、幂等、风控授权、独立签名和链上索引能力。",
+    "currentFocus": "保留已验证的资金状态、幂等、EIP-712 授权、独立签名和链上索引证据，不将这条历史实验升级为当前产品或方向。",
     "verifiedEvidence": [
       "12 个 workspace 包的 TypeScript 类型检查通过",
       "Vitest 与 Foundry 测试覆盖防重放、金额篡改、错误链和不托管资金不变量",
@@ -466,7 +480,7 @@ export const projects: Project[] = [
     ],
     "engineering": {
       "role": "稳定币结算沙盒的架构实现、测试验证与状态边界梳理",
-      "systemBoundary": "StableFlow 是钱包工程能力的业务应用副线：它不替代 Exchange Wallet Infrastructure，也不声称提供生产支付服务。",
+      "systemBoundary": "StableFlow 是历史钱包工程证据，不替代 Wallet Infrastructure，也不声称提供生产支付服务或当前产品。",
       "callFlow": [
         "创建并审核 invoice",
         "生成与 invoice 内容绑定的 EIP-712 授权",
@@ -488,7 +502,7 @@ export const projects: Project[] = [
         "集成测试中仍有依赖外部服务而跳过的用例",
         "完整本地 demo、E2E 和测试网部署需要单独验收"
       ],
-      "overviewSummary": "StableFlow 是当前开发副线，用稳定币发票结算验证状态机、风控授权、签名边界、链上事实和 outbox，而钱包后端仍是我的主工程身份。"
+      "overviewSummary": "StableFlow 作为历史证据，用稳定币发票结算说明状态机、授权、签名边界、链上事实和 outbox；它不定义当前产品或方向。"
     },
     "learning": {
       "goal": "把钱包基础设施中的资金状态与签名安全判断迁移到非托管稳定币结算场景。",
@@ -507,7 +521,7 @@ export const projects: Project[] = [
       "tradeoffs": [
         "保持非托管结算，不把网站文案扩大为支付生产经验",
         "将测试、构建与端到端部署分开标注",
-        "作为当前副线展示，不稀释 Web3 钱包后端主线"
+        "作为历史证据展示，不稀释当前产品与方向"
       ],
       "nextSteps": [
         "无缓存重跑关键测试",
@@ -528,7 +542,7 @@ export const projects: Project[] = [
     ],
     "suggestedQuestions": [
       "StableFlow 与钱包基础设施共享哪些工程问题？",
-      "为什么它被标为当前开发副线？",
+      "为什么它被归入历史工程证据？",
       "目前通过了哪些验证，还有什么没完成？"
     ]
   },
@@ -541,7 +555,9 @@ export const projects: Project[] = [
     "featured": false,
     "publish": true,
     "portfolioTier": "exploration",
-    "activityStatus": "active",
+    "activityStatus": "paused",
+    "publicRole": "historical-evidence",
+    "claimState": "locked",
     "stage": "building",
     "sourceType": "source-study",
     "visibility": "private",
@@ -653,7 +669,9 @@ export const projects: Project[] = [
     "featured": true,
     "publish": true,
     "portfolioTier": "verified",
-    "activityStatus": "active",
+    "activityStatus": "paused",
+    "publicRole": "historical-evidence",
+    "claimState": "publishable",
     "stage": "showcase-ready",
     "sourceType": "original",
     "visibility": "public",
@@ -776,7 +794,9 @@ export const projects: Project[] = [
     "featured": true,
     "publish": true,
     "portfolioTier": "verified",
-    "activityStatus": "active",
+    "activityStatus": "paused",
+    "publicRole": "historical-evidence",
+    "claimState": "publishable",
     "stage": "showcase-ready",
     "sourceType": "original",
     "visibility": "public",
@@ -902,7 +922,9 @@ export const projects: Project[] = [
     "featured": false,
     "publish": true,
     "portfolioTier": "verified",
-    "activityStatus": "active",
+    "activityStatus": "paused",
+    "publicRole": "historical-evidence",
+    "claimState": "publishable",
     "stage": "showcase-ready",
     "sourceType": "original",
     "visibility": "public",

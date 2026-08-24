@@ -12,6 +12,15 @@ xiuqiu-site 是 Qiu Market、Wallet Infrastructure 学习方向与 AI Engineerin
 
 历史公开模拟与交付记录仍作为可追溯证据保留，例如 [Wallet Reliability Lab](https://wallet-reliability-lab.vercel.app) 和 [Wallet Domain Engine](https://github.com/qianqiu0404/web3-wallet-engineer-lab)；它们不定义当前产品优先级。
 
+## Public evidence contract
+
+每个公开项目同时声明两个正交状态：
+
+- `publicRole` 只回答它是否属于当前叙事：`current-product`、`current-direction` 或 `historical-evidence`。
+- `claimState` 只回答公开 Claim 是否成熟：`locked`、`evidence-ready` 或 `publishable`。历史证据可以是 `publishable`，但不会因此成为当前产品。
+
+当前契约固定为 Qiu Market = `current-product / evidence-ready`，Wallet Infrastructure = `current-direction / locked`；其余六项只作为 `historical-evidence`。完整映射、来源优先级和失败关闭规则见 [`docs/public-evidence-contract.md`](docs/public-evidence-contract.md)。
+
 Production releases follow the exact-SHA, DB-first process in [`docs/release-controller.md`](docs/release-controller.md).
 
 Vercel Git deployments, including pull-request Previews, are disabled while the release controller is the sole production path. Preview may be restored only after Dashboard auto-assign is confirmed off and the controller has succeeded for the same live `main` SHA; see the release guide for the guarded, branch-scoped policy.
@@ -21,8 +30,8 @@ Vercel Git deployments, including pull-request Previews, are disabled while the 
 ## Architecture
 
 - `content/articles/*.md`: article sources and metadata
-- `content/projects/*.md`: project stage, evidence, target and boundaries
-- `content/obsidian-public/projects.json`: allowlisted project fields exported from Obsidian; no note bodies or source paths
+- `content/projects/*.md`: reviewed public release artifacts, including project role, Claim state, evidence, target and boundaries
+- `content/obsidian-public/projects.json`: optional allowlisted overlays exported only from explicit `publish: true` Obsidian frontmatter; an empty project list is valid and no note bodies or source paths are included
 - `content/obsidian-public/radar-weeklies.json`: human-reviewed weekly convergence exported from Obsidian public fields
 - `content/failure-cases/*.md`: structured wallet failure recovery playbook
 - `content/evidence/*.md`: reproducible, public-safe engineering evidence
@@ -94,12 +103,12 @@ Public freshness is based on when an event occurred, not when a provider backlog
 
 ## Content workflow
 
-1. Maintain project status and public-safe summaries in the canonical Obsidian project home.
-2. Mark publication candidates explicitly with `publish: true`; the default is private.
-3. Run `OBSIDIAN_VAULT_PATH=<vault> npm run sync:obsidian-public`. The exporter reads only allowlisted frontmatter fields and denies private paths.
-4. Edit site-only architecture details under `content/`; public projects must provide an accessible `repositoryUrl`, while private projects must not expose one.
-5. Run `npm run build` and commit the reviewed snapshot, source content, generated TypeScript and sitemap together.
-6. Keep verified implementation, partial evidence, design targets, and known limits visibly separate.
+1. Edit and review the complete public artifact under `content/projects/`; public projects must provide an accessible `repositoryUrl`, while private projects must not expose one.
+2. Optionally mark a canonical Obsidian project note with `publish: true` and all allowlisted public fields, including `public_role` and `claim_state`. Private notes remain unable to affect the site.
+3. Run `OBSIDIAN_VAULT_PATH=<vault> npm run sync:obsidian-public` only when an explicit public overlay is intended. The exporter reads frontmatter only from `20-项目做证据/` and `50-复盘看变化/每周/`, rejects symlink escapes, and may legitimately emit `projects: []`.
+4. Hosted builds start from the reviewed `content/projects/` artifacts, apply only known explicit overlays, and fail closed on unknown slugs, duplicate entries, incomplete fields or invalid role/Claim values.
+5. Run `npm run build` and commit reviewed source content, any explicit overlay, generated TypeScript and sitemap together.
+6. Keep verified implementation, partial evidence, design targets, historical evidence and known limits visibly separate.
 
 The local Obsidian sync command reads only explicitly marked public notes. Hosted builds consume committed repository content and never access a local vault.
 

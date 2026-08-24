@@ -29,6 +29,9 @@ test('AI public ledger is backed by published deliveries and verified public evi
     assert.ok(delivery.evidenceSlugs.includes(evidence.slug))
     assert.match(evidence.url || '', /^https:\/\//)
   })
+
+  assert.match(pageSource, /这些是历史公开交付，不代表当前 Wallet Infrastructure 已实现/)
+  assert.match(pageSource, /HISTORICAL EVIDENCE \/ PUBLIC/)
 })
 
 test('Review Before Claim keeps concrete finding, correction and test evidence together', () => {

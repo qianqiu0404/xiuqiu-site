@@ -10,14 +10,6 @@ export interface HomeServiceStep {
   description: string
 }
 
-export interface HomeProductGroup {
-  id: 'wallet-evidence' | 'market-server'
-  label: string
-  title: string
-  description: string
-  projectSlugs: readonly string[]
-}
-
 export type HomeDestination =
   | { kind: 'internal'; to: string }
   | { kind: 'external'; href: string }
@@ -68,25 +60,6 @@ export const homeSeo = {
   description:
     '维护 Qiu Market，并用 Wallet Infrastructure 学习、AI-native Engineering、自动化测试与公开证据说明 Web3 工程能力。',
 } as const
-
-export const flagshipProjectSlug = 'exchange-wallet-system'
-export const homeProductGroups: readonly HomeProductGroup[] = [
-  {
-    id: 'wallet-evidence',
-    label: 'Evidence Track',
-    title: 'Wallet Engineering',
-    description: '当前方向、公开实验和钱包工程材料按证据分层展示，不把历史材料包装成现役产品。',
-    projectSlugs: [flagshipProjectSlug, 'wallet-reliability-lab'],
-  },
-  {
-    id: 'market-server',
-    label: 'Product Line 02',
-    title: 'Market Server',
-    description: '把行情来源、降级状态、虚拟交易、账本与恢复收敛成一个可信市场事实服务。',
-    projectSlugs: ['s78-market-services'],
-  },
-] as const
-export const representativeProjectSlugs = homeProductGroups.flatMap(group => group.projectSlugs)
 
 export const homeCapabilities: HomeCapability[] = [
   {
@@ -221,9 +194,9 @@ export const homeAiWorkflow = [
 export const homeAiProofContexts: readonly HomeAiProofContext[] = [
   {
     id: 'wallet',
-    label: 'Current frame · Wallet Platform',
-    title: '让 AI 参与实现，让资金事实决定交付。',
-    summary: '公开交付记录保留 AI 参与、审查发现、纠正动作与人工决定，而不是用生成代码量替代工程证据。',
+    label: 'Historical evidence · Wallet Reliability Lab',
+    title: '让 AI 参与历史实验交付，让资金事实约束公开证据。',
+    summary: '这份历史公开交付记录保留 AI 参与、审查发现、纠正动作与人工决定，不代表当前 Wallet Infrastructure 已有公开实现。',
     steps: [
       { label: 'Scope', detail: '冻结状态机、签名边界与公开模拟范围', status: 'scoped' },
       { label: 'Build', detail: '实现 Runner、SSE、响应式工作台与验证候选', status: 'implemented' },
@@ -236,7 +209,7 @@ export const homeAiProofContexts: readonly HomeAiProofContext[] = [
       label: '查看 Wallet AI 交付',
       destination: { kind: 'internal', to: '/ai/deliveries/wallet-reliability-lab-v1' },
     },
-    assistantPrompt: 'AI 在 Wallet Platform 的工程交付中做了什么，人做了哪些决定？',
+    assistantPrompt: 'AI 在 Wallet Reliability Lab 历史交付中做了什么，人做了哪些决定？',
   },
   {
     id: 'market',

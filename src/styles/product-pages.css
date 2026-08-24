@@ -48,7 +48,9 @@
 }
 
 .product-back-link {
+  min-height: 44px;
   display: inline-flex;
+  align-items: center;
   margin-bottom: 50px;
   color: #7e8794;
   font-size: 11px;

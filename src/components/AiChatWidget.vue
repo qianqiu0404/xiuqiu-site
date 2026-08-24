@@ -59,7 +59,7 @@ const referenceTypeLabels: Record<SiteReference['type'], string> = {
   radar: '研究雷达',
   failure: '异常手册',
   evidence: '工程证据',
-  delivery: '交付记录',
+  delivery: '历史交付',
 }
 
 const canSend = computed(() => input.value.trim().length > 0 && !isLoading.value)
@@ -89,7 +89,7 @@ const currentPageContext = computed<PageContext>(() => {
     return {
       type: 'engineering',
       title: '工程档案',
-      summary: 'Exchange Wallet Infrastructure 的资金编排、风险控制、链交互、签名边界、失败场景和验证证据。',
+      summary: 'Qiu Market 是唯一 current product（evidence-ready）；Wallet Infrastructure 只是 locked current direction。钱包能力矩阵、失败手册与其余钱包项目属于学习或历史证据，不代表当前公开实现。',
     }
   }
 
@@ -97,7 +97,7 @@ const currentPageContext = computed<PageContext>(() => {
     return {
       type: 'engineering-failures',
       title: '钱包异常恢复手册',
-      summary: '30 个钱包后端核心异常；回答必须包含资金事实、先止损动作、排查与恢复依据，以及当前项目证据边界。',
+      summary: '30 个钱包后端历史/学习异常证据；回答必须包含资金事实、先止损动作、排查与恢复依据，并说明 Wallet Infrastructure 仍是 locked 当前方向。',
     }
   }
 
@@ -105,7 +105,7 @@ const currentPageContext = computed<PageContext>(() => {
     return {
       type: 'engineering-evidence',
       title: '工程证据覆盖',
-      summary: '八个钱包工程能力维度分别关联工程实现、自动化测试、可运行演示和公开说明，并明确已验证、部分验证与工程设计。',
+      summary: '证据账本按 publicRole 与 claimState 区分 2 个当前角色和 6 个历史项目；Wallet Infrastructure 的 locked Claim 不会因历史钱包证据而升级。',
     }
   }
 
@@ -146,9 +146,11 @@ const currentPageContext = computed<PageContext>(() => {
     const delivery = slug ? siteKnowledge.deliveryRecords.find(item => item.slug === slug) : undefined
     return {
       type: route.name === 'ai-delivery-detail' ? 'ai-delivery' : 'ai-deliveries',
-      title: delivery?.title || 'AI 协作真实交付记录',
+      title: delivery?.title || 'AI 历史公开交付记录',
       slug,
-      summary: delivery?.summary || '真实工程任务中的 AI 参与、人工判断、审查发现、纠正动作与公开验证。',
+      summary: delivery
+        ? `历史公开交付证据：${delivery.summary}；这不是当前 Wallet Infrastructure 的实现状态。`
+        : '历史工程任务中的 AI 参与、人工判断、审查发现、纠正动作与公开验证；这些记录不代表当前 Wallet Infrastructure 已实现。',
     }
   }
 
@@ -164,8 +166,8 @@ const currentPageContext = computed<PageContext>(() => {
   if (route.name === 'home') {
     return {
       type: 'home',
-      title: 'Wallet Platform × Market Server × AI Engineering',
-      summary: 'Wallet 与 Market 是构建的系统，AI 是贯穿计划、实现、审查、测试、文档和知识治理的工程工作流。',
+      title: 'Qiu Market current product × Wallet Infrastructure current direction',
+      summary: 'Qiu Market 是唯一 current product，公开 Claim 为 evidence-ready；Wallet Infrastructure 只是 current direction，公开 Claim 保持 locked。AI 贯穿计划、实现、审查、测试、文档和知识治理。',
     }
   }
 
@@ -231,8 +233,8 @@ const contextualPrompts = computed(() => {
       ]
     default:
       return [
-        'xiuqiu 的 Wallet Platform 包含哪些项目？',
-        'Market Server 完成后是什么产品？',
+        '当前产品与当前方向分别是什么，Claim 到了哪一步？',
+        'Qiu Market 完成后是什么产品，目前有哪些证据边界？',
         '哪些能力已经有可复现证据？',
       ]
   }

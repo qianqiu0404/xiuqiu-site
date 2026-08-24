@@ -17,6 +17,7 @@ import {
   evidenceVisibilityLabels,
   failureEvidenceStatusLabels,
 } from '../data/evidenceLedger'
+import { projectClaimStateLabels, projectPublicRoleLabels } from '../data/siteKnowledge'
 import type {
   EvidenceKind,
   EvidenceStatus,
@@ -89,7 +90,7 @@ async function revealEvidence(slug: string, clearFilters = true) {
 onMounted(() => {
   setSeoMeta({
     title: '工程证据覆盖｜xiuqiu',
-    description: '按工程实现、自动化测试、可运行演示和公开说明查看 Web3 钱包工程证据与当前边界。',
+    description: '按公开角色与 Claim 查看工程证据：Qiu Market 是当前产品，Wallet Infrastructure 是 locked 当前方向，其余钱包材料是历史证据。',
     path: '/engineering/evidence',
   })
 
@@ -106,7 +107,7 @@ onMounted(() => {
           <p class="cinematic-page-kicker">Engineering Evidence / Verification Ledger</p>
           <h1>每一个工程判断，<span>都应该能沿证据链追溯。</span></h1>
           <p>
-            账本按日期记录实现、测试、演示与公开说明，并把项目、AI 交付、失败边界和相关文章连接起来。没有关联记录时，就不补一个看似完整的节点。
+            账本按日期记录实现、测试、演示与公开说明。Qiu Market 是当前产品，Wallet Infrastructure 是 locked 当前方向；其余钱包项目与 AI 交付按历史证据展示。
           </p>
           <div class="verification-hero-meta">
             <span>{{ evidenceLedgerStats.total }} 条公开字段记录</span>
@@ -156,7 +157,7 @@ onMounted(() => {
               <select v-model="projectFilter">
                 <option value="all">全部项目</option>
                 <option v-for="project in evidenceProjectOptions" :key="project.slug" :value="project.slug">
-                  {{ project.name }}
+                  {{ project.name }} · {{ projectPublicRoleLabels[project.publicRole] }}
                 </option>
               </select>
             </label>
@@ -228,19 +229,19 @@ onMounted(() => {
                     <div class="proof-chain-records">
                       <router-link v-for="project in record.projects" :key="project.slug" :to="`/projects/${project.slug}`">
                         <strong>{{ project.name }}</strong>
-                        <small>{{ project.category }} · 更新于 {{ project.updatedAt }}</small>
+                        <small>{{ projectPublicRoleLabels[project.publicRole] }} · {{ projectClaimStateLabels[project.claimState] }} · 更新于 {{ project.updatedAt }}</small>
                       </router-link>
                     </div>
                   </section>
 
                   <section v-if="record.deliveries.length" class="proof-chain-node" data-node="delivery">
-                    <span>Delivery / Run</span>
+                    <span>Historical delivery / run</span>
                     <div class="proof-chain-records">
                       <router-link v-for="delivery in record.deliveries" :key="delivery.slug" :to="`/ai/deliveries/${delivery.slug}`">
                         <small>{{ deliveryStatusLabels[delivery.status] }} · {{ delivery.date }}</small>
                         <strong>{{ delivery.title }}</strong>
                         <p>{{ delivery.summary }}</p>
-                        <em v-if="delivery.knownLimits[0]">当前限制：{{ delivery.knownLimits[0] }}</em>
+                        <em v-if="delivery.knownLimits[0]">最后记录的限制：{{ delivery.knownLimits[0] }}</em>
                       </router-link>
                     </div>
                   </section>
@@ -388,13 +389,13 @@ onMounted(() => {
             </section>
             <section>
               <strong>Different states</strong>
-              <p>Evidence、Delivery 与 Failure 使用各自的状态语义；“已交付”“当前已实现”和“已验证”不会互相替代。</p>
+              <p>Evidence、Historical Delivery 与 Failure 使用各自的状态语义；“历史已交付”“当前已实现”和“已验证”不会互相替代。</p>
             </section>
           </div>
           <nav aria-label="继续检查工程证据">
             <router-link to="/engineering">返回 Proof Index</router-link>
             <router-link to="/engineering/failures">检查 Failure Playbook</router-link>
-            <router-link to="/ai/deliveries">查看 Delivery Ledger</router-link>
+            <router-link to="/ai/deliveries">查看 Historical Delivery Ledger</router-link>
           </nav>
         </footer>
       </div>

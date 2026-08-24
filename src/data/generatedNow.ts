@@ -7,8 +7,7 @@ export const nowSnapshot: NowSnapshot = {
   "summary": "Qiu Market 是当前可展示的 Web3 产品；Wallet Infrastructure 已完成私有 baseline 审计，但尚无通过公开 Claim 门禁的新实现。网站只同步可复核证据，不用历史项目填充当前进度。",
   "developmentProjectSlugs": [
     "s78-market-services",
-    "exchange-wallet-system",
-    "wallet-reliability-lab"
+    "exchange-wallet-system"
   ],
   "nextFocus": [
     "让 Qiu Market 的页面、运行状态与证据日期保持一致",
