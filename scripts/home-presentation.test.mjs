@@ -35,6 +35,7 @@ const articleDetailSource = readFileSync(new URL('../src/pages/ArticleDetailPage
 const routerSource = readFileSync(new URL('../src/router/index.ts', import.meta.url), 'utf8')
 const deliveryDetailSource = readFileSync(new URL('../src/pages/DeliveryDetailPage.vue', import.meta.url), 'utf8')
 const indexHtml = readFileSync(new URL('../index.html', import.meta.url), 'utf8')
+const readmeSource = readFileSync(new URL('../README.md', import.meta.url), 'utf8')
 const globalStyleSource = readFileSync(new URL('../src/style.css', import.meta.url), 'utf8')
 const homeStyleSource = readFileSync(new URL('../src/styles/home.css', import.meta.url), 'utf8')
 const notFoundStyleSource = readFileSync(new URL('../src/styles/not-found.css', import.meta.url), 'utf8')
@@ -197,6 +198,19 @@ test('configured homepage projects separate the current product from wallet evid
   assert.equal(projectsBySlug.get(flagshipProjectSlug)?.portfolioTier, 'exploration')
   assert.equal(projectsBySlug.get('wallet-reliability-lab')?.portfolioTier, 'verified')
   assert.equal(projectsBySlug.get('s78-market-services')?.portfolioTier, 'verified')
+})
+
+test('repository and homepage keep historical wallet work out of the current-product frame', () => {
+  assert.match(readmeSource, /当前只把 Qiu Market 作为产品呈现/)
+  assert.match(readmeSource, /Wallet Infrastructure.*当前钱包后端学习与工程证据方向/)
+  assert.match(readmeSource, /历史公开模拟与交付记录仍作为可追溯证据保留/)
+  assert.match(readmeSource, /它们不定义当前产品优先级/)
+  assert.doesNotMatch(readmeSource, /## Three-repository portfolio/)
+
+  assert.match(homeSource, /Historical wallet proof/)
+  assert.match(homeSource, /Historical AI delivery/)
+  assert.match(homeSource, /Historical delivery/)
+  assert.doesNotMatch(homeSource, /Featured delivery/)
 })
 
 test('homepage evidence highlights resolve to dated site evidence', () => {

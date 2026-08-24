@@ -1,24 +1,22 @@
 # xiuqiu-site
 
-[Live site](https://xiuqiu-site.vercel.app) · [Wallet Reliability Lab](https://wallet-reliability-lab.vercel.app) · [Wallet Domain Engine](https://github.com/qianqiu0404/web3-wallet-engineer-lab)
+[Live site](https://xiuqiu-site.vercel.app)
+
+xiuqiu-site 是 Qiu Market、Wallet Infrastructure 学习方向与 AI Engineering 交付证据的公开入口。当前只把 Qiu Market 作为产品呈现；Wallet Infrastructure 保持在学习、私有基线审计与最小失败证据阶段，不把历史材料或模拟实验包装成当前实现、生产钱包或真实资金经验。
+
+## Current frame
+
+- **Qiu Market**：当前可展示的 Web3 产品，使用虚拟资金验证市场事实、订单状态、账务与恢复边界。
+- **Wallet Infrastructure**：当前钱包后端学习与工程证据方向；公开页面只显示通过发布门禁的方向、证据等级和限制。
+- **AI Engineering**：记录 AI 参与需求、实现、审查与测试的过程，同时保留人工判断和最终放行边界。
+
+历史公开模拟与交付记录仍作为可追溯证据保留，例如 [Wallet Reliability Lab](https://wallet-reliability-lab.vercel.app) 和 [Wallet Domain Engine](https://github.com/qianqiu0404/web3-wallet-engineer-lab)；它们不定义当前产品优先级。
 
 Production releases follow the exact-SHA, DB-first process in [`docs/release-controller.md`](docs/release-controller.md).
 
 Vercel Git deployments, including pull-request Previews, are disabled while the release controller is the sole production path. Preview may be restored only after Dashboard auto-assign is confirmed off and the controller has succeeded for the same live `main` SHA; see the release guide for the guarded, branch-scoped policy.
 
-面向工程合作者的 Web3 钱包后端公开工程档案。网站用分层项目图谱区分旗舰系统、可验证作品和工程探索，并把行业雷达、异常恢复、测试证据和 AI 协作交付连接成一条可复核路径。
-
-## Three-repository portfolio
-
-```text
-xiuqiu-site                     个人技术品牌、文章与证据总入口
-        │
-        ├── wallet-reliability-lab      正式交互实验台
-        │
-        └── web3-wallet-engineer-lab    Go 领域引擎与资金不变量
-```
-
-公开仓库不包含四个私有钱包服务的源码、地址或配置。私有工程只展示脱敏后的边界、测试名称和当前限制。
+公开仓库不包含私有钱包服务的源码、地址或配置。私有工程只展示经过发布门禁的脱敏边界和当前限制。
 
 ## Architecture
 
@@ -72,7 +70,7 @@ DEEPSEEK_API_KEY=
 SEC_USER_AGENT=
 ```
 
-Keep `MARKET_RADAR_ENABLED` as a GitHub Actions variable set to `false` until migrations and the manual ingestion smoke test pass. Hermes stores `MARKET_RADAR_DISPATCH_TOKEN` and `WEIXIN_HOME_CHANNEL` only in its local secret environment; Weixin credentials never belong in Vercel or GitHub.
+Keep `MARKET_RADAR_ENABLED` set to `false` until migrations and the manual ingestion smoke test pass. Set it to `true` only for an approved release or worker lane. Scheduled workers may request the protected production environment only when `MARKET_RADAR_AUTOMATION_READY=true`; otherwise schedules remain dry-run. Hermes stores `MARKET_RADAR_DISPATCH_TOKEN` and `WEIXIN_HOME_CHANNEL` only in its local secret environment; Weixin credentials never belong in Vercel or GitHub.
 
 The right-side assistant is part of the public site. It uses the reviewed public knowledge graph, sends visitor questions to the DeepSeek API, and fails closed when the provider key is unavailable. The in-memory limiter is a best-effort per-instance guard, not a persistent production quota. Never commit a real API key. `.env.example` contains names and safe defaults only.
 

@@ -92,6 +92,27 @@ test('release DAG is migration, staged Vercel promotion, worker smoke, then acti
   assert.deepEqual(controller.jobs.mark_market_radar_worker_authorized.needs, [
     'preflight', 'mark_deployed_sha', 'enqueue_market_radar_notifications', 'promote_market_radar_worker',
   ])
+  const releaseSummary = controller.jobs.release_summary
+  assert.match(String(releaseSummary.if), /always\(\).*inputs\.operation == 'release'/)
+  assert.deepEqual(releaseSummary.needs, [
+    'preflight', 'production_migration', 'stage_vercel_candidate', 'verify_vercel_candidate',
+    'promote_vercel_production', 'mark_deployed_sha', 'enqueue_learning_radar_notifications',
+    'enqueue_market_radar_notifications', 'promote_market_radar_worker',
+    'mark_market_radar_worker_authorized',
+  ])
+  assert.equal(releaseSummary.environment, undefined)
+  assert.deepEqual(releaseSummary.permissions, {})
+  assert.doesNotMatch(JSON.stringify(releaseSummary), /secrets\./)
+  assert.equal(
+    releaseSummary.env.RELEASE_SHA,
+    '${{ needs.preflight.outputs.release_sha || inputs.release_sha || github.sha }}',
+  )
+  assert.equal(
+    releaseSummary.env.LEARNING_NOTIFICATION_RESULT,
+    '${{ needs.enqueue_learning_radar_notifications.result }}',
+  )
+  assert.match(releaseSummary.steps[0].run, /GITHUB_STEP_SUMMARY/)
+  assert.match(releaseSummary.steps[0].run, /Failed lanes remain failed/)
   assert.equal(
     controller.jobs.enqueue_learning_radar_notifications.steps
       .find(step => step.name === 'Enqueue idempotent Learning Radar notification')?.env.RADAR_NOTIFICATION_KINDS,

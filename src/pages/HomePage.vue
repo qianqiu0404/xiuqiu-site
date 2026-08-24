@@ -48,7 +48,7 @@ function requireEvidence(slug: string): EvidenceRecord {
 const marketProject = requireProject('s78-market-services')
 const walletEvidence = requireEvidence('wallet-lab-demo')
 const marketEvidence = requireEvidence('qiu-market-release-artifact')
-const featuredAiDelivery = deliveryRecords.find(item => item.slug === 'wallet-reliability-lab-v1')
+const historicalAiDelivery = deliveryRecords.find(item => item.slug === 'wallet-reliability-lab-v1')
 
 const productEntries = productPresentations.map(presentation => ({
   presentation,
@@ -59,10 +59,10 @@ const productEntries = productPresentations.map(presentation => ({
 const proofScenes: ProofScene[] = [
   {
     id: 'wallet',
-    label: 'Wallet proof',
+    label: 'Historical wallet proof',
     date: walletEvidence.verifiedAt,
     title: walletEvidence.title,
-    summary: walletEvidence.summary,
+    summary: `历史公开模拟证据：${walletEvidence.summary}`,
     to: '/projects/wallet-reliability-lab',
   },
   {
@@ -75,11 +75,11 @@ const proofScenes: ProofScene[] = [
   },
   {
     id: 'ai',
-    label: 'AI delivery',
-    date: featuredAiDelivery?.date || '',
-    title: featuredAiDelivery?.title || 'AI Engineering 交付账本',
-    summary: featuredAiDelivery?.summary || 'AI 参与、人工判断、审查纠正和验证结果被记录在同一条交付轨迹中。',
-    to: featuredAiDelivery ? `/ai/deliveries/${featuredAiDelivery.slug}` : '/ai/deliveries',
+    label: 'Historical AI delivery',
+    date: historicalAiDelivery?.date || '',
+    title: historicalAiDelivery?.title || 'AI Engineering 历史交付账本',
+    summary: historicalAiDelivery?.summary || '历史交付保留 AI 参与、人工判断、审查纠正和验证结果。',
+    to: historicalAiDelivery ? `/ai/deliveries/${historicalAiDelivery.slug}` : '/ai/deliveries',
   },
 ]
 
@@ -197,11 +197,11 @@ onMounted(() => setSeoMeta({ ...homeSeo, path: '/' }))
               <b>{{ String(index + 1).padStart(2, '0') }}</b>{{ step }}
             </span>
           </div>
-          <div v-if="featuredAiDelivery" class="home-ai-delivery">
-            <span>Featured delivery · {{ featuredAiDelivery.date }}</span>
-            <h3>{{ featuredAiDelivery.title }}</h3>
-            <p>{{ featuredAiDelivery.summary }}</p>
-            <router-link :to="`/ai/deliveries/${featuredAiDelivery.slug}`">查看审查与纠正记录 ↗</router-link>
+          <div v-if="historicalAiDelivery" class="home-ai-delivery">
+            <span>Historical delivery · {{ historicalAiDelivery.date }}</span>
+            <h3>{{ historicalAiDelivery.title }}</h3>
+            <p>{{ historicalAiDelivery.summary }}</p>
+            <router-link :to="`/ai/deliveries/${historicalAiDelivery.slug}`">查看历史审查与纠正记录 ↗</router-link>
           </div>
           <div class="home-ai-actions">
             <router-link to="/ai">进入 AI Engineering OS</router-link>
