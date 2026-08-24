@@ -87,6 +87,7 @@ test('release DAG is migration, staged Vercel promotion, worker smoke, then acti
   assert.deepEqual(controller.jobs.promote_vercel_production.needs, ['preflight', 'verify_vercel_candidate'])
   assert.deepEqual(controller.jobs.mark_deployed_sha.needs, ['preflight', 'promote_vercel_production'])
   assert.deepEqual(controller.jobs.enqueue_learning_radar_notifications.needs, ['preflight', 'mark_deployed_sha'])
+  assert.match(String(controller.jobs.enqueue_learning_radar_notifications.if), /vars\.LEARNING_RADAR_ENABLED == 'true'/)
   assert.deepEqual(controller.jobs.enqueue_market_radar_notifications.needs, ['preflight', 'mark_deployed_sha'])
   assert.deepEqual(controller.jobs.promote_market_radar_worker.needs, ['preflight', 'mark_deployed_sha', 'enqueue_market_radar_notifications'])
   assert.deepEqual(controller.jobs.mark_market_radar_worker_authorized.needs, [

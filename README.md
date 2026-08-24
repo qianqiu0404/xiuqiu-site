@@ -1,24 +1,24 @@
 # xiuqiu-site
 
-[Live site](https://xiuqiu-site.vercel.app) · [Wallet Reliability Lab](https://wallet-reliability-lab.vercel.app) · [Wallet Domain Engine](https://github.com/qianqiu0404/web3-wallet-engineer-lab)
+[Live site](https://xiuqiu-site.vercel.app) · [Qiu Market](https://xiuqiu-site.vercel.app/projects/s78-market-services) · [Wallet Infrastructure](https://xiuqiu-site.vercel.app/projects/exchange-wallet-system)
 
 Production releases follow the exact-SHA, DB-first process in [`docs/release-controller.md`](docs/release-controller.md).
 
 Vercel Git deployments, including pull-request Previews, are disabled while the release controller is the sole production path. Preview may be restored only after Dashboard auto-assign is confirmed off and the controller has succeeded for the same live `main` SHA; see the release guide for the guarded, branch-scoped policy.
 
-面向工程合作者的 Web3 钱包后端公开工程档案。网站用分层项目图谱区分旗舰系统、可验证作品和工程探索，并把行业雷达、异常恢复、测试证据和 AI 协作交付连接成一条可复核路径。
+面向工程合作者的钱包基础设施、虚拟资金交易与 AI Engineering 公开证据站。网站把当前方向、可验证作品和历史实验分层，并把行业雷达、异常恢复、测试证据和 AI 协作交付连接成一条可复核路径。
 
-## Three-repository portfolio
+## Current public structure
 
 ```text
-xiuqiu-site                     个人技术品牌、文章与证据总入口
+xiuqiu-site                     文章、项目与证据总入口
         │
-        ├── wallet-reliability-lab      正式交互实验台
-        │
-        └── web3-wallet-engineer-lab    Go 领域引擎与资金不变量
+        ├── Qiu Market                  当前公开产品；只使用虚拟资金
+        ├── Wallet Infrastructure       当前钱包工程与学习主线
+        └── Evidence registry           已验证作品、实验与历史证据
 ```
 
-公开仓库不包含四个私有钱包服务的源码、地址或配置。私有工程只展示脱敏后的边界、测试名称和当前限制。
+Evidence registry 中的公开 Lab、工具和历史实验不是并行现役产品。私有工程只展示脱敏后的边界、测试名称和当前限制，不公开源码、地址或配置。
 
 ## Architecture
 

@@ -32,7 +32,8 @@ Create a protected GitHub Environment named `production-release` and restrict it
 
 - Environment secret: `VERCEL_TOKEN` (project-scoped, minimum practical lifetime and permissions).
 - Environment variables: `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`.
-- Learning notification Environment secret: `LEARNING_RADAR_DATABASE_URL`. It is never allowed to fall back to the Market database URL; while M4 is disabled, a missing secret keeps only the Learning notification lane failed/partial.
+- Repository variable: `LEARNING_RADAR_ENABLED`. Keep it `false` until M4 and the isolated Learning database are explicitly enabled. While false, the Learning notification job is visibly skipped and does not turn an otherwise successful release red.
+- Learning notification Environment secret: `LEARNING_RADAR_DATABASE_URL`. It is never allowed to fall back to the Market database URL. When `LEARNING_RADAR_ENABLED=true`, a missing or invalid secret fails only the Learning notification lane.
 - Market Environment secrets: `MARKET_RADAR_DATABASE_URL`, `DEEPSEEK_API_KEY`, `SEC_USER_AGENT`.
 - Repository variable: `MARKET_RADAR_ENABLED`. Keep it `false` for R0. Set it to `true` immediately before an approved controller release; the exact-SHA deployment marker still prevents worker execution until the controller completes. Set it back to `false` to stop schedules.
 
