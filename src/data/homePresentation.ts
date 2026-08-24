@@ -11,7 +11,7 @@ export interface HomeServiceStep {
 }
 
 export interface HomeProductGroup {
-  id: 'wallet-platform' | 'market-server'
+  id: 'wallet-evidence' | 'market-server'
   label: string
   title: string
   description: string
@@ -64,19 +64,19 @@ export const walletLabUrl = 'https://wallet-reliability-lab.vercel.app'
 export const githubProfileUrl = 'https://github.com/qianqiu0404'
 export const githubRepositoriesUrl = 'https://github.com/qianqiu0404?tab=repositories'
 export const homeSeo = {
-  title: 'xiuqiu｜Wallet Launchpad、Qiu Market 与 AI Engineering',
+  title: 'xiuqiu｜Qiu Market、Wallet Infrastructure 与 AI Engineering',
   description:
-    '构建 Wallet Launchpad 与 Qiu Market，并用 AI-native Engineering 工作流、自动化测试、失败恢复和公开证据说明 Web3 系统能力。',
+    '维护 Qiu Market，并用 Wallet Infrastructure 学习、AI-native Engineering、自动化测试与公开证据说明 Web3 工程能力。',
 } as const
 
 export const flagshipProjectSlug = 'exchange-wallet-system'
 export const homeProductGroups: readonly HomeProductGroup[] = [
   {
-    id: 'wallet-platform',
-    label: 'Product Line 01',
-    title: 'Wallet Platform',
-    description: '从多链资金底座、控制平面到公开可靠性实验，形成一条可以运行、验证和继续扩展的钱包产品线。',
-    projectSlugs: [flagshipProjectSlug, 'wallet-launchpad', 'wallet-reliability-lab'],
+    id: 'wallet-evidence',
+    label: 'Evidence Track',
+    title: 'Wallet Engineering',
+    description: '当前方向、公开实验和钱包工程材料按证据分层展示，不把历史材料包装成现役产品。',
+    projectSlugs: [flagshipProjectSlug, 'wallet-reliability-lab'],
   },
   {
     id: 'market-server',
@@ -178,9 +178,9 @@ export const homeProofMethods: HomeProofMethod[] = [
 
 export const homeEvidenceHighlights: HomeEvidenceHighlight[] = [
   {
-    evidenceSlug: 'wallet-launchpad-no-funds-acceptance',
-    label: '多链无资金验收门',
-    linkLabel: '查看最新验收证据',
+    evidenceSlug: 'qiu-market-release-artifact',
+    label: 'Qiu Market 可恢复交易基线',
+    linkLabel: '查看 Market 验证证据',
     destination: { kind: 'internal', to: '/engineering/evidence' },
   },
   {
@@ -231,7 +231,7 @@ export const homeAiProofContexts: readonly HomeAiProofContext[] = [
       { label: 'Verify', detail: '构建、race、重连和公开安全门禁通过', status: 'verified' },
       { label: 'Human decision', detail: '公开版保持 simulation，不包装成生产钱包', status: 'human-gate' },
     ],
-    boundary: '当前证据来自 Wallet Reliability Lab 公开交付；Launchpad 的多链注资 E2E 与生产签名集群仍需单独验收。',
+    boundary: '当前证据来自 Wallet Reliability Lab 公开交付；它是 simulation-only 实验，不代表当前生产钱包、真实资金或签名集群。',
     evidence: {
       label: '查看 Wallet AI 交付',
       destination: { kind: 'internal', to: '/ai/deliveries/wallet-reliability-lab-v1' },

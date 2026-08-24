@@ -160,6 +160,47 @@
   padding-bottom: clamp(4.5rem, 8vw, 7.5rem);
 }
 
+.trade-radar-snapshot-notice {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  border: 1px solid rgba(24, 125, 115, 0.28);
+  padding: 1rem 1.15rem;
+  background: rgba(90, 215, 199, 0.08);
+}
+
+.trade-radar-snapshot-notice strong {
+  color: #136c63;
+  font: 650 0.68rem/1.45 var(--mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.trade-radar-snapshot-notice p {
+  margin: 0;
+  color: #46555a;
+  font-size: 0.8rem;
+  line-height: 1.65;
+}
+
+.trade-radar-detail-hero .trade-radar-snapshot-notice,
+.trade-radar-event-page .trade-radar-snapshot-notice {
+  border-color: rgba(90, 215, 199, 0.28);
+  background: rgba(90, 215, 199, 0.07);
+}
+
+.trade-radar-detail-hero .trade-radar-snapshot-notice strong,
+.trade-radar-event-page .trade-radar-snapshot-notice strong {
+  color: #8ce9dd;
+}
+
+.trade-radar-detail-hero .trade-radar-snapshot-notice p,
+.trade-radar-event-page .trade-radar-snapshot-notice p {
+  color: #a8b4bd;
+}
+
 .trade-radar-status {
   position: relative;
   z-index: 2;
@@ -1276,6 +1317,7 @@
   .trade-radar-boundary strong { font-size: 0.92rem; }
   .trade-radar-boundary p { font-size: 0.68rem; line-height: 1.4; }
   .trade-radar-status { margin-top: -1.25rem; }
+  .trade-radar-snapshot-notice { grid-template-columns: minmax(0, 1fr); gap: 0.3rem; }
   .trade-radar-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .trade-radar-metrics div { min-height: 3.65rem; padding: 0.55rem 0.7rem; }
   .trade-radar-metrics div:nth-child(2) { border-right: 0; }

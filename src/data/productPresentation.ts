@@ -1,9 +1,7 @@
-import { walletLabUrl } from './homePresentation.ts'
-
-export type ProductTheme = 'wallet' | 'market'
+export type ProductTheme = 'market'
 
 export interface ProductPresentation {
-  slug: 'wallet-launchpad' | 's78-market-services'
+  slug: 's78-market-services'
   theme: ProductTheme
   index: string
   label: string
@@ -14,7 +12,7 @@ export interface ProductPresentation {
     label: string
     href: string
     boundary: string
-    role: 'product' | 'companion'
+    role: 'product'
   }
   proofAction: {
     label: string
@@ -28,30 +26,9 @@ export const qiuMarketUrl = 'https://qiu-market.vercel.app'
 
 export const productPresentations: readonly ProductPresentation[] = [
   {
-    slug: 'wallet-launchpad',
-    theme: 'wallet',
-    index: '01',
-    label: 'Wallet Platform',
-    shortName: 'Wallet Launchpad',
-    heroLines: ['钱包控制平面', '资金事实可操作'],
-    promise: '让团队在同一个入口理解链与资产 readiness、资金状态、签名健康和异常恢复，而不把浏览器带进私钥与基础设施边界。',
-    publicAction: {
-      label: '运行配套实验（simulation-only）',
-      href: walletLabUrl,
-      boundary: '这是独立的 simulation-only 配套实验，不是 Wallet Launchpad 或其受保护 Preview。',
-      role: 'companion',
-    },
-    proofAction: {
-      label: '检查 Wallet Launchpad 证据',
-      to: '/engineering/evidence#wallet-launchpad-no-funds-acceptance',
-    },
-    flowLabel: 'A withdrawal through explicit trust boundaries',
-    proofTitle: '从测试网闭环与无资金门禁，说明系统已经走到哪里。',
-  },
-  {
     slug: 's78-market-services',
     theme: 'market',
-    index: '02',
+    index: '01',
     label: 'Market Server',
     shortName: 'Qiu Market',
     heroLines: ['可信市场事实', '交易状态可恢复'],

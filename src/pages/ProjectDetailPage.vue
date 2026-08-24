@@ -10,12 +10,17 @@ const route = useRoute()
 const router = useRouter()
 const projectKey = computed(() => String(route.params.project || ''))
 const project = computed(() => getProjectByKey(projectKey.value))
-const presentation = computed(() => productPresentationBySlug.get(project.value?.slug as 'wallet-launchpad' | 's78-market-services'))
+const presentation = computed(() => productPresentationBySlug.get(project.value?.slug as 's78-market-services'))
 const relatedArticles = computed(() => project.value ? getArticlesBySlugs(project.value.relatedArticleSlugs).slice(0, 3) : [])
 
 watchEffect(() => {
   if (!project.value) {
-    setSeoMeta({ title: 'Project not found | xiuqiu', path: route.fullPath, indexable: false })
+    setSeoMeta({
+      title: '项目未公开或不存在｜xiuqiu',
+      description: '这个项目页面不存在、已退役或尚未公开。请返回项目图谱查看当前产品与工程证据。',
+      path: route.fullPath,
+      indexable: false,
+    })
     return
   }
   setSeoMeta({
@@ -37,27 +42,17 @@ watchEffect(() => {
     <section class="product-hero" aria-labelledby="product-title">
       <div class="container product-hero-layout">
         <div class="product-hero-copy">
-          <router-link class="product-back-link" to="/">← 返回双项目首页</router-link>
+          <router-link class="product-back-link" to="/">← 返回首页</router-link>
           <p class="cinematic-page-kicker">{{ presentation.index }} / {{ presentation.label }}</p>
           <h1 id="product-title"><span v-for="line in presentation.heroLines" :key="line">{{ line }}</span></h1>
           <p class="product-hero-lead">{{ presentation.promise }}</p>
           <div class="product-hero-actions">
-            <template v-if="presentation.publicAction.role === 'companion'">
-              <router-link class="product-button product-button--primary" :to="presentation.proofAction.to">
-                {{ presentation.proofAction.label }}
-              </router-link>
-              <a class="product-button product-button--quiet" :href="presentation.publicAction.href" target="_blank" rel="noopener">
-                {{ presentation.publicAction.label }} ↗
-              </a>
-            </template>
-            <template v-else>
-              <a class="product-button product-button--primary" :href="presentation.publicAction.href" target="_blank" rel="noopener">
-                {{ presentation.publicAction.label }} ↗
-              </a>
-              <router-link class="product-button product-button--quiet" :to="presentation.proofAction.to">
-                {{ presentation.proofAction.label }}
-              </router-link>
-            </template>
+            <a class="product-button product-button--primary" :href="presentation.publicAction.href" target="_blank" rel="noopener">
+              {{ presentation.publicAction.label }} ↗
+            </a>
+            <router-link class="product-button product-button--quiet" :to="presentation.proofAction.to">
+              {{ presentation.proofAction.label }}
+            </router-link>
           </div>
           <p class="product-public-boundary">{{ presentation.publicAction.boundary }}</p>
         </div>
@@ -149,28 +144,15 @@ watchEffect(() => {
       <div class="container product-finale-layout">
         <div>
           <p class="cinematic-page-kicker">Continue from evidence</p>
-          <h2 v-if="presentation.publicAction.role === 'companion'" id="product-finale-title">
-            先检查 Launchpad 的工程证据，再运行独立的配套实验。
-          </h2>
-          <h2 v-else id="product-finale-title">先体验产品，再检查它如何被证明。</h2>
+          <h2 id="product-finale-title">先体验产品，再检查它如何被证明。</h2>
         </div>
         <div class="product-finale-actions">
-          <template v-if="presentation.publicAction.role === 'companion'">
-            <router-link class="product-button product-button--primary" :to="presentation.proofAction.to">
-              {{ presentation.proofAction.label }}
-            </router-link>
-            <a class="product-button product-button--quiet" :href="presentation.publicAction.href" target="_blank" rel="noopener">
-              {{ presentation.publicAction.label }} ↗
-            </a>
-          </template>
-          <template v-else>
-            <a class="product-button product-button--primary" :href="presentation.publicAction.href" target="_blank" rel="noopener">
-              {{ presentation.publicAction.label }} ↗
-            </a>
-            <router-link class="product-button product-button--quiet" :to="presentation.proofAction.to">
-              {{ presentation.proofAction.label }}
-            </router-link>
-          </template>
+          <a class="product-button product-button--primary" :href="presentation.publicAction.href" target="_blank" rel="noopener">
+            {{ presentation.publicAction.label }} ↗
+          </a>
+          <router-link class="product-button product-button--quiet" :to="presentation.proofAction.to">
+            {{ presentation.proofAction.label }}
+          </router-link>
           <router-link class="product-text-link" to="/projects">全部项目 →</router-link>
         </div>
       </div>
@@ -225,8 +207,9 @@ watchEffect(() => {
     </div>
   </section>
 
-  <div v-else class="container not-found">
-    <p class="not-found-title">项目未公开或不存在</p>
+  <div v-else class="container not-found" aria-labelledby="project-not-found-title">
+    <h1 id="project-not-found-title" class="not-found-title">项目未公开或不存在</h1>
+    <p class="not-found-desc">这个项目可能已退役、移动或尚未公开；项目图谱只保留当前产品与可核验的工程证据。</p>
     <router-link to="/projects" class="btn btn-primary">返回项目图谱</router-link>
   </div>
 </template>

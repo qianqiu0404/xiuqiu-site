@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { allMarketRadars } from '../data/generatedMarketRadarAll'
 import type { MarketRadarEvent as StaticMarketRadarEvent } from '../data/generatedMarketRadars'
 import { findStaticMarketRadarEvent, type StaticMarketRadarEventMatch } from '../data/marketRadarPresentation'
+import { getSnapshotFreshness } from '../data/snapshotFreshness'
 import type { MarketRadarEvent } from '../market-radar/contracts'
 import { setSeoMeta } from '../utils/seo'
 import '../styles/market-radar.css'
@@ -35,6 +36,7 @@ interface EventPresentation {
 const event = ref<EventPresentation | null>(null)
 const error = ref('')
 const loading = ref(true)
+const eventFreshness = computed(() => getSnapshotFreshness(event.value?.snapshotSlug || event.value?.publishedAt))
 let requestVersion = 0
 
 const directionLabels = { bullish: '偏多', bearish: '偏空', mixed: '分歧', neutral: '中性' }
@@ -133,7 +135,7 @@ watch(() => String(route.params.id || ''), async (id) => {
 </script>
 
 <template>
-  <div class="trade-radar-page trade-radar-event-page" lang="zh-CN">
+  <div class="trade-radar-page trade-radar-event-page" lang="zh-CN" :data-snapshot-state="eventFreshness.state">
     <div class="container trade-radar-shell">
       <router-link class="trade-radar-back" to="/market-radar">← 返回 Trade Radar</router-link>
 
@@ -154,7 +156,7 @@ watch(() => String(route.params.id || ''), async (id) => {
             <strong>{{ event.priority }}</strong>
             <span v-if="event.score !== undefined">Score {{ event.score }}</span>
             <span v-if="event.horizon">{{ horizonLabels[event.horizon] }}</span>
-            <span v-if="event.status">{{ statusLabels[event.status] }}</span>
+            <span v-if="event.status">{{ eventFreshness.isArchive ? `快照时：${statusLabels[event.status]}` : statusLabels[event.status] }}</span>
             <span v-if="event.category">{{ categoryLabels[event.category] }}</span>
           </div>
           <div class="trade-radar-event-dates">
@@ -163,9 +165,13 @@ watch(() => String(route.params.id || ''), async (id) => {
           </div>
         </header>
 
-        <p class="trade-radar-kicker">{{ event.origin === 'api' ? 'Database-backed event record' : 'Generated static event fallback' }}</p>
+        <p class="trade-radar-kicker">{{ eventFreshness.isArchive ? 'Archived event record' : event.origin === 'api' ? 'Database-backed event record' : 'Generated static event fallback' }}</p>
         <h1>{{ event.title }}</h1>
         <p class="trade-radar-event-lead">{{ event.summary }}</p>
+        <div v-if="eventFreshness.isArchive" class="trade-radar-snapshot-notice" role="status">
+          <strong>{{ eventFreshness.label }}</strong>
+          <p>这条记录来自历史快照；事件状态和观察条件只描述当时，不代表今天仍然有效。</p>
+        </div>
 
         <section class="trade-radar-event-fact"><h2>为什么重要</h2><p>{{ event.whyItMatters }}</p></section>
 

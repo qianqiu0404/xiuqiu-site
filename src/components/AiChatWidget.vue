@@ -47,7 +47,7 @@ let activeRequestController: AbortController | null = null
 const messages = ref<ChatMessage[]>([
   {
     role: 'assistant',
-    content: '你好，我是 xiuqiu AI。我只基于本站公开资料，帮你理解 Wallet Launchpad、Qiu Market Server、钱包工程证据，以及它们的目标完成形态与当前验证边界。',
+    content: '你好，我是 xiuqiu AI。我只基于本站公开资料，帮你理解 Qiu Market、Wallet Infrastructure 学习方向、钱包工程证据，以及它们当前真实的验证边界。',
   },
 ])
 

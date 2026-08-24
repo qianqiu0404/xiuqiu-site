@@ -13,7 +13,6 @@ import {
   homeSeo,
   homeServiceFlow,
   representativeProjectSlugs,
-  walletLabUrl,
 } from '../src/data/homePresentation.ts'
 import { evidenceRecords } from '../src/data/generatedEvidence.ts'
 import { evidenceLedgerRecords, evidenceLedgerStats } from '../src/data/evidenceLedger.ts'
@@ -128,6 +127,14 @@ test('skip, homepage utility actions and 404 recovery keep 44px targets', () => 
   assert.match(notFoundStyleSource, /\.route-not-found-home\s*\{[\s\S]*?min-height: 44px;/)
 })
 
+test('missing project pages fail closed with a named heading and recovery path', () => {
+  assert.match(projectDetailSource, /title: '项目未公开或不存在｜xiuqiu'/)
+  assert.match(projectDetailSource, /indexable: false/)
+  assert.match(projectDetailSource, /v-else class="container not-found" aria-labelledby="project-not-found-title"/)
+  assert.match(projectDetailSource, /<h1 id="project-not-found-title" class="not-found-title">/)
+  assert.match(projectDetailSource, /<router-link to="\/projects" class="btn btn-primary">返回项目图谱<\/router-link>/)
+})
+
 test('homepage presentation keeps the intended cardinalities', () => {
   assert.equal(homeCapabilities.length, 4)
   assert.equal(homeServiceFlow.length, 4)
@@ -159,13 +166,12 @@ test('every homepage action has one type-safe destination', () => {
   })
 })
 
-test('configured homepage projects foreground the two finished-product directions', () => {
+test('configured homepage projects separate the current product from wallet evidence', () => {
   const projectsBySlug = new Map(projects.map(project => [project.slug, project]))
 
-  assert.equal(representativeProjectSlugs.length, 4)
+  assert.equal(representativeProjectSlugs.length, 3)
   assert.deepEqual([...representativeProjectSlugs], [
     'exchange-wallet-system',
-    'wallet-launchpad',
     'wallet-reliability-lab',
     's78-market-services',
   ])
@@ -173,8 +179,8 @@ test('configured homepage projects foreground the two finished-product direction
     homeProductGroups.map(group => ({ id: group.id, projectSlugs: [...group.projectSlugs] })),
     [
       {
-        id: 'wallet-platform',
-        projectSlugs: ['exchange-wallet-system', 'wallet-launchpad', 'wallet-reliability-lab'],
+        id: 'wallet-evidence',
+        projectSlugs: ['exchange-wallet-system', 'wallet-reliability-lab'],
       },
       {
         id: 'market-server',
@@ -183,23 +189,21 @@ test('configured homepage projects foreground the two finished-product direction
     ],
   )
   assertUnique([...representativeProjectSlugs], 'homepage project slugs')
-  assert.ok(representativeProjectSlugs.includes('wallet-launchpad'))
   assert.ok(representativeProjectSlugs.includes('s78-market-services'))
 
   representativeProjectSlugs.forEach(slug =>
     assert.ok(projectsBySlug.has(slug), `Missing generated project: ${slug}`),
   )
-  assert.equal(projectsBySlug.get(flagshipProjectSlug)?.portfolioTier, 'flagship')
-  representativeProjectSlugs.slice(1).forEach(slug => {
-    assert.equal(projectsBySlug.get(slug)?.portfolioTier, 'verified')
-  })
+  assert.equal(projectsBySlug.get(flagshipProjectSlug)?.portfolioTier, 'exploration')
+  assert.equal(projectsBySlug.get('wallet-reliability-lab')?.portfolioTier, 'verified')
+  assert.equal(projectsBySlug.get('s78-market-services')?.portfolioTier, 'verified')
 })
 
 test('homepage evidence highlights resolve to dated site evidence', () => {
   const evidenceBySlug = new Map(evidenceRecords.map(record => [record.slug, record]))
 
   assert.deepEqual(homeEvidenceHighlights.map(item => item.evidenceSlug), [
-    'wallet-launchpad-no-funds-acceptance',
+    'qiu-market-release-artifact',
     'failure-playbook-public',
     'wallet-lab-demo',
   ])
@@ -234,8 +238,8 @@ test('homepage and primary navigation keep their structural contract', () => {
   const heroSource = homeSource.match(/<section class="cinematic-hero"[\s\S]*?<\/section>/)?.[0]
   assert.ok(heroSource, 'Homepage hero markup is missing')
   assert.equal((heroSource.match(/class="cinematic-button /g) || []).length, 2)
-  assert.match(heroSource, /to="\/projects\/wallet-launchpad"/)
   assert.match(heroSource, /to="\/projects\/s78-market-services"/)
+  assert.match(heroSource, /to="\/projects"/)
   assert.match(homeSource, /id="products"/)
   assert.match(homeSource, /id="ai-engineering"/)
   assert.match(homeSource, /id="evidence"/)
@@ -256,11 +260,10 @@ test('homepage and primary navigation keep their structural contract', () => {
 
   assert.match(appSource, /id="primary-navigation"/)
   const primaryLinks = linksInClass('nav-primary-links')
-  assert.equal(primaryLinks.length, 6)
+  assert.equal(primaryLinks.length, 5)
   assertUnique(primaryLinks.map(link => link.to), 'primary navigation destinations')
   assertUnique(primaryLinks.map(link => link.label), 'primary navigation labels')
   assert.deepEqual(primaryLinks, [
-    { to: '/projects/wallet-launchpad', label: 'Wallet' },
     { to: '/projects/s78-market-services', label: 'Qiu Market' },
     { to: '/ai', label: 'AI' },
     { to: '/engineering/evidence', label: 'Proof' },
@@ -279,7 +282,6 @@ test('homepage and primary navigation keep their structural contract', () => {
     'all navigation destinations',
   )
   assert.deepEqual(primaryLinks.map(link => link.to), [
-    '/projects/wallet-launchpad',
     '/projects/s78-market-services',
     '/ai',
     '/engineering/evidence',
@@ -292,7 +294,7 @@ test('homepage and primary navigation keep their structural contract', () => {
   assert.match(appSource, /class="nav-mobile-context"/)
   assert.match(appSource, /'trade-radar': 'Trade Radar'/)
   assert.match(appSource, /@click="toggleNav"/)
-  assert.equal((appSource.match(/@keydown\.space\.prevent="activateLinkOnSpace"/g) || []).length, 9)
+  assert.equal((appSource.match(/@keydown\.space\.prevent="activateLinkOnSpace"/g) || []).length, 8)
   assert.match(appSource, /navToggle\.value\?\.focus\(\)/)
   assert.match(appSource, /mainContent\.value\?\.focus\(\{ preventScroll: true \}\)/)
   assert.match(appSource, /<main id="main-content" ref="mainContent" tabindex="-1">/)
@@ -306,9 +308,8 @@ test('homepage and primary navigation keep their structural contract', () => {
   assert.match(globalStyleSource, /@media \(prefers-reduced-motion: reduce\)/)
 })
 
-test('two product home presentations keep public products separate from companion experiments', () => {
+test('product presentation contains only the current public product', () => {
   assert.deepEqual(productPresentations.map(item => item.slug), [
-    'wallet-launchpad',
     's78-market-services',
   ])
   productPresentations.forEach(item => {
@@ -317,20 +318,8 @@ test('two product home presentations keep public products separate from companio
     assert.match(item.proofAction.to, /^\//)
   })
 
-  const walletPresentation = productPresentations.find(item => item.slug === 'wallet-launchpad')
   const marketPresentation = productPresentations.find(item => item.slug === 's78-market-services')
-  assert.ok(walletPresentation)
   assert.ok(marketPresentation)
-  assert.equal(walletPresentation.publicAction.role, 'companion')
-  assert.equal(walletPresentation.publicAction.href, walletLabUrl)
-  assert.match(walletPresentation.publicAction.label, /simulation-only/)
-  assert.match(walletPresentation.publicAction.boundary, /不是 Wallet Launchpad/)
-  assert.equal(
-    walletPresentation.proofAction.to,
-    '/engineering/evidence#wallet-launchpad-no-funds-acceptance',
-  )
-  assert.match(homeSource, /v-if="entry\.presentation\.publicAction\.role === 'companion'"/)
-  assert.match(homeSource, /:to="entry\.presentation\.proofAction\.to"/)
   assert.equal(marketPresentation.publicAction.role, 'product')
   assert.equal(qiuMarketUrl, 'https://qiu-market.vercel.app')
 })
@@ -354,7 +343,6 @@ test('AI proof rails preserve evidence and human-decision boundaries', () => {
 
 test('route-driven visual modes keep shared chrome without hiding their desktop AI entry', () => {
   assert.match(appSource, /currentRoute\.meta\.visual/)
-  assert.match(appSource, /wallet-launchpad/)
   assert.match(appSource, /s78-market-services/)
   assert.match(appSource, /:cinematic="usesCinematicChrome"/)
   assert.match(appSource, /:hide-desktop-toggle="isCinematicHome"/)
@@ -394,13 +382,9 @@ test('cinematic evidence pages preserve their source-backed interaction contract
 
   assert.match(
     projectDetailSource,
-    /<template v-if="presentation\.publicAction\.role === 'companion'">[\s\S]*?<router-link class="product-button product-button--primary" :to="presentation\.proofAction\.to">/,
+    /<a class="product-button product-button--primary" :href="presentation\.publicAction\.href"/,
   )
-  assert.match(
-    projectDetailSource,
-    /<a class="product-button product-button--quiet" :href="presentation\.publicAction\.href"/,
-  )
-  assert.match(projectDetailSource, /先检查 Launchpad 的工程证据，再运行独立的配套实验/)
+  assert.match(projectDetailSource, /<router-link class="product-button product-button--quiet" :to="presentation\.proofAction\.to">/)
 
   assert.match(aiPageSource, /executionKernel/)
   assert.match(aiPageSource, /latestDeliveries/)

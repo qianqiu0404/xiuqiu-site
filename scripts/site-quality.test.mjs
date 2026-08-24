@@ -10,6 +10,7 @@ import { projects } from '../src/data/generatedProjects.ts'
 import { radarWeeklies } from '../src/data/generatedRadarWeeklies.ts'
 import { dailyRadars } from '../src/data/generatedRadarAll.ts'
 import { allMarketRadars } from '../src/data/generatedMarketRadarAll.ts'
+import { getRadarCollectionSeo } from '../src/data/snapshotFreshness.ts'
 import { parseMarkdownFrontmatter } from './frontmatter.mjs'
 
 const SITE_ORIGIN = 'https://xiuqiu-site.vercel.app'
@@ -145,8 +146,8 @@ function expectedMetadataByRoute() {
     `${articleSummaries.length} 篇关于交易所钱包、多链模型、签名服务、Go 后端与 AI 工程工作流的学习笔记。`
   const metadata = new Map([
     ['/', {
-      title: 'xiuqiu｜Wallet Launchpad、Qiu Market 与 AI Engineering',
-      description: '构建 Wallet Launchpad 与 Qiu Market，并用 AI-native Engineering 工作流、自动化测试、失败恢复和公开证据说明 Web3 系统能力。',
+      title: 'xiuqiu｜Qiu Market、Wallet Infrastructure 与 AI Engineering',
+      description: '维护 Qiu Market，并用 Wallet Infrastructure 学习、AI-native Engineering、自动化测试与公开证据说明 Web3 工程能力。',
     }],
     ['/engineering', {
       title: '工程证据索引｜xiuqiu',
@@ -162,7 +163,7 @@ function expectedMetadataByRoute() {
     }],
     ['/projects', {
       title: '项目图谱｜xiuqiu',
-      description: '先进入 Wallet Launchpad 与 Qiu Market 两个产品主页，再按证据层级浏览其他 Web3 与 AI 工程项目。',
+      description: '先进入 Qiu Market 当前产品主页，再按证据层级浏览钱包基础设施、实验与其他 Web3 工程项目。',
     }],
     ['/ai', {
       title: 'AI Engineering OS｜xiuqiu',
@@ -185,12 +186,10 @@ function expectedMetadataByRoute() {
       description: '按阶段归档的 Web3 钱包工程学习结论、验证证据与下一步。',
     }],
     ['/radar', {
-      title: '行业情报雷达｜xiuqiu',
-      description: '面向 Web3 钱包与 AI 工程的每日行业简报、人工复核周度收敛和可追溯历史档案。',
+      ...getRadarCollectionSeo('learning', dailyRadars[0]?.date),
     }],
     ['/market-radar', {
-      title: '交易研究雷达｜xiuqiu',
-      description: '基于公开来源的静态交易事件观察：事实、影响资产、观察条件和失效边界分开呈现，不调用实时行情 API。',
+      ...getRadarCollectionSeo('market', allMarketRadars[0]?.date),
     }],
     ['/articles', {
       title: '工程笔记｜xiuqiu Web3 钱包学习档案',

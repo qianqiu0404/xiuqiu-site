@@ -25,13 +25,13 @@
     "test:home": "node --test scripts/home-presentation.test.mjs",
     "test:ai": "node --test scripts/ai-evidence-presentation.test.mjs",
     "test:assistant": "node --test scripts/ai-assistant.test.mjs",
-    "test:radar": "node --test scripts/learning-radar-v2.test.mjs scripts/radar-publication-boundary.test.mjs scripts/radar-pipeline.test.mjs scripts/radar-presentation.test.mjs scripts/researchops-ledger.test.mjs scripts/daily-radar-workflow.test.mjs",
+    "test:radar": "node --test scripts/learning-radar-v2.test.mjs scripts/radar-publication-boundary.test.mjs scripts/radar-pipeline.test.mjs scripts/radar-presentation.test.mjs scripts/researchops-ledger.test.mjs scripts/daily-radar-workflow.test.mjs scripts/snapshot-freshness.test.mjs",
     "test:market-radar": "node --test scripts/market-radar.test.mjs scripts/market-radar-worker.test.mjs scripts/market-radar-event-contract.test.mjs scripts/static-market-radar-workflow.test.mjs",
     "test:notifications": "node --test scripts/radar-notifications.test.mjs",
     "test:release": "node --test scripts/release-workflow.test.mjs scripts/market-research-production.test.mjs",
     "test:article-shadow": "node --test scripts/article-catalog-shadow.test.mjs",
     "test:content-preview": "node --test scripts/content-catalog-preview.test.mjs",
-    "test:quality": "node --test scripts/site-quality.test.mjs",
+    "test:quality": "node --test scripts/site-quality.test.mjs scripts/global-css-usage.test.mjs",
     "validate:radar": "node scripts/validate-radar-candidate.mjs",
     "prepare:researchops": "node scripts/prepare-researchops-source.mjs",
     "sync:learning": "node scripts/sync-learning-from-obsidian.mjs",
@@ -60,13 +60,14 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.3",
+    "postcss": "^8.5.23",
     "typescript": "~5.7.3",
     "vite": "^6.4.3",
     "vue-tsc": "^3.3.8",
     "yaml": "^2.9.0"
   },
   "overrides": {
-    "nanoid": "3.3.17",
+    "nanoid": "3.3.18",
     "postcss": "^8.5.23"
   }
 }

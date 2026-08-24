@@ -8,21 +8,21 @@ const KIB = 1024
 const DIST_DIR = resolve(process.cwd(), process.argv[2] ?? 'dist')
 const ASSETS_DIR = resolve(DIST_DIR, 'assets')
 
-// These limits leave roughly 14–20% headroom over the 2026-07-28 local Vite
-// production-mode build. Keep them explicit so a deliberate architecture
-// change updates the budget and its rationale in the same review.
+// These limits preserve the 2026-08-24 vendor split and unused-global-CSS
+// cleanup. Keep them explicit so shared bootstrap or stylesheet growth must be
+// reviewed instead of silently consuming the recovered headroom.
 const BUDGETS = {
   mainEntry: {
-    raw: 110 * KIB,
-    gzip: 43 * KIB,
+    raw: 24 * KIB,
+    gzip: 8 * KIB,
   },
   javascriptChunk: {
     raw: 112 * KIB,
     gzip: 43 * KIB,
   },
   stylesheetChunk: {
-    raw: 80 * KIB,
-    gzip: 14 * KIB,
+    raw: 68 * KIB,
+    gzip: 12.5 * KIB,
   },
 }
 

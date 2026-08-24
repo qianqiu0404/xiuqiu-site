@@ -38,7 +38,7 @@ function projectAction(project: SiteProject) {
 onMounted(() =>
   setSeoMeta({
     title: '项目图谱｜xiuqiu',
-    description: '先进入 Wallet Launchpad 与 Qiu Market 两个产品主页，再按证据层级浏览其他 Web3 与 AI 工程项目。',
+    description: '先进入 Qiu Market 当前产品主页，再按证据层级浏览钱包基础设施、实验与其他 Web3 工程项目。',
     path: '/projects',
   }),
 )
@@ -49,11 +49,11 @@ onMounted(() =>
     <header class="project-atlas-hero cinematic-page-hero">
       <div class="container project-atlas-hero-layout project-atlas-hero-layout--focused">
         <div class="project-atlas-hero-copy">
-          <p class="cinematic-page-kicker">Project Atlas / Two products, one evidence system</p>
-          <h1>两个产品是主角。<span>其余项目是证据与能力模块。</span></h1>
-          <p>先理解 Wallet Launchpad 与 Qiu Market 的完整产品形态，再按真实阶段查看基础设施、实验、工具与工程探索。</p>
+          <p class="cinematic-page-kicker">Project Atlas / One product, one evidence system</p>
+          <h1>Qiu Market 是当前产品。<span>其余项目按证据等级陈列。</span></h1>
+          <p>先理解 Qiu Market 的产品边界，再按真实阶段查看 Wallet Infrastructure、公开实验、工具与工程探索。</p>
         </div>
-        <nav class="project-atlas-direct" aria-label="直接进入两个产品主页">
+        <nav class="project-atlas-direct" aria-label="直接进入当前产品主页">
           <router-link v-for="entry in productProjects" :key="entry.presentation.slug" :to="`/projects/${entry.presentation.slug}`">
             <span>{{ entry.presentation.index }}</span>
             <div><small>{{ entry.presentation.label }}</small><strong>{{ entry.presentation.shortName }}</strong></div>

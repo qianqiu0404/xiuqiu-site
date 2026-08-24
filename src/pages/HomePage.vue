@@ -45,16 +45,15 @@ function requireEvidence(slug: string): EvidenceRecord {
   return record
 }
 
-const walletProject = requireProject('wallet-launchpad')
 const marketProject = requireProject('s78-market-services')
-const walletEvidence = requireEvidence('wallet-launchpad-no-funds-acceptance')
+const walletEvidence = requireEvidence('wallet-lab-demo')
 const marketEvidence = requireEvidence('qiu-market-release-artifact')
 const featuredAiDelivery = deliveryRecords.find(item => item.slug === 'wallet-reliability-lab-v1')
 
 const productEntries = productPresentations.map(presentation => ({
   presentation,
-  project: presentation.slug === walletProject.slug ? walletProject : marketProject,
-  evidence: presentation.slug === walletProject.slug ? walletEvidence : marketEvidence,
+  project: marketProject,
+  evidence: marketEvidence,
 }))
 
 const proofScenes: ProofScene[] = [
@@ -64,7 +63,7 @@ const proofScenes: ProofScene[] = [
     date: walletEvidence.verifiedAt,
     title: walletEvidence.title,
     summary: walletEvidence.summary,
-    to: '/projects/wallet-launchpad',
+    to: '/projects/wallet-reliability-lab',
   },
   {
     id: 'market',
@@ -91,9 +90,9 @@ function askAi(prompt: string, slug: string) {
         prompt,
         context: {
           type: 'home',
-          title: 'xiuqiu · Wallet Launchpad × Qiu Market × AI Engineering',
+          title: 'xiuqiu · Qiu Market × Wallet Infrastructure × AI Engineering',
           slug,
-          summary: '两个 Web3 产品与一套 AI-native 工程工作流的公开工程叙事。',
+          summary: '一个 Web3 产品、钱包基础设施学习方向与一套 AI-native 工程工作流的公开证据。',
         },
       },
     }),
@@ -111,33 +110,27 @@ onMounted(() => setSeoMeta({ ...homeSeo, path: '/' }))
         <div class="cinematic-hero-copy">
           <p class="cinematic-kicker">xiuqiu / Web3 Products × AI Engineering</p>
           <h1 id="home-title">
-            两个 Web3 产品。<br />
+            一个 Web3 产品。<br />
             <span>一套证据系统。</span>
           </h1>
           <p class="cinematic-hero-lead">
-            Wallet Launchpad 负责资金与签名边界，Qiu Market 负责行情与虚拟交易事实；AI 贯穿需求、实现、审查、测试和知识治理。
+            Qiu Market 负责行情与虚拟交易事实；Wallet Infrastructure 保持在学习与基线选择阶段，AI 贯穿需求、实现、审查、测试和知识治理。
           </p>
           <p class="cinematic-boundary">公开工程作品 · 本地与测试网证据 · 不包装成生产钱包或实盘交易经验</p>
-          <div class="cinematic-actions" aria-label="直接进入两个项目主页">
-            <router-link class="cinematic-button cinematic-button--primary" to="/projects/wallet-launchpad">
-              进入 Wallet Platform
-            </router-link>
-            <router-link class="cinematic-button cinematic-button--quiet" to="/projects/s78-market-services">
+          <div class="cinematic-actions" aria-label="进入当前产品和工程证据">
+            <router-link class="cinematic-button cinematic-button--primary" to="/projects/s78-market-services">
               进入 Qiu Market
+            </router-link>
+            <router-link class="cinematic-button cinematic-button--quiet" to="/projects">
+              浏览工程项目
             </router-link>
           </div>
           <router-link class="cinematic-hero-proof-link" to="/engineering/evidence">检查全部工程证据 →</router-link>
         </div>
 
-        <div class="cinematic-product-index" aria-label="两个产品与 AI 工程系统">
-          <div class="cinematic-index-line" aria-hidden="true"></div>
-          <router-link to="/projects/wallet-launchpad" class="cinematic-index-product cinematic-index-product--wallet">
-            <span>01 / WALLET</span>
-            <strong>Control funds.</strong>
-            <small>state · risk · sign · recover</small>
-          </router-link>
+        <div class="cinematic-product-index" aria-label="当前产品与 AI 工程系统">
           <router-link to="/projects/s78-market-services" class="cinematic-index-product cinematic-index-product--market">
-            <span>02 / MARKET</span>
+            <span>01 / MARKET</span>
             <strong>Trust the market.</strong>
             <small>source · ledger · recovery</small>
           </router-link>
@@ -147,14 +140,14 @@ onMounted(() => setSeoMeta({ ...homeSeo, path: '/' }))
           </div>
         </div>
       </div>
-      <a class="cinematic-scroll-cue" href="#products"><span>Choose a product</span><i aria-hidden="true"></i></a>
+      <a class="cinematic-scroll-cue" href="#products"><span>Inspect the product</span><i aria-hidden="true"></i></a>
     </section>
 
     <section id="products" class="product-premiere" aria-labelledby="products-title">
       <div class="container">
         <header class="product-premiere-heading">
           <p class="cinematic-kicker">Product premiere</p>
-          <h2 id="products-title">首页只负责选择产品。<br />产品页负责把系统讲清楚。</h2>
+          <h2 id="products-title">首页只呈现当前产品。<br />项目页负责把证据讲清楚。</h2>
         </header>
 
         <div class="product-premiere-grid">
@@ -178,14 +171,7 @@ onMounted(() => setSeoMeta({ ...homeSeo, path: '/' }))
               <router-link class="product-premiere-primary" :to="`/projects/${entry.project.slug}`">
                 进入项目主页 <span aria-hidden="true">↗</span>
               </router-link>
-              <router-link
-                v-if="entry.presentation.publicAction.role === 'companion'"
-                :to="entry.presentation.proofAction.to"
-              >
-                {{ entry.presentation.proofAction.label }} →
-              </router-link>
               <a
-                v-else
                 :href="entry.presentation.publicAction.href"
                 target="_blank"
                 rel="noopener"
@@ -204,7 +190,7 @@ onMounted(() => setSeoMeta({ ...homeSeo, path: '/' }))
           <p class="cinematic-kicker">AI Engineering OS</p>
           <h2 id="ai-title">AI 不替我判断。<br />它缩短判断抵达证据的距离。</h2>
           <p>
-            两个产品共享同一套协作原则：AI 加速上下文整理、实现与审查，人负责资金边界、事实校准和最终放行。
+            产品、实验与学习方向共享同一套协作原则：AI 加速上下文整理、实现与审查，人负责资金边界、事实校准和最终放行。
           </p>
           <div class="home-ai-track" aria-label="AI 工程工作流">
             <span v-for="(step, index) in homeAiWorkflow" :key="step">
@@ -219,7 +205,7 @@ onMounted(() => setSeoMeta({ ...homeSeo, path: '/' }))
           </div>
           <div class="home-ai-actions">
             <router-link to="/ai">进入 AI Engineering OS</router-link>
-            <button type="button" @click="askAi('AI 如何参与 Wallet Launchpad 和 Qiu Market 的工程交付？', 'home-ai')">
+            <button type="button" @click="askAi('AI 如何参与 Qiu Market、钱包工程实验与证据审查？', 'home-ai')">
               Ask xiuqiu AI ↗
             </button>
           </div>
@@ -258,10 +244,10 @@ onMounted(() => setSeoMeta({ ...homeSeo, path: '/' }))
       <div class="container cinematic-finale-inner">
         <p class="cinematic-kicker">Designed and engineered by xiuqiu</p>
         <h2 id="finale-title">Web3 是我构建的产品。<br />AI 是我扩展工程判断的方式。</h2>
-        <p>从两个产品开始，继续检查真实交付、失败边界与公开代码。</p>
+        <p>从一个当前产品开始，继续检查真实交付、失败边界与公开代码。</p>
         <div class="cinematic-actions cinematic-finale-actions">
-          <router-link class="cinematic-button cinematic-button--primary" to="/projects/wallet-launchpad">Wallet Platform</router-link>
-          <a class="cinematic-button cinematic-button--quiet" href="https://qiu-market.vercel.app" target="_blank" rel="noopener">打开 Qiu Market</a>
+          <a class="cinematic-button cinematic-button--primary" href="https://qiu-market.vercel.app" target="_blank" rel="noopener">打开 Qiu Market</a>
+          <router-link class="cinematic-button cinematic-button--quiet" to="/engineering/evidence">检查工程证据</router-link>
           <a class="cinematic-text-action" :href="githubRepositoriesUrl" target="_blank" rel="noopener">GitHub 仓库 ↗</a>
         </div>
         <a class="cinematic-profile-link" :href="githubProfileUrl" target="_blank" rel="noopener">github.com/qianqiu0404</a>

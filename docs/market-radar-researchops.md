@@ -51,3 +51,11 @@ git diff --check
 ```
 
 每日 PR 还必须确认：Markdown 日期、分支日期、JSON 日期、`snapshotId`、页面 snapshot meta 和通知引用完全一致；晨报最终渲染不超过 1,800 字，量化跟进不超过 1,600 字。已经进入 Git 历史的研究包不可被生成器重写，提示词契约变化必须使用新的 schema 版本。研究包门禁失败时停止 v2 发布和通知，不生成替代提示词；旧 v1 页面继续只读兼容且不回填。
+
+## 定时 Worker 的恢复边界
+
+- `MARKET_RADAR_ENABLED=true` 只表示运行通道被允许评估，不等于无人值守环境已经就绪。
+- 定时触发只有在 `MARKET_RADAR_AUTOMATION_READY=true` 时才可请求生产环境；变量未设置或不为 `true` 时必须降级为 `dry-run`，并使用独立、可取消的 dry-run 并发组，避免长期等待人工环境审批或占住生产发布组。
+- 手动 `workflow_dispatch` 仍可显式选择 `ingest|daily|premarket`，并继续经过 `production-release` 的 Owner 审批；`dry-run` 不请求环境或 secrets。
+- 如果已经存在等待审批的历史运行，代码修复不会自动取消它。修复合并后新的定时／手动 `dry-run` 不再被该运行阻塞，但 Owner 仍应审查并取消或拒绝历史运行，再确认生产发布组已经释放。
+- 仓库内的 `daily-radar.yml` 与 `static-market-radar.yml` 只是每日内容 PR 的校验／合并门禁，不负责创建新简报。Learn Radar 和静态 Market Radar 的内容生产器若未运行，页面会继续停留在最后一份已合并快照。

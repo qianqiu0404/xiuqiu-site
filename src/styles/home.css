@@ -173,7 +173,7 @@
   position: relative;
   min-height: 480px;
   display: grid;
-  grid-template-rows: 1fr 1fr auto;
+  grid-template-rows: 1fr auto;
   align-self: stretch;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(5, 8, 13, 0.58);
@@ -321,7 +321,7 @@
 
 .product-premiere-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   border-top: 1px solid var(--cinema-line);
   border-bottom: 1px solid var(--cinema-line);
 }

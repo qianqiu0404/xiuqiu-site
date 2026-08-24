@@ -10,6 +10,7 @@ import {
   radarSignalCountLabel,
   radarSourceStatus,
 } from '../data/radarPresentation'
+import { getRadarCollectionSeo, getSnapshotFreshness } from '../data/snapshotFreshness'
 import { setSeoMeta } from '../utils/seo'
 import '../styles/radar.css'
 
@@ -46,6 +47,20 @@ const latestIsV2 = computed(() => Boolean(latestRadar && isLearningEditionV2(lat
 const aiBriefs = computed(() => latestRadar ? getLearningBriefs(latestRadar, 'ai') : [])
 const web3Briefs = computed(() => latestRadar ? getLearningBriefs(latestRadar, 'web3') : [])
 const latestSignalLabel = computed(() => radarSignalCountLabel(latestRadar?.marketSignals.length ?? 0))
+const latestFreshness = computed(() => getSnapshotFreshness(latestRadar?.date))
+const radarSeo = computed(() => getRadarCollectionSeo('learning', latestRadar?.date))
+const latestDailyTitle = computed(() => {
+  if (latestIsV2.value) {
+    if (latestFreshness.value.isToday) return '今天：4 条快报 + 1 篇专题。'
+    if (latestFreshness.value.isArchive) return '归档快照：4 条快报 + 1 篇专题。'
+    return '最近一期：4 条快报 + 1 篇专题。'
+  }
+  if (latestFreshness.value.isToday) return latestSignalLabel.value
+  return latestSignalLabel.value.replace(
+    /^今天/,
+    latestFreshness.value.isArchive ? '归档快照' : '最近一期',
+  )
+})
 const latestReviewBoundary = computed(() =>
   latestWeekly
     ? getRadarReviewBoundary(latestWeekly.reviewedAt, latestRadar?.date)
@@ -119,8 +134,7 @@ watch(archiveFilter, () => {
 
 onMounted(() =>
   setSeoMeta({
-    title: '行业情报雷达｜xiuqiu',
-    description: '面向 Web3 钱包与 AI 工程的每日行业简报、人工复核周度收敛和可追溯历史档案。',
+    ...radarSeo.value,
     path: '/radar',
   }),
 )
@@ -132,20 +146,24 @@ onMounted(() =>
     lang="zh-CN"
     :data-snapshot-id="latestRadar?.snapshotId"
     :data-snapshot-as-of="latestRadar?.asOf"
+    :data-snapshot-state="latestFreshness.state"
   >
     <section class="radar-intelligence-hero" aria-labelledby="radar-title">
       <div class="container radar-intelligence-shell radar-hero-layout">
         <div class="radar-hero-copy">
           <p class="radar-kicker">Industry Intelligence / Human Convergence</p>
-          <h1 id="radar-title">每天学懂<br /><span>AI 与 Web3。</span></h1>
-          <p>
+          <h1 id="radar-title">{{ latestFreshness.isArchive ? '从归档学懂' : '每天学懂' }}<br /><span>AI 与 Web3。</span></h1>
+          <p v-if="latestFreshness.isArchive">
+            历史简报保留 2 条 AI、2 条 Web3 和一个专题；先讲机制，再给例子和边界。
+          </p>
+          <p v-else>
             每天 2 条 AI、2 条 Web3，再选择一个问题做专题。先讲机制，再给例子和边界。
           </p>
         </div>
 
         <aside v-if="latestRadar" class="radar-hero-status" aria-label="最新情报状态">
           <div>
-            <span>Latest brief</span>
+            <span>{{ latestFreshness.isArchive ? 'Latest archived brief' : 'Latest brief' }}</span>
             <time :datetime="latestRadar.date">{{ latestRadar.date }}</time>
           </div>
           <dl>
@@ -158,7 +176,7 @@ onMounted(() =>
               <dd>{{ radarIndex.length }}</dd>
             </div>
           </dl>
-          <p>ResearchOps 门禁通过 · {{ radarSourceStatus(latestRadar) }}</p>
+          <p>ResearchOps 门禁通过 · {{ radarSourceStatus(latestRadar) }} · {{ latestFreshness.label }}</p>
         </aside>
         <aside v-else class="radar-hero-status" aria-label="最新情报状态">
           <div>
@@ -170,12 +188,19 @@ onMounted(() =>
       </div>
     </section>
 
+    <section v-if="latestRadar && latestFreshness.isArchive" class="radar-snapshot-notice" role="status" aria-label="雷达归档状态">
+      <div class="container radar-intelligence-shell">
+        <strong>{{ latestFreshness.label }}</strong>
+        <p>最新公开简报停留在 {{ latestRadar.date }}。以下内容是可追溯历史快照，不代表今天的新情报或当前状态。</p>
+      </div>
+    </section>
+
     <section v-if="latestRadar" class="radar-daily-stage" aria-labelledby="radar-daily-title">
       <div class="container radar-intelligence-shell">
         <header class="radar-stage-heading">
           <div>
             <p class="radar-kicker">01 / Daily Brief</p>
-            <h2 id="radar-daily-title">{{ latestIsV2 ? '今天：4 条快报 + 1 篇专题。' : latestSignalLabel }}</h2>
+            <h2 id="radar-daily-title">{{ latestDailyTitle }}</h2>
           </div>
           <router-link :to="`/radar/${latestRadar.slug}`">阅读完整简报 <span aria-hidden="true">↗</span></router-link>
         </header>
