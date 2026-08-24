@@ -21,8 +21,9 @@ The controller is inert by default. It prevents a Vercel Git deployment or a man
 5. Promotion of that verified candidate to the production domains.
 6. Independent Learning and Market notification enqueue jobs. A Learning notification failure remains visible, but cannot block the Market lane.
 7. One exact-SHA Market worker smoke and a dedicated successful Market-lane deployment marker. This marker—together with the exact-SHA deployed marker and the operator-managed `MARKET_RADAR_ENABLED` kill switch—authorizes later schedules.
+8. An always-running, secret-free summary reports the result of every lane without changing or overriding any failed job.
 
-Failures stop only their dependent lane: migration or deployment failures stop all production work, while a Learning notification failure does not authorize Learning delivery and does not block a successfully verified Market lane. The controller run itself still reports the Learning failure; Market worker authorization never treats that aggregate conclusion as evidence. `vercel.json` disables every Git-triggered Vercel deployment, including pull-request Previews, so the controller is the only active production path.
+Failures stop only their dependent lane: migration or deployment failures stop all production work, while a Learning notification failure does not authorize Learning delivery and does not block a successfully verified Market lane. The controller run itself still reports the Learning failure; the terminal summary makes the partial outcome readable but never turns it green, and Market worker authorization never treats that aggregate conclusion as evidence. `vercel.json` disables every Git-triggered Vercel deployment, including pull-request Previews, so the controller is the only active production path.
 
 Do not restore Preview deployments until both safeguards are verified: Vercel Dashboard automatic production-domain assignment (auto-assign) is disabled, and the controller has completed successfully for the same live `main` SHA. Restore Preview only with a reviewed, branch-scoped `deploymentEnabled` policy; never re-enable Git-triggered production deployments.
 

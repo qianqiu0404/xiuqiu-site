@@ -113,6 +113,19 @@ jobs:
           assert.deepEqual(controller.jobs.mark_market_radar_worker_authorized.needs, [
             'preflight', 'mark_deployed_sha', 'enqueue_market_radar_notifications', 'promote_market_radar_worker',
           ])
+          const releaseSummary = controller.jobs.release_summary
+          assert.match(String(releaseSummary.if), /always\(\).*inputs\.operation == 'release'/)
+          assert.deepEqual(releaseSummary.needs, [
+            'preflight', 'production_migration', 'stage_vercel_candidate', 'verify_vercel_candidate',
+            'promote_vercel_production', 'mark_deployed_sha', 'enqueue_learning_radar_notifications',
+            'enqueue_market_radar_notifications', 'promote_market_radar_worker',
+            'mark_market_radar_worker_authorized',
+          ])
+          assert.equal(releaseSummary.environment, undefined)
+          assert.deepEqual(releaseSummary.permissions, {})
+          assert.doesNotMatch(JSON.stringify(releaseSummary), /secrets\./)
+          assert.match(String(releaseSummary.env.LEARNING_NOTIFICATION_RESULT), /enqueue_learning_radar_notifications\.result/)
+          assert.match(releaseSummary.steps[0].run, /GITHUB_STEP_SUMMARY/)
           const learningEnqueue = controller.jobs.enqueue_learning_radar_notifications.steps
             .find(step => step.name === 'Enqueue idempotent Learning Radar notification')
           const marketEnqueue = controller.jobs.enqueue_market_radar_notifications.steps
@@ -739,3 +752,48 @@ jobs:
           }' | gh api --method POST \
             "repos/${GITHUB_REPOSITORY}/deployments/${deployment_id}/statuses" --input - >/dev/null
           echo "Recorded Market Radar lane marker $deployment_id for $RELEASE_SHA"
+
+  release_summary:
+    if: always() && inputs.operation == 'release'
+    needs:
+      - preflight
+      - production_migration
+      - stage_vercel_candidate
+      - verify_vercel_candidate
+      - promote_vercel_production
+      - mark_deployed_sha
+      - enqueue_learning_radar_notifications
+      - enqueue_market_radar_notifications
+      - promote_market_radar_worker
+      - mark_market_radar_worker_authorized
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    env:
+      RELEASE_SHA: ${{ needs.preflight.outputs.release_sha || inputs.release_sha || github.sha }}
+      MIGRATION_RESULT: ${{ needs.production_migration.result }}
+      CANDIDATE_RESULT: ${{ needs.stage_vercel_candidate.result }}
+      CANDIDATE_VERIFY_RESULT: ${{ needs.verify_vercel_candidate.result }}
+      PRODUCTION_PROMOTION_RESULT: ${{ needs.promote_vercel_production.result }}
+      DEPLOYED_SHA_RESULT: ${{ needs.mark_deployed_sha.result }}
+      LEARNING_NOTIFICATION_RESULT: ${{ needs.enqueue_learning_radar_notifications.result }}
+      MARKET_NOTIFICATION_RESULT: ${{ needs.enqueue_market_radar_notifications.result }}
+      MARKET_WORKER_RESULT: ${{ needs.promote_market_radar_worker.result }}
+      MARKET_AUTHORIZATION_RESULT: ${{ needs.mark_market_radar_worker_authorized.result }}
+    steps:
+      - name: Summarize independent release lanes
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo '## Production release lanes'
+            printf -- '- Exact SHA: `%s`\n' "$RELEASE_SHA"
+            printf -- '- Migration: %s\n' "$MIGRATION_RESULT"
+            printf -- '- Vercel candidate: %s; verification: %s\n' "$CANDIDATE_RESULT" "$CANDIDATE_VERIFY_RESULT"
+            printf -- '- Production promotion: %s; deployed-SHA marker: %s\n' "$PRODUCTION_PROMOTION_RESULT" "$DEPLOYED_SHA_RESULT"
+            printf -- '- Learning notification: %s\n' "$LEARNING_NOTIFICATION_RESULT"
+            printf -- '- Market notification: %s; worker smoke: %s; worker authorization: %s\n' \
+              "$MARKET_NOTIFICATION_RESULT" "$MARKET_WORKER_RESULT" "$MARKET_AUTHORIZATION_RESULT"
+            echo
+            echo 'This summary is observational. Failed lanes remain failed and are never authorized by this job.'
+          } >> "$GITHUB_STEP_SUMMARY"
