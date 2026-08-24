@@ -268,6 +268,7 @@ test('notifications fail closed without the published research snapshot boundary
 test('release controller enqueues daily notifications only after production promotion', () => {
   const workflow = parse(read('.github/workflows/release-controller.yml'))
   assert.deepEqual(workflow.jobs.enqueue_learning_radar_notifications.needs, ['preflight', 'mark_deployed_sha'])
+  assert.match(String(workflow.jobs.enqueue_learning_radar_notifications.if), /vars\.LEARNING_RADAR_ENABLED == 'true'/)
   assert.deepEqual(workflow.jobs.enqueue_market_radar_notifications.needs, ['preflight', 'mark_deployed_sha'])
   assert.equal(workflow.jobs.enqueue_learning_radar_notifications.environment, 'production-release')
   assert.equal(workflow.jobs.enqueue_market_radar_notifications.environment, 'production-release')
