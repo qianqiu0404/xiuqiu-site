@@ -128,3 +128,77 @@ export function getRadarReviewBoundary(
     nextReviewLabel: '下一次复核时间未在公开数据中排期。',
   }
 }
+
+export type RadarFeedDomain = 'all' | 'ai' | 'web3'
+
+export interface RadarFeedQuery {
+  domain: RadarFeedDomain
+  topic?: string
+  search?: string
+}
+
+export interface RadarFeedDay<T> {
+  date: string
+  items: T[]
+}
+
+interface FeedEntry {
+  date: string
+  domain: 'ai' | 'web3'
+  topic: string
+  title: string
+  summary: string
+}
+
+const legacyTopicLabels: Record<string, string> = {
+  market_signal: '市场信号',
+  ai_engineering: 'AI 工程',
+  web3_design: 'Web3 设计',
+  tools: '工具',
+  reading: '阅读',
+}
+
+export function radarTopicLabel(topic: string): string {
+  return legacyTopicLabels[topic] || topic.replaceAll('_', ' ')
+}
+
+export function filterRadarFeed<T extends FeedEntry>(items: readonly T[], query: RadarFeedQuery): T[] {
+  const needle = query.search?.trim().toLowerCase()
+  return items.filter(item =>
+    (query.domain === 'all' || item.domain === query.domain)
+    && (!query.topic || item.topic === query.topic)
+    && (!needle || `${item.title} ${item.summary}`.toLowerCase().includes(needle)),
+  )
+}
+
+export function groupRadarFeedByDate<T extends FeedEntry>(items: readonly T[]): RadarFeedDay<T>[] {
+  const days = new Map<string, T[]>()
+  for (const item of items) {
+    const day = days.get(item.date)
+    if (day) day.push(item)
+    else days.set(item.date, [item])
+  }
+  return [...days.entries()].map(([date, dayItems]) => ({ date, items: dayItems }))
+}
+
+export function countRadarFeedTopics<T extends FeedEntry>(items: readonly T[]): { topic: string; count: number }[] {
+  const counts = new Map<string, number>()
+  for (const item of items) counts.set(item.topic, (counts.get(item.topic) || 0) + 1)
+  return [...counts.entries()]
+    .map(([topic, count]) => ({ topic, count }))
+    .sort((a, b) => b.count - a.count || a.topic.localeCompare(b.topic))
+}
+
+// A topic is "continuing" when it appears in at least `minEditions` of the
+// latest `window` editions; it stands in for AIHOT-style heat without a model.
+export function continuingRadarTopics<T extends FeedEntry>(items: readonly T[], window = 5, minEditions = 2): Set<string> {
+  const recentDates = [...new Set(items.map(item => item.date))].sort().reverse().slice(0, window)
+  const editionsByTopic = new Map<string, Set<string>>()
+  for (const item of items) {
+    if (!recentDates.includes(item.date)) continue
+    const editions = editionsByTopic.get(item.topic) || new Set<string>()
+    editions.add(item.date)
+    editionsByTopic.set(item.topic, editions)
+  }
+  return new Set([...editionsByTopic.entries()].filter(([, editions]) => editions.size >= minEditions).map(([topic]) => topic))
+}

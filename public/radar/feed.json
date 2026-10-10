@@ -1,0 +1,789 @@
+{
+  "version": "https://jsonfeed.org/version/1.1",
+  "title": "xiuqiu 学习雷达 · AI 与 Web3",
+  "home_page_url": "https://xiuqiu-site.vercel.app/radar",
+  "feed_url": "https://xiuqiu-site.vercel.app/radar/feed.json",
+  "language": "zh-CN",
+  "items": [
+    {
+      "id": "xiuqiu-radar:ai-durable-runstate-input",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-13#ai-durable-runstate-input",
+      "title": "Agents SDK 0.20：恢复任务前先恢复调用身份",
+      "summary": "它把长任务恢复从‘重放聊天记录’提升为可核验的状态机，适合用来审视 Hermes 接管、ResearchOps 发布和其他带外部副作用的 Agent 流程。",
+      "content_text": "它把长任务恢复从‘重放聊天记录’提升为可核验的状态机，适合用来审视 Hermes 接管、ResearchOps 发布和其他带外部副作用的 Agent 流程。",
+      "date_published": "2026-08-13T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "agent"
+      ],
+      "external_url": "https://github.com/openai/openai-agents-python/releases/tag/v0.20.0"
+    },
+    {
+      "id": "xiuqiu-radar:ai-vllm-serving-reliability",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-13#ai-vllm-serving-reliability",
+      "title": "vLLM 0.27：首请求延迟与故障恢复要分别门禁",
+      "summary": "它把‘模型快不快’拆成可部署的工程问题：首请求、稳态吞吐、故障转移和依赖兼容必须分别验收，才能避免只看单次 benchmark。",
+      "content_text": "它把‘模型快不快’拆成可部署的工程问题：首请求、稳态吞吐、故障转移和依赖兼容必须分别验收，才能避免只看单次 benchmark。",
+      "date_published": "2026-08-13T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "model_inference"
+      ],
+      "external_url": "https://github.com/vllm-project/vllm/releases/tag/v0.27.0"
+    },
+    {
+      "id": "xiuqiu-radar:web3-sui-source-reproduction",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-13#web3-sui-source-reproduction",
+      "title": "Sui testnet 1.77.2：源码验证要绑定发布工具链",
+      "summary": "钱包与交易所集成链上包时需要证明‘看到的源码’与‘实际发布字节’来自同一构建语境，这个变更提供了具体的供应链核验清单。",
+      "content_text": "钱包与交易所集成链上包时需要证明‘看到的源码’与‘实际发布字节’来自同一构建语境，这个变更提供了具体的供应链核验清单。",
+      "date_published": "2026-08-13T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "onchain_infrastructure"
+      ],
+      "external_url": "https://github.com/MystenLabs/sui/releases/tag/testnet-v1.77.2"
+    },
+    {
+      "id": "xiuqiu-radar:web3-rowdas-reconstruction",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-13#web3-rowdas-reconstruction",
+      "title": "EIP-8371：把 Blob 重建从超级节点摊到行子网",
+      "summary": "它展示了数据可用性协议如何把恢复职责、传播网络和攻击成本写成显式状态机，也能帮助理解 L2 扩容为何不仅是提高 Blob 数量。",
+      "content_text": "它展示了数据可用性协议如何把恢复职责、传播网络和攻击成本写成显式状态机，也能帮助理解 L2 扩容为何不仅是提高 Blob 数量。",
+      "date_published": "2026-08-13T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "protocol"
+      ],
+      "external_url": "https://github.com/ethereum/EIPs/commit/b325d33d61f18c8bc9f5f2b9b9c59f8bf702141a"
+    },
+    {
+      "id": "xiuqiu-radar:ai-generator-evaluator-loop",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-12#ai-generator-evaluator-loop",
+      "title": "长任务 Harness：生成器与评估器要分工",
+      "summary": "它帮助你理解 Agent 不是一次长提示，而是角色、状态和评测组成的控制系统；同样适用于研究内容的采集—编辑—门禁链路。",
+      "content_text": "它帮助你理解 Agent 不是一次长提示，而是角色、状态和评测组成的控制系统；同样适用于研究内容的采集—编辑—门禁链路。",
+      "date_published": "2026-08-12T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "agent"
+      ],
+      "external_url": "https://www.anthropic.com/engineering/harness-design-long-running-apps"
+    },
+    {
+      "id": "xiuqiu-radar:ai-long-horizon-adoption",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-12#ai-long-horizon-adoption",
+      "title": "Agent 使用研究：任务时长只是方向性估计",
+      "summary": "它训练你区分产品使用指标与因果结论，也提醒学习 Agent 系统时应关注验收率、返工和边界，而不是只看运行时长或 token。",
+      "content_text": "它训练你区分产品使用指标与因果结论，也提醒学习 Agent 系统时应关注验收率、返工和边界，而不是只看运行时长或 token。",
+      "date_published": "2026-08-12T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "data"
+      ],
+      "external_url": "https://openai.com/index/how-agents-are-transforming-work/"
+    },
+    {
+      "id": "xiuqiu-radar:web3-zcash-execution-boundary",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-12#web3-zcash-execution-boundary",
+      "title": "Ledger Live 4.15：隐私资产路径要单独门禁",
+      "summary": "它把钱包隐私、签名和发布控制放在同一个具体案例中，适合学习 coin adapter、硬件边界和敏感数据最小化。",
+      "content_text": "它把钱包隐私、签名和发布控制放在同一个具体案例中，适合学习 coin adapter、硬件边界和敏感数据最小化。",
+      "date_published": "2026-08-12T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "wallet_cex"
+      ],
+      "external_url": "https://github.com/LedgerHQ/ledger-live/releases/tag/%40ledgerhq/live-desktop%404.15.0"
+    },
+    {
+      "id": "xiuqiu-radar:web3-canonical-authenticator",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-12#web3-canonical-authenticator",
+      "title": "EIP-8130：把账户认证从任意代码中拆出",
+      "summary": "它把账户抽象最难的认证、并发 nonce 与会话权限集中到可讨论协议中，适合训练从交易格式到钱包策略的全链路思考。",
+      "content_text": "它把账户抽象最难的认证、并发 nonce 与会话权限集中到可讨论协议中，适合训练从交易格式到钱包策略的全链路思考。",
+      "date_published": "2026-08-12T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "protocol"
+      ],
+      "external_url": "https://github.com/ethereum/EIPs/commit/054078969965674643d7cf4e22460c438d09dd07"
+    },
+    {
+      "id": "xiuqiu-radar:ai-managed-agent-boundaries",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-11#ai-managed-agent-boundaries",
+      "title": "Managed Agents：把大脑、双手与会话拆开",
+      "summary": "它把 Agent 可靠性与安全从提示词问题变成结构问题，适合用来学习会话持久化、工具权限、故障恢复和凭据隔离。",
+      "content_text": "它把 Agent 可靠性与安全从提示词问题变成结构问题，适合用来学习会话持久化、工具权限、故障恢复和凭据隔离。",
+      "date_published": "2026-08-11T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "agent"
+      ],
+      "external_url": "https://www.anthropic.com/engineering/managed-agents"
+    },
+    {
+      "id": "xiuqiu-radar:ai-evaluation-signal-decay",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-11#ai-evaluation-signal-decay",
+      "title": "AI-resistant Eval：旧考题会失去区分能力",
+      "summary": "学习雷达未来若用模型评估内容，也要监控门禁是否仍能区分真实机制研究与流畅复述，不能迷信一次建立的测试集。",
+      "content_text": "学习雷达未来若用模型评估内容，也要监控门禁是否仍能区分真实机制研究与流畅复述，不能迷信一次建立的测试集。",
+      "date_published": "2026-08-11T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "evaluation"
+      ],
+      "external_url": "https://www.anthropic.com/engineering/AI-resistant-technical-evaluations"
+    },
+    {
+      "id": "xiuqiu-radar:web3-confidential-token-observability",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-11#web3-confidential-token-observability",
+      "title": "Agave 4.2：机密代币意图进入节点可观测面",
+      "summary": "钱包、交易所和风控系统依赖节点解析结果；理解协议升级如何改变可观测面，有助于避免把‘无法解析’误判为‘没有发生’。",
+      "content_text": "钱包、交易所和风控系统依赖节点解析结果；理解协议升级如何改变可观测面，有助于避免把‘无法解析’误判为‘没有发生’。",
+      "date_published": "2026-08-11T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "onchain_infrastructure"
+      ],
+      "external_url": "https://github.com/anza-xyz/agave/releases/tag/v4.2.0"
+    },
+    {
+      "id": "xiuqiu-radar:web3-lightning-migration-recovery",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-11#web3-lightning-migration-recovery",
+      "title": "lnd 0.21.2 RC：迁移失败必须可恢复",
+      "summary": "Lightning 节点承载真实通道状态，迁移错误与普通应用回滚不同；学习恢复顺序能建立对不可逆状态和候选版本边界的直觉。",
+      "content_text": "Lightning 节点承载真实通道状态，迁移错误与普通应用回滚不同；学习恢复顺序能建立对不可逆状态和候选版本边界的直觉。",
+      "date_published": "2026-08-11T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "l2"
+      ],
+      "external_url": "https://github.com/lightningnetwork/lnd/releases/tag/v0.21.2-beta.rc1"
+    },
+    {
+      "id": "xiuqiu-radar:ai-realtime-critical-path",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-10#ai-realtime-critical-path",
+      "title": "实时语音 AI：先保护连续媒体关键路径",
+      "summary": "它给 AI 工程学习提供了可迁移的系统设计范式：先定义用户真正感知的关键路径，再把可重试、可恢复、可降级的工作移出该路径。",
+      "content_text": "它给 AI 工程学习提供了可迁移的系统设计范式：先定义用户真正感知的关键路径，再把可重试、可恢复、可降级的工作移出该路径。",
+      "date_published": "2026-08-10T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "model_inference"
+      ],
+      "external_url": "https://openai.com/index/continuous-voice-interaction-with-gpt-live/"
+    },
+    {
+      "id": "xiuqiu-radar:ai-evidence-improvement-loop",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-10#ai-evidence-improvement-loop",
+      "title": "Agent 改进闭环：先把专家纠错变成证据",
+      "summary": "学习雷达也需要同样的证据闭环：保留来源与拒绝原因，区分偶发误差和重复模式，再决定 ResearchOps 门禁是否需要修改。",
+      "content_text": "学习雷达也需要同样的证据闭环：保留来源与拒绝原因，区分偶发误差和重复模式，再决定 ResearchOps 门禁是否需要修改。",
+      "date_published": "2026-08-10T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "evaluation"
+      ],
+      "external_url": "https://openai.com/index/building-self-improving-tax-agents-with-codex/"
+    },
+    {
+      "id": "xiuqiu-radar:web3-signature-fail-closed",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-10#web3-signature-fail-closed",
+      "title": "OpenZeppelin 5.7：签名与权限不能静默降级",
+      "summary": "钱包与交易所后端经常组合代理、权限和签名库；理解静默降级能帮助你把安全不变量写进依赖升级与回归测试。",
+      "content_text": "钱包与交易所后端经常组合代理、权限和签名库；理解静默降级能帮助你把安全不变量写进依赖升级与回归测试。",
+      "date_published": "2026-08-10T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "security"
+      ],
+      "external_url": "https://github.com/OpenZeppelin/openzeppelin-contracts/releases/tag/v5.7.0"
+    },
+    {
+      "id": "xiuqiu-radar:web3-clear-signing-context",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-10#web3-clear-signing-context",
+      "title": "ERC-7730：清晰签名必须绑定链与合约上下文",
+      "summary": "这直接关联钱包确认页、交易所提币审核和钓鱼防护：用户看到的意图必须与真正签名的字节属于同一上下文。",
+      "content_text": "这直接关联钱包确认页、交易所提币审核和钓鱼防护：用户看到的意图必须与真正签名的字节属于同一上下文。",
+      "date_published": "2026-08-10T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "wallet_cex"
+      ],
+      "external_url": "https://github.com/ethereum/ERCs/commit/73672565aeb10e615905663ad457d75a19eae0c2"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-09-signal",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-09#industry-signals",
+      "title": "lnd 0.21.2-beta.rc1 修补迁移失败与图同步内存边界",
+      "summary": "该 RC 修复历史支付迁移启动失败、缺失版本键跳过迁移和通道图同步内存增长。运维应先备份、演练迁移与回滚；候选版不能直接替代生产稳定版。",
+      "content_text": "该 RC 修复历史支付迁移启动失败、缺失版本键跳过迁移和通道图同步内存增长。运维应先备份、演练迁移与回滚；候选版不能直接替代生产稳定版。",
+      "date_published": "2026-08-09T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "market_signal"
+      ],
+      "external_url": "https://github.com/lightningnetwork/lnd/releases/tag/v0.21.2-beta.rc1"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-09-ai",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-09#ai-engineering",
+      "title": "把专家纠错沉淀成定向 Eval，再给 Agent 有边界的修复任务",
+      "summary": "案例把生产 trace 中反复且经专家确认的错误转成定向 eval，再让 Agent 在回归集约束下提出 PR。雷达应记录接受、拒绝和改写原因；税务指标不能外推到开放研究。",
+      "content_text": "案例把生产 trace 中反复且经专家确认的错误转成定向 eval，再让 Agent 在回归集约束下提出 PR。雷达应记录接受、拒绝和改写原因；税务指标不能外推到开放研究。",
+      "date_published": "2026-08-09T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "ai_engineering"
+      ],
+      "external_url": "https://openai.com/index/building-self-improving-tax-agents-with-codex/"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-09-web3",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-09#web3-design",
+      "title": "签名前把调用数据翻译为与链和合约绑定的人类意图",
+      "summary": "ERC-7730 先匹配链、合约和 selector，再把调用数据翻译成动作、对象与金额。上下文不匹配必须退回原始字段；规范仍为 Draft，清晰展示不能替代模拟。",
+      "content_text": "ERC-7730 先匹配链、合约和 selector，再把调用数据翻译成动作、对象与金额。上下文不匹配必须退回原始字段；规范仍为 Draft，清晰展示不能替代模拟。",
+      "date_published": "2026-08-09T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "web3_design"
+      ],
+      "external_url": "https://eips.ethereum.org/EIPS/eip-7730"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-09-tools",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-09#tools",
+      "title": "Qwen Code 0.21.8 · 并行提速前先封住信任继承",
+      "summary": "版本加入 ACP 受限并发与审阅预算，并修复不可信目录继承信任、日志命令注入和 MCP 超时等边界。本地已验证 0.21.8；并发仍会放大副作用。",
+      "content_text": "版本加入 ACP 受限并发与审阅预算，并修复不可信目录继承信任、日志命令注入和 MCP 超时等边界。本地已验证 0.21.8；并发仍会放大副作用。",
+      "date_published": "2026-08-09T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "tools"
+      ],
+      "external_url": "https://github.com/QwenLM/qwen-code/releases/tag/v0.21.8"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-09-reading",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-09#reading",
+      "title": "How we built our multi-agent research system",
+      "summary": "主 Agent 规划，子 Agent 分头压缩证据，引用再独立核验。内部广度评测提升 90.2%，但约耗普通聊天 15 倍 token；必须给角色明确来源、停止条件和 schema。",
+      "content_text": "主 Agent 规划，子 Agent 分头压缩证据，引用再独立核验。内部广度评测提升 90.2%，但约耗普通聊天 15 倍 token；必须给角色明确来源、停止条件和 schema。",
+      "date_published": "2026-08-09T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "reading"
+      ],
+      "external_url": "https://www.anthropic.com/engineering/multi-agent-research-system"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-08-signal",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-08#industry-signals",
+      "title": "Algorand BetaNet 5.0.0 预演 Falcon-1024 后量子账户",
+      "summary": "BetaNet 引入 Falcon-1024 签名、大交易按字节计费与 AVM v13。钱包需联动迁移密钥、费用和工具链；这仍是测试网预览，不代表主网已激活。",
+      "content_text": "BetaNet 引入 Falcon-1024 签名、大交易按字节计费与 AVM v13。钱包需联动迁移密钥、费用和工具链；这仍是测试网预览，不代表主网已激活。",
+      "date_published": "2026-08-08T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "market_signal"
+      ],
+      "external_url": "https://github.com/algorand/go-algorand/releases/tag/v5.0.0-beta"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-08-ai",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-08#ai-engineering",
+      "title": "让长任务 Agent 在生成、评估和上下文重置之间形成闭环",
+      "summary": "planner、generator、evaluator 分工并用结构化交接跨越上下文重置。采集只交证据、独立检查器反驳；代价是更多延迟与 token，错误评分标准仍会稳定误导。",
+      "content_text": "planner、generator、evaluator 分工并用结构化交接跨越上下文重置。采集只交证据、独立检查器反驳；代价是更多延迟与 token，错误评分标准仍会稳定误导。",
+      "date_published": "2026-08-08T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "ai_engineering"
+      ],
+      "external_url": "https://www.anthropic.com/engineering/harness-design-long-running-apps"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-08-web3",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-08#web3-design",
+      "title": "跨链地址必须把链语境与账户字节绑定成同一对象",
+      "summary": "ERC-7930 把链类型、链引用和地址封进版本化二进制对象。钱包应让链语境共同进入确认、签名与策略键；规范仍在 Review，部分命名空间未必能唯一规范化。",
+      "content_text": "ERC-7930 把链类型、链引用和地址封进版本化二进制对象。钱包应让链语境共同进入确认、签名与策略键；规范仍在 Review，部分命名空间未必能唯一规范化。",
+      "date_published": "2026-08-08T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "web3_design"
+      ],
+      "external_url": "https://eips.ethereum.org/EIPS/eip-7930"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-08-tools",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-08#tools",
+      "title": "GitHub Spec Kit 0.16.1 · 把 Agent 开发交接变成可审阅规格",
+      "summary": "它把 constitution、spec、plan、tasks 与实现收敛为版本化工件，并收紧畸形输入和临时文件边界。临时环境已验证 0.16.1；生成规格仍须审查差异。",
+      "content_text": "它把 constitution、spec、plan、tasks 与实现收敛为版本化工件，并收紧畸形输入和临时文件边界。临时环境已验证 0.16.1；生成规格仍须审查差异。",
+      "date_published": "2026-08-08T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "tools"
+      ],
+      "external_url": "https://github.com/github/spec-kit/releases/tag/v0.16.1"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-08-reading",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-08#reading",
+      "title": "How agents are transforming work",
+      "summary": "样本中 70.2% 的个人用户曾发起估算超过一小时的人类工作任务。应衡量可验收产出和失败成本，而非 token 或时长；样本与模型估算不能外推为普遍生产率。",
+      "content_text": "样本中 70.2% 的个人用户曾发起估算超过一小时的人类工作任务。应衡量可验收产出和失败成本，而非 token 或时长；样本与模型估算不能外推为普遍生产率。",
+      "date_published": "2026-08-08T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "reading"
+      ],
+      "external_url": "https://openai.com/index/how-agents-are-transforming-work/"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-07-signal",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-07#industry-signals",
+      "title": "Nethermind 1.39.3 封住畸形 ABI 输入的超大内存分配路径",
+      "summary": "强制节点补丁会在创建托管数组前拒绝异常动态 bytes 与数组长度，并补齐多条异常路径的池化内存清理。官方未披露 CVE 或利用事件，升级仍需验证制品、回滚与本地负载。",
+      "content_text": "强制节点补丁会在创建托管数组前拒绝异常动态 bytes 与数组长度，并补齐多条异常路径的池化内存清理。官方未披露 CVE 或利用事件，升级仍需验证制品、回滚与本地负载。",
+      "date_published": "2026-08-07T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "market_signal"
+      ],
+      "external_url": "https://github.com/NethermindEth/nethermind/releases/tag/1.39.3"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-07-signal-1",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-07#industry-signals",
+      "title": "viem 2.55.11 拒绝 EIP-712 裸写 uint 与 int",
+      "summary": "typed-data 校验与哈希现在要求 uint256、int256 等完整位宽，避免非规范类型哈希或 RangeError。它只改变 viem 相关调用路径，不代表 EVM 或链上合约规则统一升级。",
+      "content_text": "typed-data 校验与哈希现在要求 uint256、int256 等完整位宽，避免非规范类型哈希或 RangeError。它只改变 viem 相关调用路径，不代表 EVM 或链上合约规则统一升级。",
+      "date_published": "2026-08-07T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "market_signal"
+      ],
+      "external_url": "https://github.com/wevm/viem/releases/tag/viem%402.55.11"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-07-signal-2",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-07#industry-signals",
+      "title": "欧盟扩展加密资产服务实体的治理控制限制",
+      "summary": "Regulation (EU) 2026/1848 自 8 月 25 日起把特定所有、控制和治理席位禁令扩展到其他 MiCA 加密资产服务。适用仍取决于主体、设立地、控制关系、豁免与主管机关解释。",
+      "content_text": "Regulation (EU) 2026/1848 自 8 月 25 日起把特定所有、控制和治理席位禁令扩展到其他 MiCA 加密资产服务。适用仍取决于主体、设立地、控制关系、豁免与主管机关解释。",
+      "date_published": "2026-08-07T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "market_signal"
+      ],
+      "external_url": "https://eur-lex.europa.eu/eli/reg/2026/1848/oj/eng"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-07-ai",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-07#ai-engineering",
+      "title": "把评测容器的资源保证值与硬终止上限分开校准",
+      "summary": "固定模型、提示、任务集与 harness，只逐级调整硬上限，分别统计答案错误和容器被杀；选择能降低基础设施失败、又未显著抬高正确率的最窄区间。Anthropic 的约 3 倍上限只是特定实验示例，不是通用倍率。",
+      "content_text": "固定模型、提示、任务集与 harness，只逐级调整硬上限，分别统计答案错误和容器被杀；选择能降低基础设施失败、又未显著抬高正确率的最窄区间。Anthropic 的约 3 倍上限只是特定实验示例，不是通用倍率。",
+      "date_published": "2026-08-07T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "ai_engineering"
+      ],
+      "external_url": "https://www.anthropic.com/engineering/infrastructure-noise"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-07-web3",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-07#web3-design",
+      "title": "把 P-256 硬件密钥接入拆成链能力、验签与账户授权三层",
+      "summary": "EIP-7951 的 P256VERIFY 只证明签名匹配公钥。钱包基础设施还应逐链绑定预编译能力，规范化 r、s 与公钥坐标，重算动作摘要，并独立校验账户、额度、nonce、有效期及恢复策略。",
+      "content_text": "EIP-7951 的 P256VERIFY 只证明签名匹配公钥。钱包基础设施还应逐链绑定预编译能力，规范化 r、s 与公钥坐标，重算动作摘要，并独立校验账户、额度、nonce、有效期及恢复策略。",
+      "date_published": "2026-08-07T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "web3_design"
+      ],
+      "external_url": "https://eips.ethereum.org/EIPS/eip-7951"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-07-tools",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-07#tools",
+      "title": "Pi · 可组合的 coding agent 最小运行时",
+      "summary": "Pi 同时提供交互、print/JSON、RPC 与 SDK 入口，并开放工具、权限门、沙箱、MCP 与 UI 扩展。固定版 0.84.0 已复现 CLI；默认写入与 bash、package 全系统权限、安装脚本和极端长会话资源风险要求…",
+      "content_text": "Pi 同时提供交互、print/JSON、RPC 与 SDK 入口，并开放工具、权限门、沙箱、MCP 与 UI 扩展。固定版 0.84.0 已复现 CLI；默认写入与 bash、package 全系统权限、安装脚本和极端长会话资源风险要求…",
+      "date_published": "2026-08-07T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "tools"
+      ],
+      "external_url": "https://github.com/earendil-works/pi/releases/tag/v0.84.0"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-07-reading",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-07#reading",
+      "title": "Scientific computing in the age of agentic AI",
+      "summary": "八个科研软件案例表明，agent 可加速初版，但科学有效性、数值边界、兼容性和长期所有权仍由人定义与验收。思考题：为一次真实重构列出目标行为、独立真值、最难边界与长期所有者。",
+      "content_text": "八个科研软件案例表明，agent 可加速初版，但科学有效性、数值边界、兼容性和长期所有权仍由人定义与验收。思考题：为一次真实重构列出目标行为、独立真值、最难边界与长期所有者。",
+      "date_published": "2026-08-07T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "reading"
+      ],
+      "external_url": "https://openai.com/index/scientific-computing-agentic-ai/"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-06-signal",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-06#industry-signals",
+      "title": "Safe Wallet 为旧版 Safe 的 Guard 配置增加客户端检查",
+      "summary": "web-v1.97.0 会解析直接调用和 MultiSend 内的 setGuard，并对低于 v1.4.1 的 Safe 检查目标接口；这仍是可被用户继续确认的客户端提示，不是链上强制拒绝。",
+      "content_text": "web-v1.97.0 会解析直接调用和 MultiSend 内的 setGuard，并对低于 v1.4.1 的 Safe 检查目标接口；这仍是可被用户继续确认的客户端提示，不是链上强制拒绝。",
+      "date_published": "2026-08-06T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "market_signal"
+      ],
+      "external_url": "https://github.com/safe-global/safe-wallet-monorepo/releases/tag/web-v1.97.0"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-06-signal-1",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-06#industry-signals",
+      "title": "Parity Contract Dependency Manager 明确注册表控制面",
+      "summary": "v0.12.0 用 EIP-1967 代理维持稳定地址，并显式提供实现升级、紧急冻结与 ABI 漂移测试；冻结不约束管理员，仍需独立审计实现、密钥和治理流程。",
+      "content_text": "v0.12.0 用 EIP-1967 代理维持稳定地址，并显式提供实现升级、紧急冻结与 ABI 漂移测试；冻结不约束管理员，仍需独立审计实现、密钥和治理流程。",
+      "date_published": "2026-08-06T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "market_signal"
+      ],
+      "external_url": "https://github.com/paritytech/contract-dependency-manager/releases/tag/v0.12.0"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-06-signal-2",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-06#industry-signals",
+      "title": "OpenZeppelin Foundry Upgrades 补丁版提高 Solidity 下限",
+      "summary": "v0.4.2 为新版 memory-safe assembly 语法把最低 Solidity 提升到 0.8.13。官方标注其 potentially breaking，依赖升级前需要验证编译器矩阵，不能因 patch 版本而忽略兼容性。",
+      "content_text": "v0.4.2 为新版 memory-safe assembly 语法把最低 Solidity 提升到 0.8.13。官方标注其 potentially breaking，依赖升级前需要验证编译器矩阵，不能因 patch 版本而忽略兼容性。",
+      "date_published": "2026-08-06T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "market_signal"
+      ],
+      "external_url": "https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades/releases/tag/v0.4.2"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-06-ai",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-06#ai-engineering",
+      "title": "只把可判定的数据归并交给程序化工具调用",
+      "summary": "把过滤、连接、排序、去重或字段校验限定为固定 schema、只读工具、并发和停止条件明确的子流程，再由模型完成取舍。程序输出和最终回答都要回归验证，写入与授权仍走确定性门禁。",
+      "content_text": "把过滤、连接、排序、去重或字段校验限定为固定 schema、只读工具、并发和停止条件明确的子流程，再由模型完成取舍。程序输出和最终回答都要回归验证，写入与授权仍走确定性门禁。",
+      "date_published": "2026-08-06T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "ai_engineering"
+      ],
+      "external_url": "https://developers.openai.com/api/docs/guides/latest-model#programmatic-tool-calling"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-06-web3",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-06#web3-design",
+      "title": "把签名算法迁移建模为不可逆控制权切换",
+      "summary": "EIP-8164 草案会在账户写入 ML-DSA-44 公钥后永久关闭旧 ECDSA 路径。钱包服务应绑定链、账户、nonce、算法和公钥指纹，分离旧密钥迁移授权与新密钥签名；草案未激活且无链上恢复，不能用于生产。",
+      "content_text": "EIP-8164 草案会在账户写入 ML-DSA-44 公钥后永久关闭旧 ECDSA 路径。钱包服务应绑定链、账户、nonce、算法和公钥指纹，分离旧密钥迁移授权与新密钥签名；草案未激活且无链上恢复，不能用于生产。",
+      "date_published": "2026-08-06T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "web3_design"
+      ],
+      "external_url": "https://eips.ethereum.org/EIPS/eip-8164"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-06-tools",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-06#tools",
+      "title": "OpenCode · 多端可扩展 coding agent 运行时",
+      "summary": "OpenCode 把终端、桌面、LSP、MCP、权限审批、headless server 和 SDK 集成到同一运行时；固定版 1.18.14 已复现 CLI 与本地健康端点。默认开发权限、无认证 server 和长输出丢失风险要求隔离、…",
+      "content_text": "OpenCode 把终端、桌面、LSP、MCP、权限审批、headless server 和 SDK 集成到同一运行时；固定版 1.18.14 已复现 CLI 与本地健康端点。默认开发权限、无认证 server 和长输出丢失风险要求隔离、…",
+      "date_published": "2026-08-06T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "tools"
+      ],
+      "external_url": "https://github.com/anomalyco/opencode"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-06-reading",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-06#reading",
+      "title": "Indexing the Data Lake for Online Point Queries",
+      "summary": "文章用外部 key-to-file/row 索引和精确 ranged read 让 Parquet 同时支持分析与在线点查，并写明分区、PageIndex、blob、列交错和 covering index 的代价。思考题：为真实单键查询列…",
+      "content_text": "文章用外部 key-to-file/row 索引和精确 ranged read 让 Parquet 同时支持分析与在线点查，并写明分区、PageIndex、blob、列交错和 covering index 的代价。思考题：为真实单键查询列…",
+      "date_published": "2026-08-06T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "reading"
+      ],
+      "external_url": "https://engineering.atspotify.com/2026/7/indexing-the-data-lake-for-online-point-queries"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-05-signal",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-05#industry-signals",
+      "title": "Solana Agave 4.2 将多项主网变化拆成 feature gate",
+      "summary": "官方计划分阶段降低账户存储保证金、引入更大的 v1 交易格式并缩短 slot；页面仍标为开发中，钱包、RPC 与索引服务需分别验证编码、原始字节解析、状态增长和性能指标。",
+      "content_text": "官方计划分阶段降低账户存储保证金、引入更大的 v1 交易格式并缩短 slot；页面仍标为开发中，钱包、RPC 与索引服务需分别验证编码、原始字节解析、状态增长和性能指标。",
+      "date_published": "2026-08-05T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "market_signal"
+      ],
+      "external_url": "https://solana.com/zh/upgrades/agave-4-2-release-overview"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-05-signal-1",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-05#industry-signals",
+      "title": "Sui testnet v1.77.1 收紧源码复现的工具链与依赖身份",
+      "summary": "verify-source 默认使用发布时工具链并读取链上地址，annotated tag 依赖会固定到实际 commit；这是 testnet 发布，既有锁文件仍需显式更新且不能外推为主网激活。",
+      "content_text": "verify-source 默认使用发布时工具链并读取链上地址，annotated tag 依赖会固定到实际 commit；这是 testnet 发布，既有锁文件仍需显式更新且不能外推为主网激活。",
+      "date_published": "2026-08-05T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "market_signal"
+      ],
+      "external_url": "https://github.com/MystenLabs/sui/releases/tag/testnet-v1.77.1"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-05-signal-2",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-05#industry-signals",
+      "title": "NEAR 2.13.3 用分层出站缓冲限制隔离慢连接",
+      "summary": "版本为单连接与全局出站写缓冲设置独立可配置上限，避免慢 peer 独占额度；官方明确它不是协议、数据库或安全升级，默认容量也不构成所有负载的通用保证。",
+      "content_text": "版本为单连接与全局出站写缓冲设置独立可配置上限，避免慢 peer 独占额度；官方明确它不是协议、数据库或安全升级，默认容量也不构成所有负载的通用保证。",
+      "date_published": "2026-08-05T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "market_signal"
+      ],
+      "external_url": "https://github.com/near/nearcore/releases/tag/2.13.3"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-05-ai",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-05#ai-engineering",
+      "title": "把结果正确与工具过程合规分开评分",
+      "summary": "保留人工裁决的端到端轨迹，分别标注工具选择、参数范围、写前校验和成功状态一致性，再用同一回归集比较模型或编排变更。轨迹 grader 可能误判，权限和副作用仍需确定性约束。",
+      "content_text": "保留人工裁决的端到端轨迹，分别标注工具选择、参数范围、写前校验和成功状态一致性，再用同一回归集比较模型或编排变更。轨迹 grader 可能误判，权限和副作用仍需确定性约束。",
+      "date_published": "2026-08-05T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "ai_engineering"
+      ],
+      "external_url": "https://developers.openai.com/api/docs/guides/trace-grading"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-05-web3",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-05#web3-design",
+      "title": "把 EOA 代码委托视为持续存在的账户迁移",
+      "summary": "EIP-7702 授权会持久改变 EOA 的代码语义，且外层调用回滚不撤销已处理委托。托管钱包应显式展示 authority、链域、代码哈希、nonce、初始化与撤销路径，并拒绝未知代码或漂移状态。",
+      "content_text": "EIP-7702 授权会持久改变 EOA 的代码语义，且外层调用回滚不撤销已处理委托。托管钱包应显式展示 authority、链域、代码哈希、nonce、初始化与撤销路径，并拒绝未知代码或漂移状态。",
+      "date_published": "2026-08-05T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "web3_design"
+      ],
+      "external_url": "https://eips.ethereum.org/EIPS/eip-7702"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-05-tools",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-05#tools",
+      "title": "Crush · 可切换模型与权限审阅的终端 coding agent",
+      "summary": "Crush 用 Go 集成文件与 shell 工具、会话、LSP、MCP、非交互入口和 server 模式；固定版 v0.88.0 已复现 CLI 与 provider 路由问题。可执行配置、yolo 权限、协议静默替换和网络文件系统数据…",
+      "content_text": "Crush 用 Go 集成文件与 shell 工具、会话、LSP、MCP、非交互入口和 server 模式；固定版 v0.88.0 已复现 CLI 与 provider 路由问题。可执行配置、yolo 权限、协议静默替换和网络文件系统数据…",
+      "date_published": "2026-08-05T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "tools"
+      ],
+      "external_url": "https://github.com/charmbracelet/crush"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-05-reading",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-05#reading",
+      "title": "The harness is all you need (mostly)",
+      "summary": "文章用原型、计划、实现、复核构成可观察的 agent 闭环，并强调自主执行要与沙箱隔离配套。思考题：为一个真实小任务分别写出四阶段证据，以及自动循环中仍必须停下的权限边界。",
+      "content_text": "文章用原型、计划、实现、复核构成可观察的 agent 闭环，并强调自主执行要与沙箱隔离配套。思考题：为一个真实小任务分别写出四阶段证据，以及自动循环中仍必须停下的权限边界。",
+      "date_published": "2026-08-05T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "reading"
+      ],
+      "external_url": "https://github.blog/ai-and-ml/github-copilot/the-harness-is-all-you-need-mostly/"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-04-signal",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-04#industry-signals",
+      "title": "Chainlink Node v2.58.0 调整遥测与批量发送默认值",
+      "summary": "版本新增指标属性丢弃配置，并依据容量分析扩大 Chip ingress 缓冲与批量、延长发送窗口；这是节点配置更新，生产使用仍需按负载验证并固定镜像 digest。",
+      "content_text": "版本新增指标属性丢弃配置，并依据容量分析扩大 Chip ingress 缓冲与批量、延长发送窗口；这是节点配置更新，生产使用仍需按负载验证并固定镜像 digest。",
+      "date_published": "2026-08-04T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "market_signal"
+      ],
+      "external_url": "https://github.com/smartcontractkit/chainlink/releases/tag/v2.58.0"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-04-signal-1",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-04#industry-signals",
+      "title": "Polkadot SDK 补丁修正 collator 信誉归因",
+      "summary": "stable2603-5 修正 ApprovedPeer 携带错误 PeerId 导致诚实 collator 无法累积信誉的问题，并缓解持久化请求拥塞；该发布仅含 crates，不提供 binary 或镜像。",
+      "content_text": "stable2603-5 修正 ApprovedPeer 携带错误 PeerId 导致诚实 collator 无法累积信誉的问题，并缓解持久化请求拥塞；该发布仅含 crates，不提供 binary 或镜像。",
+      "date_published": "2026-08-04T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "market_signal"
+      ],
+      "external_url": "https://github.com/paritytech/polkadot-sdk/releases/tag/polkadot-stable2603-5"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-04-signal-2",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-04#industry-signals",
+      "title": "Celestia Corto 版本在 CheckTx 限制消息数量",
+      "summary": "v9.0.5-corto 为 CheckTx 增加 SDK message 上限并升级 celestia-core；它是仅面向 Corto 的 prerelease，不能外推为主网稳定版本。",
+      "content_text": "v9.0.5-corto 为 CheckTx 增加 SDK message 上限并升级 celestia-core；它是仅面向 Corto 的 prerelease，不能外推为主网稳定版本。",
+      "date_published": "2026-08-04T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "market_signal"
+      ],
+      "external_url": "https://github.com/celestiaorg/celestia-app/releases/tag/v9.0.5-corto"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-04-ai",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-04#ai-engineering",
+      "title": "让模型产出结构化意图，由确定性 handler 执行写入",
+      "summary": "先用代码固定仓库、分支和文件边界，再让 agent 只输出变更意图；独立 handler 用窄权限、白名单、draft PR 与失败回退执行。模型判断仍需内容审阅，安全来自权限分离和可验证动作面。",
+      "content_text": "先用代码固定仓库、分支和文件边界，再让 agent 只输出变更意图；独立 handler 用窄权限、白名单、draft PR 与失败回退执行。模型判断仍需内容审阅，安全来自权限分离和可验证动作面。",
+      "date_published": "2026-08-04T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "ai_engineering"
+      ],
+      "external_url": "https://github.blog/ai-and-ml/github-copilot/automating-cross-repo-documentation-with-github-agentic-workflows/"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-04-web3",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-04#web3-design",
+      "title": "把 agent 资产与 owner 账户做单向隔离",
+      "summary": "ERC-8199 用独立沙箱钱包、agent 有效期、前后置 checker 与 owner 恢复路径限制自动执行。钱包服务可迁移独立资金边界和显式策略，但草案未补齐 nonce、升级、checker 信任与跨链恢复，不能直接用于生产。",
+      "content_text": "ERC-8199 用独立沙箱钱包、agent 有效期、前后置 checker 与 owner 恢复路径限制自动执行。钱包服务可迁移独立资金边界和显式策略，但草案未补齐 nonce、升级、checker 信任与跨链恢复，不能直接用于生产。",
+      "date_published": "2026-08-04T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "web3_design"
+      ],
+      "external_url": "https://eips.ethereum.org/EIPS/eip-8199"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-04-tools",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-04#tools",
+      "title": "Gemini CLI · 终端开源 coding agent",
+      "summary": "Gemini CLI 面向终端代码与工具工作流；固定版 0.53.1 已在无凭据临时目录复现版本输出。公开仓库与 npm 数据显示广泛关注和分发，但工具权限、提示注入和供应链风险仍需沙箱、审批与独立测试约束。",
+      "content_text": "Gemini CLI 面向终端代码与工具工作流；固定版 0.53.1 已在无凭据临时目录复现版本输出。公开仓库与 npm 数据显示广泛关注和分发，但工具权限、提示注入和供应链风险仍需沙箱、审批与独立测试约束。",
+      "date_published": "2026-08-04T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "tools"
+      ],
+      "external_url": "https://github.com/google-gemini/gemini-cli"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-04-reading",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-04#reading",
+      "title": "用条件把最小权限收紧到服务、工具与时间",
+      "summary": "Google Cloud 展示用 IAM Conditions 限定可授予角色、MCP 服务、具体工具和时间窗。思考题：为只读研究 agent 写出三条允许、三条拒绝案例，并检查属性缺失或新工具上线时是否默认拒绝。",
+      "content_text": "Google Cloud 展示用 IAM Conditions 限定可授予角色、MCP 服务、具体工具和时间窗。思考题：为只读研究 agent 写出三条允许、三条拒绝案例，并检查属性缺失或新工具上线时是否默认拒绝。",
+      "date_published": "2026-08-04T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "reading"
+      ],
+      "external_url": "https://cloud.google.com/blog/topics/developers-practitioners/generosity-under-conditions-hardening-google-cloud-access-management/"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-03-signal",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-03#industry-signals",
+      "title": "Coinbase 共享入口故障暂停多类资金工作流",
+      "summary": "资源名称冲突使共享 Istio ingress gateway 不可用，充提、卡、链上和结算工作流同时受影响，标准回滚又依赖故障入口。公司称资金未受风险，但改进项仍需后续运行证据验证。",
+      "content_text": "资源名称冲突使共享 Istio ingress gateway 不可用，充提、卡、链上和结算工作流同时受影响，标准回滚又依赖故障入口。公司称资金未受风险，但改进项仍需后续运行证据验证。",
+      "date_published": "2026-08-03T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "market_signal"
+      ],
+      "external_url": "https://www.coinbase.com/fr-fr/blog/a-postmortem-of-our-july-14-2026-incident"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-03-signal-1",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-03#industry-signals",
+      "title": "以太坊协议安全 agent 的瓶颈是可复现分诊",
+      "summary": "Ethereum Foundation 将 agent 视为安全搜索工具，要求候选用真实代码 PoC、调用链、影响边界和维护者复核转成有效漏洞；已确认一项公开 CVE，但未披露完整误报率。",
+      "content_text": "Ethereum Foundation 将 agent 视为安全搜索工具，要求候选用真实代码 PoC、调用链、影响边界和维护者复核转成有效漏洞；已确认一项公开 CVE，但未披露完整误报率。",
+      "date_published": "2026-08-03T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "market_signal"
+      ],
+      "external_url": "https://blog.ethereum.org/2026/07/09/triage-is-the-product"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-03-signal-2",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-03#industry-signals",
+      "title": "SEC 议程覆盖加密融资、托管与链上代币化证券",
+      "summary": "SEC 主席声明拟为加密资产融资、托管和链上代币化证券提供更清晰路径，同时保留投资者保护和执法；这是政策议程，不是已生效规则或产品豁免。",
+      "content_text": "SEC 主席声明拟为加密资产融资、托管和链上代币化证券提供更清晰路径，同时保留投资者保护和执法；这是政策议程，不是已生效规则或产品豁免。",
+      "date_published": "2026-08-03T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "market_signal"
+      ],
+      "external_url": "https://www.sec.gov/newsroom/speeches-statements/atkins-statement-2026-regulatory-agenda-070726"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-03-ai",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-03#ai-engineering",
+      "title": "把大型迁移拆成有依赖关系的短会话与小 PR 栈",
+      "summary": "先提交可独立测试的基础层，后续会话从前一分支派生并只承担一个目标；每层记录前置提交、局部测试和回滚。stacked PR 缩小审阅面，但最终仍需在合并基线做完整回归。",
+      "content_text": "先提交可独立测试的基础层，后续会话从前一分支派生并只承担一个目标；每层记录前置提交、局部测试和回滚。stacked PR 缩小审阅面，但最终仍需在合并基线做完整回归。",
+      "date_published": "2026-08-03T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "ai_engineering"
+      ],
+      "external_url": "https://github.blog/ai-and-ml/github-copilot/stacked-sessions-and-pull-requests-in-the-github-copilot-app/"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-03-web3",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-03#web3-design",
+      "title": "把账户验证、执行与约束拆成可清点模块",
+      "summary": "ERC-6900 用 validation、execution 和 hook 模块描述智能账户能力。钱包系统可迁移 manifest、selector、hook 顺序和安装审计，但恶意模块仍可拒绝服务或转走资金，卸载残留也必须显式清理。",
+      "content_text": "ERC-6900 用 validation、execution 和 hook 模块描述智能账户能力。钱包系统可迁移 manifest、selector、hook 顺序和安装审计，但恶意模块仍可拒绝服务或转走资金，卸载残留也必须显式清理。",
+      "date_published": "2026-08-03T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "web3_design"
+      ],
+      "external_url": "https://eips.ethereum.org/EIPS/eip-6900"
+    },
+    {
+      "id": "xiuqiu-radar:2026-08-03-tools",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-03#tools",
+      "title": "Cline · 多客户端开源 coding agent",
+      "summary": "Cline 在编辑器、CLI 与 SDK 中提供项目编辑、命令、checkpoint 和扩展能力。公开发布与 issue 显示活跃维护；试用应固定 CLI 版本、使用无凭据示例仓库，并保留命令审批与独立测试。",
+      "content_text": "Cline 在编辑器、CLI 与 SDK 中提供项目编辑、命令、checkpoint 和扩展能力。公开发布与 issue 显示活跃维护；试用应固定 CLI 版本、使用无凭据示例仓库，并保留命令审批与独立测试。",
+      "date_published": "2026-08-03T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "tools"
+      ],
+      "external_url": "https://github.com/cline/cline"
+    }
+  ]
+}

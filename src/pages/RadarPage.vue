@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { latestRadars, radarIndex, type RadarIndexEntry } from '../data/generatedRadars'
+import { useRoute, useRouter } from 'vue-router'
+import { latestRadars, radarIndex } from '../data/generatedRadars'
+import { loadRadarFeed, radarFeedItemCount, type RadarFeedItem } from '../data/generatedRadarFeed'
 import { radarWeeklies } from '../data/generatedRadarWeeklies'
 import {
   getRadarReviewBoundary,
@@ -9,6 +11,12 @@ import {
   isLearningEditionV2,
   radarSignalCountLabel,
   radarSourceStatus,
+  radarTopicLabel,
+  filterRadarFeed,
+  groupRadarFeedByDate,
+  countRadarFeedTopics,
+  continuingRadarTopics,
+  type RadarFeedDomain,
 } from '../data/radarPresentation'
 import { getRadarCollectionSeo, getSnapshotFreshness } from '../data/snapshotFreshness'
 import { setSeoMeta } from '../utils/seo'
@@ -17,29 +25,34 @@ import '../styles/radar.css'
 const latestRadar = latestRadars[0]
 const latestWeekly = radarWeeklies[0]
 const archiveLimit = 10
-type ArchiveFilter = 'all' | 'crypto' | 'ai' | 'web3' | 'tools' | 'reading'
-
-interface ArchiveFilterOption {
-  key: ArchiveFilter
-  label: string
-}
-
-interface RadarArchiveGroup {
-  week: string
-  label: string
-  radars: RadarIndexEntry[]
-}
-
-const archiveFilter = ref<ArchiveFilter>('all')
+const archiveFilter = ref<RadarFeedDomain>('all')
 const archiveExpanded = ref(false)
-const archiveFilters: ArchiveFilterOption[] = [
+const archiveFilters: { key: RadarFeedDomain; label: string }[] = [
   { key: 'all', label: '全部' },
-  { key: 'crypto', label: 'Crypto' },
-  { key: 'ai', label: 'AI Engineering' },
-  { key: 'web3', label: 'Web3 Design' },
-  { key: 'tools', label: 'Tools' },
-  { key: 'reading', label: 'Reading' },
+  { key: 'ai', label: 'AI' },
+  { key: 'web3', label: 'Web3' },
 ]
+const route = useRoute()
+const router = useRouter()
+const topicFilter = ref<string | undefined>(typeof route.query.topic === 'string' ? route.query.topic : undefined)
+const searchQuery = ref(typeof route.query.q === 'string' ? route.query.q : '')
+const radarFeedItems = ref<RadarFeedItem[]>([])
+const feedLoading = ref(true)
+const feedError = ref(false)
+const continuingTopics = computed(() => continuingRadarTopics(radarFeedItems.value))
+
+async function loadFeed() {
+  feedLoading.value = true
+  feedError.value = false
+  try {
+    radarFeedItems.value = await loadRadarFeed()
+  } catch {
+    feedError.value = true
+  }
+  feedLoading.value = false
+}
+
+loadFeed()
 const supportingSignals = computed(() =>
   latestRadar ? getSupportingRadarItems(latestRadar) : [],
 )
@@ -67,69 +80,40 @@ const latestReviewBoundary = computed(() =>
     : undefined,
 )
 
-function radarMatchesFilter(radar: RadarIndexEntry, filter: ArchiveFilter): boolean {
-  if (filter === 'all') return true
-  if (filter === 'crypto') return radar.marketSignals.length > 0 || Boolean(radar.briefs?.some(brief => brief.domain === 'web3'))
-  if (filter === 'ai') return Boolean(radar.aiTip) || Boolean(radar.briefs?.some(brief => brief.domain === 'ai'))
-  if (filter === 'web3') return Boolean(radar.web3Design) || Boolean(radar.briefs?.some(brief => brief.domain === 'web3'))
-  if (filter === 'tools') return Boolean(radar.vibeProject)
-  return Boolean(radar.readingPick)
-}
-
-function radarArchiveTitle(radar: RadarIndexEntry): string {
-  if (archiveFilter.value === 'ai') return radar.briefs?.find(brief => brief.domain === 'ai')?.title || radar.aiTip?.title || radar.summary
-  if (archiveFilter.value === 'web3') return radar.briefs?.find(brief => brief.domain === 'web3')?.title || radar.web3Design?.title || radar.summary
-  if (archiveFilter.value === 'tools') return radar.vibeProject?.title || radar.summary
-  if (archiveFilter.value === 'reading') return radar.readingPick?.title || radar.summary
-  return radar.deepDive?.title || radar.briefs?.[0]?.title || radar.marketSignals[0]?.title || radar.summary
-}
-
-function getIsoWeek(dateValue: string): { key: string; label: string } {
-  const date = new Date(`${dateValue}T00:00:00Z`)
-  const dayIndex = (date.getUTCDay() + 6) % 7
-  const thursday = new Date(date)
-  thursday.setUTCDate(date.getUTCDate() - dayIndex + 3)
-  const weekYear = thursday.getUTCFullYear()
-  const firstThursday = new Date(Date.UTC(weekYear, 0, 4))
-  const firstDayIndex = (firstThursday.getUTCDay() + 6) % 7
-  firstThursday.setUTCDate(firstThursday.getUTCDate() - firstDayIndex + 3)
-  const weekNumber = 1 + Math.round(
-    (thursday.getTime() - firstThursday.getTime()) / (7 * 24 * 60 * 60 * 1000),
-  )
-  const week = String(weekNumber).padStart(2, '0')
-  return { key: `${weekYear}-W${week}`, label: `${weekYear} · W${week}` }
-}
-
+const domainItems = computed(() => filterRadarFeed(radarFeedItems.value, { domain: archiveFilter.value }))
+const topicOptions = computed(() => countRadarFeedTopics(domainItems.value))
 const archiveFilterCounts = computed(() =>
   Object.fromEntries(
-    archiveFilters.map(option => [
-      option.key,
-      radarIndex.filter(radar => radarMatchesFilter(radar, option.key)).length,
-    ]),
-  ) as Record<ArchiveFilter, number>,
+    archiveFilters.map(option => [option.key, filterRadarFeed(radarFeedItems.value, { domain: option.key }).length]),
+  ) as Record<RadarFeedDomain, number>,
 )
-
-const filteredArchive = computed(() =>
-  radarIndex.filter(radar => radarMatchesFilter(radar, archiveFilter.value)),
+const filteredFeed = computed(() =>
+  filterRadarFeed(radarFeedItems.value, { domain: archiveFilter.value, topic: topicFilter.value, search: searchQuery.value }),
 )
-
-const visibleArchive = computed(() =>
-  archiveExpanded.value ? filteredArchive.value : filteredArchive.value.slice(0, archiveLimit),
+const feedDays = computed(() => groupRadarFeedByDate(filteredFeed.value))
+const visibleFeedDays = computed(() =>
+  archiveExpanded.value ? feedDays.value : feedDays.value.slice(0, archiveLimit),
 )
+const visibleFeedCount = computed(() => visibleFeedDays.value.reduce((sum, day) => sum + day.items.length, 0))
+const hasActiveFilter = computed(() => archiveFilter.value !== 'all' || Boolean(topicFilter.value) || Boolean(searchQuery.value.trim()))
 
-const archiveGroups = computed<RadarArchiveGroup[]>(() => {
-  const groups = new Map<string, RadarArchiveGroup>()
-  visibleArchive.value.forEach((radar) => {
-    const week = getIsoWeek(radar.date)
-    const current = groups.get(week.key)
-    if (current) current.radars.push(radar)
-    else groups.set(week.key, { week: week.key, label: week.label, radars: [radar] })
-  })
-  return [...groups.values()]
-})
+function toggleTopic(topic: string) {
+  topicFilter.value = topicFilter.value === topic ? undefined : topic
+}
 
-watch(archiveFilter, () => {
+function resetFeed() {
+  archiveFilter.value = 'all'
+  topicFilter.value = undefined
+  searchQuery.value = ''
+}
+
+watch([archiveFilter, topicFilter, searchQuery], () => {
   archiveExpanded.value = false
+  if (!feedLoading.value && topicFilter.value && !topicOptions.value.some(option => option.topic === topicFilter.value)) topicFilter.value = undefined
+  const query: Record<string, string> = {}
+  if (topicFilter.value) query.topic = topicFilter.value
+  if (searchQuery.value.trim()) query.q = searchQuery.value.trim()
+  router.replace({ query, hash: route.hash })
 })
 
 onMounted(() =>
@@ -346,51 +330,97 @@ onMounted(() =>
       <div class="container radar-intelligence-shell">
         <header class="radar-stage-heading">
           <div>
-            <p class="radar-kicker">03 / Intelligence Archive</p>
-            <h2 id="radar-archive-title">历史不是卡片墙，<br />是可检索的判断轨迹。</h2>
+            <p class="radar-kicker">03 / Intelligence Feed</p>
+            <h2 id="radar-archive-title">每一条简报，<br />都可以按主题回看。</h2>
           </div>
-          <span>{{ filteredArchive.length }} / {{ radarIndex.length }} 期</span>
+          <span>{{ feedLoading ? '…' : filteredFeed.length }} / {{ radarFeedItemCount }} 条 · {{ radarIndex.length }} 期</span>
         </header>
 
-        <div class="radar-filter-line" role="group" aria-label="按栏目筛选历史简报">
+        <div class="radar-feed-toolbar">
+          <div class="radar-filter-line" role="group" aria-label="按领域筛选简报">
+            <button
+              v-for="option in archiveFilters"
+              :key="option.key"
+              type="button"
+              :class="{ active: archiveFilter === option.key }"
+              :aria-pressed="archiveFilter === option.key"
+              @click="archiveFilter = option.key"
+            >
+              {{ option.label }} <span>{{ archiveFilterCounts[option.key] }}</span>
+            </button>
+          </div>
+          <label class="radar-feed-search">
+            <span class="sr-only">搜索简报标题与摘要</span>
+            <input v-model="searchQuery" type="search" placeholder="搜索标题或摘要" autocomplete="off" />
+          </label>
+        </div>
+
+        <div class="radar-topic-chips" role="group" aria-label="按主题筛选简报">
           <button
-            v-for="option in archiveFilters"
-            :key="option.key"
+            v-for="option in topicOptions"
+            :key="option.topic"
             type="button"
-            :class="{ active: archiveFilter === option.key }"
-            :aria-pressed="archiveFilter === option.key"
-            @click="archiveFilter = option.key"
+            :class="{ active: topicFilter === option.topic }"
+            :aria-pressed="topicFilter === option.topic"
+            @click="toggleTopic(option.topic)"
           >
-            {{ option.label }} <span>{{ archiveFilterCounts[option.key] }}</span>
+            {{ radarTopicLabel(option.topic) }} <span>{{ option.count }}</span>
           </button>
         </div>
 
-        <p class="sr-only" aria-live="polite">当前显示 {{ visibleArchive.length }} 期简报</p>
-        <div v-if="archiveGroups.length" class="radar-archive-ledger">
-          <section v-for="group in archiveGroups" :key="group.week">
-            <header><h3>{{ group.label }}</h3><span>{{ group.radars.length }} briefs</span></header>
-            <router-link v-for="radar in group.radars" :key="radar.slug" :to="`/radar/${radar.slug}`">
-              <time :datetime="radar.date">{{ radar.date.slice(5).replace('-', '.') }}</time>
-              <strong>{{ radarArchiveTitle(radar) }}</strong>
-              <span aria-hidden="true">→</span>
-            </router-link>
+        <p class="sr-only" aria-live="polite">当前显示 {{ visibleFeedCount }} 条简报</p>
+        <div v-if="feedLoading" class="radar-archive-empty" aria-busy="true" role="status">
+          <p>正在载入简报信息流…</p>
+        </div>
+        <div v-else-if="feedError" class="radar-archive-empty" role="alert">
+          <p>简报信息流载入失败。</p>
+          <button type="button" @click="loadFeed">重试</button>
+        </div>
+        <div v-else-if="visibleFeedDays.length" class="radar-archive-ledger radar-feed">
+          <section v-for="day in visibleFeedDays" :key="day.date" :aria-labelledby="`feed-day-${day.date}`">
+            <header>
+              <h3 :id="`feed-day-${day.date}`"><time :datetime="day.date">{{ day.date }}</time></h3>
+              <router-link :to="`/radar/${day.date}`">当期简报 →</router-link>
+            </header>
+            <ul class="radar-feed-cards">
+              <li v-for="item in day.items" :key="item.id">
+                <router-link :to="`/radar/${item.date}#${item.anchor}`" class="radar-feed-card">
+                  <span class="radar-feed-meta">
+                    <b :class="`radar-feed-domain radar-feed-domain--${item.domain}`">{{ item.domain.toUpperCase() }}</b>
+                    <span>{{ radarTopicLabel(item.topic) }}</span>
+                    <em v-if="continuingTopics.has(item.topic)" class="radar-feed-badge">持续追踪</em>
+                    <em v-if="item.isDeepDive" class="radar-feed-badge radar-feed-badge--deep">专题</em>
+                  </span>
+                  <strong>{{ item.title }}</strong>
+                  <p>{{ item.summary }}</p>
+                  <small v-if="item.sourceName">{{ item.sourceTier === 'tier1' ? '一手来源' : '研究解读' }} · {{ item.sourceName }}</small>
+                </router-link>
+              </li>
+            </ul>
           </section>
         </div>
         <div v-else class="radar-archive-empty" role="status">
-          <p>该栏目暂时没有公开简报。</p>
-          <button v-if="archiveFilter !== 'all'" type="button" @click="archiveFilter = 'all'">查看全部历史简报</button>
+          <p>没有符合条件的简报。</p>
+          <button v-if="hasActiveFilter" type="button" @click="resetFeed">清除筛选</button>
           <p v-else>请稍后返回确认新的公开简报。</p>
         </div>
 
         <button
-          v-if="filteredArchive.length > archiveLimit"
+          v-if="feedDays.length > archiveLimit"
           class="radar-archive-toggle"
           type="button"
           :aria-expanded="archiveExpanded"
           @click="archiveExpanded = !archiveExpanded"
         >
-          {{ archiveExpanded ? '收起历史记录' : `展开全部 ${filteredArchive.length} 期` }}
+          {{ archiveExpanded ? '收起历史记录' : `展开全部 ${feedDays.length} 天` }}
         </button>
+
+        <nav class="radar-subscribe" aria-label="订阅学习雷达">
+          <span>订阅</span>
+          <a href="/radar/rss.xml" type="application/rss+xml">RSS</a>
+          <a href="/radar/feed.json" type="application/feed+json">JSON Feed</a>
+          <a href="/llms.txt">llms.txt</a>
+        </nav>
 
         <p class="radar-editorial-disclaimer">
           内容由公开来源经 AI 自动汇总，周度判断另行人工复核。市场信息仅用于研究与教育，不构成投资建议。
