@@ -1,124 +1,84 @@
 # xiuqiu-site
 
-[Live site](https://xiuqiu-site.vercel.app)
+[Live site](https://xiuqiu-site.vercel.app) · [学习雷达 RSS](https://xiuqiu-site.vercel.app/radar/rss.xml)
 
-xiuqiu-site 是 Qiu Market、Wallet Infrastructure 学习方向与 AI Engineering 交付证据的公开入口。当前只把 Qiu Market 作为产品呈现；Wallet Infrastructure 保持在学习、私有基线审计与最小失败证据阶段，不把历史材料或模拟实验包装成当前实现、生产钱包或真实资金经验。
+xiuqiu-site 是一个个人站点，正在从「作品集 + 工程证据」转向以 **AI + Web3 Radar 情报流** 为主：每天整理 2 条 AI、2 条 Web3 工程简报和 1 个专题，并提供信息流、主题筛选、搜索与 RSS / JSON Feed 订阅。
 
-## Current frame
-
-- **Qiu Market**：当前可展示的 Web3 产品，使用虚拟资金验证市场事实、订单状态、账务与恢复边界。
-- **Wallet Infrastructure**：当前钱包后端学习与工程证据方向；公开页面只显示通过发布门禁的方向、证据等级和限制。
-- **AI Engineering**：记录 AI 参与需求、实现、审查与测试的过程，同时保留人工判断和最终放行边界。
+站点同时保留 Qiu Market、Wallet Infrastructure 与 AI Engineering 的公开证据。当前只把 Qiu Market 作为产品呈现；Wallet Infrastructure 是当前钱包后端学习与工程证据方向，仍处于学习、私有基线审计与最小失败证据阶段，不把历史材料或模拟实验包装成当前实现、生产钱包或真实资金经验。
 
 历史公开模拟与交付记录仍作为可追溯证据保留，例如 [Wallet Reliability Lab](https://wallet-reliability-lab.vercel.app) 和 [Wallet Domain Engine](https://github.com/qianqiu0404/web3-wallet-engineer-lab)；它们不定义当前产品优先级。
 
-## Public evidence contract
+> 在本仓库工作的 AI 代理与协作者请先读 [`AGENTS.md`](AGENTS.md)：冻结契约、目录约定、改动要求和重构路线都在那里。
 
-每个公开项目同时声明两个正交状态：
+## 主要页面
 
-- `publicRole` 只回答它是否属于当前叙事：`current-product`、`current-direction` 或 `historical-evidence`。
-- `claimState` 只回答公开 Claim 是否成熟：`locked`、`evidence-ready` 或 `publishable`。历史证据可以是 `publishable`，但不会因此成为当前产品。
+| 路由 | 内容 |
+| --- | --- |
+| `/radar` | 学习雷达：最新一期简报 + 按日期分组的信息流，支持 AI / Web3、主题筛选与搜索 |
+| `/radar/:date`、`/radar/week/:week` | 日报阅读器、人工复核周报 |
+| `/market-radar` | 交易雷达：静态、有来源的市场研究快照（不连接账户，不下单） |
+| `/projects`、`/projects/:slug` | 项目图谱与项目详情 |
+| `/engineering/*`、`/ai/*` | 工程证据、失败恢复手册、AI 协作交付记录 |
+| `/articles`、`/now` | 工程笔记、关于 |
 
-当前契约固定为 Qiu Market = `current-product / evidence-ready`，Wallet Infrastructure = `current-direction / locked`；其余六项只作为 `historical-evidence`。完整映射、来源优先级和失败关闭规则见 [`docs/public-evidence-contract.md`](docs/public-evidence-contract.md)。
+订阅出口（构建时生成的静态文件）：`/radar/rss.xml`、`/radar/feed.json`、`/llms.txt`，格式见 [`docs/public-feeds.md`](docs/public-feeds.md)。
 
-Production releases follow the exact-SHA, DB-first process in [`docs/release-controller.md`](docs/release-controller.md).
+## 架构
 
-Vercel Git deployments, including pull-request Previews, are disabled while the release controller is the sole production path. Preview may be restored only after Dashboard auto-assign is confirmed off and the controller has succeeded for the same live `main` SHA; see the release guide for the guarded, branch-scoped policy.
+- **内容**：`content/**` 下的 Markdown（frontmatter 即数据），包括 `articles`、`projects`、`radar`、`market-radar`、`evidence`、`deliveries`、`failure-cases`、`learning`、`now`；`content/obsidian-public/*.json` 是从 Obsidian 显式 `publish: true` 字段导出的可选覆盖层。
+- **生成**：`scripts/generate-*.mjs` 校验内容并写出 `src/data/generated*.ts`（大数据按月拆分、懒加载）以及 `public/` 下的 sitemap、RSS、JSON Feed、`llms.txt` 和交易雷达研究包。
+- **前端**：Vue 3 + Vite + vue-router，页面在 `src/pages/`，展示逻辑在 `src/data/*Presentation.ts`。
+- **接口**（Vercel serverless，`api/` 的文件路径即 URL）：
+  - `POST /api/chat`：站内 xiuqiu AI，只检索公开知识层（`src/data/siteKnowledge.ts`），转发到 DeepSeek。
+  - `GET /api/market-radar/{summary,digests,events}`、`GET /api/market-radar/events/:id`、`POST /api/market-radar/feedback`：交易雷达影子引擎读接口。
+  - `POST /api/{radar,market-radar}/outbox/{claim,ack}`：Hermes 领取 / 确认通知，需要 Bearer token。
+- **Market Radar 引擎**：`market-radar/`（迁移、采集、评分、digest、outbox worker），写入 Neon 的独立 schema，由 GitHub Actions 定时运行。
+- **通知**：`ops/hermes/` 从 outbox 领取已准备好的消息发到微信；Hermes 不调用上游数据源，也不持有其凭据。
 
-公开仓库不包含私有钱包服务的源码、地址或配置。私有工程只展示经过发布门禁的脱敏边界和当前限制。
-
-## Architecture
-
-- `content/articles/*.md`: article sources and metadata
-- `content/projects/*.md`: reviewed public release artifacts, including project role, Claim state, evidence, target and boundaries
-- `content/obsidian-public/projects.json`: optional allowlisted overlays exported only from explicit `publish: true` Obsidian frontmatter; an empty project list is valid and no note bodies or source paths are included
-- `content/obsidian-public/radar-weeklies.json`: human-reviewed weekly convergence exported from Obsidian public fields
-- `content/failure-cases/*.md`: structured wallet failure recovery playbook
-- `content/evidence/*.md`: reproducible, public-safe engineering evidence
-- `content/deliveries/*.md`: AI-assisted delivery records and human decisions
-- `src/data/generated*.ts`: generated typed metadata; article bodies are loaded from Markdown only when their route opens
-- `src/data/siteKnowledge.ts`: unified project/article/evidence knowledge graph
-- `api/chat.ts`: serverless chat proxy for xiuqiu AI, with scoped public-context retrieval, request limits, upstream timeout, and content-free operational logs
-- `content/market-radar/*.md`: reviewed static Trade Radar snapshots, isolated from the Learn Radar content model
-- `market-radar/`: optional shadow engine with isolated migrations, registration-free collectors, scoring, crypto reaction tracking and digest/outbox workers
-- `api/market-radar/`: shadow-engine read/feedback endpoints plus token-protected Hermes claim/ack endpoints
-- `src/pages/MarketRadar*.vue`: independently lazy-loaded static Trade Radar overview and dated snapshot views; `/radar` remains the separate Learn Radar
-
-## Commands
+## 命令
 
 ```bash
 npm ci
 npm run dev
+npm run build            # 全部测试 + 内容生成 + 公开安全检查 + 类型检查 + vite build + 体积预算
 npm run test:radar
 npm run test:market-radar
-npm run typecheck:api
-npm run sync:obsidian-public
-npm run build
-npm run check:knowledge
 npm run check:public
+npm run sync:obsidian-public   # 仅在需要显式公开覆盖时，需 OBSIDIAN_VAULT_PATH
 ```
 
-`npm run build` regenerates public content, validates knowledge links, type-checks the serverless API and Vue app, builds Vite, and generates static metadata pages.
+## 环境变量
 
-## Environment
+只在 Vercel / GitHub 中配置，不提交到仓库；`.env.example` 只列名称和安全默认值。
 
-Configure the public assistant in Vercel. The Market Radar database and dispatcher values are only required when the optional shadow engine and Hermes outbox are enabled:
+| 位置 | 变量 | 用途 |
+| --- | --- | --- |
+| Vercel | `DEEPSEEK_API_KEY`、`DEEPSEEK_MODEL` | 站内 AI |
+| Vercel | `MARKET_RADAR_DATABASE_URL`、`RADAR_DISPATCH_TOKEN`（兼容旧名 `MARKET_RADAR_DISPATCH_TOKEN`） | 交易雷达读接口与 outbox（启用影子引擎时） |
+| GitHub secrets | `MARKET_RADAR_DATABASE_URL`、`DEEPSEEK_API_KEY`、`SEC_USER_AGENT` | 定时 worker |
+| GitHub `production-release` 环境 | `VERCEL_TOKEN`、`VERCEL_ORG_ID`、`VERCEL_PROJECT_ID`（后两者也可放 variables）、`LEARNING_RADAR_DATABASE_URL` | 发布控制器 |
+| GitHub variables | `LEARNING_RADAR_ENABLED`、`MARKET_RADAR_ENABLED`、`MARKET_RADAR_AUTOMATION_READY` | 人工开关，默认关闭 |
 
-```env
-DEEPSEEK_API_KEY=
-DEEPSEEK_MODEL=deepseek-v4-flash
-MARKET_RADAR_DATABASE_URL=
-MARKET_RADAR_DISPATCH_TOKEN=
-```
+Hermes 只在本机密钥环境中保存 dispatch token 与微信通道配置，微信凭据不进入 Vercel 或 GitHub。
 
-Configure the optional scheduled Market Radar shadow worker in GitHub Actions secrets. The database URL must be the same Neon pooled connection string used by Vercel:
+## 发布与自动化
 
-```env
-MARKET_RADAR_DATABASE_URL=
-DEEPSEEK_API_KEY=
-SEC_USER_AGENT=
-```
+- **生产发布**只走 [`release-controller.yml`](.github/workflows/release-controller.yml)：精确 SHA、先迁移数据库、Vercel 候选验证后再提升，见 [`docs/release-controller.md`](docs/release-controller.md)。Vercel 的 Git 自动部署（包括 PR Preview）已关闭。
+- **学习雷达**每日由 ResearchOps 流程产出，PR 分支 `automation/daily-radar-YYYY-MM-DD`，只能改白名单内文件，见 [`docs/learning-radar-researchops.md`](docs/learning-radar-researchops.md)。
+- **交易雷达**每日流程与 v2 研究问题规则见 [`docs/market-radar-researchops.md`](docs/market-radar-researchops.md)。
+- 静态快照与数据库共用同一个不可变 `snapshotId`，见 [`docs/radar-publication-boundary.md`](docs/radar-publication-boundary.md)。
 
-Keep `MARKET_RADAR_ENABLED` set to `false` until migrations and the manual ingestion smoke test pass. Set it to `true` only for an approved release or worker lane. Scheduled workers may request the protected production environment only when `MARKET_RADAR_AUTOMATION_READY=true`; otherwise schedules remain dry-run. Hermes stores `MARKET_RADAR_DISPATCH_TOKEN` and `WEIXIN_HOME_CHANNEL` only in its local secret environment; Weixin credentials never belong in Vercel or GitHub.
+## 公开证据契约
 
-The right-side assistant is part of the public site. It uses the reviewed public knowledge graph, sends visitor questions to the DeepSeek API, and fails closed when the provider key is unavailable. The in-memory limiter is a best-effort per-instance guard, not a persistent production quota. Never commit a real API key. `.env.example` contains names and safe defaults only.
+每个公开项目声明两个正交状态：`publicRole`（`current-product` / `current-direction` / `historical-evidence`）回答它是否属于当前叙事；`claimState`（`locked` / `evidence-ready` / `publishable`）回答公开 Claim 是否成熟。当前固定为 Qiu Market = `current-product / evidence-ready`，Wallet Infrastructure = `current-direction / locked`，其余六项只作为 `historical-evidence`。完整映射与失败关闭规则见 [`docs/public-evidence-contract.md`](docs/public-evidence-contract.md)。
 
-xiuqiu AI receives only the most relevant records from the generated public knowledge layer for each question. It does not read private repositories or Obsidian source notes, and operational logs record request timing and response sizes without recording the user's question text.
+## 边界与安全
 
-### Market Radar boundary
+- 公开仓库不包含私有钱包服务的源码、地址或配置；私有工程只展示经过门禁的脱敏边界和当前限制。
+- `/market-radar` 是研究快照，不连接持仓、钱包或券商账户，不下单，也不构成投资建议。影子引擎失败不会覆盖已审核的静态快照。
+- 站内 AI 只读取公开知识层，不读取私有仓库或 Obsidian 原文；运行日志只记录耗时和响应大小，不记录提问内容；内存限流只是单实例的尽力保护。
+- 模型密钥只存在于服务端环境变量；CI 用 gitleaks 扫描完整 Git 历史中的密钥；本机绝对路径、类凭据值和私有 Git remote 会被 `npm run check:public` 拦截。
 
-`/market-radar` is a static, source-backed research snapshot, not an account or execution system. It never connects to positions, wallets or broker accounts and cannot place orders. Its public page is generated from reviewed `content/market-radar/` files and does not depend on the database or an upstream provider at request time.
+## 许可
 
-Daily authoring, schema v2 research-question rules, deterministic strong-model packs, and publication gates are documented in [`docs/market-radar-researchops.md`](docs/market-radar-researchops.md).
-
-The optional GitHub Actions shadow worker runs independently from the static website build, writes to the dedicated Neon `market_radar` schema, and prepares auditable Hermes outbox messages. Its read API is backed only by a reviewed SQL view; raw provider payloads, model prompts, credentials and private notes are not selected by those endpoints. Shadow-engine failure cannot erase or replace the reviewed static snapshot.
-
-The worker is disabled until the GitHub variable `MARKET_RADAR_ENABLED=true` and all required secrets are configured. Run `npm run market-radar:migrate` once before enabling ingestion. Raw provider payloads are purged after 14 days while event source links remain auditable; events, reactions, digests, feedback and trial metrics expire after one year.
-
-Event verification boundaries use the additive v2 contract introduced by `003_event_verification_boundaries.sql`. Roll it out in this order: apply the database migration, deploy the null-tolerant API and UI, then enable the v2 worker. If a rollback is required, stop or revert the worker and application first; keep the nullable `watch_for_zh` and `invalidation_zh` columns in place so already written v2 research boundaries are not destroyed. Legacy rows remain null and must not be inferred from judgments, reactions or digest text.
-
-The initial worker uses only registration-free public sources: official crypto project releases from GitHub, SEC company filings and press releases, Federal Reserve RSS, and Binance public spot candles for supported crypto reaction tracking. US-equity reactions and assets without a Binance public pair remain explicitly `pending`; the system does not substitute unlicensed or synthetic prices. Hermes never calls upstream providers or stores their credentials: it only claims prepared messages from the token-protected Market Radar outbox.
-
-Public freshness is based on when an event occurred, not when a provider backlog was collected. Events older than 72 hours fail the publication gate, and the public SQL view keeps only the latest seven days. Daily and premarket digests lead with a grouped conclusion, list at most three specially watched assets with direction, horizon, confirmation and invalidation, and explicitly report “暂无” when no asset clears the threshold instead of forcing a directional call.
-
-## Content workflow
-
-1. Edit and review the complete public artifact under `content/projects/`; public projects must provide an accessible `repositoryUrl`, while private projects must not expose one.
-2. Optionally mark a canonical Obsidian project note with `publish: true` and all allowlisted public fields, including `public_role` and `claim_state`. Private notes remain unable to affect the site.
-3. Run `OBSIDIAN_VAULT_PATH=<vault> npm run sync:obsidian-public` only when an explicit public overlay is intended. The exporter reads frontmatter only from `20-项目做证据/` and `50-复盘看变化/每周/`, rejects symlink escapes, and may legitimately emit `projects: []`.
-4. Hosted builds start from the reviewed `content/projects/` artifacts, apply only known explicit overlays, and fail closed on unknown slugs, duplicate entries, incomplete fields or invalid role/Claim values.
-5. Run `npm run build` and commit reviewed source content, any explicit overlay, generated TypeScript and sitemap together.
-6. Keep verified implementation, partial evidence, design targets, historical evidence and known limits visibly separate.
-
-The local Obsidian sync command reads only explicitly marked public notes. Hosted builds consume committed repository content and never access a local vault.
-
-## Public safety
-
-- AI provider credentials exist only as Vercel environment variables; the browser never receives the provider key.
-- CI scans the full Git history for secrets and checks generated public data.
-- Local absolute paths, credential-shaped values and private Git remote URLs fail `npm run check:public`.
-- Public evidence uses accessible HTTPS links or a `private-summary` without a URL.
-
-## License
-
-Source code is MIT licensed. Original writing and content under `content/` is licensed under CC BY-NC-SA 4.0 unless a file states otherwise. See [NOTICE.md](NOTICE.md) and [content/LICENSE.md](content/LICENSE.md).
+源代码使用 MIT 许可。`content/` 下的原创文字与内容默认使用 CC BY-NC-SA 4.0，另有说明的文件除外。见 [NOTICE.md](NOTICE.md) 和 [content/LICENSE.md](content/LICENSE.md)。
