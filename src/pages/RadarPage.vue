@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { latestRadars, radarIndex } from '../data/generatedRadars'
 import { loadRadarFeed, radarFeedItemCount, type RadarFeedItem } from '../data/generatedRadarFeed'
 import { radarWeeklies } from '../data/generatedRadarWeeklies'
+import { radarReviews } from '../data/generatedRadarReviews'
 import {
   getRadarReviewBoundary,
   getLearningBriefs,
@@ -29,6 +30,7 @@ import SubscribeBar from '../design/components/SubscribeBar.vue'
 
 const latestRadar = latestRadars[0]
 const latestWeekly = radarWeeklies[0]
+const latestReview = radarReviews[0]
 const archiveLimit = 10
 const archiveFilter = ref<RadarFeedDomain>('all')
 const archiveExpanded = ref(false)
@@ -277,6 +279,17 @@ onMounted(() =>
         <p class="radar-kicker">01 / Daily Brief</p>
         <h2 id="radar-daily-empty-title">暂无已公开日报。</h2>
         <p>可先浏览历史档案，或稍后返回确认新的公开简报。</p>
+      </div>
+    </section>
+
+    <section v-if="latestReview" class="radar-review-banner" aria-labelledby="radar-review-banner-title">
+      <div class="container radar-intelligence-shell">
+        <router-link :to="`/radar/review/${latestReview.slug}`">
+          <span class="radar-kicker">Trend Review · {{ latestReview.periodStart }} – {{ latestReview.periodEnd }}</span>
+          <strong id="radar-review-banner-title">{{ latestReview.title }}</strong>
+          <p>{{ latestReview.summary }}</p>
+          <span class="radar-review-banner-action">看 {{ latestReview.trends.length }} 条趋势线 →</span>
+        </router-link>
       </div>
     </section>
 

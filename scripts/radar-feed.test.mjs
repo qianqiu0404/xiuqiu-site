@@ -77,7 +77,7 @@ test('daily radar automation may commit the generated feed outputs', () => {
   const workflow = parse(readFileSync(new URL('../.github/workflows/daily-radar.yml', import.meta.url), 'utf8'))
   const steps = workflow.jobs['gate-and-merge'].steps
   const allowlist = steps.find(step => step.name === 'Restrict changed files').run
-  for (const path of ['src/data/generatedRadarFeed', 'src/data/generatedRadarFeedMonths/', 'public/radar/rss', 'public/radar/feed', 'public/llms']) {
+  for (const path of ['src/data/generatedRadarFeed', 'src/data/generatedRadarReviews', 'content/radar-reviews/', 'src/data/generatedRadarFeedMonths/', 'public/radar/rss', 'public/radar/feed', 'public/llms']) {
     assert.ok(allowlist.includes(path), path)
   }
   assert.match(steps.find(step => step.name === 'Ensure generated public data is committed').run, /generatedRadarFeed\.ts/)

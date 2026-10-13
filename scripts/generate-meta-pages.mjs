@@ -5,6 +5,7 @@ import { articleSummaries } from '../src/data/generatedArticleKnowledge.ts'
 import { projects } from '../src/data/generatedProjects.ts'
 import { dailyRadars } from '../src/data/generatedRadarAll.ts'
 import { radarWeeklies } from '../src/data/generatedRadarWeeklies.ts'
+import { radarReviews } from '../src/data/generatedRadarReviews.ts'
 import { deliveryRecords } from '../src/data/generatedDeliveries.ts'
 import { nowSnapshot } from '../src/data/generatedNow.ts'
 import { allMarketRadars } from '../src/data/generatedMarketRadarAll.ts'
@@ -321,6 +322,28 @@ radarWeeklies.forEach(weekly => {
         author: { '@type': 'Person', name: 'xiuqiu' },
         url: `${SITE_URL}/radar/week/${weekly.slug}`,
         mainEntityOfPage: `${SITE_URL}/radar/week/${weekly.slug}`,
+      },
+    }),
+  )
+})
+
+radarReviews.forEach(review => {
+  writePage(
+    `/radar/review/${review.slug}`,
+    replaceMeta(baseHtml, {
+      title: `${review.title}｜xiuqiu`,
+      description: review.summary,
+      path: `/radar/review/${review.slug}`,
+      type: 'article',
+      structuredData: {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: review.title,
+        description: review.summary,
+        datePublished: review.periodEnd,
+        author: { '@type': 'Person', name: 'xiuqiu' },
+        url: `${SITE_URL}/radar/review/${review.slug}`,
+        mainEntityOfPage: `${SITE_URL}/radar/review/${review.slug}`,
       },
     }),
   )

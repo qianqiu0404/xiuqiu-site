@@ -1893,3 +1893,42 @@
     transition-duration: 0.01ms !important;
   }
 }
+
+.radar-review-banner {
+  background: var(--night-bg);
+  padding: 0 0 var(--space-8);
+}
+
+.radar-review-banner a {
+  display: grid;
+  gap: var(--space-2);
+  border: 1px solid var(--night-line-strong);
+  border-radius: var(--radius-card);
+  background: var(--night-surface);
+  color: var(--night-text);
+  padding: var(--space-6);
+  transition: border-color 180ms ease;
+}
+
+.radar-review-banner strong {
+  font-size: 20px;
+  line-height: 1.4;
+}
+
+.radar-review-banner p {
+  color: var(--night-copy);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.radar-review-banner-action {
+  color: var(--accent-ai);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+@media (hover: hover) {
+  .radar-review-banner a:hover {
+    border-color: var(--accent-ai);
+  }
+}

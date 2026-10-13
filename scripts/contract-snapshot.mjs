@@ -9,7 +9,7 @@
 // the baseline, so daily content PRs never trip this guard.
 
 import { createHash } from 'node:crypto'
-import { readFileSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
 import { pathToFileURL } from 'node:url'
 
@@ -27,6 +27,13 @@ export const FROZEN_SCRIPTS = [
 function trackedFiles(...patterns) {
   return execFileSync('git', ['ls-files', '-z', '--', ...patterns], { cwd: ROOT, encoding: 'utf8' })
     .split('\0').filter(Boolean).sort()
+}
+
+// Content changes must be seen before they are staged, otherwise a new daily
+// edition would look like "unchanged content" with changed outputs.
+function workingFiles(...patterns) {
+  return execFileSync('git', ['ls-files', '-z', '--cached', '--others', '--exclude-standard', '--', ...patterns], { cwd: ROOT, encoding: 'utf8' })
+    .split('\0').filter(Boolean).filter(path => existsSync(new URL(path, ROOT))).sort()
 }
 
 function hashFile(path) {
@@ -58,7 +65,7 @@ export function buildManifest() {
       )),
       frozenScripts: Object.fromEntries(FROZEN_SCRIPTS.map(name => [name, scripts[name] ?? null])),
     },
-    contentHash: treeHash(trackedFiles('content/**')),
+    contentHash: treeHash(workingFiles('content/**')),
     outputs: hashFiles(trackedFiles(
       'src/data/generated*.ts', 'src/data/generated*/**', 'public/sitemap.xml', 'public/llms.txt', 'public/radar/**', 'public/data/**',
     )),

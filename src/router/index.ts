@@ -100,6 +100,12 @@ const router = createRouter({
       meta: { visual: 'narrative', navGroup: 'market-radar' },
     },
     {
+      path: '/radar/review/:period',
+      name: 'radar-review-detail',
+      component: () => import('../pages/RadarReviewPage.vue'),
+      meta: { visual: 'narrative', navGroup: 'radar' },
+    },
+    {
       path: '/radar/week/:week',
       name: 'radar-weekly-detail',
       component: () => import('../pages/RadarWeeklyPage.vue'),

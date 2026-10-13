@@ -4,7 +4,7 @@
 
 ## 当前阶段
 
-- 最后一期公开日报是 2026-08-13；此后每日流程暂停，恢复前先按「每日状态机」第 1 步做幂等检查。
+- 2026-08-14 至 2026-10-12 停更，空档不逐日补齐，由趋势回顾 `content/radar-reviews/2026-08-14--2026-10-13.md` 覆盖；2026-10-13 起恢复每日发布。
 - 仍处于 M1：每日 PR 以 Draft 建立，转为非草稿会触发 `daily-radar.yml` 自动合并，因此转正需要另行授权。
 - 微信通知未开启：`LEARNING_RADAR_ENABLED=false`，v2 通知构建器在 M4 完成前拒绝发送。
 - 每期发布后，`npm run build` 会同时更新信息流数据与订阅出口（见 `docs/public-feeds.md`），这些文件已在白名单内。
@@ -18,6 +18,14 @@
 5. **门禁**：运行 `npm run prepare:researchops -- <ledger.json> <public-source.md>`，执行 30 天 URL/标题去重、2/2 域分布、同域主题多样性、专题引用与来源时间边界检查。任一栏目不足时整期停止，不用低质量内容补数。
 6. **唯一发布**：生成 v2 日报并运行候选校验、`npm run test:radar`、类型检查和完整构建。M1 只写 Preview 隔离快照并建立 Draft PR，是否合并另行授权。
 7. **通知阻断**：v2 微信构建器在 M4 完成前显式拒绝发送；回填与 Preview 验收都不创建 outbox。
+
+## 趋势回顾
+
+停更或跨多周时，用趋势回顾代替逐日补齐：`content/radar-reviews/<periodStart>--<periodEnd>.md`，页面在 `/radar/review/<slug>`。
+
+- 每条趋势必须有：一句判断（thesis）、可数的信号（signal，写明统计口径）、按日期排列且落在区间内的里程碑（每个都有一手来源链接）、对工程的意义、什么会推翻它。
+- 至少覆盖 AI 和 Web3 各一条；发现类来源（AI Hot、社交平台）不能作为里程碑链接。
+- 校验在 `scripts/generate-radar-reviews.mjs`，`npm run generate:radar-review` 生成，`daily-radar.yml` 白名单已包含。
 
 ## 来源策略
 

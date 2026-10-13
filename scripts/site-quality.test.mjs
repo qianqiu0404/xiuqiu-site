@@ -8,6 +8,7 @@ import { deliveryRecords } from '../src/data/generatedDeliveries.ts'
 import { nowSnapshot } from '../src/data/generatedNow.ts'
 import { projects } from '../src/data/generatedProjects.ts'
 import { radarWeeklies } from '../src/data/generatedRadarWeeklies.ts'
+import { radarReviews } from '../src/data/generatedRadarReviews.ts'
 import { dailyRadars } from '../src/data/generatedRadarAll.ts'
 import { allMarketRadars } from '../src/data/generatedMarketRadarAll.ts'
 import { getRadarCollectionSeo } from '../src/data/snapshotFreshness.ts'
@@ -72,6 +73,7 @@ function expectedSitemapRoutes() {
   for (const dynamicPath of [
     '/ai/deliveries/:slug',
     '/radar/week/:week',
+    '/radar/review/:period',
     '/radar/:date',
     '/market-radar/:date',
     '/articles/:slug',
@@ -87,6 +89,7 @@ function expectedSitemapRoutes() {
     ...dailyRadars.map(radar => `/radar/${radar.slug}`),
     ...allMarketRadars.map(radar => `/market-radar/${radar.slug}`),
     ...radarWeeklies.map(weekly => `/radar/week/${weekly.slug}`),
+    ...radarReviews.map(review => `/radar/review/${review.slug}`),
     ...deliveryRecords.map(record => `/ai/deliveries/${record.slug}`),
   ]
 }
@@ -230,6 +233,12 @@ function expectedMetadataByRoute() {
     metadata.set(`/radar/week/${weekly.slug}`, {
       title: `${weekly.title}｜xiuqiu`,
       description: weekly.summary,
+    })
+  }
+  for (const review of radarReviews) {
+    metadata.set(`/radar/review/${review.slug}`, {
+      title: `${review.title}｜xiuqiu`,
+      description: review.summary,
     })
   }
   for (const record of deliveryRecords) {
