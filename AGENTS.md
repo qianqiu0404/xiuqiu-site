@@ -57,6 +57,7 @@ xiuqiu-site 是一个个人站点，正在从「作品集 + 工程证据」转�
 - `npm run build`：包含全部测试、内容生成、公开安全检查、类型检查、vite build、meta 页面生成和体积预算检查，是提交前的唯一准绳。
 - 单项检查：
   - `npm run test:radar`、`npm run test:market-radar`、`npm run test:notifications`、`npm run test:home`、`npm run test:quality`
+  - `npm run test:contracts`：冻结契约快照。
   - `npm run check:public`：公开内容安全检查。
   - `npm run check:budget`：chunk 体积预算检查。
 
@@ -90,7 +91,7 @@ xiuqiu-site 是一个个人站点，正在从「作品集 + 工程证据」转�
 
 ## 重构路线（每个阶段一个 PR，上一阶段全绿后再进下一阶段）
 
-1. **P0 基线**：写入本文件；新增契约快照测试，锁定冻结产物的哈希、workflow 白名单和 `api/` 路由清单。
+1. **P0 基线**（已完成）：`npm run test:contracts` 对比 `config/contract-snapshot.json`，锁定 `api/` 路由、workflow、迁移、校验器、被自动化调用的 script，以及 `content/` 未变时的全部生成产物。有意改动冻结契约时，经人工批准后运行 `node scripts/contract-snapshot.mjs --write`，让基线的 diff 进入评审。
 2. **P1 清理**：删除 Content Catalog Preview 整套代码、`article-catalog-shadow/` 和未引用的 `src/styles/ai-overview.css`。`ci.yml` 的 job 名保持不变。
 3. **P2 共享库**：抽出 `shared/site.ts` 和 `scripts/lib/`；两组 outbox 路由改用同一个 handler 工厂，接口不变。
 4. **P3 设计系统**：建立 tokens 和基础组件，先迁移 Radar 页面族。
