@@ -9,8 +9,8 @@ import { deliveryRecords } from '../src/data/generatedDeliveries.ts'
 import { nowSnapshot } from '../src/data/generatedNow.ts'
 import { allMarketRadars } from '../src/data/generatedMarketRadarAll.ts'
 import { getRadarCollectionSeo } from '../src/data/snapshotFreshness.ts'
+import { escapeHtml, SITE_URL } from '../shared/site.ts'
 
-const SITE_URL = 'https://xiuqiu-site.vercel.app'
 const distIndexUrl = new URL('../dist/index.html', import.meta.url)
 
 if (!existsSync(distIndexUrl)) {
@@ -20,14 +20,6 @@ if (!existsSync(distIndexUrl)) {
 const baseHtml = readFileSync(distIndexUrl, 'utf8')
 const learningRadarSeo = getRadarCollectionSeo('learning', dailyRadars[0]?.date)
 const marketRadarSeo = getRadarCollectionSeo('market', allMarketRadars[0]?.date)
-
-function escapeHtml(value) {
-  return value
-    .replaceAll('&', '&amp;')
-    .replaceAll('"', '&quot;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-}
 
 function jsonLdScript(data) {
   const json = JSON.stringify(data).replaceAll('<', '\\u003c')

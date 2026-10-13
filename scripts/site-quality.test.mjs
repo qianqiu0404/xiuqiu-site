@@ -12,8 +12,8 @@ import { dailyRadars } from '../src/data/generatedRadarAll.ts'
 import { allMarketRadars } from '../src/data/generatedMarketRadarAll.ts'
 import { getRadarCollectionSeo } from '../src/data/snapshotFreshness.ts'
 import { parseMarkdownFrontmatter } from './frontmatter.mjs'
+import { SITE_URL as SITE_ORIGIN } from '../shared/site.ts'
 
-const SITE_ORIGIN = 'https://xiuqiu-site.vercel.app'
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
 const DIST_ROOT = join(ROOT, 'dist')
 

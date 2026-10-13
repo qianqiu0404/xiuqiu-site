@@ -93,7 +93,7 @@ xiuqiu-site 是一个个人站点，正在从「作品集 + 工程证据」转�
 
 1. **P0 基线**（已完成）：`npm run test:contracts` 对比 `config/contract-snapshot.json`，锁定 `api/` 路由、workflow、迁移、校验器、被自动化调用的 script，以及 `content/` 未变时的全部生成产物。有意改动冻结契约时，经人工批准后运行 `node scripts/contract-snapshot.mjs --write`，让基线的 diff 进入评审。
 2. **P1 清理**（已完成）：删除 Content Catalog Preview 整套代码、`article-catalog-shadow/` 和未引用的 `src/styles/ai-overview.css`。`ci.yml` 的 job 名保持不变。
-3. **P2 共享库**：抽出 `shared/site.ts` 和 `scripts/lib/`；两组 outbox 路由改用同一个 handler 工厂，接口不变。
+3. **P2 共享库**（已完成）：抽出 `shared/site.ts` 和 `scripts/lib/`；两组 outbox 路由改用同一个 handler 工厂，接口不变。
 4. **P3 设计系统**：建立 tokens 和基础组件，先迁移 Radar 页面族。
 5. **P4 架构迁移**：页面搬进 `src/features/*`，统一经各自的 `data.ts` 取数。
 6. **P5 情报流与信息架构**：

@@ -1,7 +1,8 @@
+import { SITE_URL } from '../../shared/site'
+
 const DEFAULT_TITLE = 'xiuqiu｜Qiu Market、Wallet Infrastructure 与 AI Engineering'
 const DEFAULT_DESCRIPTION =
   '维护 Qiu Market，并用 Wallet Infrastructure 学习、AI-native Engineering、自动化测试与公开证据说明 Web3 工程能力。'
-const SITE_URL = 'https://xiuqiu-site.vercel.app'
 
 interface SeoOptions {
   title?: string

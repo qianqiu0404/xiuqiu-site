@@ -5,8 +5,8 @@ import { parseMarkdownFrontmatter } from './frontmatter.mjs'
 import { buildMarketResearchPack, validateMarketRadar } from './market-radar-contracts.mjs'
 import { buildRadarPublication } from './radar-publication-boundary.mjs'
 import { shanghaiDate } from './radar-notification-contracts.mjs'
+import { SITE_URL as PRODUCTION_ORIGIN } from '../shared/site.ts'
 
-const PRODUCTION_ORIGIN = 'https://xiuqiu-site.vercel.app'
 const MAX_RESPONSE_BYTES = 512_000
 const DEFAULT_ATTEMPTS = 12
 const DEFAULT_RETRY_DELAY_MS = 10_000

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
+import { escapeHtml } from '../../shared/site'
 import { loadArticleContent } from '../data/articles'
 import { getAdjacentArticles } from '../data/articlePresentation'
 import { evidenceStatusLabels } from '../data/evidence'
@@ -233,13 +234,6 @@ function renderContent(text: string, documentTitle?: string): string {
   if (inCode) result.push('</pre>')
 
   return result.join('\n')
-}
-
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
 }
 
 function renderInlineMarkdown(text: string): string {

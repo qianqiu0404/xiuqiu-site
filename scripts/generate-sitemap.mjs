@@ -5,8 +5,8 @@ import { dailyRadars } from '../src/data/generatedRadarAll.ts'
 import { radarWeeklies } from '../src/data/generatedRadarWeeklies.ts'
 import { deliveryRecords } from '../src/data/generatedDeliveries.ts'
 import { allMarketRadars } from '../src/data/generatedMarketRadarAll.ts'
+import { SITE_URL } from '../shared/site.ts'
 
-const SITE_URL = 'https://xiuqiu-site.vercel.app'
 const articleSlugs = articleSummaries.map(article => article.slug)
 
 const routes = [

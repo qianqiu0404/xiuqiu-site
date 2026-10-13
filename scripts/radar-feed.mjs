@@ -1,7 +1,9 @@
 // Flattens published Learning Radar editions into a brief-level feed and
 // renders the public subscription outputs (RSS, JSON Feed, llms.txt).
 
-export const SITE_URL = 'https://xiuqiu-site.vercel.app'
+import { escapeXml, SITE_URL } from '../shared/site.ts'
+
+export { SITE_URL }
 const SUMMARY_LIMIT = 120
 const FEED_ITEM_LIMIT = 60
 
@@ -52,15 +54,6 @@ export function buildRadarFeedItems(radars) {
       legacyItem(radar, 'reading', 'ai', 'reading', 'reading', radar.readingPick),
     ].filter(Boolean)
   })
-}
-
-function escapeXml(value) {
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&apos;')
 }
 
 function itemUrl(item) {

@@ -243,10 +243,10 @@ test('sample-gated quant follow-up reports strength without exact probabilities'
 
 test('two outboxes have isolated schemas, idempotency keys and delivery evidence', () => {
   const migration = read('market-radar/migrations/004_dual_radar_notifications.sql')
-  const marketClaim = read('api/market-radar/outbox/claim.ts')
-  const learningClaim = read('api/radar/outbox/claim.ts')
-  const marketAck = read('api/market-radar/outbox/ack.ts')
-  const learningAck = read('api/radar/outbox/ack.ts')
+  const marketClaim = read('lib/radar-notifications/outbox-sql.ts')
+  const learningClaim = read('lib/radar-notifications/outbox-routes.ts')
+  const marketAck = `${marketClaim}\n${read('lib/radar-notifications/outbox-handlers.ts')}`
+  const learningAck = marketAck
   assert.match(migration, /create schema if not exists learning_radar/)
   assert.match(migration, /create table if not exists learning_radar\.outbox/)
   assert.match(migration, /learning_radar\.delivery_logs/)

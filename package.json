@@ -29,7 +29,7 @@
     "test:market-radar": "node --test scripts/market-radar.test.mjs scripts/market-radar-worker.test.mjs scripts/market-radar-event-contract.test.mjs scripts/static-market-radar-workflow.test.mjs",
     "test:notifications": "node --test scripts/radar-notifications.test.mjs",
     "test:release": "node --test scripts/release-workflow.test.mjs scripts/market-research-production.test.mjs",
-    "test:contracts": "node --test scripts/contract-snapshot.test.mjs",
+    "test:contracts": "node --test scripts/contract-snapshot.test.mjs scripts/outbox-handlers.test.mjs",
     "test:quality": "node --test scripts/site-quality.test.mjs scripts/global-css-usage.test.mjs",
     "validate:radar": "node scripts/validate-radar-candidate.mjs",
     "prepare:researchops": "node scripts/prepare-researchops-source.mjs",
