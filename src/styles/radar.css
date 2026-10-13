@@ -1344,7 +1344,195 @@
   font-weight: 680;
 }
 
+.radar-intelligence-page .sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.radar-feed-toolbar {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  border-bottom: 1px solid var(--radar-line);
+}
+
+.radar-feed-toolbar .radar-filter-line {
+  border-bottom: 0;
+}
+
+.radar-feed-search input {
+  width: min(280px, 100%);
+  min-height: 40px;
+  margin-bottom: 6px;
+  border: 1px solid var(--radar-line);
+  border-radius: 8px;
+  background: var(--radar-white);
+  color: var(--radar-ink);
+  font: 500 13px/1.4 inherit;
+  padding: 0 12px;
+}
+
+.radar-feed-search input:focus-visible {
+  outline: 2px solid #9eb3ff;
+  outline-offset: 2px;
+}
+
+.radar-topic-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-bottom: 1px solid var(--radar-line);
+  padding: 16px 0;
+}
+
+.radar-topic-chips button {
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--radar-line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--radar-copy);
+  cursor: pointer;
+  font: 600 12px/1.4 inherit;
+  padding: 0 12px;
+}
+
+.radar-topic-chips button span {
+  color: var(--radar-muted);
+  font: 600 9px/1.4 var(--mono);
+}
+
+.radar-topic-chips button.active {
+  border-color: var(--radar-ink);
+  background: var(--radar-ink);
+  color: var(--radar-white);
+}
+
+.radar-topic-chips button.active span {
+  color: #c8ced6;
+}
+
+.radar-feed section > header a {
+  display: inline-block;
+  margin-top: 8px;
+  color: #3559bb;
+  font: 620 11px/1.4 inherit;
+}
+
+.radar-feed-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 12px;
+  margin: 0;
+  border-left: 1px solid var(--radar-line);
+  list-style: none;
+  padding: 20px 0 20px 25px;
+}
+
+.radar-feed-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px solid var(--radar-line);
+  border-radius: 10px;
+  background: var(--radar-white);
+  color: inherit;
+  padding: 16px;
+  transition: border-color 180ms ease, transform 180ms ease;
+}
+
+.radar-feed-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: var(--radar-muted);
+  font: 600 10px/1.4 var(--mono);
+  text-transform: uppercase;
+}
+
+.radar-feed-domain {
+  border-radius: 4px;
+  color: var(--radar-white);
+  padding: 2px 6px;
+}
+
+.radar-feed-domain--ai {
+  background: #3559bb;
+}
+
+.radar-feed-domain--web3 {
+  background: #1f7a6e;
+}
+
+.radar-feed-badge {
+  border: 1px solid currentColor;
+  border-radius: 4px;
+  color: #a05a00;
+  font-style: normal;
+  padding: 1px 5px;
+}
+
+.radar-feed-badge--deep {
+  color: #6a3fb5;
+}
+
+.radar-feed .radar-feed-card strong {
+  overflow: visible;
+  font-size: 15px;
+  white-space: normal;
+}
+
+.radar-feed-card p {
+  color: var(--radar-copy);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.radar-feed-card small {
+  margin-top: auto;
+  color: var(--radar-muted);
+  font-size: 11px;
+}
+
+.radar-subscribe {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  padding-top: 24px;
+  font-size: 13px;
+}
+
+.radar-subscribe span {
+  color: var(--radar-muted);
+  font: 650 10px/1.4 var(--mono);
+  text-transform: uppercase;
+}
+
+.radar-subscribe a {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  color: #3559bb;
+  font-weight: 650;
+}
+
 @media (hover: hover) {
+  .radar-feed-card:hover {
+    border-color: var(--radar-ink);
+    transform: translateY(-1px);
+  }
+
   .radar-stage-heading > a:hover,
   .radar-reader-articles article > a:hover,
   .radar-weekly-source-links a:hover {
@@ -1431,6 +1619,21 @@
 }
 
 @media (max-width: 620px) {
+  .radar-feed-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .radar-feed-search input {
+    width: 100%;
+  }
+
+  .radar-feed-cards {
+    grid-template-columns: minmax(0, 1fr);
+    border-left: 0;
+    padding-left: 0;
+  }
+
   .radar-intelligence-hero {
     min-height: auto;
     padding: 92px 0 58px;

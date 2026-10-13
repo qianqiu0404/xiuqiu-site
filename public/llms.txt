@@ -1,0 +1,28 @@
+# xiuqiu-site
+
+> Qiu Market、Wallet Infrastructure 学习方向与 AI Engineering 交付证据的公开入口。学习雷达每天整理 AI 与 Web3 工程简报。
+
+## Learning Radar
+
+- [信息流](https://xiuqiu-site.vercel.app/radar): 按日期、领域与主题浏览全部公开简报
+- [RSS](https://xiuqiu-site.vercel.app/radar/rss.xml)
+- [JSON Feed](https://xiuqiu-site.vercel.app/radar/feed.json)
+
+## Recent briefs
+
+- [Agents SDK 0.20：恢复任务前先恢复调用身份](https://xiuqiu-site.vercel.app/radar/2026-08-13#ai-durable-runstate-input) (2026-08-13, ai/agent): 它把长任务恢复从‘重放聊天记录’提升为可核验的状态机，适合用来审视 Hermes 接管、ResearchOps 发布和其他带外部副作用的 Agent 流程。
+- [vLLM 0.27：首请求延迟与故障恢复要分别门禁](https://xiuqiu-site.vercel.app/radar/2026-08-13#ai-vllm-serving-reliability) (2026-08-13, ai/model_inference): 它把‘模型快不快’拆成可部署的工程问题：首请求、稳态吞吐、故障转移和依赖兼容必须分别验收，才能避免只看单次 benchmark。
+- [Sui testnet 1.77.2：源码验证要绑定发布工具链](https://xiuqiu-site.vercel.app/radar/2026-08-13#web3-sui-source-reproduction) (2026-08-13, web3/onchain_infrastructure): 钱包与交易所集成链上包时需要证明‘看到的源码’与‘实际发布字节’来自同一构建语境，这个变更提供了具体的供应链核验清单。
+- [EIP-8371：把 Blob 重建从超级节点摊到行子网](https://xiuqiu-site.vercel.app/radar/2026-08-13#web3-rowdas-reconstruction) (2026-08-13, web3/protocol): 它展示了数据可用性协议如何把恢复职责、传播网络和攻击成本写成显式状态机，也能帮助理解 L2 扩容为何不仅是提高 Blob 数量。
+- [长任务 Harness：生成器与评估器要分工](https://xiuqiu-site.vercel.app/radar/2026-08-12#ai-generator-evaluator-loop) (2026-08-12, ai/agent): 它帮助你理解 Agent 不是一次长提示，而是角色、状态和评测组成的控制系统；同样适用于研究内容的采集—编辑—门禁链路。
+- [Agent 使用研究：任务时长只是方向性估计](https://xiuqiu-site.vercel.app/radar/2026-08-12#ai-long-horizon-adoption) (2026-08-12, ai/data): 它训练你区分产品使用指标与因果结论，也提醒学习 Agent 系统时应关注验收率、返工和边界，而不是只看运行时长或 token。
+- [Ledger Live 4.15：隐私资产路径要单独门禁](https://xiuqiu-site.vercel.app/radar/2026-08-12#web3-zcash-execution-boundary) (2026-08-12, web3/wallet_cex): 它把钱包隐私、签名和发布控制放在同一个具体案例中，适合学习 coin adapter、硬件边界和敏感数据最小化。
+- [EIP-8130：把账户认证从任意代码中拆出](https://xiuqiu-site.vercel.app/radar/2026-08-12#web3-canonical-authenticator) (2026-08-12, web3/protocol): 它把账户抽象最难的认证、并发 nonce 与会话权限集中到可讨论协议中，适合训练从交易格式到钱包策略的全链路思考。
+- [Managed Agents：把大脑、双手与会话拆开](https://xiuqiu-site.vercel.app/radar/2026-08-11#ai-managed-agent-boundaries) (2026-08-11, ai/agent): 它把 Agent 可靠性与安全从提示词问题变成结构问题，适合用来学习会话持久化、工具权限、故障恢复和凭据隔离。
+- [AI-resistant Eval：旧考题会失去区分能力](https://xiuqiu-site.vercel.app/radar/2026-08-11#ai-evaluation-signal-decay) (2026-08-11, ai/evaluation): 学习雷达未来若用模型评估内容，也要监控门禁是否仍能区分真实机制研究与流畅复述，不能迷信一次建立的测试集。
+- [Agave 4.2：机密代币意图进入节点可观测面](https://xiuqiu-site.vercel.app/radar/2026-08-11#web3-confidential-token-observability) (2026-08-11, web3/onchain_infrastructure): 钱包、交易所和风控系统依赖节点解析结果；理解协议升级如何改变可观测面，有助于避免把‘无法解析’误判为‘没有发生’。
+- [lnd 0.21.2 RC：迁移失败必须可恢复](https://xiuqiu-site.vercel.app/radar/2026-08-11#web3-lightning-migration-recovery) (2026-08-11, web3/l2): Lightning 节点承载真实通道状态，迁移错误与普通应用回滚不同；学习恢复顺序能建立对不可逆状态和候选版本边界的直觉。
+
+## Boundaries
+
+- 内容由公开来源经 AI 自动汇总，周度判断另行人工复核；不构成投资建议。
