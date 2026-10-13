@@ -30,8 +30,9 @@ xiuqiu-site 是一个个人站点，正在从「作品集 + 工程证据」转�
 
 ### 现状（重构完成前以此为准）
 
-- 页面在 `src/pages/`，只有两个组件在 `src/components/`，样式分散在 `src/style.css` 和 `src/styles/*.css`。
-- 页面取数目前有三种方式：直接 import `generated*.ts`、经过 `src/data/siteKnowledge.ts`、经过 `src/data/*Presentation.ts`。新代码优先用 `*Presentation.ts`。
+- 页面在 `src/features/<name>/pages/`，按功能分为 intel、market-radar、projects、articles、proof、ai、about；`src/components/` 只剩全站共用的 `AiChatWidget.vue`。
+- 页面只从本 feature 的 `data.ts` 取数，`data.ts` 再转出 `src/data/` 下的生成数据和 `*Presentation.ts`；`npm run test:home` 里的 `feature-boundaries` 测试会拦截越界 import。
+- 样式仍分散在 `src/style.css` 和 `src/styles/*.css`，颜色等 token 已统一到 `src/design/tokens.css`。
 - 新增页面逻辑（筛选、分组、格式化）写成 `*Presentation.ts` 里的纯函数，配 `node:test` 测试，不要直接写在 `.vue` 里。
 - 不要再新增一份 `SITE_URL`、`escapeHtml` 或新的深色 token。确实需要时，先复用已有的定义。
 
@@ -95,7 +96,7 @@ xiuqiu-site 是一个个人站点，正在从「作品集 + 工程证据」转�
 2. **P1 清理**（已完成）：删除 Content Catalog Preview 整套代码、`article-catalog-shadow/` 和未引用的 `src/styles/ai-overview.css`。`ci.yml` 的 job 名保持不变。
 3. **P2 共享库**（已完成）：抽出 `shared/site.ts` 和 `scripts/lib/`；两组 outbox 路由改用同一个 handler 工厂，接口不变。
 4. **P3 设计系统**（已完成）：建立 tokens 和基础组件，先迁移 Radar 页面族。
-5. **P4 架构迁移**：页面搬进 `src/features/*`，统一经各自的 `data.ts` 取数。
+5. **P4 架构迁移**（已完成）：页面搬进 `src/features/*`，统一经各自的 `data.ts` 取数。
 6. **P5 情报流与信息架构**：
    - 统一的 `IntelItem` 数据结构，learning 和 market 两类内容都归一到它。
    - `/` 改为信息流首页，新增 `/topics/:topic` 主题页、静态 API `public/data/intel/*` 和新导航。

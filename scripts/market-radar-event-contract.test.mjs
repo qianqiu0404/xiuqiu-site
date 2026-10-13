@@ -52,7 +52,7 @@ test('static event fallback preserves only generated source-backed fields', () =
 
 test('the event reader keeps source, observation and invalidation visible without raw HTML', async () => {
   const [page, styles] = await Promise.all([
-    readFile(new URL('../src/pages/MarketRadarEventPage.vue', import.meta.url), 'utf8'),
+    readFile(new URL('../src/features/market-radar/pages/MarketRadarEventPage.vue', import.meta.url), 'utf8'),
     readFile(new URL('../src/styles/market-radar.css', import.meta.url), 'utf8'),
   ])
   assert.match(page, /<dt>原始来源<\/dt>/)

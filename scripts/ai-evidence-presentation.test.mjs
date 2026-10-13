@@ -9,7 +9,7 @@ import {
   executionKernel,
 } from '../src/data/aiEvidencePresentation.ts'
 
-const pageSource = readFileSync(new URL('../src/pages/AiCollaborationPage.vue', import.meta.url), 'utf8')
+const pageSource = readFileSync(new URL('../src/features/ai/pages/AiCollaborationPage.vue', import.meta.url), 'utf8')
 const styleSource = readFileSync(new URL('../src/styles/ai-evidence-os.css', import.meta.url), 'utf8')
 const researchCaseSource = readFileSync(new URL('../content/ai-cases/research-automation-workflows.md', import.meta.url), 'utf8')
 

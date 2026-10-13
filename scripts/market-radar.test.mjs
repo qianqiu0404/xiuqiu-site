@@ -168,8 +168,8 @@ test('generated index, recent records and monthly loader remain aligned', async 
 
 test('the public page is static and contains no runtime API dependency', async () => {
   const { readFile } = await import('node:fs/promises')
-  const overview = await readFile(new URL('../src/pages/MarketRadarPage.vue', import.meta.url), 'utf8')
-  const detail = await readFile(new URL('../src/pages/MarketRadarDetailPage.vue', import.meta.url), 'utf8')
+  const overview = await readFile(new URL('../src/features/market-radar/pages/MarketRadarPage.vue', import.meta.url), 'utf8')
+  const detail = await readFile(new URL('../src/features/market-radar/pages/MarketRadarDetailPage.vue', import.meta.url), 'utf8')
   const styles = await readFile(new URL('../src/styles/market-radar.css', import.meta.url), 'utf8')
   const router = await readFile(new URL('../src/router/index.ts', import.meta.url), 'utf8')
   assert.doesNotMatch(`${overview}\n${detail}`, /fetch\(|\/api\/market-radar/)

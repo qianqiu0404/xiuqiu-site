@@ -10,6 +10,11 @@ export default defineConfig({
           if (id.includes('/node_modules/vue/') || id.includes('/node_modules/@vue/') || id.includes('/node_modules/vue-router/')) {
             return 'vue-vendor'
           }
+          // Keep each generated dataset in its own shared chunk. Feature data.ts
+          // barrels otherwise let Rollup merge unrelated datasets into one
+          // oversized chunk that every feature then downloads.
+          const generated = id.match(/\/src\/data\/(generated[A-Za-z]+)\.ts$/)
+          if (generated) return generated[1]
           return undefined
         },
       },

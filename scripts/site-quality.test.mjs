@@ -372,11 +372,11 @@ test('unknown paths render a noindex 404 page instead of redirecting to home', (
 
   const catchAllContract = routerSource.slice(catchAllStart, catchAllStart + 320)
   assert.match(catchAllContract, /name:\s*['"]not-found['"]/)
-  assert.match(catchAllContract, /component:\s*\(\)\s*=>\s*import\(['"]\.\.\/pages\/NotFoundPage\.vue['"]\)/)
+  assert.match(catchAllContract, /component:\s*\(\)\s*=>\s*import\(['"]\.\.\/features\/about\/pages\/NotFoundPage\.vue['"]\)/)
   assert.doesNotMatch(catchAllContract, /\bredirect\s*:/, 'unknown paths must not silently redirect to home')
 
-  const notFoundPath = join(ROOT, 'src/pages/NotFoundPage.vue')
-  assert.ok(existsSync(notFoundPath), 'src/pages/NotFoundPage.vue must exist')
+  const notFoundPath = join(ROOT, 'src/features/about/pages/NotFoundPage.vue')
+  assert.ok(existsSync(notFoundPath), 'src/features/about/pages/NotFoundPage.vue must exist')
   const notFoundSource = readFileSync(notFoundPath, 'utf8')
   assert.equal((notFoundSource.match(/<h1\b/g) || []).length, 1, '404 page must contain one h1')
   assert.match(notFoundSource, />页面没有找到</)
