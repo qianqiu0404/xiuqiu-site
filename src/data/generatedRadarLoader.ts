@@ -4,6 +4,7 @@
 import type { DailyRadar } from './generatedRadars.ts'
 
 const radarMonthLoaders: Record<string, () => Promise<{ monthlyRadars: DailyRadar[] }>> = {
+  '2026-10': () => import('./generatedRadarMonths/2026-10.ts'),
   '2026-08': () => import('./generatedRadarMonths/2026-08.ts'),
   '2026-07': () => import('./generatedRadarMonths/2026-07.ts'),
 }
