@@ -2,21 +2,19 @@
 .radar-daily-reader-page,
 .radar-weekly-reader-page,
 .radar-reader-not-found {
-  --radar-night: #030507;
-  --radar-night-soft: #080b10;
-  --radar-paper: #f4f4f2;
-  --radar-white: #ffffff;
-  --radar-ink: #11151b;
-  --radar-copy: #444d59;
-  --radar-muted: #707a87;
-  --radar-night-copy: #aab2bd;
-  --radar-line: rgba(17, 21, 27, 0.16);
-  --radar-night-line: rgba(255, 255, 255, 0.12);
-  --radar-blue: #7392ff;
-  --radar-green: #6ed7c9;
+  --radar-night: var(--night-bg);
+  --radar-night-soft: var(--night-surface);
+  --radar-paper: var(--paper-bg);
+  --radar-white: var(--paper-white);
+  --radar-ink: var(--paper-ink);
+  --radar-copy: var(--paper-copy);
+  --radar-muted: var(--paper-muted);
+  --radar-night-copy: var(--night-copy);
+  --radar-line: var(--paper-line);
+  --radar-night-line: var(--night-line);
   min-width: 0;
   overflow: clip;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Noto Sans SC", sans-serif;
+  font-family: var(--font-sans);
 }
 
 .radar-intelligence-page *,
@@ -63,7 +61,7 @@
   background:
     radial-gradient(circle at 78% 34%, rgba(94, 126, 244, 0.15), transparent 28%),
     radial-gradient(circle at 83% 69%, rgba(79, 197, 183, 0.06), transparent 30%),
-    linear-gradient(180deg, #020305, #06090e 78%, #030507);
+    linear-gradient(180deg, #020305, #06090e 78%, var(--night-bg));
 }
 
 .radar-intelligence-hero::before {

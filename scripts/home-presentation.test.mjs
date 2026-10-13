@@ -468,7 +468,9 @@ test('radar uses one intelligence system across overview, daily and weekly reade
   assert.match(radarPageSource, /radar-convergence-stage/)
   assert.match(radarPageSource, /radar-archive-ledger/)
   assert.match(radarPageSource, /radar-feed-cards/)
-  assert.match(radarPageSource, /radar-subscribe/)
+  for (const component of ['IntelCard', 'ChipGroup', 'SearchBox', 'LoadState', 'SubscribeBar']) {
+    assert.match(radarPageSource, new RegExp(`import ${component} from '../design/components/${component}.vue'`))
+  }
   assert.match(radarPageSource, /archiveLimit = 10/)
   assert.match(radarDetailSource, /radar-daily-reader-page/)
   assert.match(radarDetailSource, /radar-reader-articles/)

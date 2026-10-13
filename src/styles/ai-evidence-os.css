@@ -1,13 +1,11 @@
 .ai-evidence-os {
-  --aeo-ink: #080b10;
-  --aeo-ink-soft: #10151d;
-  --aeo-paper: #f4f3ef;
+  --aeo-ink: var(--night-surface);
+  --aeo-paper: var(--paper-bg);
   --aeo-paper-cool: #eef1f5;
-  --aeo-line: rgba(15, 21, 29, 0.16);
-  --aeo-line-dark: rgba(255, 255, 255, 0.14);
+  --aeo-line: var(--paper-line);
+  --aeo-line-dark: var(--night-line-strong);
   --aeo-blue: #6aa8ff;
   --aeo-acid: #b9ff66;
-  --aeo-muted: #67707d;
   background: var(--aeo-paper);
   color: var(--aeo-ink);
   overflow: clip;

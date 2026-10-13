@@ -2,7 +2,7 @@
   --product-accent: #7390f2;
   --product-accent-soft: rgba(91, 126, 238, 0.12);
   --product-accent-pale: #dfe6ff;
-  background: #030507;
+  background: var(--night-bg);
 }
 
 .product-narrative-page--market {
@@ -20,7 +20,7 @@
   padding: 126px 0 90px;
   background:
     radial-gradient(circle at 76% 40%, var(--product-accent-soft), transparent 28%),
-    linear-gradient(180deg, #020305 0%, #070a0f 68%, #030507 100%);
+    linear-gradient(180deg, #020305 0%, #070a0f 68%, var(--night-bg) 100%);
 }
 
 .product-hero::after {
@@ -284,7 +284,7 @@
   padding: clamp(104px, 13vw, 168px) 0;
   background:
     linear-gradient(90deg, rgba(255, 255, 255, 0.024) 1px, transparent 1px) 0 0 / 96px 96px,
-    #030507;
+    var(--night-bg);
 }
 
 .product-section-heading {
@@ -423,7 +423,7 @@
   padding: clamp(108px, 14vw, 182px) 0;
   background:
     radial-gradient(circle at 78% 24%, var(--product-accent-soft), transparent 30%),
-    #030507;
+    var(--night-bg);
 }
 
 .product-finale-layout {

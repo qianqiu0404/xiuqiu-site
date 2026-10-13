@@ -1,0 +1,60 @@
+/*
+ * Design tokens: the single source for colour, type, radius and spacing.
+ * Pages use the semantic names below; legacy per-family names (--radar-*,
+ * --trade-*, --cinema-*, ...) are aliases kept in src/design/legacy-aliases.css
+ * until each page family is migrated (AGENTS.md, P3–P6).
+ *
+ * Two surfaces share one palette:
+ *   night  — intel feed, radars, cinematic pages (dark canvas)
+ *   paper  — reading surfaces inside night pages, articles, ledgers
+ */
+
+:root {
+  /* Night surface */
+  --night-bg: #030507;
+  --night-surface: #090c11;
+  --night-surface-raised: #10141a;
+  --night-text: #f5f7fa;
+  --night-copy: #aab2bd;
+  --night-muted: #969eaa;
+  --night-line: rgba(255, 255, 255, 0.11);
+  --night-line-strong: rgba(255, 255, 255, 0.14);
+
+  /* Paper surface */
+  --paper-bg: #f4f4f2;
+  --paper-raised: #fafbf8;
+  --paper-white: #ffffff;
+  --paper-ink: #11151b;
+  --paper-copy: #444d59;
+  --paper-muted: #59636e;
+  --paper-line: rgba(17, 21, 27, 0.16);
+
+  /* Domain accents (night / paper-safe pairs, both ≥ 4.5:1 on their surface) */
+  --accent-ai: #7392ff;
+  --accent-ai-ink: #3559bb;
+  --accent-web3: #5ad7c7;
+  --accent-web3-ink: #187d73;
+  --accent-market: #5ad7c7;
+
+  /* Status */
+  --status-p0: #ef716f;
+  --status-p1: #d69a42;
+  --status-p2: #769ad3;
+  --status-focus: #9eb3ff;
+
+  /* Type */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Noto Sans SC", sans-serif;
+  --font-mono: "SF Mono", "Fira Code", "Fira Mono", monospace;
+
+  /* Shape and rhythm */
+  --radius-xs: 4px;
+  --radius-chip: 999px;
+  --radius-card: 10px;
+  --touch-target: 44px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+}

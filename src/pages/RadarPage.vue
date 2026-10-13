@@ -21,6 +21,11 @@ import {
 import { getRadarCollectionSeo, getSnapshotFreshness } from '../data/snapshotFreshness'
 import { setSeoMeta } from '../utils/seo'
 import '../styles/radar.css'
+import ChipGroup from '../design/components/ChipGroup.vue'
+import IntelCard from '../design/components/IntelCard.vue'
+import LoadState from '../design/components/LoadState.vue'
+import SearchBox from '../design/components/SearchBox.vue'
+import SubscribeBar from '../design/components/SubscribeBar.vue'
 
 const latestRadar = latestRadars[0]
 const latestWeekly = radarWeeklies[0]
@@ -337,45 +342,26 @@ onMounted(() =>
         </header>
 
         <div class="radar-feed-toolbar">
-          <div class="radar-filter-line" role="group" aria-label="按领域筛选简报">
-            <button
-              v-for="option in archiveFilters"
-              :key="option.key"
-              type="button"
-              :class="{ active: archiveFilter === option.key }"
-              :aria-pressed="archiveFilter === option.key"
-              @click="archiveFilter = option.key"
-            >
-              {{ option.label }} <span>{{ archiveFilterCounts[option.key] }}</span>
-            </button>
-          </div>
-          <label class="radar-feed-search">
-            <span class="sr-only">搜索简报标题与摘要</span>
-            <input v-model="searchQuery" type="search" placeholder="搜索标题或摘要" autocomplete="off" />
-          </label>
+          <ChipGroup
+            variant="tabs"
+            label="按领域筛选简报"
+            :options="archiveFilters.map(option => ({ ...option, count: archiveFilterCounts[option.key] }))"
+            :active="archiveFilter"
+            @select="key => (archiveFilter = key as RadarFeedDomain)"
+          />
+          <SearchBox v-model="searchQuery" label="搜索简报标题与摘要" placeholder="搜索标题或摘要" />
         </div>
 
-        <div class="radar-topic-chips" role="group" aria-label="按主题筛选简报">
-          <button
-            v-for="option in topicOptions"
-            :key="option.topic"
-            type="button"
-            :class="{ active: topicFilter === option.topic }"
-            :aria-pressed="topicFilter === option.topic"
-            @click="toggleTopic(option.topic)"
-          >
-            {{ radarTopicLabel(option.topic) }} <span>{{ option.count }}</span>
-          </button>
-        </div>
+        <ChipGroup
+          label="按主题筛选简报"
+          :options="topicOptions.map(option => ({ key: option.topic, label: radarTopicLabel(option.topic), count: option.count }))"
+          :active="topicFilter"
+          @select="toggleTopic"
+        />
 
         <p class="sr-only" aria-live="polite">当前显示 {{ visibleFeedCount }} 条简报</p>
-        <div v-if="feedLoading" class="radar-archive-empty" aria-busy="true" role="status">
-          <p>正在载入简报信息流…</p>
-        </div>
-        <div v-else-if="feedError" class="radar-archive-empty" role="alert">
-          <p>简报信息流载入失败。</p>
-          <button type="button" @click="loadFeed">重试</button>
-        </div>
+        <LoadState v-if="feedLoading" state="loading" message="正在载入简报信息流…" />
+        <LoadState v-else-if="feedError" state="error" message="简报信息流载入失败。" action-label="重试" @action="loadFeed" />
         <div v-else-if="visibleFeedDays.length" class="radar-archive-ledger radar-feed">
           <section v-for="day in visibleFeedDays" :key="day.date" :aria-labelledby="`feed-day-${day.date}`">
             <header>
@@ -384,26 +370,28 @@ onMounted(() =>
             </header>
             <ul class="radar-feed-cards">
               <li v-for="item in day.items" :key="item.id">
-                <router-link :to="`/radar/${item.date}#${item.anchor}`" class="radar-feed-card">
-                  <span class="radar-feed-meta">
-                    <b :class="`radar-feed-domain radar-feed-domain--${item.domain}`">{{ item.domain.toUpperCase() }}</b>
-                    <span>{{ radarTopicLabel(item.topic) }}</span>
-                    <em v-if="continuingTopics.has(item.topic)" class="radar-feed-badge">持续追踪</em>
-                    <em v-if="item.isDeepDive" class="radar-feed-badge radar-feed-badge--deep">专题</em>
-                  </span>
-                  <strong>{{ item.title }}</strong>
-                  <p>{{ item.summary }}</p>
-                  <small v-if="item.sourceName">{{ item.sourceTier === 'tier1' ? '一手来源' : '研究解读' }} · {{ item.sourceName }}</small>
-                </router-link>
+                <IntelCard
+                  :to="`/radar/${item.date}#${item.anchor}`"
+                  :domain="item.domain"
+                  :topic-label="radarTopicLabel(item.topic)"
+                  :title="item.title"
+                  :summary="item.summary"
+                  :source-label="item.sourceName ? `${item.sourceTier === 'tier1' ? '一手来源' : '研究解读'} · ${item.sourceName}` : undefined"
+                  :continuing="continuingTopics.has(item.topic)"
+                  :deep-dive="item.isDeepDive"
+                />
               </li>
             </ul>
           </section>
         </div>
-        <div v-else class="radar-archive-empty" role="status">
-          <p>没有符合条件的简报。</p>
-          <button v-if="hasActiveFilter" type="button" @click="resetFeed">清除筛选</button>
-          <p v-else>请稍后返回确认新的公开简报。</p>
-        </div>
+        <LoadState
+          v-else
+          state="empty"
+          message="没有符合条件的简报。"
+          :action-label="hasActiveFilter ? '清除筛选' : undefined"
+          hint="请稍后返回确认新的公开简报。"
+          @action="resetFeed"
+        />
 
         <button
           v-if="feedDays.length > archiveLimit"
@@ -415,12 +403,7 @@ onMounted(() =>
           {{ archiveExpanded ? '收起历史记录' : `展开全部 ${feedDays.length} 天` }}
         </button>
 
-        <nav class="radar-subscribe" aria-label="订阅学习雷达">
-          <span>订阅</span>
-          <a href="/radar/rss.xml" type="application/rss+xml">RSS</a>
-          <a href="/radar/feed.json" type="application/feed+json">JSON Feed</a>
-          <a href="/llms.txt">llms.txt</a>
-        </nav>
+        <SubscribeBar />
 
         <p class="radar-editorial-disclaimer">
           内容由公开来源经 AI 自动汇总，周度判断另行人工复核。市场信息仅用于研究与教育，不构成投资建议。

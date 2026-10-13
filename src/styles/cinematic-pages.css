@@ -1,13 +1,8 @@
 .cinematic-page {
-  --cinema-bg: #030507;
-  --cinema-surface: #090c11;
-  --cinema-surface-raised: #0f131a;
-  --cinema-line: rgba(255, 255, 255, 0.1);
-  --cinema-text: #f5f7fa;
-  --cinema-muted: #939ba8;
-  --cinema-blue: #5b82ff;
-  --cinema-market: #5ad7c7;
-  --cinema-silver: #d9dce3;
+  --cinema-bg: var(--night-bg);
+  --cinema-line: var(--night-line);
+  --cinema-text: var(--night-text);
+  --cinema-muted: var(--night-muted);
   min-height: 100vh;
   overflow: clip;
   background: var(--cinema-bg);
@@ -32,7 +27,7 @@
   background:
     radial-gradient(circle at 78% 34%, rgba(78, 120, 255, 0.14), transparent 24%),
     radial-gradient(circle at 72% 58%, rgba(90, 215, 199, 0.055), transparent 33%),
-    linear-gradient(180deg, #020305 0%, #070a10 72%, #030507 100%);
+    linear-gradient(180deg, #020305 0%, #070a10 72%, var(--night-bg) 100%);
 }
 
 .cinematic-page-hero::after {
