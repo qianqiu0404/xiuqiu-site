@@ -9,6 +9,8 @@ import { nowSnapshot } from '../src/data/generatedNow.ts'
 import { projects } from '../src/data/generatedProjects.ts'
 import { radarWeeklies } from '../src/data/generatedRadarWeeklies.ts'
 import { radarReviews } from '../src/data/generatedRadarReviews.ts'
+import { intelTopics } from '../src/data/generatedIntelFeed.ts'
+import { intelTopicLabel } from '../src/data/intelPresentation.ts'
 import { dailyRadars } from '../src/data/generatedRadarAll.ts'
 import { allMarketRadars } from '../src/data/generatedMarketRadarAll.ts'
 import { getRadarCollectionSeo } from '../src/data/snapshotFreshness.ts'
@@ -74,6 +76,7 @@ function expectedSitemapRoutes() {
     '/ai/deliveries/:slug',
     '/radar/week/:week',
     '/radar/review/:period',
+    '/topics/:topic',
     '/radar/:date',
     '/market-radar/:date',
     '/articles/:slug',
@@ -90,6 +93,7 @@ function expectedSitemapRoutes() {
     ...allMarketRadars.map(radar => `/market-radar/${radar.slug}`),
     ...radarWeeklies.map(weekly => `/radar/week/${weekly.slug}`),
     ...radarReviews.map(review => `/radar/review/${review.slug}`),
+    ...intelTopics.map(topic => `/topics/${topic.topic}`),
     ...deliveryRecords.map(record => `/ai/deliveries/${record.slug}`),
   ]
 }
@@ -149,6 +153,10 @@ function expectedMetadataByRoute() {
     `${articleSummaries.length} 篇关于交易所钱包、多链模型、签名服务、Go 后端与 AI 工程工作流的学习笔记。`
   const metadata = new Map([
     ['/', {
+      title: 'xiuqiu｜AI 与 Web3 工程情报流',
+      description: '每天 2 条 AI、2 条 Web3 工程简报和市场事件，按主题筛选、搜索与订阅；每条都回到一手来源。',
+    }],
+    ['/about', {
       title: 'xiuqiu｜Qiu Market、Wallet Infrastructure 与 AI Engineering',
       description: '维护 Qiu Market，并用 Wallet Infrastructure 学习、AI-native Engineering、自动化测试与公开证据说明 Web3 工程能力。',
     }],
@@ -233,6 +241,12 @@ function expectedMetadataByRoute() {
     metadata.set(`/radar/week/${weekly.slug}`, {
       title: `${weekly.title}｜xiuqiu`,
       description: weekly.summary,
+    })
+  }
+  for (const topic of intelTopics) {
+    metadata.set(`/topics/${topic.topic}`, {
+      title: `${intelTopicLabel(topic.topic)}｜主题｜xiuqiu`,
+      description: `${intelTopicLabel(topic.topic)}：${topic.firstSeen} 至 ${topic.lastSeen} 的 ${topic.count} 条工程情报，按日期回看。`,
     })
   }
   for (const review of radarReviews) {

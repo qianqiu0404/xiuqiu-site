@@ -11,6 +11,7 @@ import {
   homeSeo,
   homeServiceFlow,
 } from '../src/data/homePresentation.ts'
+import { intelHomeSeo } from '../src/data/intelPresentation.ts'
 import { evidenceRecords } from '../src/data/generatedEvidence.ts'
 import { evidenceLedgerRecords, evidenceLedgerStats } from '../src/data/evidenceLedger.ts'
 import { projects } from '../src/data/generatedProjects.ts'
@@ -18,6 +19,7 @@ import { productPresentations, qiuMarketUrl } from '../src/data/productPresentat
 import { getAdjacentArticles, sortArticlesForReading } from '../src/data/articlePresentation.ts'
 
 const homeSource = readFileSync(new URL('../src/features/about/pages/HomePage.vue', import.meta.url), 'utf8')
+const intelHomeSource = readFileSync(new URL('../src/features/intel/pages/IntelHomePage.vue', import.meta.url), 'utf8')
 const appSource = readFileSync(new URL('../src/App.vue', import.meta.url), 'utf8')
 const chatWidgetSource = readFileSync(new URL('../src/components/AiChatWidget.vue', import.meta.url), 'utf8')
 const projectAtlasSource = readFileSync(new URL('../src/features/projects/pages/ProjectAtlasPage.vue', import.meta.url), 'utf8')
@@ -316,37 +318,32 @@ test('homepage and primary navigation keep their structural contract', () => {
   assertUnique(primaryLinks.map(link => link.to), 'primary navigation destinations')
   assertUnique(primaryLinks.map(link => link.label), 'primary navigation labels')
   assert.deepEqual(primaryLinks, [
+    { to: '/', label: '情报流' },
+    { to: '/radar', label: '学习雷达' },
+    { to: '/market-radar', label: '市场雷达' },
     { to: '/projects/s78-market-services', label: 'Qiu Market' },
     { to: '/ai', label: 'AI' },
-    { to: '/engineering/evidence', label: 'Proof' },
-    { to: '/radar', label: 'Learn Radar' },
-    { to: '/market-radar', label: 'Trade Radar' },
   ])
 
   const secondaryLinks = linksInClass('nav-secondary-links')
   assert.deepEqual(secondaryLinks, [
-    { to: '/projects', label: '项目图谱' },
-    { to: '/articles', label: '工程笔记' },
-    { to: '/now', label: 'About' },
+    { to: '/engineering/evidence', label: '证据' },
+    { to: '/projects', label: '项目' },
+    { to: '/articles', label: '笔记' },
+    { to: '/about', label: '关于' },
   ])
   assertUnique(
     [...primaryLinks, ...secondaryLinks].map(link => link.to),
     'all navigation destinations',
   )
-  assert.deepEqual(primaryLinks.map(link => link.to), [
-    '/projects/s78-market-services',
-    '/ai',
-    '/engineering/evidence',
-    '/radar',
-    '/market-radar',
-  ])
+  assert.deepEqual(primaryLinks.map(link => link.to), ['/', '/radar', '/market-radar', '/projects/s78-market-services', '/ai'])
 
   assert.match(appSource, /currentRoute\.name === 'learning'\) return 'learn-radar'/)
   assert.match(appSource, /aria-current="location"/)
   assert.match(appSource, /class="nav-mobile-context"/)
   assert.match(appSource, /'trade-radar': 'Trade Radar'/)
   assert.match(appSource, /@click="toggleNav"/)
-  assert.equal((appSource.match(/@keydown\.space\.prevent="activateLinkOnSpace"/g) || []).length, 8)
+  assert.equal((appSource.match(/@keydown\.space\.prevent="activateLinkOnSpace"/g) || []).length, 9)
   assert.match(appSource, /navToggle\.value\?\.focus\(\)/)
   assert.match(appSource, /mainContent\.value\?\.focus\(\{ preventScroll: true \}\)/)
   assert.match(appSource, /<main id="main-content" ref="mainContent" tabindex="-1">/)
@@ -485,7 +482,9 @@ test('static and runtime homepage SEO stay aligned', () => {
   const title = indexHtml.match(/<title>([^<]+)<\/title>/)?.[1]
   const description = indexHtml.match(/<meta name="description" content="([^"]+)"\s*\/>/)?.[1]
 
-  assert.equal(title, homeSeo.title)
-  assert.equal(description, homeSeo.description)
-  assert.match(homeSource, /\.\.\.homeSeo/)
+  assert.equal(title, intelHomeSeo.title)
+  assert.equal(description, intelHomeSeo.description)
+  assert.match(intelHomeSource, /\.\.\.intelHomeSeo, path: '\/'/)
+  // The former home moved to /about and keeps its own SEO.
+  assert.match(homeSource, /\.\.\.homeSeo, path: '\/about'/)
 })

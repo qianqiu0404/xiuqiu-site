@@ -14,10 +14,10 @@
     ],
     "workflows": {
       ".github/workflows/ci.yml": "314d797b7689c2e5",
-      ".github/workflows/daily-radar.yml": "853325ce533a97a4",
+      ".github/workflows/daily-radar.yml": "d36a1338702e4510",
       ".github/workflows/market-radar.yml": "2f332a7f6fdc785f",
       ".github/workflows/release-controller.yml": "f4ab8602324ee104",
-      ".github/workflows/static-market-radar.yml": "f5a4d4ac1930f183"
+      ".github/workflows/static-market-radar.yml": "77df8f0d72c1feca"
     },
     "migrations": {
       "market-radar/migrations/001_initial.sql": "25441b80a60cd599",
@@ -38,12 +38,12 @@
     },
     "frozenScripts": {
       "build": "npm run test:contracts && npm run test:release && npm run test:content && npm run test:radar && npm run test:market-radar && npm run test:notifications && npm run generate:content && npm run test:home && npm run test:ai && npm run test:assistant && npm run test:chat && npm run generate:sitemap && npm run check:knowledge && npm run check:public && npm run typecheck:api && vue-tsc && vite build && npm run generate:meta-pages && npm run test:quality && npm run check:budget",
-      "generate:content": "npm run generate:articles && npm run generate:projects && npm run generate:ai && npm run generate:learning && npm run generate:radar && npm run generate:market-radar && npm run generate:radar-weekly && npm run generate:radar-review && npm run generate:failures && npm run generate:evidence && npm run generate:deliveries && npm run generate:now",
+      "generate:content": "npm run generate:articles && npm run generate:projects && npm run generate:ai && npm run generate:learning && npm run generate:radar && npm run generate:market-radar && npm run generate:radar-weekly && npm run generate:radar-review && npm run generate:intel && npm run generate:failures && npm run generate:evidence && npm run generate:deliveries && npm run generate:now",
       "generate:radar": "node scripts/generate-radars.mjs",
       "generate:market-radar": "node scripts/generate-market-radars.mjs",
       "generate:radar-weekly": "node scripts/generate-radar-weeklies.mjs",
       "generate:sitemap": "node scripts/generate-sitemap.mjs",
-      "test:radar": "node --test scripts/learning-radar-v2.test.mjs scripts/radar-publication-boundary.test.mjs scripts/radar-pipeline.test.mjs scripts/radar-presentation.test.mjs scripts/researchops-ledger.test.mjs scripts/daily-radar-workflow.test.mjs scripts/snapshot-freshness.test.mjs scripts/radar-feed.test.mjs scripts/radar-reviews.test.mjs",
+      "test:radar": "node --test scripts/learning-radar-v2.test.mjs scripts/radar-publication-boundary.test.mjs scripts/radar-pipeline.test.mjs scripts/radar-presentation.test.mjs scripts/researchops-ledger.test.mjs scripts/daily-radar-workflow.test.mjs scripts/snapshot-freshness.test.mjs scripts/radar-feed.test.mjs scripts/radar-reviews.test.mjs scripts/intel-feed.test.mjs",
       "test:market-radar": "node --test scripts/market-radar.test.mjs scripts/market-radar-worker.test.mjs scripts/market-radar-event-contract.test.mjs scripts/static-market-radar-workflow.test.mjs",
       "test:notifications": "node --test scripts/radar-notifications.test.mjs",
       "prepare:researchops": "node scripts/prepare-researchops-source.mjs",
@@ -61,7 +61,7 @@
     "public/llms.txt": "6ae7296d360a6408",
     "public/radar/feed.json": "83b57b7ff6ad6c82",
     "public/radar/rss.xml": "aaa5e94b8d422057",
-    "public/sitemap.xml": "d0e08073a209e920",
+    "public/sitemap.xml": "395fec27c5e158fc",
     "src/data/generatedAiCases.ts": "395039b0ab2980f9",
     "src/data/generatedArticleKnowledge.ts": "1744f623a939e2f6",
     "src/data/generatedDeliveries.ts": "8fe6e8577a0b78a7",

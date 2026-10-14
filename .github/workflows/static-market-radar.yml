@@ -47,6 +47,10 @@ jobs:
               src/data/generatedMarketRadarAll.ts|\
               src/data/generatedMarketRadarLoader.ts|\
               "src/data/generatedMarketRadarMonths/$RADAR_MONTH.ts"|\
+              src/data/generatedIntelFeed.ts|\
+              "src/data/generatedIntelFeedMonths/$RADAR_MONTH.ts"|\
+              public/data/intel/latest.json|\
+              public/data/intel/topics.json|\
               public/sitemap.xml) ;;
               *) echo "Static market radar PR changed a non-allowlisted or historical file: $file"; exit 1 ;;
             esac
@@ -68,6 +72,9 @@ jobs:
           src/data/generatedMarketRadarLoader.ts
           src/data/generatedMarketRadarMonths
           public/data/market-radar-packs
+          src/data/generatedIntelFeed.ts
+          src/data/generatedIntelFeedMonths
+          public/data/intel
           public/sitemap.xml
       - name: Squash merge verified static market radar
         env:

@@ -14,14 +14,17 @@ xiuqiu-site 是一个个人站点，正在从「作品集 + 工程证据」转�
 
 | 路由 | 内容 |
 | --- | --- |
+| `/` | 情报流首页：学习雷达简报 + 市场雷达事件 + 趋势回顾，按领域、主题筛选与搜索，显示距上次更新多久 |
+| `/topics/:topic` | 主题页：某个主题的全部历史条目 |
 | `/radar` | 学习雷达：最新一期简报 + 按日期分组的信息流，支持 AI / Web3、主题筛选与搜索 |
 | `/radar/:date`、`/radar/week/:week` | 日报阅读器、人工复核周报 |
 | `/market-radar` | 交易雷达：静态、有来源的市场研究快照（不连接账户，不下单） |
 | `/projects`、`/projects/:slug` | 项目图谱与项目详情 |
 | `/engineering/*`、`/ai/*` | 工程证据、失败恢复手册、AI 协作交付记录 |
-| `/articles`、`/now` | 工程笔记、关于 |
+| `/about`、`/now`、`/articles` | 关于（原首页）、当前动态、工程笔记 |
+| `/radar/review/:period` | 趋势回顾：多周的趋势线、信号与里程碑 |
 
-订阅出口（构建时生成的静态文件）：`/radar/rss.xml`、`/radar/feed.json`、`/llms.txt`，格式见 [`docs/public-feeds.md`](docs/public-feeds.md)。
+订阅出口（构建时生成的静态文件）：`/radar/rss.xml`、`/radar/feed.json`、`/llms.txt`、`/data/intel/latest.json`、`/data/intel/topics.json`，格式见 [`docs/public-feeds.md`](docs/public-feeds.md)。
 
 ## 架构
 

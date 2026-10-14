@@ -4,6 +4,7 @@ import { projects } from '../src/data/generatedProjects.ts'
 import { dailyRadars } from '../src/data/generatedRadarAll.ts'
 import { radarWeeklies } from '../src/data/generatedRadarWeeklies.ts'
 import { radarReviews } from '../src/data/generatedRadarReviews.ts'
+import { intelTopics } from '../src/data/generatedIntelFeed.ts'
 import { deliveryRecords } from '../src/data/generatedDeliveries.ts'
 import { allMarketRadars } from '../src/data/generatedMarketRadarAll.ts'
 import { SITE_URL } from '../shared/site.ts'
@@ -12,6 +13,7 @@ const articleSlugs = articleSummaries.map(article => article.slug)
 
 const routes = [
   '/',
+  '/about',
   '/engineering',
   '/engineering/failures',
   '/engineering/evidence',
@@ -30,6 +32,7 @@ const routes = [
   ...allMarketRadars.map(radar => `/market-radar/${radar.slug}`),
   ...radarWeeklies.map(weekly => `/radar/week/${weekly.slug}`),
   ...radarReviews.map(review => `/radar/review/${review.slug}`),
+  ...intelTopics.map(topic => `/topics/${topic.topic}`),
   ...deliveryRecords.map(record => `/ai/deliveries/${record.slug}`),
 ]
 const urls = routes

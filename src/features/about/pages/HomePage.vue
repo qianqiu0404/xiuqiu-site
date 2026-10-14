@@ -90,7 +90,7 @@ function askAi(prompt: string, slug: string) {
   )
 }
 
-onMounted(() => setSeoMeta({ ...homeSeo, path: '/' }))
+onMounted(() => setSeoMeta({ ...homeSeo, path: '/about' }))
 </script>
 
 <template>

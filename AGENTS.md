@@ -4,7 +4,7 @@
 
 ## 项目是什么
 
-xiuqiu-site 是一个个人站点，正在从「作品集 + 工程证据」转向以 **AI + Web3 Radar 情报流** 为主。技术栈是 Vue 3 + Vite + vue-router，部署在 Vercel。
+xiuqiu-site 是一个以 **AI + Web3 Radar 情报流** 为主的个人站点：首页 `/` 是情报流，原作品集与工程证据保留在 `/about`、`/projects`、`/engineering/*`。技术栈是 Vue 3 + Vite + vue-router，部署在 Vercel。
 
 - 内容写在 `content/**` 的 Markdown 里，构建时生成 `src/data/generated*.ts` 和 `public/**` 下的静态产物。
 - `api/` 下有少量 serverless 接口：`/api/chat`、Market Radar 的读接口，以及 Hermes 用的 outbox 接口。
@@ -97,7 +97,7 @@ xiuqiu-site 是一个个人站点，正在从「作品集 + 工程证据」转�
 3. **P2 共享库**（已完成）：抽出 `shared/site.ts` 和 `scripts/lib/`；两组 outbox 路由改用同一个 handler 工厂，接口不变。
 4. **P3 设计系统**（已完成）：建立 tokens 和基础组件，先迁移 Radar 页面族。
 5. **P4 架构迁移**（已完成）：页面搬进 `src/features/*`，统一经各自的 `data.ts` 取数。
-6. **P5 情报流与信息架构**：
+6. **P5 情报流与信息架构**（已完成）：
    - 统一的 `IntelItem` 数据结构，learning 和 market 两类内容都归一到它。
    - `/` 改为信息流首页，新增 `/topics/:topic` 主题页、静态 API `public/data/intel/*` 和新导航。
    - 旧 URL 加 redirect。

@@ -6,7 +6,19 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
+      component: () => import('../features/intel/pages/IntelHomePage.vue'),
+      meta: { visual: 'narrative', navGroup: 'home' },
+    },
+    {
+      path: '/about',
+      name: 'about',
       component: () => import('../features/about/pages/HomePage.vue'),
+      meta: { visual: 'narrative', navGroup: 'about' },
+    },
+    {
+      path: '/topics/:topic',
+      name: 'topic',
+      component: () => import('../features/intel/pages/IntelTopicPage.vue'),
       meta: { visual: 'narrative', navGroup: 'home' },
     },
     {

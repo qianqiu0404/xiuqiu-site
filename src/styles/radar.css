@@ -1390,7 +1390,7 @@
 }
 
 .radar-topic-chips button {
-  min-height: 32px;
+  min-height: var(--touch-target);
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -1419,8 +1419,10 @@
 }
 
 .radar-feed section > header a {
-  display: inline-block;
-  margin-top: 8px;
+  min-height: var(--touch-target);
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0;
   color: #3559bb;
   font: 620 11px/1.4 inherit;
 }
@@ -1470,6 +1472,18 @@
 
 .radar-feed-domain--web3 {
   background: #1f7a6e;
+}
+
+.radar-feed-domain--market {
+  background: #8a5a12;
+}
+
+.radar-feed-domain--review {
+  background: var(--paper-ink);
+}
+
+.radar-feed-badge--priority {
+  color: #b23a38;
 }
 
 .radar-feed-badge {

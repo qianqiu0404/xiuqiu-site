@@ -31,6 +31,7 @@ const currentNavSection = computed(() => {
   if (currentRoute.name === 'learning') return 'learn-radar'
 
   const navGroup = String(currentRoute.meta.navGroup || '')
+  if (currentRoute.name === 'home' || currentRoute.name === 'topic') return 'intel'
   const sectionByGroup: Record<string, string> = {
     ai: 'ai',
     evidence: 'proof',
@@ -58,6 +59,7 @@ const currentMobileContextLabel = computed(() => {
     proof: 'Proof',
     'learn-radar': 'Learn Radar',
     'trade-radar': 'Trade Radar',
+    intel: '情报流',
     projects: '项目图谱',
     notes: '工程笔记',
     about: 'About',
@@ -159,6 +161,30 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
         <div class="nav-primary-links" role="group" aria-label="核心入口">
           <router-link
             class="nav-link"
+            :class="{ 'is-current': isCurrentNavSection('intel') }"
+            :aria-current="currentNavAria('intel', '/')"
+            to="/"
+            @click="handleNavLinkActivation"
+            @keydown.space.prevent="activateLinkOnSpace"
+          >情报流</router-link>
+          <router-link
+            class="nav-link"
+            :class="{ 'is-current': isCurrentNavSection('learn-radar') }"
+            :aria-current="currentNavAria('learn-radar', '/radar')"
+            to="/radar"
+            @click="handleNavLinkActivation"
+            @keydown.space.prevent="activateLinkOnSpace"
+          >学习雷达</router-link>
+          <router-link
+            class="nav-link"
+            :class="{ 'is-current': isCurrentNavSection('trade-radar') }"
+            :aria-current="currentNavAria('trade-radar', '/market-radar')"
+            to="/market-radar"
+            @click="handleNavLinkActivation"
+            @keydown.space.prevent="activateLinkOnSpace"
+          >市场雷达</router-link>
+          <router-link
+            class="nav-link"
             :class="{ 'is-current': isCurrentNavSection('qiu-market') }"
             :aria-current="currentNavAria('qiu-market', '/projects/s78-market-services')"
             to="/projects/s78-market-services"
@@ -173,6 +199,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
             @click="handleNavLinkActivation"
             @keydown.space.prevent="activateLinkOnSpace"
           >AI</router-link>
+        </div>
+
+        <div class="nav-secondary-links" role="group" aria-label="更多入口">
           <router-link
             class="nav-link"
             :class="{ 'is-current': isCurrentNavSection('proof') }"
@@ -180,26 +209,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
             to="/engineering/evidence"
             @click="handleNavLinkActivation"
             @keydown.space.prevent="activateLinkOnSpace"
-          >Proof</router-link>
-          <router-link
-            class="nav-link"
-            :class="{ 'is-current': isCurrentNavSection('learn-radar') }"
-            :aria-current="currentNavAria('learn-radar', '/radar')"
-            to="/radar"
-            @click="handleNavLinkActivation"
-            @keydown.space.prevent="activateLinkOnSpace"
-          >Learn Radar</router-link>
-          <router-link
-            class="nav-link"
-            :class="{ 'is-current': isCurrentNavSection('trade-radar') }"
-            :aria-current="currentNavAria('trade-radar', '/market-radar')"
-            to="/market-radar"
-            @click="handleNavLinkActivation"
-            @keydown.space.prevent="activateLinkOnSpace"
-          >Trade Radar</router-link>
-        </div>
-
-        <div class="nav-secondary-links" role="group" aria-label="更多入口">
+          >证据</router-link>
           <router-link
             class="nav-link"
             :class="{ 'is-current': isCurrentNavSection('projects') }"
@@ -207,7 +217,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
             to="/projects"
             @click="handleNavLinkActivation"
             @keydown.space.prevent="activateLinkOnSpace"
-          >项目图谱</router-link>
+          >项目</router-link>
           <router-link
             class="nav-link"
             :class="{ 'is-current': isCurrentNavSection('notes') }"
@@ -215,15 +225,15 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
             to="/articles"
             @click="handleNavLinkActivation"
             @keydown.space.prevent="activateLinkOnSpace"
-          >工程笔记</router-link>
+          >笔记</router-link>
           <router-link
             class="nav-link"
             :class="{ 'is-current': isCurrentNavSection('about') }"
-            :aria-current="currentNavAria('about', '/now')"
-            to="/now"
+            :aria-current="currentNavAria('about', '/about')"
+            to="/about"
             @click="handleNavLinkActivation"
             @keydown.space.prevent="activateLinkOnSpace"
-          >About</router-link>
+          >关于</router-link>
         </div>
       </div>
     </nav>
