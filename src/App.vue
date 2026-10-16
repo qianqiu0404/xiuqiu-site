@@ -21,7 +21,7 @@ const visualMode = computed(() => {
 })
 // Intel-family routes use the paper "brief" shell; other narrative/lab pages
 // keep the cinematic shell until they are redesigned (P6).
-const BRIEF_ROUTES = new Set(['home', 'topic', 'radar', 'radar-detail', 'radar-weekly-detail', 'radar-review-detail', 'market-radar', 'market-radar-detail', 'market-radar-event'])
+const BRIEF_ROUTES = new Set(['home', 'topic', 'radar', 'radar-detail', 'radar-weekly-detail', 'radar-review-detail', 'market-radar', 'market-radar-detail', 'market-radar-event', 'project-detail', 'ai', 'ai-deliveries', 'ai-delivery-detail', 'social-research'])
 const usesBriefChrome = computed(() => BRIEF_ROUTES.has(String(router.currentRoute.value.name || '')))
 const usesCinematicChrome = computed(() => !usesBriefChrome.value && (visualMode.value === 'narrative' || visualMode.value === 'lab'))
 

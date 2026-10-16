@@ -1,6 +1,6 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
+import { readdirSync, readFileSync } from 'node:fs'
 import { renderComponent } from './lib/render-vue.mjs'
 
 const component = name => new URL(`../src/design/components/${name}.vue`, import.meta.url)
@@ -76,9 +76,10 @@ test('tokens: light defines every token once, dark overrides only colours and ma
   assert.deepEqual(systemDark, forcedDark, 'system dark and forced dark must stay identical')
   for (const name of Object.keys(forcedDark)) assert.ok(lightNames.includes(name), `dark overrides unknown token ${name}`)
 
-  const families = ['radar', 'market-radar', 'cinematic-pages', 'home', 'ai-evidence-os', 'product-pages']
-    .map(name => readFileSync(new URL(`../src/styles/${name}.css`, import.meta.url), 'utf8'))
-  const designCss = ['brief', 'shell'].map(name => readFileSync(new URL(`../src/design/${name}.css`, import.meta.url), 'utf8'))
+  const cssIn = dir => readdirSync(new URL(dir, import.meta.url)).filter(name => name.endsWith('.css'))
+    .map(name => readFileSync(new URL(`${dir}${name}`, import.meta.url), 'utf8'))
+  const families = cssIn('../src/styles/')
+  const designCss = cssIn('../src/design/').filter(css => !css.includes('Design tokens'))
   // Legacy globals still defined on :root in src/style.css until P6.
   const globalStyle = readFileSync(new URL('../src/style.css', import.meta.url), 'utf8')
   const legacyNames = [...globalStyle.slice(globalStyle.indexOf(':root {'), globalStyle.indexOf('}', globalStyle.indexOf(':root {'))).matchAll(/^\s*(--[a-z0-9-]+):/gm)].map(match => match[1])

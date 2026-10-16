@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, watchEffect } from 'vue'
-import '../../../styles/cinematic-pages.css'
+import '../../../design/brief.css'
+import '../../../design/reader.css'
+import '../../../design/product.css'
 import { useRoute } from 'vue-router'
 import { evidenceBySlug, evidenceStatusLabels, deliveryRecords, getProjectByKey } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
@@ -20,52 +22,63 @@ watchEffect(() => setSeoMeta(delivery.value ? {
 </script>
 
 <template>
-  <section class="delivery-detail-page delivery-trace-page cinematic-page">
+  <div class="brief delivery-detail-page" lang="zh-CN">
     <template v-if="delivery">
-      <header class="delivery-trace-hero cinematic-page-hero">
-        <div class="container delivery-detail-container">
-          <router-link class="back-link" to="/ai/deliveries">&larr; 返回历史公开交付记录</router-link>
-          <div class="delivery-detail-hero">
-            <div class="card-status-row"><time>{{ delivery.date }}</time><strong :data-status="delivery.status">{{ statusLabel[delivery.status] }}</strong></div>
-            <p class="cinematic-page-kicker">Historical Delivery Trace / {{ delivery.kind }}</p>
-            <h1>{{ delivery.title }}</h1>
-            <p>{{ delivery.summary }}</p>
-            <div class="delivery-project-links"><router-link v-for="project in projects" :key="project!.slug" :to="`/projects/${project!.slug}`">{{ project!.name }}</router-link></div>
+      <header class="brief-masthead">
+        <div class="brief-shell brief-reading">
+          <router-link class="brief-back back-link" to="/ai/deliveries">← 返回历史公开交付记录</router-link>
+          <p class="brief-dateline">
+            <time :datetime="delivery.date">{{ delivery.date }}</time>
+            <span>AI 历史公开交付 / {{ delivery.kind }}</span>
+            <b class="brief-tag" :data-status="delivery.status">{{ statusLabel[delivery.status] }}</b>
+          </p>
+          <h1>{{ delivery.title }}</h1>
+          <p class="brief-lede">{{ delivery.summary }}</p>
+          <div class="reader-related">
+            <router-link v-for="project in projects" :key="project!.slug" :to="`/projects/${project!.slug}`">{{ project!.name }} →</router-link>
           </div>
         </div>
       </header>
 
-      <div class="delivery-trace-surface">
-        <div class="container delivery-detail-container">
-          <section class="delivery-goal">
-            <p class="delivery-trace-index">01 / GOAL &amp; SCOPE</p>
-            <h2>{{ delivery.goal }}</h2>
-            <ul><li v-for="item in delivery.scope" :key="item">{{ item }}</li></ul>
-          </section>
+      <div class="brief-shell brief-reading product-body">
+        <section class="reader-section">
+          <header class="reader-section-header"><span>01</span><h2>{{ delivery.goal }}</h2><small>GOAL &amp; SCOPE</small></header>
+          <ul class="product-bullets"><li v-for="item in delivery.scope" :key="item">{{ item }}</li></ul>
+        </section>
 
-          <div class="delivery-role-grid">
-            <section><p class="delivery-trace-index">02 / AI CONTRIBUTION</p><h2>AI 参与</h2><ul><li v-for="item in delivery.aiContribution" :key="item">{{ item }}</li></ul></section>
-            <section><p class="delivery-trace-index">03 / HUMAN GATE</p><h2>人工判断</h2><ul><li v-for="item in delivery.humanDecisions" :key="item">{{ item }}</li></ul></section>
+        <div class="product-pair">
+          <section class="brief-panel"><h2>02 / AI CONTRIBUTION · AI 参与</h2><ul class="product-bullets"><li v-for="item in delivery.aiContribution" :key="item">{{ item }}</li></ul></section>
+          <section class="brief-panel"><h2>03 / HUMAN GATE · 人工判断</h2><ul class="product-bullets"><li v-for="item in delivery.humanDecisions" :key="item">{{ item }}</li></ul></section>
+          <section class="brief-panel"><h2>04 / REVIEW FINDINGS · 审查发现</h2><ul class="product-bullets"><li v-for="item in delivery.reviewFindings" :key="item">{{ item }}</li></ul></section>
+          <section class="brief-panel"><h2>05 / CORRECTIONS · 纠正动作</h2><ul class="product-bullets"><li v-for="item in delivery.corrections" :key="item">{{ item }}</li></ul></section>
+        </div>
+
+        <section class="reader-section">
+          <header class="reader-section-header"><span>06</span><h2>交付结果如何被复核</h2><small>VERIFIED EVIDENCE</small></header>
+          <div class="radar-reader-articles">
+            <article v-for="record in evidence" :key="record!.slug" class="reader-article reader-article--compact">
+              <p class="brief-card-meta"><span>{{ record!.kind }}</span><b class="brief-tag" :data-status="record!.status">{{ evidenceStatusLabels[record!.status] }}</b></p>
+              <h3>{{ record!.title }}</h3>
+              <p>{{ record!.summary }}</p>
+              <div v-if="record!.command" class="product-commands"><code>{{ record!.command }}</code></div>
+              <a v-if="record!.url" class="reader-source-link" :href="record!.url" target="_blank" rel="noopener">查看证据 →</a>
+            </article>
           </div>
-
-          <div class="delivery-review-grid">
-            <section><p class="delivery-trace-index">04 / REVIEW FINDINGS</p><h2>审查发现</h2><ul><li v-for="item in delivery.reviewFindings" :key="item">{{ item }}</li></ul></section>
-            <section><p class="delivery-trace-index">05 / CORRECTIONS</p><h2>纠正动作</h2><ul><li v-for="item in delivery.corrections" :key="item">{{ item }}</li></ul></section>
+          <div class="reader-related">
+            <a v-for="link in delivery.publicLinks" :key="link.url" :href="link.url" target="_blank" rel="noopener">{{ link.label }} →</a>
           </div>
+        </section>
 
-          <section class="delivery-evidence-section">
-            <div class="section-heading section-heading-left"><p class="delivery-trace-index">06 / VERIFIED EVIDENCE</p><h2 class="section-title">交付结果如何被复核</h2></div>
-            <div class="delivery-evidence-grid"><article v-for="record in evidence" :key="record!.slug"><div class="card-status-row"><span>{{ record!.kind }}</span><strong :data-status="record!.status">{{ evidenceStatusLabels[record!.status] }}</strong></div><h3>{{ record!.title }}</h3><p>{{ record!.summary }}</p><code v-if="record!.command">{{ record!.command }}</code><a v-if="record!.url" :href="record!.url" target="_blank" rel="noopener">查看证据 &rarr;</a></article></div>
-            <div class="delivery-public-links"><a v-for="link in delivery.publicLinks" :key="link.url" :href="link.url" target="_blank" rel="noopener">{{ link.label }} &rarr;</a></div>
-          </section>
-
-          <section class="delivery-limits">
-            <div><p class="delivery-trace-index">07 / LAST RECORDED LIMITS</p><h2>最后记录的限制</h2><ul><li v-for="item in delivery.knownLimits" :key="item">{{ item }}</li></ul></div>
-            <div><p class="delivery-trace-index">08 / LAST RECORDED NEXT STEP / PAUSED</p><h2>最后记录的下一步（已暂停）</h2><p>{{ delivery.nextStep }}</p></div>
-          </section>
+        <div class="product-pair">
+          <section class="brief-panel"><h2>07 / LAST RECORDED LIMITS · 最后记录的限制</h2><ul class="product-bullets"><li v-for="item in delivery.knownLimits" :key="item">{{ item }}</li></ul></section>
+          <section class="brief-panel"><h2>08 / LAST RECORDED NEXT STEP / PAUSED · 最后记录的下一步（已暂停）</h2><p>{{ delivery.nextStep }}</p></section>
         </div>
       </div>
     </template>
-    <div v-else class="container not-found"><p class="not-found-title">这条交付记录不存在</p><router-link class="btn btn-primary" to="/ai/deliveries">返回交付记录</router-link></div>
-  </section>
+    <div v-else class="brief-masthead"><div class="brief-shell">
+      <p class="brief-dateline"><span>Delivery</span></p>
+      <h1>这条交付记录不存在</h1>
+      <div class="reader-actions"><router-link class="brief-button" to="/ai/deliveries">返回交付记录</router-link></div>
+    </div></div>
+  </div>
 </template>

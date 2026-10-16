@@ -2730,12 +2730,6 @@ img {
   grid-template-columns: repeat(3, 1fr);
 }
 
-.control-strip-grid span,
-.card-status-row span {
-  color: var(--legacy-accent);
-  font: 700 11px/1.4 var(--mono);
-}
-
 .control-strip-grid p,
 .capability-track-card p,
 .ai-case-preview-card p,
@@ -2789,17 +2783,6 @@ img {
   margin-top: 28px;
 }
 
-.card-status-row {
-  justify-content: space-between;
-}
-
-.card-status-row strong {
-  border-radius: 999px;
-  background: rgba(0, 113, 227, 0.08);
-  color: var(--legacy-accent);
-  font: 650 10px/1.4 var(--mono);
-  padding: 5px 9px;
-}
 
 .project-proof-preview {
   border-top: 1px solid var(--border-light);

@@ -42,7 +42,7 @@ const readmeSource = readFileSync(new URL('../README.md', import.meta.url), 'utf
 const globalStyleSource = readFileSync(new URL('../src/style.css', import.meta.url), 'utf8')
 const homeStyleSource = readFileSync(new URL('../src/styles/home.css', import.meta.url), 'utf8')
 const cinematicPagesCss = readFileSync(new URL('../src/styles/cinematic-pages.css', import.meta.url), 'utf8')
-const productPagesCss = readFileSync(new URL('../src/styles/product-pages.css', import.meta.url), 'utf8')
+const briefCss = readFileSync(new URL('../src/design/brief.css', import.meta.url), 'utf8')
 const notFoundStyleSource = readFileSync(new URL('../src/styles/not-found.css', import.meta.url), 'utf8')
 const aiProofRailSource = readFileSync(new URL('../src/features/about/components/AiEngineeringProofRail.vue', import.meta.url), 'utf8')
 
@@ -120,7 +120,8 @@ test('article paper, touch, focus and long-content style contracts stay responsi
 test('skip, homepage utility actions and 404 recovery keep 44px targets', () => {
   assert.match(globalStyleSource, /\.skip-link\s*\{[\s\S]*?min-height: 44px;[\s\S]*?display: inline-flex;/)
   assert.match(globalStyleSource, /\.back-link\s*\{[\s\S]*?min-height: 44px;[\s\S]*?display: inline-flex;/)
-  assert.match(productPagesCss, /\.product-back-link\s*\{[\s\S]*?min-height: 44px;[\s\S]*?display: inline-flex;/)
+  // The product page back link uses the shared brief-back target.
+  assert.match(briefCss, /\.brief-back\s*\{[\s\S]*?min-height: var\(--touch-target\);[\s\S]*?display: inline-flex;/)
   for (const selector of [
     '.cinematic-hero-proof-link',
     '.cinematic-scroll-cue',
@@ -435,11 +436,12 @@ test('cinematic evidence pages preserve their source-backed interaction contract
   assert.match(evidencePageSource, /它不自动等于生产可用、经过审计或处理过真实资金/)
   assert.match(evidencePageSource, /:id="record\.evidence\.slug"/)
 
+  // Primary action opens the public product; the secondary action goes to its evidence.
   assert.match(
     projectDetailSource,
-    /<a class="product-button product-button--primary" :href="presentation\.publicAction\.href"/,
+    /<a class="brief-button brief-button--primary" :href="presentation\.publicAction\.href"/,
   )
-  assert.match(projectDetailSource, /<router-link class="product-button product-button--quiet" :to="presentation\.proofAction\.to">/)
+  assert.match(projectDetailSource, /<router-link class="brief-button" :to="presentation\.proofAction\.to">/)
 
   assert.match(aiPageSource, /executionKernel/)
   assert.match(aiPageSource, /latestDeliveries/)
@@ -451,7 +453,7 @@ test('cinematic evidence pages preserve their source-backed interaction contract
   assert.match(aiPageSource, /Human Boundary/)
   assert.match(aiPageSource, /\/ai\/deliveries/)
   assert.ok(
-    aiPageSource.indexOf('class="aeo-protocol"') < aiPageSource.indexOf('class="aeo-ledger"'),
+    aiPageSource.indexOf('id="execution-kernel-title"') < aiPageSource.indexOf('id="public-delivery-title"'),
     'AI execution protocol should appear before the public delivery ledger',
   )
   for (const field of ['aiContribution', 'humanDecisions', 'reviewFindings', 'corrections', 'knownLimits', 'nextStep']) {

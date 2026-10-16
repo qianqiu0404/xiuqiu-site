@@ -20,7 +20,8 @@
   min-width: 0;
 }
 
-.brief a {
+/* :where keeps this at zero specificity so component link colours win. */
+:where(.brief) a {
   color: inherit;
 }
 
@@ -654,6 +655,18 @@
 
 .brief-button:hover {
   border-color: var(--ink-3);
+}
+
+.brief-button--primary {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+}
+
+.brief-button--primary:hover {
+  border-color: var(--accent-ink);
+  background: var(--accent-ink);
+  color: var(--bg);
 }
 
 .brief-more {

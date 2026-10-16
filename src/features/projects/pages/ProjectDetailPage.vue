@@ -3,7 +3,9 @@ import { computed, watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getArticlesBySlugs, getProjectByKey, projectActivityLabels, projectClaimStateLabels, projectPublicRoleLabels, projectSourceLabels, projectStageLabels, projectVisibilityLabels, productPresentationBySlug } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
-import '../../../styles/product-pages.css'
+import '../../../design/brief.css'
+import '../../../design/reader.css'
+import '../../../design/product.css'
 
 const route = useRoute()
 const router = useRouter()
@@ -40,181 +42,172 @@ watchEffect(() => {
 <template>
   <div
     v-if="project && presentation"
-    class="product-narrative-page cinematic-page"
-    :class="`product-narrative-page--${presentation.theme}`"
+    class="brief product-page"
+    :data-theme-accent="presentation.theme"
     lang="zh-CN"
   >
-    <section class="product-hero" aria-labelledby="product-title">
-      <div class="container product-hero-layout">
-        <div class="product-hero-copy">
-          <router-link class="product-back-link" to="/">← 返回首页</router-link>
-          <p class="cinematic-page-kicker">{{ presentation.index }} / {{ presentation.label }}</p>
-          <h1 id="product-title"><span v-for="line in presentation.heroLines" :key="line">{{ line }}</span></h1>
-          <p class="product-hero-lead">{{ presentation.promise }}</p>
-          <div class="product-hero-actions">
-            <a class="product-button product-button--primary" :href="presentation.publicAction.href" target="_blank" rel="noopener">
-              {{ presentation.publicAction.label }} ↗
-            </a>
-            <router-link class="product-button product-button--quiet" :to="presentation.proofAction.to">
-              {{ presentation.proofAction.label }}
-            </router-link>
+    <header class="brief-masthead">
+      <div class="brief-shell">
+        <router-link class="brief-back product-back-link" to="/">← 情报流</router-link>
+        <p class="brief-dateline">
+          <span>{{ presentation.index }} / {{ presentation.label }}</span>
+          <span>{{ projectPublicRoleLabels[project.publicRole] }}</span>
+          <time :datetime="project.updatedAt">更新于 {{ project.updatedAt }}</time>
+        </p>
+        <div class="product-hero">
+          <div>
+            <h1 id="product-title">{{ presentation.shortName }}<span>{{ presentation.heroLines.join(' · ') }}</span></h1>
+            <p class="brief-lede">{{ presentation.promise }}</p>
+            <div class="product-actions">
+              <a class="brief-button brief-button--primary" :href="presentation.publicAction.href" target="_blank" rel="noopener">
+                {{ presentation.publicAction.label }} ↗
+              </a>
+              <router-link class="brief-button" :to="presentation.proofAction.to">{{ presentation.proofAction.label }}</router-link>
+            </div>
+            <p class="brief-note">{{ presentation.publicAction.boundary }}</p>
           </div>
-          <p class="product-public-boundary">{{ presentation.publicAction.boundary }}</p>
-        </div>
 
-        <div class="product-status-object" aria-label="当前项目状态">
-          <span class="product-status-index">{{ presentation.index }}</span>
-          <div>
-            <small>PUBLIC ROLE</small>
-            <strong>{{ projectPublicRoleLabels[project.publicRole] }} · {{ presentation.shortName }}</strong>
-          </div>
-          <div>
-            <small>CLAIM / STAGE</small>
-            <strong>{{ projectClaimStateLabels[project.claimState] }} · {{ projectStageLabels[project.stage] }}</strong>
-          </div>
-          <div>
-            <small>LAST VERIFIED</small>
-            <strong>{{ project.updatedAt }}</strong>
-          </div>
-          <i aria-hidden="true"></i>
+          <dl class="product-status" aria-label="当前项目状态">
+            <div><dt>Public role</dt><dd>{{ projectPublicRoleLabels[project.publicRole] }} · {{ presentation.shortName }}</dd></div>
+            <div><dt>Claim / Stage</dt><dd>{{ projectClaimStateLabels[project.claimState] }} · {{ projectStageLabels[project.stage] }}</dd></div>
+            <div><dt>Activity</dt><dd>{{ projectActivityLabels[project.activityStatus] }}</dd></div>
+            <div><dt>Last verified</dt><dd>{{ project.updatedAt }}</dd></div>
+          </dl>
         </div>
       </div>
-    </section>
+    </header>
 
-    <section class="product-promise" aria-labelledby="promise-title">
-      <div class="container product-promise-layout">
-        <div>
-          <p class="cinematic-page-kicker">Product promise</p>
-          <h2 id="promise-title">完成后的产品，不是一组功能，而是一条可以被操作和恢复的事实链。</h2>
-        </div>
-        <p>{{ project.targetOutcome }}</p>
-      </div>
-      <div class="container product-ability-strip">
-        <span v-for="(ability, index) in project.coreAbilities.slice(0, 6)" :key="ability">
-          <b>{{ String(index + 1).padStart(2, '0') }}</b>{{ ability }}
-        </span>
-      </div>
-    </section>
-
-    <section class="product-flow" aria-labelledby="flow-title">
-      <div class="container">
-        <header class="product-section-heading">
-          <div>
-            <p class="cinematic-page-kicker">System flow</p>
-            <h2 id="flow-title">{{ presentation.flowLabel }}</h2>
-          </div>
-          <p>{{ project.engineering.systemBoundary }}</p>
+    <div class="brief-shell product-body">
+      <section class="reader-section" aria-labelledby="promise-title">
+        <header class="reader-section-header">
+          <span>01</span>
+          <h2 id="promise-title">产品承诺</h2>
+          <small>Product promise</small>
         </header>
-        <ol class="product-flow-list">
-          <li v-for="(step, index) in project.engineering.callFlow" :key="step">
-            <span>{{ String(index + 1).padStart(2, '0') }}</span>
-            <p>{{ step }}</p>
-          </li>
+        <p class="product-promise">完成后的产品，不是一组功能，而是一条可以被操作和恢复的事实链。</p>
+        <p class="reader-why">{{ project.targetOutcome }}</p>
+        <ol class="product-abilities">
+          <li v-for="ability in project.coreAbilities.slice(0, 6)" :key="ability">{{ ability }}</li>
         </ol>
-      </div>
-    </section>
+      </section>
 
-    <section class="product-proof" aria-labelledby="proof-title">
-      <div class="container">
-        <header class="product-section-heading product-section-heading--light">
-          <div>
-            <p class="cinematic-page-kicker">Evidence ready</p>
-            <h2 id="proof-title">{{ presentation.proofTitle }}</h2>
-          </div>
-          <p>目标形态说明方向；下面只列已复核证据与当前边界。跨日 Owner Gate 尚未通过。</p>
+      <section class="reader-section" aria-labelledby="flow-title">
+        <header class="reader-section-header">
+          <span>02</span>
+          <h2 id="flow-title">系统流</h2>
+          <small>{{ presentation.flowLabel }}</small>
         </header>
+        <p class="product-boundary-copy">{{ project.engineering.systemBoundary }}</p>
+        <ol class="product-flow">
+          <li v-for="step in project.engineering.callFlow" :key="step">{{ step }}</li>
+        </ol>
+      </section>
 
-        <div class="product-proof-layout">
-          <div class="product-proof-list">
-            <article v-for="(item, index) in project.verifiedEvidence.slice(0, 4)" :key="item">
-              <span>{{ String(index + 1).padStart(2, '0') }}</span>
-              <p>{{ item }}</p>
-            </article>
-          </div>
-          <aside class="product-boundary-panel">
-            <p class="product-boundary-label">CURRENT BOUNDARY</p>
+      <section class="reader-section" aria-labelledby="proof-title">
+        <header class="reader-section-header">
+          <span>03</span>
+          <h2 id="proof-title">Evidence ready</h2>
+          <small>{{ presentation.proofTitle }}</small>
+        </header>
+        <p class="brief-note">目标形态说明方向；下面只列已复核证据与当前边界。跨日 Owner Gate 尚未通过。</p>
+        <div class="product-proof">
+          <ol class="reader-list">
+            <li v-for="item in project.verifiedEvidence.slice(0, 4)" :key="item">{{ item }}</li>
+          </ol>
+          <aside class="brief-panel product-limits" aria-label="当前边界">
+            <h2>Current boundary</h2>
             <ul>
               <li v-for="item in project.knownLimits.slice(0, 3)" :key="item">{{ item }}</li>
             </ul>
-            <div>
+            <div class="product-gate">
               <span>OWNER GATE PENDING</span>
               <p>{{ project.nextMilestone }}</p>
             </div>
           </aside>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="product-finale" aria-labelledby="product-finale-title">
-      <div class="container product-finale-layout">
-        <div>
-          <p class="cinematic-page-kicker">Continue from evidence</p>
-          <h2 id="product-finale-title">先体验产品，再检查它如何被证明。</h2>
-        </div>
-        <div class="product-finale-actions">
-          <a class="product-button product-button--primary" :href="presentation.publicAction.href" target="_blank" rel="noopener">
+      <section class="reader-section product-finale" aria-labelledby="product-finale-title">
+        <h2 id="product-finale-title">先体验产品，再检查它如何被证明。</h2>
+        <div class="product-actions">
+          <a class="brief-button brief-button--primary" :href="presentation.publicAction.href" target="_blank" rel="noopener">
             {{ presentation.publicAction.label }} ↗
           </a>
-          <router-link class="product-button product-button--quiet" :to="presentation.proofAction.to">
-            {{ presentation.proofAction.label }}
-          </router-link>
-          <router-link class="product-text-link" to="/projects">全部项目 →</router-link>
+          <router-link class="brief-button" :to="presentation.proofAction.to">{{ presentation.proofAction.label }}</router-link>
+          <router-link class="reader-source-link" to="/projects">全部项目 →</router-link>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   </div>
 
-  <section v-else-if="project" class="section page-top project-dossier-page">
-    <div class="container project-detail-container">
-      <router-link to="/projects" class="back-link">&larr; 返回项目图谱</router-link>
-      <article class="project-detail project-dossier">
-        <header class="project-detail-header">
-          <p class="section-label">{{ projectPublicRoleLabels[project.publicRole] }} / {{ project.category }}</p>
-          <div class="project-state-tags">
-            <span>{{ projectPublicRoleLabels[project.publicRole] }}</span>
-            <span>{{ projectClaimStateLabels[project.claimState] }}</span>
-            <span>{{ projectActivityLabels[project.activityStatus] }}</span>
-            <span>{{ projectStageLabels[project.stage] }}</span>
-            <span>{{ projectSourceLabels[project.sourceType] }}</span>
-            <span>{{ projectVisibilityLabels[project.visibility] }}</span>
-            <time>更新于 {{ project.updatedAt }}</time>
-          </div>
-          <h1>{{ project.name }}</h1>
-          <p>{{ project.positioning }}</p>
-          <p v-if="isHistoricalEvidence" class="verification-note project-role-boundary">该档案保留为历史工程证据，不代表当前产品、当前方向或现役优先级。</p>
-          <a v-if="project.visibility === 'public' && project.repositoryUrl" :href="project.repositoryUrl" class="btn btn-primary" target="_blank" rel="noopener">查看公开仓库 &rarr;</a>
-        </header>
-
-        <div class="project-dossier-summary">
-          <section><small>Target outcome</small><p>{{ project.targetOutcome }}</p></section>
-          <section><small>{{ isHistoricalEvidence ? 'Last recorded evidence next step' : 'Next gate' }}</small><p>{{ project.nextMilestone }}</p></section>
+  <div v-else-if="project" class="brief project-dossier-page" lang="zh-CN">
+    <header class="brief-masthead">
+      <div class="brief-shell brief-reading">
+        <router-link to="/projects" class="brief-back back-link">← 返回项目图谱</router-link>
+        <p class="brief-dateline">
+          <span>{{ projectPublicRoleLabels[project.publicRole] }}</span>
+          <span>{{ project.category }}</span>
+          <time :datetime="project.updatedAt">更新于 {{ project.updatedAt }}</time>
+        </p>
+        <h1>{{ project.name }}</h1>
+        <p class="brief-lede">{{ project.positioning }}</p>
+        <ul class="product-tags" aria-label="项目状态">
+          <li>{{ projectPublicRoleLabels[project.publicRole] }}</li>
+          <li>{{ projectClaimStateLabels[project.claimState] }}</li>
+          <li>{{ projectActivityLabels[project.activityStatus] }}</li>
+          <li>{{ projectStageLabels[project.stage] }}</li>
+          <li>{{ projectSourceLabels[project.sourceType] }}</li>
+          <li>{{ projectVisibilityLabels[project.visibility] }}</li>
+        </ul>
+        <p v-if="isHistoricalEvidence" class="brief-fresh brief-fresh--stale project-role-boundary">该档案保留为历史工程证据，不代表当前产品、当前方向或现役优先级。</p>
+        <div v-if="project.visibility === 'public' && project.repositoryUrl" class="product-actions">
+          <a :href="project.repositoryUrl" class="brief-button brief-button--primary" target="_blank" rel="noopener">查看公开仓库 →</a>
         </div>
+      </div>
+    </header>
 
-        <section class="learning-section">
-          <p class="section-label">Verified evidence</p>
-          <h2>{{ isHistoricalEvidence ? '历史记录中由代码、测试或运行记录支持的事实' : '当前能被代码、测试或运行记录支持的事实' }}</h2>
-          <ul class="learning-list evidence-detail-list"><li v-for="item in project.verifiedEvidence" :key="item">{{ item }}</li></ul>
+    <article class="brief-shell brief-reading product-body project-dossier">
+      <dl class="product-summary">
+        <div><dt>Target outcome</dt><dd>{{ project.targetOutcome }}</dd></div>
+        <div><dt>{{ isHistoricalEvidence ? 'Last recorded evidence next step' : 'Next gate' }}</dt><dd>{{ project.nextMilestone }}</dd></div>
+      </dl>
+
+      <section class="reader-section">
+        <header class="reader-section-header"><span>01</span><h2>{{ isHistoricalEvidence ? '历史记录中由代码、测试或运行记录支持的事实' : '当前能被代码、测试或运行记录支持的事实' }}</h2><small>Verified evidence</small></header>
+        <ol class="reader-list"><li v-for="item in project.verifiedEvidence" :key="item">{{ item }}</li></ol>
+      </section>
+
+      <div class="product-pair">
+        <section class="brief-panel">
+          <h2>System boundary · 负责什么，不负责什么</h2>
+          <p>{{ project.engineering.systemBoundary }}</p>
         </section>
+        <section class="brief-panel">
+          <h2>Evidence limits · 仍未完成的边界</h2>
+          <ul class="product-bullets"><li v-for="item in project.knownLimits" :key="item">{{ item }}</li></ul>
+        </section>
+      </div>
 
-        <div class="learning-detail-grid">
-          <section class="learning-section"><p class="section-label">System boundary</p><h2>负责什么，不负责什么</h2><p>{{ project.engineering.systemBoundary }}</p></section>
-          <section class="learning-section"><p class="section-label">Evidence limits</p><h2>仍未完成的边界</h2><ul class="learning-list"><li v-for="item in project.knownLimits" :key="item">{{ item }}</li></ul></section>
+      <details class="reader-disclosure">
+        <summary>Verification · 查看可复现命令与说明</summary>
+        <div>
+          <div v-if="project.learning.verification.length" class="product-commands"><code v-for="command in project.learning.verification" :key="command">{{ command }}</code></div>
+          <p v-if="project.learning.verificationNote">{{ project.learning.verificationNote }}</p>
         </div>
+      </details>
 
-        <details class="learning-section project-evidence-details">
-          <summary><span><small>Verification</small>查看可复现命令与说明</span></summary>
-          <div v-if="project.learning.verification.length" class="verification-command-grid"><code v-for="command in project.learning.verification" :key="command">{{ command }}</code></div>
-          <p v-if="project.learning.verificationNote" class="verification-note">{{ project.learning.verificationNote }}</p>
-        </details>
-
-        <section v-if="relatedArticles.length" class="learning-section">
-          <p class="section-label">Continue reading</p>
-          <h2>继续理解项目中的工程判断</h2>
-          <div class="followup-links"><router-link v-for="article in relatedArticles" :key="article.slug" :to="`/articles/${article.slug}`" class="followup-link"><span>{{ article.title }}</span><small>{{ article.difficulty }} · {{ article.readingTime }}</small></router-link></div>
-        </section>
-      </article>
-    </div>
-  </section>
+      <section v-if="relatedArticles.length" class="reader-section">
+        <header class="reader-section-header"><span>→</span><h2>继续理解项目中的工程判断</h2><small>Continue reading</small></header>
+        <div class="brief-panel">
+          <ul>
+            <li v-for="article in relatedArticles" :key="article.slug">
+              <router-link :to="`/articles/${article.slug}`">{{ article.title }} <span>{{ article.difficulty }} · {{ article.readingTime }}</span></router-link>
+            </li>
+          </ul>
+        </div>
+      </section>
+    </article>
+  </div>
 
   <div v-else class="container not-found" aria-labelledby="project-not-found-title">
     <h1 id="project-not-found-title" class="not-found-title">项目未公开或不存在</h1>
