@@ -1,11 +1,8 @@
 .cinematic-home {
-  --cinema-bg: #030507;
-  --cinema-surface: #090c11;
-  --cinema-line: rgba(255, 255, 255, 0.11);
-  --cinema-text: #f5f7fa;
-  --cinema-muted: #969eaa;
-  --cinema-wallet: #6f8fff;
-  --cinema-market: #63d6c8;
+  --cinema-bg: var(--night-bg);
+  --cinema-line: var(--night-line);
+  --cinema-text: var(--night-text);
+  --cinema-muted: var(--night-muted);
   overflow: clip;
   background: var(--cinema-bg);
   color: var(--cinema-text);
@@ -44,7 +41,7 @@
   background:
     radial-gradient(circle at 72% 42%, rgba(83, 112, 229, 0.12), transparent 26%),
     radial-gradient(circle at 83% 60%, rgba(85, 198, 187, 0.055), transparent 30%),
-    linear-gradient(180deg, #020305 0%, #05080d 70%, #030507 100%);
+    linear-gradient(180deg, #020305 0%, #05080d 70%, var(--night-bg) 100%);
 }
 
 .cinematic-hero::before {
@@ -457,7 +454,7 @@
   padding: clamp(104px, 13vw, 172px) 0;
   background:
     linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px) 0 0 / 92px 92px,
-    linear-gradient(180deg, #06080c, #030507);
+    linear-gradient(180deg, #06080c, var(--night-bg));
 }
 
 .home-ai-layout {
@@ -674,7 +671,7 @@
   padding: clamp(116px, 15vw, 196px) 0 clamp(94px, 12vw, 150px);
   background:
     radial-gradient(circle at 50% 12%, rgba(87, 118, 233, 0.1), transparent 27%),
-    #030507;
+    var(--night-bg);
 }
 
 .cinematic-finale-inner {

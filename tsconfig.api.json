@@ -10,5 +10,5 @@
     "lib": ["ES2022", "DOM"],
     "types": ["vite/client"]
   },
-  "include": ["api/**/*.ts", "lib/**/*.ts", "src/market-radar/**/*.ts", "src/data/**/*.ts"]
+  "include": ["api/**/*.ts", "lib/**/*.ts", "shared/**/*.ts", "src/market-radar/**/*.ts", "src/data/**/*.ts"]
 }

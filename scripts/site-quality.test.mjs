@@ -8,12 +8,15 @@ import { deliveryRecords } from '../src/data/generatedDeliveries.ts'
 import { nowSnapshot } from '../src/data/generatedNow.ts'
 import { projects } from '../src/data/generatedProjects.ts'
 import { radarWeeklies } from '../src/data/generatedRadarWeeklies.ts'
+import { radarReviews } from '../src/data/generatedRadarReviews.ts'
+import { intelTopics } from '../src/data/generatedIntelFeed.ts'
+import { intelTopicLabel } from '../src/data/intelPresentation.ts'
 import { dailyRadars } from '../src/data/generatedRadarAll.ts'
 import { allMarketRadars } from '../src/data/generatedMarketRadarAll.ts'
 import { getRadarCollectionSeo } from '../src/data/snapshotFreshness.ts'
 import { parseMarkdownFrontmatter } from './frontmatter.mjs'
+import { SITE_URL as SITE_ORIGIN } from '../shared/site.ts'
 
-const SITE_ORIGIN = 'https://xiuqiu-site.vercel.app'
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
 const DIST_ROOT = join(ROOT, 'dist')
 
@@ -72,6 +75,8 @@ function expectedSitemapRoutes() {
   for (const dynamicPath of [
     '/ai/deliveries/:slug',
     '/radar/week/:week',
+    '/radar/review/:period',
+    '/topics/:topic',
     '/radar/:date',
     '/market-radar/:date',
     '/articles/:slug',
@@ -87,6 +92,8 @@ function expectedSitemapRoutes() {
     ...dailyRadars.map(radar => `/radar/${radar.slug}`),
     ...allMarketRadars.map(radar => `/market-radar/${radar.slug}`),
     ...radarWeeklies.map(weekly => `/radar/week/${weekly.slug}`),
+    ...radarReviews.map(review => `/radar/review/${review.slug}`),
+    ...intelTopics.map(topic => `/topics/${topic.topic}`),
     ...deliveryRecords.map(record => `/ai/deliveries/${record.slug}`),
   ]
 }
@@ -146,6 +153,10 @@ function expectedMetadataByRoute() {
     `${articleSummaries.length} 篇关于交易所钱包、多链模型、签名服务、Go 后端与 AI 工程工作流的学习笔记。`
   const metadata = new Map([
     ['/', {
+      title: 'xiuqiu｜AI 与 Web3 工程情报流',
+      description: '每天 2 条 AI、2 条 Web3 工程简报和市场事件，按主题筛选、搜索与订阅；每条都回到一手来源。',
+    }],
+    ['/about', {
       title: 'xiuqiu｜Qiu Market、Wallet Infrastructure 与 AI Engineering',
       description: '维护 Qiu Market，并用 Wallet Infrastructure 学习、AI-native Engineering、自动化测试与公开证据说明 Web3 工程能力。',
     }],
@@ -230,6 +241,18 @@ function expectedMetadataByRoute() {
     metadata.set(`/radar/week/${weekly.slug}`, {
       title: `${weekly.title}｜xiuqiu`,
       description: weekly.summary,
+    })
+  }
+  for (const topic of intelTopics) {
+    metadata.set(`/topics/${topic.topic}`, {
+      title: `${intelTopicLabel(topic.topic)}｜主题｜xiuqiu`,
+      description: `${intelTopicLabel(topic.topic)}：${topic.firstSeen} 至 ${topic.lastSeen} 的 ${topic.count} 条工程情报，按日期回看。`,
+    })
+  }
+  for (const review of radarReviews) {
+    metadata.set(`/radar/review/${review.slug}`, {
+      title: `${review.title}｜xiuqiu`,
+      description: review.summary,
     })
   }
   for (const record of deliveryRecords) {
@@ -363,11 +386,11 @@ test('unknown paths render a noindex 404 page instead of redirecting to home', (
 
   const catchAllContract = routerSource.slice(catchAllStart, catchAllStart + 320)
   assert.match(catchAllContract, /name:\s*['"]not-found['"]/)
-  assert.match(catchAllContract, /component:\s*\(\)\s*=>\s*import\(['"]\.\.\/pages\/NotFoundPage\.vue['"]\)/)
+  assert.match(catchAllContract, /component:\s*\(\)\s*=>\s*import\(['"]\.\.\/features\/about\/pages\/NotFoundPage\.vue['"]\)/)
   assert.doesNotMatch(catchAllContract, /\bredirect\s*:/, 'unknown paths must not silently redirect to home')
 
-  const notFoundPath = join(ROOT, 'src/pages/NotFoundPage.vue')
-  assert.ok(existsSync(notFoundPath), 'src/pages/NotFoundPage.vue must exist')
+  const notFoundPath = join(ROOT, 'src/features/about/pages/NotFoundPage.vue')
+  assert.ok(existsSync(notFoundPath), 'src/features/about/pages/NotFoundPage.vue must exist')
   const notFoundSource = readFileSync(notFoundPath, 'utf8')
   assert.equal((notFoundSource.match(/<h1\b/g) || []).length, 1, '404 page must contain one h1')
   assert.match(notFoundSource, />页面没有找到</)

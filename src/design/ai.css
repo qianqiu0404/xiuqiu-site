@@ -1,0 +1,171 @@
+/* AI section pages in the brief system: /ai, deliveries, social research. */
+
+.ai-status-note {
+  background: var(--bg-sunk);
+  border-radius: 0 0 var(--radius-panel) var(--radius-panel);
+}
+
+.ai-status-note dd {
+  color: var(--ink-3) !important;
+  font-size: var(--text-xs) !important;
+  font-weight: 500 !important;
+  line-height: 1.6;
+}
+
+.ai-kernel {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  list-style: none;
+  padding: 0;
+}
+
+.ai-kernel li {
+  display: grid;
+  align-content: start;
+  gap: var(--space-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  padding: var(--space-4);
+}
+
+.ai-kernel span {
+  color: var(--domain-ai);
+  font: 700 var(--text-xs)/1 var(--font-mono);
+}
+
+.ai-kernel h3 {
+  color: var(--ink);
+  font-size: var(--text-base);
+  font-weight: 700;
+}
+
+.ai-kernel p {
+  color: var(--ink-3);
+  font-size: var(--text-sm);
+  line-height: 1.65;
+}
+
+.ai-delivery-proof {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+  border-top: 1px solid var(--line-soft);
+  padding-top: var(--space-3);
+}
+
+.ai-delivery-proof > span {
+  display: grid;
+  gap: 2px;
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+  line-height: 1.6;
+}
+
+.ai-delivery-proof b {
+  color: var(--ink-4);
+  font: 600 11px/1.4 var(--font-mono);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ai-reviews {
+  display: grid;
+  gap: var(--space-4);
+  margin: 0;
+  list-style: none;
+  padding: 0;
+}
+
+.ai-run-intro {
+  display: grid;
+  align-content: start;
+  gap: var(--space-3);
+}
+
+.ai-run-intro .brief-fresh {
+  justify-self: start;
+  margin-top: 0;
+}
+
+.ai-run-intro > p:not(.brief-fresh):not(.brief-note) {
+  color: var(--ink-2);
+  line-height: 1.75;
+}
+
+.ai-run-trace {
+  gap: 0 !important;
+  margin: 0;
+  list-style: none;
+}
+
+.ai-run-trace li {
+  display: grid;
+  grid-template-columns: 28px minmax(0, 1fr) auto;
+  align-items: start;
+  gap: var(--space-3);
+  border-top: 1px solid var(--line-soft);
+  padding: var(--space-3) 0;
+}
+
+.ai-run-trace li:first-child {
+  border-top: 0;
+}
+
+.ai-run-trace span {
+  color: var(--ink-4);
+  font: 600 var(--text-xs)/1.6 var(--font-mono);
+}
+
+.ai-run-trace p {
+  color: var(--ink);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.ai-run-trace small {
+  color: var(--ink-3);
+  font-size: var(--text-xs);
+  line-height: 1.55;
+}
+
+.ai-run-trace strong {
+  color: var(--status-fresh);
+  font: 700 11px/1.6 var(--font-mono);
+}
+
+.ai-run-trace li.is-failed strong {
+  color: var(--status-p0);
+}
+
+.ai-surfaces {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-4);
+}
+
+.ai-surface h3 {
+  color: var(--ink);
+  font-size: var(--text-md);
+  font-weight: 700;
+}
+
+.ai-surface > p:not(.brief-card-meta):not(.brief-note) {
+  color: var(--ink-2);
+  font-size: var(--text-sm);
+  line-height: 1.7;
+}
+
+/* Evidence level colours the status tag: verified → fresh, partial/in-progress → amber, integration-only → neutral. */
+.ai-surface[data-level="private-verified"] .brief-tag { --tag: var(--status-fresh); --tag-soft: var(--domain-web3-soft); }
+.ai-surface[data-level="operational-partial"] .brief-tag,
+.ai-surface[data-level="in-progress"] .brief-tag { --tag: var(--status-stale); --tag-soft: var(--domain-market-soft); }
+.ai-surface[data-level="integration-only"] .brief-tag { --tag: var(--ink-2); --tag-soft: var(--bg-sunk); }
+
+@media (max-width: 640px) {
+  .ai-delivery-proof {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

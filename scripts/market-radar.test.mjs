@@ -168,8 +168,8 @@ test('generated index, recent records and monthly loader remain aligned', async 
 
 test('the public page is static and contains no runtime API dependency', async () => {
   const { readFile } = await import('node:fs/promises')
-  const overview = await readFile(new URL('../src/pages/MarketRadarPage.vue', import.meta.url), 'utf8')
-  const detail = await readFile(new URL('../src/pages/MarketRadarDetailPage.vue', import.meta.url), 'utf8')
+  const overview = await readFile(new URL('../src/features/market-radar/pages/MarketRadarPage.vue', import.meta.url), 'utf8')
+  const detail = await readFile(new URL('../src/features/market-radar/pages/MarketRadarDetailPage.vue', import.meta.url), 'utf8')
   const styles = await readFile(new URL('../src/styles/market-radar.css', import.meta.url), 'utf8')
   const router = await readFile(new URL('../src/router/index.ts', import.meta.url), 'utf8')
   assert.doesNotMatch(`${overview}\n${detail}`, /fetch\(|\/api\/market-radar/)
@@ -200,7 +200,8 @@ test('the public page is static and contains no runtime API dependency', async (
   assert.match(detail, /历史样本不足/)
   assert.match(detail, /name: 'market-radar-detail'[\s\S]*hash: `#\$\{event\.id\}`/)
   assert.match(router, /to\.name === 'market-radar-detail'\) return false/)
-  assert.match(styles, /--trade-market: #5ad7c7/)
+  assert.match(styles, /--trade-market: var\(--accent-market\)/)
+  assert.match(await readFile(new URL('../src/design/tokens.css', import.meta.url), 'utf8'), /--accent-market: #5ad7c7/)
   assert.match(styles, /color: #b8c1cc/)
   assert.match(styles, /grid-template-columns: repeat\(4, minmax\(0, 1fr\)\)/)
   assert.match(styles, /\.trade-radar-page :where\(a, summary, \[tabindex='-1'\]\):focus-visible/)

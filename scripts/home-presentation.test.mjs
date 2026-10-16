@@ -11,38 +11,40 @@ import {
   homeSeo,
   homeServiceFlow,
 } from '../src/data/homePresentation.ts'
+import { intelHomeSeo } from '../src/data/intelPresentation.ts'
 import { evidenceRecords } from '../src/data/generatedEvidence.ts'
 import { evidenceLedgerRecords, evidenceLedgerStats } from '../src/data/evidenceLedger.ts'
 import { projects } from '../src/data/generatedProjects.ts'
 import { productPresentations, qiuMarketUrl } from '../src/data/productPresentation.ts'
 import { getAdjacentArticles, sortArticlesForReading } from '../src/data/articlePresentation.ts'
 
-const homeSource = readFileSync(new URL('../src/pages/HomePage.vue', import.meta.url), 'utf8')
+const homeSource = readFileSync(new URL('../src/features/about/pages/HomePage.vue', import.meta.url), 'utf8')
+const intelHomeSource = readFileSync(new URL('../src/features/intel/pages/IntelHomePage.vue', import.meta.url), 'utf8')
 const appSource = readFileSync(new URL('../src/App.vue', import.meta.url), 'utf8')
 const chatWidgetSource = readFileSync(new URL('../src/components/AiChatWidget.vue', import.meta.url), 'utf8')
-const projectAtlasSource = readFileSync(new URL('../src/pages/ProjectAtlasPage.vue', import.meta.url), 'utf8')
-const projectDetailSource = readFileSync(new URL('../src/pages/ProjectDetailPage.vue', import.meta.url), 'utf8')
+const projectAtlasSource = readFileSync(new URL('../src/features/projects/pages/ProjectAtlasPage.vue', import.meta.url), 'utf8')
+const projectDetailSource = readFileSync(new URL('../src/features/projects/pages/ProjectDetailPage.vue', import.meta.url), 'utf8')
 const qiuProjectSource = readFileSync(new URL('../content/projects/s78-market-services.md', import.meta.url), 'utf8')
-const engineeringPageSource = readFileSync(new URL('../src/pages/EngineeringPage.vue', import.meta.url), 'utf8')
-const nowPageSource = readFileSync(new URL('../src/pages/NowPage.vue', import.meta.url), 'utf8')
-const evidencePageSource = readFileSync(new URL('../src/pages/EngineeringEvidencePage.vue', import.meta.url), 'utf8')
-const aiPageSource = readFileSync(new URL('../src/pages/AiCollaborationPage.vue', import.meta.url), 'utf8')
-const radarPageSource = readFileSync(new URL('../src/pages/RadarPage.vue', import.meta.url), 'utf8')
-const radarDetailSource = readFileSync(new URL('../src/pages/RadarDetailPage.vue', import.meta.url), 'utf8')
-const radarWeeklySource = readFileSync(new URL('../src/pages/RadarWeeklyPage.vue', import.meta.url), 'utf8')
-const articlesPageSource = readFileSync(new URL('../src/pages/ArticlesPage.vue', import.meta.url), 'utf8')
-const articleDetailSource = readFileSync(new URL('../src/pages/ArticleDetailPage.vue', import.meta.url), 'utf8')
+const engineeringPageSource = readFileSync(new URL('../src/features/proof/pages/EngineeringPage.vue', import.meta.url), 'utf8')
+const nowPageSource = readFileSync(new URL('../src/features/about/pages/NowPage.vue', import.meta.url), 'utf8')
+const evidencePageSource = readFileSync(new URL('../src/features/proof/pages/EngineeringEvidencePage.vue', import.meta.url), 'utf8')
+const aiPageSource = readFileSync(new URL('../src/features/ai/pages/AiCollaborationPage.vue', import.meta.url), 'utf8')
+const radarPageSource = readFileSync(new URL('../src/features/intel/pages/RadarPage.vue', import.meta.url), 'utf8')
+const radarDetailSource = readFileSync(new URL('../src/features/intel/pages/RadarDetailPage.vue', import.meta.url), 'utf8')
+const radarWeeklySource = readFileSync(new URL('../src/features/intel/pages/RadarWeeklyPage.vue', import.meta.url), 'utf8')
+const articlesPageSource = readFileSync(new URL('../src/features/articles/pages/ArticlesPage.vue', import.meta.url), 'utf8')
+const articleDetailSource = readFileSync(new URL('../src/features/articles/pages/ArticleDetailPage.vue', import.meta.url), 'utf8')
 const routerSource = readFileSync(new URL('../src/router/index.ts', import.meta.url), 'utf8')
-const deliveryListSource = readFileSync(new URL('../src/pages/DeliveryListPage.vue', import.meta.url), 'utf8')
-const deliveryDetailSource = readFileSync(new URL('../src/pages/DeliveryDetailPage.vue', import.meta.url), 'utf8')
+const deliveryListSource = readFileSync(new URL('../src/features/proof/pages/DeliveryListPage.vue', import.meta.url), 'utf8')
+const deliveryDetailSource = readFileSync(new URL('../src/features/proof/pages/DeliveryDetailPage.vue', import.meta.url), 'utf8')
 const indexHtml = readFileSync(new URL('../index.html', import.meta.url), 'utf8')
 const readmeSource = readFileSync(new URL('../README.md', import.meta.url), 'utf8')
 const globalStyleSource = readFileSync(new URL('../src/style.css', import.meta.url), 'utf8')
 const homeStyleSource = readFileSync(new URL('../src/styles/home.css', import.meta.url), 'utf8')
 const cinematicPagesCss = readFileSync(new URL('../src/styles/cinematic-pages.css', import.meta.url), 'utf8')
-const productPagesCss = readFileSync(new URL('../src/styles/product-pages.css', import.meta.url), 'utf8')
+const briefCss = readFileSync(new URL('../src/design/brief.css', import.meta.url), 'utf8')
 const notFoundStyleSource = readFileSync(new URL('../src/styles/not-found.css', import.meta.url), 'utf8')
-const aiProofRailSource = readFileSync(new URL('../src/components/AiEngineeringProofRail.vue', import.meta.url), 'utf8')
+const aiProofRailSource = readFileSync(new URL('../src/features/about/components/AiEngineeringProofRail.vue', import.meta.url), 'utf8')
 
 function assertUnique(values, label) {
   assert.equal(new Set(values).size, values.length, `${label} must be unique`)
@@ -118,7 +120,8 @@ test('article paper, touch, focus and long-content style contracts stay responsi
 test('skip, homepage utility actions and 404 recovery keep 44px targets', () => {
   assert.match(globalStyleSource, /\.skip-link\s*\{[\s\S]*?min-height: 44px;[\s\S]*?display: inline-flex;/)
   assert.match(globalStyleSource, /\.back-link\s*\{[\s\S]*?min-height: 44px;[\s\S]*?display: inline-flex;/)
-  assert.match(productPagesCss, /\.product-back-link\s*\{[\s\S]*?min-height: 44px;[\s\S]*?display: inline-flex;/)
+  // The product page back link uses the shared brief-back target.
+  assert.match(briefCss, /\.brief-back\s*\{[\s\S]*?min-height: var\(--touch-target\);[\s\S]*?display: inline-flex;/)
   for (const selector of [
     '.cinematic-hero-proof-link',
     '.cinematic-scroll-cue',
@@ -316,37 +319,32 @@ test('homepage and primary navigation keep their structural contract', () => {
   assertUnique(primaryLinks.map(link => link.to), 'primary navigation destinations')
   assertUnique(primaryLinks.map(link => link.label), 'primary navigation labels')
   assert.deepEqual(primaryLinks, [
+    { to: '/', label: '情报流' },
+    { to: '/radar', label: '学习雷达' },
+    { to: '/market-radar', label: '市场雷达' },
     { to: '/projects/s78-market-services', label: 'Qiu Market' },
     { to: '/ai', label: 'AI' },
-    { to: '/engineering/evidence', label: 'Proof' },
-    { to: '/radar', label: 'Learn Radar' },
-    { to: '/market-radar', label: 'Trade Radar' },
   ])
 
   const secondaryLinks = linksInClass('nav-secondary-links')
   assert.deepEqual(secondaryLinks, [
-    { to: '/projects', label: '项目图谱' },
-    { to: '/articles', label: '工程笔记' },
-    { to: '/now', label: 'About' },
+    { to: '/engineering/evidence', label: '证据' },
+    { to: '/projects', label: '项目' },
+    { to: '/articles', label: '笔记' },
+    { to: '/about', label: '关于' },
   ])
   assertUnique(
     [...primaryLinks, ...secondaryLinks].map(link => link.to),
     'all navigation destinations',
   )
-  assert.deepEqual(primaryLinks.map(link => link.to), [
-    '/projects/s78-market-services',
-    '/ai',
-    '/engineering/evidence',
-    '/radar',
-    '/market-radar',
-  ])
+  assert.deepEqual(primaryLinks.map(link => link.to), ['/', '/radar', '/market-radar', '/projects/s78-market-services', '/ai'])
 
   assert.match(appSource, /currentRoute\.name === 'learning'\) return 'learn-radar'/)
   assert.match(appSource, /aria-current="location"/)
   assert.match(appSource, /class="nav-mobile-context"/)
   assert.match(appSource, /'trade-radar': 'Trade Radar'/)
   assert.match(appSource, /@click="toggleNav"/)
-  assert.equal((appSource.match(/@keydown\.space\.prevent="activateLinkOnSpace"/g) || []).length, 8)
+  assert.equal((appSource.match(/@keydown\.space\.prevent="activateLinkOnSpace"/g) || []).length, 9)
   assert.match(appSource, /navToggle\.value\?\.focus\(\)/)
   assert.match(appSource, /mainContent\.value\?\.focus\(\{ preventScroll: true \}\)/)
   assert.match(appSource, /<main id="main-content" ref="mainContent" tabindex="-1">/)
@@ -438,11 +436,12 @@ test('cinematic evidence pages preserve their source-backed interaction contract
   assert.match(evidencePageSource, /它不自动等于生产可用、经过审计或处理过真实资金/)
   assert.match(evidencePageSource, /:id="record\.evidence\.slug"/)
 
+  // Primary action opens the public product; the secondary action goes to its evidence.
   assert.match(
     projectDetailSource,
-    /<a class="product-button product-button--primary" :href="presentation\.publicAction\.href"/,
+    /<a class="brief-button brief-button--primary" :href="presentation\.publicAction\.href"/,
   )
-  assert.match(projectDetailSource, /<router-link class="product-button product-button--quiet" :to="presentation\.proofAction\.to">/)
+  assert.match(projectDetailSource, /<router-link class="brief-button" :to="presentation\.proofAction\.to">/)
 
   assert.match(aiPageSource, /executionKernel/)
   assert.match(aiPageSource, /latestDeliveries/)
@@ -454,7 +453,7 @@ test('cinematic evidence pages preserve their source-backed interaction contract
   assert.match(aiPageSource, /Human Boundary/)
   assert.match(aiPageSource, /\/ai\/deliveries/)
   assert.ok(
-    aiPageSource.indexOf('class="aeo-protocol"') < aiPageSource.indexOf('class="aeo-ledger"'),
+    aiPageSource.indexOf('id="execution-kernel-title"') < aiPageSource.indexOf('id="public-delivery-title"'),
     'AI execution protocol should appear before the public delivery ledger',
   )
   for (const field of ['aiContribution', 'humanDecisions', 'reviewFindings', 'corrections', 'knownLimits', 'nextStep']) {
@@ -468,7 +467,9 @@ test('radar uses one intelligence system across overview, daily and weekly reade
   assert.match(radarPageSource, /radar-convergence-stage/)
   assert.match(radarPageSource, /radar-archive-ledger/)
   assert.match(radarPageSource, /radar-feed-cards/)
-  assert.match(radarPageSource, /radar-subscribe/)
+  for (const component of ['IntelCard', 'ChipGroup', 'SearchBox', 'LoadState', 'SubscribeBar']) {
+    assert.match(radarPageSource, new RegExp(`import ${component} from '../../../design/components/${component}.vue'`))
+  }
   assert.match(radarPageSource, /archiveLimit = 10/)
   assert.match(radarDetailSource, /radar-daily-reader-page/)
   assert.match(radarDetailSource, /radar-reader-articles/)
@@ -483,7 +484,9 @@ test('static and runtime homepage SEO stay aligned', () => {
   const title = indexHtml.match(/<title>([^<]+)<\/title>/)?.[1]
   const description = indexHtml.match(/<meta name="description" content="([^"]+)"\s*\/>/)?.[1]
 
-  assert.equal(title, homeSeo.title)
-  assert.equal(description, homeSeo.description)
-  assert.match(homeSource, /\.\.\.homeSeo/)
+  assert.equal(title, intelHomeSeo.title)
+  assert.equal(description, intelHomeSeo.description)
+  assert.match(intelHomeSource, /\.\.\.intelHomeSeo, path: '\/'/)
+  // The former home moved to /about and keeps its own SEO.
+  assert.match(homeSource, /\.\.\.homeSeo, path: '\/about'/)
 })

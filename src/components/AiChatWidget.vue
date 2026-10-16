@@ -533,7 +533,7 @@ onUnmounted(() => {
   height: 52px;
   border: 1px solid rgba(0, 113, 227, 0.18);
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--legacy-accent);
   color: #fff;
   font-size: 14px;
   font-weight: 700;
@@ -715,7 +715,7 @@ onUnmounted(() => {
   flex: 0 0 auto;
   border: 1px solid var(--border-light);
   border-radius: 50%;
-  background: var(--bg);
+  background: var(--legacy-bg);
   color: var(--text-muted);
   font-size: 22px;
   line-height: 1;
@@ -756,7 +756,7 @@ onUnmounted(() => {
 
 .ai-message-user {
   margin-left: auto;
-  background: var(--accent);
+  background: var(--legacy-accent);
   color: #fff;
 }
 
@@ -810,7 +810,7 @@ onUnmounted(() => {
 .ai-prompt {
   border: 1px solid var(--border-light);
   border-radius: 999px;
-  background: var(--bg);
+  background: var(--legacy-bg);
   color: var(--text-secondary);
   cursor: pointer;
   font-size: 12px;
@@ -859,7 +859,7 @@ onUnmounted(() => {
   resize: vertical;
   border: 1px solid var(--border-light);
   border-radius: 14px;
-  background: var(--bg);
+  background: var(--legacy-bg);
   color: var(--text);
   font: 400 13px/1.5 var(--font);
   outline: none;
@@ -877,7 +877,7 @@ onUnmounted(() => {
   flex: 0 0 auto;
   border: none;
   border-radius: 999px;
-  background: var(--accent);
+  background: var(--legacy-accent);
   color: #fff;
   cursor: pointer;
   font-size: 13px;

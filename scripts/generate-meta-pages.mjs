@@ -5,12 +5,16 @@ import { articleSummaries } from '../src/data/generatedArticleKnowledge.ts'
 import { projects } from '../src/data/generatedProjects.ts'
 import { dailyRadars } from '../src/data/generatedRadarAll.ts'
 import { radarWeeklies } from '../src/data/generatedRadarWeeklies.ts'
+import { radarReviews } from '../src/data/generatedRadarReviews.ts'
+import { intelTopics } from '../src/data/generatedIntelFeed.ts'
+import { intelTopicLabel } from '../src/data/intelPresentation.ts'
+import { homeSeo } from '../src/data/homePresentation.ts'
 import { deliveryRecords } from '../src/data/generatedDeliveries.ts'
 import { nowSnapshot } from '../src/data/generatedNow.ts'
 import { allMarketRadars } from '../src/data/generatedMarketRadarAll.ts'
 import { getRadarCollectionSeo } from '../src/data/snapshotFreshness.ts'
+import { escapeHtml, SITE_URL } from '../shared/site.ts'
 
-const SITE_URL = 'https://xiuqiu-site.vercel.app'
 const distIndexUrl = new URL('../dist/index.html', import.meta.url)
 
 if (!existsSync(distIndexUrl)) {
@@ -20,14 +24,6 @@ if (!existsSync(distIndexUrl)) {
 const baseHtml = readFileSync(distIndexUrl, 'utf8')
 const learningRadarSeo = getRadarCollectionSeo('learning', dailyRadars[0]?.date)
 const marketRadarSeo = getRadarCollectionSeo('market', allMarketRadars[0]?.date)
-
-function escapeHtml(value) {
-  return value
-    .replaceAll('&', '&amp;')
-    .replaceAll('"', '&quot;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-}
 
 function jsonLdScript(data) {
   const json = JSON.stringify(data).replaceAll('<', '\\u003c')
@@ -98,6 +94,32 @@ if (articleSummaries.length === 0) {
 }
 
 const writingDescription = `${articleSummaries.length} 篇关于交易所钱包、多链模型、签名服务、Go 后端与 AI 工程工作流的学习笔记。`
+
+writePage(
+  '/about',
+  replaceMeta(baseHtml, {
+    title: homeSeo.title,
+    description: homeSeo.description,
+    path: '/about',
+  }),
+)
+
+intelTopics.forEach(topic => {
+  writePage(
+    `/topics/${topic.topic}`,
+    replaceMeta(baseHtml, {
+      title: `${intelTopicLabel(topic.topic)}｜主题｜xiuqiu`,
+      description: `${intelTopicLabel(topic.topic)}：${topic.firstSeen} 至 ${topic.lastSeen} 的 ${topic.count} 条工程情报，按日期回看。`,
+      path: `/topics/${topic.topic}`,
+      structuredData: {
+        '@context': 'https://schema.org',
+        '@type': 'CollectionPage',
+        name: `${intelTopicLabel(topic.topic)}｜主题｜xiuqiu`,
+        url: `${SITE_URL}/topics/${topic.topic}`,
+      },
+    }),
+  )
+})
 
 writePage(
   '/projects',
@@ -329,6 +351,28 @@ radarWeeklies.forEach(weekly => {
         author: { '@type': 'Person', name: 'xiuqiu' },
         url: `${SITE_URL}/radar/week/${weekly.slug}`,
         mainEntityOfPage: `${SITE_URL}/radar/week/${weekly.slug}`,
+      },
+    }),
+  )
+})
+
+radarReviews.forEach(review => {
+  writePage(
+    `/radar/review/${review.slug}`,
+    replaceMeta(baseHtml, {
+      title: `${review.title}｜xiuqiu`,
+      description: review.summary,
+      path: `/radar/review/${review.slug}`,
+      type: 'article',
+      structuredData: {
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: review.title,
+        description: review.summary,
+        datePublished: review.periodEnd,
+        author: { '@type': 'Person', name: 'xiuqiu' },
+        url: `${SITE_URL}/radar/review/${review.slug}`,
+        mainEntityOfPage: `${SITE_URL}/radar/review/${review.slug}`,
       },
     }),
   )

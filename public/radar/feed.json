@@ -6,6 +6,58 @@
   "language": "zh-CN",
   "items": [
     {
+      "id": "xiuqiu-radar:ai-vllm-031-preload-cache-isolation",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-13#ai-vllm-031-preload-cache-isolation",
+      "title": "vLLM 0.31：重启不重载权重，缓存键先分清来源",
+      "summary": "这把推理服务的可用性和隔离性拆成两件可以分别验收的事：重启时间看权重是否常驻，多租户安全看缓存键是否带命名空间，不能只靠吞吐基准判断升级是否安全。",
+      "content_text": "这把推理服务的可用性和隔离性拆成两件可以分别验收的事：重启时间看权重是否常驻，多租户安全看缓存键是否带命名空间，不能只靠吞吐基准判断升级是否安全。",
+      "date_published": "2026-10-13T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "model_inference"
+      ],
+      "external_url": "https://github.com/vllm-project/vllm/releases/tag/v0.31.0"
+    },
+    {
+      "id": "xiuqiu-radar:ai-anthropic-distillation-defenses",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-13#ai-anthropic-distillation-defenses",
+      "title": "Anthropic 防蒸馏：推理过程成为需要保护的资产",
+      "summary": "这说明模型服务的安全边界已经从输出内容扩展到推理过程和上下文可编辑性。做 Agent 平台时，推理日志、可回放上下文和导出接口都要按数据资产来设计访问控制。",
+      "content_text": "这说明模型服务的安全边界已经从输出内容扩展到推理过程和上下文可编辑性。做 Agent 平台时，推理日志、可回放上下文和导出接口都要按数据资产来设计访问控制。",
+      "date_published": "2026-10-13T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "safety"
+      ],
+      "external_url": "https://www.anthropic.com/research/distillation-defenses"
+    },
+    {
+      "id": "xiuqiu-radar:web3-reth-bal-persistence",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-13#web3-reth-bal-persistence",
+      "title": "Reth 2.7：区块访问列表进入客户端存储",
+      "summary": "Glamsterdam 的并行执行不是只改共识规则，而是让每个客户端多出一份要落盘、要限流的结构化数据。跑自建节点的后端要把 BAL 的存储和缓存成本算进容量规划。",
+      "content_text": "Glamsterdam 的并行执行不是只改共识规则，而是让每个客户端多出一份要落盘、要限流的结构化数据。跑自建节点的后端要把 BAL 的存储和缓存成本算进容量规划。",
+      "date_published": "2026-10-13T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "protocol"
+      ],
+      "external_url": "https://github.com/paradigmxyz/reth/releases/tag/v2.7.0"
+    },
+    {
+      "id": "xiuqiu-radar:web3-geth-1178-dos-fixes",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-13#web3-geth-1178-dos-fixes",
+      "title": "geth 1.17.8：Amsterdam 之后才出现的 DoS 面",
+      "summary": "这提醒钱包和交易所后端：硬分叉风险不止在激活那一刻，测试网阶段暴露的 DoS 面会在主网前通过补丁版本关闭，节点运维需要按补丁节奏升级。",
+      "content_text": "这提醒钱包和交易所后端：硬分叉风险不止在激活那一刻，测试网阶段暴露的 DoS 面会在主网前通过补丁版本关闭，节点运维需要按补丁节奏升级。",
+      "date_published": "2026-10-13T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "security"
+      ],
+      "external_url": "https://github.com/ethereum/go-ethereum/releases/tag/v1.17.8"
+    },
+    {
       "id": "xiuqiu-radar:ai-durable-runstate-input",
       "url": "https://xiuqiu-site.vercel.app/radar/2026-08-13#ai-durable-runstate-input",
       "title": "Agents SDK 0.20：恢复任务前先恢复调用身份",
@@ -732,58 +784,6 @@
         "market_signal"
       ],
       "external_url": "https://blog.ethereum.org/2026/07/09/triage-is-the-product"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-03-signal-2",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-03#industry-signals",
-      "title": "SEC 议程覆盖加密融资、托管与链上代币化证券",
-      "summary": "SEC 主席声明拟为加密资产融资、托管和链上代币化证券提供更清晰路径，同时保留投资者保护和执法；这是政策议程，不是已生效规则或产品豁免。",
-      "content_text": "SEC 主席声明拟为加密资产融资、托管和链上代币化证券提供更清晰路径，同时保留投资者保护和执法；这是政策议程，不是已生效规则或产品豁免。",
-      "date_published": "2026-08-03T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "market_signal"
-      ],
-      "external_url": "https://www.sec.gov/newsroom/speeches-statements/atkins-statement-2026-regulatory-agenda-070726"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-03-ai",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-03#ai-engineering",
-      "title": "把大型迁移拆成有依赖关系的短会话与小 PR 栈",
-      "summary": "先提交可独立测试的基础层，后续会话从前一分支派生并只承担一个目标；每层记录前置提交、局部测试和回滚。stacked PR 缩小审阅面，但最终仍需在合并基线做完整回归。",
-      "content_text": "先提交可独立测试的基础层，后续会话从前一分支派生并只承担一个目标；每层记录前置提交、局部测试和回滚。stacked PR 缩小审阅面，但最终仍需在合并基线做完整回归。",
-      "date_published": "2026-08-03T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "ai_engineering"
-      ],
-      "external_url": "https://github.blog/ai-and-ml/github-copilot/stacked-sessions-and-pull-requests-in-the-github-copilot-app/"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-03-web3",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-03#web3-design",
-      "title": "把账户验证、执行与约束拆成可清点模块",
-      "summary": "ERC-6900 用 validation、execution 和 hook 模块描述智能账户能力。钱包系统可迁移 manifest、selector、hook 顺序和安装审计，但恶意模块仍可拒绝服务或转走资金，卸载残留也必须显式清理。",
-      "content_text": "ERC-6900 用 validation、execution 和 hook 模块描述智能账户能力。钱包系统可迁移 manifest、selector、hook 顺序和安装审计，但恶意模块仍可拒绝服务或转走资金，卸载残留也必须显式清理。",
-      "date_published": "2026-08-03T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "web3_design"
-      ],
-      "external_url": "https://eips.ethereum.org/EIPS/eip-6900"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-03-tools",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-03#tools",
-      "title": "Cline · 多客户端开源 coding agent",
-      "summary": "Cline 在编辑器、CLI 与 SDK 中提供项目编辑、命令、checkpoint 和扩展能力。公开发布与 issue 显示活跃维护；试用应固定 CLI 版本、使用无凭据示例仓库，并保留命令审批与独立测试。",
-      "content_text": "Cline 在编辑器、CLI 与 SDK 中提供项目编辑、命令、checkpoint 和扩展能力。公开发布与 issue 显示活跃维护；试用应固定 CLI 版本、使用无凭据示例仓库，并保留命令审批与独立测试。",
-      "date_published": "2026-08-03T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "tools"
-      ],
-      "external_url": "https://github.com/cline/cline"
     }
   ]
 }

@@ -3,10 +3,11 @@
 
 export interface RadarFeedItem { id: string; date: string; domain: 'ai' | 'web3'; topic: string; title: string; summary: string; anchor: string; sourceName?: string; sourceTier?: 'tier1' | 'tier2'; sourceUrl?: string; isDeepDive?: true }
 
-export const radarFeedItemCount = 204
+export const radarFeedItemCount = 208
 
 // Newest month first; each month is a separate lazy chunk so the page bundle stays flat as editions accumulate.
 const radarFeedMonthLoaders: (() => Promise<{ monthlyFeedItems: RadarFeedItem[] }>)[] = [
+  () => import('./generatedRadarFeedMonths/2026-10.ts'),
   () => import('./generatedRadarFeedMonths/2026-08.ts'),
   () => import('./generatedRadarFeedMonths/2026-07.ts'),
 ]

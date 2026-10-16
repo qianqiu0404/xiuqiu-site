@@ -4,7 +4,7 @@
 
 ## 项目是什么
 
-xiuqiu-site 是一个个人站点，正在从「作品集 + 工程证据」转向以 **AI + Web3 Radar 情报流** 为主。技术栈是 Vue 3 + Vite + vue-router，部署在 Vercel。
+xiuqiu-site 是一个以 **AI + Web3 Radar 情报流** 为主的个人站点：首页 `/` 是情报流，原作品集与工程证据保留在 `/about`、`/projects`、`/engineering/*`。技术栈是 Vue 3 + Vite + vue-router，部署在 Vercel。
 
 - 内容写在 `content/**` 的 Markdown 里，构建时生成 `src/data/generated*.ts` 和 `public/**` 下的静态产物。
 - `api/` 下有少量 serverless 接口：`/api/chat`、Market Radar 的读接口，以及 Hermes 用的 outbox 接口。
@@ -30,8 +30,14 @@ xiuqiu-site 是一个个人站点，正在从「作品集 + 工程证据」转�
 
 ### 现状（重构完成前以此为准）
 
-- 页面在 `src/pages/`，只有两个组件在 `src/components/`，样式分散在 `src/style.css` 和 `src/styles/*.css`。
-- 页面取数目前有三种方式：直接 import `generated*.ts`、经过 `src/data/siteKnowledge.ts`、经过 `src/data/*Presentation.ts`。新代码优先用 `*Presentation.ts`。
+- 页面在 `src/features/<name>/pages/`，按功能分为 intel、market-radar、projects、articles、proof、ai、about；`src/components/` 只剩全站共用的 `AiChatWidget.vue`。
+- 页面只从本 feature 的 `data.ts` 取数，`data.ts` 再转出 `src/data/` 下的生成数据和 `*Presentation.ts`；`npm run test:home` 里的 `feature-boundaries` 测试会拦截越界 import。
+- 设计系统叫「纸感研究简报」，分三层：
+  - `src/design/tokens.css`：颜色、字号、间距、圆角。浅色是默认，深色跟随系统，`<html data-theme>` 可强制切换。新代码只用语义名（`--bg`、`--ink-*`、`--accent`、`--domain-*`、`--status-*`）。
+  - `src/design/shell.css`：情报流相关路由的页头、页脚和主题切换。
+  - `src/design/brief.css` + `reader.css`：情报流、主题页、日报、周报、趋势回顾共用的布局和组件；`market-skin.css` 把市场雷达旧页面映射到同一套色板。
+- 情报流相关页面（`/`、`/topics/*`、`/radar/**`、`/market-radar/**`）已用新设计；`/about`、`/projects`、`/articles`、证据和 AI 页仍是旧样式，等 P6 迁移。
+- 改颜色后要在浅色和深色下都确认文字对比度 ≥ 4.5:1（大字 ≥ 3:1）；`design-components` 测试会检查 token 是否齐全、深浅两套是否一致。
 - 新增页面逻辑（筛选、分组、格式化）写成 `*Presentation.ts` 里的纯函数，配 `node:test` 测试，不要直接写在 `.vue` 里。
 - 不要再新增一份 `SITE_URL`、`escapeHtml` 或新的深色 token。确实需要时，先复用已有的定义。
 
@@ -57,6 +63,7 @@ xiuqiu-site 是一个个人站点，正在从「作品集 + 工程证据」转�
 - `npm run build`：包含全部测试、内容生成、公开安全检查、类型检查、vite build、meta 页面生成和体积预算检查，是提交前的唯一准绳。
 - 单项检查：
   - `npm run test:radar`、`npm run test:market-radar`、`npm run test:notifications`、`npm run test:home`、`npm run test:quality`
+  - `npm run test:contracts`：冻结契约快照。
   - `npm run check:public`：公开内容安全检查。
   - `npm run check:budget`：chunk 体积预算检查。
 
@@ -90,12 +97,12 @@ xiuqiu-site 是一个个人站点，正在从「作品集 + 工程证据」转�
 
 ## 重构路线（每个阶段一个 PR，上一阶段全绿后再进下一阶段）
 
-1. **P0 基线**：写入本文件；新增契约快照测试，锁定冻结产物的哈希、workflow 白名单和 `api/` 路由清单。
-2. **P1 清理**：删除 Content Catalog Preview 整套代码、`article-catalog-shadow/` 和未引用的 `src/styles/ai-overview.css`。`ci.yml` 的 job 名保持不变。
-3. **P2 共享库**：抽出 `shared/site.ts` 和 `scripts/lib/`；两组 outbox 路由改用同一个 handler 工厂，接口不变。
-4. **P3 设计系统**：建立 tokens 和基础组件，先迁移 Radar 页面族。
-5. **P4 架构迁移**：页面搬进 `src/features/*`，统一经各自的 `data.ts` 取数。
-6. **P5 情报流与信息架构**：
+1. **P0 基线**（已完成）：`npm run test:contracts` 对比 `config/contract-snapshot.json`，锁定 `api/` 路由、workflow、迁移、校验器、被自动化调用的 script，以及 `content/` 未变时的全部生成产物。有意改动冻结契约时，经人工批准后运行 `node scripts/contract-snapshot.mjs --write`，让基线的 diff 进入评审。
+2. **P1 清理**（已完成）：删除 Content Catalog Preview 整套代码、`article-catalog-shadow/` 和未引用的 `src/styles/ai-overview.css`。`ci.yml` 的 job 名保持不变。
+3. **P2 共享库**（已完成）：抽出 `shared/site.ts` 和 `scripts/lib/`；两组 outbox 路由改用同一个 handler 工厂，接口不变。
+4. **P3 设计系统**（已完成）：建立 tokens 和基础组件，先迁移 Radar 页面族。
+5. **P4 架构迁移**（已完成）：页面搬进 `src/features/*`，统一经各自的 `data.ts` 取数。
+6. **P5 情报流与信息架构**（已完成）：
    - 统一的 `IntelItem` 数据结构，learning 和 market 两类内容都归一到它。
    - `/` 改为信息流首页，新增 `/topics/:topic` 主题页、静态 API `public/data/intel/*` 和新导航。
    - 旧 URL 加 redirect。

@@ -19,7 +19,34 @@ const visualMode = computed(() => {
   }
   return String(currentRoute.meta.visual || 'editorial')
 })
-const usesCinematicChrome = computed(() => visualMode.value === 'narrative' || visualMode.value === 'lab')
+// Intel-family routes use the paper "brief" shell; other narrative/lab pages
+// keep the cinematic shell until they are redesigned (P6).
+const BRIEF_ROUTES = new Set(['home', 'topic', 'radar', 'radar-detail', 'radar-weekly-detail', 'radar-review-detail', 'market-radar', 'market-radar-detail', 'market-radar-event', 'project-detail', 'ai', 'ai-deliveries', 'ai-delivery-detail', 'social-research'])
+const usesBriefChrome = computed(() => BRIEF_ROUTES.has(String(router.currentRoute.value.name || '')))
+const usesCinematicChrome = computed(() => !usesBriefChrome.value && (visualMode.value === 'narrative' || visualMode.value === 'lab'))
+
+type ThemePreference = 'system' | 'light' | 'dark'
+const THEME_KEY = 'xiuqiu-theme'
+const theme = ref<ThemePreference>('system')
+const themeLabels: Record<ThemePreference, string> = { system: '跟随系统', light: '浅色', dark: '深色' }
+const nextTheme: Record<ThemePreference, ThemePreference> = { system: 'light', light: 'dark', dark: 'system' }
+
+function applyTheme(value: ThemePreference) {
+  const root = document.documentElement
+  if (value === 'system') root.removeAttribute('data-theme')
+  else root.setAttribute('data-theme', value)
+}
+
+function cycleTheme() {
+  theme.value = nextTheme[theme.value]
+  applyTheme(theme.value)
+  try {
+    if (theme.value === 'system') localStorage.removeItem(THEME_KEY)
+    else localStorage.setItem(THEME_KEY, theme.value)
+  } catch {
+    // Storage can be unavailable (private mode); the choice still applies for this visit.
+  }
+}
 const AiChatWidget = defineAsyncComponent(() => import('./components/AiChatWidget.vue'))
 const currentNavSection = computed(() => {
   const currentRoute = router.currentRoute.value
@@ -31,6 +58,7 @@ const currentNavSection = computed(() => {
   if (currentRoute.name === 'learning') return 'learn-radar'
 
   const navGroup = String(currentRoute.meta.navGroup || '')
+  if (currentRoute.name === 'home' || currentRoute.name === 'topic') return 'intel'
   const sectionByGroup: Record<string, string> = {
     ai: 'ai',
     evidence: 'proof',
@@ -58,6 +86,7 @@ const currentMobileContextLabel = computed(() => {
     proof: 'Proof',
     'learn-radar': 'Learn Radar',
     'trade-radar': 'Trade Radar',
+    intel: '情报流',
     projects: '项目图谱',
     notes: '工程笔记',
     about: 'About',
@@ -109,14 +138,27 @@ function handleEscape(event: KeyboardEvent) {
 }
 
 watch(() => router.currentRoute.value.fullPath, closeNav)
-onMounted(() => window.addEventListener('keydown', handleEscape))
+// The brief shell paints the page background, so mark the document root.
+watch(usesBriefChrome, value => {
+  if (typeof document !== 'undefined') document.documentElement.toggleAttribute('data-shell-brief', value)
+}, { immediate: true })
+onMounted(() => {
+  window.addEventListener('keydown', handleEscape)
+  try {
+    const saved = localStorage.getItem(THEME_KEY)
+    if (saved === 'light' || saved === 'dark') theme.value = saved
+  } catch {
+    // Ignore unavailable storage.
+  }
+  applyTheme(theme.value)
+})
 onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
 </script>
 
 <template>
   <a class="skip-link" href="#main-content">跳到主要内容</a>
 
-  <header class="site-header" :class="{ 'site-header--cinematic': usesCinematicChrome }">
+  <header class="site-header" :class="{ 'site-header--cinematic': usesCinematicChrome, 'site-header--brief': usesBriefChrome }">
     <nav class="nav container" aria-label="主导航">
       <router-link
         class="brand"
@@ -136,6 +178,16 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
         aria-current="location"
         :aria-label="`当前栏目：${currentMobileContextLabel}`"
       >{{ currentMobileContextLabel }}</span>
+
+      <button
+        class="theme-toggle"
+        type="button"
+        :aria-label="`切换配色，当前：${themeLabels[theme]}`"
+        :title="`配色：${themeLabels[theme]}`"
+        @click="cycleTheme"
+      >
+        <span aria-hidden="true" :class="`theme-toggle-icon theme-toggle-icon--${theme}`" />
+      </button>
 
       <button
         ref="navToggle"
@@ -159,6 +211,30 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
         <div class="nav-primary-links" role="group" aria-label="核心入口">
           <router-link
             class="nav-link"
+            :class="{ 'is-current': isCurrentNavSection('intel') }"
+            :aria-current="currentNavAria('intel', '/')"
+            to="/"
+            @click="handleNavLinkActivation"
+            @keydown.space.prevent="activateLinkOnSpace"
+          >情报流</router-link>
+          <router-link
+            class="nav-link"
+            :class="{ 'is-current': isCurrentNavSection('learn-radar') }"
+            :aria-current="currentNavAria('learn-radar', '/radar')"
+            to="/radar"
+            @click="handleNavLinkActivation"
+            @keydown.space.prevent="activateLinkOnSpace"
+          >学习雷达</router-link>
+          <router-link
+            class="nav-link"
+            :class="{ 'is-current': isCurrentNavSection('trade-radar') }"
+            :aria-current="currentNavAria('trade-radar', '/market-radar')"
+            to="/market-radar"
+            @click="handleNavLinkActivation"
+            @keydown.space.prevent="activateLinkOnSpace"
+          >市场雷达</router-link>
+          <router-link
+            class="nav-link"
             :class="{ 'is-current': isCurrentNavSection('qiu-market') }"
             :aria-current="currentNavAria('qiu-market', '/projects/s78-market-services')"
             to="/projects/s78-market-services"
@@ -173,6 +249,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
             @click="handleNavLinkActivation"
             @keydown.space.prevent="activateLinkOnSpace"
           >AI</router-link>
+        </div>
+
+        <div class="nav-secondary-links" role="group" aria-label="更多入口">
           <router-link
             class="nav-link"
             :class="{ 'is-current': isCurrentNavSection('proof') }"
@@ -180,26 +259,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
             to="/engineering/evidence"
             @click="handleNavLinkActivation"
             @keydown.space.prevent="activateLinkOnSpace"
-          >Proof</router-link>
-          <router-link
-            class="nav-link"
-            :class="{ 'is-current': isCurrentNavSection('learn-radar') }"
-            :aria-current="currentNavAria('learn-radar', '/radar')"
-            to="/radar"
-            @click="handleNavLinkActivation"
-            @keydown.space.prevent="activateLinkOnSpace"
-          >Learn Radar</router-link>
-          <router-link
-            class="nav-link"
-            :class="{ 'is-current': isCurrentNavSection('trade-radar') }"
-            :aria-current="currentNavAria('trade-radar', '/market-radar')"
-            to="/market-radar"
-            @click="handleNavLinkActivation"
-            @keydown.space.prevent="activateLinkOnSpace"
-          >Trade Radar</router-link>
-        </div>
-
-        <div class="nav-secondary-links" role="group" aria-label="更多入口">
+          >证据</router-link>
           <router-link
             class="nav-link"
             :class="{ 'is-current': isCurrentNavSection('projects') }"
@@ -207,7 +267,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
             to="/projects"
             @click="handleNavLinkActivation"
             @keydown.space.prevent="activateLinkOnSpace"
-          >项目图谱</router-link>
+          >项目</router-link>
           <router-link
             class="nav-link"
             :class="{ 'is-current': isCurrentNavSection('notes') }"
@@ -215,15 +275,15 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
             to="/articles"
             @click="handleNavLinkActivation"
             @keydown.space.prevent="activateLinkOnSpace"
-          >工程笔记</router-link>
+          >笔记</router-link>
           <router-link
             class="nav-link"
             :class="{ 'is-current': isCurrentNavSection('about') }"
-            :aria-current="currentNavAria('about', '/now')"
-            to="/now"
+            :aria-current="currentNavAria('about', '/about')"
+            to="/about"
             @click="handleNavLinkActivation"
             @keydown.space.prevent="activateLinkOnSpace"
-          >About</router-link>
+          >关于</router-link>
         </div>
       </div>
     </nav>
@@ -233,7 +293,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
     <router-view />
   </main>
 
-  <footer class="footer" :class="{ 'footer--cinematic': usesCinematicChrome }">
+  <footer class="footer" :class="{ 'footer--cinematic': usesCinematicChrome, 'footer--brief': usesBriefChrome }">
     <div class="container footer-inner">
       <span>© {{ new Date().getFullYear() }} xiuqiu</span>
       <nav class="footer-links" aria-label="页尾导航">

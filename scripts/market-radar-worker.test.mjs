@@ -175,8 +175,8 @@ test('US premarket scheduling follows New York wall time and excludes weekends',
 
 test('public SQL view and APIs preserve privacy and outbox delivery semantics', () => {
   const migration = read('market-radar/migrations/001_initial.sql')
-  const claim = read('api/market-radar/outbox/claim.ts')
-  const ack = read('api/market-radar/outbox/ack.ts')
+  const claim = read('lib/radar-notifications/outbox-sql.ts')
+  const ack = claim
   const repository = read('lib/market-radar/repository.ts')
   const publicView = migration.slice(migration.indexOf('create or replace view market_radar.public_events'))
   assert.doesNotMatch(publicView, /payload|prompt|private_note/i)

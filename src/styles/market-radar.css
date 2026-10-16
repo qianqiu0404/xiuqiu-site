@@ -1,19 +1,18 @@
 .trade-radar-page {
-  --trade-night: #030507;
-  --trade-night-soft: #090c11;
-  --trade-surface: #10141a;
-  --trade-paper: #f3f4f1;
-  --trade-paper-raised: #fafbf8;
-  --trade-ink: #11151b;
-  --trade-copy: #4d5661;
-  --trade-muted: #59636e;
-  --trade-line-dark: rgba(255, 255, 255, 0.11);
-  --trade-line: rgba(17, 21, 27, 0.15);
-  --trade-market: #5ad7c7;
-  --trade-market-dark: #187d73;
-  --trade-p0: #ef716f;
-  --trade-p1: #d69a42;
-  --trade-p2: #769ad3;
+  --trade-night: var(--night-bg);
+  --trade-night-soft: var(--night-surface);
+  --trade-paper: var(--paper-bg);
+  --trade-paper-raised: var(--paper-raised);
+  --trade-ink: var(--paper-ink);
+  --trade-copy: var(--paper-copy);
+  --trade-muted: var(--paper-muted);
+  --trade-line-dark: var(--night-line);
+  --trade-line: var(--paper-line);
+  --trade-market: var(--accent-market);
+  --trade-market-dark: var(--accent-web3-ink);
+  --trade-p0: var(--status-p0);
+  --trade-p1: var(--status-p1);
+  --trade-p2: var(--status-p2);
   min-height: 100vh;
   overflow: clip;
   background: var(--trade-paper);
@@ -74,7 +73,7 @@
   background:
     radial-gradient(circle at 80% 28%, rgba(90, 215, 199, 0.13), transparent 24rem),
     radial-gradient(circle at 16% 88%, rgba(91, 130, 255, 0.07), transparent 28rem),
-    linear-gradient(180deg, #020305 0%, #070a0f 74%, #030507 100%);
+    linear-gradient(180deg, #020305 0%, #070a0f 74%, var(--night-bg) 100%);
   color: #f5f7fa;
 }
 
@@ -874,7 +873,7 @@
   background: transparent;
   color: var(--trade-market-dark);
   cursor: pointer;
-  font: 680 0.76rem/1 var(--sans);
+  font: 680 0.76rem/1 var(--font-sans);
 }
 .trade-radar-research-card button:hover { background: rgba(24, 125, 115, 0.08); }
 .trade-radar-research-card footer span {

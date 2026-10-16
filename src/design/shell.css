@@ -1,0 +1,243 @@
+/*
+ * Site shell for the "paper research brief" design. Scoped to
+ * .site-header--brief / .footer--brief / [data-shell-brief] so the
+ * cinematic pages keep their own chrome until P6.
+ */
+
+:root[data-shell-brief] {
+  background: var(--bg);
+  color: var(--ink);
+}
+
+:root[data-shell-brief] body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-feature-settings: "tnum" 0;
+}
+
+:root[data-shell-brief] :focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Header */
+.site-header--brief {
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  box-shadow: none;
+  backdrop-filter: saturate(1.4) blur(14px);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px);
+}
+
+.site-header--brief .nav {
+  max-width: var(--content-width);
+  height: var(--header-height);
+  gap: var(--space-4);
+}
+
+.site-header--brief .brand {
+  gap: var(--space-2);
+  color: var(--ink);
+  font: 700 17px/1 var(--font-sans);
+  letter-spacing: -0.01em;
+}
+
+.site-header--brief .brand::before {
+  width: 8px;
+  height: 8px;
+  content: '';
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+.site-header--brief .brand.is-current,
+.site-header--brief .brand[aria-current] {
+  box-shadow: none;
+}
+
+.site-header--brief .nav-context {
+  display: none;
+}
+
+.site-header--brief .nav-links {
+  gap: var(--space-2);
+}
+
+.site-header--brief .nav-primary-links,
+.site-header--brief .nav-secondary-links {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.site-header--brief .nav-secondary-links {
+  border-left: 1px solid var(--line);
+  padding-left: var(--space-2);
+}
+
+.site-header--brief .nav-link {
+  min-height: var(--touch-target);
+  border-radius: var(--radius-control);
+  padding: 0 10px;
+  color: var(--ink-3);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.site-header--brief .nav-secondary-links .nav-link {
+  font-size: 13px;
+}
+
+.site-header--brief .nav-link:hover {
+  background: var(--bg-sunk);
+  color: var(--ink);
+}
+
+.site-header--brief .nav-link.is-current,
+.site-header--brief .nav-link[aria-current] {
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.site-header--brief .nav-toggle span {
+  background: var(--ink);
+}
+
+.site-header--brief .nav-mobile-context {
+  border-left-color: var(--line);
+  color: var(--ink-3);
+}
+
+/* Theme toggle: visible in the brief shell only */
+.theme-toggle {
+  display: none;
+}
+
+.site-header--brief .theme-toggle {
+  order: 10;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: var(--touch-target);
+  height: var(--touch-target);
+  margin-left: var(--space-1);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--ink-3);
+  cursor: pointer;
+}
+
+.site-header--brief .theme-toggle:hover {
+  background: var(--bg-sunk);
+  color: var(--ink);
+}
+
+.theme-toggle-icon {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid currentColor;
+  border-radius: 50%;
+}
+
+.theme-toggle-icon--system::after {
+  position: absolute;
+  inset: 0 0 0 50%;
+  content: '';
+  border-radius: 0 8px 8px 0;
+  background: currentColor;
+}
+
+.theme-toggle-icon--dark {
+  background: currentColor;
+}
+
+.theme-toggle-icon--light::after {
+  position: absolute;
+  inset: 3px;
+  content: '';
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* Footer */
+.footer--brief {
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+  color: var(--ink-3);
+}
+
+.footer--brief .footer-inner {
+  max-width: var(--content-width);
+  color: var(--ink-3);
+  font-size: var(--text-sm);
+}
+
+.footer--brief .footer-links a {
+  color: var(--ink-3);
+}
+
+.footer--brief .footer-links a:hover {
+  color: var(--ink);
+}
+
+@media (max-width: 1080px) {
+  .site-header--brief .nav-secondary-links {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .site-header--brief .nav {
+    height: 52px;
+  }
+
+  .site-header--brief .theme-toggle {
+    order: 0;
+    margin-left: auto;
+  }
+
+  .site-header--brief .nav-toggle {
+    order: 1;
+    margin-left: 0;
+  }
+
+  .site-header--brief .nav-links {
+    top: 52px;
+    max-height: calc(100dvh - 52px);
+    border-bottom: 1px solid var(--line);
+    background: var(--bg);
+    box-shadow: var(--shadow-hover);
+  }
+
+  .site-header--brief .nav-links.open .nav-primary-links,
+  .site-header--brief .nav-links.open .nav-secondary-links {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    border-left: 0;
+    padding-left: 0;
+  }
+
+  .site-header--brief .nav-links.open .nav-secondary-links {
+    border-top: 1px solid var(--line);
+    padding-top: var(--space-2);
+  }
+
+  .site-header--brief .nav-link {
+    min-height: var(--touch-target);
+    justify-content: flex-start;
+    font-size: 15px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header--brief .nav-link,
+  .site-header--brief .theme-toggle {
+    transition: none !important;
+  }
+}

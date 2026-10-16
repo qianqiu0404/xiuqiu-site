@@ -1,0 +1,19 @@
+// Data entry point for the intel feature. Pages in this feature import
+// data only from here; generated*.ts and shared helpers stay in src/data.
+
+export { loadRadarFeed, radarFeedItemCount } from '../../data/generatedRadarFeed'
+export type { RadarFeedItem } from '../../data/generatedRadarFeed'
+export { loadRadarBySlug } from '../../data/generatedRadarLoader'
+export { radarReviews } from '../../data/generatedRadarReviews'
+export { latestRadars, radarIndex } from '../../data/generatedRadars'
+export type { DailyRadar } from '../../data/generatedRadars'
+export { radarWeeklies } from '../../data/generatedRadarWeeklies'
+export { continuingRadarTopics, countRadarFeedTopics, filterRadarFeed, getLearningBriefs, getRadarDetailSections, getRadarReviewBoundary, getSupportingRadarItems, groupRadarFeedByDate, isLearningEditionV2, radarSignalCountLabel, radarSourceStatus, radarTopicLabel } from '../../data/radarPresentation'
+export type { RadarFeedDomain } from '../../data/radarPresentation'
+export { reviewDomainCounts, reviewMilestoneCount, reviewPeriodDays, trendMonthTicks, trendSpan, trendTrack } from '../../data/radarReviewPresentation'
+export { getProjectByKey } from '../../data/siteKnowledge'
+export { getRadarCollectionSeo, getSnapshotFreshness } from '../../data/snapshotFreshness'
+export { intelItemCount, intelLatestDate, intelLatestItems, intelTopics, loadIntelItems } from '../../data/generatedIntelFeed'
+export type { IntelItem, IntelTopic } from '../../data/generatedIntelFeed'
+export { continuingIntelTopics, filterIntel, intelDayLabel, intelHomeSeo, intelKindLabel, shanghaiToday, getIntelFreshness, groupIntelByDate, intelDomainLabel, intelFilters, intelSourceLabel, intelTopicLabel, topicsForFilter } from '../../data/intelPresentation'
+export type { IntelFilter } from '../../data/intelPresentation'

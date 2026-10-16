@@ -19,9 +19,9 @@ import {
 } from './generate-radar-weeklies.mjs'
 
 const appSource = readFileSync(new URL('../src/App.vue', import.meta.url), 'utf8')
-const radarPageSource = readFileSync(new URL('../src/pages/RadarPage.vue', import.meta.url), 'utf8')
-const radarDetailSource = readFileSync(new URL('../src/pages/RadarDetailPage.vue', import.meta.url), 'utf8')
-const radarWeeklySource = readFileSync(new URL('../src/pages/RadarWeeklyPage.vue', import.meta.url), 'utf8')
+const radarPageSource = readFileSync(new URL('../src/features/intel/pages/RadarPage.vue', import.meta.url), 'utf8')
+const radarDetailSource = readFileSync(new URL('../src/features/intel/pages/RadarDetailPage.vue', import.meta.url), 'utf8')
+const radarWeeklySource = readFileSync(new URL('../src/features/intel/pages/RadarWeeklyPage.vue', import.meta.url), 'utf8')
 
 function radar(overrides = {}) {
   return {

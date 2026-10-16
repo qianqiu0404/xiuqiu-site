@@ -8,6 +8,17 @@
 | `/radar/feed.json` | [JSON Feed 1.1](https://jsonfeed.org/version/1.1) | 最近 60 条 |
 | `/llms.txt` | Markdown，面向 Agent | 最近 12 条 + 入口链接 |
 
+## 情报流静态 API
+
+`scripts/generate-intel-feed.mjs` 把学习雷达 brief、市场雷达事件和趋势回顾归一为 `IntelItem`，额外生成：
+
+| 路径 | 内容 |
+| --- | --- |
+| `/data/intel/latest.json` | 最近 7 天的 IntelItem（`schemaVersion: 1`，含绝对 `url`） |
+| `/data/intel/topics.json` | 主题 → 条目数、首次与最近出现日期、主题页 URL |
+
+`IntelItem` 字段：`id`（`learning:`/`market:`/`review:` 前缀，发布后不变）、`kind`、`date`、`domain`（ai / web3 / market / review）、`topic`、`title`、`summary`、`href`、可选 `source { name, tier?, url }` 与 `flags { deepDive?, priority? }`。站内使用 `src/data/generatedIntelFeed.ts`（首屏索引）与 `generatedIntelFeedMonths/YYYY-MM.ts`（懒加载）。两个每日 PR 门禁的白名单都包含这些文件。
+
 ## 条目约定
 
 - 每条对应一条 brief（v2）或一个旧版栏目（v1），`id` 形如 `xiuqiu-radar:<brief-id>`，一经发布不变。
