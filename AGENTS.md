@@ -32,7 +32,12 @@ xiuqiu-site 是一个以 **AI + Web3 Radar 情报流** 为主的个人站点：�
 
 - 页面在 `src/features/<name>/pages/`，按功能分为 intel、market-radar、projects、articles、proof、ai、about；`src/components/` 只剩全站共用的 `AiChatWidget.vue`。
 - 页面只从本 feature 的 `data.ts` 取数，`data.ts` 再转出 `src/data/` 下的生成数据和 `*Presentation.ts`；`npm run test:home` 里的 `feature-boundaries` 测试会拦截越界 import。
-- 样式仍分散在 `src/style.css` 和 `src/styles/*.css`，颜色等 token 已统一到 `src/design/tokens.css`。
+- 设计系统叫「纸感研究简报」，分三层：
+  - `src/design/tokens.css`：颜色、字号、间距、圆角。浅色是默认，深色跟随系统，`<html data-theme>` 可强制切换。新代码只用语义名（`--bg`、`--ink-*`、`--accent`、`--domain-*`、`--status-*`）。
+  - `src/design/shell.css`：情报流相关路由的页头、页脚和主题切换。
+  - `src/design/brief.css` + `reader.css`：情报流、主题页、日报、周报、趋势回顾共用的布局和组件；`market-skin.css` 把市场雷达旧页面映射到同一套色板。
+- 情报流相关页面（`/`、`/topics/*`、`/radar/**`、`/market-radar/**`）已用新设计；`/about`、`/projects`、`/articles`、证据和 AI 页仍是旧样式，等 P6 迁移。
+- 改颜色后要在浅色和深色下都确认文字对比度 ≥ 4.5:1（大字 ≥ 3:1）；`design-components` 测试会检查 token 是否齐全、深浅两套是否一致。
 - 新增页面逻辑（筛选、分组、格式化）写成 `*Presentation.ts` 里的纯函数，配 `node:test` 测试，不要直接写在 `.vue` 里。
 - 不要再新增一份 `SITE_URL`、`escapeHtml` 或新的深色 token。确实需要时，先复用已有的定义。
 

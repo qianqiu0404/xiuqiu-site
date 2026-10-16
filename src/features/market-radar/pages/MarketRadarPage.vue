@@ -3,6 +3,7 @@ import { computed, onMounted } from 'vue'
 import { latestMarketRadars, marketRadarIndex, getRadarCollectionSeo, getSnapshotFreshness } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
 import '../../../styles/market-radar.css'
+import '../../../design/market-skin.css'
 
 const latest = latestMarketRadars[0]
 const latestFreshness = computed(() => getSnapshotFreshness(latest?.date))

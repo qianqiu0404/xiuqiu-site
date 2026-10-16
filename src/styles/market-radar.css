@@ -873,7 +873,7 @@
   background: transparent;
   color: var(--trade-market-dark);
   cursor: pointer;
-  font: 680 0.76rem/1 var(--sans);
+  font: 680 0.76rem/1 var(--font-sans);
 }
 .trade-radar-research-card button:hover { background: rgba(24, 125, 115, 0.08); }
 .trade-radar-research-card footer span {

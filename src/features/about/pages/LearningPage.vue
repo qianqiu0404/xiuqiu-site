@@ -85,7 +85,7 @@ onMounted(() => {
 .learning-archive-list article p { margin: 0.7rem 0 0; color: var(--text-muted); line-height: 1.75; }
 .learning-reading > div { margin-top: 2rem; border-top: 1px solid var(--border); }
 .learning-reading a { display: grid; grid-template-columns: 120px minmax(0, 1fr) auto; gap: 2rem; border-bottom: 1px solid var(--border); padding: 1.35rem 0; }
-.learning-reading a:hover span { color: var(--accent); }
+.learning-reading a:hover span { color: var(--legacy-accent); }
 .learning-reading b { font-size: 0.76rem; font-weight: 620; }
 @media (max-width: 720px) {
   .learning-archive-hero { padding: 2.2rem 0 3.5rem; }

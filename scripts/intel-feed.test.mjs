@@ -114,3 +114,13 @@ test('both daily PR gates may commit the regenerated intel feed', () => {
     assert.match(workflow, /public\/data\/intel/)
   }
 })
+
+test('dateline helpers format Shanghai calendar dates in Chinese', async () => {
+  const { intelDayLabel, shanghaiToday, intelKindLabel } = await import('../src/data/intelPresentation.ts')
+  assert.equal(intelDayLabel('2026-10-15'), '10月15日 周四')
+  assert.equal(intelDayLabel('2026-08-13'), '8月13日 周四')
+  assert.equal(intelDayLabel('bad'), 'bad')
+  assert.equal(shanghaiToday(new Date('2026-10-14T17:00:00Z')), '2026-10-15')
+  assert.equal(shanghaiToday(new Date('2026-10-14T15:00:00Z')), '2026-10-14')
+  assert.equal(intelKindLabel('market'), '市场雷达')
+})

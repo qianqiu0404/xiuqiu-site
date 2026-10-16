@@ -472,7 +472,7 @@
 }
 
 .project-dossier-summary small {
-  color: var(--text-light);
+  color: var(--paper-muted);
   font: 650 10px/1.4 var(--mono);
   letter-spacing: 0.08em;
   text-transform: uppercase;

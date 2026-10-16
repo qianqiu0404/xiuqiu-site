@@ -3,7 +3,8 @@ import { computed, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import { radarWeeklies, latestRadars, getRadarReviewBoundary, getProjectByKey } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
-import '../../../styles/radar.css'
+import '../../../design/brief.css'
+import '../../../design/reader.css'
 
 const route = useRoute()
 const weekly = computed(() => radarWeeklies.find(item => item.slug === String(route.params.week || '')))
@@ -77,77 +78,67 @@ watchEffect(() =>
 </script>
 
 <template>
-  <div v-if="weekly" class="radar-weekly-reader-page" lang="zh-CN">
-    <header class="radar-reader-hero radar-reader-hero--weekly">
-      <div class="container radar-reader-shell">
-        <router-link to="/radar" class="radar-reader-back">← Intelligence Radar</router-link>
-        <div class="radar-reader-hero-grid">
-          <div>
-            <p class="radar-kicker">Human Reviewed Weekly</p>
-            <h1>{{ weekly.title }}</h1>
-          </div>
-          <div class="radar-reader-summary">
-            <p>{{ weekly.summary }}</p>
-            <dl>
-              <div><dt>Reviewed</dt><dd><time :datetime="weekly.reviewedAt">{{ reviewBoundary?.lastReviewedLabel }}</time></dd></div>
-              <div><dt>Gate</dt><dd>人工复核后公开</dd></div>
-              <div><dt>Sections</dt><dd>{{ sections.length }}</dd></div>
-            </dl>
-            <p v-if="reviewBoundary" class="radar-review-boundary">
-              {{ reviewBoundary.statusLabel }} {{ reviewBoundary.nextReviewLabel }}
-            </p>
-          </div>
-        </div>
+  <div v-if="weekly" class="brief radar-weekly-reader-page" lang="zh-CN">
+    <header class="brief-masthead">
+      <div class="brief-shell">
+        <router-link to="/" class="brief-back">← 情报流</router-link>
+        <p class="brief-dateline">
+          <span>{{ weekly.week }}</span>
+          <span>人工复核周报</span>
+          <time :datetime="weekly.reviewedAt">{{ reviewBoundary?.lastReviewedLabel }}</time>
+        </p>
+        <h1>{{ weekly.title }}</h1>
+        <p class="brief-lede">{{ weekly.summary }}</p>
+        <p v-if="reviewBoundary" class="brief-fresh brief-fresh--stale" role="status">
+          {{ reviewBoundary.statusLabel }} {{ reviewBoundary.nextReviewLabel }}
+        </p>
       </div>
     </header>
 
-    <div class="radar-reader-body">
-      <div class="container radar-reader-shell">
-        <aside class="radar-weekly-boundary" aria-label="本页事实与推断边界">
+    <div class="brief-shell reader-layout">
+      <nav class="reader-toc" aria-label="本周收敛结论">
+        <span>本周收敛</span>
+        <a v-for="section in sections" :key="section.id" :href="`#${section.id}`">
+          {{ section.shortLabel }} · {{ section.items.length }}
+        </a>
+      </nav>
+
+      <div class="reader-main">
+        <aside class="radar-weekly-boundary reader-boundary" aria-label="本页事实与推断边界">
           <div><span>01</span><strong>来源事实</strong><p>原始来源只作为复核输入，可在页尾逐项打开。</p></div>
           <div><span>02</span><strong>人工判断</strong><p>明确标在“形成判断”，不能代替工程验证。</p></div>
           <div><span>03</span><strong>工程记录</strong><p>“已进入工程”表示已有复核记录，不等于生产验收。</p></div>
         </aside>
 
-        <nav class="radar-weekly-reader-stats" aria-label="本周收敛结论">
-          <span>Convergence index</span>
-          <a v-for="section in sections" :key="section.id" :href="`#${section.id}`">
-            <strong>{{ section.items.length }}</strong><small>{{ section.shortLabel }}</small>
-          </a>
-        </nav>
-
-        <div class="radar-weekly-flow" aria-label="研究流转边界">
-          <span>公开来源</span><i>→</i><span>人工判断</span><i>→</i><span>工程验证</span>
-        </div>
-
         <section
           v-for="(section, index) in sections"
           :id="section.id"
           :key="section.id"
-          class="radar-weekly-reader-section"
+          class="reader-section"
           :data-tone="section.tone"
         >
-          <header>
+          <header class="reader-section-header">
             <span>{{ String(index + 1).padStart(2, '0') }}</span>
-            <div><h2 class="radar-kicker">{{ section.label }}</h2><strong>{{ section.boundary }}</strong></div>
+            <h2 class="radar-kicker">{{ section.label }}</h2>
+            <small>{{ section.boundary }}</small>
           </header>
-          <ol><li v-for="item in section.items" :key="item">{{ item }}</li></ol>
+          <ol class="reader-list"><li v-for="item in section.items" :key="item">{{ item }}</li></ol>
         </section>
 
-        <section v-if="relatedProjects.length" class="radar-reader-projects">
-          <header><p class="radar-kicker">Related Engineering</p><h2>已经建立连接的项目。</h2></header>
-          <div>
+        <section v-if="relatedProjects.length" class="reader-section">
+          <header class="reader-section-header"><span>→</span><h2>已经建立连接的项目</h2></header>
+          <div class="reader-related">
             <router-link v-for="project in relatedProjects" :key="project!.slug" :to="`/projects/${project!.slug}`">
               {{ project!.name }} <span aria-hidden="true">→</span>
             </router-link>
           </div>
         </section>
 
-        <details class="radar-reader-disclosure">
-          <summary>复核说明与原始来源 <span aria-hidden="true">＋</span></summary>
+        <details class="reader-disclosure">
+          <summary>复核说明与原始来源</summary>
           <div>
             <p>周度收敛只公开经过人工复核并通过公开门禁的内容，不复制私人每日记录；来源用于复核，不代表采用或背书。</p>
-            <div class="radar-weekly-source-links">
+            <div class="reader-related">
               <a v-for="(url, index) in weekly.sourceUrls" :key="url" :href="url" target="_blank" rel="noopener">
                 Source {{ String(index + 1).padStart(2, '0') }} <span aria-hidden="true">↗</span>
               </a>
@@ -158,14 +149,12 @@ watchEffect(() =>
     </div>
   </div>
 
-  <div v-else class="radar-reader-not-found radar-state">
-    <div class="container radar-state__content">
-      <p class="radar-state__eyebrow">Weekly review unavailable</p>
-      <h1 class="radar-state__title">这份周度收敛不存在或尚未公开。</h1>
-      <p class="radar-state__message">周报只在人工复核并通过公开门禁后出现。请返回雷达阅读已公开日报与最近一次周报。</p>
-      <div class="radar-state__actions">
-        <router-link to="/radar" class="btn btn-primary">返回雷达</router-link>
-      </div>
-    </div>
+  <div v-else class="brief radar-state">
+    <div class="brief-masthead"><div class="brief-shell">
+      <p class="brief-dateline"><span>Weekly review unavailable</span></p>
+      <h1>这份周度收敛不存在或尚未公开。</h1>
+      <p class="brief-lede">周报只在人工复核并通过公开门禁后出现。请返回情报流阅读已公开日报与最近一次周报。</p>
+      <div class="reader-actions"><router-link to="/" class="brief-button">返回情报流</router-link></div>
+    </div></div>
   </div>
 </template>

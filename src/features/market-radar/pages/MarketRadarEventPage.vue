@@ -6,6 +6,7 @@ import type { StaticMarketRadarEvent, StaticMarketRadarEventMatch } from '../dat
 import type { MarketRadarEvent } from '../../../market-radar/contracts'
 import { setSeoMeta } from '../../../utils/seo'
 import '../../../styles/market-radar.css'
+import '../../../design/market-skin.css'
 
 const route = useRoute()
 interface EventPresentation {

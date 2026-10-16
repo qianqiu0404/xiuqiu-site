@@ -98,3 +98,29 @@ export function intelSourceLabel(item: IntelItem): string | undefined {
   const tier = item.source.tier === 'tier1' ? '一手来源' : item.source.tier === 'tier2' ? '研究解读' : '来源'
   return `${tier} · ${item.source.name}`
 }
+
+const WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+
+// "10月15日 周四" for a YYYY-MM-DD calendar date (no timezone shift).
+export function intelDayLabel(date: string): string {
+  const [year, month, day] = date.split('-').map(Number)
+  if (!year || !month || !day) return date
+  const weekday = WEEKDAYS[new Date(Date.UTC(year, month - 1, day)).getUTCDay()]
+  return `${month}月${day}日 ${weekday}`
+}
+
+// Today's date in Asia/Shanghai, used for the masthead dateline.
+export function shanghaiToday(now = new Date()): string {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit' })
+      .formatToParts(now)
+      .map(part => [part.type, part.value]),
+  )
+  return `${parts.year}-${parts.month}-${parts.day}`
+}
+
+const KIND_LABELS: Record<IntelItem['kind'], string> = { learning: '学习雷达', market: '市场雷达', review: '趋势回顾' }
+
+export function intelKindLabel(kind: IntelItem['kind']): string {
+  return KIND_LABELS[kind]
+}

@@ -3,7 +3,9 @@ import { computed, ref, watch, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
 import {
   groupIntelByDate,
+  intelDayLabel,
   intelDomainLabel,
+  intelKindLabel,
   intelSourceLabel,
   intelTopicLabel,
   intelTopics,
@@ -11,8 +13,7 @@ import {
 } from '../data'
 import type { IntelItem } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
-import '../../../styles/radar.css'
-import '../../../styles/intel-home.css'
+import '../../../design/brief.css'
 import IntelCard from '../../../design/components/IntelCard.vue'
 import LoadState from '../../../design/components/LoadState.vue'
 
@@ -50,31 +51,40 @@ watchEffect(() =>
 </script>
 
 <template>
-  <div v-if="topic" class="radar-intelligence-page intel-home intel-topic-page" lang="zh-CN">
-    <header class="intel-home-hero">
-      <div class="container intel-home-shell">
-        <router-link to="/" class="radar-reader-back">← 情报流</router-link>
-        <p class="radar-kicker">Topic · {{ intelDomainLabel(topic.domain) }}</p>
-        <h1>{{ intelTopicLabel(topic.topic) }}</h1>
-        <p class="intel-home-lede">共 {{ topic.count }} 条 · {{ topic.firstSeen }} 至 {{ topic.lastSeen }}</p>
+  <div v-if="topic" class="brief" lang="zh-CN">
+    <header class="brief-masthead">
+      <div class="brief-shell">
+        <router-link to="/" class="brief-back">← 情报流</router-link>
+        <p class="brief-dateline">
+          <span>主题</span>
+          <span>{{ intelDomainLabel(topic.domain) }}</span>
+        </p>
+        <div class="brief-masthead-row">
+          <h1>{{ intelTopicLabel(topic.topic) }}</h1>
+          <dl class="brief-stats">
+            <div><dt>条目</dt><dd>{{ topic.count }}</dd></div>
+            <div><dt>首次</dt><dd>{{ topic.firstSeen.slice(5) }}</dd></div>
+            <div><dt>最近</dt><dd>{{ topic.lastSeen.slice(5) }}</dd></div>
+          </dl>
+        </div>
       </div>
     </header>
 
-    <div class="container intel-home-shell">
+    <div class="brief-shell brief-reading">
       <LoadState v-if="state === 'loading'" state="loading" message="正在载入这个主题的历史条目…" />
       <LoadState v-else-if="state === 'error'" state="error" message="载入失败。" action-label="重试" @action="load" />
-      <div v-else class="radar-archive-ledger radar-feed">
-        <section v-for="day in days" :key="day.date" :aria-labelledby="`topic-day-${day.date}`">
-          <header>
-            <h2 :id="`topic-day-${day.date}`" class="intel-topic-day"><time :datetime="day.date">{{ day.date }}</time></h2>
+      <template v-else>
+        <section v-for="day in days" :key="day.date" class="brief-day" :aria-labelledby="`topic-day-${day.date}`">
+          <header class="brief-day-header">
+            <h2 :id="`topic-day-${day.date}`"><time :datetime="day.date">{{ intelDayLabel(day.date) }}</time></h2>
           </header>
-          <ul class="radar-feed-cards">
-            <li v-for="item in day.items" :key="item.id">
+          <ol class="brief-timeline">
+            <li v-for="item in day.items" :key="item.id" :data-domain="item.domain">
               <IntelCard
                 :to="item.href"
                 :domain="item.domain"
                 :domain-label="intelDomainLabel(item.domain)"
-                :topic-label="intelTopicLabel(item.topic)"
+                :topic-label="intelKindLabel(item.kind)"
                 :title="item.title"
                 :summary="item.summary"
                 :source-label="intelSourceLabel(item)"
@@ -82,17 +92,19 @@ watchEffect(() =>
                 :badge="item.flags?.priority === 'P0' ? 'P0' : undefined"
               />
             </li>
-          </ul>
+          </ol>
         </section>
-      </div>
+      </template>
     </div>
   </div>
 
-  <section v-else class="radar-reader-not-found" aria-labelledby="topic-not-found-title">
-    <div class="container radar-reader-shell">
-      <p class="radar-kicker">Topic</p>
-      <h1 id="topic-not-found-title">没有找到这个主题</h1>
-      <router-link to="/" class="radar-reader-back">← 返回情报流</router-link>
+  <section v-else class="brief" aria-labelledby="topic-not-found-title">
+    <div class="brief-masthead">
+      <div class="brief-shell">
+        <p class="brief-dateline"><span>主题</span></p>
+        <h1 id="topic-not-found-title">没有找到这个主题</h1>
+        <router-link to="/" class="brief-back">← 返回情报流</router-link>
+      </div>
     </div>
   </section>
 </template>

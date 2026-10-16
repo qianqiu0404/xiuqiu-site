@@ -5,6 +5,7 @@ import { loadMarketRadarBySlug, getSnapshotFreshness } from '../data'
 import type { MarketRadarDaily } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
 import '../../../styles/market-radar.css'
+import '../../../design/market-skin.css'
 
 const route = useRoute()
 const entry = ref<MarketRadarDaily>()

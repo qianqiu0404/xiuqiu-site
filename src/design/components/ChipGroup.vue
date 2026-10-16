@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Toggle chips with counts. `variant="tabs"` renders the underline tab style.
+// Toggle group with counts. `variant="tabs"` renders the segmented control.
 defineProps<{
   label: string
   options: { key: string; label: string; count?: number }[]
@@ -10,7 +10,7 @@ defineEmits<{ select: [key: string] }>()
 </script>
 
 <template>
-  <div :class="variant === 'tabs' ? 'radar-filter-line' : 'radar-topic-chips'" role="group" :aria-label="label">
+  <div :class="variant === 'tabs' ? 'brief-tabs' : 'brief-chips'" role="group" :aria-label="label">
     <button
       v-for="option in options"
       :key="option.key"

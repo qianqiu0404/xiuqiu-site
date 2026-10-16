@@ -11,12 +11,12 @@ defineEmits<{ action: [] }>()
 
 <template>
   <div
-    class="radar-archive-empty"
+    class="brief-state"
     :role="state === 'error' ? 'alert' : 'status'"
     :aria-busy="state === 'loading' || undefined"
   >
     <p>{{ message }}</p>
-    <button v-if="actionLabel" type="button" @click="$emit('action')">{{ actionLabel }}</button>
-    <p v-else-if="hint">{{ hint }}</p>
+    <button v-if="actionLabel" class="brief-button" type="button" @click="$emit('action')">{{ actionLabel }}</button>
+    <p v-else-if="hint" class="brief-note">{{ hint }}</p>
   </div>
 </template>

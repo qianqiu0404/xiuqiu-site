@@ -1,16 +1,95 @@
 /*
- * Design tokens: the single source for colour, type, radius and spacing.
- * Pages use the semantic names below; legacy per-family names (--radar-*,
- * --trade-*, --cinema-*, ...) are aliases kept in src/design/legacy-aliases.css
- * until each page family is migrated (AGENTS.md, P3–P6).
+ * Design tokens — "paper research brief".
  *
- * Two surfaces share one palette:
- *   night  — intel feed, radars, cinematic pages (dark canvas)
- *   paper  — reading surfaces inside night pages, articles, ledgers
+ * One source for colour, type, radius and spacing. The site reads as a daily
+ * research brief: warm paper, deep ink, one restrained accent, and colour used
+ * only to carry meaning (domain, priority, freshness). Light is the default;
+ * dark follows the system and can be forced with <html data-theme="dark">.
+ *
+ * Semantic names (--bg, --ink, --accent, --domain-*) are what new code uses.
+ * The --night-* / --paper-* names from P3 remain as aliases for page families
+ * that have not been redesigned yet (P6), so nothing regresses mid-migration.
  */
 
 :root {
-  /* Night surface */
+  color-scheme: light;
+
+  /* Surfaces */
+  --bg: #f7f6f2;
+  --bg-sunk: #efeee8;
+  --surface: #fffefb;
+  --surface-raised: #ffffff;
+
+  /* Ink (all ≥ 4.5:1 on --bg and --surface) */
+  --ink: #1b1f23;
+  --ink-2: #353b41;
+  --ink-3: #565e66;
+  --ink-4: #646c74;
+
+  /* Lines */
+  --line: #e2e0d8;
+  --line-soft: #ebe9e2;
+  --line-strong: #cfccc2;
+
+  /* Accent: deep teal, used for links, focus and the "now" marker */
+  --accent: #0f6a6f;
+  --accent-soft: rgba(15, 106, 111, 0.08);
+  --accent-ink: #0b5559;
+
+  /* Domains — text colours ≥ 4.5:1 on surface, soft fills for chips */
+  --domain-ai: #3a4fb0;
+  --domain-ai-soft: rgba(58, 79, 176, 0.09);
+  --domain-web3: #0f6a5a;
+  --domain-web3-soft: rgba(15, 106, 90, 0.09);
+  --domain-market: #8a5410;
+  --domain-market-soft: rgba(138, 84, 16, 0.1);
+  --domain-review: #1b1f23;
+  --domain-review-soft: rgba(27, 31, 35, 0.07);
+
+  /* Status */
+  --status-p0: #b3261e;
+  --status-p0-soft: rgba(179, 38, 30, 0.09);
+  --status-p1: #9a5b00;
+  --status-p2: #4a5f8a;
+  --status-fresh: #1d7a4a;
+  --status-stale: #9a5b00;
+  --focus-ring: #0f6a6f;
+
+  /* Type */
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  --font-serif: "Songti SC", "Noto Serif SC", "Source Han Serif SC", Georgia, serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Monaco, Consolas, monospace;
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-md: 17px;
+  --text-lg: 20px;
+  --text-xl: 26px;
+  --text-2xl: clamp(28px, 4vw, 40px);
+
+  /* Shape and rhythm */
+  --radius-xs: 4px;
+  --radius-control: 8px;
+  --radius-chip: 999px;
+  --radius-card: 12px;
+  --radius-panel: 14px;
+  --shadow-card: 0 1px 0 rgba(27, 31, 35, 0.04), 0 1px 2px rgba(27, 31, 35, 0.04);
+  --shadow-hover: 0 2px 4px rgba(27, 31, 35, 0.05), 0 8px 24px rgba(27, 31, 35, 0.06);
+  --touch-target: 44px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --content-width: 1180px;
+  --reading-width: 720px;
+  --header-height: 56px;
+
+  /* P3 aliases for page families not yet redesigned (removed in P6) */
   --night-bg: #030507;
   --night-surface: #090c11;
   --night-surface-raised: #10141a;
@@ -19,8 +98,6 @@
   --night-muted: #969eaa;
   --night-line: rgba(255, 255, 255, 0.11);
   --night-line-strong: rgba(255, 255, 255, 0.14);
-
-  /* Paper surface */
   --paper-bg: #f4f4f2;
   --paper-raised: #fafbf8;
   --paper-white: #ffffff;
@@ -28,33 +105,83 @@
   --paper-copy: #444d59;
   --paper-muted: #59636e;
   --paper-line: rgba(17, 21, 27, 0.16);
-
-  /* Domain accents (night / paper-safe pairs, both ≥ 4.5:1 on their surface) */
   --accent-ai: #7392ff;
   --accent-ai-ink: #3559bb;
   --accent-web3: #5ad7c7;
   --accent-web3-ink: #187d73;
   --accent-market: #5ad7c7;
-
-  /* Status */
-  --status-p0: #ef716f;
-  --status-p1: #d69a42;
-  --status-p2: #769ad3;
   --status-focus: #9eb3ff;
+  --radius-xs-legacy: 4px;
+}
 
-  /* Type */
-  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Noto Sans SC", sans-serif;
-  --font-mono: "SF Mono", "Fira Code", "Fira Mono", monospace;
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #12171a;
+    --bg-sunk: #0d1114;
+    --surface: #181e22;
+    --surface-raised: #1d2428;
+    --ink: #e8ecec;
+    --ink-2: #d0d6d7;
+    --ink-3: #a7b0b3;
+    --ink-4: #929ca0;
+    --line: #2a3237;
+    --line-soft: #232a2e;
+    --line-strong: #374046;
+    --accent: #4fd1d6;
+    --accent-soft: rgba(79, 209, 214, 0.12);
+    --accent-ink: #7fe0e3;
+    --domain-ai: #9aabff;
+    --domain-ai-soft: rgba(154, 171, 255, 0.13);
+    --domain-web3: #5fd4b8;
+    --domain-web3-soft: rgba(95, 212, 184, 0.12);
+    --domain-market: #e8b261;
+    --domain-market-soft: rgba(232, 178, 97, 0.13);
+    --domain-review: #e8ecec;
+    --domain-review-soft: rgba(232, 236, 236, 0.1);
+    --status-p0: #ff8a80;
+    --status-p0-soft: rgba(255, 138, 128, 0.13);
+    --status-p1: #f0b35a;
+    --status-p2: #9fb2dd;
+    --status-fresh: #6fd39a;
+    --status-stale: #f0b35a;
+    --focus-ring: #4fd1d6;
+    --shadow-card: 0 1px 0 rgba(0, 0, 0, 0.2);
+    --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.35);
+  }
+}
 
-  /* Shape and rhythm */
-  --radius-xs: 4px;
-  --radius-chip: 999px;
-  --radius-card: 10px;
-  --touch-target: 44px;
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-6: 24px;
-  --space-8: 32px;
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #12171a;
+  --bg-sunk: #0d1114;
+  --surface: #181e22;
+  --surface-raised: #1d2428;
+  --ink: #e8ecec;
+  --ink-2: #d0d6d7;
+  --ink-3: #a7b0b3;
+  --ink-4: #929ca0;
+  --line: #2a3237;
+  --line-soft: #232a2e;
+  --line-strong: #374046;
+  --accent: #4fd1d6;
+  --accent-soft: rgba(79, 209, 214, 0.12);
+  --accent-ink: #7fe0e3;
+  --domain-ai: #9aabff;
+  --domain-ai-soft: rgba(154, 171, 255, 0.13);
+  --domain-web3: #5fd4b8;
+  --domain-web3-soft: rgba(95, 212, 184, 0.12);
+  --domain-market: #e8b261;
+  --domain-market-soft: rgba(232, 178, 97, 0.13);
+  --domain-review: #e8ecec;
+  --domain-review-soft: rgba(232, 236, 236, 0.1);
+  --status-p0: #ff8a80;
+  --status-p0-soft: rgba(255, 138, 128, 0.13);
+  --status-p1: #f0b35a;
+  --status-p2: #9fb2dd;
+  --status-fresh: #6fd39a;
+  --status-stale: #f0b35a;
+  --focus-ring: #4fd1d6;
+  --shadow-card: 0 1px 0 rgba(0, 0, 0, 0.2);
+  --shadow-hover: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
