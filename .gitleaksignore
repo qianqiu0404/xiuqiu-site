@@ -1,0 +1,3 @@
+# Reviewed false positives only. Each entry is one exact fingerprint.
+# localStorage key name for the failure-playbook self-test progress, not a credential.
+3cd25f765aba2b600376435b9dfb583bdb8b7e88:src/pages/FailurePlaybookPage.vue:generic-api-key:23
