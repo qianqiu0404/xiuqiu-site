@@ -7,7 +7,7 @@ import {
 } from '../market-radar/worker/core.mjs'
 import { buildDigestBody, summarizeAttentionAssets } from '../market-radar/worker/digests.mjs'
 import { isUsPremarketWindow, newYorkParts } from '../market-radar/worker/market-calendar.mjs'
-import { parseBinanceKlines, parseGitHubReleasePayload, parseRss, parseSecCompanyFeed } from '../market-radar/worker/providers.mjs'
+import { checkQiuMarketHealth, parseBinanceKlines, parseGitHubReleasePayload, parseRss, parseSecCompanyFeed } from '../market-radar/worker/providers.mjs'
 import { parseEventCursor } from '../src/market-radar/contracts.ts'
 import { splitRadarMigrationStatements } from '../market-radar/worker/migrations.mjs'
 
@@ -317,4 +317,28 @@ test('manual smoke runs can select one bounded market group', () => {
 test('the duplicate DST premarket trigger exits before claiming quota', () => {
   const worker = read('market-radar/worker/run.mjs')
   assert.ok(worker.indexOf("reason: 'outside_us_premarket_window'") < worker.indexOf('claimWorkerLease()'))
+})
+
+
+test('Qiu Market health sends the read API a JSON POST', async t => {
+  let checked = false
+  t.mock.method(globalThis, 'fetch', async (url, options) => {
+    assert.equal(url, 'https://qiu.example/api/v1/get_market_insights')
+    assert.equal(options.method, 'POST')
+    assert.equal(options.headers['Content-Type'], 'application/json')
+    assert.deepEqual(JSON.parse(options.body), { consumer_token: 'market-radar-health' })
+    assert.ok(options.signal instanceof AbortSignal)
+    checked = true
+    return new Response('{}', { status: options.method === 'POST' ? 200 : 405 })
+  })
+  assert.deepEqual(await checkQiuMarketHealth('https://qiu.example'), { healthy: true, status: 200 })
+  assert.equal(checked, true)
+})
+
+test('Qiu Market health preserves HTTP and transport failures', async t => {
+  t.mock.method(globalThis, 'fetch', async () => new Response('{}', { status: 502 }))
+  assert.deepEqual(await checkQiuMarketHealth(), { healthy: false, status: 502 })
+  t.mock.restoreAll()
+  t.mock.method(globalThis, 'fetch', async () => { throw new Error('network unavailable') })
+  assert.deepEqual(await checkQiuMarketHealth(), { healthy: false, status: 0 })
 })
