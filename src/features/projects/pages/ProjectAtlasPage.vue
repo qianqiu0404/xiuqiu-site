@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import '../../../styles/cinematic-pages.css'
+import '../../../design/brief.css'
+import '../../../design/reader.css'
+import '../../../design/atlas.css'
 import { projectClaimStateLabels, projectStageLabels, siteProjects, productPresentations } from '../data'
 import type { SiteProject } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
@@ -53,74 +55,68 @@ onMounted(() =>
 </script>
 
 <template>
-  <section class="project-atlas-page project-atlas-page--cinematic cinematic-page">
-    <header class="project-atlas-hero cinematic-page-hero">
-      <div class="container project-atlas-hero-layout project-atlas-hero-layout--focused">
-        <div class="project-atlas-hero-copy">
-          <p class="cinematic-page-kicker">Project Atlas / One product, one evidence system</p>
-          <h1>Qiu Market 是当前产品。<span>其余项目按证据等级陈列。</span></h1>
-          <p>先理解 Qiu Market 的产品边界，再区分 Wallet Infrastructure 当前方向与不定义现役优先级的历史工程证据。</p>
+  <div class="brief project-atlas-page" lang="zh-CN">
+    <header class="brief-masthead">
+      <div class="brief-shell">
+        <p class="brief-dateline"><span>Project Atlas / One product, one evidence system</span></p>
+        <div class="brief-masthead-row">
+          <div>
+            <h1>Qiu Market 是当前产品。<span class="atlas-h1-sub">其余项目按证据等级陈列。</span></h1>
+            <p class="brief-lede">先理解 Qiu Market 的产品边界，再区分 Wallet Infrastructure 当前方向与不定义现役优先级的历史工程证据。</p>
+          </div>
+          <nav class="atlas-direct" aria-label="直接进入当前产品主页">
+            <router-link v-for="entry in productProjects" :key="entry.presentation.slug" class="brief-button brief-button--primary" :to="`/projects/${entry.presentation.slug}`">
+              {{ entry.presentation.shortName }} · 进入项目主页 ↗
+            </router-link>
+          </nav>
         </div>
-        <nav class="project-atlas-direct" aria-label="直接进入当前产品主页">
-          <router-link v-for="entry in productProjects" :key="entry.presentation.slug" :to="`/projects/${entry.presentation.slug}`">
-            <span>{{ entry.presentation.index }}</span>
-            <div><small>{{ entry.presentation.label }}</small><strong>{{ entry.presentation.shortName }}</strong></div>
-            <b>进入项目主页 ↗</b>
-          </router-link>
-        </nav>
       </div>
     </header>
 
-    <div class="container project-atlas-focused-registry">
-      <section id="current-product" class="project-atlas-premiere" aria-labelledby="atlas-products-title">
-        <div class="project-atlas-group-heading">
-          <div><p class="cinematic-page-kicker">Act 01</p><h2 id="atlas-products-title">Current product</h2></div>
-          <p>唯一当前产品。产品页讲清目标形态、系统流、当前证据、限制与下一道 Gate。</p>
-        </div>
+    <div class="brief-shell product-body">
+      <section id="current-product" class="reader-section" aria-labelledby="atlas-products-title">
+        <header class="reader-section-header"><span>01</span><h2 id="atlas-products-title">Current product</h2><small>唯一当前产品。产品页讲清目标形态、系统流、当前证据、限制与下一道 Gate。</small></header>
+        <article v-for="entry in productProjects" :key="entry.project.slug" class="reader-article atlas-product" :data-accent="entry.presentation.theme">
+          <p class="brief-card-meta">
+            <b class="brief-tag brief-tag--market">{{ entry.presentation.index }} / {{ entry.presentation.label }}</b>
+            <time :datetime="entry.project.updatedAt">{{ entry.project.updatedAt }}</time>
+          </p>
+          <h3>{{ entry.project.name }}</h3>
+          <p class="reader-why">{{ entry.presentation.promise }}</p>
+          <blockquote class="atlas-evidence">{{ entry.project.verifiedEvidence[0] }}</blockquote>
+          <footer class="atlas-footer">
+            <strong>{{ projectClaimStateLabels[entry.project.claimState] }} · {{ projectStageLabels[entry.project.stage] }}</strong>
+            <router-link class="brief-button" :to="`/projects/${entry.project.slug}`">进入产品主页 ↗</router-link>
+          </footer>
+        </article>
+      </section>
 
-        <div class="project-atlas-product-grid">
-          <article v-for="entry in productProjects" :key="entry.project.slug" :class="`is-${entry.presentation.theme}`">
-            <header><span>{{ entry.presentation.index }} / {{ entry.presentation.label }}</span><time :datetime="entry.project.updatedAt">{{ entry.project.updatedAt }}</time></header>
-            <h3>{{ entry.project.name }}</h3>
-            <p>{{ entry.presentation.promise }}</p>
-            <blockquote>{{ entry.project.verifiedEvidence[0] }}</blockquote>
-            <footer>
-              <strong>{{ projectClaimStateLabels[entry.project.claimState] }} · {{ projectStageLabels[entry.project.stage] }}</strong>
-              <router-link :to="`/projects/${entry.project.slug}`">进入产品主页 ↗</router-link>
+      <section
+        v-for="(group, groupIndex) in supportingGroups"
+        :id="group.role"
+        :key="group.role"
+        class="reader-section"
+        :aria-labelledby="`atlas-${group.role}-title`"
+      >
+        <header class="reader-section-header">
+          <span>{{ String(groupIndex + 2).padStart(2, '0') }}</span>
+          <h2 :id="`atlas-${group.role}-title`">{{ group.title }}</h2>
+          <small>{{ group.projects.length }} 项 · {{ group.description }}</small>
+        </header>
+        <div class="atlas-grid">
+          <article v-for="project in group.projects" :key="project.id" class="brief-panel atlas-card">
+            <p class="brief-card-meta"><span>{{ project.category }}</span><time :datetime="project.updatedAt">{{ project.updatedAt }}</time></p>
+            <h3>{{ project.name }}</h3>
+            <p>{{ project.positioning }}</p>
+            <blockquote class="atlas-evidence">{{ project.verifiedEvidence[0] }}</blockquote>
+            <footer class="atlas-footer">
+              <strong>{{ projectClaimStateLabels[project.claimState] }} · {{ projectStageLabels[project.stage] }}</strong>
+              <a v-if="projectAction(project).href" class="reader-source-link" :href="projectAction(project).href" target="_blank" rel="noopener">{{ projectAction(project).label }} ↗</a>
+              <router-link v-else class="reader-source-link" :to="projectAction(project).to!">{{ projectAction(project).label }} →</router-link>
             </footer>
           </article>
         </div>
       </section>
-
-      <section
-        v-for="group in supportingGroups"
-        :id="group.role"
-        :key="group.role"
-        class="project-atlas-archive"
-        :aria-labelledby="`atlas-${group.role}-title`"
-      >
-        <div class="project-atlas-group-heading">
-          <div><p class="cinematic-page-kicker">{{ group.act }}</p><h2 :id="`atlas-${group.role}-title`">{{ group.title }}</h2></div>
-          <p>{{ group.description }}</p>
-        </div>
-
-        <section class="project-atlas-compact-group">
-          <header><h3>{{ group.title }}</h3><span>{{ group.projects.length }} 项</span></header>
-          <div class="project-atlas-compact-list" :class="{ 'project-atlas-compact-list--single': group.projects.length === 1 }">
-            <article v-for="project in group.projects" :key="project.id">
-              <div class="project-atlas-compact-meta"><span>{{ project.category }}</span><time :datetime="project.updatedAt">{{ project.updatedAt }}</time></div>
-              <h4>{{ project.name }}</h4>
-              <p>{{ project.positioning }}</p>
-              <blockquote>{{ project.verifiedEvidence[0] }}</blockquote>
-              <footer>
-                <strong>{{ projectClaimStateLabels[project.claimState] }} · {{ projectStageLabels[project.stage] }}</strong>
-                <a v-if="projectAction(project).href" :href="projectAction(project).href" target="_blank" rel="noopener">{{ projectAction(project).label }} ↗</a>
-                <router-link v-else :to="projectAction(project).to!">{{ projectAction(project).label }} →</router-link>
-              </footer>
-            </article>
-          </div>
-        </section>
-      </section>
     </div>
-  </section>
+  </div>
 </template>

@@ -61,7 +61,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.learning-archive-page { background: #f4f4f1; }
+.learning-archive-page { background: var(--surface); }
 .learning-archive-container { max-width: 1120px; }
 .learning-archive-hero { max-width: 860px; padding: 3.2rem 0 5rem; }
 .learning-archive-hero h1 { margin: 0.75rem 0 1.4rem; font-size: clamp(3rem, 6vw, 5.8rem); letter-spacing: -0.06em; line-height: 1; text-wrap: balance; }

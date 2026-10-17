@@ -10,6 +10,10 @@
 
 ## Recent briefs
 
+- [Agents SDK 0.24：审批没结束前，不压缩上下文](https://xiuqiu-site.vercel.app/radar/2026-10-17#ai-agents-sdk-024-approval-compaction) (2026-10-17, ai/agent): 带人工门禁的 Agent，审批对象必须是稳定、可核对的原始调用。上下文管理和审批流程的先后顺序，本身就是安全边界的一部分。
+- [用模型复原 NIST 曲线种子：不是后门，是 1997 年的时钟](https://xiuqiu-site.vercel.app/radar/2026-10-17#ai-anthropic-ecdsa-curve-origins) (2026-10-17, ai/safety): 这既说明 P-256、P-384 等曲线的种子来源是普通、可复现的，反而降低了后门疑虑；也说明强模型已经能独立完成多步骤的密码学取证，安全团队需要把这类能力算进威胁模型和审计流程。
+- [Agave 4.3.2：验证者客户端的依赖也是攻击面](https://xiuqiu-site.vercel.app/radar/2026-10-17#web3-agave-432-dependency-security) (2026-10-17, web3/security): 节点安全不只看协议本身，传输层和基础库同样决定节点能不能被打挂。把依赖公告的处理方式写成可检查的规则，比单纯升级版本号更可靠。
+- [op-supernode 1.0.4：L1 重组后，safe 不能跑到未验证的块上](https://xiuqiu-site.vercel.app/radar/2026-10-17#web3-op-supernode-safe-head-reorg) (2026-10-17, web3/l2): L2 的“已确认”有好几种含义。钱包和交易所后端如果只看一个标签，重组时就可能把不该入账的资金算成安全；这次修复说明这几层确认要分开读、分开监控。
 - [vLLM 0.31：重启不重载权重，缓存键先分清来源](https://xiuqiu-site.vercel.app/radar/2026-10-13#ai-vllm-031-preload-cache-isolation) (2026-10-13, ai/model_inference): 这把推理服务的可用性和隔离性拆成两件可以分别验收的事：重启时间看权重是否常驻，多租户安全看缓存键是否带命名空间，不能只靠吞吐基准判断升级是否安全。
 - [Anthropic 防蒸馏：推理过程成为需要保护的资产](https://xiuqiu-site.vercel.app/radar/2026-10-13#ai-anthropic-distillation-defenses) (2026-10-13, ai/safety): 这说明模型服务的安全边界已经从输出内容扩展到推理过程和上下文可编辑性。做 Agent 平台时，推理日志、可回放上下文和导出接口都要按数据资产来设计访问控制。
 - [Reth 2.7：区块访问列表进入客户端存储](https://xiuqiu-site.vercel.app/radar/2026-10-13#web3-reth-bal-persistence) (2026-10-13, web3/protocol): Glamsterdam 的并行执行不是只改共识规则，而是让每个客户端多出一份要落盘、要限流的结构化数据。跑自建节点的后端要把 BAL 的存储和缓存成本算进容量规划。
@@ -18,10 +22,6 @@
 - [vLLM 0.27：首请求延迟与故障恢复要分别门禁](https://xiuqiu-site.vercel.app/radar/2026-08-13#ai-vllm-serving-reliability) (2026-08-13, ai/model_inference): 它把‘模型快不快’拆成可部署的工程问题：首请求、稳态吞吐、故障转移和依赖兼容必须分别验收，才能避免只看单次 benchmark。
 - [Sui testnet 1.77.2：源码验证要绑定发布工具链](https://xiuqiu-site.vercel.app/radar/2026-08-13#web3-sui-source-reproduction) (2026-08-13, web3/onchain_infrastructure): 钱包与交易所集成链上包时需要证明‘看到的源码’与‘实际发布字节’来自同一构建语境，这个变更提供了具体的供应链核验清单。
 - [EIP-8371：把 Blob 重建从超级节点摊到行子网](https://xiuqiu-site.vercel.app/radar/2026-08-13#web3-rowdas-reconstruction) (2026-08-13, web3/protocol): 它展示了数据可用性协议如何把恢复职责、传播网络和攻击成本写成显式状态机，也能帮助理解 L2 扩容为何不仅是提高 Blob 数量。
-- [长任务 Harness：生成器与评估器要分工](https://xiuqiu-site.vercel.app/radar/2026-08-12#ai-generator-evaluator-loop) (2026-08-12, ai/agent): 它帮助你理解 Agent 不是一次长提示，而是角色、状态和评测组成的控制系统；同样适用于研究内容的采集—编辑—门禁链路。
-- [Agent 使用研究：任务时长只是方向性估计](https://xiuqiu-site.vercel.app/radar/2026-08-12#ai-long-horizon-adoption) (2026-08-12, ai/data): 它训练你区分产品使用指标与因果结论，也提醒学习 Agent 系统时应关注验收率、返工和边界，而不是只看运行时长或 token。
-- [Ledger Live 4.15：隐私资产路径要单独门禁](https://xiuqiu-site.vercel.app/radar/2026-08-12#web3-zcash-execution-boundary) (2026-08-12, web3/wallet_cex): 它把钱包隐私、签名和发布控制放在同一个具体案例中，适合学习 coin adapter、硬件边界和敏感数据最小化。
-- [EIP-8130：把账户认证从任意代码中拆出](https://xiuqiu-site.vercel.app/radar/2026-08-12#web3-canonical-authenticator) (2026-08-12, web3/protocol): 它把账户抽象最难的认证、并发 nonce 与会话权限集中到可讨论协议中，适合训练从交易格式到钱包策略的全链路思考。
 
 ## Boundaries
 

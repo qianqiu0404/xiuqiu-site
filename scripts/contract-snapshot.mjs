@@ -66,7 +66,10 @@ export function buildManifest() {
       frozenScripts: Object.fromEntries(FROZEN_SCRIPTS.map(name => [name, scripts[name] ?? null])),
     },
     contentHash: treeHash(workingFiles('content/**')),
-    outputs: hashFiles(trackedFiles(
+    // Working tree, not just tracked files, so a newly generated month chunk is
+    // covered before it is committed. Write the baseline only after
+    // `npm run generate:content`, or it records stale output hashes.
+    outputs: hashFiles(workingFiles(
       'src/data/generated*.ts', 'src/data/generated*/**', 'public/sitemap.xml', 'public/llms.txt', 'public/radar/**', 'public/data/**',
     )),
   }

@@ -3,9 +3,7 @@
   align-items: center;
   min-height: calc(100vh - 69px);
   padding-bottom: 100px;
-  background:
-    radial-gradient(circle at 50% 30%, rgba(0, 113, 227, 0.08), transparent 32%),
-    linear-gradient(180deg, #fff 0%, var(--bg-warm) 100%);
+  background: var(--surface);
 }
 
 .route-not-found-inner {
@@ -16,7 +14,7 @@
 
 .route-not-found-code {
   margin-bottom: 6px;
-  color: rgba(0, 113, 227, 0.15);
+  color: var(--ink-4);
   font: 750 clamp(80px, 16vw, 150px) / 0.86 var(--font);
   letter-spacing: -0.08em;
 }
@@ -55,7 +53,7 @@
 }
 
 .route-not-found a:focus-visible {
-  outline: 3px solid rgba(0, 113, 227, 0.35);
+  outline: 3px solid var(--focus-ring);
   outline-offset: 4px;
 }
 

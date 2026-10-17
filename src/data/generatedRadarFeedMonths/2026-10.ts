@@ -5,6 +5,55 @@ import type { RadarFeedItem } from '../generatedRadarFeed.ts'
 
 export const monthlyFeedItems: RadarFeedItem[] = [
   {
+    "id": "ai-agents-sdk-024-approval-compaction",
+    "date": "2026-10-17",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "Agents SDK 0.24：审批没结束前，不压缩上下文",
+    "summary": "带人工门禁的 Agent，审批对象必须是稳定、可核对的原始调用。上下文管理和审批流程的先后顺序，本身就是安全边界的一部分。",
+    "anchor": "ai-agents-sdk-024-approval-compaction",
+    "sourceName": "OpenAI Agents Python SDK v0.24.0 release notes",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/openai/openai-agents-python/releases/tag/v0.24.0",
+    "isDeepDive": true
+  },
+  {
+    "id": "ai-anthropic-ecdsa-curve-origins",
+    "date": "2026-10-17",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "用模型复原 NIST 曲线种子：不是后门，是 1997 年的时钟",
+    "summary": "这既说明 P-256、P-384 等曲线的种子来源是普通、可复现的，反而降低了后门疑虑；也说明强模型已经能独立完成多步骤的密码学取证，安全团队需要把这类能力算进威胁模型和审计流程。",
+    "anchor": "ai-anthropic-ecdsa-curve-origins",
+    "sourceName": "Anthropic: Claude reveals ECDSA curve origins",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://www.anthropic.com/research/ecdsa-curve-origins"
+  },
+  {
+    "id": "web3-agave-432-dependency-security",
+    "date": "2026-10-17",
+    "domain": "web3",
+    "topic": "security",
+    "title": "Agave 4.3.2：验证者客户端的依赖也是攻击面",
+    "summary": "节点安全不只看协议本身，传输层和基础库同样决定节点能不能被打挂。把依赖公告的处理方式写成可检查的规则，比单纯升级版本号更可靠。",
+    "anchor": "web3-agave-432-dependency-security",
+    "sourceName": "Agave v4.3.2 release notes",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/anza-xyz/agave/releases/tag/v4.3.2"
+  },
+  {
+    "id": "web3-op-supernode-safe-head-reorg",
+    "date": "2026-10-17",
+    "domain": "web3",
+    "topic": "l2",
+    "title": "op-supernode 1.0.4：L1 重组后，safe 不能跑到未验证的块上",
+    "summary": "L2 的“已确认”有好几种含义。钱包和交易所后端如果只看一个标签，重组时就可能把不该入账的资金算成安全；这次修复说明这几层确认要分开读、分开监控。",
+    "anchor": "web3-op-supernode-safe-head-reorg",
+    "sourceName": "op-supernode v1.0.4 release notes",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/ethereum-optimism/optimism/releases/tag/op-supernode/v1.0.4"
+  },
+  {
     "id": "ai-vllm-031-preload-cache-isolation",
     "date": "2026-10-13",
     "domain": "ai",

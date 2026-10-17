@@ -6,9 +6,72 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-10-13"
-export const intelItemCount = 219
+export const intelLatestDate: string | null = "2026-10-17"
+export const intelItemCount = 223
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "learning:ai-agents-sdk-024-approval-compaction",
+    "kind": "learning",
+    "date": "2026-10-17",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "Agents SDK 0.24：审批没结束前，不压缩上下文",
+    "summary": "带人工门禁的 Agent，审批对象必须是稳定、可核对的原始调用。上下文管理和审批流程的先后顺序，本身就是安全边界的一部分。",
+    "href": "/radar/2026-10-17#ai-agents-sdk-024-approval-compaction",
+    "source": {
+      "name": "OpenAI Agents Python SDK v0.24.0 release notes",
+      "tier": "tier1",
+      "url": "https://github.com/openai/openai-agents-python/releases/tag/v0.24.0"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "learning:ai-anthropic-ecdsa-curve-origins",
+    "kind": "learning",
+    "date": "2026-10-17",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "用模型复原 NIST 曲线种子：不是后门，是 1997 年的时钟",
+    "summary": "这既说明 P-256、P-384 等曲线的种子来源是普通、可复现的，反而降低了后门疑虑；也说明强模型已经能独立完成多步骤的密码学取证，安全团队需要把这类能力算进威胁模型和审计流程。",
+    "href": "/radar/2026-10-17#ai-anthropic-ecdsa-curve-origins",
+    "source": {
+      "name": "Anthropic: Claude reveals ECDSA curve origins",
+      "tier": "tier1",
+      "url": "https://www.anthropic.com/research/ecdsa-curve-origins"
+    }
+  },
+  {
+    "id": "learning:web3-agave-432-dependency-security",
+    "kind": "learning",
+    "date": "2026-10-17",
+    "domain": "web3",
+    "topic": "security",
+    "title": "Agave 4.3.2：验证者客户端的依赖也是攻击面",
+    "summary": "节点安全不只看协议本身，传输层和基础库同样决定节点能不能被打挂。把依赖公告的处理方式写成可检查的规则，比单纯升级版本号更可靠。",
+    "href": "/radar/2026-10-17#web3-agave-432-dependency-security",
+    "source": {
+      "name": "Agave v4.3.2 release notes",
+      "tier": "tier1",
+      "url": "https://github.com/anza-xyz/agave/releases/tag/v4.3.2"
+    }
+  },
+  {
+    "id": "learning:web3-op-supernode-safe-head-reorg",
+    "kind": "learning",
+    "date": "2026-10-17",
+    "domain": "web3",
+    "topic": "l2",
+    "title": "op-supernode 1.0.4：L1 重组后，safe 不能跑到未验证的块上",
+    "summary": "L2 的“已确认”有好几种含义。钱包和交易所后端如果只看一个标签，重组时就可能把不该入账的资金算成安全；这次修复说明这几层确认要分开读、分开监控。",
+    "href": "/radar/2026-10-17#web3-op-supernode-safe-head-reorg",
+    "source": {
+      "name": "op-supernode v1.0.4 release notes",
+      "tier": "tier1",
+      "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-supernode/v1.0.4"
+    }
+  },
   {
     "id": "review:2026-08-14--2026-10-13",
     "kind": "review",
@@ -85,6 +148,34 @@ export const intelLatestItems: IntelItem[] = [
 ]
 export const intelTopics: IntelTopic[] = [
   {
+    "topic": "agent",
+    "domain": "ai",
+    "count": 4,
+    "lastSeen": "2026-10-17",
+    "firstSeen": "2026-08-11"
+  },
+  {
+    "topic": "security",
+    "domain": "web3",
+    "count": 3,
+    "lastSeen": "2026-10-17",
+    "firstSeen": "2026-08-10"
+  },
+  {
+    "topic": "l2",
+    "domain": "web3",
+    "count": 2,
+    "lastSeen": "2026-10-17",
+    "firstSeen": "2026-08-11"
+  },
+  {
+    "topic": "safety",
+    "domain": "ai",
+    "count": 2,
+    "lastSeen": "2026-10-17",
+    "firstSeen": "2026-10-13"
+  },
+  {
     "topic": "model_inference",
     "domain": "ai",
     "count": 3,
@@ -99,20 +190,6 @@ export const intelTopics: IntelTopic[] = [
     "firstSeen": "2026-08-12"
   },
   {
-    "topic": "security",
-    "domain": "web3",
-    "count": 2,
-    "lastSeen": "2026-10-13",
-    "firstSeen": "2026-08-10"
-  },
-  {
-    "topic": "safety",
-    "domain": "ai",
-    "count": 1,
-    "lastSeen": "2026-10-13",
-    "firstSeen": "2026-10-13"
-  },
-  {
     "topic": "market_macro",
     "domain": "market",
     "count": 6,
@@ -125,13 +202,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 4,
     "lastSeen": "2026-08-13",
     "firstSeen": "2026-08-09"
-  },
-  {
-    "topic": "agent",
-    "domain": "ai",
-    "count": 3,
-    "lastSeen": "2026-08-13",
-    "firstSeen": "2026-08-11"
   },
   {
     "topic": "onchain_infrastructure",
@@ -160,13 +230,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 2,
     "lastSeen": "2026-08-11",
     "firstSeen": "2026-08-10"
-  },
-  {
-    "topic": "l2",
-    "domain": "web3",
-    "count": 1,
-    "lastSeen": "2026-08-11",
-    "firstSeen": "2026-08-11"
   },
   {
     "topic": "market_signal",

@@ -107,10 +107,8 @@ onMounted(() => setSeoMeta({
   min-height: calc(100vh - 6rem);
   overflow: hidden;
   padding-top: 48px;
-  background:
-    radial-gradient(circle at 86% 6%, rgba(44, 96, 181, 0.08), transparent 27rem),
-    #f7f9fc;
-  color: #101b2f;
+  background: var(--surface);
+  color: var(--domain-ai);
 }
 
 .proof-index-inner {
@@ -119,7 +117,7 @@ onMounted(() => setSeoMeta({
 
 .proof-index-kicker {
   margin: 0;
-  color: #4671b6;
+  color: var(--domain-ai);
   font: 650 0.68rem/1.4 var(--mono);
   letter-spacing: 0.13em;
   text-transform: uppercase;
@@ -131,7 +129,7 @@ onMounted(() => setSeoMeta({
   gap: clamp(2.5rem, 8vw, 8rem);
   align-items: end;
   padding: clamp(3rem, 5vw, 5rem) 0 clamp(3rem, 6vw, 5.5rem);
-  border-bottom: 1px solid #d7dee9;
+  border-bottom: 1px solid var(--line-strong);
 }
 
 .proof-index-hero h1 {
@@ -145,13 +143,13 @@ onMounted(() => setSeoMeta({
 }
 
 .proof-index-hero h1 span {
-  color: #315b9f;
+  color: var(--domain-ai);
 }
 
 .proof-index-hero > div > p:last-child {
   max-width: 43rem;
   margin: 0;
-  color: #5d6879;
+  color: var(--ink-2);
   font-size: clamp(1rem, 1.45vw, 1.15rem);
   line-height: 1.8;
 }
@@ -160,8 +158,8 @@ onMounted(() => setSeoMeta({
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   margin: 0;
-  border-top: 1px solid #cfd7e3;
-  border-bottom: 1px solid #cfd7e3;
+  border-top: 1px solid var(--line-strong);
+  border-bottom: 1px solid var(--line-strong);
 }
 
 .proof-index-summary div {
@@ -173,11 +171,11 @@ onMounted(() => setSeoMeta({
 
 .proof-index-summary div + div {
   padding-left: 1.4rem;
-  border-left: 1px solid #cfd7e3;
+  border-left: 1px solid var(--line-strong);
 }
 
 .proof-index-summary dt {
-  color: #7a8798;
+  color: var(--ink-3);
   font: 650 0.62rem/1.4 var(--mono);
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -191,7 +189,7 @@ onMounted(() => setSeoMeta({
 
 .proof-index-summary span {
   margin-top: 0.7rem;
-  color: #687486;
+  color: var(--ink-2);
   font-size: 0.78rem;
 }
 
@@ -214,7 +212,7 @@ onMounted(() => setSeoMeta({
 }
 
 .proof-index-paths nav {
-  border-top: 1px solid #cfd7e3;
+  border-top: 1px solid var(--line-strong);
 }
 
 .proof-index-path {
@@ -224,29 +222,29 @@ onMounted(() => setSeoMeta({
   align-items: center;
   min-width: 0;
   padding: clamp(1.5rem, 3vw, 2.3rem) 0;
-  border-bottom: 1px solid #d7dee9;
+  border-bottom: 1px solid var(--line-strong);
   color: inherit;
   transition: color 180ms ease, padding 180ms ease;
 }
 
 .proof-index-path:hover,
 .proof-index-path:focus-visible {
-  color: #255aa9;
+  color: var(--domain-ai);
 }
 
 .proof-index-path:focus-visible {
-  outline: 2px solid #3970c7;
+  outline: 2px solid var(--accent);
   outline-offset: 7px;
 }
 
 .proof-index-path-number {
   align-self: start;
-  color: #8b96a6;
+  color: var(--ink-3);
   font: 600 0.75rem/1.4 var(--mono);
 }
 
 .proof-index-path small {
-  color: #7c8797;
+  color: var(--ink-3);
   font: 650 0.62rem/1.4 var(--mono);
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -261,7 +259,7 @@ onMounted(() => setSeoMeta({
 .proof-index-path p {
   max-width: 43rem;
   margin: 0;
-  color: #687486;
+  color: var(--ink-2);
   line-height: 1.7;
 }
 
@@ -273,7 +271,7 @@ onMounted(() => setSeoMeta({
 }
 
 .proof-index-path-action span {
-  color: #7a8798;
+  color: var(--ink-3);
   font: 550 0.7rem/1.4 var(--mono);
 }
 
@@ -291,11 +289,11 @@ onMounted(() => setSeoMeta({
   gap: 2rem;
   margin-top: clamp(2rem, 4vw, 3.5rem);
   padding-top: 1.3rem;
-  border-top: 1px solid #d7dee9;
+  border-top: 1px solid var(--line-strong);
 }
 
 .proof-index-boundary strong {
-  color: #48617f;
+  color: var(--domain-ai);
   font: 650 0.68rem/1.4 var(--mono);
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -304,7 +302,7 @@ onMounted(() => setSeoMeta({
 .proof-index-boundary p {
   max-width: 51rem;
   margin: 0;
-  color: #697587;
+  color: var(--ink-3);
   font-size: 0.84rem;
   line-height: 1.75;
 }
