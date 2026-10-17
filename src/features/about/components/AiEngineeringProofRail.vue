@@ -106,9 +106,9 @@ function askAi(event: MouseEvent) {
 
 <style scoped>
 .ai-proof-rail {
-  --proof-border: rgba(255, 255, 255, 0.14);
-  --proof-muted: rgba(242, 246, 255, 0.66);
-  --proof-soft: rgba(242, 246, 255, 0.82);
+  --proof-border: var(--line);
+  --proof-muted: var(--ink-2);
+  --proof-soft: var(--ink-2);
   position: relative;
   display: flex;
   max-height: 100%;
@@ -117,11 +117,9 @@ function askAi(event: MouseEvent) {
   width: 100%;
   border: 1px solid var(--proof-border);
   border-radius: 28px;
-  background:
-    radial-gradient(circle at 86% -5%, rgba(166, 207, 255, 0.2), transparent 34%),
-    linear-gradient(155deg, rgba(21, 25, 34, 0.96), rgba(5, 7, 12, 0.94));
-  box-shadow: 0 28px 72px rgba(0, 0, 0, 0.24), inset 0 1px rgba(255, 255, 255, 0.08);
-  color: #f7f9fd;
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
+  color: var(--ink);
   padding: 24px;
   isolation: isolate;
   backdrop-filter: blur(20px);
@@ -135,7 +133,7 @@ function askAi(event: MouseEvent) {
   right: 18%;
   left: 18%;
   height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(210, 231, 255, 0.84), transparent);
+  background: var(--surface);
   content: '';
 }
 
@@ -150,7 +148,7 @@ function askAi(event: MouseEvent) {
 }
 
 .ai-proof-kicker {
-  color: rgba(219, 235, 255, 0.92);
+  color: var(--ink);
   font-size: 10px;
   font-weight: 700;
 }
@@ -164,7 +162,7 @@ function askAi(event: MouseEvent) {
 
 .ai-proof-header h2 {
   margin-top: 7px;
-  color: #fff;
+  color: var(--ink);
   font-size: clamp(22px, 2vw, 28px);
   letter-spacing: -0.035em;
   line-height: 1.12;
@@ -185,7 +183,7 @@ function askAi(event: MouseEvent) {
   margin-top: 24px;
   overflow-y: auto;
   padding: 0 4px 0 0;
-  scrollbar-color: rgba(207, 226, 250, 0.28) transparent;
+  scrollbar-color: var(--line-strong) transparent;
   scrollbar-width: thin;
   list-style: none;
 }
@@ -196,7 +194,7 @@ function askAi(event: MouseEvent) {
 
 .ai-proof-steps::-webkit-scrollbar-thumb {
   border-radius: 999px;
-  background: rgba(207, 226, 250, 0.28);
+  background: var(--bg-sunk);
 }
 
 .ai-proof-steps li {
@@ -204,7 +202,7 @@ function askAi(event: MouseEvent) {
   display: grid;
   grid-template-columns: 28px minmax(0, 1fr);
   gap: 11px;
-  border-top: 1px solid rgba(255, 255, 255, 0.09);
+  border-top: 1px solid var(--line);
   padding: 14px 0;
 }
 
@@ -215,18 +213,18 @@ function askAi(event: MouseEvent) {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: rgba(206, 226, 250, 0.44);
-  box-shadow: 0 0 0 3px rgba(206, 226, 250, 0.06);
+  background: var(--bg-sunk);
+  box-shadow: var(--shadow-card);
   content: '';
 }
 
 .ai-proof-steps li.is-active::after {
-  background: #fff;
-  box-shadow: 0 0 0 4px rgba(181, 217, 255, 0.16), 0 0 18px rgba(181, 217, 255, 0.62);
+  background: var(--surface);
+  box-shadow: var(--shadow-card);
 }
 
 .ai-proof-index {
-  color: rgba(228, 239, 252, 0.46);
+  color: var(--ink-3);
   font-size: 8px;
   line-height: 1.5;
 }
@@ -239,7 +237,7 @@ function askAi(event: MouseEvent) {
 }
 
 .ai-proof-step-heading h3 {
-  color: #fff;
+  color: var(--ink);
   font-size: 12px;
   font-weight: 650;
   letter-spacing: -0.01em;
@@ -248,7 +246,7 @@ function askAi(event: MouseEvent) {
 
 .ai-proof-status {
   flex: 0 0 auto;
-  color: rgba(196, 222, 252, 0.72);
+  color: var(--ink-2);
   font-size: 8px;
   font-weight: 650;
 }
@@ -261,14 +259,14 @@ function askAi(event: MouseEvent) {
 }
 
 .ai-proof-boundary {
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid var(--line);
   border-radius: 16px;
-  background: rgba(255, 255, 255, 0.045);
+  background: var(--bg-sunk);
   padding: 13px 14px;
 }
 
 .ai-proof-boundary > span {
-  color: rgba(204, 226, 251, 0.7);
+  color: var(--ink-2);
   font-size: 8px;
   font-weight: 700;
 }
@@ -300,16 +298,16 @@ function askAi(event: MouseEvent) {
 }
 
 .ai-proof-evidence {
-  border: 1px solid rgba(255, 255, 255, 0.13);
-  background: rgba(255, 255, 255, 0.04);
-  color: rgba(239, 246, 255, 0.84);
+  border: 1px solid var(--line);
+  background: var(--bg-sunk);
+  color: var(--ink-2);
   text-decoration: none;
 }
 
 .ai-proof-ask {
-  border: 1px solid rgba(218, 235, 255, 0.25);
-  background: rgba(247, 250, 255, 0.94);
-  color: #10131a;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink-2);
   cursor: pointer;
 }
 
@@ -319,18 +317,18 @@ function askAi(event: MouseEvent) {
 }
 
 .ai-proof-evidence:hover {
-  border-color: rgba(255, 255, 255, 0.28);
-  background: rgba(255, 255, 255, 0.075);
-  color: #fff;
+  border-color: var(--line);
+  background: var(--bg-sunk);
+  color: var(--ink);
 }
 
 .ai-proof-ask:hover {
-  background: #fff;
+  background: var(--surface);
 }
 
 .ai-proof-evidence:focus-visible,
 .ai-proof-ask:focus-visible {
-  outline: 3px solid rgba(191, 222, 255, 0.52);
+  outline: 3px solid var(--accent);
   outline-offset: 3px;
 }
 

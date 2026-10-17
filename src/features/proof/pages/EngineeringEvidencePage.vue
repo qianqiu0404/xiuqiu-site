@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from 'vue'
-import '../../../styles/cinematic-pages.css'
+import '../../../design/brief.css'
 import { evidenceCapabilities, evidenceCellStatus, evidenceForCell, evidenceKinds, evidenceStatusLabels, deliveryStatusLabels, evidenceKindLabels, evidenceLedgerRecords, evidenceLedgerStats, evidenceProjectOptions, evidenceVisibilityLabels, failureEvidenceStatusLabels, projectClaimStateLabels, projectPublicRoleLabels } from '../data'
 import type { EvidenceKind, EvidenceStatus, EvidenceVisibility } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
@@ -80,11 +80,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="verification-ledger-page cinematic-page">
-    <header class="verification-hero cinematic-page-hero">
+  <section class="brief verification-ledger-page" lang="zh-CN">
+    <header class="brief-masthead verification-hero">
       <div class="container verification-hero-layout">
         <div class="verification-hero-copy">
-          <p class="cinematic-page-kicker">Engineering Evidence / Verification Ledger</p>
+          <p class="brief-dateline"><span>Engineering Evidence / Verification Ledger</span></p>
           <h1>每一个工程判断，<span>都应该能沿证据链追溯。</span></h1>
           <p>
             账本按日期记录实现、测试、演示与公开说明。Qiu Market 是当前产品，Wallet Infrastructure 是 locked 当前方向；其余钱包项目与 AI 交付按历史证据展示。

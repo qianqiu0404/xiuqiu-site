@@ -90,11 +90,9 @@ onMounted(() => setSeoMeta({
   min-height: calc(100vh - 6rem);
   overflow: hidden;
   padding-top: 48px;
-  background:
-    linear-gradient(90deg, transparent 0, transparent calc(100% - 1px), rgba(25, 50, 87, 0.04) calc(100% - 1px)),
-    #fbfcfe;
+  background: var(--surface);
   background-size: min(25vw, 22rem) 100%;
-  color: #101b2f;
+  color: var(--domain-ai);
 }
 
 .about-now-inner {
@@ -103,7 +101,7 @@ onMounted(() => setSeoMeta({
 
 .about-now-kicker {
   margin: 0;
-  color: #426cae;
+  color: var(--domain-ai);
   font: 650 0.68rem/1.4 var(--mono);
   letter-spacing: 0.13em;
   text-transform: uppercase;
@@ -115,7 +113,7 @@ onMounted(() => setSeoMeta({
   gap: clamp(3rem, 9vw, 9rem);
   align-items: end;
   padding: clamp(3rem, 5vw, 5rem) 0 clamp(3.25rem, 6vw, 5.75rem);
-  border-bottom: 1px solid #d9e0e9;
+  border-bottom: 1px solid var(--line-strong);
 }
 
 .about-now-copy h1 {
@@ -131,7 +129,7 @@ onMounted(() => setSeoMeta({
 .about-now-summary {
   max-width: 49rem;
   margin: 0;
-  color: #5b6779;
+  color: var(--ink-2);
   font-size: clamp(1rem, 1.45vw, 1.16rem);
   line-height: 1.8;
 }
@@ -141,7 +139,7 @@ onMounted(() => setSeoMeta({
   gap: 0;
   max-width: 50rem;
   margin: 2rem 0 0;
-  border-top: 1px solid #d9e0e9;
+  border-top: 1px solid var(--line-strong);
 }
 
 .about-now-role div {
@@ -149,11 +147,11 @@ onMounted(() => setSeoMeta({
   grid-template-columns: 8.2rem minmax(0, 1fr);
   gap: 1.25rem;
   padding: 0.9rem 0;
-  border-bottom: 1px solid #e2e7ee;
+  border-bottom: 1px solid var(--line-strong);
 }
 
 .about-now-role dt {
-  color: #8390a0;
+  color: var(--ink-3);
   font: 650 0.63rem/1.55 var(--mono);
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -162,7 +160,7 @@ onMounted(() => setSeoMeta({
 .about-now-role dd {
   min-width: 0;
   margin: 0;
-  color: #2c3c53;
+  color: var(--domain-ai);
   line-height: 1.55;
 }
 
@@ -171,7 +169,7 @@ onMounted(() => setSeoMeta({
   display: grid;
   gap: 0.9rem;
   padding: 2rem 0 0;
-  border-top: 2px solid #315f9f;
+  border-top: 2px solid var(--accent);
 }
 
 .about-now-boundary::before {
@@ -181,22 +179,22 @@ onMounted(() => setSeoMeta({
   width: 0.62rem;
   height: 0.62rem;
   border-radius: 50%;
-  background: #315f9f;
-  box-shadow: 0 0 0 0.35rem #dce7f6;
+  background: var(--accent);
+  box-shadow: var(--shadow-card);
   content: '';
 }
 
 .about-now-boundary[data-stale='true'] {
-  border-color: #9a6930;
+  border-color: var(--line-strong);
 }
 
 .about-now-boundary[data-stale='true']::before {
-  background: #9a6930;
-  box-shadow: 0 0 0 0.35rem #f3e7d8;
+  background: var(--bg-sunk);
+  box-shadow: var(--shadow-card);
 }
 
 .about-now-boundary span {
-  color: #667790;
+  color: var(--domain-ai);
   font: 650 0.64rem/1.4 var(--mono);
   letter-spacing: 0.11em;
   text-transform: uppercase;
@@ -211,7 +209,7 @@ onMounted(() => setSeoMeta({
 
 .about-now-boundary p {
   margin: 0;
-  color: #687486;
+  color: var(--ink-2);
   font-size: 0.88rem;
   line-height: 1.75;
 }
@@ -221,7 +219,7 @@ onMounted(() => setSeoMeta({
   grid-template-columns: minmax(15rem, 0.62fr) minmax(0, 1.38fr);
   gap: clamp(2.5rem, 8vw, 8rem);
   padding: clamp(3.5rem, 7vw, 6.5rem) 0;
-  border-bottom: 1px solid #d9e0e9;
+  border-bottom: 1px solid var(--line-strong);
 }
 
 .about-now-focus header h2 {
@@ -235,7 +233,7 @@ onMounted(() => setSeoMeta({
 .about-now-focus header > p:last-child {
   max-width: 22rem;
   margin: 0;
-  color: #758093;
+  color: var(--ink-3);
   font-size: 0.86rem;
   line-height: 1.7;
 }
@@ -244,7 +242,7 @@ onMounted(() => setSeoMeta({
   min-width: 0;
   margin: 0;
   padding: 0;
-  border-top: 1px solid #cfd7e2;
+  border-top: 1px solid var(--line-strong);
   list-style: none;
 }
 
@@ -253,17 +251,17 @@ onMounted(() => setSeoMeta({
   grid-template-columns: 3.4rem minmax(0, 1fr);
   gap: 1.2rem;
   padding: clamp(1.35rem, 2.5vw, 2rem) 0;
-  border-bottom: 1px solid #d9e0e9;
+  border-bottom: 1px solid var(--line-strong);
 }
 
 .about-now-focus li span {
-  color: #426cae;
+  color: var(--domain-ai);
   font: 650 0.7rem/1.7 var(--mono);
 }
 
 .about-now-focus li p {
   margin: 0;
-  color: #2d3c51;
+  color: var(--domain-ai);
   line-height: 1.75;
 }
 
@@ -278,12 +276,12 @@ onMounted(() => setSeoMeta({
 .about-now-delivery time {
   display: block;
   margin-top: 0.75rem;
-  color: #7a8798;
+  color: var(--ink-3);
   font: 550 0.72rem/1.4 var(--mono);
 }
 
 .about-now-delivery-status {
-  color: #426cae;
+  color: var(--domain-ai);
   font: 650 0.64rem/1.4 var(--mono);
   letter-spacing: 0.08em;
 }
@@ -297,20 +295,20 @@ onMounted(() => setSeoMeta({
 .about-now-delivery p {
   max-width: 43rem;
   margin: 0;
-  color: #687486;
+  color: var(--ink-2);
   line-height: 1.7;
 }
 
 .about-now-delivery small {
   display: block;
   margin-top: 0.75rem;
-  color: #8994a3;
+  color: var(--ink-3);
   font: 550 0.68rem/1.5 var(--mono);
 }
 
 .about-now-delivery > a {
   white-space: nowrap;
-  color: #285da9;
+  color: var(--domain-ai);
   font-size: 0.82rem;
   font-weight: 700;
 }
@@ -321,7 +319,7 @@ onMounted(() => setSeoMeta({
 }
 
 .about-now-delivery > a:focus-visible {
-  outline: 2px solid #3970c7;
+  outline: 2px solid var(--accent);
   outline-offset: 6px;
 }
 
@@ -372,4 +370,5 @@ onMounted(() => setSeoMeta({
     grid-column: 1;
   }
 }
+.about-now-delivery a { min-height: var(--touch-target); display: inline-flex; align-items: center; }
 </style>

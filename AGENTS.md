@@ -36,7 +36,8 @@ xiuqiu-site 是一个以 **AI + Web3 Radar 情报流** 为主的个人站点：�
   - `src/design/tokens.css`：颜色、字号、间距、圆角。浅色是默认，深色跟随系统，`<html data-theme>` 可强制切换。新代码只用语义名（`--bg`、`--ink-*`、`--accent`、`--domain-*`、`--status-*`）。
   - `src/design/shell.css`：情报流相关路由的页头、页脚和主题切换。
   - `src/design/brief.css` + `reader.css`：情报流、主题页、日报、周报、趋势回顾共用的布局和组件；`market-skin.css` 把市场雷达旧页面映射到同一套色板。
-- 情报流相关页面（`/`、`/topics/*`、`/radar/**`、`/market-radar/**`）已用新设计；`/about`、`/projects`、`/articles`、证据和 AI 页仍是旧样式，等 P6 迁移。
+- 全站所有路由都使用 brief 外壳和同一套 token（P6 完成）；旧的深色 cinematic 外壳已删除。`src/style.css` 和 `src/styles/*.css` 里剩下的页面样式只引用 token，不再写死颜色。
+- 新增或修改样式时不要写十六进制或 rgba 颜色，用 `src/design/tokens.css` 里的变量。
 - 改颜色后要在浅色和深色下都确认文字对比度 ≥ 4.5:1（大字 ≥ 3:1）；`design-components` 测试会检查 token 是否齐全、深浅两套是否一致。
 - 新增页面逻辑（筛选、分组、格式化）写成 `*Presentation.ts` 里的纯函数，配 `node:test` 测试，不要直接写在 `.vue` 里。
 - 不要再新增一份 `SITE_URL`、`escapeHtml` 或新的深色 token。确实需要时，先复用已有的定义。
@@ -106,5 +107,5 @@ xiuqiu-site 是一个以 **AI + Web3 Radar 情报流** 为主的个人站点：�
    - 统一的 `IntelItem` 数据结构，learning 和 market 两类内容都归一到它。
    - `/` 改为信息流首页，新增 `/topics/:topic` 主题页、静态 API `public/data/intel/*` 和新导航。
    - 旧 URL 加 redirect。
-7. **P6 其余页面**：articles、projects、proof、ai、about 迁到新设计系统，删除旧 CSS，收紧 CSS 预算。
+7. **P6 其余页面**（已完成）：articles、projects、proof、ai、about 迁到新设计系统，删除旧 CSS，收紧 CSS 预算。
 8. **P7（可选）**：用预渲染替代客户端 SEO 和 `generate-meta-pages.mjs`。

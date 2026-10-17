@@ -41,7 +41,6 @@ const indexHtml = readFileSync(new URL('../index.html', import.meta.url), 'utf8'
 const readmeSource = readFileSync(new URL('../README.md', import.meta.url), 'utf8')
 const globalStyleSource = readFileSync(new URL('../src/style.css', import.meta.url), 'utf8')
 const homeStyleSource = readFileSync(new URL('../src/styles/home.css', import.meta.url), 'utf8')
-const cinematicPagesCss = readFileSync(new URL('../src/styles/cinematic-pages.css', import.meta.url), 'utf8')
 const briefCss = readFileSync(new URL('../src/design/brief.css', import.meta.url), 'utf8')
 const notFoundStyleSource = readFileSync(new URL('../src/styles/not-found.css', import.meta.url), 'utf8')
 const aiProofRailSource = readFileSync(new URL('../src/features/about/components/AiEngineeringProofRail.vue', import.meta.url), 'utf8')
@@ -105,7 +104,7 @@ test('article body keeps heading hierarchy without repeating the document title'
 })
 
 test('article paper, touch, focus and long-content style contracts stay responsive', () => {
-  assert.match(globalStyleSource, /\.article-reader-page\s*\{[\s\S]*?--article-paper: #f5f3ee;[\s\S]*?background: var\(--article-paper\)/)
+  assert.match(globalStyleSource, /\.article-reader-page\s*\{[\s\S]*?--article-paper: var\(--bg\);[\s\S]*?background: var\(--article-paper\)/)
   assert.match(globalStyleSource, /\.article-reader-page :where\(a, button\):focus-visible/)
   assert.match(globalStyleSource, /\.article-detail-body\s*\{[\s\S]*?width: min\(100%, 760px\);[\s\S]*?overflow-wrap: anywhere/)
   assert.match(globalStyleSource, /\.article-detail-body \.code-block\s*\{[\s\S]*?overflow-x: auto/)
@@ -411,8 +410,9 @@ test('cinematic evidence pages preserve their source-backed interaction contract
   assert.match(projectAtlasSource, /project\.verifiedEvidence\[0\]/)
   assert.match(projectAtlasSource, /productPresentations/)
   assert.match(projectAtlasSource, /进入产品主页/)
-  assert.match(cinematicPagesCss, /\.project-atlas-product-grid footer a \{[\s\S]*?min-height: 44px/)
-  assert.match(cinematicPagesCss, /\.project-atlas-compact-list footer a \{[\s\S]*?min-height: 44px/)
+  // Atlas actions use the shared brief targets (44px via --touch-target).
+  assert.match(projectAtlasSource, /class="brief-button" :to="`\/projects\/\$\{entry\.project\.slug\}`">进入产品主页/)
+  assert.match(projectAtlasSource, /class="reader-source-link" :href="projectAction\(project\)\.href"/)
   assert.match(projectAtlasSource, /target="_blank"/)
   assert.match(projectAtlasSource, /rel="noopener"/)
 
