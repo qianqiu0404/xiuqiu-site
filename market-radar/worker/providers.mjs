@@ -136,7 +136,12 @@ export async function fetchBinanceSeries({ symbol, startTime, endTime, interval 
 
 export async function checkQiuMarketHealth(baseUrl = 'https://qiu-market.vercel.app') {
   try {
-    const response = await fetch(`${baseUrl}/api/v1/get_market_insights`, { signal: AbortSignal.timeout(8_000) })
+    const response = await fetch(`${baseUrl}/api/v1/get_market_insights`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ consumer_token: 'market-radar-health' }),
+      signal: AbortSignal.timeout(8_000),
+    })
     return { healthy: response.ok, status: response.status }
   } catch {
     return { healthy: false, status: 0 }
