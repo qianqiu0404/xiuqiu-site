@@ -5,6 +5,189 @@ import type { DailyRadar } from '../generatedRadars.ts'
 
 export const monthlyRadars: DailyRadar[] = [
   {
+    "date": "2026-10-17",
+    "slug": "2026-10-17",
+    "title": "学习雷达 · 2026-10-17",
+    "summary": "AI 关注 Agent 审批与上下文压缩的先后顺序、用模型复原 ECDSA 曲线种子；Web3 关注 Solana 客户端的依赖安全版本，以及 OP Stack 在 L1 重组后如何守住 safe head。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-10-17T03:00:00.000Z",
+    "generatedAt": "2026-10-17T03:00:00.000Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-agents-sdk-024-approval-compaction",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "Agents SDK 0.24：审批没结束前，不压缩上下文",
+        "whatHappened": "OpenAI Agents Python SDK 在 2026-10-15 发布 0.24.0。自动上下文压缩会在仍有待审批调用时暂缓，延迟审批的历史在恢复运行后继续保留；会话写入按 API 的 20 条上限分批；RunState 快照升级到 schema 1.21，部分旧版同名 agent 图需要在原 SDK 上跑完。",
+        "mechanism": "压缩会把旧的对话轮次折叠成摘要。如果压缩发生在审批悬而未决的时候，被审批的那次工具调用可能失去完整上下文，恢复后审批人看到的已经不是当初那份参数。0.24 把顺序固定为先结清审批、再允许压缩，并让延迟审批的记录跟着会话身份一起持久化。",
+        "workedExample": "一个需要人工批准才能发起转账的 Agent：调用在等待审批时触发了上下文长度阈值。升级前可能先压缩、再恢复，审批界面里的上下文被摘要替换；升级后压缩被推迟，审批人看到原始调用和参数，批准后才进入压缩。",
+        "whyItMatters": "带人工门禁的 Agent，审批对象必须是稳定、可核对的原始调用。上下文管理和审批流程的先后顺序，本身就是安全边界的一部分。",
+        "risksAndLimits": [
+          "RunState schema 1.21 的读取器会拒绝部分旧版同名非根 agent 图，旧 SDK 也读不了 1.21 快照，升级前要先跑完受影响的长任务。",
+          "自定义 tool_error_formatter 现在可能收到 kind=\"tool_exception\"，没有处理这个值的回调需要补上分支或返回 None。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "OpenAI Agents Python SDK v0.24.0 release notes",
+            "url": "https://github.com/openai/openai-agents-python/releases/tag/v0.24.0",
+            "publishedAt": "2026-10-15T02:20:12.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "自定义的上下文裁剪或摘要逻辑，是否也会在审批未决时改写历史？",
+          "长任务跨 SDK 版本升级时，怎样判断哪些 RunState 必须先在旧版本上跑完？"
+        ]
+      },
+      {
+        "id": "ai-anthropic-ecdsa-curve-origins",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "用模型复原 NIST 曲线种子：不是后门，是 1997 年的时钟",
+        "whatHappened": "Anthropic Frontier Red Team 在 2026-10-16 发布研究：内部模型在半小时内复原了 NIST 素数曲线种子的来源。种子来自 C 库的 lrand48 伪随机数生成器，用 Unix 时间戳初始化，时间在 1997 年 5 月到 1998 年 4 月之间，例如 P-256 对应 1997-08-16，第 1842 个候选。作者明确说这不是密码学破解，也不是新攻击。",
+        "mechanism": "模型先假设生成器是 1990 年代 C 库常见的 PRNG，写了覆盖 34 种生成器与输出切片组合的扫描器；发现四个种子的高位全为 0（偶然概率约 1/5810），锁定 lrand48，再暴力搜索隐藏的 17 位状态并用 LLL 格基约化处理截断的种子，最后把状态倒推回 srand48 的初始化形式。",
+        "workedExample": "把它当成一次长链条的研究任务来看：模型提出可检验的假设、写扫描程序、用统计异常缩小范围、再用已知数学工具求解。团队可以照这个方式让 Agent 做逆向或审计，但每一步都要留下可复跑的程序和中间结果，而不是只看最终结论。",
+        "whyItMatters": "这既说明 P-256、P-384 等曲线的种子来源是普通、可复现的，反而降低了后门疑虑；也说明强模型已经能独立完成多步骤的密码学取证，安全团队需要把这类能力算进威胁模型和审计流程。",
+        "risksAndLimits": [
+          "大素数曲线（P-224、P-256、P-384、P-521）的基点生成方式仍未解出，二进制曲线 B-163 的种子也没有对上已知方法。",
+          "作者指出同一轮里有被跳过的可用候选，选择标准未知；他们认为不足以构成弱化，但没有证明完全没有筛选。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_research",
+            "name": "Anthropic: Claude reveals ECDSA curve origins",
+            "url": "https://www.anthropic.com/research/ecdsa-curve-origins",
+            "publishedAt": "2026-10-15T16:00:00.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "钱包或签名服务里还有哪些参数依赖“来源不明但大家都在用”的常量？",
+          "让 Agent 做密码学或协议审计时，怎样要求它留下可独立复核的中间产物？"
+        ]
+      },
+      {
+        "id": "web3-agave-432-dependency-security",
+        "domain": "web3",
+        "topic": "security",
+        "title": "Agave 4.3.2：验证者客户端的依赖也是攻击面",
+        "whatHappened": "Anza 在 2026-10-15 发布 Agave 4.3.2，标为适用于 Testnet、Devnet 和 Mainnet Beta 的稳定版。更新把 quinn 和 quinn-proto 直接 vendored 进代码树并修复 rustsec20260339，对 RUSTSEC-2026-0292 在审计里忽略的同时在 CI 中禁止调用受影响的 imbl 代码路径，并说明部分 rustls 公告不影响 Agave。",
+        "mechanism": "QUIC 库负责验证者之间的网络传输，库里的漏洞可以直接变成节点的 DoS 面。Agave 的做法分两层：网络栈依赖 vendored 进仓库，修复不必等上游发版；对判定不受影响的公告，不只是忽略告警，还在 CI 里禁用对应的代码路径，防止以后有人误用。",
+        "workedExample": "交易所或钱包后端如果自己跑 Solana RPC 节点，升级前可以对照这次的发布说明：确认网络栈依赖的修复版本，检查自己的部署镜像是否也带有被忽略的公告对应的依赖，并把“忽略告警”与“禁止调用”的结论写进内部的依赖审计记录。",
+        "whyItMatters": "节点安全不只看协议本身，传输层和基础库同样决定节点能不能被打挂。把依赖公告的处理方式写成可检查的规则，比单纯升级版本号更可靠。",
+        "risksAndLimits": [
+          "发布说明没有给出升级紧急程度和具体的利用条件，运营方需要自己评估暴露面。",
+          "vendored 依赖会让后续跟进上游修复变成手工工作，需要有人持续核对上游安全公告。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "security_release",
+            "name": "Agave v4.3.2 release notes",
+            "url": "https://github.com/anza-xyz/agave/releases/tag/v4.3.2",
+            "publishedAt": "2026-10-15T22:20:41.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "自建节点的镜像里，网络栈依赖的版本由谁跟踪、多久核对一次？",
+          "“公告不影响我们”这个结论，怎样变成 CI 里可以自动检查的规则？"
+        ]
+      },
+      {
+        "id": "web3-op-supernode-safe-head-reorg",
+        "domain": "web3",
+        "topic": "l2",
+        "title": "op-supernode 1.0.4：L1 重组后，safe 不能跑到未验证的块上",
+        "whatHappened": "Optimism 在 2026-10-07 发布 op-supernode 1.0.4，建议运营方升级。修复两处开启 interop 的链在 L1 重组后的 safe head 问题：safe 标签现在停在最后一个已跨链验证的块，不再推进到未验证的块；开启 --safedb.path 时，派生重置会把 safe head 数据库截断到 local-safe，避免查询悄悄返回错误的 L1 区块。",
+        "mechanism": "interop 链有两层安全：local-safe 表示本链从 L1 派生出的块，cross-safe 表示跨链依赖也验证过的块。L1 重组会把 local-safe 拉回去；旧版本可能让 safe 标签越过最后一个跨链验证的块，或者在重置时删掉中间一段 safe head 记录，之后 superroot_atTimestamp、optimism_safeHeadAtL1Block 会在不报错的情况下返回偏后的 L1 区块。",
+        "workedExample": "交易所在 OP Stack 链上判断入账是否“安全”时，如果读的是 safe 标签或 safe head 数据库，重组后可能把还没跨链验证的块当成已确认。升级后要重建一次 safe head 数据库清掉旧缺口，并在入账逻辑里核对 optimism_syncStatus 的 safe 与 cross-safe 是否一致。",
+        "whyItMatters": "L2 的“已确认”有好几种含义。钱包和交易所后端如果只看一个标签，重组时就可能把不该入账的资金算成安全；这次修复说明这几层确认要分开读、分开监控。",
+        "risksAndLimits": [
+          "新版本只阻止新的缺口，已经存在的缺口不会自动修复，必须手动重建 safe head 数据库。",
+          "修复只针对开启 interop 的链；没开 interop 的链不受这两处问题影响，但同样值得检查入账逻辑用的是哪一层确认。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "op-supernode v1.0.4 release notes",
+            "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-supernode/v1.0.4",
+            "publishedAt": "2026-10-07T08:42:29.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "后端的入账判断用的是 unsafe、safe、cross-safe 还是 finalized？重组时各自会怎样变化？",
+          "safe head 数据库出现缺口时，有没有监控能在查询结果出错之前发现？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-ai-approval-before-compaction",
+      "domain": "ai",
+      "topic": "agent",
+      "title": "审批和上下文压缩：谁先谁后决定了门禁是否有效",
+      "whatHappened": "OpenAI Agents SDK 0.24.0（2026-10-15）把自动压缩推迟到审批结清之后，并让延迟审批的历史在恢复后保留。前几个版本已经在审批路径上逐步收紧：0.22.3 让条件审批按校验后的工具参数判断，0.23.0 把函数工具审批限定在所属 agent 内，并要求会话历史使用加密封装。",
+      "mechanism": "人工门禁能起作用，要满足三个条件：审批对象是确定的一次调用，审批时看到的参数就是将要执行的参数，审批前后这次调用的上下文不被改写。上下文压缩会动第三个条件。把顺序定为先结清审批再压缩，相当于给审批中的调用加了一把锁，压缩只能处理已经结清的历史。",
+      "workedExample": "设想一条三步的发布流程：Agent 起草公告，等待人工审批，审批通过后调用发布工具。如果在等待审批期间，对话长度触发了压缩，压缩把起草过程概括成一句话。升级前，恢复后的审批人可能只看到摘要；升级后，压缩会等到审批结束，审批人看到的是完整的草稿和发布参数，批准后才折叠历史。",
+      "whyItMatters": "做 Agent 平台时，审批、上下文管理和持久化往往由不同的人分别开发。这个版本说明它们之间的先后顺序需要单独设计和测试，否则门禁可能在没人注意的情况下失效。",
+      "risksAndLimits": [
+        "这只覆盖 SDK 自带的自动压缩；应用层自己实现的摘要、截断或检索增强，仍可能在审批未决时改写上下文。",
+        "发布说明描述的是行为变化，没有给出可直接复用的测试用例，团队需要自己补上“审批中触发压缩”的回归测试。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "OpenAI Agents Python SDK v0.23.0 release notes (approval scoping, encrypted history)",
+          "url": "https://github.com/openai/openai-agents-python/releases/tag/v0.23.0",
+          "publishedAt": "2026-10-02T01:08:23.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_release",
+          "name": "OpenAI Agents Python SDK v0.22.3 release notes (approvals match validated arguments)",
+          "url": "https://github.com/openai/openai-agents-python/releases/tag/v0.22.3",
+          "publishedAt": "2026-09-17T22:19:05.000Z"
+        }
+      ],
+      "nextQuestions": [
+        "自己的 Agent 平台里，有没有“审批中触发压缩或截断”的回归测试？",
+        "审批记录应该保存原始参数、参数摘要，还是两者都要？"
+      ],
+      "basedOnBriefId": "ai-agents-sdk-024-approval-compaction"
+    },
+    "sourceUrls": [
+      "https://github.com/openai/openai-agents-python/releases/tag/v0.24.0",
+      "https://www.anthropic.com/research/ecdsa-curve-origins",
+      "https://github.com/anza-xyz/agave/releases/tag/v4.3.2",
+      "https://github.com/ethereum-optimism/optimism/releases/tag/op-supernode/v1.0.4",
+      "https://github.com/openai/openai-agents-python/releases/tag/v0.23.0",
+      "https://github.com/openai/openai-agents-python/releases/tag/v0.22.3"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-10-17-d53fe47a385f286a",
+    "asOf": "2026-10-17T03:00:00.000Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
+  {
     "date": "2026-10-13",
     "slug": "2026-10-13",
     "title": "学习雷达 · 2026-10-13",

@@ -6,7 +6,43 @@
     <atom:link href="https://xiuqiu-site.vercel.app/radar/rss.xml" rel="self" type="application/rss+xml" />
     <description>每天 2 条 AI、2 条 Web3 工程简报：先讲机制，再给例子和边界。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Tue, 13 Oct 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 17 Oct 2026 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>Agents SDK 0.24：审批没结束前，不压缩上下文</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-17#ai-agents-sdk-024-approval-compaction</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-agents-sdk-024-approval-compaction</guid>
+      <pubDate>Sat, 17 Oct 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>agent</category>
+      <description>带人工门禁的 Agent，审批对象必须是稳定、可核对的原始调用。上下文管理和审批流程的先后顺序，本身就是安全边界的一部分。</description>
+    </item>
+    <item>
+      <title>用模型复原 NIST 曲线种子：不是后门，是 1997 年的时钟</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-17#ai-anthropic-ecdsa-curve-origins</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-anthropic-ecdsa-curve-origins</guid>
+      <pubDate>Sat, 17 Oct 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>safety</category>
+      <description>这既说明 P-256、P-384 等曲线的种子来源是普通、可复现的，反而降低了后门疑虑；也说明强模型已经能独立完成多步骤的密码学取证，安全团队需要把这类能力算进威胁模型和审计流程。</description>
+    </item>
+    <item>
+      <title>Agave 4.3.2：验证者客户端的依赖也是攻击面</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-17#web3-agave-432-dependency-security</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-agave-432-dependency-security</guid>
+      <pubDate>Sat, 17 Oct 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>security</category>
+      <description>节点安全不只看协议本身，传输层和基础库同样决定节点能不能被打挂。把依赖公告的处理方式写成可检查的规则，比单纯升级版本号更可靠。</description>
+    </item>
+    <item>
+      <title>op-supernode 1.0.4：L1 重组后，safe 不能跑到未验证的块上</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-17#web3-op-supernode-safe-head-reorg</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-op-supernode-safe-head-reorg</guid>
+      <pubDate>Sat, 17 Oct 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>l2</category>
+      <description>L2 的“已确认”有好几种含义。钱包和交易所后端如果只看一个标签，重组时就可能把不该入账的资金算成安全；这次修复说明这几层确认要分开读、分开监控。</description>
+    </item>
     <item>
       <title>vLLM 0.31：重启不重载权重，缓存键先分清来源</title>
       <link>https://xiuqiu-site.vercel.app/radar/2026-10-13#ai-vllm-031-preload-cache-isolation</link>
@@ -510,42 +546,6 @@
       <category>WEB3</category>
       <category>web3_design</category>
       <description>ERC-8199 用独立沙箱钱包、agent 有效期、前后置 checker 与 owner 恢复路径限制自动执行。钱包服务可迁移独立资金边界和显式策略，但草案未补齐 nonce、升级、checker 信任与跨链恢复，不能直接用于生产。</description>
-    </item>
-    <item>
-      <title>Gemini CLI · 终端开源 coding agent</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-04#tools</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-04-tools</guid>
-      <pubDate>Tue, 04 Aug 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>tools</category>
-      <description>Gemini CLI 面向终端代码与工具工作流；固定版 0.53.1 已在无凭据临时目录复现版本输出。公开仓库与 npm 数据显示广泛关注和分发，但工具权限、提示注入和供应链风险仍需沙箱、审批与独立测试约束。</description>
-    </item>
-    <item>
-      <title>用条件把最小权限收紧到服务、工具与时间</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-04#reading</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-04-reading</guid>
-      <pubDate>Tue, 04 Aug 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>reading</category>
-      <description>Google Cloud 展示用 IAM Conditions 限定可授予角色、MCP 服务、具体工具和时间窗。思考题：为只读研究 agent 写出三条允许、三条拒绝案例，并检查属性缺失或新工具上线时是否默认拒绝。</description>
-    </item>
-    <item>
-      <title>Coinbase 共享入口故障暂停多类资金工作流</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-03#industry-signals</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-03-signal</guid>
-      <pubDate>Mon, 03 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>market_signal</category>
-      <description>资源名称冲突使共享 Istio ingress gateway 不可用，充提、卡、链上和结算工作流同时受影响，标准回滚又依赖故障入口。公司称资金未受风险，但改进项仍需后续运行证据验证。</description>
-    </item>
-    <item>
-      <title>以太坊协议安全 agent 的瓶颈是可复现分诊</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-03#industry-signals</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-03-signal-1</guid>
-      <pubDate>Mon, 03 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>market_signal</category>
-      <description>Ethereum Foundation 将 agent 视为安全搜索工具，要求候选用真实代码 PoC、调用链、影响边界和维护者复核转成有效漏洞；已确认一项公开 CVE，但未披露完整误报率。</description>
     </item>
   </channel>
 </rss>

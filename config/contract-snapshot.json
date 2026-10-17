@@ -55,7 +55,7 @@
       "verify:market-radar-production": "node scripts/verify-market-research-production.mjs"
     }
   },
-  "contentHash": "7f5d438a4cb34ec9",
+  "contentHash": "86803df5e6f98b0c",
   "outputs": {
     "public/data/intel/latest.json": "284e8dd87e0c28c6",
     "public/data/intel/topics.json": "cc95bfafdc511c58",
