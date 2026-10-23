@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
-import { loadMarketRadarBySlug, getSnapshotFreshness } from '../data'
+import { loadMarketRadarBySlug, getSnapshotFreshness, readingReturnLink } from '../data'
 import type { MarketRadarDaily } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
 import '../../../styles/market-radar.css'
 import '../../../design/market-skin.css'
 
 const route = useRoute()
+const returnLink = computed(() => route.query.from ? readingReturnLink(route.query.from) : { href: '/market-radar', label: '← 返回市场雷达' })
 const entry = ref<MarketRadarDaily>()
 const loading = ref(true)
 let requestVersion = 0
@@ -117,7 +118,7 @@ watchEffect(() => {
   <div v-else-if="entry" class="trade-radar-page trade-radar-detail" lang="zh-CN" :data-snapshot-state="entryFreshness.state">
     <header class="trade-radar-detail-hero">
       <div class="container trade-radar-shell">
-        <router-link class="trade-radar-back" to="/market-radar">← 返回 Trade Radar</router-link>
+        <router-link class="trade-radar-back" :to="returnLink.href">{{ returnLink.label }}</router-link>
         <p class="trade-radar-kicker">{{ entryFreshness.isArchive ? 'Archived verification snapshot' : 'Dated verification snapshot' }} / {{ entry.date }}</p>
         <h1>{{ entry.title }}</h1>
         <p class="trade-radar-detail-lead">{{ entry.summary }}</p>

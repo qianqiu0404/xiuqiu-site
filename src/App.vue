@@ -249,7 +249,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
             to="/ai"
             @click="handleNavLinkActivation"
             @keydown.space.prevent="activateLinkOnSpace"
-          >AI</router-link>
+          >AI 工程</router-link>
         </div>
 
         <div class="nav-secondary-links" role="group" aria-label="更多入口">

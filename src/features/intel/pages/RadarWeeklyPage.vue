@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
-import { radarWeeklies, latestRadars, getRadarReviewBoundary, getProjectByKey } from '../data'
+import { radarWeeklies, latestRadars, getRadarReviewBoundary, getProjectByKey, readingReturnLink } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
 import '../../../design/brief.css'
 import '../../../design/reader.css'
 
 const route = useRoute()
+const returnLink = computed(() => readingReturnLink(route.query.from))
 const weekly = computed(() => radarWeeklies.find(item => item.slug === String(route.params.week || '')))
 const relatedProjects = computed(() =>
   weekly.value?.relatedProjectSlugs.map(getProjectByKey).filter(Boolean) || [],
@@ -81,7 +82,7 @@ watchEffect(() =>
   <div v-if="weekly" class="brief radar-weekly-reader-page" lang="zh-CN">
     <header class="brief-masthead">
       <div class="brief-shell">
-        <router-link to="/" class="brief-back">← 情报流</router-link>
+        <router-link :to="returnLink.href" class="brief-back">{{ returnLink.label }}</router-link>
         <p class="brief-dateline">
           <span>{{ weekly.week }}</span>
           <span>人工复核周报</span>
@@ -154,7 +155,7 @@ watchEffect(() =>
       <p class="brief-dateline"><span>Weekly review unavailable</span></p>
       <h1>这份周度收敛不存在或尚未公开。</h1>
       <p class="brief-lede">周报只在人工复核并通过公开门禁后出现。请返回情报流阅读已公开日报与最近一次周报。</p>
-      <div class="reader-actions"><router-link to="/" class="brief-button">返回情报流</router-link></div>
+      <div class="reader-actions"><router-link :to="returnLink.href" class="brief-button">{{ returnLink.label }}</router-link></div>
     </div></div>
   </div>
 </template>

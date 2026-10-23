@@ -8,6 +8,7 @@ defineProps<{
   title: string
   summary: string
   sourceLabel?: string
+  readingLabel?: string
   continuing?: boolean
   deepDive?: boolean
   badge?: string
@@ -26,5 +27,6 @@ defineProps<{
     <strong class="brief-card-title">{{ title }}</strong>
     <span class="brief-card-summary">{{ summary }}</span>
     <small v-if="sourceLabel" class="brief-card-source">{{ sourceLabel }}</small>
+    <small v-if="readingLabel" class="brief-card-reading">{{ readingLabel }}</small>
   </router-link>
 </template>

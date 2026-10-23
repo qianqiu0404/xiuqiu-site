@@ -1,4 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { readingHashId, waitForReadingElement } from '../utils/readingScroll'
+
+let scrolling: AbortController | undefined
 
 const router = createRouter({
   history: createWebHistory(),
@@ -154,13 +157,33 @@ const router = createRouter({
       meta: { visual: 'editorial' },
     },
   ],
-  scrollBehavior(to) {
+  async scrollBehavior(to, from, savedPosition) {
+    scrolling?.abort()
+    const controller = new AbortController()
+    scrolling = controller
+    const signal = controller.signal
     if (to.hash) {
       // Market Radar date snapshots load asynchronously and restore their own
       // hash after the event headings exist, including in-page hash changes.
       if (to.name === 'market-radar-detail') return false
-      return { el: to.hash, behavior: 'smooth' }
+      const id = readingHashId(to.hash)
+      if (!id) return { top: 0 }
+      if (to.name === 'home' || to.name === 'topic') {
+        await waitForReadingElement(() => document.querySelector<HTMLElement>('[data-reading-ready="true"]'), signal)
+      }
+      const target = await waitForReadingElement(() => document.getElementById(id), signal)
+      if (signal.aborted) return false
+      if (!target) return { top: 0 }
+      target.focus({ preventScroll: true })
+      return { el: target, top: parseFloat(getComputedStyle(target).scrollMarginTop) || 80, behavior: 'auto' }
     }
+    if (savedPosition) {
+      if (to.name === 'home' || to.name === 'topic') {
+        await waitForReadingElement(() => document.querySelector<HTMLElement>('[data-reading-ready="true"]'), signal)
+      }
+      return signal.aborted ? false : savedPosition
+    }
+    if (to.path === from.path) return false
     return { top: 0 }
   },
 })

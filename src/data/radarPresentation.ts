@@ -102,8 +102,9 @@ export function getVisibleRadarArchive<T>(radars: readonly T[], expanded: boolea
 }
 
 export function radarSourceStatus(radar: DailyRadar): string {
-  if (isLearningEditionV2(radar)) return `${radar.sourceUrls.length} 个分级来源 · 2 AI / 2 Web3 / 1 专题`
-  return `${radar.sourceSections.length}/4 来源已汇总`
+  const links = new Set(radar.sourceUrls).size
+  if (isLearningEditionV2(radar)) return `${links} 个原始链接（去重） · 2 AI / 2 Web3 / 1 专题`
+  return `研究输入 ${radar.sourceSections.length}/4 类已汇总 · ${links} 个原始链接（去重）`
 }
 
 export function radarSignalCountLabel(count: number): string {
