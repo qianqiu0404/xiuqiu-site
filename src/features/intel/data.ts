@@ -22,3 +22,6 @@ export { mergeReadingItems, readingTopics, researchHref, researchEvidenceLabel, 
 export { readIntelQuery, intelQueryParams, intelQueryLabel, intelResultLabel, intelItemId, intelReadingHref, intelReadingLabel, readingReturnLink, withReadingReturn } from '../../data/readingNavigationPresentation'
 export type { IntelQuery } from '../../data/readingNavigationPresentation'
 export { sourceDisplayLabel } from '../../data/sourcePresentation'
+export { loadGrokNews, loadGrokDetail, grokReadingItems, grokUpdateLabel } from '../../data/grokNews'
+export { intelTopicHref } from '../../data/intelPresentation'
+export type { GrokNewsIndex } from '../../data/grokNews'

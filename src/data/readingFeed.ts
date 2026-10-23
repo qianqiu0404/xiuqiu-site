@@ -43,7 +43,7 @@ export type ResearchNode = { text: string } | {
 export interface ResearchDetail { schema_version: 1; record: ResearchCard; content: ResearchNode[] }
 export interface ReadingItem {
   id: string
-  kind: 'learning' | 'market' | 'review' | 'research'
+  kind: 'learning' | 'market' | 'review' | 'research' | 'grok'
   date: string
   domain: ReadingDomain
   topic: string

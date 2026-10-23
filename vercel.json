@@ -6,6 +6,10 @@
   "trailingSlash": false,
   "rewrites": [
     {
+      "source": "/grok-news-data/:path*",
+      "destination": "https://raw.githubusercontent.com/qianqiu0404/xiuqiu-site/refs/heads/news/x-ai-digest/feed/v1/:path*"
+    },
+    {
       "source": "/research-data/:path*",
       "destination": "https://shared-research.vercel.app/feed/v1/:path*"
     }

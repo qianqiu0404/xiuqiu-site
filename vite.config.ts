@@ -7,6 +7,13 @@ export default defineConfig({
   // override lets both repositories be verified together before either ships.
   server: {
     proxy: {
+      '/grok-news-data': {
+        target: process.env.GROK_NEWS_PREVIEW_ORIGIN || 'https://raw.githubusercontent.com',
+        changeOrigin: true,
+        rewrite: path => process.env.GROK_NEWS_PREVIEW_ORIGIN
+          ? path.replace(/^\/grok-news-data/, '/feed/v1')
+          : path.replace(/^\/grok-news-data/, '/qianqiu0404/xiuqiu-site/refs/heads/news/x-ai-digest/feed/v1'),
+      },
       '/research-data': {
         target: process.env.RESEARCH_PREVIEW_ORIGIN || 'https://shared-research.vercel.app',
         changeOrigin: true,

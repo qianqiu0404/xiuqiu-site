@@ -35,8 +35,12 @@ import {
   intelItemId,
   intelReadingHref,
   intelReadingLabel,
+  loadGrokNews,
+  grokReadingItems,
+  grokUpdateLabel,
+  intelTopicHref,
 } from '../data'
-import type { IntelFilter, IntelItem, IntelQuery, ResearchIndex } from '../data'
+import type { IntelFilter, IntelItem, IntelQuery, ResearchIndex, GrokNewsIndex } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
 import '../../../design/brief.css'
 import ChipGroup from '../../../design/components/ChipGroup.vue'
@@ -58,7 +62,7 @@ const topicsExpanded = ref(false)
 
 function updateQuery(patch: Partial<IntelQuery>) {
   const next = { ...query.value, expanded: false, ...patch }
-  if (next.topic && !topicsForFilter(combinedTopics.value, next.filter).some(option => option.topic === next.topic)) next.topic = undefined
+  if (patch.filter && next.topic && !topicsForFilter(combinedTopics.value, next.filter).some(option => option.topic === next.topic)) next.topic = undefined
   router.replace({ path: '/', query: intelQueryParams(next) })
 }
 
@@ -67,9 +71,16 @@ function updateQuery(patch: Partial<IntelQuery>) {
 const nativeItems = ref<IntelItem[]>(intelLatestItems)
 const research = ref<ResearchIndex>()
 const researchState = ref<'loading' | 'ready' | 'error'>('loading')
-const items = computed(() => mergeReadingItems(nativeItems.value, research.value))
+const grok = ref<GrokNewsIndex>()
+const grokState = ref<'loading' | 'ready' | 'error'>('loading')
+const items = computed(() => mergeReadingItems([...nativeItems.value, ...grokReadingItems(grok.value)], research.value))
 const combinedTopics = computed(() => archiveState.value === 'ready' ? readingTopics(items.value) : [...intelTopics, ...readingTopics(mergeReadingItems([], research.value))])
 const archiveState = ref<'loading' | 'ready' | 'error'>('loading')
+
+async function refreshGrok(force = false) {
+  grokState.value = 'loading'
+  try { grok.value = await loadGrokNews(force); grokState.value = 'ready' } catch { grokState.value = 'error' }
+}
 
 async function loadResearch(force = false) {
   researchState.value = 'loading'
@@ -119,14 +130,15 @@ function reset() {
   updateQuery({ filter: 'all', topic: undefined, search: '' })
 }
 
-const readingReady = computed(() => archiveState.value !== 'loading' && researchState.value !== 'loading')
+const readingReady = computed(() => archiveState.value !== 'loading' && researchState.value !== 'loading' && grokState.value !== 'loading')
 const resultLabel = computed(() => intelResultLabel(filtered.value.length, visibleCount.value,
-  filter.value === 'research' ? [researchState.value] : [archiveState.value, researchState.value]))
+  filter.value === 'grok' ? [grokState.value] : filter.value === 'research' ? [researchState.value] : [archiveState.value, researchState.value, grokState.value]))
 
 onMounted(() => {
   setSeoMeta({ ...intelHomeSeo, path: '/' })
   loadArchive()
   loadResearch()
+  refreshGrok()
 })
 </script>
 
@@ -141,15 +153,16 @@ onMounted(() => {
         <div class="brief-masthead-row">
           <div>
             <h1>AI 与 Web3 工程情报</h1>
-            <p class="brief-lede">工程简报、市场事件与共享研究资料，在这里一起阅读。保留来源和核实范围，按领域、主题或关键词筛选。</p>
+            <p class="brief-lede">工程简报、市场事件、Grok Bot 新闻与共享研究资料，在这里一起阅读。保留来源和核实范围，按领域、主题或关键词筛选。</p>
           </div>
           <dl class="brief-stats">
             <div><dt>雷达最新一期</dt><dd>{{ latestDayCount }} 条</dd></div>
-            <div><dt>累计阅读条目</dt><dd>{{ intelItemCount + (research?.cards.length || 0) }}</dd></div>
+            <div><dt>累计阅读条目</dt><dd>{{ intelItemCount + (research?.cards.length || 0) + (grok?.records.length || 0) }}</dd></div>
             <div><dt>主题</dt><dd>{{ combinedTopics.length }}</dd></div>
           </dl>
         </div>
         <p :class="`brief-fresh brief-fresh--${freshness.state}`" role="status">原有雷达 · {{ freshness.label }}</p>
+        <p v-if="grok" class="brief-note" role="status">{{ grokUpdateLabel(grok) }}</p>
         <p v-if="research" class="brief-note" role="status">{{ researchUpdateLabel(research) }} · 收录时间不代表事件发生时间。</p>
       </div>
     </header>
@@ -181,6 +194,8 @@ onMounted(() => {
           <button v-if="hasActiveFilter" type="button" class="brief-button" @click="reset">清除筛选</button>
           <small>分类数字为已载入条目总量（不含趋势回顾）；搜索范围为标题与摘要。</small>
         </div>
+        <LoadState v-if="grokState === 'loading'" state="loading" message="正在载入 Grok Bot 新闻…" />
+        <LoadState v-else-if="grokState === 'error'" state="error" :message="grok ? 'Grok Bot 刷新失败，仍保留上次资料。' : 'Grok Bot 直投资料暂不可读，其他资料仍可阅读。'" action-label="重试 Grok Bot" @action="refreshGrok(true)" />
         <LoadState v-if="researchState === 'loading'" state="loading" message="正在载入共享研究资料…" />
         <LoadState
           v-else-if="researchState === 'error'"
@@ -217,9 +232,9 @@ onMounted(() => {
             </ol>
           </section>
         </template>
-        <LoadState v-else-if="archiveState === 'loading' || researchState === 'loading'" state="loading" message="正在载入情报…" />
+        <LoadState v-else-if="archiveState === 'loading' || researchState === 'loading' || grokState === 'loading'" state="loading" message="正在载入情报…" />
         <LoadState
-          v-else-if="archiveState !== 'error' && (filter !== 'research' || researchState !== 'error')"
+          v-else-if="archiveState !== 'error' && (filter !== 'research' || researchState !== 'error') && (filter !== 'grok' || grokState !== 'error')"
           state="empty"
           message="没有符合条件的条目。"
           :action-label="hasActiveFilter ? '清除筛选' : undefined"
@@ -242,6 +257,12 @@ onMounted(() => {
       </section>
 
       <aside class="brief-aside" aria-label="趋势、主题与订阅">
+        <section class="brief-panel" aria-labelledby="intel-grok-title">
+          <h2 id="intel-grok-title">Grok Bot 新闻</h2>
+          <p>由 x-ai-digest 搜索并直接投递本站，保留原始出处、整理说明与核实范围。</p>
+          <button type="button" class="brief-button" :disabled="grokState === 'loading'" @click="refreshGrok(true)">刷新新闻</button>
+          <p class="brief-note">Bot 整理未经人工复核。原有雷达、共享研究与 Bot 新闻各自更新。</p>
+        </section>
         <section class="brief-panel" aria-labelledby="intel-research-title">
           <h2 id="intel-research-title">共享研究</h2>
           <p>合并明确关联的事件和完全重复的材料，保留不同版本与观点。</p>
@@ -262,7 +283,7 @@ onMounted(() => {
           <h2 id="intel-continuing-title">持续追踪 · 30 天</h2>
           <ul>
             <li v-for="entry in continuingTopics" :key="entry.topic">
-              <router-link :to="`/topics/${entry.topic}`">{{ intelTopicLabel(entry.topic) }} <span>{{ entry.count }} 条</span></router-link>
+              <router-link :to="intelTopicHref(entry.topic)">{{ intelTopicLabel(entry.topic) }} <span>{{ entry.count }} 条</span></router-link>
             </li>
           </ul>
         </section>
@@ -271,7 +292,7 @@ onMounted(() => {
           <h2 id="intel-topics-title">主题</h2>
           <ul>
             <li v-for="entry in combinedTopics.slice(0, 10)" :key="entry.topic">
-              <router-link :to="`/topics/${entry.topic}`">{{ intelTopicLabel(entry.topic) }} <span>{{ entry.count }} · {{ entry.lastSeen.slice(5) }}</span></router-link>
+              <router-link :to="intelTopicHref(entry.topic)">{{ intelTopicLabel(entry.topic) }} <span>{{ entry.count }} · {{ entry.lastSeen.slice(5) }}</span></router-link>
             </li>
           </ul>
         </section>

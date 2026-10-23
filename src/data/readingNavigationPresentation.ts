@@ -66,7 +66,7 @@ export function intelReadingHref(item: ReadingItem, listPath: string): string {
 }
 
 export function intelReadingLabel(kind: ReadingItem['kind']): string {
-  return kind === 'learning' ? '阅读当期日报 →' : kind === 'market' ? '阅读当期市场快照 →' : kind === 'review' ? '阅读趋势回顾 →' : '阅读研究资料 →'
+  return kind === 'learning' ? '阅读当期日报 →' : kind === 'market' ? '阅读当期市场快照 →' : kind === 'review' ? '阅读趋势回顾 →' : kind === 'grok' ? '阅读 Bot 新闻与来源 →' : '阅读研究资料 →'
 }
 
 export function withReadingReturn(href: string, from: unknown): string {
