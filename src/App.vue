@@ -83,7 +83,7 @@ const currentContextLabel = computed(() => {
 const currentMobileContextLabel = computed(() => {
   const labels: Record<string, string> = {
     'qiu-market': 'Qiu Market',
-    ai: 'AI',
+    ai: 'AI 工程',
     proof: 'Proof',
     'learn-radar': 'Learn Radar',
     'trade-radar': 'Trade Radar',
