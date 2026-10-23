@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import test from 'node:test'
 import './shared-research.test.mjs'
+import './reading-collections.test.mjs'
 import {
   aiEngineeringOutcomes,
   homeAiProofContexts,
@@ -19,7 +20,6 @@ import { projects } from '../src/data/generatedProjects.ts'
 import { productPresentations, qiuMarketUrl } from '../src/data/productPresentation.ts'
 import { getAdjacentArticles, sortArticlesForReading } from '../src/data/articlePresentation.ts'
 
-const homeSource = readFileSync(new URL('../src/features/about/pages/HomePage.vue', import.meta.url), 'utf8')
 const intelHomeSource = readFileSync(new URL('../src/features/intel/pages/IntelHomePage.vue', import.meta.url), 'utf8')
 const appSource = readFileSync(new URL('../src/App.vue', import.meta.url), 'utf8')
 const chatWidgetSource = readFileSync(new URL('../src/components/AiChatWidget.vue', import.meta.url), 'utf8')
@@ -33,7 +33,6 @@ const aiPageSource = readFileSync(new URL('../src/features/ai/pages/AiCollaborat
 const radarPageSource = readFileSync(new URL('../src/features/intel/pages/RadarPage.vue', import.meta.url), 'utf8')
 const radarDetailSource = readFileSync(new URL('../src/features/intel/pages/RadarDetailPage.vue', import.meta.url), 'utf8')
 const radarWeeklySource = readFileSync(new URL('../src/features/intel/pages/RadarWeeklyPage.vue', import.meta.url), 'utf8')
-const articlesPageSource = readFileSync(new URL('../src/features/articles/pages/ArticlesPage.vue', import.meta.url), 'utf8')
 const articleDetailSource = readFileSync(new URL('../src/features/articles/pages/ArticleDetailPage.vue', import.meta.url), 'utf8')
 const routerSource = readFileSync(new URL('../src/router/index.ts', import.meta.url), 'utf8')
 const deliveryListSource = readFileSync(new URL('../src/features/proof/pages/DeliveryListPage.vue', import.meta.url), 'utf8')
@@ -41,7 +40,6 @@ const deliveryDetailSource = readFileSync(new URL('../src/features/proof/pages/D
 const indexHtml = readFileSync(new URL('../index.html', import.meta.url), 'utf8')
 const readmeSource = readFileSync(new URL('../README.md', import.meta.url), 'utf8')
 const globalStyleSource = readFileSync(new URL('../src/style.css', import.meta.url), 'utf8')
-const homeStyleSource = readFileSync(new URL('../src/styles/home.css', import.meta.url), 'utf8')
 const briefCss = readFileSync(new URL('../src/design/brief.css', import.meta.url), 'utf8')
 const notFoundStyleSource = readFileSync(new URL('../src/styles/not-found.css', import.meta.url), 'utf8')
 const aiProofRailSource = readFileSync(new URL('../src/features/about/components/AiEngineeringProofRail.vue', import.meta.url), 'utf8')
@@ -64,17 +62,11 @@ test('article reading order is deterministic and never wraps at either edge', ()
   assert.deepEqual(getAdjacentArticles(records, 'missing'), {})
 })
 
-test('article list and reader keep one main landmark and truthful editorial metadata', () => {
+test('article reader keeps one main landmark and truthful editorial metadata', () => {
   assert.equal((appSource.match(/<main\b/g) || []).length, 1)
-  assert.equal((articlesPageSource.match(/<main\b/g) || []).length, 0)
   assert.equal((articleDetailSource.match(/<main\b/g) || []).length, 0)
-  assert.equal((articlesPageSource.match(/<h1\b/g) || []).length, 1)
   assert.equal((articleDetailSource.match(/<h1\b/g) || []).length, 4)
 
-  assert.match(articlesPageSource, /发布\s*<time :datetime="article\.date">/)
-  assert.match(articlesPageSource, /v-if="article\.updatedAt">更新\s*<time :datetime="article\.updatedAt">/)
-  assert.match(articlesPageSource, /articleSeriesLabel\(article\)/)
-  assert.match(articlesPageSource, /articleProjectNames\(article\)/)
   assert.match(articleDetailSource, /发布\s*<time :datetime="article\.date">/)
   assert.match(articleDetailSource, /v-if="article\.updatedAt">更新\s*<time :datetime="article\.updatedAt">/)
   assert.match(articleDetailSource, /v-if="article\.series \|\| relatedProjects\.length"/)
@@ -113,8 +105,6 @@ test('article paper, touch, focus and long-content style contracts stay responsi
   assert.match(globalStyleSource, /\.article-reader-state__actions :where\(a, button\)\s*\{[\s\S]*?min-height: 44px/)
   assert.match(globalStyleSource, /\.article-navigation > a\s*\{[\s\S]*?min-height: 88px/)
   assert.match(globalStyleSource, /@media \(prefers-reduced-motion: reduce\)[\s\S]*?\.article-series-links a,[\s\S]*?\.followup-link/)
-  assert.match(articlesPageSource, /min-height: 46px/)
-  assert.match(articlesPageSource, /@media \(prefers-reduced-motion: reduce\)/)
 })
 
 test('skip, homepage utility actions and 404 recovery keep 44px targets', () => {
@@ -122,16 +112,6 @@ test('skip, homepage utility actions and 404 recovery keep 44px targets', () => 
   assert.match(globalStyleSource, /\.back-link\s*\{[\s\S]*?min-height: 44px;[\s\S]*?display: inline-flex;/)
   // The product page back link uses the shared brief-back target.
   assert.match(briefCss, /\.brief-back\s*\{[\s\S]*?min-height: var\(--touch-target\);[\s\S]*?display: inline-flex;/)
-  for (const selector of [
-    '.cinematic-hero-proof-link',
-    '.cinematic-scroll-cue',
-    '.home-ai-delivery a',
-    '.cinematic-profile-link',
-  ]) {
-    const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-    assert.match(homeStyleSource, new RegExp(`${escaped}\\s*\\{[\\s\\S]*?min-height: 44px;`), selector)
-  }
-  assert.match(homeStyleSource, /\.home-ai-actions :where\(a, button\)\s*\{[\s\S]*?min-height: 44px;/)
   assert.match(aiProofRailSource, /\.ai-proof-evidence,[\s\S]*?\.ai-proof-ask\s*\{[\s\S]*?min-height: 44px;/)
   assert.match(notFoundStyleSource, /\.route-not-found-home\s*\{[\s\S]*?min-height: 44px;/)
 })
@@ -217,11 +197,6 @@ test('repository and homepage keep historical wallet work out of the current-pro
   assert.match(readmeSource, /它们不定义当前产品优先级/)
   assert.doesNotMatch(readmeSource, /## Three-repository portfolio/)
 
-  assert.match(homeSource, /Historical wallet proof/)
-  assert.match(homeSource, /Historical AI delivery/)
-  assert.match(homeSource, /Historical delivery/)
-  assert.doesNotMatch(homeSource, /Featured delivery/)
-
   assert.match(chatWidgetSource, /Qiu Market current product × Wallet Infrastructure current direction/)
   assert.match(chatWidgetSource, /Qiu Market 是唯一 current product/)
   assert.match(chatWidgetSource, /Wallet Infrastructure 只是 current direction/)
@@ -288,21 +263,7 @@ test('verification ledger resolves only source-backed evidence relationships', (
   })
 })
 
-test('homepage and primary navigation keep their structural contract', () => {
-  assert.equal((homeSource.match(/<section(?:\s|>)/g) || []).length, 5)
-  const heroSource = homeSource.match(/<section class="cinematic-hero"[\s\S]*?<\/section>/)?.[0]
-  assert.ok(heroSource, 'Homepage hero markup is missing')
-  assert.equal((heroSource.match(/class="cinematic-button /g) || []).length, 2)
-  assert.match(heroSource, /to="\/projects\/s78-market-services"/)
-  assert.match(heroSource, /to="\/projects"/)
-  assert.match(homeSource, /id="products"/)
-  assert.match(homeSource, /id="ai-engineering"/)
-  assert.match(homeSource, /id="evidence"/)
-  assert.match(homeSource, /AiEngineeringProofRail/)
-  assert.match(homeSource, /Ask xiuqiu AI/)
-  assert.match(homeSource, /AI 不替我判断/)
-  assert.match(homeSource, /qiu-market\.vercel\.app/)
-
+test('primary navigation keeps its structural contract', () => {
   function linksInClass(className) {
     const block = appSource.match(new RegExp(`<div class="${className}"[\\s\\S]*?<\\/div>`))?.[0]
     assert.ok(block, `${className} markup is missing`)
@@ -488,6 +449,4 @@ test('static and runtime homepage SEO stay aligned', () => {
   assert.equal(title, intelHomeSeo.title)
   assert.equal(description, intelHomeSeo.description)
   assert.match(intelHomeSource, /\.\.\.intelHomeSeo, path: '\/'/)
-  // The former home moved to /about and keeps its own SEO.
-  assert.match(homeSource, /\.\.\.homeSeo, path: '\/about'/)
 })

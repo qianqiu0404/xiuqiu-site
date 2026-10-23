@@ -1,0 +1,39 @@
+/* Reading collections share the brief masthead, toolbar, paper and sidebar. */
+.collection-section + .collection-section { margin-top: var(--space-8); }
+.collection-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: var(--space-2); padding: var(--space-4) 0; border-bottom: 1px solid var(--line-strong); }
+.collection-heading h2 { font-size: var(--text-lg); line-height: 1.4; }
+.collection-heading > span, .collection-meta { color: var(--ink-3); font: 500 var(--text-xs)/1.7 var(--font-mono); }
+.collection-meta { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-3); align-items: center; }
+.collection-list { margin: 0; padding: 0; list-style: none; }
+.collection-row { padding: var(--space-5) 0; border-bottom: 1px solid var(--line); overflow-wrap: anywhere; }
+.collection-row h2, .collection-row h3 { margin: var(--space-2) 0; font-size: var(--text-lg); line-height: 1.5; font-weight: 650; }
+.collection-row h2 a, .collection-row h3 a { display: flex; align-items: center; min-height: var(--touch-target); text-decoration: none; }
+.collection-row h2 a:hover, .collection-row h3 a:hover { color: var(--accent-ink); }
+.collection-row > p { color: var(--ink-2); font-size: var(--text-sm); line-height: 1.85; }
+.collection-row .collection-context { margin-top: var(--space-3); color: var(--ink-3); font-size: var(--text-xs); }
+.collection-tag { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: var(--radius-chip); padding: 2px var(--space-2); color: var(--ink-2); font: 600 var(--text-xs)/1.6 var(--font-sans); }
+.collection-tag--market { color: var(--domain-market); background: var(--domain-market-soft); border-color: transparent; }
+.collection-tag--notes { color: var(--domain-web3); background: var(--domain-web3-soft); border-color: transparent; }
+.collection-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); margin-top: var(--space-3); }
+.collection-link { display: inline-flex; align-items: center; min-height: var(--touch-target); color: var(--accent-ink); font-size: var(--text-sm); text-underline-offset: 4px; }
+.collection-notice { margin-top: var(--space-4); padding: var(--space-3) var(--space-4); border-left: 3px solid var(--status-stale); background: var(--surface); color: var(--ink-2); font-size: var(--text-sm); }
+.collection-notice strong { color: var(--status-stale); }
+.collection-boundaries { margin-top: var(--space-3); border-top: 1px dashed var(--line); }
+.collection-boundaries summary { display: flex; align-items: center; min-height: var(--touch-target); cursor: pointer; color: var(--ink-3); font-size: var(--text-sm); }
+.collection-boundaries summary::after { content: '＋'; margin-left: auto; }
+.collection-boundaries[open] summary::after { content: '−'; }
+.collection-boundaries dl { display: grid; gap: var(--space-3); padding: var(--space-3) 0; font-size: var(--text-sm); }
+.collection-boundaries dt { color: var(--ink-3); font-size: var(--text-xs); }
+.collection-boundaries dd { margin: var(--space-1) 0 0; color: var(--ink-2); line-height: 1.8; }
+.collection-copy { padding: var(--space-4) 0; color: var(--ink-2); font-size: var(--text-md); line-height: 1.9; }
+.collection-copy p + p { margin-top: var(--space-3); }
+.collection-workflow { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-4); }
+.collection-workflow span { padding: var(--space-2) var(--space-3); border: 1px solid var(--line); color: var(--ink-2); font-size: var(--text-sm); }
+.collection-workflow b { margin-right: var(--space-2); color: var(--ink-4); font-family: var(--font-mono); font-size: var(--text-xs); }
+.collection-panel-copy { color: var(--ink-3); font-size: var(--text-sm); line-height: 1.8; }
+.collection-selected { margin: 0; padding-left: var(--space-4); }
+.collection-selected li::marker { color: var(--ink-4); font-family: var(--font-mono); }
+@media (max-width: 720px) {
+  .collection-heading h2, .collection-row h2, .collection-row h3 { font-size: var(--text-md); }
+  .collection-row { padding: var(--space-4) 0; }
+}
