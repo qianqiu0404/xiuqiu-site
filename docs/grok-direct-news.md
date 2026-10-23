@@ -72,7 +72,8 @@ node --experimental-strip-types scripts/publish-grok-news.mjs --publish batch.js
 
 domain 可用 ai/web3/market/research；source_access 可用 accessible/partial/unavailable/not_checked。
 来源时间不能用发布脚本运行时间代替。首次条目版本为 1，更正逐版递增；同 origin_id +
-revision 不同内容会拒绝。索引有 2000 条上限，达到时停止并报告，不静默删除历史。
+revision 不同内容会拒绝。索引有 2000 条和 2 MiB 上限，达到任一上限时在写入前停止并报告，
+保留可读的旧索引，不静默删除历史；后续先制定归档方案。
 
 ## 验证与回滚
 

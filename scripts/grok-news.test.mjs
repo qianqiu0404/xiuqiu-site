@@ -80,6 +80,13 @@ test('publication is atomic on the data branch, reads back and never deploys the
   const denied = fakeGitHub(false)
   await assert.rejects(publishGrokNews(batch(item()), denied.request), /没有本站写权限/)
   assert.equal(denied.calls.filter(c => c.method !== 'GET').length, 0)
+  const large = fakeGitHub()
+  const chunk = offset => batch(...Array.from({ length: 50 }, (_, n) => item({ origin_id: `x-ai-digest:large:${offset + n}`, summary: '摘要'.repeat(750), bot_analysis: '分析'.repeat(1500) })))
+  await publishGrokNews(chunk(0), large.request)
+  await publishGrokNews(chunk(50), large.request)
+  const safeWrites = large.calls.filter(call => call.method !== 'GET').length
+  await assert.rejects(publishGrokNews(chunk(100), large.request), /读取上限/)
+  assert.equal(large.calls.filter(call => call.method !== 'GET').length, safeWrites, 'an unreadable index must never replace the last good branch')
 })
 
 test('news retains date provenance, unverified status and distinct source filtering', () => {

@@ -48,7 +48,9 @@ export async function publishGrokNews(batch, request) {
   }
   const { changed, index } = mergeGrokNews(previous, batch)
   if (!changed.length) return { status: 'unchanged', branch: NEWS_BRANCH, commit: head, changed: 0 }
-  const files = [{ path: 'feed/v1/index.json', content: json(index) }, ...changed.map(record => ({ path: `feed/v1/records/${record.id}/r${record.revision}.json`, content: json(record) }))]
+  const indexText = json(index)
+  if (Buffer.byteLength(indexText) > 2 * 1024 * 1024) throw new Error('新闻索引达到页面读取上限，未发布；请先制定归档方案')
+  const files = [{ path: 'feed/v1/index.json', content: indexText }, ...changed.map(record => ({ path: `feed/v1/records/${record.id}/r${record.revision}.json`, content: json(record) }))]
   const entries = []
   for (const file of files) {
     const blob = await request('POST', `${root}/git/blobs`, { content: file.content, encoding: 'utf-8' })
