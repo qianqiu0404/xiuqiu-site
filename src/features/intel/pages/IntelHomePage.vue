@@ -21,8 +21,15 @@ import {
   radarReviews,
   shanghaiToday,
   topicsForFilter,
+  loadResearchIndex,
+  mergeReadingItems,
+  readingTopics,
+  researchUpdateLabel,
+  dailyRadarHref,
+  researchHref,
+  RESEARCH_HOME,
 } from '../data'
-import type { IntelFilter, IntelItem } from '../data'
+import type { IntelFilter, IntelItem, ResearchIndex } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
 import '../../../design/brief.css'
 import ChipGroup from '../../../design/components/ChipGroup.vue'
@@ -43,13 +50,27 @@ const expanded = ref(false)
 
 // The first screen renders from the bundled latest window; the full archive
 // loads lazily so the home chunk does not grow with every edition.
-const items = ref<IntelItem[]>(intelLatestItems)
+const nativeItems = ref<IntelItem[]>(intelLatestItems)
+const research = ref<ResearchIndex>()
+const researchState = ref<'loading' | 'ready' | 'error'>('loading')
+const items = computed(() => mergeReadingItems(nativeItems.value, research.value))
+const combinedTopics = computed(() => archiveState.value === 'ready' ? readingTopics(items.value) : [...intelTopics, ...readingTopics(mergeReadingItems([], research.value))])
 const archiveState = ref<'loading' | 'ready' | 'error'>('loading')
+
+async function loadResearch(force = false) {
+  researchState.value = 'loading'
+  try {
+    research.value = await loadResearchIndex(force)
+    researchState.value = 'ready'
+  } catch {
+    researchState.value = 'error'
+  }
+}
 
 async function loadArchive() {
   archiveState.value = 'loading'
   try {
-    items.value = await loadIntelItems()
+    nativeItems.value = await loadIntelItems()
     archiveState.value = 'ready'
   } catch {
     archiveState.value = 'error'
@@ -66,13 +87,13 @@ const days = computed(() => groupIntelByDate(filtered.value))
 const visibleDays = computed(() => (expanded.value ? days.value : days.value.slice(0, DAY_LIMIT)))
 const visibleCount = computed(() => visibleDays.value.reduce((sum, day) => sum + day.items.length, 0))
 const topicOptions = computed(() =>
-  topicsForFilter(intelTopics, filter.value).map(entry => ({ key: entry.topic, label: intelTopicLabel(entry.topic), count: entry.count })),
+  topicsForFilter(combinedTopics.value, filter.value).map(entry => ({ key: entry.topic, label: intelTopicLabel(entry.topic), count: entry.count })),
 )
 const filterOptions = computed(() =>
   intelFilters.map(option => ({ ...option, count: filterIntel(items.value, { filter: option.key }).filter(item => item.kind !== 'review').length })),
 )
 const continuingTopics = computed(() =>
-  intelTopics.filter(entry => continuing.value.has(entry.topic)).slice(0, 6),
+  combinedTopics.value.filter(entry => continuing.value.has(entry.topic)).slice(0, 6),
 )
 const hasActiveFilter = computed(() => filter.value !== 'all' || Boolean(topic.value) || Boolean(search.value.trim()))
 
@@ -99,6 +120,7 @@ watch([filter, topic, search], () => {
 onMounted(() => {
   setSeoMeta({ ...intelHomeSeo, path: '/' })
   loadArchive()
+  loadResearch()
 })
 </script>
 
@@ -113,15 +135,16 @@ onMounted(() => {
         <div class="brief-masthead-row">
           <div>
             <h1>AI 与 Web3 工程情报</h1>
-            <p class="brief-lede">每天 2 条 AI、2 条 Web3 工程简报，加上市场事件。先讲机制，再给例子和边界；每条都回到一手来源。</p>
+            <p class="brief-lede">工程简报、市场事件与共享研究资料，在这里一起阅读。保留来源和核实范围，按领域、主题或关键词筛选。</p>
           </div>
           <dl class="brief-stats">
-            <div><dt>最新一期</dt><dd>{{ latestDayCount }} 条</dd></div>
-            <div><dt>累计</dt><dd>{{ intelItemCount }}</dd></div>
-            <div><dt>主题</dt><dd>{{ intelTopics.length }}</dd></div>
+            <div><dt>雷达最新一期</dt><dd>{{ latestDayCount }} 条</dd></div>
+            <div><dt>累计阅读条目</dt><dd>{{ intelItemCount + (research?.cards.length || 0) }}</dd></div>
+            <div><dt>主题</dt><dd>{{ combinedTopics.length }}</dd></div>
           </dl>
         </div>
-        <p :class="`brief-fresh brief-fresh--${freshness.state}`" role="status">{{ freshness.label }}</p>
+        <p :class="`brief-fresh brief-fresh--${freshness.state}`" role="status">原有雷达 · {{ freshness.label }}</p>
+        <p v-if="research" class="brief-note" role="status">{{ researchUpdateLabel(research) }} · 收录时间不代表事件发生时间。</p>
       </div>
     </header>
 
@@ -143,6 +166,14 @@ onMounted(() => {
         </div>
 
         <p class="brief-sr-only" aria-live="polite">当前显示 {{ visibleCount }} 条</p>
+        <LoadState v-if="researchState === 'loading'" state="loading" message="正在载入共享研究资料…" />
+        <LoadState
+          v-else-if="researchState === 'error'"
+          state="error"
+          :message="research ? '共享研究刷新失败，仍保留上次载入的资料。' : '共享研究暂时无法载入，原有雷达仍可阅读。'"
+          action-label="重试共享研究"
+          @action="loadResearch(true)"
+        />
         <template v-if="visibleDays.length">
           <section v-for="day in visibleDays" :key="day.date" class="brief-day" :aria-labelledby="`intel-day-${day.date}`">
             <header class="brief-day-header">
@@ -150,7 +181,7 @@ onMounted(() => {
                 <time :datetime="day.date">{{ intelDayLabel(day.date) }}</time>
                 <small>{{ day.items.length }} 条</small>
               </h3>
-              <router-link :to="`/radar/${day.date}`">当期日报 →</router-link>
+              <router-link v-if="dailyRadarHref(day.items)" :to="dailyRadarHref(day.items)!">当期日报 →</router-link>
             </header>
             <ol class="brief-timeline">
               <li v-for="item in day.items" :key="item.id" :data-domain="item.domain">
@@ -170,9 +201,9 @@ onMounted(() => {
             </ol>
           </section>
         </template>
-        <LoadState v-else-if="archiveState === 'loading'" state="loading" message="正在载入历史情报…" />
+        <LoadState v-else-if="archiveState === 'loading' || researchState === 'loading'" state="loading" message="正在载入情报…" />
         <LoadState
-          v-else
+          v-else-if="archiveState !== 'error' && (filter !== 'research' || researchState !== 'error')"
           state="empty"
           message="没有符合条件的条目。"
           :action-label="hasActiveFilter ? '清除筛选' : undefined"
@@ -195,6 +226,15 @@ onMounted(() => {
       </section>
 
       <aside class="brief-aside" aria-label="趋势、主题与订阅">
+        <section class="brief-panel" aria-labelledby="intel-research-title">
+          <h2 id="intel-research-title">共享研究</h2>
+          <p>合并明确关联的事件和完全重复的材料，保留不同版本与观点。</p>
+          <ul v-if="research?.briefs.length">
+            <li v-for="brief in research.briefs.slice(0, 3)" :key="brief.id"><router-link :to="researchHref(brief.id)">{{ brief.title }}</router-link></li>
+          </ul>
+          <a :href="RESEARCH_HOME" class="brief-link" rel="noopener noreferrer">资料源与完整记录 ↗</a>
+          <p class="brief-note">分类沿用资料源的标签与关键词辅助归类，不代表核实结论。资料和原有雷达各自更新。</p>
+        </section>
         <router-link v-if="latestReview" :to="`/radar/review/${latestReview.slug}`" class="brief-panel brief-panel-feature">
           <h2>趋势回顾</h2>
           <strong>{{ latestReview.title }}</strong>
@@ -214,16 +254,16 @@ onMounted(() => {
         <section class="brief-panel" aria-labelledby="intel-topics-title">
           <h2 id="intel-topics-title">主题</h2>
           <ul>
-            <li v-for="entry in intelTopics.slice(0, 10)" :key="entry.topic">
+            <li v-for="entry in combinedTopics.slice(0, 10)" :key="entry.topic">
               <router-link :to="`/topics/${entry.topic}`">{{ intelTopicLabel(entry.topic) }} <span>{{ entry.count }} · {{ entry.lastSeen.slice(5) }}</span></router-link>
             </li>
           </ul>
         </section>
 
         <section class="brief-panel" aria-labelledby="intel-subscribe-title">
-          <h2 id="intel-subscribe-title">订阅</h2>
+          <h2 id="intel-subscribe-title">原有雷达订阅</h2>
           <SubscribeBar />
-          <p class="brief-note">由公开来源自动汇总，未经人工复核；市场内容不构成投资建议。</p>
+          <p class="brief-note">订阅暂含原有雷达；共享研究在站内更新。自动汇总未经人工复核，市场内容不构成投资建议。</p>
         </section>
       </aside>
     </div>

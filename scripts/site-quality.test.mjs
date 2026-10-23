@@ -11,6 +11,7 @@ import { radarWeeklies } from '../src/data/generatedRadarWeeklies.ts'
 import { radarReviews } from '../src/data/generatedRadarReviews.ts'
 import { intelTopics } from '../src/data/generatedIntelFeed.ts'
 import { intelTopicLabel } from '../src/data/intelPresentation.ts'
+import { researchEntryRoutes } from '../src/data/sharedResearchPresentation.ts'
 import { dailyRadars } from '../src/data/generatedRadarAll.ts'
 import { allMarketRadars } from '../src/data/generatedMarketRadarAll.ts'
 import { getRadarCollectionSeo } from '../src/data/snapshotFreshness.ts'
@@ -70,7 +71,7 @@ function expectedSitemapRoutes() {
   const routerSource = read('src/router/index.ts')
   const fixedRouterPaths = [...routerSource.matchAll(/\bpath:\s*['"`]([^'"`]+)['"`]/g)]
     .map(match => match[1])
-    .filter(path => !path.includes(':') && !path.includes('*') && path !== '/404')
+    .filter(path => !path.includes(':') && !path.includes('*') && path !== '/404' && !researchEntryRoutes.includes(path))
 
   for (const dynamicPath of [
     '/ai/deliveries/:slug',
@@ -365,6 +366,18 @@ test('legacy project static pages canonicalize to the public slug', () => {
       const meta = inspectMeta(readFileSync(outputPath, 'utf8'), outputPath)
       assert.equal(meta.canonical, `${SITE_ORIGIN}/projects/${project.slug}`)
     }
+  }
+})
+
+test('fixed research entries have noindex metadata and stay outside the canonical sitemap', () => {
+  const indexed = new Set(sitemapEntries().map(routeFromSitemapUrl))
+  for (const route of researchEntryRoutes) {
+    const path = builtPagePath(route)
+    assert.ok(existsSync(path), `research entry is missing: ${route}`)
+    const meta = inspectMeta(readFileSync(path, 'utf8'), path)
+    assert.equal(meta.robots?.replaceAll(' ', ''), 'noindex,nofollow')
+    assert.equal(meta.canonical, expectedCanonical(route))
+    assert.ok(!indexed.has(route), `research entry must remain outside sitemap: ${route}`)
   }
 })
 

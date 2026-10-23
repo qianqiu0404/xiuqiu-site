@@ -10,6 +10,9 @@ import {
   intelTopicLabel,
   intelTopics,
   loadIntelItems,
+  loadResearchIndex,
+  mergeReadingItems,
+  readingTopics,
 } from '../data'
 import type { IntelItem } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
@@ -19,17 +22,23 @@ import LoadState from '../../../design/components/LoadState.vue'
 
 const route = useRoute()
 const topicKey = computed(() => String(route.params.topic || ''))
-const topic = computed(() => intelTopics.find(entry => entry.topic === topicKey.value))
+const topic = computed(() => readingTopics(items.value).find(entry => entry.topic === topicKey.value) || intelTopics.find(entry => entry.topic === topicKey.value))
 const items = ref<IntelItem[]>([])
 const state = ref<'loading' | 'ready' | 'error'>('loading')
+let version = 0
 
 async function load() {
   state.value = 'loading'
+  const request = ++version
   try {
-    const all = await loadIntelItems()
+    const all = topicKey.value.startsWith('research-')
+      ? mergeReadingItems([], await loadResearchIndex())
+      : await loadIntelItems()
+    if (request !== version) return
     items.value = all.filter(item => item.topic === topicKey.value)
     state.value = 'ready'
   } catch {
+    if (request !== version) return
     state.value = 'error'
   }
 }
@@ -44,6 +53,7 @@ watchEffect(() =>
           title: `${intelTopicLabel(topic.value.topic)}｜主题｜xiuqiu`,
           description: `${intelTopicLabel(topic.value.topic)}：${topic.value.firstSeen} 至 ${topic.value.lastSeen} 的 ${topic.value.count} 条工程情报，按日期回看。`,
           path: `/topics/${topic.value.topic}`,
+          indexable: !topic.value.topic.startsWith('research-'),
         }
       : { title: 'Topic not found｜xiuqiu', path: route.fullPath, indexable: false },
   ),
@@ -51,17 +61,17 @@ watchEffect(() =>
 </script>
 
 <template>
-  <div v-if="topic" class="brief" lang="zh-CN">
+  <div v-if="topic || state !== 'ready'" class="brief" lang="zh-CN">
     <header class="brief-masthead">
       <div class="brief-shell">
         <router-link to="/" class="brief-back">← 情报流</router-link>
         <p class="brief-dateline">
           <span>主题</span>
-          <span>{{ intelDomainLabel(topic.domain) }}</span>
+          <span v-if="topic">{{ intelDomainLabel(topic.domain) }}</span>
         </p>
         <div class="brief-masthead-row">
-          <h1>{{ intelTopicLabel(topic.topic) }}</h1>
-          <dl class="brief-stats">
+          <h1>{{ intelTopicLabel(topicKey) }}</h1>
+          <dl v-if="topic" class="brief-stats">
             <div><dt>条目</dt><dd>{{ topic.count }}</dd></div>
             <div><dt>首次</dt><dd>{{ topic.firstSeen.slice(5) }}</dd></div>
             <div><dt>最近</dt><dd>{{ topic.lastSeen.slice(5) }}</dd></div>

@@ -2,7 +2,7 @@
 // One intel item: domain tag, topic, flags, title, summary, source.
 defineProps<{
   to: string
-  domain: 'ai' | 'web3' | 'market' | 'review'
+  domain: 'ai' | 'web3' | 'market' | 'review' | 'research'
   domainLabel?: string
   topicLabel: string
   title: string

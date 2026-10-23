@@ -8,6 +8,7 @@ import { radarWeeklies } from '../src/data/generatedRadarWeeklies.ts'
 import { radarReviews } from '../src/data/generatedRadarReviews.ts'
 import { intelTopics } from '../src/data/generatedIntelFeed.ts'
 import { intelTopicLabel } from '../src/data/intelPresentation.ts'
+import { researchEntryRoutes } from '../src/data/sharedResearchPresentation.ts'
 import { homeSeo } from '../src/data/homePresentation.ts'
 import { deliveryRecords } from '../src/data/generatedDeliveries.ts'
 import { nowSnapshot } from '../src/data/generatedNow.ts'
@@ -87,6 +88,17 @@ function writePage(path, html) {
   mkdirSync(dirname(fileURLToPath(outputUrl)), { recursive: true })
   writeFileSync(outputUrl, html)
   generatedRouteCount += 1
+}
+
+// Fixed, noindex reader entry: unknown URL paths retain the site's real 404
+// behaviour. Research IDs travel in the query and are validated by the API.
+for (const path of researchEntryRoutes) {
+  writePage(path, replaceMeta(baseHtml, {
+    title: path === '/research' ? '共享研究｜xiuqiu' : `${intelTopicLabel(path.split('/').at(-1))}｜共享研究｜xiuqiu`,
+    description: '共享研究的原始资料、整理说明、来源和核实范围。自动整理，未经人工复核。',
+    path,
+    robots: 'noindex, nofollow',
+  }))
 }
 
 if (articleSummaries.length === 0) {

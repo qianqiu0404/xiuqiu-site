@@ -1,6 +1,7 @@
-import type { IntelDomain, IntelItem, IntelTopic } from './generatedIntelFeed.ts'
+import type { ReadingDomain as IntelDomain, ReadingItem as IntelItem, ReadingTopic as IntelTopic } from './readingFeed.ts'
 import { radarTopicLabel } from './radarPresentation.ts'
 import { getSnapshotFreshness } from './snapshotFreshness.ts'
+import { researchCardLabel, researchTopicLabel } from './sharedResearchPresentation.ts'
 
 // Home page SEO; index.html carries the same values for the static document.
 export const intelHomeSeo = {
@@ -8,13 +9,14 @@ export const intelHomeSeo = {
   description: '每天 2 条 AI、2 条 Web3 工程简报和市场事件，按主题筛选、搜索与订阅；每条都回到一手来源。',
 } as const
 
-export type IntelFilter = 'all' | 'ai' | 'web3' | 'market'
+export type IntelFilter = 'all' | 'ai' | 'web3' | 'market' | 'research'
 
 export const intelFilters: { key: IntelFilter; label: string }[] = [
   { key: 'all', label: '全部' },
   { key: 'ai', label: 'AI' },
   { key: 'web3', label: 'Web3' },
   { key: 'market', label: '市场' },
+  { key: 'research', label: '共享研究' },
 ]
 
 const marketTopicLabels: Record<string, string> = {
@@ -25,10 +27,10 @@ const marketTopicLabels: Record<string, string> = {
   trend_review: '趋势回顾',
 }
 
-const domainLabels: Record<IntelDomain, string> = { ai: 'AI', web3: 'WEB3', market: '市场', review: '回顾' }
+const domainLabels: Record<IntelDomain, string> = { ai: 'AI', web3: 'WEB3', market: '市场', review: '回顾', research: '资料' }
 
 export function intelTopicLabel(topic: string): string {
-  return marketTopicLabels[topic] || radarTopicLabel(topic)
+  return researchTopicLabel(topic) || marketTopicLabels[topic] || radarTopicLabel(topic)
 }
 
 export function intelDomainLabel(domain: IntelDomain): string {
@@ -39,7 +41,7 @@ export function intelDomainLabel(domain: IntelDomain): string {
 export function filterIntel(items: readonly IntelItem[], query: { filter: IntelFilter; topic?: string; search?: string }): IntelItem[] {
   const needle = query.search?.trim().toLowerCase()
   return items.filter(item =>
-    (query.filter === 'all' || item.domain === query.filter || item.kind === 'review')
+    (query.filter === 'all' || (query.filter === 'research' ? item.kind === 'research' : item.domain === query.filter || item.kind === 'review'))
     && (!query.topic || item.topic === query.topic)
     && (!needle || `${item.title} ${item.summary}`.toLowerCase().includes(needle)),
   )
@@ -90,10 +92,11 @@ export function getIntelFreshness(latestDate: string | null | undefined, now = n
 }
 
 export function topicsForFilter(topics: readonly IntelTopic[], filter: IntelFilter): IntelTopic[] {
-  return topics.filter(topic => filter === 'all' || topic.domain === filter)
+  return topics.filter(topic => filter === 'all' || (filter === 'research' ? topic.topic.startsWith('research-') : topic.domain === filter))
 }
 
 export function intelSourceLabel(item: IntelItem): string | undefined {
+  if (item.research) return researchCardLabel(item.research)
   if (!item.source) return undefined
   const tier = item.source.tier === 'tier1' ? '一手来源' : item.source.tier === 'tier2' ? '研究解读' : '来源'
   return `${tier} · ${item.source.name}`
@@ -119,7 +122,7 @@ export function shanghaiToday(now = new Date()): string {
   return `${parts.year}-${parts.month}-${parts.day}`
 }
 
-const KIND_LABELS: Record<IntelItem['kind'], string> = { learning: '学习雷达', market: '市场雷达', review: '趋势回顾' }
+const KIND_LABELS: Record<IntelItem['kind'], string> = { learning: '学习雷达', market: '市场雷达', review: '趋势回顾', research: '共享研究' }
 
 export function intelKindLabel(kind: IntelItem['kind']): string {
   return KIND_LABELS[kind]
