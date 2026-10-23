@@ -338,6 +338,8 @@
 /* ---------- Day groups and timeline ---------- */
 
 .intel-topics-expanded .brief-chips { flex-wrap: wrap; overflow-x: visible; }
+.brief-toolbar .brief-tabs { flex-wrap: wrap; }
+.brief-toolbar .brief-tabs button { flex: 0 0 auto; white-space: nowrap; }
 .intel-topics-toggle { min-height: var(--touch-target); padding: var(--space-2) 0; border: 0; background: transparent; cursor: pointer; font: inherit; }
 .intel-search-feedback { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); padding: var(--space-3) 0; border-bottom: 1px solid var(--line); }
 .intel-search-feedback p { display: flex; flex-wrap: wrap; gap: var(--space-3); margin: 0; }
@@ -348,6 +350,11 @@
 .brief-timeline > li:target .brief-card,
 .reader-section:target,
 .reader-article:target { outline: 2px solid var(--accent); outline-offset: 4px; }
+
+@media (max-width: 640px) {
+  .intel-search-feedback p { flex-basis: 100%; }
+  .intel-search-feedback .brief-button { margin-right: auto; }
+}
 
 .brief-day {
   padding-top: var(--space-6);
