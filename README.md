@@ -22,6 +22,7 @@
 | 路由 | 内容 |
 | --- | --- |
 | `/` | 情报流首页 |
+| `/research?id=<id>`、`/research?producer=grok&id=<id>` | 外部资料详情：shared-research 共享研究与 Grok Bot 直投新闻，站内渲染 |
 | `/topics/:topic` | 主题页：某个主题的全部历史条目 |
 | `/radar`、`/radar/:date`、`/radar/week/:week` | 学习雷达信息流、日报阅读器、人工复核周报 |
 | `/radar/review/:period` | 趋势回顾：多周的趋势线、信号与里程碑 |
@@ -30,6 +31,17 @@
 | `/engineering`、`/engineering/failures`、`/engineering/evidence` | 工程证据与失败恢复手册 |
 | `/ai`、`/ai/deliveries`、`/ai/deliveries/:slug`、`/ai/social-research` | AI 协作与交付记录 |
 | `/about`、`/now`、`/learning`、`/articles`、`/articles/:slug` | 关于、当前动态、学习记录、工程笔记 |
+
+### 外部数据源
+
+首页情报流除构建期静态内容外，还在浏览器端读取两个外部数据源，经 `vercel.json` 的 rewrite 同源代理：
+
+| 站内路径 | 上游 | 内容 | 说明 |
+| --- | --- | --- | --- |
+| `/grok-news-data/*` | 本仓库数据分支 `news/x-ai-digest` 的 `feed/v1/` | x-ai-digest（Grok Bot）直投新闻，首页 `/?domain=grok` 筛选 | 未经人工复核；见 [`docs/grok-direct-news.md`](docs/grok-direct-news.md) |
+| `/research-data/*` | `shared-research.vercel.app/feed/v1/` | 共享研究索引与详情 | 只读代理；见 [`docs/shared-research-integration.md`](docs/shared-research-integration.md) |
+
+两者都不进入构建、RSS/JSON Feed 或 `public/data/intel/*`，更新时不需要重新发布本站。前端读取超时 10 秒；某个来源失败时只在该来源位置显示错误和重试按钮（已读到的旧资料保留），静态雷达照常展示。rewrite 本身没有服务端降级或健康检查。
 
 订阅出口：`/radar/rss.xml`、`/radar/feed.json`、`/llms.txt`、`/data/intel/latest.json`、`/data/intel/topics.json`，格式见 [`docs/public-feeds.md`](docs/public-feeds.md)。
 
@@ -131,7 +143,8 @@ docs/                流程与契约文档
 ## 当前状态
 
 - site-2.0 重构 P0–P6 已完成：契约快照基线、清理、共享库、设计系统（纸感研究简报，浅色默认、深色跟随系统）、页面迁入 `src/features/*`、情报流首页与主题页、其余页面迁移。P7（用预渲染替代 `generate-meta-pages.mjs`）为可选项，尚未开始。
-- 学习雷达 2026-08-14 至 2026-10-12 停更，由趋势回顾 `content/radar-reviews/2026-08-14--2026-10-13.md` 覆盖；2026-10-13 起恢复每日发布。仍处于 M1：每日 PR 以 Draft 建立，合并需另行授权。
+- 学习雷达 2026-08-14 至 2026-10-12 停更，由趋势回顾 `content/radar-reviews/2026-08-14--2026-10-13.md` 覆盖。2026-10-13 起恢复，但仍处于 M1（每日 PR 以 Draft 建立，合并需另行授权），实际入库的是 10-13、10-17、10-24 三期，10-18 至 10-23 由趋势回顾覆盖。
+- 交易雷达静态快照在 2026-08-13 之后只有 2026-10-24 一期；影子引擎 worker 定时运行，但 `MARKET_RADAR_AUTOMATION_READY` 未开启，定时触发全部降级为 dry-run。
 - 学习雷达微信通知未开启（`LEARNING_RADAR_ENABLED=false`，M4 完成前不发送）。
 
 ## 边界与安全
