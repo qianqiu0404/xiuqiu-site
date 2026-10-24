@@ -13,6 +13,9 @@ import {
   loadResearchIndex,
   mergeReadingItems,
   readingTopics,
+  intelItemId,
+  intelReadingHref,
+  intelReadingLabel,
 } from '../data'
 import type { IntelItem } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
@@ -61,7 +64,7 @@ watchEffect(() =>
 </script>
 
 <template>
-  <div v-if="topic || state !== 'ready'" class="brief" lang="zh-CN">
+  <div v-if="topic || state !== 'ready'" class="brief" lang="zh-CN" :data-reading-ready="state !== 'loading'">
     <header class="brief-masthead">
       <div class="brief-shell">
         <router-link to="/" class="brief-back">← 情报流</router-link>
@@ -89,9 +92,10 @@ watchEffect(() =>
             <h2 :id="`topic-day-${day.date}`"><time :datetime="day.date">{{ intelDayLabel(day.date) }}</time></h2>
           </header>
           <ol class="brief-timeline">
-            <li v-for="item in day.items" :key="item.id" :data-domain="item.domain">
+            <li v-for="item in day.items" :id="intelItemId(item.id)" :key="item.id" :data-domain="item.domain" tabindex="-1">
               <IntelCard
-                :to="item.href"
+                :to="intelReadingHref(item, route.fullPath)"
+                :reading-label="intelReadingLabel(item.kind)"
                 :domain="item.domain"
                 :domain-label="intelDomainLabel(item.domain)"
                 :topic-label="intelKindLabel(item.kind)"

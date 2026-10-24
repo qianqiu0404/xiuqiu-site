@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { computed, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
-import { radarReviews, reviewDomainCounts, reviewMilestoneCount, reviewPeriodDays, trendMonthTicks, trendSpan, trendTrack, radarTopicLabel } from '../data'
+import { radarReviews, reviewDomainCounts, reviewMilestoneCount, reviewPeriodDays, trendMonthTicks, trendSpan, trendTrack, radarTopicLabel, readingReturnLink } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
 import '../../../design/brief.css'
 import '../../../design/reader.css'
 import '../../../styles/radar-review.css'
 
 const route = useRoute()
+const returnLink = computed(() => readingReturnLink(route.query.from))
 const review = computed(() => radarReviews.find(item => item.slug === String(route.params.period || '')))
 const ticks = computed(() => (review.value ? trendMonthTicks(review.value) : []))
 const domainCounts = computed(() => (review.value ? reviewDomainCounts(review.value) : { ai: 0, web3: 0 }))
@@ -25,7 +26,7 @@ watchEffect(() =>
   <div v-if="review" class="brief radar-review-page" lang="zh-CN">
     <header class="brief-masthead">
       <div class="brief-shell">
-        <router-link to="/" class="brief-back">← 情报流</router-link>
+        <router-link :to="returnLink.href" class="brief-back">{{ returnLink.label }}</router-link>
         <p class="brief-dateline">
           <span>趋势回顾</span>
           <span><time :datetime="review.periodStart">{{ review.periodStart }}</time> – <time :datetime="review.periodEnd">{{ review.periodEnd }}</time></span>
@@ -101,7 +102,7 @@ watchEffect(() =>
     <div class="brief-masthead"><div class="brief-shell">
       <p class="brief-dateline"><span>趋势回顾</span></p>
       <h1 id="review-not-found-title">没有找到这期趋势回顾</h1>
-      <router-link to="/" class="brief-back">← 返回情报流</router-link>
+      <router-link :to="returnLink.href" class="brief-back">{{ returnLink.label }}</router-link>
     </div></div>
   </section>
 </template>

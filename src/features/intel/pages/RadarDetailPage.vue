@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import { computed, ref, watch, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
-import { loadRadarBySlug, getLearningBriefs, getRadarDetailSections, isLearningEditionV2, radarSourceStatus, getProjectByKey, getSnapshotFreshness } from '../data'
+import { loadRadarBySlug, getLearningBriefs, getRadarDetailSections, isLearningEditionV2, radarSourceStatus, getProjectByKey, getSnapshotFreshness, readingReturnLink, sourceDisplayLabel } from '../data'
 import type { DailyRadar } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
 import '../../../design/brief.css'
 import '../../../design/reader.css'
 
 const route = useRoute()
+const returnLink = computed(() => readingReturnLink(route.query.from))
 const radar = ref<DailyRadar>()
 const loading = ref(true)
 const loadError = ref(false)
@@ -61,7 +62,7 @@ watchEffect(() => {
   <div v-else-if="radar" class="brief radar-daily-reader-page" lang="zh-CN" :data-snapshot-state="radarFreshness.state">
     <header class="brief-masthead">
       <div class="brief-shell">
-        <router-link to="/" class="brief-back">← 情报流</router-link>
+        <router-link :to="returnLink.href" class="brief-back">{{ returnLink.label }}</router-link>
         <p class="brief-dateline">
           <time :datetime="radar.date">{{ radar.date }}</time>
           <span>学习雷达</span>
@@ -71,7 +72,7 @@ watchEffect(() => {
         <p class="brief-lede">{{ radar.summary }}</p>
         <dl class="reader-facts">
           <div><dt>{{ isV2 ? 'Researched' : 'Generated' }}</dt><dd><time :datetime="radar.researchedAt || radar.generatedAt">{{ radar.researchedAt || radar.generatedAt }}</time></dd></div>
-          <div><dt>Sources</dt><dd>{{ radarSourceStatus(radar) }}</dd></div>
+          <div><dt>来源覆盖</dt><dd>{{ radarSourceStatus(radar) }}</dd></div>
         </dl>
         <p v-if="radarFreshness.isArchive" class="brief-fresh brief-fresh--stale" role="status">
           {{ radarFreshness.label }} · 这是 {{ radar.date }} 的冻结简报，不代表今天的新情报或当前项目状态。
@@ -102,6 +103,7 @@ watchEffect(() => {
             :id="group.id"
             :key="group.id"
             class="reader-section"
+            tabindex="-1"
           >
             <header class="reader-section-header">
               <span>{{ String(groupIndex + 1).padStart(2, '0') }}</span>
@@ -109,7 +111,7 @@ watchEffect(() => {
               <small>2 briefs · 机制、例子与边界</small>
             </header>
             <div class="radar-reader-articles">
-              <article v-for="brief in group.items" :id="brief.id" :key="brief.id" class="reader-article">
+              <article v-for="brief in group.items" :id="brief.id" :key="brief.id" class="reader-article" tabindex="-1">
                 <p class="brief-card-meta">
                   <b :class="`brief-tag brief-tag--${group.domain}`">{{ group.label.toUpperCase() }}</b>
                   <span>{{ brief.topic.replaceAll('_', ' ') }}</span>
@@ -127,7 +129,7 @@ watchEffect(() => {
                   <li v-for="source in brief.sources" :key="source.url">
                     <a :href="source.url" target="_blank" rel="noopener noreferrer">
                       <b>{{ source.tier === 'tier1' ? '一手' : '解读' }}</b>
-                      <span>{{ source.name }}</span>
+                      <span>{{ sourceDisplayLabel(source.url, source.name) }}</span>
                       <time v-if="source.publishedAt" :datetime="source.publishedAt">{{ source.publishedAt.slice(0, 10) }}</time>
                       <i aria-hidden="true">↗</i>
                     </a>
@@ -137,7 +139,7 @@ watchEffect(() => {
             </div>
           </section>
 
-          <section v-if="radar.deepDive" id="deep-dive" class="reader-section reader-deep">
+          <section v-if="radar.deepDive" id="deep-dive" class="reader-section reader-deep" tabindex="-1">
             <header class="reader-section-header">
               <span>03</span>
               <h2>专题</h2>
@@ -161,7 +163,7 @@ watchEffect(() => {
                 <li v-for="source in radar.deepDive.sources" :key="source.url">
                   <a :href="source.url" target="_blank" rel="noopener noreferrer">
                     <b>{{ source.tier === 'tier1' ? '一手' : '解读' }}</b>
-                    <span>{{ source.name }}</span>
+                    <span>{{ sourceDisplayLabel(source.url, source.name) }}</span>
                     <time v-if="source.publishedAt" :datetime="source.publishedAt">{{ source.publishedAt.slice(0, 10) }}</time>
                     <i aria-hidden="true">↗</i>
                   </a>
@@ -176,6 +178,7 @@ watchEffect(() => {
           :id="group.id"
           :key="group.id"
           class="reader-section"
+          tabindex="-1"
         >
           <header class="reader-section-header">
             <span>{{ String(groupIndex + 1).padStart(2, '0') }}</span>
@@ -187,7 +190,7 @@ watchEffect(() => {
               <h3>{{ item.title }}</h3>
               <p>{{ item.summary }}</p>
               <a v-if="item.sourceUrl" class="reader-source-link" :href="item.sourceUrl" target="_blank" rel="noopener">
-                {{ item.sourceUrl.includes('coinmarketcap.com') ? '查看实时币价' : '打开原始来源' }}
+                {{ sourceDisplayLabel(item.sourceUrl) }}
                 <span aria-hidden="true">↗</span>
               </a>
             </article>
@@ -225,7 +228,7 @@ watchEffect(() => {
       <p class="brief-lede">公开简报资源可能暂时不可用。可重试一次，或返回情报流查看其他期数。</p>
       <div class="reader-actions">
         <button type="button" class="brief-button" @click="loadRadar(String(route.params.date || ''))">重新载入</button>
-        <router-link to="/" class="brief-button">返回情报流</router-link>
+        <router-link :to="returnLink.href" class="brief-button">{{ returnLink.label }}</router-link>
       </div>
     </div></div>
   </div>
@@ -235,7 +238,7 @@ watchEffect(() => {
       <p class="brief-dateline"><span>Brief unavailable</span></p>
       <h1>这期雷达不存在或未通过发布门禁。</h1>
       <p class="brief-lede">日期可能不在公开档案中。请返回情报流，从已公开的历史简报继续阅读。</p>
-      <div class="reader-actions"><router-link to="/" class="brief-button">返回情报流</router-link></div>
+      <div class="reader-actions"><router-link :to="returnLink.href" class="brief-button">{{ returnLink.label }}</router-link></div>
     </div></div>
   </div>
 </template>

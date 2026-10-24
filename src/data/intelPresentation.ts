@@ -2,6 +2,7 @@ import type { ReadingDomain as IntelDomain, ReadingItem as IntelItem, ReadingTop
 import { radarTopicLabel } from './radarPresentation.ts'
 import { getSnapshotFreshness } from './snapshotFreshness.ts'
 import { researchCardLabel, researchTopicLabel } from './sharedResearchPresentation.ts'
+import { sourceDisplayLabel } from './sourcePresentation.ts'
 
 // Home page SEO; index.html carries the same values for the static document.
 export const intelHomeSeo = {
@@ -99,7 +100,7 @@ export function intelSourceLabel(item: IntelItem): string | undefined {
   if (item.research) return researchCardLabel(item.research)
   if (!item.source) return undefined
   const tier = item.source.tier === 'tier1' ? '一手来源' : item.source.tier === 'tier2' ? '研究解读' : '来源'
-  return `${tier} · ${item.source.name}`
+  return `${tier} · ${sourceDisplayLabel(item.source.url, item.source.name)}`
 }
 
 const WEEKDAYS = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']

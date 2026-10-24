@@ -19,3 +19,6 @@ export { continuingIntelTopics, filterIntel, intelDayLabel, intelHomeSeo, intelK
 export type { IntelFilter } from '../../data/intelPresentation'
 export { loadResearchIndex, loadResearchDetail, RESEARCH_HOME, ResearchRequestError } from '../../data/sharedResearch'
 export { mergeReadingItems, readingTopics, researchHref, researchEvidenceLabel, researchAccessLabel, researchTypeLabel, researchDateLabel, researchCalendarDate, researchUpdateLabel, dailyRadarHref } from '../../data/sharedResearchPresentation'
+export { readIntelQuery, intelQueryParams, intelQueryLabel, intelResultLabel, intelItemId, intelReadingHref, intelReadingLabel, readingReturnLink, withReadingReturn } from '../../data/readingNavigationPresentation'
+export type { IntelQuery } from '../../data/readingNavigationPresentation'
+export { sourceDisplayLabel } from '../../data/sourcePresentation'

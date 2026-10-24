@@ -284,7 +284,7 @@ test('primary navigation keeps its structural contract', () => {
     { to: '/radar', label: '学习雷达' },
     { to: '/market-radar', label: '市场雷达' },
     { to: '/projects/s78-market-services', label: 'Qiu Market' },
-    { to: '/ai', label: 'AI' },
+    { to: '/ai', label: 'AI 工程' },
   ])
 
   const secondaryLinks = linksInClass('nav-secondary-links')

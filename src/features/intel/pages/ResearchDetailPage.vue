@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
-import { loadResearchDetail, researchHref, researchEvidenceLabel, researchAccessLabel, researchTypeLabel, researchDateLabel, researchCalendarDate, RESEARCH_HOME, ResearchRequestError } from '../data'
+import { loadResearchDetail, researchHref, researchEvidenceLabel, researchAccessLabel, researchTypeLabel, researchDateLabel, researchCalendarDate, RESEARCH_HOME, ResearchRequestError, readingReturnLink, sourceDisplayLabel, withReadingReturn } from '../data'
 import type { ResearchDetail } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
 import LoadState from '../../../design/components/LoadState.vue'
@@ -11,6 +11,7 @@ import '../../../design/reader.css'
 import '../../../design/research.css'
 
 const route = useRoute()
+const returnLink = computed(() => readingReturnLink(route.query.from || '/?domain=research'))
 const detail = ref<ResearchDetail>()
 const state = ref<'loading' | 'ready' | 'error' | 'missing'>('loading')
 const record = computed(() => detail.value?.record)
@@ -40,7 +41,7 @@ watchEffect(() => {
   <div class="brief" lang="zh-CN">
     <header class="brief-masthead">
       <div class="brief-shell">
-        <router-link to="/?domain=research" class="brief-back">← 共享研究情报流</router-link>
+        <router-link :to="returnLink.href" class="brief-back">{{ returnLink.label }}</router-link>
         <p class="brief-dateline"><span>共享研究</span><span>自动整理 · 未经人工复核</span></p>
         <h1>{{ record?.title || (state === 'loading' ? '正在载入资料…' : state === 'missing' ? '没有找到这条资料' : '资料暂时无法载入') }}</h1>
         <template v-if="record">
@@ -64,9 +65,9 @@ watchEffect(() => {
           <h2 id="research-materials-title">来源与原始材料 · {{ record.materials.length }}</h2>
           <ul>
             <li v-for="material in record.materials" :key="material.id">
-              <router-link :to="researchHref(material.id)">{{ material.title }}</router-link>
+              <router-link :to="withReadingReturn(researchHref(material.id), returnLink.href)">{{ material.title }}</router-link>
               <p>{{ researchTypeLabel(material.source_type) }} · {{ researchAccessLabel(material.source_access) }}</p>
-              <a v-if="material.source_url" :href="material.source_url" rel="noopener noreferrer">打开原始来源 ↗</a>
+              <a v-if="material.source_url" :href="material.source_url" rel="noopener noreferrer">{{ sourceDisplayLabel(material.source_url) }} ↗</a>
             </li>
           </ul>
         </section>

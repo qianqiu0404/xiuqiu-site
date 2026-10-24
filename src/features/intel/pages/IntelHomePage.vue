@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import {
   continuingIntelTopics,
@@ -28,8 +28,15 @@ import {
   dailyRadarHref,
   researchHref,
   RESEARCH_HOME,
+  readIntelQuery,
+  intelQueryParams,
+  intelQueryLabel,
+  intelResultLabel,
+  intelItemId,
+  intelReadingHref,
+  intelReadingLabel,
 } from '../data'
-import type { IntelFilter, IntelItem, ResearchIndex } from '../data'
+import type { IntelFilter, IntelItem, IntelQuery, ResearchIndex } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
 import '../../../design/brief.css'
 import ChipGroup from '../../../design/components/ChipGroup.vue'
@@ -42,11 +49,18 @@ const DAY_LIMIT = 8
 const route = useRoute()
 const router = useRouter()
 
-const queryFilter = String(route.query.domain || '')
-const filter = ref<IntelFilter>(intelFilters.some(option => option.key === queryFilter) ? queryFilter as IntelFilter : 'all')
-const topic = ref<string | undefined>(typeof route.query.topic === 'string' ? route.query.topic : undefined)
-const search = ref(typeof route.query.q === 'string' ? route.query.q : '')
-const expanded = ref(false)
+const query = computed(() => readIntelQuery(route.query))
+const filter = computed({ get: () => query.value.filter, set: (value: IntelFilter) => updateQuery({ filter: value }) })
+const topic = computed(() => query.value.topic)
+const search = computed({ get: () => query.value.search, set: (value: string) => updateQuery({ search: value }) })
+const expanded = computed({ get: () => query.value.expanded, set: (value: boolean) => updateQuery({ expanded: value }) })
+const topicsExpanded = ref(false)
+
+function updateQuery(patch: Partial<IntelQuery>) {
+  const next = { ...query.value, expanded: false, ...patch }
+  if (next.topic && !topicsForFilter(combinedTopics.value, next.filter).some(option => option.topic === next.topic)) next.topic = undefined
+  router.replace({ path: '/', query: intelQueryParams(next) })
+}
 
 // The first screen renders from the bundled latest window; the full archive
 // loads lazily so the home chunk does not grow with every edition.
@@ -98,24 +112,16 @@ const continuingTopics = computed(() =>
 const hasActiveFilter = computed(() => filter.value !== 'all' || Boolean(topic.value) || Boolean(search.value.trim()))
 
 function toggleTopic(key: string) {
-  topic.value = topic.value === key ? undefined : key
+  updateQuery({ topic: topic.value === key ? undefined : key })
 }
 
 function reset() {
-  filter.value = 'all'
-  topic.value = undefined
-  search.value = ''
+  updateQuery({ filter: 'all', topic: undefined, search: '' })
 }
 
-watch([filter, topic, search], () => {
-  expanded.value = false
-  if (topic.value && !topicOptions.value.some(option => option.key === topic.value)) topic.value = undefined
-  const query: Record<string, string> = {}
-  if (filter.value !== 'all') query.domain = filter.value
-  if (topic.value) query.topic = topic.value
-  if (search.value.trim()) query.q = search.value.trim()
-  router.replace({ query, hash: route.hash })
-})
+const readingReady = computed(() => archiveState.value !== 'loading' && researchState.value !== 'loading')
+const resultLabel = computed(() => intelResultLabel(filtered.value.length, visibleCount.value,
+  filter.value === 'research' ? [researchState.value] : [archiveState.value, researchState.value]))
 
 onMounted(() => {
   setSeoMeta({ ...intelHomeSeo, path: '/' })
@@ -125,7 +131,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="brief" lang="zh-CN">
+  <div class="brief" lang="zh-CN" :data-reading-ready="readingReady">
     <header class="brief-masthead">
       <div class="brief-shell">
         <p class="brief-dateline">
@@ -162,10 +168,19 @@ onMounted(() => {
             />
             <SearchBox v-model="search" label="搜索标题与摘要" placeholder="搜索标题或摘要" />
           </div>
-          <ChipGroup label="按主题筛选" :options="topicOptions" :active="topic" @select="toggleTopic" />
+          <div id="intel-topic-options" :class="{ 'intel-topics-expanded': topicsExpanded }">
+            <ChipGroup label="按主题筛选" :options="topicOptions" :active="topic" @select="toggleTopic" />
+          </div>
+          <button v-if="topicOptions.length" type="button" class="brief-link intel-topics-toggle" :aria-expanded="topicsExpanded" aria-controls="intel-topic-options" @click="topicsExpanded = !topicsExpanded">
+            {{ topicsExpanded ? '收起主题 ↑' : `展开全部 ${topicOptions.length} 个主题 ↓` }}
+          </button>
         </div>
 
-        <p class="brief-sr-only" aria-live="polite">当前显示 {{ visibleCount }} 条</p>
+        <div class="intel-search-feedback">
+          <p role="status" aria-live="polite"><span>{{ intelQueryLabel(query) }}</span><strong>{{ resultLabel }}</strong></p>
+          <button v-if="hasActiveFilter" type="button" class="brief-button" @click="reset">清除筛选</button>
+          <small>分类数字为已载入条目总量（不含趋势回顾）；搜索范围为标题与摘要。</small>
+        </div>
         <LoadState v-if="researchState === 'loading'" state="loading" message="正在载入共享研究资料…" />
         <LoadState
           v-else-if="researchState === 'error'"
@@ -184,9 +199,10 @@ onMounted(() => {
               <router-link v-if="dailyRadarHref(day.items)" :to="dailyRadarHref(day.items)!">当期日报 →</router-link>
             </header>
             <ol class="brief-timeline">
-              <li v-for="item in day.items" :key="item.id" :data-domain="item.domain">
+              <li v-for="item in day.items" :id="intelItemId(item.id)" :key="item.id" :data-domain="item.domain" tabindex="-1">
                 <IntelCard
-                  :to="item.href"
+                  :to="intelReadingHref(item, route.fullPath)"
+                  :reading-label="intelReadingLabel(item.kind)"
                   :domain="item.domain"
                   :domain-label="intelDomainLabel(item.domain)"
                   :topic-label="`${intelTopicLabel(item.topic)} · ${intelKindLabel(item.kind)}`"

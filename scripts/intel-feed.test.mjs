@@ -82,8 +82,8 @@ test('freshness banner is explicit about publishing gaps', () => {
 test('labels cover market topics and source tiers', () => {
   assert.equal(intelTopicLabel('market_macro'), '宏观')
   assert.equal(intelTopicLabel('model_inference'), 'model inference')
-  assert.equal(intelSourceLabel(item({ source: { name: 'vLLM', tier: 'tier1', url: 'https://github.com/x' } })), '一手来源 · vLLM')
-  assert.equal(intelSourceLabel(item({ source: { name: 'Fed', url: 'https://www.federalreserve.gov/x' } })), '来源 · Fed')
+  assert.equal(intelSourceLabel(item({ source: { name: 'vLLM', tier: 'tier1', url: 'https://github.com/x' } })), '一手来源 · vLLM · github.com')
+  assert.equal(intelSourceLabel(item({ source: { name: 'Fed', url: 'https://www.federalreserve.gov/x' } })), '来源 · Fed · federalreserve.gov')
   assert.equal(intelSourceLabel(item({})), undefined)
 })
 
@@ -123,4 +123,46 @@ test('dateline helpers format Shanghai calendar dates in Chinese', async () => {
   assert.equal(shanghaiToday(new Date('2026-10-14T17:00:00Z')), '2026-10-15')
   assert.equal(shanghaiToday(new Date('2026-10-14T15:00:00Z')), '2026-10-14')
   assert.equal(intelKindLabel('market'), '市场雷达')
+})
+
+
+test('search context survives detail links, expanded archives and encoded keywords', async () => {
+  const { readIntelQuery, intelQueryParams, intelReadingHref, readingReturnLink } = await import('../src/data/readingNavigationPresentation.ts')
+  const query = readIntelQuery({ domain: 'ai', topic: 'tools', q: 'MCP & SDK', expanded: '1' })
+  assert.deepEqual(readIntelQuery(intelQueryParams(query)), query)
+  const href = intelReadingHref(item({ id: 'learning:2026-08-09:tools', href: '/radar/2026-08-09#tools' }), '/?domain=ai&q=MCP%20%26%20SDK&expanded=1')
+  const target = new URL(href, 'https://xiuqiu-site.vercel.app')
+  assert.equal(target.hash, '#tools')
+  const back = readingReturnLink(target.searchParams.get('from'))
+  assert.equal(back.href, '/?domain=ai&q=MCP+%26+SDK&expanded=1#intel-item-learning%3A2026-08-09%3Atools')
+  assert.match(back.label, /AI.*MCP & SDK.*搜索结果/)
+  assert.equal(readingReturnLink('/topics/tools#intel-item-a').href, '/topics/tools#intel-item-a')
+})
+
+test('return destinations reject external and non-list paths without changing the reader', async () => {
+  const { readingReturnLink, readIntelQuery } = await import('../src/data/readingNavigationPresentation.ts')
+  for (const value of ['https://evil.example', '//evil.example', '/\\evil.example', '/ai', '/research?id=x', 'javascript:alert(1)', ['/?q=MCP']]) {
+    assert.equal(readingReturnLink(value).href, '/', String(value))
+  }
+  assert.equal(readingReturnLink('/?domain=ai&unknown=x&from=//evil.example#bad').href, '/?domain=ai')
+  assert.deepEqual(readIntelQuery({ domain: ['ai'], topic: '<bad>', q: ['MCP'], expanded: 'yes' }), { filter: 'all', topic: undefined, search: '', expanded: false })
+})
+
+test('feedback distinguishes matching totals, the visible window and incomplete archives', async () => {
+  const { intelResultLabel, intelQueryLabel, readIntelQuery } = await import('../src/data/readingNavigationPresentation.ts')
+  assert.equal(intelResultLabel(23, 8, ['ready', 'ready']), '找到 23 条 · 当前显示 8 条')
+  assert.equal(intelResultLabel(0, 0, ['ready', 'ready']), '找到 0 条')
+  assert.match(intelResultLabel(7, 7, ['loading', 'ready']), /正在载入.*7 条/)
+  assert.match(intelResultLabel(7, 7, ['error', 'ready']), /已载入资料中匹配 7 条/)
+  assert.equal(intelQueryLabel(readIntelQuery({ domain: 'ai', q: 'MCP' })), 'AI · “MCP”')
+})
+
+test('source labels preserve editorial names and reveal original domains', async () => {
+  const { sourceDisplayLabel } = await import('../src/data/sourcePresentation.ts')
+  assert.equal(sourceDisplayLabel('https://github.com/QwenLM/qwen-code/releases/tag/v1', '原始来源'), 'QwenLM/qwen-code · github.com')
+  assert.equal(sourceDisplayLabel('https://openai.com/index/story'), 'OpenAI · openai.com')
+  assert.equal(sourceDisplayLabel('https://www.example.org/story'), 'example.org')
+  assert.equal(sourceDisplayLabel('javascript:alert(1)'), '来源待确认')
+  const { radarSourceStatus } = await import('../src/data/radarPresentation.ts')
+  assert.equal(radarSourceStatus({ sourceSections: ['crypto', 'radar', 'vibe', 'reading'], sourceUrls: ['https://a.test', 'https://a.test', 'https://b.test'] }), '研究输入 4/4 类已汇总 · 2 个原始链接（去重）')
 })

@@ -9,3 +9,5 @@ export { findStaticMarketRadarEvent } from '../../data/marketRadarPresentation'
 export { filterMarketEvents, formatMarketTime, marketCategoryLabel, marketCategoryOptions, marketPriorityLabels, marketSnapshotSummary, marketStatusLabels } from '../../data/marketRadarPresentation'
 export type { StaticMarketRadarEventMatch } from '../../data/marketRadarPresentation'
 export { getRadarCollectionSeo, getSnapshotFreshness } from '../../data/snapshotFreshness'
+
+export { readingReturnLink } from '../../data/readingNavigationPresentation'
