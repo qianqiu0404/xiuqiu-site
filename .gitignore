@@ -25,6 +25,9 @@ pnpm-debug.log*
 .vscode/
 .idea/
 
+# local agent config and worktrees (launch.json, settings.local.json)
+.claude/
+
 # cache
 .cache/
 .temp/
