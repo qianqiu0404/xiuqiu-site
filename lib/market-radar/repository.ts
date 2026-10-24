@@ -4,20 +4,13 @@ import {
   type MarketRadarDigestList,
   type MarketRadarEvent,
   type MarketRadarEventList,
-  type MarketRadarHealth,
   type MarketRadarSummary,
 } from '../../src/market-radar/contracts.js'
 import { mapPublicEventRow } from '../../src/market-radar/public-event.js'
 import { getMarketRadarDb, isMarketRadarConfigured } from './db.js'
+import { marketRadarSources, summarizeMarketRadarHealth, type MarketRadarPublicationPointer } from './health.js'
 
 type QueryRow = Record<string, unknown>
-
-const knownSources = ['github_releases', 'sec_edgar', 'federal_reserve', 'binance_market_data', 'qiu_market']
-
-interface PublicationPointer {
-  snapshotId: string
-  asOf: string
-}
 
 function iso(value: unknown): string | null {
   if (!value) return null
@@ -31,7 +24,7 @@ function numberOrNull(value: unknown): number | null {
   return Number.isFinite(parsed) ? parsed : null
 }
 
-async function getCurrentPublication(kind: 'market' | 'learning'): Promise<PublicationPointer | null> {
+async function getCurrentPublication(kind: 'market' | 'learning'): Promise<MarketRadarPublicationPointer | null> {
   const rows = await getMarketRadarDb().query(`select snapshot_id, as_of
     from radar_system.publication_snapshots
     where radar_kind = $1 and origin = 'research' and publication_state = 'published'
@@ -47,7 +40,7 @@ export async function getSummary(): Promise<MarketRadarSummary> {
     return {
       status: 'unconfigured', snapshotId: null, asOf: null, generatedAt, latestEventAt: null, freshnessMinutes: null, isDelayed: true,
       eventCount24h: 0, p0Count24h: 0, p1Count24h: 0,
-      sources: knownSources.map(source => ({ source, health: 'unconfigured', lastSuccessAt: null })),
+      sources: marketRadarSources.map(source => ({ source, health: 'unconfigured', lastSuccessAt: null })),
       message: '交易雷达数据库尚未配置，当前没有可验证的实时数据。',
     }
   }
@@ -60,41 +53,28 @@ export async function getSummary(): Promise<MarketRadarSummary> {
       count(*) filter (where occurred_at >= now() - interval '24 hours' and priority = 'P0') as p0_count_24h,
       count(*) filter (where occurred_at >= now() - interval '24 hours' and priority = 'P1') as p1_count_24h
       from market_radar.public_events where snapshot_id = $1`, [publication?.snapshotId || '']),
-    sql.query(`select distinct on (source) source, status, finished_at, error_code
+    sql.query(`select distinct on (source) source, status, error_code,
+      max(finished_at) filter (where status = 'succeeded') over (partition by source) as last_success_at
       from market_radar.job_runs order by source, started_at desc`, []),
   ])
 
   const first = (counts[0] || {}) as QueryRow
   const latestEventAt = iso(first.latest_event_at)
-  const sourceByName = new Map((sourceRows as QueryRow[]).map(row => [String(row.source), row]))
-  const sources = knownSources.map(source => {
-    const row = sourceByName.get(source)
-    const health: MarketRadarHealth = !row ? 'degraded' : row.status === 'succeeded' ? 'healthy' : 'degraded'
-    return { source, health, lastSuccessAt: row?.status === 'succeeded' ? iso(row.finished_at) : null, message: row?.error_code ? String(row.error_code) : undefined }
-  })
-  const latestSourceSuccessAt = sources.reduce<string | null>((latest, source) => {
-    if (!source.lastSuccessAt) return latest
-    return !latest || source.lastSuccessAt > latest ? source.lastSuccessAt : latest
-  }, null)
-  const freshnessMinutes = latestSourceSuccessAt
-    ? Math.max(0, Math.round((Date.now() - new Date(latestSourceSuccessAt).getTime()) / 60_000))
-    : null
-  const isDelayed = !publication || freshnessMinutes === null || freshnessMinutes > 90
+  const health = summarizeMarketRadarHealth(publication, (sourceRows as QueryRow[]).map(row => ({
+    source: String(row.source),
+    status: String(row.status),
+    lastSuccessAt: iso(row.last_success_at),
+    errorCode: row.error_code ? String(row.error_code) : undefined,
+  })), new Date(generatedAt))
   return {
-    status: publication && sources.some(source => source.health === 'healthy') ? (isDelayed ? 'degraded' : 'healthy') : 'degraded',
+    ...health,
     snapshotId: publication?.snapshotId || null,
     asOf: publication?.asOf || null,
     generatedAt,
     latestEventAt,
-    freshnessMinutes,
-    isDelayed,
     eventCount24h: Number(first.event_count_24h || 0),
     p0Count24h: Number(first.p0_count_24h || 0),
     p1Count24h: Number(first.p1_count_24h || 0),
-    sources,
-    message: !publication
-      ? '当前没有通过发布门禁的交易快照。'
-      : isDelayed ? '数据超过 90 分钟未更新，请把它视为延迟，而不是没有事件。' : undefined,
   }
 }
 
