@@ -3,6 +3,175 @@
 import type { MarketRadarDaily } from '../generatedMarketRadars.ts'
 export const monthlyMarketRadars: MarketRadarDaily[] = [
   {
+    "date": "2026-10-25",
+    "slug": "2026-10-25",
+    "title": "交易研究雷达 · 2026-10-25",
+    "summary": "Hoodi 的旧 10 月 26 日激活安排已被官方延期公告取代；OCC 稳定币最终规则公布后，生效、受理和具体主体批准仍是不同阶段。本期只记录来源支持的变化和验证边界。",
+    "snapshotId": "market-2026-10-25-379b5e29b6bc56d1",
+    "asOf": "2026-10-24T21:38:41.000Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-10-25T05:38:41+08:00",
+    "events": [
+      {
+        "id": "hoodi-glamsterdam-postponed-2026-10-22",
+        "priority": "P1",
+        "status": "released",
+        "category": "crypto",
+        "title": "Hoodi Glamsterdam 延期，旧 10 月 26 日激活安排已撤销",
+        "fact": "Ethereum Foundation 于 10 月 22 日宣布 Hoodi 的 Glamsterdam 升级延期，原 10 月 26 日 17:42:48 UTC 的激活不再排期，新日期未定。公告取代此前指引，移除 Amsterdam、Gloas 及相关 gas-limit 排期；它不回滚链历史，也没有设置主网激活日期。",
+        "whyWatch": "系统观察：旧客户端或自定义配置、节点升级和测试网运行构成待验证的传导链。配置修订本身不能证明运营方已全部更新，也不能单独说明主网或 ETH 的市场变化。",
+        "assets": [
+          "ETH"
+        ],
+        "watchFor": "核对执行层、共识层与验证器的更新指引及自定义配置，观察旧时间附近的 Hoodi 最终性、RPC 和分叉证据，并等候官方新排期；将发行方的条件性风险与实际观测分开。",
+        "invalidation": "若 EF 后续发布新配置或排期，应据新公告修订观察窗口；没有采用率与运行数据时，不声称已全面升级或发生全网异常，不把 Hoodi 变化外推为主网故障。",
+        "sourceName": "Ethereum Foundation Protocol Cluster",
+        "sourceUrl": "https://blog.ethereum.org/2026/10/22/glamsterdam-hoodi-delay",
+        "sourcePublishedAt": "2026-10-22"
+      },
+      {
+        "id": "occ-genius-final-rule-announced-2026-10-21",
+        "priority": "P1",
+        "status": "released",
+        "category": "regulation",
+        "title": "OCC 公布 GENIUS 最终规则，生效与受理仍有各自门槛",
+        "fact": "OCC 于 10 月 21 日公布其管辖范围内支付稳定币发行及部分托管活动的最终规则，生效日为 2027 年 1 月 18 日。BSA、AML 与 OFAC 制裁规则另行制定；申请与豁免受理开始时间将另行公告。公布不等于现已生效、开始受理或具体主体已获批。",
+        "whyWatch": "系统观察：规则、申请与主体批准、储备及赎回安排、实际服务准入需要逐环核对。公告可能改变业务准备的依据，但不是稳定币采用增长、实际资金流或单一发行方合规状态的证据。",
+        "assets": [
+          "支付稳定币"
+        ],
+        "watchFor": "关注 OCC 后续受理公告、OMB 相关流程、具体主体批准记录、公开储备和赎回披露，以及 BSA、AML、OFAC 的独立规则；区分官方要求、发行方自述与可验证的运行结果。",
+        "invalidation": "若后续官方材料修订生效、受理或适用范围，以新材料为准。未经主体与批准记录核对，不给具体稳定币贴获批标签；缺少采用和运行样本时不作市场因果推断。",
+        "sourceName": "OCC News Release 2026-92",
+        "sourceUrl": "https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-92.html",
+        "sourcePublishedAt": "2026-10-21"
+      }
+    ],
+    "sourceUrls": [
+      "https://blog.ethereum.org/2026/10/22/glamsterdam-hoodi-delay",
+      "https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-92.html"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "只登记一手事实和可复核观察方法；尚未建立同类事件、固定窗口及跨资产结果的历史样本，量化样本门禁保持关闭。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "客户端配置与监管公告不能单独解释资产变化；本期没有测量采用率、储备资金流或股票、黄金与加密资产的同窗口反应。",
+      "nextValidation": "先定义配置采用、公开受理和运行披露的观察口径，记录同期其他事件；取得可比样本前只保留弱信号状态。",
+      "invalidation": "来源修订、主体范围不符或观察窗口不一致时停止比较；缺失数据不能补成确定性结论。",
+      "sourceUrls": [
+        "https://blog.ethereum.org/2026/10/22/glamsterdam-hoodi-delay",
+        "https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-92.html"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "Hoodi 撤销旧激活配置后，执行层与共识层的一致性经哪些可验证环节影响测试网可用性，哪些结论不能外推主网？",
+        "focusEventIds": [
+          "hoodi-glamsterdam-postponed-2026-10-22"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些受理公告、主体批准与储备赎回证据，能支持或推翻 OCC 最终规则已改变稳定币服务准入的解释？",
+        "focusEventIds": [
+          "occ-genius-final-rule-announced-2026-10-21"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "如果客户端及时移除旧配置且测试网没有异常，接下来观察什么，哪些证据会终止把延期解释为运行风险？",
+        "focusEventIds": [
+          "hoodi-glamsterdam-postponed-2026-10-22"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-10-25",
+      "snapshotId": "market-2026-10-25-379b5e29b6bc56d1",
+      "asOf": "2026-10-24T21:38:41.000Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-10-25",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "Hoodi 撤销旧激活配置后，执行层与共识层的一致性经哪些可验证环节影响测试网可用性，哪些结论不能外推主网？",
+          "focusEventIds": [
+            "hoodi-glamsterdam-postponed-2026-10-22"
+          ],
+          "prompt": "研究任务：Hoodi 撤销旧激活配置后，执行层与共识层的一致性经哪些可验证环节影响测试网可用性，哪些结论不能外推主网？\n证据快照：2026-10-25；asOf=2026-10-24T21:38:41.000Z；snapshotId=market-2026-10-25-379b5e29b6bc56d1\n\n材料 1｜Hoodi Glamsterdam 延期，旧 10 月 26 日激活安排已撤销\n已确认事实：Ethereum Foundation 于 10 月 22 日宣布 Hoodi 的 Glamsterdam 升级延期，原 10 月 26 日 17:42:48 UTC 的激活不再排期，新日期未定。公告取代此前指引，移除 Amsterdam、Gloas 及相关 gas-limit 排期；它不回滚链历史，也没有设置主网激活日期。\n关注机制：系统观察：旧客户端或自定义配置、节点升级和测试网运行构成待验证的传导链。配置修订本身不能证明运营方已全部更新，也不能单独说明主网或 ETH 的市场变化。\n接下来验证：核对执行层、共识层与验证器的更新指引及自定义配置，观察旧时间附近的 Hoodi 最终性、RPC 和分叉证据，并等候官方新排期；将发行方的条件性风险与实际观测分开。\n失效条件：若 EF 后续发布新配置或排期，应据新公告修订观察窗口；没有采用率与运行数据时，不声称已全面升级或发生全网异常，不把 Hoodi 变化外推为主网故障。\n一手来源：https://blog.ethereum.org/2026/10/22/glamsterdam-hoodi-delay\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "2254bf8112c8f7cd2d15575be718fe46631ed215d170ef8ff511b242e2088ba5",
+          "sourceUrls": [
+            "https://blog.ethereum.org/2026/10/22/glamsterdam-hoodi-delay"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些受理公告、主体批准与储备赎回证据，能支持或推翻 OCC 最终规则已改变稳定币服务准入的解释？",
+          "focusEventIds": [
+            "occ-genius-final-rule-announced-2026-10-21"
+          ],
+          "prompt": "研究任务：哪些受理公告、主体批准与储备赎回证据，能支持或推翻 OCC 最终规则已改变稳定币服务准入的解释？\n证据快照：2026-10-25；asOf=2026-10-24T21:38:41.000Z；snapshotId=market-2026-10-25-379b5e29b6bc56d1\n\n材料 1｜OCC 公布 GENIUS 最终规则，生效与受理仍有各自门槛\n已确认事实：OCC 于 10 月 21 日公布其管辖范围内支付稳定币发行及部分托管活动的最终规则，生效日为 2027 年 1 月 18 日。BSA、AML 与 OFAC 制裁规则另行制定；申请与豁免受理开始时间将另行公告。公布不等于现已生效、开始受理或具体主体已获批。\n关注机制：系统观察：规则、申请与主体批准、储备及赎回安排、实际服务准入需要逐环核对。公告可能改变业务准备的依据，但不是稳定币采用增长、实际资金流或单一发行方合规状态的证据。\n接下来验证：关注 OCC 后续受理公告、OMB 相关流程、具体主体批准记录、公开储备和赎回披露，以及 BSA、AML、OFAC 的独立规则；区分官方要求、发行方自述与可验证的运行结果。\n失效条件：若后续官方材料修订生效、受理或适用范围，以新材料为准。未经主体与批准记录核对，不给具体稳定币贴获批标签；缺少采用和运行样本时不作市场因果推断。\n一手来源：https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-92.html\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "92b89a5e4d567a6e5a91a9a505758f6eeaa62a39daa86f4bc1a9c25b3b9dc62e",
+          "sourceUrls": [
+            "https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-92.html"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "如果客户端及时移除旧配置且测试网没有异常，接下来观察什么，哪些证据会终止把延期解释为运行风险？",
+          "focusEventIds": [
+            "hoodi-glamsterdam-postponed-2026-10-22"
+          ],
+          "prompt": "研究任务：如果客户端及时移除旧配置且测试网没有异常，接下来观察什么，哪些证据会终止把延期解释为运行风险？\n证据快照：2026-10-25；asOf=2026-10-24T21:38:41.000Z；snapshotId=market-2026-10-25-379b5e29b6bc56d1\n\n材料 1｜Hoodi Glamsterdam 延期，旧 10 月 26 日激活安排已撤销\n已确认事实：Ethereum Foundation 于 10 月 22 日宣布 Hoodi 的 Glamsterdam 升级延期，原 10 月 26 日 17:42:48 UTC 的激活不再排期，新日期未定。公告取代此前指引，移除 Amsterdam、Gloas 及相关 gas-limit 排期；它不回滚链历史，也没有设置主网激活日期。\n关注机制：系统观察：旧客户端或自定义配置、节点升级和测试网运行构成待验证的传导链。配置修订本身不能证明运营方已全部更新，也不能单独说明主网或 ETH 的市场变化。\n接下来验证：核对执行层、共识层与验证器的更新指引及自定义配置，观察旧时间附近的 Hoodi 最终性、RPC 和分叉证据，并等候官方新排期；将发行方的条件性风险与实际观测分开。\n失效条件：若 EF 后续发布新配置或排期，应据新公告修订观察窗口；没有采用率与运行数据时，不声称已全面升级或发生全网异常，不把 Hoodi 变化外推为主网故障。\n一手来源：https://blog.ethereum.org/2026/10/22/glamsterdam-hoodi-delay\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "4e59b80adbe6448815a16371bed4271565ca18ec815ec833497c1738fa84662d",
+          "sourceUrls": [
+            "https://blog.ethereum.org/2026/10/22/glamsterdam-hoodi-delay"
+          ]
+        }
+      ]
+    }
+  },
+  {
     "date": "2026-10-24",
     "slug": "2026-10-24",
     "title": "交易研究雷达恢复版 · 2026-10-24",

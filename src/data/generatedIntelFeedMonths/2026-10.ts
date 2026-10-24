@@ -68,6 +68,40 @@ export const monthlyIntelItems: IntelItem[] = [
     }
   },
   {
+    "id": "market:2026-10-25:hoodi-glamsterdam-postponed-2026-10-22",
+    "kind": "market",
+    "date": "2026-10-25",
+    "domain": "market",
+    "topic": "market_crypto",
+    "title": "Hoodi Glamsterdam 延期，旧 10 月 26 日激活安排已撤销",
+    "summary": "系统观察：旧客户端或自定义配置、节点升级和测试网运行构成待验证的传导链。配置修订本身不能证明运营方已全部更新，也不能单独说明主网或 ETH 的市场变化。",
+    "href": "/market-radar/2026-10-25#hoodi-glamsterdam-postponed-2026-10-22",
+    "source": {
+      "name": "Ethereum Foundation Protocol Cluster",
+      "url": "https://blog.ethereum.org/2026/10/22/glamsterdam-hoodi-delay"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
+  {
+    "id": "market:2026-10-25:occ-genius-final-rule-announced-2026-10-21",
+    "kind": "market",
+    "date": "2026-10-25",
+    "domain": "market",
+    "topic": "market_regulation",
+    "title": "OCC 公布 GENIUS 最终规则，生效与受理仍有各自门槛",
+    "summary": "系统观察：规则、申请与主体批准、储备及赎回安排、实际服务准入需要逐环核对。公告可能改变业务准备的依据，但不是稳定币采用增长、实际资金流或单一发行方合规状态的证据。",
+    "href": "/market-radar/2026-10-25#occ-genius-final-rule-announced-2026-10-21",
+    "source": {
+      "name": "OCC News Release 2026-92",
+      "url": "https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-92.html"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
+  {
     "id": "learning:ai-aisi-assessment-scope-persistence",
     "kind": "learning",
     "date": "2026-10-24",

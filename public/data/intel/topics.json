@@ -4,6 +4,14 @@
   "homePageUrl": "https://xiuqiu-site.vercel.app/",
   "topics": [
     {
+      "topic": "market_crypto",
+      "domain": "market",
+      "count": 7,
+      "lastSeen": "2026-10-25",
+      "firstSeen": "2026-08-09",
+      "url": "https://xiuqiu-site.vercel.app/topics/market_crypto"
+    },
+    {
       "topic": "agent",
       "domain": "ai",
       "count": 5,
@@ -36,12 +44,12 @@
       "url": "https://xiuqiu-site.vercel.app/topics/data"
     },
     {
-      "topic": "market_crypto",
+      "topic": "market_regulation",
       "domain": "market",
-      "count": 6,
-      "lastSeen": "2026-10-24",
-      "firstSeen": "2026-08-09",
-      "url": "https://xiuqiu-site.vercel.app/topics/market_crypto"
+      "count": 1,
+      "lastSeen": "2026-10-25",
+      "firstSeen": "2026-10-25",
+      "url": "https://xiuqiu-site.vercel.app/topics/market_regulation"
     },
     {
       "topic": "security",
