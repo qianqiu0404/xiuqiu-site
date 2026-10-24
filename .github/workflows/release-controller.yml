@@ -14,6 +14,16 @@ on:
         description: Required for release; must equal the live main HEAD SHA
         type: string
         required: false
+      enqueue_market_notifications:
+        description: Explicitly authorize Market notification delivery for this release
+        type: boolean
+        default: false
+        required: false
+      run_market_worker:
+        description: Explicitly authorize the AI-backed Market worker for this release
+        type: boolean
+        default: false
+        required: false
 
 permissions:
   contents: read
@@ -29,6 +39,7 @@ jobs:
     outputs:
       operation: ${{ steps.plan.outputs.operation }}
       release_sha: ${{ steps.plan.outputs.release_sha }}
+      market_research_date: ${{ steps.research.outputs.market_research_date }}
       dag_audit: ${{ steps.audit.outputs.dag_audit }}
       permission_audit: ${{ steps.audit.outputs.permission_audit }}
     env:
@@ -85,6 +96,17 @@ jobs:
           cache: npm
 
       - run: npm ci
+      - name: Resolve exact release research dates before promotion
+        id: research
+        run: |
+          node --input-type=module <<'NODE'
+          import { appendFileSync } from 'node:fs'
+          import { selectRadarPublicationPlan } from './scripts/radar-publication-selection.mjs'
+          const plan = selectRadarPublicationPlan({ env: { RADAR_PUBLICATION_SELECTION: 'latest' } })
+          if (!plan.byKind.market) throw new Error('Release has no reviewed Market research snapshot')
+          appendFileSync(process.env.GITHUB_OUTPUT, 'market_research_date=' + plan.byKind.market + '\n')
+          console.log(JSON.stringify({ dates: plan.dates, byKind: plan.byKind }))
+          NODE
       - name: Audit release DAG and permission boundaries
         id: audit
         shell: bash
@@ -100,6 +122,8 @@ jobs:
           const controllerSource = fs.readFileSync('.github/workflows/release-controller.yml', 'utf8')
           assert.deepEqual(Object.keys(controller.on), ['workflow_dispatch'])
           assert.equal(controller.on.workflow_dispatch.inputs.operation.default, 'dry-run')
+          assert.equal(controller.on.workflow_dispatch.inputs.enqueue_market_notifications.default, false)
+          assert.equal(controller.on.workflow_dispatch.inputs.run_market_worker.default, false)
           assert.equal(controller.jobs.preflight.environment, undefined)
           assert.doesNotMatch(JSON.stringify(controller.jobs.preflight), /secrets\./)
           assert.equal(controller.jobs.production_migration.needs, 'preflight')
@@ -139,6 +163,9 @@ jobs:
           assert.equal(learningEnqueue.env.LEARNING_RADAR_DATABASE_URL, learningDbSecretEnv)
           assert.equal(learningEnqueue.env.MARKET_RADAR_DATABASE_URL, undefined)
           assert.equal(marketEnqueue.env.RADAR_NOTIFICATION_KINDS, 'market')
+          assert.match(String(marketEnqueue.if), /inputs\.enqueue_market_notifications/)
+          assert.match(String(controller.jobs.promote_market_radar_worker.if), /inputs\.run_market_worker/)
+          assert.match(String(controller.jobs.mark_market_radar_worker_authorized.if), /inputs\.run_market_worker/)
           assert.equal(marketEnqueue.env.MARKET_RADAR_DATABASE_URL, marketDbSecretEnv)
           assert.equal(marketEnqueue.env.LEARNING_RADAR_DATABASE_URL, undefined)
           assert.equal(worker.jobs.authorize.permissions.actions, 'read')
@@ -525,6 +552,8 @@ jobs:
         run: npm ci
 
       - name: Verify promoted Market Radar research handoff before notification
+        env:
+          RADAR_NOTIFICATION_DATE: ${{ needs.preflight.outputs.market_research_date }}
         run: |
           set -euo pipefail
           npm run verify:market-radar-production
@@ -626,6 +655,9 @@ jobs:
     environment: production-release
     permissions:
       contents: read
+    outputs:
+      publication_result: ${{ steps.publish_research.outcome }}
+      notification_result: ${{ steps.market_notification.outcome }}
     env:
       GH_TOKEN: ${{ github.token }}
       RELEASE_SHA: ${{ needs.preflight.outputs.release_sha }}
@@ -649,7 +681,19 @@ jobs:
           cache: npm
 
       - run: npm ci
+      - name: Publish immutable research snapshots without notifications
+        id: publish_research
+        env:
+          MARKET_RADAR_DATABASE_URL: ${{ secrets.MARKET_RADAR_DATABASE_URL }}
+          RADAR_PUBLICATION_SELECTION: latest
+        run: |
+          set -euo pipefail
+          test -n "$MARKET_RADAR_DATABASE_URL"
+          npm run radar:publish-snapshots
+
       - name: Enqueue idempotent Market Radar notification
+        id: market_notification
+        if: inputs.enqueue_market_notifications
         env:
           MARKET_RADAR_DATABASE_URL: ${{ secrets.MARKET_RADAR_DATABASE_URL }}
           RADAR_NOTIFICATION_KINDS: market
@@ -659,7 +703,7 @@ jobs:
           npm run notifications:enqueue
 
   promote_market_radar_worker:
-    if: needs.preflight.outputs.operation == 'release'
+    if: needs.preflight.outputs.operation == 'release' && inputs.run_market_worker
     needs: [preflight, mark_deployed_sha, enqueue_market_radar_notifications]
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -704,7 +748,7 @@ jobs:
           npm run market-radar:worker
 
   mark_market_radar_worker_authorized:
-    if: needs.preflight.outputs.operation == 'release'
+    if: needs.preflight.outputs.operation == 'release' && inputs.run_market_worker
     needs: [preflight, mark_deployed_sha, enqueue_market_radar_notifications, promote_market_radar_worker]
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -778,7 +822,10 @@ jobs:
       PRODUCTION_PROMOTION_RESULT: ${{ needs.promote_vercel_production.result }}
       DEPLOYED_SHA_RESULT: ${{ needs.mark_deployed_sha.result }}
       LEARNING_NOTIFICATION_RESULT: ${{ needs.enqueue_learning_radar_notifications.result }}
-      MARKET_NOTIFICATION_RESULT: ${{ needs.enqueue_market_radar_notifications.result }}
+      MARKET_RELEASE_LANE_RESULT: ${{ needs.enqueue_market_radar_notifications.result }}
+      MARKET_PUBLICATION_RESULT: ${{ needs.enqueue_market_radar_notifications.outputs.publication_result || 'not_run' }}
+      MARKET_NOTIFICATION_RESULT: ${{ needs.enqueue_market_radar_notifications.outputs.notification_result || 'not_run' }}
+      MARKET_NOTIFICATION_REQUESTED: ${{ inputs.enqueue_market_notifications }}
       MARKET_WORKER_RESULT: ${{ needs.promote_market_radar_worker.result }}
       MARKET_AUTHORIZATION_RESULT: ${{ needs.mark_market_radar_worker_authorized.result }}
     steps:
@@ -793,8 +840,10 @@ jobs:
             printf -- '- Vercel candidate: %s; verification: %s\n' "$CANDIDATE_RESULT" "$CANDIDATE_VERIFY_RESULT"
             printf -- '- Production promotion: %s; deployed-SHA marker: %s\n' "$PRODUCTION_PROMOTION_RESULT" "$DEPLOYED_SHA_RESULT"
             printf -- '- Learning notification: %s\n' "$LEARNING_NOTIFICATION_RESULT"
-            printf -- '- Market notification: %s; worker smoke: %s; worker authorization: %s\n' \
-              "$MARKET_NOTIFICATION_RESULT" "$MARKET_WORKER_RESULT" "$MARKET_AUTHORIZATION_RESULT"
+            market_notification='not_requested'
+            if [ "$MARKET_NOTIFICATION_REQUESTED" = 'true' ]; then market_notification="$MARKET_NOTIFICATION_RESULT"; fi
+            printf -- '- Market lane: %s; publication: %s; notification: %s; worker smoke: %s; worker authorization: %s\n' \
+              "$MARKET_RELEASE_LANE_RESULT" "$MARKET_PUBLICATION_RESULT" "$market_notification" "$MARKET_WORKER_RESULT" "$MARKET_AUTHORIZATION_RESULT"
             echo
             echo 'This summary is observational. Failed lanes remain failed and are never authorized by this job.'
           } >> "$GITHUB_STEP_SUMMARY"

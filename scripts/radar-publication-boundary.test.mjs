@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
 import { assertResearchPublication, buildRadarPublication, selectRadarDataset } from './radar-publication-boundary.mjs'
-import { readFileSync } from 'node:fs'
+import { readFileSync, mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { pathToFileURL } from 'node:url'
+import { selectRadarPublicationPlan } from './radar-publication-selection.mjs'
 
 const research = {
   date: '2026-08-12',
@@ -47,4 +51,42 @@ test('snapshot publishing is separate from notification delivery', () => {
   const store = readFileSync(new URL('./radar-publication-store.mjs', import.meta.url), 'utf8')
   assert.match(`${publisher}\n${store}`, /publication_snapshots/)
   assert.doesNotMatch(`${publisher}\n${store}`, /\.outbox|build\w*Notification|enqueue/i)
+})
+
+test('release selection uses latest published source per lane, including after midnight', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'radar-publication-'))
+  const root = pathToFileURL(directory + '/')
+  const write = (lane, date, overrides = {}) => {
+    const folder = join(directory, 'content', lane)
+    mkdirSync(folder, { recursive: true })
+    writeFileSync(join(folder, date + '.md'), '---\n' + JSON.stringify({ date, slug: date, publish: true, reviewStatus: 'automated', ...overrides }) + '\n---\n')
+  }
+  try {
+    write('radar', '2026-10-24')
+    write('radar', '2026-10-25', { publish: false })
+    write('radar', '2026-10-26', { publish: false })
+    write('market-radar', '2026-10-23')
+    const plan = selectRadarPublicationPlan({ root, today: '2026-10-25', env: { RADAR_PUBLICATION_SELECTION: 'latest' } })
+    assert.deepEqual(plan.dates, ['2026-10-23', '2026-10-24'])
+    assert.deepEqual(plan.byKind, { learning: '2026-10-24', market: '2026-10-23' })
+    assert.deepEqual([...plan.kinds], ['learning', 'market'])
+    write('radar', '2026-10-26')
+    assert.throws(() => selectRadarPublicationPlan({ root, today: '2026-10-25', env: { RADAR_PUBLICATION_SELECTION: 'latest' } }), /Future published research/)
+    write('radar', '2026-10-26', { publish: false })
+    write('market-radar', '2026-10-24', { slug: '2026-10-23' })
+    assert.throws(() => selectRadarPublicationPlan({ root, today: '2026-10-25', env: { RADAR_PUBLICATION_SELECTION: 'latest' } }), /must agree/)
+  } finally {
+    rmSync(directory, { recursive: true, force: true })
+  }
+})
+
+test('publication selection retains explicit date mode and fails closed on ambiguous input', () => {
+  assert.deepEqual(selectRadarPublicationPlan({ env: {}, today: '2026-10-24' }).dates, ['2026-10-24'])
+  assert.deepEqual(selectRadarPublicationPlan({ env: { RADAR_PUBLICATION_DATES: '2026-10-23,2026-10-24' } }).dates, ['2026-10-23', '2026-10-24'])
+  for (const env of [
+    { RADAR_PUBLICATION_DATES: 'yesterday' },
+    { RADAR_PUBLICATION_KINDS: 'unknown' },
+    { RADAR_PUBLICATION_SELECTION: 'all' },
+    { RADAR_PUBLICATION_SELECTION: 'latest', RADAR_PUBLICATION_DATE: '2026-10-24' },
+  ]) assert.throws(() => selectRadarPublicationPlan({ env }))
 })

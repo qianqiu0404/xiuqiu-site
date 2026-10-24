@@ -177,20 +177,21 @@ export const articleKnowledge: ArticleKnowledge[] = [
   {
     "id": 5,
     "slug": "market-services-data-flow",
-    "title": "market-services：Go 行情服务如何组织数据流",
+    "title": "Qiu Market：行情数据、读快照与虚拟交易怎样分工",
     "date": "2026-05-24",
-    "summary": "从 HTTP、gRPC、Redis、PostgreSQL、行情同步和 Dashboard API，拆解一个 Go 后端行情服务如何运行。",
+    "updatedAt": "2026-10-24",
+    "summary": "从 PostgreSQL 持久状态、Redis 读快照、HTTP/gRPC、行情新鲜度与独立虚拟交易域，梳理 Qiu Market 当前架构记录中的事实边界。",
     "tags": [
       "Go",
       "Market",
       "Backend",
       "Redis"
     ],
-    "readingTime": "12 min",
+    "readingTime": "8 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
     "evidenceLevel": "local-verified",
-    "evidenceSummary": "已梳理并局部运行采集、存储、API 与数据新鲜度链路。",
+    "evidenceSummary": "2026-10-24 只读核对已提交的架构、质量与 10 月 17 日恢复记录，修正早期概念图；没有重新启动服务、运行测试或检查线上端点。",
     "conceptTags": [
       "go-infra",
       "api-design"
@@ -199,12 +200,14 @@ export const articleKnowledge: ArticleKnowledge[] = [
       3
     ],
     "recommendedSlugs": [
+      "qiu-market-virtual-funds-recovery",
       "http-rpc-grpc",
       "api-system-calls"
     ],
     "suggestedQuestions": [
-      "market-services 的数据流如何组织？",
-      "Redis 和 PostgreSQL 在行情服务里如何分工？"
+      "为什么行情主写顺序是 PostgreSQL 在先，而不是先缓存再同步？",
+      "Redis 不可用时，为什么同一读快照不能全部回退 SQL？",
+      "入口恢复、行情新鲜与交易可写分别需要什么证据？"
     ]
   },
   {
@@ -1577,7 +1580,7 @@ export const articleKnowledge: ArticleKnowledge[] = [
     "slug": "qiu-market-virtual-funds-recovery",
     "title": "虚拟资金也要守账：Qiu Market 的撮合、双重记账与确定性恢复",
     "date": "2026-07-28",
-    "updatedAt": "2026-08-04",
+    "updatedAt": "2026-10-24",
     "summary": "Qiu Market 不连接真实资金，但仍用资金系统的标准约束一个 BTC/USDT 虚拟交易纵切片：整数金额、available/held、借贷平衡、串行撮合、事务事件流、结果未知停机和 state hash 恢复。",
     "tags": [
       "Go",
@@ -1586,11 +1589,11 @@ export const articleKnowledge: ArticleKnowledge[] = [
       "PostgreSQL",
       "Recovery"
     ],
-    "readingTime": "4 min",
+    "readingTime": "5 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
     "evidenceLevel": "local-verified",
-    "evidenceSummary": "基于 Qiu Market 已审核的本地提交与测试记录：BTC/USDT 虚拟撮合、available/held 双重记账、PostgreSQL 事件/快照/outbox、幂等重试与 state hash 恢复已验证；不代表真实资金、实盘交易或生产部署。",
+    "evidenceSummary": "保留 2026-08-04 的本地基线复验，并补充 8 月本地 full-stack golden 的隔离集成与进程恢复记录；本轮只读核对。真实资金、provider 许可、生产交易与跨日 Owner Gate 均不在已完成范围。",
     "conceptTags": [
       "go-infra",
       "api-design",
@@ -1688,20 +1691,21 @@ export const articleSummaries: ArticleSummary[] = [
   {
     "id": 5,
     "slug": "market-services-data-flow",
-    "title": "market-services：Go 行情服务如何组织数据流",
+    "title": "Qiu Market：行情数据、读快照与虚拟交易怎样分工",
     "date": "2026-05-24",
-    "summary": "从 HTTP、gRPC、Redis、PostgreSQL、行情同步和 Dashboard API，拆解一个 Go 后端行情服务如何运行。",
+    "updatedAt": "2026-10-24",
+    "summary": "从 PostgreSQL 持久状态、Redis 读快照、HTTP/gRPC、行情新鲜度与独立虚拟交易域，梳理 Qiu Market 当前架构记录中的事实边界。",
     "tags": [
       "Go",
       "Market",
       "Backend",
       "Redis"
     ],
-    "readingTime": "12 min",
+    "readingTime": "8 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
     "evidenceLevel": "local-verified",
-    "evidenceSummary": "已梳理并局部运行采集、存储、API 与数据新鲜度链路。"
+    "evidenceSummary": "2026-10-24 只读核对已提交的架构、质量与 10 月 17 日恢复记录，修正早期概念图；没有重新启动服务、运行测试或检查线上端点。"
   },
   {
     "id": 6,
@@ -2355,7 +2359,7 @@ export const articleSummaries: ArticleSummary[] = [
     "slug": "qiu-market-virtual-funds-recovery",
     "title": "虚拟资金也要守账：Qiu Market 的撮合、双重记账与确定性恢复",
     "date": "2026-07-28",
-    "updatedAt": "2026-08-04",
+    "updatedAt": "2026-10-24",
     "summary": "Qiu Market 不连接真实资金，但仍用资金系统的标准约束一个 BTC/USDT 虚拟交易纵切片：整数金额、available/held、借贷平衡、串行撮合、事务事件流、结果未知停机和 state hash 恢复。",
     "tags": [
       "Go",
@@ -2364,10 +2368,10 @@ export const articleSummaries: ArticleSummary[] = [
       "PostgreSQL",
       "Recovery"
     ],
-    "readingTime": "4 min",
+    "readingTime": "5 min",
     "difficulty": "项目拆解",
     "kind": "engineering-note",
     "evidenceLevel": "local-verified",
-    "evidenceSummary": "基于 Qiu Market 已审核的本地提交与测试记录：BTC/USDT 虚拟撮合、available/held 双重记账、PostgreSQL 事件/快照/outbox、幂等重试与 state hash 恢复已验证；不代表真实资金、实盘交易或生产部署。"
+    "evidenceSummary": "保留 2026-08-04 的本地基线复验，并补充 8 月本地 full-stack golden 的隔离集成与进程恢复记录；本轮只读核对。真实资金、provider 许可、生产交易与跨日 Owner Gate 均不在已完成范围。"
   }
 ]

@@ -5,15 +5,12 @@ import { validateMarketRadar } from './market-radar-contracts.mjs'
 import { assertPublicRadarContent } from './radar-pipeline.mjs'
 import { buildRadarPublication } from './radar-publication-boundary.mjs'
 import { publishRadarSnapshot } from './radar-publication-store.mjs'
-import { shanghaiDate } from './radar-notification-contracts.mjs'
 import { normalizeLearningEditionV2 } from './learning-radar-v2.mjs'
+import { selectRadarPublicationPlan } from './radar-publication-selection.mjs'
 
 const databaseUrl = process.env.MARKET_RADAR_DATABASE_URL
 if (!databaseUrl) throw new Error('MARKET_RADAR_DATABASE_URL is required')
-const dates = (process.env.RADAR_PUBLICATION_DATES || process.env.RADAR_PUBLICATION_DATE || shanghaiDate()).split(',').map(value => value.trim())
-if (dates.some(date => !/^\d{4}-\d{2}-\d{2}$/.test(date))) throw new Error('RADAR_PUBLICATION_DATES must contain YYYY-MM-DD values')
-const kinds = new Set((process.env.RADAR_PUBLICATION_KINDS || 'learning,market').split(',').map(value => value.trim()))
-if ([...kinds].some(kind => !['learning', 'market'].includes(kind))) throw new Error('RADAR_PUBLICATION_KINDS only supports learning and market')
+const { dates, kinds, byKind } = selectRadarPublicationPlan()
 const sql = neon(databaseUrl)
 
 function readPublication(path, kind, date) {
@@ -33,8 +30,8 @@ function readPublication(path, kind, date) {
 const result = { dates, snapshots: [] }
 for (const date of dates) {
   const publications = [
-    ['learning', kinds.has('learning') ? readPublication(new URL(`../content/radar/${date}.md`, import.meta.url), 'learning', date) : null],
-    ['market', kinds.has('market') ? readPublication(new URL(`../content/market-radar/${date}.md`, import.meta.url), 'market', date) : null],
+    ['learning', kinds.has('learning') && (!byKind || byKind.learning === date) ? readPublication(new URL(`../content/radar/${date}.md`, import.meta.url), 'learning', date) : null],
+    ['market', kinds.has('market') && (!byKind || byKind.market === date) ? readPublication(new URL(`../content/market-radar/${date}.md`, import.meta.url), 'market', date) : null],
   ]
   for (const [kind, publication] of publications) {
     if (!publication) continue

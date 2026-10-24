@@ -22,7 +22,7 @@
     "2026-10-17 的恢复记录确认公开行情读链路的 502 消除；同次现场参考价仍不可用、市场雷达公开列表为空，不能据此宣布整套产品恢复"
   ],
   "targetOutcome": "完成后的 Qiu Market Server 是一套可独立部署的行情与虚拟交易后端：上游异常不会制造假价格，下游可以按统一市场身份读取报价、来源和健康状态；订单、余额、成交、事件和 WebSocket cursor 能在重启或提交结果未知后从 PostgreSQL 确定性恢复。",
-  "nextMilestone": "先在同一固定候选重跑本地 full-stack golden，并由 Owner 追踪 submit→ledger→recovery；再分别复验参考价、公开研究更新和生产交易门。跨日 Owner Gate 未完成前，Claim 保持 evidence-ready。",
+  "nextMilestone": "在 Node 24 上重跑同一固定候选的 full-stack golden，并由 Owner 现场追踪 submit→ledger→recovery，修改一条失败测试并说明虚拟资金边界；再分别复验参考价、公开研究更新和生产交易门。跨日 Owner Gate 未完成前，Q-01/Q-02 保持 evidence-ready。",
   "knownLimits": [
     "跨日 Owner Gate 尚未通过，Q-01/Q-02 保持 evidence-ready；本轮内容核对没有代替本人闭卷解释或修改失败测试",
     "交易只使用虚拟资金，不接充值、提现、私钥、真实交易所下单或实盘资产",
@@ -115,7 +115,7 @@
       "Owner Gate 未通过前保持 evidence-ready"
     ],
     "nextSteps": [
-      "在固定候选与匹配工具链上重跑 full-stack golden，保留原始失败与清理回执",
+      "在 Node 24 与固定候选上重跑 full-stack golden，保留原始失败与清理回执",
       "由 Owner 追踪 submit→ledger→recovery 并修改一条失败测试",
       "分别核对参考价新鲜度、公开研究与生产交易门，不把页面可达视为整链路通过"
     ]

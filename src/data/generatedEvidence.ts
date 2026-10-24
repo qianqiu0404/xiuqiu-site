@@ -47,7 +47,7 @@ export const evidenceRecords: EvidenceRecord[] = [
   },
   {
     "slug": "exchange-wallet-implementation",
-    "title": "Exchange Wallet Infrastructure 工程边界",
+    "title": "历史四服务钱包工程边界",
     "capabilityIds": [
       "request-idempotency",
       "fund-state",
@@ -64,7 +64,7 @@ export const evidenceRecords: EvidenceRecord[] = [
     "kind": "implementation",
     "status": "partial",
     "visibility": "private-summary",
-    "summary": "四个私有服务已定位资金编排、风险审批、多链适配与签名边界；网站只公开去敏后的代码事实和当前限制。",
+    "summary": "2026-07-13 的历史四服务材料定位了资金编排、风险审批、多链适配与签名边界；它不是当前 Wallet Infrastructure 的实现或验收记录。",
     "verifiedAt": "2026-07-13",
     "failureSlugs": [
       "duplicate-request-id",
@@ -79,7 +79,7 @@ export const evidenceRecords: EvidenceRecord[] = [
   },
   {
     "slug": "exchange-wallet-tests",
-    "title": "四服务局部测试基线",
+    "title": "历史四服务局部测试基线",
     "capabilityIds": [
       "request-idempotency",
       "fund-state",
@@ -96,7 +96,7 @@ export const evidenceRecords: EvidenceRecord[] = [
     "kind": "test",
     "status": "partial",
     "visibility": "private-summary",
-    "summary": "dispatcher、chain adaptor、RPC、risk approval 与幂等相关测试已分别运行；跨四服务的一键基线仍在整理。",
+    "summary": "2026-07-13 的旧四服务记录分别运行过 dispatcher、chain adaptor、RPC、risk approval 与幂等局部测试；未形成跨四服务一键基线，也不验证当前 WIF。",
     "verifiedAt": "2026-07-13",
     "command": "go test ./services ./services/grpc ./services/rpc ./chaindispatcher",
     "failureSlugs": [
@@ -177,6 +177,50 @@ export const evidenceRecords: EvidenceRecord[] = [
     ]
   },
   {
+    "slug": "qiu-market-full-stack-golden",
+    "title": "Qiu Market 本地全链路集成记录",
+    "capabilityIds": [
+      "request-idempotency",
+      "fund-state",
+      "reconciliation",
+      "observability"
+    ],
+    "projectSlugs": [
+      "s78-market-services"
+    ],
+    "kind": "test",
+    "status": "partial",
+    "visibility": "private-summary",
+    "summary": "2026-08-10 的隔离集成记录覆盖浏览器→HTTP/gRPC→真实一次性 PostgreSQL→虚拟撮合与账本，并在强制终止后用 snapshot + event tail 恢复同一 state hash。行情、研究与质量来源使用本地夹具；2026-10-24 仅核对记录，没有重跑。",
+    "verifiedAt": "2026-08-10",
+    "command": "make verify-full-stack-golden",
+    "failureSlugs": [],
+    "deliverySlugs": [],
+    "articleSlugs": [
+      "qiu-market-virtual-funds-recovery"
+    ]
+  },
+  {
+    "slug": "qiu-market-read-path-recovery",
+    "title": "Qiu Market 公开读链路与数据降级快照",
+    "capabilityIds": [
+      "observability"
+    ],
+    "projectSlugs": [
+      "s78-market-services"
+    ],
+    "kind": "writeup",
+    "status": "partial",
+    "visibility": "private-summary",
+    "summary": "2026-10-17 的恢复记录确认公开行情读链路的 502 消除；同次现场参考展示价仍不可用、市场雷达公开列表为空。入口可达、数据新鲜度和虚拟交易验收分别判断；2026-10-24 只读核对，没有重新检查线上端点。",
+    "verifiedAt": "2026-10-17",
+    "failureSlugs": [],
+    "deliverySlugs": [],
+    "articleSlugs": [
+      "market-services-data-flow"
+    ]
+  },
+  {
     "slug": "qiu-market-release-artifact",
     "title": "Qiu Market Server 可恢复交易基线",
     "capabilityIds": [
@@ -191,7 +235,7 @@ export const evidenceRecords: EvidenceRecord[] = [
     "kind": "test",
     "status": "verified",
     "visibility": "private-summary",
-    "summary": "release artifact 72343ba 的完整 Go test 于 2026-08-04 重新通过；已有去敏记录覆盖虚拟 BTC/USDT 撮合、available / held 双重记账、PostgreSQL 事件/快照/outbox、幂等与 state hash 恢复。该证据不包含真实资金或生产验收。",
+    "summary": "2026-08-04 的历史基线完整 Go test 复验通过；已有去敏记录覆盖虚拟 BTC/USDT 撮合、available / held 双重记账、PostgreSQL 事件/快照/outbox、幂等与 state hash 恢复。该证据不包含真实资金或生产验收，本轮未重跑。",
     "verifiedAt": "2026-08-04",
     "command": "go test ./...",
     "failureSlugs": [],
@@ -364,6 +408,31 @@ export const evidenceRecords: EvidenceRecord[] = [
       "wallet-domain-engine-v1"
     ],
     "articleSlugs": []
+  },
+  {
+    "slug": "wallet-infrastructure-offline-funds-consistency",
+    "title": "Wallet Infrastructure 离线资金一致性记录",
+    "capabilityIds": [
+      "fund-state",
+      "signer-boundary",
+      "broadcast-finality",
+      "reconciliation",
+      "observability"
+    ],
+    "projectSlugs": [
+      "exchange-wallet-system"
+    ],
+    "kind": "test",
+    "status": "partial",
+    "visibility": "private-summary",
+    "summary": "2026-10-21 的离线记录覆盖网络阻断后的签名与首次广播门、广播拒绝后保留冻结并继续观察原交易，以及重复处理不增加资金效果；完整本地 Gate 与独立复审有通过回执。2026-10-24 仅核对记录，未重跑；公开 Claim 保持 locked。",
+    "verifiedAt": "2026-10-21",
+    "failureSlugs": [],
+    "deliverySlugs": [],
+    "articleSlugs": [
+      "cex-evm-wallet-deposit-withdrawal-loop",
+      "wallet-ledger-transaction-mq-consistency"
+    ]
   },
   {
     "slug": "wallet-lab-demo",

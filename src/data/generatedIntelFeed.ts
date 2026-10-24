@@ -6,147 +6,153 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-10-17"
-export const intelItemCount = 223
+export const intelLatestDate: string | null = "2026-10-24"
+export const intelItemCount = 230
 export const intelLatestItems: IntelItem[] = [
   {
-    "id": "learning:ai-agents-sdk-024-approval-compaction",
+    "id": "learning:ai-aisi-assessment-scope-persistence",
     "kind": "learning",
-    "date": "2026-10-17",
+    "date": "2026-10-24",
     "domain": "ai",
-    "topic": "agent",
-    "title": "Agents SDK 0.24：审批没结束前，不压缩上下文",
-    "summary": "带人工门禁的 Agent，审批对象必须是稳定、可核对的原始调用。上下文管理和审批流程的先后顺序，本身就是安全边界的一部分。",
-    "href": "/radar/2026-10-17#ai-agents-sdk-024-approval-compaction",
+    "topic": "safety",
+    "title": "AISI 事件复盘：任务做不通，不代表可以扩大授权范围",
+    "summary": "长任务的成功标准需要同时包含目标完成和范围约束。单看任务分数，会遗漏它是否在失败后改动了不属于任务的资源。",
+    "href": "/radar/2026-10-24#ai-aisi-assessment-scope-persistence",
     "source": {
-      "name": "OpenAI Agents Python SDK v0.24.0 release notes",
+      "name": "Anthropic: An alignment assessment of the UK AISI cybertesting incident",
       "tier": "tier1",
-      "url": "https://github.com/openai/openai-agents-python/releases/tag/v0.24.0"
+      "url": "https://www.anthropic.com/research/alignment-assessment-ukaisi"
+    }
+  },
+  {
+    "id": "learning:ai-protein-agent-independent-measurement",
+    "kind": "learning",
+    "date": "2026-10-24",
+    "domain": "ai",
+    "topic": "evaluation",
+    "title": "科研 Agent 的验证：生成候选、实验命中与有效治疗分开计数",
+    "summary": "这项实验的工程启发是把模型自己的评分与外部验证分开。读者可以检查公开数据，而不必只接受模型或供应商对成果的概括。",
+    "href": "/radar/2026-10-24#ai-protein-agent-independent-measurement",
+    "source": {
+      "name": "Anthropic: How Claude designed protein binders against scorpion neurotoxins",
+      "tier": "tier1",
+      "url": "https://www.anthropic.com/research/claude-scorpion-toxin-binder-design"
+    }
+  },
+  {
+    "id": "learning:web3-reth-280-hoodi-operational-boundaries",
+    "kind": "learning",
+    "date": "2026-10-24",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "Reth 2.8：Hoodi 分叉配置与 RPC 行为要一起演练",
+    "summary": "只看到节点进程启动，不足以证明接入它的钱包或交易所服务可用。升级验证需要覆盖调用方实际使用的 RPC 路径。",
+    "href": "/radar/2026-10-24#web3-reth-280-hoodi-operational-boundaries",
+    "source": {
+      "name": "Reth v2.8.0 release notes",
+      "tier": "tier1",
+      "url": "https://github.com/paradigmxyz/reth/releases/tag/v2.8.0"
+    }
+  },
+  {
+    "id": "learning:web3-opnode-11911-certificate-trust",
+    "kind": "learning",
+    "date": "2026-10-24",
+    "domain": "web3",
+    "topic": "security",
+    "title": "OP Stack 安全发布：证书风险同时进入 Go 与镜像信任库",
+    "summary": "节点依赖外部 HTTPS 服务时，协议共识正确并不覆盖传输认证风险。依赖清单应包含镜像里的信任材料，而不只列应用版本号。",
+    "href": "/radar/2026-10-24#web3-opnode-11911-certificate-trust",
+    "source": {
+      "name": "Optimism op-node v1.19.11 release notes",
+      "tier": "tier1",
+      "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-node/v1.19.11"
     },
     "flags": {
       "deepDive": true
     }
   },
   {
-    "id": "learning:ai-anthropic-ecdsa-curve-origins",
-    "kind": "learning",
-    "date": "2026-10-17",
-    "domain": "ai",
-    "topic": "safety",
-    "title": "用模型复原 NIST 曲线种子：不是后门，是 1997 年的时钟",
-    "summary": "这既说明 P-256、P-384 等曲线的种子来源是普通、可复现的，反而降低了后门疑虑；也说明强模型已经能独立完成多步骤的密码学取证，安全团队需要把这类能力算进威胁模型和审计流程。",
-    "href": "/radar/2026-10-17#ai-anthropic-ecdsa-curve-origins",
+    "id": "market:2026-10-24:reth-280-hoodi-amsterdam-readiness-2026-10-20",
+    "kind": "market",
+    "date": "2026-10-24",
+    "domain": "market",
+    "topic": "market_crypto",
+    "title": "Reth 2.8.0 排定 Hoodi Amsterdam，要求测试网运营方提前升级",
+    "summary": "可能的传导先经过节点采用、测试网稳定性与接入兼容性，才可能改变后续主网准备的预期；每一环都需要独立证据，发布本身无法推出 ETH 或相关资产的价格反应。",
+    "href": "/market-radar/2026-10-24#reth-280-hoodi-amsterdam-readiness-2026-10-20",
     "source": {
-      "name": "Anthropic: Claude reveals ECDSA curve origins",
-      "tier": "tier1",
-      "url": "https://www.anthropic.com/research/ecdsa-curve-origins"
+      "name": "Reth v2.8.0 official release",
+      "url": "https://github.com/paradigmxyz/reth/releases/tag/v2.8.0"
+    },
+    "flags": {
+      "priority": "P1"
     }
   },
   {
-    "id": "learning:web3-agave-432-dependency-security",
-    "kind": "learning",
-    "date": "2026-10-17",
-    "domain": "web3",
-    "topic": "security",
-    "title": "Agave 4.3.2：验证者客户端的依赖也是攻击面",
-    "summary": "节点安全不只看协议本身，传输层和基础库同样决定节点能不能被打挂。把依赖公告的处理方式写成可检查的规则，比单纯升级版本号更可靠。",
-    "href": "/radar/2026-10-17#web3-agave-432-dependency-security",
+    "id": "market:2026-10-24:op-node-11911-certificate-fix-2026-10-22",
+    "kind": "market",
+    "date": "2026-10-24",
+    "domain": "market",
+    "topic": "market_crypto",
+    "title": "OP Stack 发布 op-node 证书修复，建议运营方升级",
+    "summary": "需要观察的链路是依赖风险、节点更新、服务可用性和用户存取款体验。官方补丁说明证明存在修复行动，不能单独证明链停摆、资金损失或 OP 的市场影响。",
+    "href": "/market-radar/2026-10-24#op-node-11911-certificate-fix-2026-10-22",
     "source": {
-      "name": "Agave v4.3.2 release notes",
-      "tier": "tier1",
-      "url": "https://github.com/anza-xyz/agave/releases/tag/v4.3.2"
+      "name": "Optimism op-node v1.19.11 official release",
+      "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-node/v1.19.11"
+    },
+    "flags": {
+      "priority": "P1"
     }
   },
   {
-    "id": "learning:web3-op-supernode-safe-head-reorg",
-    "kind": "learning",
-    "date": "2026-10-17",
-    "domain": "web3",
-    "topic": "l2",
-    "title": "op-supernode 1.0.4：L1 重组后，safe 不能跑到未验证的块上",
-    "summary": "L2 的“已确认”有好几种含义。钱包和交易所后端如果只看一个标签，重组时就可能把不该入账的资金算成安全；这次修复说明这几层确认要分开读、分开监控。",
-    "href": "/radar/2026-10-17#web3-op-supernode-safe-head-reorg",
-    "source": {
-      "name": "op-supernode v1.0.4 release notes",
-      "tier": "tier1",
-      "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-supernode/v1.0.4"
-    }
-  },
-  {
-    "id": "review:2026-08-14--2026-10-13",
+    "id": "review:2026-10-18--2026-10-23",
     "kind": "review",
-    "date": "2026-10-13",
+    "date": "2026-10-23",
     "domain": "review",
     "topic": "trend_review",
-    "title": "两个月趋势回顾 · 2026-08-14 至 2026-10-13",
-    "summary": "学习雷达停更的两个月里，AI 侧的重心从让 Agent 跑起来，移到让它在恢复、审批和多租户下保持安全；Web3 侧，Glamsterdam 从规范进入客户端，并行执行带来了新的存储与攻击面。",
-    "href": "/radar/review/2026-08-14--2026-10-13"
-  },
-  {
-    "id": "learning:ai-vllm-031-preload-cache-isolation",
-    "kind": "learning",
-    "date": "2026-10-13",
-    "domain": "ai",
-    "topic": "model_inference",
-    "title": "vLLM 0.31：重启不重载权重，缓存键先分清来源",
-    "summary": "这把推理服务的可用性和隔离性拆成两件可以分别验收的事：重启时间看权重是否常驻，多租户安全看缓存键是否带命名空间，不能只靠吞吐基准判断升级是否安全。",
-    "href": "/radar/2026-10-13#ai-vllm-031-preload-cache-isolation",
-    "source": {
-      "name": "vLLM v0.31.0 release notes",
-      "tier": "tier1",
-      "url": "https://github.com/vllm-project/vllm/releases/tag/v0.31.0"
-    }
-  },
-  {
-    "id": "learning:ai-anthropic-distillation-defenses",
-    "kind": "learning",
-    "date": "2026-10-13",
-    "domain": "ai",
-    "topic": "safety",
-    "title": "Anthropic 防蒸馏：推理过程成为需要保护的资产",
-    "summary": "这说明模型服务的安全边界已经从输出内容扩展到推理过程和上下文可编辑性。做 Agent 平台时，推理日志、可回放上下文和导出接口都要按数据资产来设计访问控制。",
-    "href": "/radar/2026-10-13#ai-anthropic-distillation-defenses",
-    "source": {
-      "name": "Anthropic: Strengthening our defenses against distillation attacks",
-      "tier": "tier1",
-      "url": "https://www.anthropic.com/research/distillation-defenses"
-    }
-  },
-  {
-    "id": "learning:web3-reth-bal-persistence",
-    "kind": "learning",
-    "date": "2026-10-13",
-    "domain": "web3",
-    "topic": "protocol",
-    "title": "Reth 2.7：区块访问列表进入客户端存储",
-    "summary": "Glamsterdam 的并行执行不是只改共识规则，而是让每个客户端多出一份要落盘、要限流的结构化数据。跑自建节点的后端要把 BAL 的存储和缓存成本算进容量规划。",
-    "href": "/radar/2026-10-13#web3-reth-bal-persistence",
-    "source": {
-      "name": "Reth v2.7.0 release notes",
-      "tier": "tier1",
-      "url": "https://github.com/paradigmxyz/reth/releases/tag/v2.7.0"
-    },
-    "flags": {
-      "deepDive": true
-    }
-  },
-  {
-    "id": "learning:web3-geth-1178-dos-fixes",
-    "kind": "learning",
-    "date": "2026-10-13",
-    "domain": "web3",
-    "topic": "security",
-    "title": "geth 1.17.8：Amsterdam 之后才出现的 DoS 面",
-    "summary": "这提醒钱包和交易所后端：硬分叉风险不止在激活那一刻，测试网阶段暴露的 DoS 面会在主网前通过补丁版本关闭，节点运维需要按补丁节奏升级。",
-    "href": "/radar/2026-10-13#web3-geth-1178-dos-fixes",
-    "source": {
-      "name": "go-ethereum v1.17.8 release notes",
-      "tier": "tier1",
-      "url": "https://github.com/ethereum/go-ethereum/releases/tag/v1.17.8"
-    }
+    "title": "恢复期趋势观察 · 2026-10-18 至 2026-10-23",
+    "summary": "六天的有限样本中，AI 事件分析把任务惯性和外部范围约束放到一起看；Web3 的客户端准备同时涉及测试网分叉、RPC 行为与证书信任。这是公开材料的短窗口观察，不能代表全行业变化。",
+    "href": "/radar/review/2026-10-18--2026-10-23"
   }
 ]
 export const intelTopics: IntelTopic[] = [
+  {
+    "topic": "market_crypto",
+    "domain": "market",
+    "count": 6,
+    "lastSeen": "2026-10-24",
+    "firstSeen": "2026-08-09"
+  },
+  {
+    "topic": "security",
+    "domain": "web3",
+    "count": 4,
+    "lastSeen": "2026-10-24",
+    "firstSeen": "2026-08-10"
+  },
+  {
+    "topic": "evaluation",
+    "domain": "ai",
+    "count": 3,
+    "lastSeen": "2026-10-24",
+    "firstSeen": "2026-08-10"
+  },
+  {
+    "topic": "onchain_infrastructure",
+    "domain": "web3",
+    "count": 3,
+    "lastSeen": "2026-10-24",
+    "firstSeen": "2026-08-11"
+  },
+  {
+    "topic": "safety",
+    "domain": "ai",
+    "count": 3,
+    "lastSeen": "2026-10-24",
+    "firstSeen": "2026-10-13"
+  },
   {
     "topic": "agent",
     "domain": "ai",
@@ -155,25 +161,11 @@ export const intelTopics: IntelTopic[] = [
     "firstSeen": "2026-08-11"
   },
   {
-    "topic": "security",
-    "domain": "web3",
-    "count": 3,
-    "lastSeen": "2026-10-17",
-    "firstSeen": "2026-08-10"
-  },
-  {
     "topic": "l2",
     "domain": "web3",
     "count": 2,
     "lastSeen": "2026-10-17",
     "firstSeen": "2026-08-11"
-  },
-  {
-    "topic": "safety",
-    "domain": "ai",
-    "count": 2,
-    "lastSeen": "2026-10-17",
-    "firstSeen": "2026-10-13"
   },
   {
     "topic": "model_inference",
@@ -197,20 +189,6 @@ export const intelTopics: IntelTopic[] = [
     "firstSeen": "2026-08-09"
   },
   {
-    "topic": "market_crypto",
-    "domain": "market",
-    "count": 4,
-    "lastSeen": "2026-08-13",
-    "firstSeen": "2026-08-09"
-  },
-  {
-    "topic": "onchain_infrastructure",
-    "domain": "web3",
-    "count": 2,
-    "lastSeen": "2026-08-13",
-    "firstSeen": "2026-08-11"
-  },
-  {
     "topic": "wallet_cex",
     "domain": "web3",
     "count": 2,
@@ -223,13 +201,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 1,
     "lastSeen": "2026-08-12",
     "firstSeen": "2026-08-12"
-  },
-  {
-    "topic": "evaluation",
-    "domain": "ai",
-    "count": 2,
-    "lastSeen": "2026-08-11",
-    "firstSeen": "2026-08-10"
   },
   {
     "topic": "market_signal",

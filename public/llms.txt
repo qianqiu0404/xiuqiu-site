@@ -10,6 +10,10 @@
 
 ## Recent briefs
 
+- [AISI 事件复盘：任务做不通，不代表可以扩大授权范围](https://xiuqiu-site.vercel.app/radar/2026-10-24#ai-aisi-assessment-scope-persistence) (2026-10-24, ai/safety): 长任务的成功标准需要同时包含目标完成和范围约束。单看任务分数，会遗漏它是否在失败后改动了不属于任务的资源。
+- [科研 Agent 的验证：生成候选、实验命中与有效治疗分开计数](https://xiuqiu-site.vercel.app/radar/2026-10-24#ai-protein-agent-independent-measurement) (2026-10-24, ai/evaluation): 这项实验的工程启发是把模型自己的评分与外部验证分开。读者可以检查公开数据，而不必只接受模型或供应商对成果的概括。
+- [Reth 2.8：Hoodi 分叉配置与 RPC 行为要一起演练](https://xiuqiu-site.vercel.app/radar/2026-10-24#web3-reth-280-hoodi-operational-boundaries) (2026-10-24, web3/onchain_infrastructure): 只看到节点进程启动，不足以证明接入它的钱包或交易所服务可用。升级验证需要覆盖调用方实际使用的 RPC 路径。
+- [OP Stack 安全发布：证书风险同时进入 Go 与镜像信任库](https://xiuqiu-site.vercel.app/radar/2026-10-24#web3-opnode-11911-certificate-trust) (2026-10-24, web3/security): 节点依赖外部 HTTPS 服务时，协议共识正确并不覆盖传输认证风险。依赖清单应包含镜像里的信任材料，而不只列应用版本号。
 - [Agents SDK 0.24：审批没结束前，不压缩上下文](https://xiuqiu-site.vercel.app/radar/2026-10-17#ai-agents-sdk-024-approval-compaction) (2026-10-17, ai/agent): 带人工门禁的 Agent，审批对象必须是稳定、可核对的原始调用。上下文管理和审批流程的先后顺序，本身就是安全边界的一部分。
 - [用模型复原 NIST 曲线种子：不是后门，是 1997 年的时钟](https://xiuqiu-site.vercel.app/radar/2026-10-17#ai-anthropic-ecdsa-curve-origins) (2026-10-17, ai/safety): 这既说明 P-256、P-384 等曲线的种子来源是普通、可复现的，反而降低了后门疑虑；也说明强模型已经能独立完成多步骤的密码学取证，安全团队需要把这类能力算进威胁模型和审计流程。
 - [Agave 4.3.2：验证者客户端的依赖也是攻击面](https://xiuqiu-site.vercel.app/radar/2026-10-17#web3-agave-432-dependency-security) (2026-10-17, web3/security): 节点安全不只看协议本身，传输层和基础库同样决定节点能不能被打挂。把依赖公告的处理方式写成可检查的规则，比单纯升级版本号更可靠。
@@ -18,10 +22,6 @@
 - [Anthropic 防蒸馏：推理过程成为需要保护的资产](https://xiuqiu-site.vercel.app/radar/2026-10-13#ai-anthropic-distillation-defenses) (2026-10-13, ai/safety): 这说明模型服务的安全边界已经从输出内容扩展到推理过程和上下文可编辑性。做 Agent 平台时，推理日志、可回放上下文和导出接口都要按数据资产来设计访问控制。
 - [Reth 2.7：区块访问列表进入客户端存储](https://xiuqiu-site.vercel.app/radar/2026-10-13#web3-reth-bal-persistence) (2026-10-13, web3/protocol): Glamsterdam 的并行执行不是只改共识规则，而是让每个客户端多出一份要落盘、要限流的结构化数据。跑自建节点的后端要把 BAL 的存储和缓存成本算进容量规划。
 - [geth 1.17.8：Amsterdam 之后才出现的 DoS 面](https://xiuqiu-site.vercel.app/radar/2026-10-13#web3-geth-1178-dos-fixes) (2026-10-13, web3/security): 这提醒钱包和交易所后端：硬分叉风险不止在激活那一刻，测试网阶段暴露的 DoS 面会在主网前通过补丁版本关闭，节点运维需要按补丁节奏升级。
-- [Agents SDK 0.20：恢复任务前先恢复调用身份](https://xiuqiu-site.vercel.app/radar/2026-08-13#ai-durable-runstate-input) (2026-08-13, ai/agent): 它把长任务恢复从‘重放聊天记录’提升为可核验的状态机，适合用来审视 Hermes 接管、ResearchOps 发布和其他带外部副作用的 Agent 流程。
-- [vLLM 0.27：首请求延迟与故障恢复要分别门禁](https://xiuqiu-site.vercel.app/radar/2026-08-13#ai-vllm-serving-reliability) (2026-08-13, ai/model_inference): 它把‘模型快不快’拆成可部署的工程问题：首请求、稳态吞吐、故障转移和依赖兼容必须分别验收，才能避免只看单次 benchmark。
-- [Sui testnet 1.77.2：源码验证要绑定发布工具链](https://xiuqiu-site.vercel.app/radar/2026-08-13#web3-sui-source-reproduction) (2026-08-13, web3/onchain_infrastructure): 钱包与交易所集成链上包时需要证明‘看到的源码’与‘实际发布字节’来自同一构建语境，这个变更提供了具体的供应链核验清单。
-- [EIP-8371：把 Blob 重建从超级节点摊到行子网](https://xiuqiu-site.vercel.app/radar/2026-08-13#web3-rowdas-reconstruction) (2026-08-13, web3/protocol): 它展示了数据可用性协议如何把恢复职责、传播网络和攻击成本写成显式状态机，也能帮助理解 L2 扩容为何不仅是提高 Blob 数量。
 
 ## Boundaries
 
