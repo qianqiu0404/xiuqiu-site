@@ -461,6 +461,7 @@
 .brief-tag--web3 { --tag: var(--domain-web3); --tag-soft: var(--domain-web3-soft); }
 .brief-tag--market { --tag: var(--domain-market); --tag-soft: var(--domain-market-soft); }
 .brief-tag--review { --tag: var(--domain-review); --tag-soft: var(--domain-review-soft); }
+.brief-tag--research { --tag: var(--ink-2); --tag-soft: var(--bg-sunk); }
 .brief-tag--p0 { --tag: var(--status-p0); --tag-soft: var(--status-p0-soft); }
 
 .brief-flag {

@@ -4,6 +4,12 @@
     "deploymentEnabled": false
   },
   "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/research-data/:path*",
+      "destination": "https://shared-research.vercel.app/feed/v1/:path*"
+    }
+  ],
   "functions": {
     "api/chat.ts": {
       "includeFiles": "src/data/**"

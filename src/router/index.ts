@@ -10,6 +10,12 @@ const router = createRouter({
       meta: { visual: 'narrative', navGroup: 'home' },
     },
     {
+      path: '/research',
+      name: 'research-detail',
+      component: () => import('../features/intel/pages/ResearchDetailPage.vue'),
+      meta: { visual: 'narrative', navGroup: 'home' },
+    },
+    {
       path: '/about',
       name: 'about',
       component: () => import('../features/about/pages/HomePage.vue'),
