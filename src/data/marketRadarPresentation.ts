@@ -7,6 +7,35 @@ export const marketCategoryOptions = [
   { key: 'equity', label: '美股' },
   { key: 'regulation', label: '政策' },
 ]
+export interface MarketQuery {
+  category: string
+  query: string
+}
+
+export function readMarketQuery(query: Record<string, unknown>): MarketQuery {
+  return {
+    category: marketCategoryOptions.some(option => option.key === query.category) ? query.category as string : 'all',
+    query: typeof query.q === 'string' ? query.q : '',
+  }
+}
+
+export function marketQueryParams(query: MarketQuery): Record<string, string> {
+  const normalized = readMarketQuery({ category: query.category, q: query.query })
+  return {
+    ...(normalized.category !== 'all' ? { category: normalized.category } : {}),
+    ...(normalized.query.trim() ? { q: normalized.query } : {}),
+  }
+}
+
+export function marketQueueHash(hash: unknown): string {
+  return typeof hash === 'string' && /^#queue-[a-z0-9]+(?:-[a-z0-9]+)*$/.test(hash) ? hash : ''
+}
+
+export function marketListHref(query: MarketQuery, hash?: unknown): string {
+  const params = new URLSearchParams(marketQueryParams(query)).toString()
+  return `/market-radar${params ? `?${params}` : ''}${marketQueueHash(hash)}`
+}
+
 export const marketStatusLabels = { scheduled: '已排期', released: '已发布', monitoring: '观察中' }
 export const marketPriorityLabels = { P0: '关键', P1: '重要', P2: '跟踪' }
 
