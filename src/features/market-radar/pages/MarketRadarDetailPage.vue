@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
-import { loadMarketRadarBySlug, getSnapshotFreshness, readingReturnLink } from '../data'
+import { loadMarketRadarBySlug, getSnapshotFreshness, getRadarCorrections, readingReturnLink } from '../data'
 import type { MarketRadarDaily } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
 import '../../../styles/market-radar.css'
@@ -14,6 +14,7 @@ const loading = ref(true)
 let requestVersion = 0
 const allAssets = computed(() => entry.value ? [...new Set(entry.value.events.flatMap(event => event.assets))] : [])
 const entryFreshness = computed(() => getSnapshotFreshness(entry.value?.date))
+const corrections = computed(() => getRadarCorrections('market', entry.value?.slug))
 const categoryLabels = { macro: '宏观', crypto: '加密', equity: '美股', regulation: '政策' }
 const statusLabels = { scheduled: '已排期', released: '已发布', monitoring: '观察中' }
 const priorityLabels = { P0: '关键', P1: '重要', P2: '跟踪' }
@@ -121,6 +122,14 @@ watchEffect(() => {
         <router-link class="trade-radar-back" :to="returnLink.href">{{ returnLink.label }}</router-link>
         <p class="trade-radar-kicker">{{ entryFreshness.isArchive ? 'Archived verification snapshot' : 'Dated verification snapshot' }} / {{ entry.date }}</p>
         <h1>{{ entry.title }}</h1>
+        <aside v-for="correction in corrections" :key="correction.id" class="trade-radar-snapshot-notice" role="note" :aria-labelledby="`correction-${correction.id}`">
+          <strong :id="`correction-${correction.id}`"><time :datetime="correction.date">{{ correction.date }}</time> 更正</strong>
+          <div>
+            <p>{{ correction.summary }}</p>
+            <p>{{ correction.boundary }}</p>
+            <a class="trade-radar-back" :href="correction.source.url" target="_blank" rel="noopener noreferrer">{{ correction.source.label }} · {{ correction.source.publishedAt }} ↗</a>
+          </div>
+        </aside>
         <p class="trade-radar-detail-lead">{{ entry.summary }}</p>
         <div v-if="entryFreshness.isArchive" class="trade-radar-snapshot-notice" role="status">
           <strong>{{ entryFreshness.label }}</strong>

@@ -11,3 +11,5 @@ export type { StaticMarketRadarEventMatch } from '../../data/marketRadarPresenta
 export { getRadarCollectionSeo, getSnapshotFreshness } from '../../data/snapshotFreshness'
 
 export { readingReturnLink } from '../../data/readingNavigationPresentation'
+
+export { getRadarCorrections } from '../../data/radarCorrectionPresentation'

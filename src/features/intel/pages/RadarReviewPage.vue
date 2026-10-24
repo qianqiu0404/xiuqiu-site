@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
-import { radarReviews, reviewDomainCounts, reviewMilestoneCount, reviewPeriodDays, trendMonthTicks, trendSpan, trendTrack, radarTopicLabel, readingReturnLink } from '../data'
+import { radarReviews, reviewDomainCounts, reviewMilestoneCount, reviewPeriodDays, trendMonthTicks, trendSpan, trendTrack, radarTopicLabel, readingReturnLink, getRadarCorrections } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
 import '../../../design/brief.css'
 import '../../../design/reader.css'
@@ -10,6 +10,7 @@ import '../../../styles/radar-review.css'
 const route = useRoute()
 const returnLink = computed(() => readingReturnLink(route.query.from))
 const review = computed(() => radarReviews.find(item => item.slug === String(route.params.period || '')))
+const corrections = computed(() => getRadarCorrections('review', review.value?.slug))
 const ticks = computed(() => (review.value ? trendMonthTicks(review.value) : []))
 const domainCounts = computed(() => (review.value ? reviewDomainCounts(review.value) : { ai: 0, web3: 0 }))
 
@@ -43,6 +44,12 @@ watchEffect(() =>
             <div><dt>里程碑</dt><dd>{{ reviewMilestoneCount(review) }}</dd></div>
           </dl>
         </div>
+        <aside v-for="correction in corrections" :key="correction.id" class="brief-state" role="note" :aria-labelledby="`correction-${correction.id}`">
+          <strong :id="`correction-${correction.id}`"><time :datetime="correction.date">{{ correction.date }}</time> 更正</strong>
+          <p>{{ correction.summary }}</p>
+          <p>{{ correction.boundary }}</p>
+          <a class="brief-button" :href="correction.source.url" target="_blank" rel="noopener noreferrer">{{ correction.source.label }} · {{ correction.source.publishedAt }} ↗</a>
+        </aside>
         <p class="brief-note review-boundary">由公开来源自动汇总，未经人工复核；计数口径写在每条趋势里。</p>
       </div>
     </header>

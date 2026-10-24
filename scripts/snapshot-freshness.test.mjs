@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict'
+import { getRadarCorrections } from '../src/data/radarCorrectionPresentation.ts'
 import test from 'node:test'
 import { getRadarCollectionSeo, getSnapshotFreshness } from '../src/data/snapshotFreshness.ts'
 
@@ -41,4 +42,32 @@ test('collection metadata names stale snapshots as archives', () => {
 test('fresh and unknown collection metadata avoid false daily or real-time claims', () => {
   assert.match(getRadarCollectionSeo('learning', '2026-08-24', now).description, /最新公开简报为 2026-08-24/)
   assert.match(getRadarCollectionSeo('market', undefined, now).description, /不代表实时行情/)
+})
+
+
+test('Hoodi correction accompanies only the three affected frozen pages', () => {
+  const learning = getRadarCorrections('learning', '2026-10-24')
+  const market = getRadarCorrections('market', '2026-10-24')
+  assert.equal(learning.length, 1)
+  assert.deepEqual(market, learning)
+  assert.deepEqual(getRadarCorrections('review', '2026-10-18--2026-10-23'), learning)
+  assert.deepEqual(getRadarCorrections('review', '2026-10-24'), [])
+  assert.deepEqual(getRadarCorrections('review', '2026-08-14--2026-10-13'), [])
+  for (const kind of ['learning', 'market']) {
+    for (const slug of [undefined, '', '2026-10-13', '2026-10-25', '2026-10-18--2026-10-23', 'unknown']) {
+      assert.deepEqual(getRadarCorrections(kind, slug), [], `${kind}/${slug}`)
+    }
+  }
+})
+
+test('Hoodi correction cites the superseding EF announcement and preserves its network boundary', () => {
+  const [correction] = getRadarCorrections('learning', '2026-10-24')
+  assert.equal(correction.date, '2026-10-25')
+  assert.equal(correction.source.publishedAt, '2026-10-22')
+  assert.equal(correction.source.url, 'https://blog.ethereum.org/2026/10/22/glamsterdam-hoodi-delay')
+  assert.match(correction.summary, /Hoodi Glamsterdam 升级已延期，尚未确定新日期/)
+  assert.match(correction.summary, /Amsterdam.*Gloas.*200M.*均已撤销/)
+  assert.match(correction.boundary, /仅针对 Hoodi 测试网/)
+  assert.match(correction.boundary, /不是以太坊主网排期/)
+  assert.match(correction.boundary, /原始冻结正文保留/)
 })

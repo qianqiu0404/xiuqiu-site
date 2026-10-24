@@ -25,3 +25,5 @@ export { sourceDisplayLabel } from '../../data/sourcePresentation'
 export { loadGrokNews, loadGrokDetail, grokReadingItems, grokUpdateLabel } from '../../data/grokNews'
 export { intelTopicHref } from '../../data/intelPresentation'
 export type { GrokNewsIndex } from '../../data/grokNews'
+
+export { getRadarCorrections } from '../../data/radarCorrectionPresentation'
