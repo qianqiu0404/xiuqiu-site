@@ -2,6 +2,7 @@ import { parseGrokIndex } from '../../shared/grokNews.ts'
 import type { GrokNewsIndex, GrokNewsRecord } from '../../shared/grokNews.ts'
 import type { ReadingItem, ResearchCard, ResearchDetail } from './readingFeed.ts'
 import { researchCalendarDate } from './sharedResearchPresentation.ts'
+import { createExternalLoader } from './externalSourceStatus.ts'
 
 export function grokCard(record: GrokNewsRecord): ResearchCard {
   const href = `/research?producer=grok&id=${record.id}`
@@ -56,8 +57,10 @@ export function createGrokNewsClient(fetcher: typeof fetch = fetch, now = Date.n
 }
 const client = createGrokNewsClient()
 export const loadGrokNews = client.load
+// Live index first; the build-time snapshot only when the rewrite fails.
+export const loadGrokNewsWithFallback = createExternalLoader('grok', loadGrokNews, parseGrokIndex)
 export async function loadGrokDetail(id: string, force = false): Promise<ResearchDetail | undefined> {
-  const record = (await loadGrokNews(force)).records.find(record => record.id === id)
+  const record = (await loadGrokNewsWithFallback(force)).value.records.find(record => record.id === id)
   return record ? grokDetail(record) : undefined
 }
 export type { GrokNewsIndex }

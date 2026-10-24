@@ -1,8 +1,30 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import type { Plugin } from 'vite'
+import { buildExternalSnapshotFiles } from './shared/externalSources.ts'
+import { parseGrokIndex } from './shared/grokNews.ts'
+import { parseResearchIndex } from './src/data/sharedResearch.ts'
+
+// Copies the two rewritten feeds into dist/ at build time so the page has a
+// read-only fallback when a rewrite target is down. A failed fetch only skips
+// that snapshot; it never fails the build. EXTERNAL_SNAPSHOTS=off skips both.
+function externalSnapshots(): Plugin {
+  return {
+    name: 'external-source-snapshots',
+    apply: 'build',
+    async generateBundle() {
+      if (process.env.EXTERNAL_SNAPSHOTS === 'off') return
+      const files = await buildExternalSnapshotFiles({ grok: parseGrokIndex, research: parseResearchIndex })
+      for (const file of files) {
+        if (file.fileName && file.json) this.emitFile({ type: 'asset', fileName: file.fileName, source: file.json })
+        else this.warn(`external snapshot ${file.source} skipped: ${file.error}`)
+      }
+    },
+  }
+}
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [vue(), externalSnapshots()],
   // The same public, read-only origin used by vercel.json. An explicit local
   // override lets both repositories be verified together before either ships.
   server: {
