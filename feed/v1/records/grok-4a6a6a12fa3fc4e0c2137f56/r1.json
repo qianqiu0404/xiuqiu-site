@@ -1,0 +1,20 @@
+{
+  "origin_id": "x-ai-digest:2026-10-24:2113772381504438420",
+  "revision": 1,
+  "bot_id": "x-ai-digest",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-25T06:50:14+08:00",
+  "published_at": "2026-10-23T23:19:42.000Z",
+  "event_date": null,
+  "domain": "ai",
+  "title": "Muse Spark Open 登上 AA-AgentPerf",
+  "summary": "Meta 新开放权重模型 Muse Spark Open（816B 总参、42B 激活）登上 AA-AgentPerf：在 4× NVIDIA GB300/B300 上可达约每兆瓦 1.5 亿 token/s；智能指数 39 分；62 层中有 46 层用 2048-token 滑动窗口注意力，百万上下文 KV cache 约减 75%。调优后的 SGLang 配置比发布周 cookbook 吞吐高约 1.6–1.8 倍。 原文为公开帖子，已通过 X 公开读取接口取得全文。",
+  "source_url": "https://x.com/ArtificialAnlys/status/2113772381504438420",
+  "source_name": "Artificial Analysis（@ArtificialAnlys）",
+  "source_access": "accessible",
+  "source_excerpt": "Results from Muse Spark Open, Meta’s newly released 816B (42B active) open-weights model, are now live on AA-AgentPerf. In our initial testing, the model reaches…",
+  "bot_analysis": "开源模型上线后，真正拉开差距的往往是「推理引擎 + 配置」而不是权重本身；部署时预留一周做 serving 调优（TP、prefill-decode 间隔、tokenizer worker），并按「每兆瓦吞吐」而不是单卡峰值来比硬件。",
+  "id": "grok-4a6a6a12fa3fc4e0c2137f56",
+  "fingerprint": "a74058bc0bcff5371a4945ac9b41ca34237c6e19387f3e31795a7523a0a13464"
+}

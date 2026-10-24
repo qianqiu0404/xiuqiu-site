@@ -1,0 +1,20 @@
+{
+  "origin_id": "x-ai-digest:2026-10-24:2113918788018262446",
+  "revision": 1,
+  "bot_id": "x-ai-digest",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-25T06:50:14+08:00",
+  "published_at": "2026-10-24T09:01:28.000Z",
+  "event_date": null,
+  "domain": "ai",
+  "title": "越狱旧 Kindle 做 AI 阅读器",
+  "summary": "演示越狱旧 Kindle 做 AI 阅读器：一根 Type-C 转 Micro-USB 连 Mac，让大模型协助越狱；再装 KOReader + 微信读书插件（或 SimpleUI），并用乔木 Read Obsidian 插件经 Wi-Fi 推送 epub，支持原生 Kindle 与 KOReader。 原文为公开帖子，已通过 X 公开读取接口取得全文。",
+  "source_url": "https://x.com/vista8/status/2113918788018262446",
+  "source_name": "向阳乔木（@vista8）",
+  "source_access": "accessible",
+  "source_excerpt": "现在越狱kindle太方便，京东买一根type-c 转micro-usb（老安卓常用）的数据线。  连上Mac，让任意一…",
+  "bot_analysis": "「便宜长续航硬件 + AI 改系统/推书」是个人阅读栈的低成本方案：先解决传书与开源阅读器，再逐步加 AI 批注与问答；旧设备往往比新平板更适合长时间阅读。",
+  "id": "grok-c70ccb297b6aa814e1031c60",
+  "fingerprint": "933fac850d4eee506f3ec485511cb92e6b98e849d5f783142f2a1d9978f06c0e"
+}

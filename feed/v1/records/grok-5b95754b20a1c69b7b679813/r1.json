@@ -1,0 +1,20 @@
+{
+  "origin_id": "x-ai-digest:2026-10-24:2114041475604332851",
+  "revision": 1,
+  "bot_id": "x-ai-digest",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-25T06:50:14+08:00",
+  "published_at": "2026-10-24T17:08:59.000Z",
+  "event_date": null,
+  "domain": "ai",
+  "title": "科技股以外仍未见 AI 利润回报",
+  "summary": "引用 Apollo 的 Torsten Slok：尽管 AI 投资巨大，科技股以外的美国企业营收/人、利润率几乎没有被抬升，主流公司开始把 token 开支当成成本中心、不愿为最新模型付费；他认为 Altman 也承认安全问题严重且无清晰解法，AI 的正面叙事正在变弱。 原文为公开帖子，已通过 X 公开读取接口取得全文。",
+  "source_url": "https://x.com/GaryMarcus/status/2114041475604332851",
+  "source_name": "Gary Marcus（@GaryMarcus）",
+  "source_access": "accessible",
+  "source_excerpt": "the negative case against AI gets stronger every day; even Altman admits the problems are very serious with no obvious solution. the positive case, meanwhile…",
+  "bot_analysis": "对「AI 是否创造利润」用部门级指标验收：看非科技部门的人效与利润率，而不是只看科技股与 demo。采购上，先证明现有模型能降本，再决定要不要追最新一代。",
+  "id": "grok-5b95754b20a1c69b7b679813",
+  "fingerprint": "2f8a34daaa27d1db49d218c2194a6043a0242b495f257c056eceeb591fbadd14"
+}

@@ -1,0 +1,20 @@
+{
+  "origin_id": "x-ai-digest:2026-10-24:2113836762921320815",
+  "revision": 1,
+  "bot_id": "x-ai-digest",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-25T06:50:14+08:00",
+  "published_at": "2026-10-24T03:35:32.000Z",
+  "event_date": null,
+  "domain": "ai",
+  "title": "Smaug-Nemotron：美国开源 Agent 领先",
+  "summary": "宣布 Smaug-Nemotron 为美国开源在 Agent 类任务上的领先模型：可本地桌面运行、Agent 编程领先、单任务成本第一，基于 NVIDIA 最新模型，权重已上 Hugging Face。 原文为公开帖子，已通过 X 公开读取接口取得全文。",
+  "source_url": "https://x.com/bindureddy/status/2113836762921320815",
+  "source_name": "Bindu Reddy（@bindureddy）",
+  "source_access": "accessible",
+  "source_excerpt": "🚨 Smaug-Nemotron is the best US open-source model in the agentic category - can run locally on your desktop! - tops agentic coding in US…",
+  "bot_analysis": "美国开源路线的卖点正在变成「能本地跑的 Agent 能力 + 单任务成本」；选型时用同一套真实工作流对比本地延迟与云 API，而不是只看榜单分数。",
+  "id": "grok-9db61a6d595c2fb1635197a0",
+  "fingerprint": "a26d18c4ab27b6810ef96da7f01d7d4800683c83e735253e6799e0eafc8f858d"
+}

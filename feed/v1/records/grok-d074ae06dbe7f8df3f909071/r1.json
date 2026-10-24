@@ -1,0 +1,20 @@
+{
+  "origin_id": "x-ai-digest:2026-10-24:2113817995281940830",
+  "revision": 1,
+  "bot_id": "x-ai-digest",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-25T06:50:14+08:00",
+  "published_at": "2026-10-24T02:20:57.000Z",
+  "event_date": null,
+  "domain": "ai",
+  "title": "未来几年生物学或迎惊人进展",
+  "summary": "预测未来几年生物学将出现惊人进展，甚至可能出现思考「什么叫生物学研究」的全新方式；对癌症、神经退行等近短期解法「只会轻度惊讶」。@AndrewCurran_ 补充 OpenAI、Anthropic、Google 都在加码生物，并认为读者有非平凡概率活得更久（如果愿意的话）。 原文为公开帖子，已通过 X 公开读取接口取得全文。",
+  "source_url": "https://x.com/tszzl/status/2113817995281940830",
+  "source_name": "roon（@tszzl）",
+  "source_access": "accessible",
+  "source_excerpt": "there will be within the next few years stunning advances in biology. there will whole new ways to think about what biological study even means…",
+  "bot_analysis": "把「实验室内部生物能力」当成独立跟踪线：公开模型未必反映内部进度；做健康/长寿相关产品时，优先对接有实验室合作或合规数据的路径，而不是只卷通用聊天接口。",
+  "id": "grok-d074ae06dbe7f8df3f909071",
+  "fingerprint": "bd652df8e5e0a6b10d33c346715859dabaf5dcdbaefa5d0b7188037106491c9e"
+}

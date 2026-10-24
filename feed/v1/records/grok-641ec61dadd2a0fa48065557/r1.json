@@ -1,0 +1,20 @@
+{
+  "origin_id": "x-ai-digest:2026-10-24:2114057736363352127",
+  "revision": 1,
+  "bot_id": "x-ai-digest",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-25T06:50:14+08:00",
+  "published_at": "2026-10-24T18:13:36.000Z",
+  "event_date": null,
+  "domain": "ai",
+  "title": "Anthropic：把多余 subagent 折回主循环",
+  "summary": "解读 Anthropic 新指南：随着前沿模型更擅长管上下文，许多场景应把多余 subagent 折回主循环，改成 Skills（教怎么做）+ Tools/MCP（能做事），subagent 留给并行、隔离上下文或单 Agent 搞不定的任务；有客户因此执行快约 2 倍。他强调：别凭感觉删，要用 cost/效率 eval 决定是否折叠；工具过多、上下文膨胀、职责不清时，subagent 仍有价值。 原文为公开帖子，已通过 X 公开读取接口取得全文。",
+  "source_url": "https://x.com/omarsar0/status/2114057736363352127",
+  "source_name": "elvis（@omarsar0）",
+  "source_access": "accessible",
+  "source_excerpt": "Banger guide by Anthropic. While frontier models have improved at context management, subagents still help in some cases (e.g., parallelizing research tasks with their own…",
+  "bot_analysis": "Agent 架构进入「做减法」阶段：默认一个主 Agent + 按需加载 Skill/Tool；只有 eval 证明并行或隔离有净收益时才保留 subagent。每次改 harness 都跑同一套任务集对比延迟与费用。",
+  "id": "grok-641ec61dadd2a0fa48065557",
+  "fingerprint": "ab45a27e19031c899ceaf84badbae41e98f3d747dff7eee2a213685da7d7e2e2"
+}

@@ -1,0 +1,20 @@
+{
+  "origin_id": "x-ai-digest:2026-10-24:2114021917586014449",
+  "revision": 1,
+  "bot_id": "x-ai-digest",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-25T06:50:14+08:00",
+  "published_at": "2026-10-24T15:51:16.000Z",
+  "event_date": null,
+  "domain": "ai",
+  "title": "Perplexity Computer 接入 /impeccable",
+  "summary": "开源 Skill `/impeccable`（@pbakaus）已进入 Perplexity Computer 技能市场：用来审查并修正界面，避免「一眼 AI 生成」的排版/对比度/无障碍问题；每用户赠 5000 credits，用该 Skill 的任务在 10 月 31 日前免费。 原文为公开帖子，已通过 X 公开读取接口取得全文。",
+  "source_url": "https://x.com/AravSrinivas/status/2114021917586014449",
+  "source_name": "Aravind Srinivas（@AravSrinivas）",
+  "source_access": "accessible",
+  "source_excerpt": "/impeccable is now a skill inside Computer. It’s an open-source skill built by @pbakaus to let you build interfaces that don’t look like AI-generated slop…",
+  "bot_analysis": "把「审美质检」做成可调用 Skill，而不是事后人工改：生成界面后固定跑一轮布局/字体/对比度/无障碍检查，不过就打回重做。任何会对外展示的 Agent 产物都可以套这条流水线。",
+  "id": "grok-9b781e8195b1ed2eb1901c5f",
+  "fingerprint": "34a18d50c215ab24d2011cd038fd518d3eb17f02e654a502460269d30ccd9eda"
+}

@@ -1,0 +1,20 @@
+{
+  "origin_id": "x-ai-digest:2026-10-24:2113767466002211306",
+  "revision": 1,
+  "bot_id": "x-ai-digest",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-25T06:50:14+08:00",
+  "published_at": "2026-10-23T23:00:10.000Z",
+  "event_date": null,
+  "domain": "ai",
+  "title": "Block Dessa：全双工语音可本地跑",
+  "summary": "惊叹 Block（Jack Dorsey）发布的全双工语音模型 Dessa：完全在语音对话上训练、可本地运行，他认为在「听不出是人是机器」上已接近过关，并对「不是 ElevenLabs 们做出来的」表示震惊；@kimmonismus 补充该语音可在 M4 Max 及以上本地跑，体感「像魔法」。 原文为公开帖子，已通过 X 公开读取接口取得全文。",
+  "source_url": "https://x.com/LinusEkenstam/status/2113767466002211306",
+  "source_name": "Linus ✦ Ekenstam（@LinusEkenstam）",
+  "source_access": "accessible",
+  "source_excerpt": "I’m shook OpenAI voice just got slapped hard I’m in complete disbelief that this new voice model is made by Block and not Elevenlabs et…",
+  "bot_analysis": "语音产品的下一阶段是「全双工 + 可本地」：评估时重点测打断、重叠说话、端侧延迟与隐私（是否离线），而不是只听样音是否自然。本地可跑意味着会议室、医疗等场景可以不上传原音频。",
+  "id": "grok-507f3d93f23d17a81ae04bdc",
+  "fingerprint": "61b316db229a17b03abca34324993af02b0a897e36ed78294f5eef09c403e23b"
+}

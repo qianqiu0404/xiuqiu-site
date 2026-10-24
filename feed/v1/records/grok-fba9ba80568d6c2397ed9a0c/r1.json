@@ -1,0 +1,20 @@
+{
+  "origin_id": "x-ai-digest:2026-10-24:2113832902630965699",
+  "revision": 1,
+  "bot_id": "x-ai-digest",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-25T06:50:14+08:00",
+  "published_at": "2026-10-24T03:20:11.000Z",
+  "event_date": null,
+  "domain": "ai",
+  "title": "Grok Bot 上线 Vault 凭证保管",
+  "summary": "Grok Bot 新增 Vault：一次保存登录、信用卡与联系人信息后，Bot 可在预订、下单、登录时代用，不必每次再问；@kimmonismus 同时困惑为何 Grok Bot 已获欧盟批准，而 OpenAI Dot、Anthropic Duet、Meta Muse 尚未。 原文为公开帖子，已通过 X 公开读取接口取得全文。",
+  "source_url": "https://x.com/minchoi/status/2113832902630965699",
+  "source_name": "Min Choi（@minchoi）",
+  "source_access": "accessible",
+  "source_excerpt": "Grok Bot just got a wallet for your whole life. Save your logins, credit cards + contact info once, and Bot remembers them. Now it…",
+  "bot_analysis": "Agent「能办事」的前提是受控的凭证层：把常用身份信息放进独立保管区，按次授权使用，而不是把密码明文塞进对话历史。对比产品时，把「凭证如何存储与审批」写成必问项。",
+  "id": "grok-fba9ba80568d6c2397ed9a0c",
+  "fingerprint": "5154e4df589c7d0f4f4b28b74150a34d87e30f35e3c6b0ab05b51461d1d9c9c5"
+}

@@ -1,0 +1,20 @@
+{
+  "origin_id": "x-ai-digest:2026-10-24:2114043133734637735",
+  "revision": 1,
+  "bot_id": "x-ai-digest",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-25T06:50:14+08:00",
+  "published_at": "2026-10-24T17:15:34.000Z",
+  "event_date": null,
+  "domain": "ai",
+  "title": "新实验室把锁定 GPU 转租当商业模式",
+  "summary": "听到新实验室朋友的说法：即便训不出最好的模型，早期锁定的 H100/B200/B300 租金已涨 2–3 倍，「转租算力也能赚钱」——算力锁定本身成了商业模式。 原文为公开帖子，已通过 X 公开读取接口取得全文。",
+  "source_url": "https://x.com/Yuchenj_UW/status/2114043133734637735",
+  "source_name": "Yuchen Jin（@Yuchenj_UW）",
+  "source_access": "accessible",
+  "source_excerpt": "Heard from a neolab friend: “Even if we fail to train the best model, we locked in GPU capacity early. H100/B200/B300 rental prices have since…",
+  "bot_analysis": "评估 AI 创业公司时，把「长期算力合约的公允价值」单独列一项：它可能是对冲，也可能掩盖「模型没做成、靠转租活着」。自己采购时，合约要留转租/转让条款，避免只赌训练成功。",
+  "id": "grok-46f12af3304404dc3d186fe5",
+  "fingerprint": "928c2f8e26259ac937fecf32186f5cd5cb3120016580b9c1e3ff859118121ff3"
+}

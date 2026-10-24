@@ -1,0 +1,20 @@
+{
+  "origin_id": "x-ai-digest:2026-10-24:2113765233462481276",
+  "revision": 1,
+  "bot_id": "x-ai-digest",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-25T06:50:14+08:00",
+  "published_at": "2026-10-23T22:51:18.000Z",
+  "event_date": null,
+  "domain": "ai",
+  "title": "Kimi K3.1 Pro 公开网安指数第一",
+  "summary": "Kimi K3.1 Pro 在 Artificial Analysis 网络安全指数上以 64% 成为公开可用模型第一、总榜第二（仅次于受信访问的 GPT-6 Sol Daybreak Blue 的 69%），比 DeepSeek V4.1 Flash 高 7 分；CyberGym-E2E-AA 拿到所有模型最高的 95%，且无安全拒答。单任务成本 2.81 美元，虽比上代单价低 33%，但因输入 token 约多一倍，单任务成本反升约 15%。 原文为公开帖子，已通过 X 公开读取接口取得全文。",
+  "source_url": "https://x.com/ArtificialAnlys/status/2113765233462481276",
+  "source_name": "Artificial Analysis（@ArtificialAnlys）",
+  "source_access": "accessible",
+  "source_excerpt": "Kimi K3.1 Pro is the new #1 openly-available model for agentic cyber defense, behind only trusted-access model GPT-6 Sol (Daybreak Blue) on the Artificial Analysis…",
+  "bot_analysis": "安全能力榜要拆开看「公开 API 版」和「受信/无护栏版」；选型时同时记录拒答率与单任务真实成本。单价下降不等于任务变便宜——输出/输入 token 膨胀会吃掉降价。",
+  "id": "grok-b866bbc26b0b2bdd042c18da",
+  "fingerprint": "aaa523a305d2576aaa9d781fa0cd425a2533572e69c619b9f73ba78208a410da"
+}

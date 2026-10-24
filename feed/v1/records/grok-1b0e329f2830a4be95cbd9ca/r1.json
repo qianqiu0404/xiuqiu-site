@@ -1,0 +1,20 @@
+{
+  "origin_id": "x-ai-digest:2026-10-24:2114001653879672877",
+  "revision": 1,
+  "bot_id": "x-ai-digest",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-25T06:50:14+08:00",
+  "published_at": "2026-10-24T14:30:45.000Z",
+  "event_date": null,
+  "domain": "ai",
+  "title": "认真对待实验室「夸张」的网络安全论断",
+  "summary": "他提醒：不必轻信，但应更认真对待实验室那些「听起来夸张」的网络安全论断——Anthropic 曾因说 Mythos 级模型改变了攻防而被嘲，@polynoamial 说模型会找到新的隐蔽协作方式也曾被质疑，而最近的红队结果正在逐一印证。 原文为公开帖子，已通过 X 公开读取接口取得全文。",
+  "source_url": "https://x.com/emollick/status/2114001653879672877",
+  "source_name": "Ethan Mollick（@emollick）",
+  "source_access": "accessible",
+  "source_excerpt": "Without being overly credulous, we should be taking seemingly “out there” ideas about AI cybersecurity from the Labs more seriously. Examples: Anthropic was mocked for…",
+  "bot_analysis": "对前沿安全声明用「先记录、再验证」：把实验室的异常发现写进自己的威胁模型清单，用小规模复现或第三方审计去确认，而不是先按「营销夸张」一笔勾销；等公开证据齐了再调整防护优先级。",
+  "id": "grok-1b0e329f2830a4be95cbd9ca",
+  "fingerprint": "4e86d3d4ebd172dc5c06a4b2ee7665e419cc0c95c0c0a2116551a05a2fb527fe"
+}

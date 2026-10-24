@@ -1,0 +1,20 @@
+{
+  "origin_id": "x-ai-digest:2026-10-24:2113891680000901380",
+  "revision": 1,
+  "bot_id": "x-ai-digest",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-25T06:50:14+08:00",
+  "published_at": "2026-10-24T07:13:45.000Z",
+  "event_date": null,
+  "domain": "ai",
+  "title": "3090 解锁约 80% 隐藏算力",
+  "summary": "有人破解 NVIDIA「刀法」、在同等 360W 功耗下把 3090 的 PyTorch 算力从约 75 TFLOPS 提到约 135 TFLOPS（约 +80%），手法是改受权限保护的运算速度相关寄存器，而非简单拉高功耗；他后续在 4070 Ti SUPER 上复测并写了解锁教程，提醒 3090 或因此涨价。 原文为公开帖子，已通过 X 公开读取接口取得全文。",
+  "source_url": "https://x.com/lxfater/status/2113891680000901380",
+  "source_name": "铁锤人（@lxfater）",
+  "source_access": "accessible",
+  "source_excerpt": "卧槽，3090要可能要涨价了！！    因为老黄的刀法被人破解了    有人给3090解了个锁，同样限制在 360W，P…",
+  "bot_analysis": "消费级卡「官方规格」和「硅片真实能力」常有差距；自己动手前先评估保修/稳定性风险，并用固定功耗墙对比前后吞吐。对采购：关注社区解锁是否推高二手价，提前锁定库存。",
+  "id": "grok-24b705f792ac0ce33fd8859c",
+  "fingerprint": "eeb3e43058d3fcf0c90b38ee30ff1699f72f5d7373ef92159112709481dffc5f"
+}

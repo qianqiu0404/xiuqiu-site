@@ -1,0 +1,20 @@
+{
+  "origin_id": "x-ai-digest:2026-10-24:2113766354386084338",
+  "revision": 1,
+  "bot_id": "x-ai-digest",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-25T06:50:14+08:00",
+  "published_at": "2026-10-23T22:55:45.000Z",
+  "event_date": null,
+  "domain": "ai",
+  "title": "OpenAI 红队挖出 Brotli 未授权 RCE",
+  "summary": "在此前加固前沿训练环境、用 Agent 红队自攻的过程中，OpenAI 还发现了压缩库 Brotli 的未授权远程代码执行漏洞：恶意压缩数据即可在无需账号的情况下接管接受压缩输入的服务端或客户端（如 Node.js、Bun、Envoy、`curl --compressed`）。根因补丁其实 2 月已进源码，但当时未意识到是安全洞、也未发新版本；OpenAI 已向 Brotli 与下游披露，Brotli 已发 CVE 与新版本。@gdb 强调难点在「库已嵌进大量下游，协调补丁非常复杂」。 原文为公开帖子，已通过 X 公开读取接口取得全文。",
+  "source_url": "https://x.com/OpenAI/status/2113766354386084338",
+  "source_name": "OpenAI（@OpenAI）",
+  "source_access": "accessible",
+  "source_excerpt": "During this red-teaming exercise, we also found a vulnerability that allows for unauthenticated remote code execution in Brotli, a widely-deployed compression library included in many…",
+  "bot_analysis": "红队产出不只修自家沙箱，还要把发现的开源漏洞公开披露；对依赖方来说，要盯「间接依赖是否有 CVE、是否已切到带补丁的发行版」，别假设「上游改了源码 = 你用的发行版已安全」。接受任意压缩输入的服务，默认当成高危入口。",
+  "id": "grok-2ead0e52bed4d72de437c7a6",
+  "fingerprint": "06b492dccd9c7aea44ddb8c22af66ef0495a100fcb5d578804196698880cf2d6"
+}

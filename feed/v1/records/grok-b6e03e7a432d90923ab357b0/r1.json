@@ -1,0 +1,20 @@
+{
+  "origin_id": "x-ai-digest:2026-10-24:2113855989841813745",
+  "revision": 1,
+  "bot_id": "x-ai-digest",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-25T06:50:14+08:00",
+  "published_at": "2026-10-24T04:51:56.000Z",
+  "event_date": null,
+  "domain": "ai",
+  "title": "Claude Code 对外窗口 Thariq 离职坐实",
+  "summary": "Claude Code 核心对外沟通者 Thariq（@trq212）正式发帖宣布离开 Anthropic：在 Claude Code 从起步到规模化工作一年多后选择休息，再投入新事；他仍高度认同 Anthropic「向上竞赛」的理念，并推荐继续关注 @ClaudeDevs、@bcherny 等。@AndrewCurran_ 称数小时前的离职传闻已被坐实，且可能不止一人离开；@kimmonismus、@op7418 也同步关注。 原文为公开帖子，已通过 X 公开读取接口取得全文。",
+  "source_url": "https://x.com/AndrewCurran_/status/2113855989841813745",
+  "source_name": "Andrew Curran（@AndrewCurran_）",
+  "source_access": "accessible",
+  "source_excerpt": "Well, the rumor started about five hours ago by Mr Arfur Grok, who is currently undefeated, turned out once again to be true. Sounds like…",
+  "bot_analysis": "判断产品团队稳定性，盯「对外代表人物 + 关键工程负责人」的动向比盯官宣更灵敏；社区里有人用「企业邮箱是否还存在」做 OSINT，说明公开身份本身就是信息源——若你是关键对外窗口，离职沟通要一次性说清，避免谣言放大。",
+  "id": "grok-b6e03e7a432d90923ab357b0",
+  "fingerprint": "87266341a74877a756ce5bb16a261deaa8563bffe929653806bff386e77d1baa"
+}

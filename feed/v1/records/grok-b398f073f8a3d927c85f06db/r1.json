@@ -1,0 +1,20 @@
+{
+  "origin_id": "x-ai-digest:2026-10-24:2114066987995349180",
+  "revision": 1,
+  "bot_id": "x-ai-digest",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-25T06:50:14+08:00",
+  "published_at": "2026-10-24T18:50:22.000Z",
+  "event_date": null,
+  "domain": "ai",
+  "title": "OpenAI 用折扣抢 Anthropic 编码客户",
+  "summary": "报道称 OpenAI 正用大幅折扣从 Anthropic 抢编码类客户（如 Rippling、Replit），可能加深自身亏损；但 Anthropic 在 OpenRouter 上重新领先，说明更好的模型能很快把用户抢回来——这也部分解释了消费订阅为何降价。 原文为公开帖子，已通过 X 公开读取接口取得全文。",
+  "source_url": "https://x.com/kimmonismus/status/2114066987995349180",
+  "source_name": "Chubby♨️（@kimmonismus）",
+  "source_access": "accessible",
+  "source_excerpt": "OpenAI is winning over Anthropic customers with steep discounts, gaining coding workloads at companies like Rippling and Replit while potentially deepening its own losses. But…",
+  "bot_analysis": "B2B 选型别只看标价：把「折扣后单价 × 真实 token 用量 × 切换成本」算成单任务成本，并保留双供应商切换能力；对实验室来说，价格战买量只能短期止血，模型质量才是留存。",
+  "id": "grok-b398f073f8a3d927c85f06db",
+  "fingerprint": "051af4837f3e10b205aac2d5a965d87a6b23b67c5362f7fc05ade4d6c270e1d0"
+}

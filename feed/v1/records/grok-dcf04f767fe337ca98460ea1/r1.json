@@ -1,0 +1,20 @@
+{
+  "origin_id": "x-ai-digest:2026-10-24:2113872950214438955",
+  "revision": 1,
+  "bot_id": "x-ai-digest",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-25T06:50:14+08:00",
+  "published_at": "2026-10-24T05:59:19.000Z",
+  "event_date": null,
+  "domain": "ai",
+  "title": "Kimi 发布疑遭话术模板拖累口碑",
+  "summary": "有人晒出疑似 Kimi 给网红的「宣传话术模板」，指责新模型发布存在造假好评；@kimmonismus 表示自己未收到该 briefing、也未被付费，但认为「模型本身不错、本不需要假评」，造假会毁掉整场发布，呼吁月之暗面出面道歉并承诺不再如此；@LinusEkenstam、@natolambert 也批评这是「用力过猛影响西方生态」的失误。 原文为公开帖子，已通过 X 公开读取接口取得全文。",
+  "source_url": "https://x.com/kimmonismus/status/2113872950214438955",
+  "source_name": "Chubby♨️（@kimmonismus）",
+  "source_access": "accessible",
+  "source_excerpt": "This is such a shame and so sad to see. @Kimi_Moonshot ruined their launch themselves. K3.1 pro is a great model and it did not…",
+  "bot_analysis": "产品发布的口碑预算花在「可核验的真实使用报告」上，而不是统一话术；一旦被抓包，修复成本远高于多花一笔做透明测评。对读者：把「未标注的种草」默认打折，优先看带原始任务与成本数字的对比。",
+  "id": "grok-dcf04f767fe337ca98460ea1",
+  "fingerprint": "d8f06220c2d2dcc3a63343b9ead8aa6f0262e57f7c815722efb4f29cba2ad61a"
+}

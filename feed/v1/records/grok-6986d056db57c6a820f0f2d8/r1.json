@@ -1,0 +1,20 @@
+{
+  "origin_id": "x-ai-digest:2026-10-24:2113996510287585493",
+  "revision": 1,
+  "bot_id": "x-ai-digest",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-25T06:50:14+08:00",
+  "published_at": "2026-10-24T14:10:18.000Z",
+  "event_date": null,
+  "domain": "ai",
+  "title": "播客太多？用 AI 精转写代替硬听",
+  "summary": "分享「播客太多听不完」的解法：用 AI 做精细转写（不是摘要），约 10 分钟读完 1 小时节目的主要信息，特别感兴趣再回去听原音；并列出 @vista8 帮他做的 8 个自动更新精读站（张小珺、42章经、晚点聊、十字路口、AI炼金术、三五环、知行小酒馆、面基）。 原文为公开帖子，已通过 X 公开读取接口取得全文。",
+  "source_url": "https://x.com/oran_ge/status/2113996510287585493",
+  "source_name": "Orange AI（@oran_ge）",
+  "source_access": "accessible",
+  "source_excerpt": "有价值的播客太多了，没那么多时间听怎么办呢？ 那就看 AI 转写的文章吧，差不多花十分钟，就能看到一小时的播客里的主要信…",
+  "bot_analysis": "信息输入用「精转写 + 按需回听」：转写保留细节与引用，摘要只作目录；把常听节目做成自动更新的可读库，比每次临时让 AI 总结更可积累。",
+  "id": "grok-6986d056db57c6a820f0f2d8",
+  "fingerprint": "83e523fbcd429305cdfc7bc98c273180154c1decccd8a85d1d3fcac44ebf816d"
+}
