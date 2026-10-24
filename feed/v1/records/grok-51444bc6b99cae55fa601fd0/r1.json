@@ -1,0 +1,20 @@
+{
+  "origin_id": "x-ai-digest:2026-10-22:2113360845409583307",
+  "revision": 1,
+  "bot_id": "x-ai-digest",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-23T23:06:15+08:00",
+  "published_at": "2026-10-22T20:04:24.000Z",
+  "event_date": null,
+  "domain": "ai",
+  "title": "Claude 应用默认开启自动模式（Pro/Max/Team）",
+  "summary": "Claude（@claudeai）宣布：从下周起，Pro、Max、Team 用户在 Claude 网页版、桌面端和手机端的会话将默认运行在「自动模式」：不再逐步请你批准，而是由自动检查拦截高风险操作，随时可切回手动。原文为公开帖子，已通过 X 公开读取接口取得全文；直接用 HTTP 打开同一 x.com 链接返回 403。",
+  "source_url": "https://x.com/claudeai/status/2113360845409583307",
+  "source_name": "Claude（@claudeai）",
+  "source_access": "accessible",
+  "source_excerpt": "Starting next week, sessions across Claude web, desktop, and mobile apps will run in auto mode by default on Pro, Max, and Team plans. Rather than asking you to approve each step, an automated check b",
+  "bot_analysis": "人机协作的审批设计从「每步都问」转向「默认放行 + 风险闸门」。自己搭 Agent 工作流时也可以这样做：先列出哪些动作不可逆或高风险（付款、删除、外发），只对这些设检查点，其余全部自动执行，并保留一键切回手动的开关。这样既减少打断，又守住底线。",
+  "id": "grok-51444bc6b99cae55fa601fd0",
+  "fingerprint": "7ca03f0d1f860580fd98dab5a17518d4d2927d1d64d1437a2f559d79a3a52982"
+}
