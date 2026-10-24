@@ -6,6 +6,58 @@
   "language": "zh-CN",
   "items": [
     {
+      "id": "xiuqiu-radar:ai-single-loop-progressive-disclosure",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-25#ai-single-loop-progressive-disclosure",
+      "title": "何时把子 Agent 收回主循环：先用完整任务评测比较",
+      "summary": "选择单循环或多个 Agent，需要看任务之间共享多少上下文，以及完整任务的实际结果；团队组织方式本身不是效果证据。",
+      "content_text": "选择单循环或多个 Agent，需要看任务之间共享多少上下文，以及完整任务的实际结果；团队组织方式本身不是效果证据。",
+      "date_published": "2026-10-25T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "agent"
+      ],
+      "external_url": "https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop"
+    },
+    {
+      "id": "xiuqiu-radar:ai-raw-rag-source-preservation",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-25#ai-raw-rag-source-preservation",
+      "title": "Raw-RAG：先保留原始证据，再证明复杂记忆的增益",
+      "summary": "增加记忆管理复杂度之前，一个保留来源的检索基线能帮助分清：收益来自更好的证据，还是来自更复杂的组织方式。",
+      "content_text": "增加记忆管理复杂度之前，一个保留来源的检索基线能帮助分清：收益来自更好的证据，还是来自更复杂的组织方式。",
+      "date_published": "2026-10-25T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "data"
+      ],
+      "external_url": "https://arxiv.org/abs/2610.30755"
+    },
+    {
+      "id": "xiuqiu-radar:web3-hoodi-glamsterdam-postponed",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-25#web3-hoodi-glamsterdam-postponed",
+      "title": "Hoodi 正式延期：10 月 26 日的激活配置已经撤销",
+      "summary": "升级计划需要支持撤销和替换。运维判断要追踪当前有效状态，不能把某次发版中的计划当作永远有效的确认。",
+      "content_text": "升级计划需要支持撤销和替换。运维判断要追踪当前有效状态，不能把某次发版中的计划当作永远有效的确认。",
+      "date_published": "2026-10-25T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "protocol"
+      ],
+      "external_url": "https://blog.ethereum.org/2026/10/22/glamsterdam-hoodi-delay"
+    },
+    {
+      "id": "xiuqiu-radar:web3-wavelength-public-mainnet",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-25#web3-wavelength-public-mainnet",
+      "title": "Wavelength 公开主网版：支付权限、确定失败与恢复分开看",
+      "summary": "把支付接给 Agent，接口可调用只是起点。权限能否收窄、状态能否持久化、未知结果能否恢复，需要分别提供证据。",
+      "content_text": "把支付接给 Agent，接口可调用只是起点。权限能否收窄、状态能否持久化、未知结果能否恢复，需要分别提供证据。",
+      "date_published": "2026-10-25T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "wallet_cex"
+      ],
+      "external_url": "https://lightning.engineering/posts/2026-10-23-wavelength-mainnet-launch/"
+    },
+    {
       "id": "xiuqiu-radar:ai-aisi-assessment-scope-persistence",
       "url": "https://xiuqiu-site.vercel.app/radar/2026-10-24#ai-aisi-assessment-scope-persistence",
       "title": "AISI 事件复盘：任务做不通，不代表可以扩大授权范围",
@@ -732,58 +784,6 @@
         "ai_engineering"
       ],
       "external_url": "https://developers.openai.com/api/docs/guides/trace-grading"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-05-web3",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-05#web3-design",
-      "title": "把 EOA 代码委托视为持续存在的账户迁移",
-      "summary": "EIP-7702 授权会持久改变 EOA 的代码语义，且外层调用回滚不撤销已处理委托。托管钱包应显式展示 authority、链域、代码哈希、nonce、初始化与撤销路径，并拒绝未知代码或漂移状态。",
-      "content_text": "EIP-7702 授权会持久改变 EOA 的代码语义，且外层调用回滚不撤销已处理委托。托管钱包应显式展示 authority、链域、代码哈希、nonce、初始化与撤销路径，并拒绝未知代码或漂移状态。",
-      "date_published": "2026-08-05T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "web3_design"
-      ],
-      "external_url": "https://eips.ethereum.org/EIPS/eip-7702"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-05-tools",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-05#tools",
-      "title": "Crush · 可切换模型与权限审阅的终端 coding agent",
-      "summary": "Crush 用 Go 集成文件与 shell 工具、会话、LSP、MCP、非交互入口和 server 模式；固定版 v0.88.0 已复现 CLI 与 provider 路由问题。可执行配置、yolo 权限、协议静默替换和网络文件系统数据…",
-      "content_text": "Crush 用 Go 集成文件与 shell 工具、会话、LSP、MCP、非交互入口和 server 模式；固定版 v0.88.0 已复现 CLI 与 provider 路由问题。可执行配置、yolo 权限、协议静默替换和网络文件系统数据…",
-      "date_published": "2026-08-05T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "tools"
-      ],
-      "external_url": "https://github.com/charmbracelet/crush"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-05-reading",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-05#reading",
-      "title": "The harness is all you need (mostly)",
-      "summary": "文章用原型、计划、实现、复核构成可观察的 agent 闭环，并强调自主执行要与沙箱隔离配套。思考题：为一个真实小任务分别写出四阶段证据，以及自动循环中仍必须停下的权限边界。",
-      "content_text": "文章用原型、计划、实现、复核构成可观察的 agent 闭环，并强调自主执行要与沙箱隔离配套。思考题：为一个真实小任务分别写出四阶段证据，以及自动循环中仍必须停下的权限边界。",
-      "date_published": "2026-08-05T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "reading"
-      ],
-      "external_url": "https://github.blog/ai-and-ml/github-copilot/the-harness-is-all-you-need-mostly/"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-04-signal",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-04#industry-signals",
-      "title": "Chainlink Node v2.58.0 调整遥测与批量发送默认值",
-      "summary": "版本新增指标属性丢弃配置，并依据容量分析扩大 Chip ingress 缓冲与批量、延长发送窗口；这是节点配置更新，生产使用仍需按负载验证并固定镜像 digest。",
-      "content_text": "版本新增指标属性丢弃配置，并依据容量分析扩大 Chip ingress 缓冲与批量、延长发送窗口；这是节点配置更新，生产使用仍需按负载验证并固定镜像 digest。",
-      "date_published": "2026-08-04T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "market_signal"
-      ],
-      "external_url": "https://github.com/smartcontractkit/chainlink/releases/tag/v2.58.0"
     }
   ]
 }

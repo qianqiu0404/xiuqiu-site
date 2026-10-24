@@ -6,9 +6,72 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-10-24"
-export const intelItemCount = 230
+export const intelLatestDate: string | null = "2026-10-25"
+export const intelItemCount = 234
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "learning:ai-single-loop-progressive-disclosure",
+    "kind": "learning",
+    "date": "2026-10-25",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "何时把子 Agent 收回主循环：先用完整任务评测比较",
+    "summary": "选择单循环或多个 Agent，需要看任务之间共享多少上下文，以及完整任务的实际结果；团队组织方式本身不是效果证据。",
+    "href": "/radar/2026-10-25#ai-single-loop-progressive-disclosure",
+    "source": {
+      "name": "Anthropic: Building agents — When to fold subagents into your main agent loop",
+      "tier": "tier1",
+      "url": "https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop"
+    }
+  },
+  {
+    "id": "learning:ai-raw-rag-source-preservation",
+    "kind": "learning",
+    "date": "2026-10-25",
+    "domain": "ai",
+    "topic": "data",
+    "title": "Raw-RAG：先保留原始证据，再证明复杂记忆的增益",
+    "summary": "增加记忆管理复杂度之前，一个保留来源的检索基线能帮助分清：收益来自更好的证据，还是来自更复杂的组织方式。",
+    "href": "/radar/2026-10-25#ai-raw-rag-source-preservation",
+    "source": {
+      "name": "Raw-RAG arXiv v1 submission and abstract",
+      "tier": "tier1",
+      "url": "https://arxiv.org/abs/2610.30755"
+    }
+  },
+  {
+    "id": "learning:web3-hoodi-glamsterdam-postponed",
+    "kind": "learning",
+    "date": "2026-10-25",
+    "domain": "web3",
+    "topic": "protocol",
+    "title": "Hoodi 正式延期：10 月 26 日的激活配置已经撤销",
+    "summary": "升级计划需要支持撤销和替换。运维判断要追踪当前有效状态，不能把某次发版中的计划当作永远有效的确认。",
+    "href": "/radar/2026-10-25#web3-hoodi-glamsterdam-postponed",
+    "source": {
+      "name": "Ethereum Foundation: Glamsterdam on Hoodi Postponed",
+      "tier": "tier1",
+      "url": "https://blog.ethereum.org/2026/10/22/glamsterdam-hoodi-delay"
+    }
+  },
+  {
+    "id": "learning:web3-wavelength-public-mainnet",
+    "kind": "learning",
+    "date": "2026-10-25",
+    "domain": "web3",
+    "topic": "wallet_cex",
+    "title": "Wavelength 公开主网版：支付权限、确定失败与恢复分开看",
+    "summary": "把支付接给 Agent，接口可调用只是起点。权限能否收窄、状态能否持久化、未知结果能否恢复，需要分别提供证据。",
+    "href": "/radar/2026-10-25#web3-wavelength-public-mainnet",
+    "source": {
+      "name": "Lightning Labs: Wavelength public mainnet launch",
+      "tier": "tier1",
+      "url": "https://lightning.engineering/posts/2026-10-23-wavelength-mainnet-launch/"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
   {
     "id": "learning:ai-aisi-assessment-scope-persistence",
     "kind": "learning",
@@ -119,6 +182,34 @@ export const intelLatestItems: IntelItem[] = [
 ]
 export const intelTopics: IntelTopic[] = [
   {
+    "topic": "agent",
+    "domain": "ai",
+    "count": 5,
+    "lastSeen": "2026-10-25",
+    "firstSeen": "2026-08-11"
+  },
+  {
+    "topic": "protocol",
+    "domain": "web3",
+    "count": 4,
+    "lastSeen": "2026-10-25",
+    "firstSeen": "2026-08-12"
+  },
+  {
+    "topic": "wallet_cex",
+    "domain": "web3",
+    "count": 3,
+    "lastSeen": "2026-10-25",
+    "firstSeen": "2026-08-10"
+  },
+  {
+    "topic": "data",
+    "domain": "ai",
+    "count": 2,
+    "lastSeen": "2026-10-25",
+    "firstSeen": "2026-08-12"
+  },
+  {
     "topic": "market_crypto",
     "domain": "market",
     "count": 6,
@@ -154,13 +245,6 @@ export const intelTopics: IntelTopic[] = [
     "firstSeen": "2026-10-13"
   },
   {
-    "topic": "agent",
-    "domain": "ai",
-    "count": 4,
-    "lastSeen": "2026-10-17",
-    "firstSeen": "2026-08-11"
-  },
-  {
     "topic": "l2",
     "domain": "web3",
     "count": 2,
@@ -175,32 +259,11 @@ export const intelTopics: IntelTopic[] = [
     "firstSeen": "2026-08-10"
   },
   {
-    "topic": "protocol",
-    "domain": "web3",
-    "count": 3,
-    "lastSeen": "2026-10-13",
-    "firstSeen": "2026-08-12"
-  },
-  {
     "topic": "market_macro",
     "domain": "market",
     "count": 6,
     "lastSeen": "2026-08-13",
     "firstSeen": "2026-08-09"
-  },
-  {
-    "topic": "wallet_cex",
-    "domain": "web3",
-    "count": 2,
-    "lastSeen": "2026-08-12",
-    "firstSeen": "2026-08-10"
-  },
-  {
-    "topic": "data",
-    "domain": "ai",
-    "count": 1,
-    "lastSeen": "2026-08-12",
-    "firstSeen": "2026-08-12"
   },
   {
     "topic": "market_signal",

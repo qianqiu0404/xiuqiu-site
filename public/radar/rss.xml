@@ -6,7 +6,43 @@
     <atom:link href="https://xiuqiu-site.vercel.app/radar/rss.xml" rel="self" type="application/rss+xml" />
     <description>每天 2 条 AI、2 条 Web3 工程简报：先讲机制，再给例子和边界。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Sat, 24 Oct 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 25 Oct 2026 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>何时把子 Agent 收回主循环：先用完整任务评测比较</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-25#ai-single-loop-progressive-disclosure</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-single-loop-progressive-disclosure</guid>
+      <pubDate>Sun, 25 Oct 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>agent</category>
+      <description>选择单循环或多个 Agent，需要看任务之间共享多少上下文，以及完整任务的实际结果；团队组织方式本身不是效果证据。</description>
+    </item>
+    <item>
+      <title>Raw-RAG：先保留原始证据，再证明复杂记忆的增益</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-25#ai-raw-rag-source-preservation</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-raw-rag-source-preservation</guid>
+      <pubDate>Sun, 25 Oct 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>data</category>
+      <description>增加记忆管理复杂度之前，一个保留来源的检索基线能帮助分清：收益来自更好的证据，还是来自更复杂的组织方式。</description>
+    </item>
+    <item>
+      <title>Hoodi 正式延期：10 月 26 日的激活配置已经撤销</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-25#web3-hoodi-glamsterdam-postponed</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-hoodi-glamsterdam-postponed</guid>
+      <pubDate>Sun, 25 Oct 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>protocol</category>
+      <description>升级计划需要支持撤销和替换。运维判断要追踪当前有效状态，不能把某次发版中的计划当作永远有效的确认。</description>
+    </item>
+    <item>
+      <title>Wavelength 公开主网版：支付权限、确定失败与恢复分开看</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-25#web3-wavelength-public-mainnet</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-wavelength-public-mainnet</guid>
+      <pubDate>Sun, 25 Oct 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>wallet_cex</category>
+      <description>把支付接给 Agent，接口可调用只是起点。权限能否收窄、状态能否持久化、未知结果能否恢复，需要分别提供证据。</description>
+    </item>
     <item>
       <title>AISI 事件复盘：任务做不通，不代表可以扩大授权范围</title>
       <link>https://xiuqiu-site.vercel.app/radar/2026-10-24#ai-aisi-assessment-scope-persistence</link>
@@ -510,42 +546,6 @@
       <category>AI</category>
       <category>ai_engineering</category>
       <description>保留人工裁决的端到端轨迹，分别标注工具选择、参数范围、写前校验和成功状态一致性，再用同一回归集比较模型或编排变更。轨迹 grader 可能误判，权限和副作用仍需确定性约束。</description>
-    </item>
-    <item>
-      <title>把 EOA 代码委托视为持续存在的账户迁移</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-05#web3-design</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-05-web3</guid>
-      <pubDate>Wed, 05 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>web3_design</category>
-      <description>EIP-7702 授权会持久改变 EOA 的代码语义，且外层调用回滚不撤销已处理委托。托管钱包应显式展示 authority、链域、代码哈希、nonce、初始化与撤销路径，并拒绝未知代码或漂移状态。</description>
-    </item>
-    <item>
-      <title>Crush · 可切换模型与权限审阅的终端 coding agent</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-05#tools</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-05-tools</guid>
-      <pubDate>Wed, 05 Aug 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>tools</category>
-      <description>Crush 用 Go 集成文件与 shell 工具、会话、LSP、MCP、非交互入口和 server 模式；固定版 v0.88.0 已复现 CLI 与 provider 路由问题。可执行配置、yolo 权限、协议静默替换和网络文件系统数据…</description>
-    </item>
-    <item>
-      <title>The harness is all you need (mostly)</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-05#reading</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-05-reading</guid>
-      <pubDate>Wed, 05 Aug 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>reading</category>
-      <description>文章用原型、计划、实现、复核构成可观察的 agent 闭环，并强调自主执行要与沙箱隔离配套。思考题：为一个真实小任务分别写出四阶段证据，以及自动循环中仍必须停下的权限边界。</description>
-    </item>
-    <item>
-      <title>Chainlink Node v2.58.0 调整遥测与批量发送默认值</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-04#industry-signals</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-04-signal</guid>
-      <pubDate>Tue, 04 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>market_signal</category>
-      <description>版本新增指标属性丢弃配置，并依据容量分析扩大 Chip ingress 缓冲与批量、延长发送窗口；这是节点配置更新，生产使用仍需按负载验证并固定镜像 digest。</description>
     </item>
   </channel>
 </rss>
