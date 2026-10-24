@@ -75,6 +75,16 @@ domain 可用 ai/web3/market/research；source_access 可用 accessible/partial/
 revision 不同内容会拒绝。索引有 2000 条和 2 MiB 上限，达到任一上限时在写入前停止并报告，
 保留可读的旧索引，不静默删除历史；后续先制定归档方案。
 
+GitHub 的 [Contents API 大文件约束](https://docs.github.com/en/rest/repos/contents#get-repository-content)
+规定：超过 1 MB 的文件不能依赖内联 `content`；使用 object 媒体类型时它为空且 `encoding=none`。
+脚本显式请求 object 元数据，必要时用返回的安全 SHA 读取 Git Blob 的 Base64 内容；读取与写入
+仍遵守 2 MiB 硬上限和既有 schema 校验，不因 GitHub 的内联阈值降低页面上限。
+
+旧 revision 重试时先核对不可变历史版本：指纹一致返回 `unchanged`，并在 `ignored` 中标为
+`verified_replay`；同版本指纹冲突仍拒绝。历史版本缺失时不声称它曾成功发布，回执明确标为
+`stale_ignored`，保留当前较新版本，并允许同批的其他新条目继续发布。旧包全部被忽略时总状态
+为 `stale_ignored`；混合批次仍以实际新条目的提交与读回决定 `data_verified`。
+
 ## 验证与回滚
 
 `node --test scripts/grok-news.test.mjs` 覆盖公开边界、离线校验、权限拒绝、固定 ID、重复包、

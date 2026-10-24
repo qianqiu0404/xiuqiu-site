@@ -38,7 +38,13 @@ export function mergeReadingItems(native: readonly ReadingItem[], index?: Resear
   // Only the source's explicit event/exact-content groups collapse records.
   // Sharing a URL or a similar title across Radar and research proves no identity.
   const order = { review: 0, grok: 1, research: 2, learning: 3, market: 4 }
-  return [...native, ...researchItems(index)].sort((a, b) => b.date.localeCompare(a.date) || order[a.kind] - order[b.kind])
+  return [...native, ...researchItems(index)].sort((a, b) => {
+    const groupOrder = b.date.localeCompare(a.date) || order[a.kind] - order[b.kind]
+    if (groupOrder || a.kind !== 'grok' || b.kind !== 'grok') return groupOrder
+    const aTime = Date.parse(a.research?.collected_at || '')
+    const bTime = Date.parse(b.research?.collected_at || '')
+    return (Number.isFinite(bTime) ? bTime : 0) - (Number.isFinite(aTime) ? aTime : 0) || a.id.localeCompare(b.id)
+  })
 }
 export function readingTopics(items: readonly ReadingItem[]): ReadingTopic[] {
   const topics = new Map<string, ReadingTopic>()
