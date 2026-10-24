@@ -344,6 +344,7 @@
 .intel-search-feedback { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); padding: var(--space-3) 0; border-bottom: 1px solid var(--line); }
 .intel-search-feedback p { display: flex; flex-wrap: wrap; gap: var(--space-3); margin: 0; }
 .intel-search-feedback strong { color: var(--ink); }
+.brief-note.intel-source-warning { color: var(--status-stale); }
 .intel-search-feedback small { flex-basis: 100%; color: var(--ink-3); }
 .brief-card-reading { display: block; margin-top: var(--space-2); color: var(--accent); }
 .brief-timeline > li { scroll-margin-top: calc(var(--header-height) + var(--space-4)); }

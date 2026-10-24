@@ -1,3 +1,4 @@
+import { createExternalLoader } from './externalSourceStatus.ts'
 import type { ResearchCard, ResearchDetail, ResearchIndex, ResearchMaterial, ResearchNode } from './readingFeed.ts'
 
 export const RESEARCH_HOME = 'https://shared-research.vercel.app/'
@@ -137,4 +138,6 @@ export function createResearchClient(fetcher: typeof fetch = fetch, now = Date.n
 }
 const client = createResearchClient()
 export const loadResearchIndex = client.loadIndex
+// Index only: record details have no snapshot and still need the live source.
+export const loadResearchIndexWithFallback = createExternalLoader('research', loadResearchIndex, parseResearchIndex)
 export const loadResearchDetail = client.loadDetail

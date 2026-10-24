@@ -21,7 +21,8 @@ import {
   radarReviews,
   shanghaiToday,
   topicsForFilter,
-  loadResearchIndex,
+  loadResearchIndexWithFallback,
+  externalSourceNotice,
   mergeReadingItems,
   readingTopics,
   researchUpdateLabel,
@@ -35,12 +36,12 @@ import {
   intelItemId,
   intelReadingHref,
   intelReadingLabel,
-  loadGrokNews,
+  loadGrokNewsWithFallback,
   grokReadingItems,
   grokUpdateLabel,
   intelTopicHref,
 } from '../data'
-import type { IntelFilter, IntelItem, IntelQuery, ResearchIndex, GrokNewsIndex } from '../data'
+import type { IntelFilter, IntelItem, IntelQuery, ResearchIndex, GrokNewsIndex, ExternalLoad } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
 import '../../../design/brief.css'
 import ChipGroup from '../../../design/components/ChipGroup.vue'
@@ -73,19 +74,33 @@ const research = ref<ResearchIndex>()
 const researchState = ref<'loading' | 'ready' | 'error'>('loading')
 const grok = ref<GrokNewsIndex>()
 const grokState = ref<'loading' | 'ready' | 'error'>('loading')
+const grokLoad = ref<ExternalLoad<GrokNewsIndex>>()
+const researchLoad = ref<ExternalLoad<ResearchIndex>>()
+// Live and current is the normal case and needs no extra line.
+const externalNotices = computed(() => [
+  grokLoad.value && { id: 'grok', ...externalSourceNotice('grok', grokLoad.value, Date.now()) },
+  researchLoad.value && { id: 'research', ...externalSourceNotice('research', researchLoad.value, Date.now()) },
+].filter(notice => notice && notice.tone === 'warn') as { id: string; text: string }[])
 const items = computed(() => mergeReadingItems([...nativeItems.value, ...grokReadingItems(grok.value)], research.value))
 const combinedTopics = computed(() => archiveState.value === 'ready' ? readingTopics(items.value) : [...intelTopics, ...readingTopics(mergeReadingItems([], research.value))])
 const archiveState = ref<'loading' | 'ready' | 'error'>('loading')
 
 async function refreshGrok(force = false) {
   grokState.value = 'loading'
-  try { grok.value = await loadGrokNews(force); grokState.value = 'ready' } catch { grokState.value = 'error' }
+  try {
+    const load = await loadGrokNewsWithFallback(force)
+    grok.value = load.value
+    grokLoad.value = load
+    grokState.value = 'ready'
+  } catch { grokState.value = 'error' }
 }
 
 async function loadResearch(force = false) {
   researchState.value = 'loading'
   try {
-    research.value = await loadResearchIndex(force)
+    const load = await loadResearchIndexWithFallback(force)
+    research.value = load.value
+    researchLoad.value = load
     researchState.value = 'ready'
   } catch {
     researchState.value = 'error'
@@ -164,6 +179,7 @@ onMounted(() => {
         <p :class="`brief-fresh brief-fresh--${freshness.state}`" role="status">原有雷达 · {{ freshness.label }}</p>
         <p v-if="grok" class="brief-note" role="status">{{ grokUpdateLabel(grok) }}</p>
         <p v-if="research" class="brief-note" role="status">{{ researchUpdateLabel(research) }} · 收录时间不代表事件发生时间。</p>
+        <p v-for="notice in externalNotices" :key="notice.id" class="brief-note intel-source-warning" role="status">{{ notice.text }}</p>
       </div>
     </header>
 
