@@ -10,6 +10,9 @@ export { filterMarketEvents, formatMarketTime, marketCategoryLabel, marketCatego
 export type { StaticMarketRadarEventMatch } from '../../data/marketRadarPresentation'
 export { getRadarCollectionSeo, getSnapshotFreshness } from '../../data/snapshotFreshness'
 
-export { readingReturnLink } from '../../data/readingNavigationPresentation'
+export { readingReturnLink, withReadingReturn, marketReadingHref } from '../../data/readingNavigationPresentation'
 
 export { getRadarCorrections } from '../../data/radarCorrectionPresentation'
+
+export { readMarketQuery, marketQueryParams, marketListHref } from '../../data/marketRadarPresentation'
+export type { MarketQuery } from '../../data/marketRadarPresentation'

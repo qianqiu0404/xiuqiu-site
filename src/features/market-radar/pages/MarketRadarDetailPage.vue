@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
-import { loadMarketRadarBySlug, getSnapshotFreshness, getRadarCorrections, readingReturnLink } from '../data'
+import { loadMarketRadarBySlug, getSnapshotFreshness, getRadarCorrections, readingReturnLink, withReadingReturn } from '../data'
 import type { MarketRadarDaily } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
 import '../../../styles/market-radar.css'
@@ -147,7 +147,7 @@ watchEffect(() => {
       <aside class="trade-radar-detail-index">
         <p class="trade-radar-kicker">Event index</p>
         <nav aria-label="本期事件目录">
-          <router-link v-for="(event, index) in entry.events" :key="event.id" :to="{ name: 'market-radar-detail', params: { date: entry.slug }, hash: `#${event.id}` }">
+          <router-link v-for="(event, index) in entry.events" :key="event.id" :to="withReadingReturn(`/market-radar/${entry.slug}#${event.id}`, route.query.from)">
             <span>{{ String(index + 1).padStart(2, '0') }}</span><strong>{{ event.title }}</strong>
           </router-link>
         </nav>
@@ -183,7 +183,7 @@ watchEffect(() => {
             <div class="trade-radar-source-block">
               <span>来源发布 {{ event.sourcePublishedAt }}</span>
               <a :href="event.sourceUrl" target="_blank" rel="noopener">核对 {{ event.sourceName }} <i aria-hidden="true">↗</i></a>
-              <router-link :to="{ name: 'market-radar-event', params: { id: event.id } }">查看事件详情 <i aria-hidden="true">→</i></router-link>
+              <router-link :to="withReadingReturn(`/market-radar/events/${event.id}`, route.query.from)">查看事件详情 <i aria-hidden="true">→</i></router-link>
             </div>
           </footer>
         </article>
