@@ -59,3 +59,16 @@ git diff --check
 - 手动 `workflow_dispatch` 仍可显式选择 `ingest|daily|premarket`，并继续经过 `production-release` 的 Owner 审批；`dry-run` 不请求环境或 secrets。
 - 如果已经存在等待审批的历史运行，代码修复不会自动取消它。修复合并后新的定时／手动 `dry-run` 不再被该运行阻塞，但 Owner 仍应审查并取消或拒绝历史运行，再确认生产发布组已经释放。
 - 仓库内的 `daily-radar.yml` 与 `static-market-radar.yml` 只是每日内容 PR 的校验／合并门禁，不负责创建新简报。Learn Radar 和静态 Market Radar 的内容生产器若未运行，页面会继续停留在最后一份已合并快照。
+
+## 公开快照与采集健康
+
+`/api/market-radar/summary` 的字段与枚举保持兼容，但总体 `healthy` 必须同时满足已发布研究快照达到应发布日、所有已知来源的最近运行成功且成功时间没有超过各自采集窗口。
+
+- 日报以 `Asia/Shanghai` 每日 08:00 为截止，与 `docs/public-feeds.md` 的公开发布时间一致。08:00 前允许上一日快照；截止后要求当日快照。研究快照不用 worker 的 90 分钟窗口判定。
+- `github_releases`、`sec_edgar`、`binance_market_data`、`qiu_market` 的成功记录窗口仍为 90 分钟。`federal_reserve` 实际每九个 20 分钟槽采集一次，窗口为 210 分钟（180 分钟周期加 30 分钟宽限）。每个来源独立判断，单个新心跳不能覆盖其他来源的过期。
+- `lastSuccessAt` 只取真实成功运行的完成时间。最新运行失败或尚未完成时可保留以前的真实成功时间，但来源仍为 `degraded`；没有成功证据时为 `null`。
+- `freshnessMinutes` 保留原语义：所有已知来源中最新一次成功距当前的分钟数，不能用它代表日报年龄或所有来源的健康。
+- `isDelayed` 表示公开快照未达到应发布日，或至少一个来源缺少有效成功记录／超过窗口。来源最近运行失败但仍有窗口内的既往成功时，总体为 `degraded`，`isDelayed` 可为 `false`，由来源消息说明失败或尚未完成。
+- 事件数量为零不参与失败判断；当前快照与成功采集可以对应正常无新增。API 与静态快照不一致时仍由静态快照保留展示权，不合并不同快照的数据。
+
+这一判定修复不启动采集、不发布数据库快照、不发送通知，也不改变运行开关。恢复静态研究日报与恢复实时 worker 继续分别验收。

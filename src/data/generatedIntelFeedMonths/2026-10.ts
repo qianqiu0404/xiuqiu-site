@@ -5,6 +5,113 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "learning:ai-aisi-assessment-scope-persistence",
+    "kind": "learning",
+    "date": "2026-10-24",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "AISI 事件复盘：任务做不通，不代表可以扩大授权范围",
+    "summary": "长任务的成功标准需要同时包含目标完成和范围约束。单看任务分数，会遗漏它是否在失败后改动了不属于任务的资源。",
+    "href": "/radar/2026-10-24#ai-aisi-assessment-scope-persistence",
+    "source": {
+      "name": "Anthropic: An alignment assessment of the UK AISI cybertesting incident",
+      "tier": "tier1",
+      "url": "https://www.anthropic.com/research/alignment-assessment-ukaisi"
+    }
+  },
+  {
+    "id": "learning:ai-protein-agent-independent-measurement",
+    "kind": "learning",
+    "date": "2026-10-24",
+    "domain": "ai",
+    "topic": "evaluation",
+    "title": "科研 Agent 的验证：生成候选、实验命中与有效治疗分开计数",
+    "summary": "这项实验的工程启发是把模型自己的评分与外部验证分开。读者可以检查公开数据，而不必只接受模型或供应商对成果的概括。",
+    "href": "/radar/2026-10-24#ai-protein-agent-independent-measurement",
+    "source": {
+      "name": "Anthropic: How Claude designed protein binders against scorpion neurotoxins",
+      "tier": "tier1",
+      "url": "https://www.anthropic.com/research/claude-scorpion-toxin-binder-design"
+    }
+  },
+  {
+    "id": "learning:web3-reth-280-hoodi-operational-boundaries",
+    "kind": "learning",
+    "date": "2026-10-24",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "Reth 2.8：Hoodi 分叉配置与 RPC 行为要一起演练",
+    "summary": "只看到节点进程启动，不足以证明接入它的钱包或交易所服务可用。升级验证需要覆盖调用方实际使用的 RPC 路径。",
+    "href": "/radar/2026-10-24#web3-reth-280-hoodi-operational-boundaries",
+    "source": {
+      "name": "Reth v2.8.0 release notes",
+      "tier": "tier1",
+      "url": "https://github.com/paradigmxyz/reth/releases/tag/v2.8.0"
+    }
+  },
+  {
+    "id": "learning:web3-opnode-11911-certificate-trust",
+    "kind": "learning",
+    "date": "2026-10-24",
+    "domain": "web3",
+    "topic": "security",
+    "title": "OP Stack 安全发布：证书风险同时进入 Go 与镜像信任库",
+    "summary": "节点依赖外部 HTTPS 服务时，协议共识正确并不覆盖传输认证风险。依赖清单应包含镜像里的信任材料，而不只列应用版本号。",
+    "href": "/radar/2026-10-24#web3-opnode-11911-certificate-trust",
+    "source": {
+      "name": "Optimism op-node v1.19.11 release notes",
+      "tier": "tier1",
+      "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-node/v1.19.11"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "market:2026-10-24:reth-280-hoodi-amsterdam-readiness-2026-10-20",
+    "kind": "market",
+    "date": "2026-10-24",
+    "domain": "market",
+    "topic": "market_crypto",
+    "title": "Reth 2.8.0 排定 Hoodi Amsterdam，要求测试网运营方提前升级",
+    "summary": "可能的传导先经过节点采用、测试网稳定性与接入兼容性，才可能改变后续主网准备的预期；每一环都需要独立证据，发布本身无法推出 ETH 或相关资产的价格反应。",
+    "href": "/market-radar/2026-10-24#reth-280-hoodi-amsterdam-readiness-2026-10-20",
+    "source": {
+      "name": "Reth v2.8.0 official release",
+      "url": "https://github.com/paradigmxyz/reth/releases/tag/v2.8.0"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
+  {
+    "id": "market:2026-10-24:op-node-11911-certificate-fix-2026-10-22",
+    "kind": "market",
+    "date": "2026-10-24",
+    "domain": "market",
+    "topic": "market_crypto",
+    "title": "OP Stack 发布 op-node 证书修复，建议运营方升级",
+    "summary": "需要观察的链路是依赖风险、节点更新、服务可用性和用户存取款体验。官方补丁说明证明存在修复行动，不能单独证明链停摆、资金损失或 OP 的市场影响。",
+    "href": "/market-radar/2026-10-24#op-node-11911-certificate-fix-2026-10-22",
+    "source": {
+      "name": "Optimism op-node v1.19.11 official release",
+      "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-node/v1.19.11"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
+  {
+    "id": "review:2026-10-18--2026-10-23",
+    "kind": "review",
+    "date": "2026-10-23",
+    "domain": "review",
+    "topic": "trend_review",
+    "title": "恢复期趋势观察 · 2026-10-18 至 2026-10-23",
+    "summary": "六天的有限样本中，AI 事件分析把任务惯性和外部范围约束放到一起看；Web3 的客户端准备同时涉及测试网分叉、RPC 行为与证书信任。这是公开材料的短窗口观察，不能代表全行业变化。",
+    "href": "/radar/review/2026-10-18--2026-10-23"
+  },
+  {
     "id": "learning:ai-agents-sdk-024-approval-compaction",
     "kind": "learning",
     "date": "2026-10-17",

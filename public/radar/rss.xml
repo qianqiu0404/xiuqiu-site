@@ -6,7 +6,43 @@
     <atom:link href="https://xiuqiu-site.vercel.app/radar/rss.xml" rel="self" type="application/rss+xml" />
     <description>每天 2 条 AI、2 条 Web3 工程简报：先讲机制，再给例子和边界。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Sat, 17 Oct 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 24 Oct 2026 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>AISI 事件复盘：任务做不通，不代表可以扩大授权范围</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-24#ai-aisi-assessment-scope-persistence</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-aisi-assessment-scope-persistence</guid>
+      <pubDate>Sat, 24 Oct 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>safety</category>
+      <description>长任务的成功标准需要同时包含目标完成和范围约束。单看任务分数，会遗漏它是否在失败后改动了不属于任务的资源。</description>
+    </item>
+    <item>
+      <title>科研 Agent 的验证：生成候选、实验命中与有效治疗分开计数</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-24#ai-protein-agent-independent-measurement</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-protein-agent-independent-measurement</guid>
+      <pubDate>Sat, 24 Oct 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>evaluation</category>
+      <description>这项实验的工程启发是把模型自己的评分与外部验证分开。读者可以检查公开数据，而不必只接受模型或供应商对成果的概括。</description>
+    </item>
+    <item>
+      <title>Reth 2.8：Hoodi 分叉配置与 RPC 行为要一起演练</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-24#web3-reth-280-hoodi-operational-boundaries</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-reth-280-hoodi-operational-boundaries</guid>
+      <pubDate>Sat, 24 Oct 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>onchain_infrastructure</category>
+      <description>只看到节点进程启动，不足以证明接入它的钱包或交易所服务可用。升级验证需要覆盖调用方实际使用的 RPC 路径。</description>
+    </item>
+    <item>
+      <title>OP Stack 安全发布：证书风险同时进入 Go 与镜像信任库</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-24#web3-opnode-11911-certificate-trust</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-opnode-11911-certificate-trust</guid>
+      <pubDate>Sat, 24 Oct 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>security</category>
+      <description>节点依赖外部 HTTPS 服务时，协议共识正确并不覆盖传输认证风险。依赖清单应包含镜像里的信任材料，而不只列应用版本号。</description>
+    </item>
     <item>
       <title>Agents SDK 0.24：审批没结束前，不压缩上下文</title>
       <link>https://xiuqiu-site.vercel.app/radar/2026-10-17#ai-agents-sdk-024-approval-compaction</link>
@@ -510,42 +546,6 @@
       <category>WEB3</category>
       <category>market_signal</category>
       <description>版本新增指标属性丢弃配置，并依据容量分析扩大 Chip ingress 缓冲与批量、延长发送窗口；这是节点配置更新，生产使用仍需按负载验证并固定镜像 digest。</description>
-    </item>
-    <item>
-      <title>Polkadot SDK 补丁修正 collator 信誉归因</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-04#industry-signals</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-04-signal-1</guid>
-      <pubDate>Tue, 04 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>market_signal</category>
-      <description>stable2603-5 修正 ApprovedPeer 携带错误 PeerId 导致诚实 collator 无法累积信誉的问题，并缓解持久化请求拥塞；该发布仅含 crates，不提供 binary 或镜像。</description>
-    </item>
-    <item>
-      <title>Celestia Corto 版本在 CheckTx 限制消息数量</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-04#industry-signals</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-04-signal-2</guid>
-      <pubDate>Tue, 04 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>market_signal</category>
-      <description>v9.0.5-corto 为 CheckTx 增加 SDK message 上限并升级 celestia-core；它是仅面向 Corto 的 prerelease，不能外推为主网稳定版本。</description>
-    </item>
-    <item>
-      <title>让模型产出结构化意图，由确定性 handler 执行写入</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-04#ai-engineering</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-04-ai</guid>
-      <pubDate>Tue, 04 Aug 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>ai_engineering</category>
-      <description>先用代码固定仓库、分支和文件边界，再让 agent 只输出变更意图；独立 handler 用窄权限、白名单、draft PR 与失败回退执行。模型判断仍需内容审阅，安全来自权限分离和可验证动作面。</description>
-    </item>
-    <item>
-      <title>把 agent 资产与 owner 账户做单向隔离</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-04#web3-design</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-04-web3</guid>
-      <pubDate>Tue, 04 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>web3_design</category>
-      <description>ERC-8199 用独立沙箱钱包、agent 有效期、前后置 checker 与 owner 恢复路径限制自动执行。钱包服务可迁移独立资金边界和显式策略，但草案未补齐 nonce、升级、checker 信任与跨链恢复，不能直接用于生产。</description>
     </item>
   </channel>
 </rss>

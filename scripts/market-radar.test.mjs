@@ -5,7 +5,8 @@ import { allMarketRadars } from '../src/data/generatedMarketRadarAll.ts'
 import { latestMarketRadars, marketRadarIndex } from '../src/data/generatedMarketRadars.ts'
 import { loadMarketRadarBySlug } from '../src/data/generatedMarketRadarLoader.ts'
 import { assertMarketRadarArchive, buildMarketResearchPack, validateMarketRadar } from './market-radar-contracts.mjs'
-import { buildRadarPublication } from './radar-publication-boundary.mjs'
+import { buildRadarPublication, selectRadarDataset } from './radar-publication-boundary.mjs'
+import { marketRadarSources, summarizeMarketRadarHealth } from '../lib/market-radar/health.ts'
 
 function event(overrides = {}) {
   return {
@@ -192,4 +193,105 @@ test('the public page is static and contains no runtime API dependency', async (
   assert.match(styles, /\.trade-radar-page :where\(a, summary, \[tabindex='-1'\]\):focus-visible/)
   assert.match(styles, /@media \(max-width: 720px\)/)
   assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/)
+})
+
+const healthNow = new Date('2026-10-24T04:00:00.000Z')
+const currentPublication = { snapshotId: 'market-2026-10-24-current', asOf: '2026-10-24T00:00:00.000Z' }
+function successfulSources(minutesAgo = 10) {
+  return marketRadarSources.map(source => ({
+    source, status: 'succeeded', lastSuccessAt: new Date(healthNow.getTime() - minutesAgo * 60_000).toISOString(),
+  }))
+}
+
+test('new source heartbeats cannot make an old public market snapshot healthy', () => {
+  const result = summarizeMarketRadarHealth({
+    snapshotId: 'market-2026-08-13-old', asOf: '2026-08-13T00:04:41.000Z',
+  }, successfulSources(), healthNow)
+  assert.equal(result.status, 'degraded')
+  assert.equal(result.isDelayed, true)
+  assert.equal(result.freshnessMinutes, 10)
+  assert.ok(result.sources.every(source => source.health === 'healthy'))
+  assert.match(result.message, /公开研究快照/)
+})
+
+test('one recent source cannot hide another source past its collection window', () => {
+  const sources = successfulSources()
+  sources[0].lastSuccessAt = new Date(healthNow.getTime() - 91 * 60_000).toISOString()
+  const result = summarizeMarketRadarHealth(currentPublication, sources, healthNow)
+  assert.equal(result.status, 'degraded')
+  assert.equal(result.isDelayed, true)
+  assert.equal(result.freshnessMinutes, 10)
+  assert.equal(result.sources[0].health, 'degraded')
+  assert.equal(result.sources[1].health, 'healthy')
+})
+
+test('the three-hour Federal Reserve collector has its own bounded grace window', () => {
+  const sources = successfulSources()
+  const fed = sources.find(source => source.source === 'federal_reserve')
+  fed.lastSuccessAt = new Date(healthNow.getTime() - 210 * 60_000).toISOString()
+  assert.equal(summarizeMarketRadarHealth(currentPublication, sources, healthNow).status, 'healthy')
+  fed.lastSuccessAt = new Date(healthNow.getTime() - 211 * 60_000).toISOString()
+  const result = summarizeMarketRadarHealth(currentPublication, sources, healthNow)
+  assert.equal(result.status, 'degraded')
+  assert.equal(result.sources.find(source => source.source === 'federal_reserve').health, 'degraded')
+})
+
+test('no published snapshot stays degraded even when all collectors have succeeded', () => {
+  const result = summarizeMarketRadarHealth(null, successfulSources(), healthNow)
+  assert.equal(result.status, 'degraded')
+  assert.equal(result.isDelayed, true)
+  assert.match(result.message, /没有通过发布门禁/)
+})
+
+test('fresh successful collectors and a current daily snapshot remain healthy on a quiet day', () => {
+  const result = {
+    ...summarizeMarketRadarHealth(currentPublication, successfulSources(), healthNow),
+    latestEventAt: null, eventCount24h: 0, p0Count24h: 0, p1Count24h: 0,
+  }
+  assert.equal(result.status, 'healthy')
+  assert.equal(result.isDelayed, false)
+  assert.equal(result.eventCount24h, 0)
+  assert.equal(result.message, undefined)
+})
+
+test('daily publication age uses the 08:00 Shanghai deadline rather than the worker window', () => {
+  const previousPublication = { snapshotId: 'market-2026-10-23-previous', asOf: '2026-10-23T00:00:00.000Z' }
+  const beforeCutoff = new Date('2026-10-23T23:59:00.000Z')
+  const sources = successfulSources().map(source => ({ ...source, lastSuccessAt: '2026-10-23T23:50:00.000Z' }))
+  assert.equal(summarizeMarketRadarHealth(previousPublication, sources, beforeCutoff).status, 'healthy')
+  const atCutoff = new Date('2026-10-24T00:00:00.000Z')
+  assert.equal(summarizeMarketRadarHealth(previousPublication, sources, atCutoff).status, 'degraded')
+  // Today's eight-hour-old publication is valid while each collector is current.
+  assert.equal(summarizeMarketRadarHealth(currentPublication, successfulSources(), healthNow).status, 'healthy')
+})
+
+test('failed and unfinished runs stay visible and retain only actual prior success timestamps', () => {
+  for (const status of ['failed', 'running']) {
+    const sources = successfulSources()
+    sources[0] = { ...sources[0], status }
+    const result = summarizeMarketRadarHealth(currentPublication, sources, healthNow)
+    assert.equal(result.status, 'degraded')
+    assert.equal(result.isDelayed, false)
+    assert.equal(result.sources[0].health, 'degraded')
+    assert.equal(result.sources[0].lastSuccessAt, sources[0].lastSuccessAt)
+    assert.match(result.sources[0].message, status === 'failed' ? /未成功/ : /尚未完成/)
+  }
+})
+
+test('missing, invalid and future source success times fail closed', () => {
+  for (const lastSuccessAt of [null, 'invalid', '2026-10-25T04:00:00.000Z']) {
+    const sources = successfulSources().map(source => ({ ...source, lastSuccessAt }))
+    const result = summarizeMarketRadarHealth(currentPublication, sources, healthNow)
+    assert.equal(result.status, 'degraded')
+    assert.equal(result.freshnessMinutes, null)
+    assert.equal(result.isDelayed, true)
+  }
+  assert.equal(summarizeMarketRadarHealth(currentPublication, successfulSources().slice(1), healthNow).status, 'degraded')
+})
+
+test('market data with a different API snapshot never replaces the static publication', () => {
+  const staticDataset = { snapshotId: currentPublication.snapshotId, items: ['reviewed-static-event'] }
+  const apiDataset = { snapshotId: 'market-2026-08-13-old', items: [], status: 'healthy' }
+  assert.equal(selectRadarDataset(staticDataset, apiDataset), staticDataset)
+  assert.equal(selectRadarDataset(staticDataset, { ...apiDataset, snapshotId: currentPublication.snapshotId }).items.length, 0)
 })

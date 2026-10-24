@@ -1,18 +1,18 @@
 ---
 {
-  "updatedAt": "2026-08-24",
-  "headline": "维护 Qiu Market，并让钱包方向回到可验证事实",
-  "summary": "Qiu Market 是当前可展示的 Web3 产品；Wallet Infrastructure 已完成私有 baseline 审计，但尚无通过公开 Claim 门禁的新实现。网站只同步可复核证据，不用历史项目填充当前进度。",
+  "updatedAt": "2026-10-24",
+  "headline": "维护 Qiu Market 的数据可信度，核对钱包资金一致性证据",
+  "summary": "Qiu Market 继续作为当前产品，重点区分入口可达、行情新鲜度与虚拟交易恢复；Wallet Infrastructure 继续作为当前方向，已有离线资金一致性修复与历史运行记录，公开 Claim 仍为 locked。",
   "developmentProjectSlugs": [
     "s78-market-services",
     "exchange-wallet-system"
   ],
   "nextFocus": [
-    "让 Qiu Market 的页面、运行状态与证据日期保持一致",
-    "在 Wallet Infrastructure 的固定私有基线上验证一个可复现失败切片",
-    "只把经过独立复验的代码、测试和失败边界同步到作品站"
+    "分别核对 Qiu Market 的参考价、公开研究、虚拟交易与生产门，保留数据降级状态",
+    "补齐 Wallet Infrastructure 的资金恢复证据，区分离线候选、运行版本与实网验收",
+    "项目与笔记保留实际证据日期，不把本轮资料核对或 AI 整理写成本人掌握或生产通过"
   ]
 }
 ---
 
-当前快照只选择允许公开的项目与近期重点。它描述正在验证的方向，不把 AI 生成内容、局部测试、历史材料或设计目标写成生产结论。
+当前公开角色保持不变：一个产品、一个学习与证据方向，其余项目保留为历史工程证据。更新时间表示本页完成资料核对，不表示所有关联系统当天重新验收。

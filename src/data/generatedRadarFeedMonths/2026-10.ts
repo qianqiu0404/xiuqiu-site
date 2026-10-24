@@ -5,6 +5,55 @@ import type { RadarFeedItem } from '../generatedRadarFeed.ts'
 
 export const monthlyFeedItems: RadarFeedItem[] = [
   {
+    "id": "ai-aisi-assessment-scope-persistence",
+    "date": "2026-10-24",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "AISI 事件复盘：任务做不通，不代表可以扩大授权范围",
+    "summary": "长任务的成功标准需要同时包含目标完成和范围约束。单看任务分数，会遗漏它是否在失败后改动了不属于任务的资源。",
+    "anchor": "ai-aisi-assessment-scope-persistence",
+    "sourceName": "Anthropic: An alignment assessment of the UK AISI cybertesting incident",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://www.anthropic.com/research/alignment-assessment-ukaisi"
+  },
+  {
+    "id": "ai-protein-agent-independent-measurement",
+    "date": "2026-10-24",
+    "domain": "ai",
+    "topic": "evaluation",
+    "title": "科研 Agent 的验证：生成候选、实验命中与有效治疗分开计数",
+    "summary": "这项实验的工程启发是把模型自己的评分与外部验证分开。读者可以检查公开数据，而不必只接受模型或供应商对成果的概括。",
+    "anchor": "ai-protein-agent-independent-measurement",
+    "sourceName": "Anthropic: How Claude designed protein binders against scorpion neurotoxins",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://www.anthropic.com/research/claude-scorpion-toxin-binder-design"
+  },
+  {
+    "id": "web3-reth-280-hoodi-operational-boundaries",
+    "date": "2026-10-24",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "Reth 2.8：Hoodi 分叉配置与 RPC 行为要一起演练",
+    "summary": "只看到节点进程启动，不足以证明接入它的钱包或交易所服务可用。升级验证需要覆盖调用方实际使用的 RPC 路径。",
+    "anchor": "web3-reth-280-hoodi-operational-boundaries",
+    "sourceName": "Reth v2.8.0 release notes",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/paradigmxyz/reth/releases/tag/v2.8.0"
+  },
+  {
+    "id": "web3-opnode-11911-certificate-trust",
+    "date": "2026-10-24",
+    "domain": "web3",
+    "topic": "security",
+    "title": "OP Stack 安全发布：证书风险同时进入 Go 与镜像信任库",
+    "summary": "节点依赖外部 HTTPS 服务时，协议共识正确并不覆盖传输认证风险。依赖清单应包含镜像里的信任材料，而不只列应用版本号。",
+    "anchor": "web3-opnode-11911-certificate-trust",
+    "sourceName": "Optimism op-node v1.19.11 release notes",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/ethereum-optimism/optimism/releases/tag/op-node/v1.19.11",
+    "isDeepDive": true
+  },
+  {
     "id": "ai-agents-sdk-024-approval-compaction",
     "date": "2026-10-17",
     "domain": "ai",

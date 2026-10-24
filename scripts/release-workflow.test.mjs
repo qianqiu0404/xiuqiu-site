@@ -65,6 +65,8 @@ test('release controller is inert by default and binds every production step to 
   assert.deepEqual(Object.keys(controller.on), ['workflow_dispatch'])
   assert.equal(controller.on.workflow_dispatch.inputs.operation.default, 'dry-run')
   assert.equal(controller.on.workflow_dispatch.inputs.release_sha.required, false)
+  assert.equal(controller.on.workflow_dispatch.inputs.enqueue_market_notifications.default, false)
+  assert.equal(controller.on.workflow_dispatch.inputs.run_market_worker.default, false)
   assert.match(controller.concurrency.group, /xiuqiu-production-release/)
   assert.equal(controller.concurrency['cancel-in-progress'], false)
 
@@ -73,6 +75,8 @@ test('release controller is inert by default and binds every production step to 
   assert.match(controllerSource, /release_sha must be a full lowercase 40-character commit SHA/)
   assert.match(controllerSource, /test "\$release_sha" = "\$remote_main"/)
   assert.match(controllerSource, /test "\$MARKET_RADAR_ENABLED" = 'true'/)
+  assert.equal(controller.jobs.preflight.outputs.market_research_date, '${{ steps.research.outputs.market_research_date }}')
+  assert.match(controller.jobs.preflight.steps.find(step => step.id === 'research').run, /selectRadarPublicationPlan/)
 
   for (const jobName of productionJobs) {
     assert.equal(controller.jobs[jobName].environment, 'production-release')
@@ -89,6 +93,23 @@ test('release DAG is migration, staged Vercel promotion, worker smoke, then acti
   assert.deepEqual(controller.jobs.enqueue_learning_radar_notifications.needs, ['preflight', 'mark_deployed_sha'])
   assert.match(String(controller.jobs.enqueue_learning_radar_notifications.if), /vars\.LEARNING_RADAR_ENABLED == 'true'/)
   assert.deepEqual(controller.jobs.enqueue_market_radar_notifications.needs, ['preflight', 'mark_deployed_sha'])
+  const marketSteps = controller.jobs.enqueue_market_radar_notifications.steps
+  const publicationStep = marketSteps.find(step => step.name === 'Publish immutable research snapshots without notifications')
+  assert.ok(publicationStep)
+  assert.equal(publicationStep.env.RADAR_PUBLICATION_SELECTION, 'latest')
+  assert.equal(publicationStep.env.MARKET_RADAR_DATABASE_URL, '${{ secrets.MARKET_RADAR_DATABASE_URL }}')
+  assert.match(publicationStep.run, /npm run radar:publish-snapshots/)
+  assert.doesNotMatch(publicationStep.run, /notifications:enqueue|market-radar:worker/)
+  assert.equal(publicationStep.env.DEEPSEEK_API_KEY, undefined)
+  assert.equal(controller.jobs.enqueue_market_radar_notifications.outputs.publication_result, '${{ steps.publish_research.outcome }}')
+  assert.equal(controller.jobs.enqueue_market_radar_notifications.outputs.notification_result, '${{ steps.market_notification.outcome }}')
+  assert.equal(controller.jobs.release_summary.env.MARKET_PUBLICATION_RESULT, "${{ needs.enqueue_market_radar_notifications.outputs.publication_result || 'not_run' }}")
+  assert.equal(controller.jobs.release_summary.env.MARKET_NOTIFICATION_RESULT, "${{ needs.enqueue_market_radar_notifications.outputs.notification_result || 'not_run' }}")
+  const marketNotification = marketSteps.find(step => step.name === 'Enqueue idempotent Market Radar notification')
+  assert.match(String(marketNotification.if), /inputs\.enqueue_market_notifications/)
+  assert.ok(marketSteps.indexOf(publicationStep) < marketSteps.indexOf(marketNotification))
+  assert.match(String(controller.jobs.promote_market_radar_worker.if), /inputs\.run_market_worker/)
+  assert.match(String(controller.jobs.mark_market_radar_worker_authorized.if), /inputs\.run_market_worker/)
   assert.deepEqual(controller.jobs.promote_market_radar_worker.needs, ['preflight', 'mark_deployed_sha', 'enqueue_market_radar_notifications'])
   assert.deepEqual(controller.jobs.mark_market_radar_worker_authorized.needs, [
     'preflight', 'mark_deployed_sha', 'enqueue_market_radar_notifications', 'promote_market_radar_worker',
@@ -161,6 +182,7 @@ test('release DAG is migration, staged Vercel promotion, worker smoke, then acti
   const verifyIndex = promoteSteps.findIndex(step => step.name === 'Verify promoted Market Radar research handoff before notification')
   assert.ok(promoteIndex >= 0 && verifyIndex > promoteIndex)
   assert.match(promoteSteps[verifyIndex].run, /npm run verify:market-radar-production/)
+  assert.equal(promoteSteps[verifyIndex].env.RADAR_NOTIFICATION_DATE, '${{ needs.preflight.outputs.market_research_date }}')
   assert.match(controllerSource, /vercel whoami --token "\$VERCEL_TOKEN"/)
   assert.match(controllerSource, /vercel project inspect "\$VERCEL_PROJECT_ID" --token "\$VERCEL_TOKEN"/)
   assert.match(controllerSource, /vercel pull --yes --environment=production --token "\$VERCEL_TOKEN"/)

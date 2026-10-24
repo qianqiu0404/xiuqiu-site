@@ -9,17 +9,32 @@ export const NEWS_BRANCH = 'news/x-ai-digest'
 const root = `repos/${NEWS_REPO}`
 const hash = value => createHash('sha256').update(value).digest('hex')
 const json = value => `${JSON.stringify(value, null, 2)}\n`
-export function mergeGrokNews(previous, batch) {
+const MAX_INDEX_BYTES = 2 * 1024 * 1024
+const revisionKey = item => `${item.origin_id}|${item.revision}`
+
+export function mergeGrokNews(previous, batch, history = new Map()) {
   const existing = parseGrokIndex(previous), items = parseGrokBatch(batch)
   for (const record of existing.records) {
     if (record.id !== `grok-${hash(record.origin_id).slice(0, 24)}` || record.fingerprint !== hash(JSON.stringify(parseGrokItem(record)))) throw new Error('既有新闻索引指纹不一致，未发布')
   }
   const records = new Map(existing.records.map(record => [record.origin_id, record]))
-  const changed = []
+  const changed = [], ignored = []
   for (const item of items) {
     const fingerprint = hash(JSON.stringify(item)), old = records.get(item.origin_id)
     if (old && old.revision === item.revision) {
       if (old.fingerprint !== fingerprint) throw new Error('同一新闻版本内容冲突，未发布')
+      continue
+    }
+    if (old && item.revision < old.revision) {
+      const prior = history.get(revisionKey(item))
+      if (prior) {
+        const parsed = parseGrokItem(prior)
+        if (parsed.origin_id !== item.origin_id || parsed.revision !== item.revision || prior.id !== old.id
+          || prior.fingerprint !== hash(JSON.stringify(parsed))) throw new Error('历史新闻版本指纹不一致，未发布')
+        if (prior.fingerprint !== fingerprint) throw new Error('同一新闻版本内容冲突，未发布')
+      }
+      ignored.push({ origin_id: item.origin_id, revision: item.revision, current_revision: old.revision,
+        status: prior ? 'verified_replay' : 'stale_ignored' })
       continue
     }
     if (item.revision !== (old?.revision || 0) + 1) throw new Error('新闻更正必须逐版追加，未发布')
@@ -27,9 +42,31 @@ export function mergeGrokNews(previous, batch) {
     records.set(item.origin_id, record)
     changed.push(record)
   }
-  const latest = [...records.values()].sort((a, b) => b.collected_at.localeCompare(a.collected_at) || a.id.localeCompare(b.id))
+  const latest = [...records.values()].sort((a, b) => Date.parse(b.collected_at) - Date.parse(a.collected_at) || a.id.localeCompare(b.id))
   const updated = latest.reduce((max, record) => !max || Date.parse(record.collected_at) > Date.parse(max) ? record.collected_at : max, null)
-  return { changed, index: parseGrokIndex({ schema_version: 1, bot_id: 'x-ai-digest', updated_at: updated, records: latest }) }
+  return { changed, ignored, index: parseGrokIndex({ schema_version: 1, bot_id: 'x-ai-digest', updated_at: updated, records: latest }) }
+}
+
+async function readNewsJson(request, path) {
+  const file = await request('GET', path)
+  if (Number(file?.size) > MAX_INDEX_BYTES) throw new Error('新闻数据达到页面读取上限；请先制定归档方案')
+  let blob = file
+  if (file?.encoding !== 'base64' || typeof file.content !== 'string' || !file.content.trim()) {
+    if (typeof file?.sha !== 'string' || !/^[a-f0-9]{40}$/i.test(file.sha)) throw new Error('新闻文件缺少安全的 Blob 标识；请先读回核对')
+    blob = await request('GET', `${root}/git/blobs/${file.sha}`)
+    if (blob?.sha !== file.sha) throw new Error('新闻 Blob 标识不一致；请先读回核对')
+  }
+  if (blob?.encoding !== 'base64' || typeof blob.content !== 'string' || !blob.content.trim()) {
+    throw new Error('新闻 Blob 编码不受支持；投递结果待核对，请先读回分支')
+  }
+  const encoded = blob.content.replace(/\s/g, '')
+  if (encoded.length % 4 !== 0 || !/^[A-Za-z0-9+/]+={0,2}$/.test(encoded)) {
+    throw new Error('新闻 Blob 内容不是有效 Base64；请先读回核对')
+  }
+  const content = Buffer.from(encoded, 'base64')
+  if (Number(blob.size) > MAX_INDEX_BYTES || content.byteLength > MAX_INDEX_BYTES) throw new Error('新闻数据达到页面读取上限；请先制定归档方案')
+  try { return JSON.parse(content.toString('utf8')) }
+  catch { throw new Error('新闻 JSON 无法解析；投递结果待核对，请先读回分支，不要重新生成新闻') }
 }
 
 export async function publishGrokNews(batch, request) {
@@ -43,13 +80,24 @@ export async function publishGrokNews(batch, request) {
   if (head) {
     const commit = await request('GET', `${root}/git/commits/${head}`)
     tree = commit.tree.sha
-    const file = await request('GET', `${root}/contents/feed/v1/index.json?ref=${head}`)
-    previous = JSON.parse(Buffer.from(file.content, 'base64').toString('utf8'))
+    previous = await readNewsJson(request, `${root}/contents/feed/v1/index.json?ref=${head}`)
   }
-  const { changed, index } = mergeGrokNews(previous, batch)
-  if (!changed.length) return { status: 'unchanged', branch: NEWS_BRANCH, commit: head, changed: 0 }
+  let merged = mergeGrokNews(previous, batch)
+  const history = new Map()
+  for (const replay of merged.ignored) {
+    const id = `grok-${hash(replay.origin_id).slice(0, 24)}`
+    try {
+      history.set(revisionKey(replay), await readNewsJson(request,
+        `${root}/contents/feed/v1/records/${id}/r${replay.revision}.json?ref=${head}`))
+    } catch (error) { if (error.status !== 404) throw error }
+  }
+  if (history.size) merged = mergeGrokNews(previous, batch, history)
+  const { changed, ignored, index } = merged
+  const replayReceipt = ignored.length ? { ignored } : {}
+  if (!changed.length) return { status: ignored.some(item => item.status === 'stale_ignored') ? 'stale_ignored' : 'unchanged',
+    branch: NEWS_BRANCH, commit: head, changed: 0, ...replayReceipt }
   const indexText = json(index)
-  if (Buffer.byteLength(indexText) > 2 * 1024 * 1024) throw new Error('新闻索引达到页面读取上限，未发布；请先制定归档方案')
+  if (Buffer.byteLength(indexText) > MAX_INDEX_BYTES) throw new Error('新闻索引达到页面读取上限，未发布；请先制定归档方案')
   const files = [{ path: 'feed/v1/index.json', content: indexText }, ...changed.map(record => ({ path: `feed/v1/records/${record.id}/r${record.revision}.json`, content: json(record) }))]
   const entries = []
   for (const file of files) {
@@ -61,15 +109,16 @@ export async function publishGrokNews(batch, request) {
   if (head) await request('PATCH', `${root}/git/refs/heads/${NEWS_BRANCH}`, { sha: commit.sha, force: false })
   else await request('POST', `${root}/git/refs`, { ref: `refs/heads/${NEWS_BRANCH}`, sha: commit.sha })
   // Read the moving branch, not just the immutable commit we already created.
-  const readback = await request('GET', `${root}/contents/feed/v1/index.json?ref=${encodeURIComponent(NEWS_BRANCH)}`)
-  const live = parseGrokIndex(JSON.parse(Buffer.from(readback.content, 'base64').toString('utf8')))
+  const live = parseGrokIndex(await readNewsJson(request, `${root}/contents/feed/v1/index.json?ref=${encodeURIComponent(NEWS_BRANCH)}`))
   if (!changed.every(record => live.records.some(r => r.id === record.id && r.fingerprint === record.fingerprint))) throw new Error('投递结果待核对；请先读回分支，不要重发或重新生成新闻')
-  return { status: 'data_verified', branch: NEWS_BRANCH, commit: commit.sha, changed: changed.length, website: 'not_verified' }
+  return { status: 'data_verified', branch: NEWS_BRANCH, commit: commit.sha, changed: changed.length, website: 'not_verified', ...replayReceipt }
 }
 
 async function ghRequest(method, path, body) {
   try {
-    const output = execFileSync('gh', ['api', '-X', method, path, ...(body ? ['--input', '-'] : [])], { input: body ? JSON.stringify(body) : undefined, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'], maxBuffer: 8 * 1024 * 1024 })
+    const output = execFileSync('gh', ['api', '-X', method, path,
+      ...(method === 'GET' && path.includes('/contents/') ? ['-H', 'Accept: application/vnd.github.object+json'] : []),
+      ...(body ? ['--input', '-'] : [])], { input: body ? JSON.stringify(body) : undefined, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'], maxBuffer: 8 * 1024 * 1024 })
     return output ? JSON.parse(output) : {}
   } catch (error) {
     const status = Number(String(error.stderr).match(/HTTP (\d{3})/)?.[1] || 0)

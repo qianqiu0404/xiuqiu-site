@@ -1,7 +1,8 @@
 # x-ai-digest 直接投递个人站
 
-2026-10-23：代码候选，尚未上线。新闻 Bot「X」确认自己就是 x-ai-digest，当前 GitHub
-身份 xoqiu09 对 qianqiu0404/xiuqiu-site 只有读权限。未申请、授予或扩大权限；真实投递待解决。
+2026-10-24：新闻接入已通过既有 Release Controller 上线。指定 Bot「X」即 x-ai-digest，
+其已有 GitHub 身份 xoqiu09 具备本站数据分支写权限；一条真实公开新闻已投递并从 GitHub 与
+正式站独立读回。既有 x-ai 每日任务已追加本站投递，首次新增定时步骤仍待 10 月 25 日实际执行。
 
 ## 路径
 
@@ -18,7 +19,7 @@
 仅适用于本 Bot x-ai-digest 已被用户指定的公开新闻输出，不同步私人聊天、其他 Bot 历史、
 账户材料或凭据。使用自己环境中的独立 checkout，不使用维护者电脑路径。
 
-1. 从包含本文件和 `scripts/publish-grok-news.mjs` 的已审阅代码分支取得脚本；运行需 Node 22.18+
+1. 从维护者明确批准并固定的完整提交 SHA 取得本文件和 `scripts/publish-grok-news.mjs`；运行需 Node 22.18+
    或支持 TypeScript type stripping 的更新版本，以及已登录的 gh。不要下载执行不明脚本。
 2. 一条新闻首次采集时分配并保存稳定 origin_id，建议 `x-ai-digest:<首次批次>:<来源帖子ID>`。
    重试保持原包和 collected_at 不变；修订增加 revision，不重生成 ID。
@@ -39,6 +40,7 @@ node --experimental-strip-types scripts/publish-grok-news.mjs --publish batch.js
    commit SHA、分支回执和站内地址，不把模型回复或数据提交当成上线证据。
 6. 无权限、字段错误、同版本内容冲突时停止。网络超时或并发冲突先读回分支与固定包，
    不重新搜索、不生成另一条、不强推。原包重投没有变化时返回 unchanged，不创建提交。
+   旧修订重投按下方 `verified_replay` / `stale_ignored` 回执处理，不能据此声称新增发布。
    更正保存 `feed/v1/records/<稳定ID>/r<版本>.json`；旧版本保留。
 
 ## 资料包 v1
@@ -75,6 +77,16 @@ domain 可用 ai/web3/market/research；source_access 可用 accessible/partial/
 revision 不同内容会拒绝。索引有 2000 条和 2 MiB 上限，达到任一上限时在写入前停止并报告，
 保留可读的旧索引，不静默删除历史；后续先制定归档方案。
 
+GitHub 的 [Contents API 大文件约束](https://docs.github.com/en/rest/repos/contents#get-repository-content)
+规定：超过 1 MB 的文件不能依赖内联 `content`；使用 object 媒体类型时它为空且 `encoding=none`。
+脚本显式请求 object 元数据，必要时用返回的安全 SHA 读取 Git Blob 的 Base64 内容；读取与写入
+仍遵守 2 MiB 硬上限和既有 schema 校验，不因 GitHub 的内联阈值降低页面上限。
+
+旧 revision 重试时先核对不可变历史版本：指纹一致返回 `unchanged`，并在 `ignored` 中标为
+`verified_replay`；同版本指纹冲突仍拒绝。历史版本缺失时不声称它曾成功发布，回执明确标为
+`stale_ignored`，保留当前较新版本，并允许同批的其他新条目继续发布。旧包全部被忽略时总状态
+为 `stale_ignored`；混合批次仍以实际新条目的提交与读回决定 `data_verified`。
+
 ## 验证与回滚
 
 `node --test scripts/grok-news.test.mjs` 覆盖公开边界、离线校验、权限拒绝、固定 ID、重复包、
@@ -84,6 +96,7 @@ revision 不同内容会拒绝。索引有 2000 条和 2 MiB 上限，达到任�
 本地联合预览给 `GROK_NEWS_PREVIEW_ORIGIN` 指向只读测试 HTTP 服务，其目录中放
 `feed/v1/index.json`。测试资料必须标明 fixture，不发布到 GitHub 数据分支或正式站。
 
-首次发布前只读核对 live main、两个旧 PR 和本分支。数据分支不是代码 PR 的合并目标。
+每次脚本升级前核对 live main、当前修复 PR 与批准的完整候选 SHA；定时任务只切换到明确批准的版本。
+数据分支不是代码 PR 的合并目标。
 回滚只撤回 Grok 数据读取和展示或停止 Bot 对本站投递，保留数据分支与旧版本恢复材料；
 原雷达、共享研究及 Bot 向其他已授权目标的工作继续独立。

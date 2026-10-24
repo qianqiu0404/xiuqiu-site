@@ -60,22 +60,23 @@ export const projects: Project[] = [
     "stage": "exploring",
     "sourceType": "adapted",
     "visibility": "private",
-    "positioning": "当前的钱包后端基础设施学习与证据建设方向，聚焦资金状态、链上事实、Ledger、签名边界、恢复与可观测性；私有基线审计已经完成，但尚未形成通过公开 Claim 门禁的新实现。",
-    "currentFocus": "围绕已核验的私有基线，继续验证单资产充值、Ledger、Outbox、余额投影和对账能否组成默认可运行的最小闭环。",
+    "positioning": "当前的钱包后端基础设施学习与证据建设方向，聚焦 Sepolia 充值、Ledger、Outbox、余额投影、提现结果未知、对账与只读诊断；已存在运行和离线验证记录，公开 Claim 仍为 locked。",
+    "currentFocus": "以资金一致性的离线验证为重点，核对网络阻断、广播拒绝后保留冻结与原交易观察；把历史测试网充值、当前运行记录、离线候选和未完成恢复分开表达。",
     "verifiedEvidence": [
-      "已完成一个私有 canonical baseline 的只读审计与仓库级构建验证",
-      "充值、Ledger、Outbox、Projection 与 Reconciliation 存在相邻实现，但尚未形成默认可运行的完整 authority 闭环",
-      "当前对外 Claim 仍为 locked；私有路径、固定 SHA 与未通过发布门禁的实现细节不在网站公开"
+      "已提交记录显示：2026-10-19 完成 SAFE 扫描上界运行切换与短时观察；本轮只读复核，升级后的新充值验收仍未完成",
+      "2026-10-21 的离线完整 Gate 记录覆盖网络阻断后的签名/首次广播门，以及广播拒绝后保留冻结、继续观察原交易与幂等结算；不表示部署或实网提现通过",
+      "USDC 入账、原生 ETH 提现和热钱包对账已有局部实现与离线记录，但相应实网验收仍缺失；公开 Claim 保持 locked"
     ],
     "targetOutcome": "形成一个本人能够定位代码、运行测试、注入失败并讲清资金、链、账务、签名和恢复边界的最小钱包基础设施证据闭环。",
-    "nextMilestone": "在固定私有基线上完成一个可复现失败切片，独立验证 Deposit、Ledger 与 Outbox 的事务边界，再决定哪些结论可以通过公开 Claim 门禁。",
+    "nextMilestone": "在同一固定候选上补齐资金一致性、人工复核恢复与充值重组补偿的离线证据；分别列清尚未部署、尚未实网验证和需 Owner 解释的部分，再评估公开 Claim。",
     "knownLimits": [
-      "私有 baseline 已审计，但默认运行路径与 dormant authority 路径仍不等价",
-      "当前页面只公开方向和证据等级，不公开未通过发布门禁的仓库路径、SHA 或私有实现细节",
-      "不会连接真实资金、签名或广播，也不会把 fixture、no-funds 或历史材料写成当前测试网或生产证据",
-      "本人掌握度仍处于 learning，公开材料和 AI 整理不能替代闭卷复现"
+      "本轮只核对已提交状态与既有回执，没有运行钱包服务、连接数据库/RPC、使用密钥、签名或广播",
+      "历史 ETH 充值与 10 月 19 日运行观察不能代替升级后新充值、USDC 入账、提现或热钱包对账验收",
+      "拒绝后保留冻结的离线修复不自动修复历史已释放记录；人工复核恢复、充值重组资金补偿等仍有缺口",
+      "本地 Console 展示或合成浏览器通过不代表实网业务完成；归集、多链、MPC/TSS 和真实 Kafka 不进入当前完成项",
+      "私有源码、路径和版本标识不公开；代码、测试、公开 Claim 与本人掌握度分别判断"
     ],
-    "updatedAt": "2026-08-24",
+    "updatedAt": "2026-10-24",
     "coreAbilities": [
       "充值扫描与地址归属",
       "确认策略与链重组处理",
@@ -86,9 +87,9 @@ export const projects: Project[] = [
     ],
     "talkingPoints": [
       "为什么链上托管余额不等于用户负债",
-      "为什么 Deposit、Ledger entry 与 Outbox 需要同一短事务",
-      "scanner cursor 为什么只能推进最高连续已提交高度",
-      "当前哪些是设计范围，哪些仍然是 Missing"
+      "SAFE 扫描上界与 FINALIZED 资金入账为什么要分开",
+      "为什么广播拒绝或结果未知时仍要保留冻结并观察原交易",
+      "哪些离线测试已通过，哪些实网与恢复门仍未完成"
     ],
     "techStack": [
       "Go",
@@ -99,45 +100,48 @@ export const projects: Project[] = [
       "Observability"
     ],
     "engineering": {
-      "role": "钱包基础设施学习、候选基线选择与最小证据闭环设计",
-      "systemBoundary": "目标边界是让 Scanner 负责链上观察，ownership 负责地址归属，Deposit 负责业务状态，Ledger 负责负债事实，Outbox 负责事务后交付；当前仍是设计范围，尚未绑定具体实现。",
+      "role": "钱包基础设施学习、资金一致性实现的证据核对与失败边界梳理",
+      "systemBoundary": "当前方向以 Sepolia 单运营方钱包为边界：Scanner 观察链，Deposit 表达业务状态，Ledger 保存资金事实，Outbox 交付事务后事件，投影与 Console 派生展示；Core 不持私钥，只读 SRE 不拥有资金权限。",
       "callFlow": [
-        "Scanner 读取区块并产生候选链上事件",
-        "地址归属与链身份校验决定事件是否进入业务域",
-        "Finality 策略决定何时允许业务入账",
-        "Deposit、Ledger entry 与 Outbox 在同一短事务中提交",
-        "Balance Projection 从 Ledger 派生可用余额",
-        "Reconciliation 在固定高度比较 custody 与 liability"
+        "Scanner 扫描到 SAFE 上界，独立等待 FINALIZED 证据才允许充值入账",
+        "地址归属与资产路由决定链上事件对应哪一个负债账户",
+        "Deposit、Ledger、来源唯一约束、余额投影与 Outbox 在一个短事务中提交",
+        "通知至少一次交付，消费者和资金效果依靠幂等避免重复",
+        "提现按申请、冻结、签名边界、广播与原交易观察分阶段处理",
+        "Reconciliation 在固定 finalized 区块比较托管与负债；冲突进入显式 Incident"
       ],
       "failureScenarios": [
-        "Deposit 已识别但 Ledger 或 Outbox 原子写失败",
-        "区块重组使已观察事件失去 canonical 身份",
-        "scanner cursor 越过未提交高度导致永久漏扫"
+        "链上事件或 finalized 证据冲突时停止资金入账",
+        "网络 Incident 阻断新的签名许可与首次广播意图",
+        "广播拒绝或结果未知后保留冻结，不自动重签、重发或释放",
+        "历史已释放记录、人工复核恢复和充值重组补偿仍需独立方案与验收"
       ],
       "evidence": [
-        "私有 baseline 的仓库级测试、构建与静态检查已经通过",
-        "下一阶段证据必须来自同一固定基线上的可复现失败注入和默认运行路径"
+        "10 月 19 日运行切换与短时观察的历史回执",
+        "10 月 21 日资金一致性相关离线完整 Gate 及独立复审记录",
+        "本轮已提交文档与必要代码入口只读核对；未重新执行钱包测试"
       ],
       "knownLimits": [
-        "尚无默认启用的完整 authority 闭环、集成运行验收或公开 Claim",
-        "旧项目材料和公开实验不得自动升级为当前实现或本人贡献"
+        "公开 Claim 保持 locked，离线通过不等于实网验收或本人掌握",
+        "USDC、提现与热钱包对账的实网闭环仍未完成",
+        "旧四服务材料独立标为历史，不替代当前 WIF 的实现与验收"
       ],
-      "overviewSummary": "这是当前的钱包后端基础设施学习与证据方向；私有 baseline 已审计，但网站继续保留 Partial、Missing 与公开 Claim 门禁边界。"
+      "overviewSummary": "钱包方向已从基线审计推进到具体实现与分层验证。网站公开可复核的去敏摘要，同时保留未部署、未实网验证、恢复缺口与 Claim 门禁。"
     },
     "learning": {
-      "goal": "能够在固定代码基线上解释充值、Ledger、Outbox、余额投影与对账的事实边界，并复现至少一个失败场景。",
+      "goal": "在固定候选上解释充值、Ledger、Outbox、提现冻结与结果未知的事实边界，能复现失败并说明恢复中仍缺少什么。",
       "verified": [],
       "verification": [],
-      "verificationNote": "私有 baseline 已完成仓库级验证，但命令、路径和 SHA 尚未通过公开发布门禁，因此本站不列出为公开项目证据。",
+      "verificationNote": "本轮仅复核已提交状态和既有测试回执，未执行钱包测试，也未验证本人掌握度。历史运行、离线完整 Gate、本地界面候选和实网资金闭环各有独立范围；本站不公开私有命令参数、路径或版本标识。",
       "tradeoffs": [
-        "先建立一个可复现闭环，不先扩多链、微服务或新 UI",
-        "设计理解、历史材料和当前代码证据分开表达",
-        "不使用生产规模、真实资金或未复验的旧结果包装项目"
+        "离线候选、运行版本与历史验收分开记录",
+        "未知结果先保留冻结与原交易观察，不用重试制造确定性",
+        "先完成资金一致性与恢复证据，再扩资产、界面或公开 Claim"
       ],
       "nextSteps": [
-        "在已选私有 baseline 上复现一个最小失败切片",
-        "验证 Deposit、Ledger 与 Outbox 是否进入同一默认运行路径",
-        "为 Ledger 与 Outbox 原子失败编写最小失败合同"
+        "补齐人工复核恢复与充值重组补偿的离线证据",
+        "核对同一候选的源代码、测试回执和未部署边界",
+        "在独立授权的实网步骤与本人解释均完成后再评估 Claim"
       ]
     },
     "conceptTags": [
@@ -299,22 +303,22 @@ export const projects: Project[] = [
     "sourceType": "adapted",
     "visibility": "private",
     "positioning": "面向行情产品与交易系统的统一 Market Server：接入 CEX、Perp 与 AMM 来源，输出带来源、新鲜度和降级状态的可信市场事实，并为虚拟现货交易提供撮合、账本、事件和确定性恢复。",
-    "currentFocus": "以统一市场身份、行情新鲜度、虚拟资金账本和结果未知恢复为核心，收敛可重复发布的 Market Server；真实交易所下单、充值提现和衍生品执行不进入产品边界。",
+    "currentFocus": "在保留虚拟资金与本地恢复边界的同时，分别核对行情读链路、参考价新鲜度、研究发布与交易验收；入口恢复不能替代数据质量恢复。",
     "verifiedEvidence": [
-      "release artifact 72343ba 已实现四家 CEX WebSocket / REST 对账、Hyperliquid、Uniswap / PancakeSwap、可信新鲜度和 16 个只读 gRPC RPC",
-      "BTC/USDT 虚拟交易已覆盖定点数撮合、available / held 双重记账、PostgreSQL 事件/快照/outbox、幂等、WebSocket cursor 与重启 state hash 恢复",
-      "2026-08-04 在 release artifact 上重新通过完整 Go test；已有记录还覆盖 race / vet、前端测试与构建、隔离 PostgreSQL publisher/feed/cleanup 集成和二进制恢复演练"
+      "原有虚拟 BTC/USDT 撮合、available / held 双重记账、PostgreSQL 事件/快照/outbox、幂等与 state hash 恢复证据继续保留，2026-08-04 完整 Go test 复验属于历史基线",
+      "2026-08-10 的本地 full-stack golden 记录覆盖浏览器、HTTP/gRPC、真实一次性 PostgreSQL、进程强制终止后 snapshot + event tail 恢复与独立账务核对；外部行情与研究使用隔离夹具",
+      "2026-10-17 的恢复记录确认公开行情读链路的 502 消除；同次现场参考价仍不可用、市场雷达公开列表为空，不能据此宣布整套产品恢复"
     ],
     "targetOutcome": "完成后的 Qiu Market Server 是一套可独立部署的行情与虚拟交易后端：上游异常不会制造假价格，下游可以按统一市场身份读取报价、来源和健康状态；订单、余额、成交、事件和 WebSocket cursor 能在重启或提交结果未知后从 PostgreSQL 确定性恢复。",
-    "nextMilestone": "在 Node 24 上重跑同一 full-stack golden；由 Owner 现场追踪 submit→ledger→recovery，修改一条失败测试并说明虚拟资金边界。通过这道跨日验收前，Q-01/Q-02 保持 evidence-ready。",
+    "nextMilestone": "在 Node 24 上重跑同一固定候选的 full-stack golden，并由 Owner 现场追踪 submit→ledger→recovery，修改一条失败测试并说明虚拟资金边界；再分别复验参考价、公开研究更新和生产交易门。跨日 Owner Gate 未完成前，Q-01/Q-02 保持 evidence-ready。",
     "knownLimits": [
-      "跨日 Owner Gate 尚未通过；Q-01/Q-02 只保持 evidence-ready，不升级为更高 Claim",
+      "跨日 Owner Gate 尚未通过，Q-01/Q-02 保持 evidence-ready；本轮内容核对没有代替本人闭卷解释或修改失败测试",
       "交易只使用虚拟资金，不接充值、提现、私钥、真实交易所下单或实盘资产",
-      "生产 migration、公开 Preview、OAuth、容量与 soak 仅在项目重启对应阶段后再验收，不计入当前完成门",
-      "多场所资产数量、延迟和可用率都是时间点快照，不作为固定规模或 SLA 声明",
-      "仓库暂按私有项目展示"
+      "2026-10-17 入口恢复是当日读链路记录；当时参考展示价不可用、公开研究为空，本轮未重新验收线上数据质量",
+      "本地 full-stack golden 使用隔离的行情、研究与质量夹具，不证明真实 provider 已启用、数据许可已批准、生产迁移、OAuth、容量或长期 soak 通过",
+      "多场所数量、延迟和可用率均是时间点快照，不作为固定规模或 SLA；私有仓库不公开源码与版本标识"
     ],
-    "updatedAt": "2026-08-04",
+    "updatedAt": "2026-10-24",
     "coreAbilities": [
       "多场所行情采集与身份治理",
       "数据新鲜度与故障隔离",
@@ -347,11 +351,11 @@ export const projects: Project[] = [
       "systemBoundary": "Qiu Market 只处理行情与单用户虚拟资金交易；它不接交易所真实下单、充值提现、私钥或实盘资产，行情参考异常也不能伪造可成交价格。",
       "callFlow": [
         "Crawler / DEX adapter 获取并核对外部行情",
-        "统一 Snapshot Writer 写 PostgreSQL 并派生 Redis / Doris",
-        "HTTP / gRPC 向前端提供来源和新鲜度",
-        "虚拟交易 gateway 把命令送入单市场 runner",
-        "撮合、账本、事件、outbox 与快照在 PostgreSQL 恢复",
-        "Vue 展示行情、订单、余额和错误状态"
+        "Snapshot Writer 先写 PostgreSQL，再派生 Redis 缓存与 Doris 分析数据",
+        "Redis 还决定同一读快照的版本；HTTP / gRPC 输出来源、新鲜度与降级状态",
+        "独立虚拟交易 gateway 把命令送入单市场 runner",
+        "撮合、账本、事件、outbox 与快照在独立交易 PostgreSQL 中恢复",
+        "Vue 展示行情、订单、余额和错误状态；行情与交易分别报告可用性"
       ],
       "failureScenarios": [
         "外部来源失败时保留最后成功值并降级，不能生成 mock 行情",
@@ -360,15 +364,14 @@ export const projects: Project[] = [
         "生产 migration 或恢复证据不完整时禁止晋级"
       ],
       "evidence": [
-        "Go test/race/vet 与交易 fuzz/benchmark",
-        "前端单测、生产构建与浏览器回归",
-        "真实 PostgreSQL restart/state-hash 集成",
-        "Doris 与多场所来源本地交换数据记录",
-        "release artifact 72343ba 与恢复演练"
+        "历史 Go test/race/vet 与前端构建记录",
+        "本地 full-stack golden：真实一次性 PostgreSQL、浏览器与进程恢复",
+        "研究/质量故障夹具与独立账务核对",
+        "2026-10-17 公开读链路恢复与同次数据降级记录"
       ],
       "knownLimits": [
         "跨日 Owner Gate 尚未通过，当前 Claim 保持 evidence-ready",
-        "生产 migration、Preview、OAuth、容量和 soak 属于项目重启后的后续门，不是当前完成项",
+        "本地隔离集成与公开读链路快照不替代生产交易、外部数据许可或持续新鲜度验收",
         "虚拟资金边界不能包装成商业交易所或实盘经验"
       ],
       "overviewSummary": "Qiu Market Server 的产品形态是可信行情平面加可恢复的虚拟交易纵切片：它向上游治理来源与新鲜度，向下游提供一致的市场、订单、账本和事件事实。"
@@ -388,9 +391,10 @@ export const projects: Project[] = [
         "go vet ./...",
         "npm --prefix frontend test -- --run",
         "npm --prefix frontend run build",
+        "make verify-full-stack-golden",
         "git diff --check"
       ],
-      "verificationNote": "2026-08-04 在 release artifact 72343ba 上重新通过完整 Go test；PostgreSQL 集成、race / vet、前端构建与恢复演练来自已有去敏记录。跨日 Owner Gate 尚未通过，生产迁移、Preview、容量和 soak 不计入已完成证据。",
+      "verificationNote": "这些命令来自历史审核记录，本轮只读核对，没有重跑 Qiu 服务或测试。8 月本地 full-stack golden 覆盖真实一次性 PostgreSQL 与隔离 provider 夹具；10 月 17 日公开读链路恢复仍伴随参考价和研究数据缺口。Owner Gate、真实 provider 许可及生产交易门分别保留。",
       "tradeoffs": [
         "不使用假数据兜底",
         "真实行情与可执行路线价格分开",
@@ -399,9 +403,9 @@ export const projects: Project[] = [
         "Owner Gate 未通过前保持 evidence-ready"
       ],
       "nextSteps": [
-        "在 Node 24 上重跑同一 full-stack golden",
+        "在 Node 24 与固定候选上重跑 full-stack golden，保留原始失败与清理回执",
         "由 Owner 追踪 submit→ledger→recovery 并修改一条失败测试",
-        "明确说明虚拟资金边界；仅在项目重启对应阶段后再安排外部环境门"
+        "分别核对参考价新鲜度、公开研究与生产交易门，不把页面可达视为整链路通过"
       ]
     },
     "conceptTags": [

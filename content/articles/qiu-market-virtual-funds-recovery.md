@@ -4,10 +4,10 @@
   "slug": "qiu-market-virtual-funds-recovery",
   "kind": "engineering-note",
   "evidenceLevel": "local-verified",
-  "evidenceSummary": "基于 Qiu Market 已审核的本地提交与测试记录：BTC/USDT 虚拟撮合、available/held 双重记账、PostgreSQL 事件/快照/outbox、幂等重试与 state hash 恢复已验证；不代表真实资金、实盘交易或生产部署。",
+  "evidenceSummary": "保留 2026-08-04 的本地基线复验，并补充 8 月本地 full-stack golden 的隔离集成与进程恢复记录；本轮只读核对。真实资金、provider 许可、生产交易与跨日 Owner Gate 均不在已完成范围。",
   "title": "虚拟资金也要守账：Qiu Market 的撮合、双重记账与确定性恢复",
   "date": "2026-07-28",
-  "updatedAt": "2026-08-04",
+  "updatedAt": "2026-10-24",
   "summary": "Qiu Market 不连接真实资金，但仍用资金系统的标准约束一个 BTC/USDT 虚拟交易纵切片：整数金额、available/held、借贷平衡、串行撮合、事务事件流、结果未知停机和 state hash 恢复。",
   "tags": [
     "Go",
@@ -40,7 +40,7 @@
 
 # 虚拟资金也要守账：Qiu Market 的撮合、双重记账与确定性恢复
 
-> 证据边界：本文基于 Qiu Market Server release artifact `72343ba` 及其测试与验收记录；2026-08-04 已重新通过完整 Go test。项目只使用虚拟资金。本文不代表真实充值提现、私钥托管、真实交易所下单、实盘资产、生产 HFT、公开 Preview、容量或长期稳定性验收。
+> 证据边界：本文保留 2026-08-04 的本地基线复验，补充 8 月本地 full-stack golden 的历史记录。2026-10-24 只读核对材料，没有重跑 Qiu 服务或测试。项目只使用虚拟资金；真实资金、外部数据许可、生产交易与本人掌握度各有独立门禁。
 
 # 为什么虚拟交易仍要按资金系统设计
 
@@ -184,11 +184,20 @@ market_id + account_id + operation + request_id
 - stale writer 遇到 stream sequence 冲突时不能写入新资金事实；
 - 本地浏览器记录覆盖虚拟入金、挂单、成交、费用、撤单、WebSocket 与交易重启恢复。
 
+## 后续集成记录怎样加强恢复证据
+
+8 月的 full-stack golden 把浏览器、会话与 CSRF、HTTP/gRPC、真实一次性 PostgreSQL、撮合和 journal 放进同一条本地链路。它先制造完全成交与部分成交，再强制终止旧交易进程；新的进程必须从旧 snapshot 加后续 event tail 恢复到相同的 sequence、余额、订单、账本和 state hash，之后才能撤掉余单并重放相同 request ID。
+
+独立核对重新计算逐资产守恒、费用与重复请求的经济效果，不能只相信接口返回的“恢复成功”。研究与质量链路同时注入 empty、degraded、限流、超时和过期场景，并检查它们没有写入交易账本或参考价。
+
+这里的 PostgreSQL 和进程切换是真实依赖交换；行情、研究和质量来源仍是隔离夹具。夹具中的技术许可假设不等于真实 provider 获准启用。本轮未重跑这个门，也没有用其历史通过记录替代跨日 Owner 验收。
+
+2026-10-17 的公开行情读入口恢复属于另一层证据：当时参考价仍不可用、公开研究为空。入口可达不能证明虚拟交易已经完成生产 OAuth、写入准入或恢复演练。
+
 这些证据支持 `local-verified`，但不能升级为下面的声明：
 
 - 系统处理过真实资金或真实用户资产；
 - 已接入充值、提现、私钥或真实交易所下单；
-- release artifact 已经完成生产迁移、公开 Preview 或成为长期运行基线；
 - 已完成公开 Preview、真实 OAuth 回调和生产迁移；
 - 已通过容量、低延迟、备份恢复、监控告警或长期 soak；
 - 这是生产级 CEX 或 HFT 撮合引擎。

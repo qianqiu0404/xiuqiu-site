@@ -19,8 +19,8 @@ The controller is inert by default. It prevents a Vercel Git deployment or a man
 3. A Vercel production candidate built from the exact SHA with `--skip-domain`.
 4. READY, project, target, SHA, ref, and alias-error validation plus candidate smoke tests.
 5. Promotion of that verified candidate to the production domains.
-6. Independent Learning and Market notification enqueue jobs. Learning stays visibly skipped while its repository switch is off; once enabled, a Learning notification failure remains visible but cannot block the Market lane.
-7. One exact-SHA Market worker smoke and a dedicated successful Market-lane deployment marker. This marker—together with the exact-SHA deployed marker and the operator-managed `MARKET_RADAR_ENABLED` kill switch—authorizes later schedules.
+6. Publish the latest reviewed Learning and Market research snapshots from this exact release without notification delivery. The legacy Market enqueue job name is retained for compatibility; its publication step selects each lane independently, rejects future published editions before promotion, ignores drafts, and fails closed on date/slug drift. Market notification delivery runs only when the dispatch explicitly sets `enqueue_market_notifications=true`. Learning stays skipped while its repository switch is off.
+7. Only when the dispatch explicitly sets `run_market_worker=true`, run the AI-backed exact-SHA Market worker and create its dedicated successful deployment marker. Ordinary content releases default to no AI worker, no worker authorization marker and no Market notification. Existing worker kill switches and exact-SHA authorization checks remain in force.
 8. An always-running, secret-free summary reports the result of every lane without changing or overriding any failed job.
 
 Failures stop only their dependent lane: migration or deployment failures stop all production work. When `LEARNING_RADAR_ENABLED=false`, the Learning notification job is skipped and the terminal summary records that result without making an unimplemented lane look failed. Once Learning is enabled, a Learning notification failure remains red, never authorizes Learning delivery, and does not block a successfully verified Market lane. Market worker authorization never treats the aggregate summary as evidence. `vercel.json` disables every Git-triggered Vercel deployment, including pull-request Previews, so the controller is the only active production path.
@@ -56,6 +56,14 @@ The preflight summary records the exact SHA, DAG audit, and permission audit. Al
 
 ## Production release and rollback
 
-Only a reviewed main SHA may be released. Set `MARKET_RADAR_ENABLED=true`, then dispatch the controller with `operation=release` and the complete live main SHA. The controller preflight fails closed unless that kill switch is enabled; the worker still cannot run until both the exact-SHA deployed marker and the dedicated successful Market-lane marker exist. Never run migrations or workers separately.
+Only a reviewed main SHA may be released. The current preflight still requires the existing `MARKET_RADAR_ENABLED=true` channel permission. Dispatch the controller with `operation=release` and the complete live main SHA. For a content-only release, leave both `enqueue_market_notifications` and `run_market_worker` at their default `false`; validated static research snapshots are still published. Neither optional action may be inferred from an ordinary content update request. The controller preflight fails closed unless that kill switch is enabled; the worker still cannot run until both the exact-SHA deployed marker and the dedicated successful Market-lane marker exist. Never run migrations or workers separately.
 
 If migration, build, candidate verification, or smoke fails, the production alias remains on the prior deployment and the worker remains unauthorized. If promotion succeeds but a later check fails, stop the worker, use Vercel rollback to point the production domains to the previous READY deployment, and leave `watch_for_zh` and `invalidation_zh` in place. Set `MARKET_RADAR_ENABLED=false` to stop scheduled work; do not drop or rewrite the nullable columns.
+
+## Content restoration and runtime status
+
+The static research publication pointer and runtime event rows are separate facts. Publishing a reviewed Markdown snapshot does not fabricate runtime events or digests, restart a collector, or claim the AI worker is healthy. Public readers retain static snapshot authority when runtime data is absent or mismatched. A content-only release intentionally leaves runtime schedules in dry-run until separately authorized; the new SHA receives no worker marker.
+
+The old `enqueue_market_radar_notifications` job name remains unchanged because other workflows audit it. The release summary reports its snapshot publication result separately from whether notification delivery was requested. A skipped optional worker is not a successful worker smoke test.
+
+The preflight resolves the latest reviewed research date for the exact checkout and passes that Market date to the promoted-page verifier. A release that crosses midnight still verifies the selected page and pack; it cannot silently treat an absent new-day file as a successful verification.
