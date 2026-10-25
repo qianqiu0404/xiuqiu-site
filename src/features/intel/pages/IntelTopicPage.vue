@@ -10,7 +10,7 @@ import {
   intelTopicLabel,
   intelTopics,
   loadIntelItems,
-  loadResearchIndex,
+  loadResearchIndexWithFallback,
   mergeReadingItems,
   readingTopics,
   intelItemId,
@@ -35,7 +35,7 @@ async function load() {
   const request = ++version
   try {
     const all = topicKey.value.startsWith('research-')
-      ? mergeReadingItems([], await loadResearchIndex())
+      ? mergeReadingItems([], (await loadResearchIndexWithFallback()).value)
       : await loadIntelItems()
     if (request !== version) return
     items.value = all.filter(item => item.topic === topicKey.value)
