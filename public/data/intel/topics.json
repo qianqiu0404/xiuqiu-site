@@ -12,6 +12,38 @@
       "url": "https://xiuqiu-site.vercel.app/topics/market_macro"
     },
     {
+      "topic": "security",
+      "domain": "web3",
+      "count": 5,
+      "lastSeen": "2026-10-26",
+      "firstSeen": "2026-08-10",
+      "url": "https://xiuqiu-site.vercel.app/topics/security"
+    },
+    {
+      "topic": "evaluation",
+      "domain": "ai",
+      "count": 4,
+      "lastSeen": "2026-10-26",
+      "firstSeen": "2026-08-10",
+      "url": "https://xiuqiu-site.vercel.app/topics/evaluation"
+    },
+    {
+      "topic": "model_inference",
+      "domain": "ai",
+      "count": 4,
+      "lastSeen": "2026-10-26",
+      "firstSeen": "2026-08-10",
+      "url": "https://xiuqiu-site.vercel.app/topics/model_inference"
+    },
+    {
+      "topic": "onchain_infrastructure",
+      "domain": "web3",
+      "count": 4,
+      "lastSeen": "2026-10-26",
+      "firstSeen": "2026-08-11",
+      "url": "https://xiuqiu-site.vercel.app/topics/onchain_infrastructure"
+    },
+    {
       "topic": "market_regulation",
       "domain": "market",
       "count": 2,
@@ -60,30 +92,6 @@
       "url": "https://xiuqiu-site.vercel.app/topics/data"
     },
     {
-      "topic": "security",
-      "domain": "web3",
-      "count": 4,
-      "lastSeen": "2026-10-24",
-      "firstSeen": "2026-08-10",
-      "url": "https://xiuqiu-site.vercel.app/topics/security"
-    },
-    {
-      "topic": "evaluation",
-      "domain": "ai",
-      "count": 3,
-      "lastSeen": "2026-10-24",
-      "firstSeen": "2026-08-10",
-      "url": "https://xiuqiu-site.vercel.app/topics/evaluation"
-    },
-    {
-      "topic": "onchain_infrastructure",
-      "domain": "web3",
-      "count": 3,
-      "lastSeen": "2026-10-24",
-      "firstSeen": "2026-08-11",
-      "url": "https://xiuqiu-site.vercel.app/topics/onchain_infrastructure"
-    },
-    {
       "topic": "safety",
       "domain": "ai",
       "count": 3,
@@ -98,14 +106,6 @@
       "lastSeen": "2026-10-17",
       "firstSeen": "2026-08-11",
       "url": "https://xiuqiu-site.vercel.app/topics/l2"
-    },
-    {
-      "topic": "model_inference",
-      "domain": "ai",
-      "count": 3,
-      "lastSeen": "2026-10-13",
-      "firstSeen": "2026-08-10",
-      "url": "https://xiuqiu-site.vercel.app/topics/model_inference"
     },
     {
       "topic": "market_signal",

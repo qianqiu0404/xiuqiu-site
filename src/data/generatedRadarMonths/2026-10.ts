@@ -5,6 +5,212 @@ import type { DailyRadar } from '../generatedRadars.ts'
 
 export const monthlyRadars: DailyRadar[] = [
   {
+    "date": "2026-10-26",
+    "slug": "2026-10-26",
+    "title": "学习雷达 · 2026-10-26",
+    "summary": "AI 关注 AKV 的缓存操作历史与 ARATest 的声明验证边界；Web3 看 Bitcoin Core 对易发现漏洞调整披露流程，以及 Sui 的 checkpoint 读取条件与 API 迁移。专题讨论漏洞严重性与披露时序为何需要分别判断。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-10-25T21:43:06.660Z",
+    "generatedAt": "2026-10-25T21:43:06.660Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-akv-cache-operation-history",
+        "domain": "ai",
+        "topic": "model_inference",
+        "title": "AKV：相同文本前缀，未必对应相同缓存状态",
+        "whatHappened": "10 月 20 日提交的 AKV 预印本提出直接控制 Agent 的 KV 缓存，用 drop 和 repos 管理后续注意力与位置编码，并提供配套服务引擎。作者在指定模型和基准中报告效率收益，本期未独立复现。",
+        "mechanism": "drop 使选中的 KV 不再参与后续 attention，repos 调整保留 key 的位置编码，文本轨迹保持不变。保留 KV 仍可能包含先前历史的影响，因此缓存复用需要同时匹配 token 与操作历史。",
+        "workedExample": "论文示意：先基于 A、B 生成 C 再 drop A，与先 drop A 再生成 C，最终都留下 B、C，但 C 的状态不同。工程上可用这两条序列检查复用和恢复是否混淆；本期没有运行该测试。",
+        "whyItMatters": "长任务的缓存优化需要同时核对任务质量、延迟和状态正确性；只看提示文本或缓存命中率，可能漏掉操作顺序造成的差异。",
+        "risksAndLimits": [
+          "drop 不等于物理删除或隐私擦除，保留 KV 仍可能携带被移出历史的影响。",
+          "预印本尚未独立复现；固定 token 费率的 API 等价成本估算，不是实际云账单或普遍节省承诺。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "research_preprint",
+            "name": "Cache Engineering for Agents: arXiv v1 submission",
+            "url": "https://arxiv.org/abs/2610.28577",
+            "publishedAt": "2026-10-20T17:32:24.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "research_preprint",
+            "name": "AKV v1: cache operations, experiments and cost accounting",
+            "url": "https://arxiv.org/html/2610.28577v1",
+            "publishedAt": "2026-10-20T17:32:24.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "缓存恢复和复用是否把操作顺序、位置编码与 token 前缀一起纳入身份？",
+          "评测是否分别记录质量、实际延迟和明确口径下的成本？"
+        ]
+      },
+      {
+        "id": "ai-aratest-claim-contract",
+        "domain": "ai",
+        "topic": "evaluation",
+        "title": "ARATest：先固定声明的范围，再解释验证结果",
+        "whatHappened": "10 月 21 日提交的 ARATest 预印本，把研究声明转成可执行属性。作者在 33 份研究工件的 243 条声明中，报告 54 条形成忠实且完整的证据绑定；这个覆盖范围不能写成已验证全部论文。",
+        "mechanism": "类型化声明先固定比较对象、适用范围、统计单位和数值规则，再让生成器提供案例。结果分 holds、violated、inconclusive；holds 只支持已查案例，inconclusive 既不支持也不反驳属性。",
+        "workedExample": "若声明比较的是同一数据集上多个种子的平均得分，检查器就应按该平均值和预先声明的范围比较，不能事后改成每个种子都必须领先。缺少完整证据时保留不确定结果；此工程示例未执行。",
+        "whyItMatters": "Agent 生成结论后，需要让后续检查仍回答同一个问题。保留声明、证据和可重放的反例，有助于定位错误来自解释、数据绑定还是实验。",
+        "risksAndLimits": [
+          "这是作者报告的预印本结果；属性目录在同一批声明上设计，不能推出对未见论文的覆盖或科学有效性。",
+          "多数声明及实验设计由 AI 评审，不能视为独立人工审查；重放已存证据也不等于重新执行科学实验。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "research_preprint",
+            "name": "From Prose to Properties: ARATest arXiv v1 submission",
+            "url": "https://arxiv.org/abs/2610.30495",
+            "publishedAt": "2026-10-21T22:20:00.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "research_preprint",
+            "name": "ARATest v1: claim contract, verdicts and threats to validity",
+            "url": "https://arxiv.org/html/2610.30495v1",
+            "publishedAt": "2026-10-21T22:20:00.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "声明是否在运行前固定统计单位、比较范围和容差，且不由 Agent 事后替换？",
+          "一次失败能否追到具体证据和声明绑定，而不是直接宣布原论文被推翻？"
+        ]
+      },
+      {
+        "id": "web3-bitcoin-easily-discoverable-policy",
+        "domain": "web3",
+        "topic": "security",
+        "title": "Bitcoin Core：易发现漏洞走同步修复与披露分支",
+        "whatHappened": "Bitcoin Core 维护者 Antoine Poinsot 于 10 月 22 日通知披露政策更新：被分诊为容易发现的漏洞，将尽快为各受维护大版本发布含修复的 point release，并同步给出安全公告。这是一项政策变更，没有披露某个新漏洞。",
+        "mechanism": "官方政策新增 easily discoverable 判断，例如只需简单 LLM 提示就能发现的问题。这一分支不采用标准的严重性相关保密期；未进入该分支的问题仍按原有政策处理，不能概括为全面取消 embargo。",
+        "workedExample": "维护多个大版本的节点团队，可以把受维护版本、可安装修复版和公告放在同一张核对表中；仅见主分支补丁合并，不能推定每个版本已可升级。这是流程示例，本期没有漏洞测试或节点操作。",
+        "whyItMatters": "维护者认为易被重新发现的问题若长期等待披露，会延迟用户取得修复版。工程上应按实际公告和版本记录核对可用修复，不能只等待下一次大版本。",
+        "risksAndLimits": [
+          "是否容易发现由分诊判断，简单 LLM 提示只是例子；政策没有承诺自动分类或所有问题立即公开。",
+          "同步公告不证明用户已经升级，也不代表漏洞严重性降低；具体缺陷仍需看各自安全公告。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "maintainer_announcement",
+            "name": "Antoine Poinsot: Bitcoin Core security policy update",
+            "url": "https://mirror.b10c.me/lists/bitcoindev/1ehBdwhbU-1cUjU5SjRxn75XNUBvIfNbkfqPCJRFPlOfsBu5gHWotmNRNxcMirTl1baT2H-zBfJMeWM6rl-XJG8zV6gHf8vQ9b_TRB9vnIk=@antoinep.com/T/",
+            "publishedAt": "2026-10-22T18:07:17.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_security_policy",
+            "name": "Bitcoin Core: Security Advisories policy",
+            "url": "https://bitcoincore.org/en/security-advisories/"
+          }
+        ],
+        "nextQuestions": [
+          "维护版本清单、修复版与安全公告能否逐项对应？",
+          "流程是否把影响严重性、可重新发现性和用户可取得的修复分别记录？"
+        ]
+      },
+      {
+        "id": "web3-sui-checkpoint-consistent-read",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Sui v1.82.3：给读取指定 checkpoint 条件，并核对 API 迁移",
+        "whatHappened": "Sui 的 mainnet-v1.82.3 于 10 月 21 日发布。release notes 为 kv-rpc 增加可选的 checkpoint 读取条件，并明确未追上时的超时错误；同一版本还移除 Fullnode 的 JSON-RPC 服务。",
+        "mechanism": "请求带 x-sui-consistent-read-checkpoint 时，服务端等待能够提供截至指定 checkpoint 的数据，超时返回 Unavailable；不带该 header 的请求不受影响。这是读取进度条件，不是共识最终性证明。",
+        "workedExample": "假设应用已取得某笔交易所在的 checkpoint C，可在后续读取时携带 C。拟议测试应区分副本追上后返回与超时 Unavailable，避免把后者当成没有业务数据；本期未调用链上接口或运行此例。",
+        "whyItMatters": "应用可以把读副本尚未追上与业务无数据分开处理；接入升级还需核对自身 SDK、服务端与错误处理是否使用兼容接口。",
+        "risksAndLimits": [
+          "release notes 不证明任意第三方服务已部署或支持该 header，也不替接入方完成迁移验收。",
+          "JSON-RPC 移除范围按 Fullnode 的本版本说明理解；启动时旧 DB 会清理，不应据此宣称所有运营方接口已经停用。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Sui mainnet-v1.82.3 release notes",
+            "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.82.3",
+            "publishedAt": "2026-10-21T22:29:14.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "读取超时、保留期不足和业务空结果，在应用中是否有不同处理？",
+          "升级前是否明确使用的 API、SDK 和运营方服务范围？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-bitcoin-disclosure-two-dimensions",
+      "domain": "web3",
+      "topic": "security",
+      "title": "专题：漏洞严重性与披露时序，需要分别判断",
+      "whatHappened": "Bitcoin Core 的 10 月 22 日维护者通知与当前官方政策，把“容易重新发现”加入披露时序判断：这一类问题尽快为受维护大版本发修复版，并随版本发布安全公告。",
+      "mechanism": "严重性描述影响程度，容易发现的标签则影响何时披露和提供修复。两者不是同一维度。官方仍保留按严重性区分的标准时间线及例外，不能因为出现 LLM 这一例子，就把所有漏洞归入快速公开分支。",
+      "workedExample": "对一项已被分诊为容易发现的缺陷，拟议核对流程应同时查看各维护大版本的修复版和公告；对未进入该分支的问题，按官方对应时间线核对。这个流程推演没有发现或复现漏洞，也未操作节点。",
+      "whyItMatters": "工程上的推论是：补丁合并、可安装版本与披露公告应分别留下证据，再核对覆盖范围；一条完成记录不足以代替多版本修复交付。",
+      "risksAndLimits": [
+        "该政策没有承诺每次修复的具体天数，也不能据此推算未公开问题的数量或严重性。",
+        "这是公开政策阅读与流程推演，不是 Bitcoin Core 的升级验收或安全审计。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "maintainer_announcement",
+          "name": "Antoine Poinsot: Bitcoin Core security policy update",
+          "url": "https://mirror.b10c.me/lists/bitcoindev/1ehBdwhbU-1cUjU5SjRxn75XNUBvIfNbkfqPCJRFPlOfsBu5gHWotmNRNxcMirTl1baT2H-zBfJMeWM6rl-XJG8zV6gHf8vQ9b_TRB9vnIk=@antoinep.com/T/",
+          "publishedAt": "2026-10-22T18:07:17.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_security_policy",
+          "name": "Bitcoin Core: Security Advisories policy",
+          "url": "https://bitcoincore.org/en/security-advisories/"
+        }
+      ],
+      "nextQuestions": [
+        "修复交付清单能否把分诊决定、各维护版本和公告关联起来？",
+        "未取得对应修复版时，状态是否仍保留待核对，而不是因补丁已合并就关闭？"
+      ],
+      "basedOnBriefId": "web3-bitcoin-easily-discoverable-policy"
+    },
+    "sourceUrls": [
+      "https://arxiv.org/abs/2610.28577",
+      "https://arxiv.org/html/2610.28577v1",
+      "https://arxiv.org/abs/2610.30495",
+      "https://arxiv.org/html/2610.30495v1",
+      "https://mirror.b10c.me/lists/bitcoindev/1ehBdwhbU-1cUjU5SjRxn75XNUBvIfNbkfqPCJRFPlOfsBu5gHWotmNRNxcMirTl1baT2H-zBfJMeWM6rl-XJG8zV6gHf8vQ9b_TRB9vnIk=@antoinep.com/T/",
+      "https://bitcoincore.org/en/security-advisories/",
+      "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.82.3"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-10-26-2ca3bd796c6d6d5a",
+    "asOf": "2026-10-25T21:43:06.660Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
+  {
     "date": "2026-10-25",
     "slug": "2026-10-25",
     "title": "学习雷达 · 2026-10-25",

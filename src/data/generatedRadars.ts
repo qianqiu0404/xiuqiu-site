@@ -12,6 +12,48 @@ export interface RadarIndexEntry { date: string; slug: string; snapshotId: strin
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-10-26",
+    "slug": "2026-10-26",
+    "snapshotId": "learning-2026-10-26-2ca3bd796c6d6d5a",
+    "asOf": "2026-10-25T21:43:06.660Z",
+    "title": "学习雷达 · 2026-10-26",
+    "summary": "AI 关注 AKV 的缓存操作历史与 ARATest 的声明验证边界；Web3 看 Bitcoin Core 对易发现漏洞调整披露流程，以及 Sui 的 checkpoint 读取条件与 API 迁移。专题讨论漏洞严重性与披露时序为何需要分别判断。",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "briefs": [
+      {
+        "id": "ai-akv-cache-operation-history",
+        "domain": "ai",
+        "topic": "model_inference",
+        "title": "AKV：相同文本前缀，未必对应相同缓存状态"
+      },
+      {
+        "id": "ai-aratest-claim-contract",
+        "domain": "ai",
+        "topic": "evaluation",
+        "title": "ARATest：先固定声明的范围，再解释验证结果"
+      },
+      {
+        "id": "web3-bitcoin-easily-discoverable-policy",
+        "domain": "web3",
+        "topic": "security",
+        "title": "Bitcoin Core：易发现漏洞走同步修复与披露分支"
+      },
+      {
+        "id": "web3-sui-checkpoint-consistent-read",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Sui v1.82.3：给读取指定 checkpoint 条件，并核对 API 迁移"
+      }
+    ],
+    "deepDive": {
+      "id": "deep-bitcoin-disclosure-two-dimensions",
+      "title": "专题：漏洞严重性与披露时序，需要分别判断",
+      "basedOnBriefId": "web3-bitcoin-easily-discoverable-policy"
+    },
+    "marketSignals": []
+  },
+  {
     "date": "2026-10-25",
     "slug": "2026-10-25",
     "snapshotId": "learning-2026-10-25-f87ef45cb9bec9ae",
@@ -1195,6 +1237,212 @@ export const radarIndex: RadarIndexEntry[] = [
 
 export const latestRadars: DailyRadar[] = [
   {
+    "date": "2026-10-26",
+    "slug": "2026-10-26",
+    "title": "学习雷达 · 2026-10-26",
+    "summary": "AI 关注 AKV 的缓存操作历史与 ARATest 的声明验证边界；Web3 看 Bitcoin Core 对易发现漏洞调整披露流程，以及 Sui 的 checkpoint 读取条件与 API 迁移。专题讨论漏洞严重性与披露时序为何需要分别判断。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-10-25T21:43:06.660Z",
+    "generatedAt": "2026-10-25T21:43:06.660Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-akv-cache-operation-history",
+        "domain": "ai",
+        "topic": "model_inference",
+        "title": "AKV：相同文本前缀，未必对应相同缓存状态",
+        "whatHappened": "10 月 20 日提交的 AKV 预印本提出直接控制 Agent 的 KV 缓存，用 drop 和 repos 管理后续注意力与位置编码，并提供配套服务引擎。作者在指定模型和基准中报告效率收益，本期未独立复现。",
+        "mechanism": "drop 使选中的 KV 不再参与后续 attention，repos 调整保留 key 的位置编码，文本轨迹保持不变。保留 KV 仍可能包含先前历史的影响，因此缓存复用需要同时匹配 token 与操作历史。",
+        "workedExample": "论文示意：先基于 A、B 生成 C 再 drop A，与先 drop A 再生成 C，最终都留下 B、C，但 C 的状态不同。工程上可用这两条序列检查复用和恢复是否混淆；本期没有运行该测试。",
+        "whyItMatters": "长任务的缓存优化需要同时核对任务质量、延迟和状态正确性；只看提示文本或缓存命中率，可能漏掉操作顺序造成的差异。",
+        "risksAndLimits": [
+          "drop 不等于物理删除或隐私擦除，保留 KV 仍可能携带被移出历史的影响。",
+          "预印本尚未独立复现；固定 token 费率的 API 等价成本估算，不是实际云账单或普遍节省承诺。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "research_preprint",
+            "name": "Cache Engineering for Agents: arXiv v1 submission",
+            "url": "https://arxiv.org/abs/2610.28577",
+            "publishedAt": "2026-10-20T17:32:24.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "research_preprint",
+            "name": "AKV v1: cache operations, experiments and cost accounting",
+            "url": "https://arxiv.org/html/2610.28577v1",
+            "publishedAt": "2026-10-20T17:32:24.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "缓存恢复和复用是否把操作顺序、位置编码与 token 前缀一起纳入身份？",
+          "评测是否分别记录质量、实际延迟和明确口径下的成本？"
+        ]
+      },
+      {
+        "id": "ai-aratest-claim-contract",
+        "domain": "ai",
+        "topic": "evaluation",
+        "title": "ARATest：先固定声明的范围，再解释验证结果",
+        "whatHappened": "10 月 21 日提交的 ARATest 预印本，把研究声明转成可执行属性。作者在 33 份研究工件的 243 条声明中，报告 54 条形成忠实且完整的证据绑定；这个覆盖范围不能写成已验证全部论文。",
+        "mechanism": "类型化声明先固定比较对象、适用范围、统计单位和数值规则，再让生成器提供案例。结果分 holds、violated、inconclusive；holds 只支持已查案例，inconclusive 既不支持也不反驳属性。",
+        "workedExample": "若声明比较的是同一数据集上多个种子的平均得分，检查器就应按该平均值和预先声明的范围比较，不能事后改成每个种子都必须领先。缺少完整证据时保留不确定结果；此工程示例未执行。",
+        "whyItMatters": "Agent 生成结论后，需要让后续检查仍回答同一个问题。保留声明、证据和可重放的反例，有助于定位错误来自解释、数据绑定还是实验。",
+        "risksAndLimits": [
+          "这是作者报告的预印本结果；属性目录在同一批声明上设计，不能推出对未见论文的覆盖或科学有效性。",
+          "多数声明及实验设计由 AI 评审，不能视为独立人工审查；重放已存证据也不等于重新执行科学实验。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "research_preprint",
+            "name": "From Prose to Properties: ARATest arXiv v1 submission",
+            "url": "https://arxiv.org/abs/2610.30495",
+            "publishedAt": "2026-10-21T22:20:00.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "research_preprint",
+            "name": "ARATest v1: claim contract, verdicts and threats to validity",
+            "url": "https://arxiv.org/html/2610.30495v1",
+            "publishedAt": "2026-10-21T22:20:00.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "声明是否在运行前固定统计单位、比较范围和容差，且不由 Agent 事后替换？",
+          "一次失败能否追到具体证据和声明绑定，而不是直接宣布原论文被推翻？"
+        ]
+      },
+      {
+        "id": "web3-bitcoin-easily-discoverable-policy",
+        "domain": "web3",
+        "topic": "security",
+        "title": "Bitcoin Core：易发现漏洞走同步修复与披露分支",
+        "whatHappened": "Bitcoin Core 维护者 Antoine Poinsot 于 10 月 22 日通知披露政策更新：被分诊为容易发现的漏洞，将尽快为各受维护大版本发布含修复的 point release，并同步给出安全公告。这是一项政策变更，没有披露某个新漏洞。",
+        "mechanism": "官方政策新增 easily discoverable 判断，例如只需简单 LLM 提示就能发现的问题。这一分支不采用标准的严重性相关保密期；未进入该分支的问题仍按原有政策处理，不能概括为全面取消 embargo。",
+        "workedExample": "维护多个大版本的节点团队，可以把受维护版本、可安装修复版和公告放在同一张核对表中；仅见主分支补丁合并，不能推定每个版本已可升级。这是流程示例，本期没有漏洞测试或节点操作。",
+        "whyItMatters": "维护者认为易被重新发现的问题若长期等待披露，会延迟用户取得修复版。工程上应按实际公告和版本记录核对可用修复，不能只等待下一次大版本。",
+        "risksAndLimits": [
+          "是否容易发现由分诊判断，简单 LLM 提示只是例子；政策没有承诺自动分类或所有问题立即公开。",
+          "同步公告不证明用户已经升级，也不代表漏洞严重性降低；具体缺陷仍需看各自安全公告。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "maintainer_announcement",
+            "name": "Antoine Poinsot: Bitcoin Core security policy update",
+            "url": "https://mirror.b10c.me/lists/bitcoindev/1ehBdwhbU-1cUjU5SjRxn75XNUBvIfNbkfqPCJRFPlOfsBu5gHWotmNRNxcMirTl1baT2H-zBfJMeWM6rl-XJG8zV6gHf8vQ9b_TRB9vnIk=@antoinep.com/T/",
+            "publishedAt": "2026-10-22T18:07:17.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_security_policy",
+            "name": "Bitcoin Core: Security Advisories policy",
+            "url": "https://bitcoincore.org/en/security-advisories/"
+          }
+        ],
+        "nextQuestions": [
+          "维护版本清单、修复版与安全公告能否逐项对应？",
+          "流程是否把影响严重性、可重新发现性和用户可取得的修复分别记录？"
+        ]
+      },
+      {
+        "id": "web3-sui-checkpoint-consistent-read",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Sui v1.82.3：给读取指定 checkpoint 条件，并核对 API 迁移",
+        "whatHappened": "Sui 的 mainnet-v1.82.3 于 10 月 21 日发布。release notes 为 kv-rpc 增加可选的 checkpoint 读取条件，并明确未追上时的超时错误；同一版本还移除 Fullnode 的 JSON-RPC 服务。",
+        "mechanism": "请求带 x-sui-consistent-read-checkpoint 时，服务端等待能够提供截至指定 checkpoint 的数据，超时返回 Unavailable；不带该 header 的请求不受影响。这是读取进度条件，不是共识最终性证明。",
+        "workedExample": "假设应用已取得某笔交易所在的 checkpoint C，可在后续读取时携带 C。拟议测试应区分副本追上后返回与超时 Unavailable，避免把后者当成没有业务数据；本期未调用链上接口或运行此例。",
+        "whyItMatters": "应用可以把读副本尚未追上与业务无数据分开处理；接入升级还需核对自身 SDK、服务端与错误处理是否使用兼容接口。",
+        "risksAndLimits": [
+          "release notes 不证明任意第三方服务已部署或支持该 header，也不替接入方完成迁移验收。",
+          "JSON-RPC 移除范围按 Fullnode 的本版本说明理解；启动时旧 DB 会清理，不应据此宣称所有运营方接口已经停用。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Sui mainnet-v1.82.3 release notes",
+            "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.82.3",
+            "publishedAt": "2026-10-21T22:29:14.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "读取超时、保留期不足和业务空结果，在应用中是否有不同处理？",
+          "升级前是否明确使用的 API、SDK 和运营方服务范围？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-bitcoin-disclosure-two-dimensions",
+      "domain": "web3",
+      "topic": "security",
+      "title": "专题：漏洞严重性与披露时序，需要分别判断",
+      "whatHappened": "Bitcoin Core 的 10 月 22 日维护者通知与当前官方政策，把“容易重新发现”加入披露时序判断：这一类问题尽快为受维护大版本发修复版，并随版本发布安全公告。",
+      "mechanism": "严重性描述影响程度，容易发现的标签则影响何时披露和提供修复。两者不是同一维度。官方仍保留按严重性区分的标准时间线及例外，不能因为出现 LLM 这一例子，就把所有漏洞归入快速公开分支。",
+      "workedExample": "对一项已被分诊为容易发现的缺陷，拟议核对流程应同时查看各维护大版本的修复版和公告；对未进入该分支的问题，按官方对应时间线核对。这个流程推演没有发现或复现漏洞，也未操作节点。",
+      "whyItMatters": "工程上的推论是：补丁合并、可安装版本与披露公告应分别留下证据，再核对覆盖范围；一条完成记录不足以代替多版本修复交付。",
+      "risksAndLimits": [
+        "该政策没有承诺每次修复的具体天数，也不能据此推算未公开问题的数量或严重性。",
+        "这是公开政策阅读与流程推演，不是 Bitcoin Core 的升级验收或安全审计。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "maintainer_announcement",
+          "name": "Antoine Poinsot: Bitcoin Core security policy update",
+          "url": "https://mirror.b10c.me/lists/bitcoindev/1ehBdwhbU-1cUjU5SjRxn75XNUBvIfNbkfqPCJRFPlOfsBu5gHWotmNRNxcMirTl1baT2H-zBfJMeWM6rl-XJG8zV6gHf8vQ9b_TRB9vnIk=@antoinep.com/T/",
+          "publishedAt": "2026-10-22T18:07:17.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_security_policy",
+          "name": "Bitcoin Core: Security Advisories policy",
+          "url": "https://bitcoincore.org/en/security-advisories/"
+        }
+      ],
+      "nextQuestions": [
+        "修复交付清单能否把分诊决定、各维护版本和公告关联起来？",
+        "未取得对应修复版时，状态是否仍保留待核对，而不是因补丁已合并就关闭？"
+      ],
+      "basedOnBriefId": "web3-bitcoin-easily-discoverable-policy"
+    },
+    "sourceUrls": [
+      "https://arxiv.org/abs/2610.28577",
+      "https://arxiv.org/html/2610.28577v1",
+      "https://arxiv.org/abs/2610.30495",
+      "https://arxiv.org/html/2610.30495v1",
+      "https://mirror.b10c.me/lists/bitcoindev/1ehBdwhbU-1cUjU5SjRxn75XNUBvIfNbkfqPCJRFPlOfsBu5gHWotmNRNxcMirTl1baT2H-zBfJMeWM6rl-XJG8zV6gHf8vQ9b_TRB9vnIk=@antoinep.com/T/",
+      "https://bitcoincore.org/en/security-advisories/",
+      "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.82.3"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-10-26-2ca3bd796c6d6d5a",
+    "asOf": "2026-10-25T21:43:06.660Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
+  {
     "date": "2026-10-25",
     "slug": "2026-10-25",
     "title": "学习雷达 · 2026-10-25",
@@ -2338,191 +2586,6 @@ export const latestRadars: DailyRadar[] = [
     ],
     "marketSignals": [],
     "snapshotId": "learning-2026-08-12-802ca3adfabc99c8",
-    "asOf": "2026-08-12T05:27:51.000Z",
-    "origin": "research",
-    "publicationState": "published"
-  },
-  {
-    "date": "2026-08-11",
-    "slug": "2026-08-11",
-    "title": "学习雷达 · 2026-08-11",
-    "summary": "AI 关注可恢复 Agent 与评测失效；Web3 关注机密代币可观测性和 Lightning 迁移边界。",
-    "publish": true,
-    "reviewStatus": "automated",
-    "schemaVersion": 2,
-    "editionMode": "backfill",
-    "researchedAt": "2026-08-12T05:27:51.000Z",
-    "generatedAt": "2026-08-12T05:27:51.000Z",
-    "sourceSections": [
-      "ai",
-      "web3",
-      "deepDive"
-    ],
-    "missingSections": [],
-    "briefs": [
-      {
-        "id": "ai-managed-agent-boundaries",
-        "domain": "ai",
-        "topic": "agent",
-        "title": "Managed Agents：把大脑、双手与会话拆开",
-        "whatHappened": "Anthropic 在 2026-04-08 公开 Managed Agents 架构，说明长任务如何把持久 session、可替换 harness 与按需 sandbox 分成独立接口。",
-        "mechanism": "事件先追加到外部 session 日志；harness 只负责模型循环和工具路由，崩溃后用 sessionId 恢复；sandbox 作为 execute 工具按需创建，凭据留在初始化器或外部 vault。",
-        "workedExample": "代码 Agent 修改仓库时，初始化器用短期 token 完成 clone 并配置 remote，生成代码所在沙箱只能执行 git 命令但读不到 token；harness 崩溃后从最后事件继续。",
-        "whyItMatters": "它把 Agent 可靠性与安全从提示词问题变成结构问题，适合用来学习会话持久化、工具权限、故障恢复和凭据隔离。",
-        "risksAndLimits": [
-          "Managed Agents 仍处于 beta，接口、数据保留和功能可用性可能变化。",
-          "持久会话提高可恢复性，也扩大数据保留与删除治理责任。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_engineering",
-            "name": "Anthropic · Scaling Managed Agents",
-            "url": "https://www.anthropic.com/engineering/managed-agents",
-            "publishedAt": "2026-04-08T00:00:00.000Z"
-          }
-        ],
-        "nextQuestions": [
-          "session 日志中哪些事件必须不可变，哪些可以压缩或派生？",
-          "如何证明沙箱中的生成代码永远无法读取长期凭据？"
-        ]
-      },
-      {
-        "id": "ai-evaluation-signal-decay",
-        "domain": "ai",
-        "topic": "evaluation",
-        "title": "AI-resistant Eval：旧考题会失去区分能力",
-        "whatHappened": "Anthropic 在 2026-01-21 复盘三轮性能工程作业：模型逐步追平固定时限内的优秀候选人，迫使团队重建题目与评分信号。",
-        "mechanism": "评测不是固定题库，而是对目标能力的测量仪器；模型能力、推理预算或训练暴露改变后，必须重新检查分数分布、作弊路径和人与模型的区分度。",
-        "workedExample": "当模型在旧优化题上达到通过线，团队不只提高分数门槛，而是换成多个陌生且受约束的小问题，并把理解、调试工具和跨题稳定性重新纳入信号。",
-        "whyItMatters": "学习雷达未来若用模型评估内容，也要监控门禁是否仍能区分真实机制研究与流畅复述，不能迷信一次建立的测试集。",
-        "risksAndLimits": [
-          "招聘作业样本不能代表所有 Agent 任务或真实软件工程绩效。",
-          "为了难倒模型而过度偏离真实工作，会降低评测的岗位相关性。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_engineering",
-            "name": "Anthropic · Designing AI-resistant technical evaluations",
-            "url": "https://www.anthropic.com/engineering/AI-resistant-technical-evaluations",
-            "publishedAt": "2026-01-21T00:00:00.000Z"
-          }
-        ],
-        "nextQuestions": [
-          "如何检测学习雷达内容门禁已经被新模型轻易游戏化？",
-          "哪些隐藏评测能保持新鲜，同时又有稳定的人工基准？"
-        ]
-      },
-      {
-        "id": "web3-confidential-token-observability",
-        "domain": "web3",
-        "topic": "onchain_infrastructure",
-        "title": "Agave 4.2：机密代币意图进入节点可观测面",
-        "whatHappened": "Anza 在 2026-08-07 发布 Agave 4.2.0，加入 Token-2022 PermissionedBurn、ConfidentialBurn 与 Batch 指令解析，并调整增量快照默认间隔。",
-        "mechanism": "节点和解析器识别新的机密代币指令形状，使索引器能记录操作类型与状态变化；但隐私字段仍受协议约束，解析意图不等于解密资产细节。",
-        "workedExample": "索引器遇到 ConfidentialBurn 时可以标记燃烧流程并关联交易状态，而不是把未知指令丢进 generic bucket；升级前需回放旧账本和新指令混合数据。",
-        "whyItMatters": "钱包、交易所和风控系统依赖节点解析结果；理解协议升级如何改变可观测面，有助于避免把‘无法解析’误判为‘没有发生’。",
-        "risksAndLimits": [
-          "稳定版本标签不等于你的插件、索引器和快照组合已经兼容。",
-          "增加解析能力不能突破机密交易设计本身的隐私边界。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "Anza Agave v4.2.0",
-            "url": "https://github.com/anza-xyz/agave/releases/tag/v4.2.0",
-            "publishedAt": "2026-08-07T20:29:04.000Z"
-          }
-        ],
-        "nextQuestions": [
-          "新解析器对历史账本回放和索引 schema 有哪些兼容性要求？",
-          "钱包可以展示哪些机密代币意图，而不泄露受保护信息？"
-        ]
-      },
-      {
-        "id": "web3-lightning-migration-recovery",
-        "domain": "web3",
-        "topic": "l2",
-        "title": "lnd 0.21.2 RC：迁移失败必须可恢复",
-        "whatHappened": "Lightning Labs 在 2026-08-08 发布 lnd 0.21.2-beta.rc1，修复历史支付迁移启动失败、缺失版本键处理和通道图同步内存增长。",
-        "mechanism": "节点启动时按版本键执行数据库迁移；修复让缺失或部分状态不再把节点困在不可启动状态，同时约束图同步数据结构的增长。",
-        "workedExample": "升级前复制 channel.db，在离线节点执行迁移并重启两次，确认版本键稳定、历史支付可读且图同步内存不持续增长，再决定是否进入更高环境。",
-        "whyItMatters": "Lightning 节点承载真实通道状态，迁移错误与普通应用回滚不同；学习恢复顺序能建立对不可逆状态和候选版本边界的直觉。",
-        "risksAndLimits": [
-          "这是 release candidate，不应因修复描述充分就直接替换生产稳定版本。",
-          "数据库备份必须与节点停机点一致，复制运行中的文件可能得到不一致快照。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "lnd v0.21.2-beta.rc1",
-            "url": "https://github.com/lightningnetwork/lnd/releases/tag/v0.21.2-beta.rc1",
-            "publishedAt": "2026-08-08T22:12:50.000Z"
-          }
-        ],
-        "nextQuestions": [
-          "Lightning 节点数据库迁移需要哪些停机、备份与回滚证据？",
-          "如何用长期指标区分图同步峰值与真正的内存泄漏？"
-        ]
-      }
-    ],
-    "deepDive": {
-      "id": "deep-ai-recoverable-agents",
-      "domain": "ai",
-      "topic": "infrastructure",
-      "title": "专题：可恢复 Agent 的最小结构",
-      "whatHappened": "Managed Agents 的公开架构与产品文档共同给出一个可操作模型：Agent 定义、执行环境、session 和事件彼此独立，长任务通过持久事件恢复。",
-      "mechanism": "不可变事件日志保存事实顺序，stateless harness 从日志构造模型上下文，sandbox 只暴露必要执行接口，外部 vault 代持凭据；幂等动作键阻止恢复时重复产生副作用。",
-      "workedExample": "研究任务完成两条来源后 harness 崩溃，新实例读取 session 事件，发现 source-1 与 source-2 已核验，只继续第三条；发布动作使用 edition/date 幂等键，因此不会重复写快照。",
-      "whyItMatters": "这可以直接转成 Agent 系统设计练习：分别画出事实存储、推理循环、执行权限和恢复边界，再验证每一层单独失败时会发生什么。",
-      "risksAndLimits": [
-        "日志可恢复不代表决策正确，错误事件仍会被后续 harness 当作事实读取。",
-        "压缩上下文可能删除未来需要的细节，因此原始事件与模型上下文不能混为一体。"
-      ],
-      "sources": [
-        {
-          "tier": "tier1",
-          "role": "event",
-          "kind": "official_engineering",
-          "name": "Anthropic · Scaling Managed Agents",
-          "url": "https://www.anthropic.com/engineering/managed-agents",
-          "publishedAt": "2026-04-08T00:00:00.000Z"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_documentation",
-          "name": "Claude Managed Agents overview",
-          "url": "https://platform.claude.com/docs/en/managed-agents/overview"
-        }
-      ],
-      "nextQuestions": [
-        "恢复流程如何区分可以安全重试的工具与必须人工确认的副作用？",
-        "事件日志、工作文件和模型上下文分别应该保留多久？"
-      ],
-      "basedOnBriefId": "ai-managed-agent-boundaries"
-    },
-    "sourceUrls": [
-      "https://www.anthropic.com/engineering/managed-agents",
-      "https://www.anthropic.com/engineering/AI-resistant-technical-evaluations",
-      "https://github.com/anza-xyz/agave/releases/tag/v4.2.0",
-      "https://github.com/lightningnetwork/lnd/releases/tag/v0.21.2-beta.rc1",
-      "https://platform.claude.com/docs/en/managed-agents/overview"
-    ],
-    "relatedProjectSlugs": [
-      "wallet-core",
-      "exchange-wallet-system",
-      "web3-wallet-engineer-lab"
-    ],
-    "marketSignals": [],
-    "snapshotId": "learning-2026-08-11-1b2e89b6a2014ce0",
     "asOf": "2026-08-12T05:27:51.000Z",
     "origin": "research",
     "publicationState": "published"
