@@ -2,6 +2,7 @@ import { SITE_URL } from '../../shared/site.ts'
 import { intelFilters, intelTopicLabel } from './intelPresentation.ts'
 import type { IntelFilter } from './intelPresentation.ts'
 import type { ReadingItem } from './readingFeed.ts'
+import { readMarketQuery, marketListHref, marketCategoryLabel } from './marketRadarPresentation.ts'
 
 export interface IntelQuery {
   filter: IntelFilter
@@ -41,7 +42,7 @@ export function intelResultLabel(total: number, shown: number, states: readonly 
 
 export function intelItemId(id: string): string { return `intel-item-${id}` }
 
-// Only our two list readers are valid return destinations. Query and fragment
+// Only the allowlisted list readers are valid return destinations. Query and fragment
 // are reconstructed so a shared detail URL cannot become an open redirect.
 export function readingReturnLink(from: unknown): { href: string; label: string } {
   const fallback = { href: '/', label: '← 情报流' }
@@ -49,6 +50,12 @@ export function readingReturnLink(from: unknown): { href: string; label: string 
   try {
     const url = new URL(from, SITE_URL)
     if (url.origin !== new URL(SITE_URL).origin) return fallback
+    if (url.pathname === '/market-radar') {
+      if (from.split(/[?#]/)[0] !== '/market-radar') return fallback
+      const query = readMarketQuery({ category: url.searchParams.get('category'), q: url.searchParams.get('q') })
+      const context = [marketCategoryLabel(query.category), query.query.trim() ? `“${query.query.trim()}”` : ''].filter(Boolean).join(' · ')
+      return { href: marketListHref(query, url.hash), label: `← 返回 ${context} 市场雷达` }
+    }
     const topicPath = /^\/topics\/[a-z0-9_-]+$/i.test(url.pathname)
     if (url.pathname !== '/' && !topicPath) return fallback
     const query = readIntelQuery({ domain: url.searchParams.get('domain'), topic: url.searchParams.get('topic'), q: url.searchParams.get('q'), expanded: url.searchParams.get('expanded') })
@@ -73,4 +80,10 @@ export function withReadingReturn(href: string, from: unknown): string {
   const url = new URL(href, SITE_URL)
   if (typeof from === 'string') url.searchParams.set('from', readingReturnLink(from).href)
   return `${url.pathname}${url.search}${url.hash}`
+}
+
+
+export function marketReadingHref(href: string, listPath: string, eventId?: string): string {
+  const from = eventId ? `${listPath.split('#')[0]}#queue-${eventId}` : listPath
+  return withReadingReturn(href, from)
 }

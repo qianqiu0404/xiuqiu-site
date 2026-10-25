@@ -5,6 +5,55 @@ import type { RadarFeedItem } from '../generatedRadarFeed.ts'
 
 export const monthlyFeedItems: RadarFeedItem[] = [
   {
+    "id": "ai-single-loop-progressive-disclosure",
+    "date": "2026-10-25",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "何时把子 Agent 收回主循环：先用完整任务评测比较",
+    "summary": "选择单循环或多个 Agent，需要看任务之间共享多少上下文，以及完整任务的实际结果；团队组织方式本身不是效果证据。",
+    "anchor": "ai-single-loop-progressive-disclosure",
+    "sourceName": "Anthropic: Building agents — When to fold subagents into your main agent loop",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop"
+  },
+  {
+    "id": "ai-raw-rag-source-preservation",
+    "date": "2026-10-25",
+    "domain": "ai",
+    "topic": "data",
+    "title": "Raw-RAG：先保留原始证据，再证明复杂记忆的增益",
+    "summary": "增加记忆管理复杂度之前，一个保留来源的检索基线能帮助分清：收益来自更好的证据，还是来自更复杂的组织方式。",
+    "anchor": "ai-raw-rag-source-preservation",
+    "sourceName": "Raw-RAG arXiv v1 submission and abstract",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://arxiv.org/abs/2610.30755"
+  },
+  {
+    "id": "web3-hoodi-glamsterdam-postponed",
+    "date": "2026-10-25",
+    "domain": "web3",
+    "topic": "protocol",
+    "title": "Hoodi 正式延期：10 月 26 日的激活配置已经撤销",
+    "summary": "升级计划需要支持撤销和替换。运维判断要追踪当前有效状态，不能把某次发版中的计划当作永远有效的确认。",
+    "anchor": "web3-hoodi-glamsterdam-postponed",
+    "sourceName": "Ethereum Foundation: Glamsterdam on Hoodi Postponed",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://blog.ethereum.org/2026/10/22/glamsterdam-hoodi-delay"
+  },
+  {
+    "id": "web3-wavelength-public-mainnet",
+    "date": "2026-10-25",
+    "domain": "web3",
+    "topic": "wallet_cex",
+    "title": "Wavelength 公开主网版：支付权限、确定失败与恢复分开看",
+    "summary": "把支付接给 Agent，接口可调用只是起点。权限能否收窄、状态能否持久化、未知结果能否恢复，需要分别提供证据。",
+    "anchor": "web3-wavelength-public-mainnet",
+    "sourceName": "Lightning Labs: Wavelength public mainnet launch",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://lightning.engineering/posts/2026-10-23-wavelength-mainnet-launch/",
+    "isDeepDive": true
+  },
+  {
     "id": "ai-aisi-assessment-scope-persistence",
     "date": "2026-10-24",
     "domain": "ai",

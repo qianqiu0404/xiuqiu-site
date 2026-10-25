@@ -166,3 +166,30 @@ test('source labels preserve editorial names and reveal original domains', async
   const { radarSourceStatus } = await import('../src/data/radarPresentation.ts')
   assert.equal(radarSourceStatus({ sourceSections: ['crypto', 'radar', 'vibe', 'reading'], sourceUrls: ['https://a.test', 'https://a.test', 'https://b.test'] }), '研究输入 4/4 类已汇总 · 2 个原始链接（去重）')
 })
+
+
+test('market reading returns preserve filters, the selected queue anchor and detail anchors', async () => {
+  const { readingReturnLink, marketReadingHref, withReadingReturn } = await import('../src/data/readingNavigationPresentation.ts')
+  const href = marketReadingHref('/market-radar/2026-10-24#reth-280-hoodi', '/market-radar?category=crypto&q=Hoodi%20%26%20RPC&unknown=discard', 'reth-280-hoodi')
+  const detail = new URL(href, 'https://xiuqiu-site.vercel.app')
+  assert.equal(detail.hash, '#reth-280-hoodi')
+  const back = readingReturnLink(detail.searchParams.get('from'))
+  assert.equal(back.href, '/market-radar?category=crypto&q=Hoodi+%26+RPC#queue-reth-280-hoodi')
+  assert.match(back.label, /加密.*Hoodi & RPC.*市场雷达/)
+  const event = new URL(withReadingReturn('/market-radar/events/reth-280-hoodi', detail.searchParams.get('from')), 'https://xiuqiu-site.vercel.app')
+  assert.equal(readingReturnLink(event.searchParams.get('from')).href, back.href)
+  const historical = new URL(marketReadingHref('/market-radar/2026-08-13', back.href), 'https://xiuqiu-site.vercel.app')
+  assert.equal(readingReturnLink(historical.searchParams.get('from')).href, back.href)
+  assert.equal(readingReturnLink('/market-radar?unknown=discard&from=//evil.example#bad').href, '/market-radar')
+})
+
+test('market return allowlist rejects nonexact paths and hostile destinations', async () => {
+  const { readingReturnLink } = await import('../src/data/readingNavigationPresentation.ts')
+  for (const value of ['https://evil.example/market-radar', '//evil.example/market-radar', '/%5cevil.example/market-radar', '/market-radar/extra', '/market-radar/', '/anything/../market-radar', '/market-radar/../market-radar', '/%6darket-radar', [' /market-radar']]) {
+    assert.equal(readingReturnLink(value).href, '/', String(value))
+  }
+  assert.equal(readingReturnLink('/market-radar?category=unknown&q=Hoodi&domain=ai#queue-event%2Fother').href, '/market-radar?q=Hoodi')
+  assert.equal(readingReturnLink('/market-radar?category=crypto&q=%E5%88%86%E5%8F%89#queue-event-1').href, '/market-radar?category=crypto&q=%E5%88%86%E5%8F%89#queue-event-1')
+  assert.equal(readingReturnLink('/?domain=ai&q=MCP#intel-item-a').href, '/?domain=ai&q=MCP#intel-item-a')
+  assert.equal(readingReturnLink('/topics/tools#intel-item-a').href, '/topics/tools#intel-item-a')
+})

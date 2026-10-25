@@ -12,6 +12,48 @@ export interface RadarIndexEntry { date: string; slug: string; snapshotId: strin
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-10-25",
+    "slug": "2026-10-25",
+    "snapshotId": "learning-2026-10-25-f87ef45cb9bec9ae",
+    "asOf": "2026-10-24T21:33:36.459Z",
+    "title": "学习雷达 · 2026-10-25",
+    "summary": "AI 关注用完整任务评测选择 Agent 结构，以及 Raw-RAG 的原始证据基线；Web3 补充 Hoodi 已延期的正式更正，并看 Wavelength 公开主网版如何区分支付权限、失败与恢复。专题讨论不确定付款结果的记录边界。",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "briefs": [
+      {
+        "id": "ai-single-loop-progressive-disclosure",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "何时把子 Agent 收回主循环：先用完整任务评测比较"
+      },
+      {
+        "id": "ai-raw-rag-source-preservation",
+        "domain": "ai",
+        "topic": "data",
+        "title": "Raw-RAG：先保留原始证据，再证明复杂记忆的增益"
+      },
+      {
+        "id": "web3-hoodi-glamsterdam-postponed",
+        "domain": "web3",
+        "topic": "protocol",
+        "title": "Hoodi 正式延期：10 月 26 日的激活配置已经撤销"
+      },
+      {
+        "id": "web3-wavelength-public-mainnet",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "Wavelength 公开主网版：支付权限、确定失败与恢复分开看"
+      }
+    ],
+    "deepDive": {
+      "id": "deep-wavelength-operation-state-and-permissions",
+      "title": "专题：付款请求超时之后，先核对原操作到了哪一步",
+      "basedOnBriefId": "web3-wavelength-public-mainnet"
+    },
+    "marketSignals": []
+  },
+  {
     "date": "2026-10-24",
     "slug": "2026-10-24",
     "snapshotId": "learning-2026-10-24-29630448a4cd6a87",
@@ -1153,6 +1195,205 @@ export const radarIndex: RadarIndexEntry[] = [
 
 export const latestRadars: DailyRadar[] = [
   {
+    "date": "2026-10-25",
+    "slug": "2026-10-25",
+    "title": "学习雷达 · 2026-10-25",
+    "summary": "AI 关注用完整任务评测选择 Agent 结构，以及 Raw-RAG 的原始证据基线；Web3 补充 Hoodi 已延期的正式更正，并看 Wavelength 公开主网版如何区分支付权限、失败与恢复。专题讨论不确定付款结果的记录边界。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-10-24T21:33:36.459Z",
+    "generatedAt": "2026-10-24T21:33:36.459Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-single-loop-progressive-disclosure",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "何时把子 Agent 收回主循环：先用完整任务评测比较",
+        "whatHappened": "Anthropic 的 Diane Sarkis 于 10 月 22 日发布工程指南，建议部分企业应用把路由、规划和领域子 Agent 逐步收回主循环，通过按需加载 skills 和 tools 提供能力；同时保留并行独立工作、上下文膨胀或指令冲突时使用子 Agent 的理由。",
+        "mechanism": "作者认为，共享上下文能减少摘要交接的信息损失，按需加载则避免把全部规则和工具一次塞入提示词。迁移方法是先建共享的端到端评测，再逐个比较保留子 Agent 与改用 skill/tool 的结果。",
+        "workedExample": "一个客服流程先查订单、再查配送日期。工程示例可以让两种结构处理同一批任务，检查最终答案是否真正调用配送信息，同时记录延迟和权限违规；局部步骤得分高，不保证整条流程正确。此例未在本期执行。",
+        "whyItMatters": "选择单循环或多个 Agent，需要看任务之间共享多少上下文，以及完整任务的实际结果；团队组织方式本身不是效果证据。",
+        "risksAndLimits": [
+          "这是供应商经验指南，未提供统一公开样本和可复跑实验，不能推出所有多 Agent 结构都更差。",
+          "结构简化不等于权限合并；工具层的校验、审批和用户访问范围仍需独立成立。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_engineering",
+            "name": "Anthropic: Building agents — When to fold subagents into your main agent loop",
+            "url": "https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop",
+            "publishedAt": "2026-10-22T00:00:00.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "比较两种 Agent 结构时，是否使用同一组完整任务和权限约束？",
+          "哪些步骤必须共享原始上下文，哪些任务适合独立并行后返回紧凑结果？"
+        ]
+      },
+      {
+        "id": "ai-raw-rag-source-preservation",
+        "domain": "ai",
+        "topic": "data",
+        "title": "Raw-RAG：先保留原始证据，再证明复杂记忆的增益",
+        "whatHappened": "10 月 22 日提交的 Raw-RAG 预印本，用原始历史检索和重排作为记忆基线。作者在四个离线对话基准的七个基准与模型组合中，报告六组领先所比较的记忆系统；这里的领先比较明确排除了 Full-context，不能改写成胜过所有方案。",
+        "mechanism": "方法保留带时间的原始历史，切窗后做向量检索与重排，再让 reader 处理状态变化，不预先依赖模型抽取或改写事实。作者的解释是：必要证据的覆盖可以弥补利用率不足，关系和时序路径也属于证据。",
+        "workedExample": "用户先约定周一开会，后来改到周二。工程示例可以比较原文检索与结构化记忆是否同时找到两次变更及其先后关系，再检查最终回答；只存一个日期值，会丢掉为什么以新值为准的依据。此例未运行。",
+        "whyItMatters": "增加记忆管理复杂度之前，一个保留来源的检索基线能帮助分清：收益来自更好的证据，还是来自更复杂的组织方式。",
+        "risksAndLimits": [
+          "这是尚未独立复现的预印本，证据限于离线对话基准，不证明互动 Agent 或生产系统普遍更优。",
+          "原始历史也有存储、隐私和删除成本；作者明确要求考虑这些约束，不能据此主张永久保存全部对话。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "research_preprint",
+            "name": "Raw-RAG arXiv v1 submission and abstract",
+            "url": "https://arxiv.org/abs/2610.30755",
+            "publishedAt": "2026-10-22T05:23:16.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "research_preprint",
+            "name": "Raw-RAG v1: methods, main results and limitations",
+            "url": "https://arxiv.org/html/2610.30755v1",
+            "publishedAt": "2026-10-22T05:23:16.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "记忆评测是否同时衡量证据覆盖、最终正确性和删除要求？",
+          "相同 reader 和证据预算下，结构化记忆具体改善了哪类任务？"
+        ]
+      },
+      {
+        "id": "web3-hoodi-glamsterdam-postponed",
+        "domain": "web3",
+        "topic": "protocol",
+        "title": "Hoodi 正式延期：10 月 26 日的激活配置已经撤销",
+        "whatHappened": "本期补充此前遗漏的正式更正：EF Protocol Cluster 已于 10 月 22 日宣布 Hoodi Glamsterdam 延期，撤销原定 10 月 26 日 17:42:48 UTC 的激活，尚未设新日期。公告明确取代旧计划与操作指引；不是 10 月 25 日才发生延期。",
+        "mechanism": "EF 称延期用于进一步调查 EIP-8037 与主网合约的交互，同时移除 Amsterdam、Gloas 和对应 gas-limit 的未来计划。撤销未来配置不等于回滚 Hoodi 历史，旧 release 中曾存在排期也不代表它仍有效。",
+        "workedExample": "节点升级清单可分别记录有效公告、执行层配置和共识层配置，再检查验证者与构建服务是否一致。若旧版本仍写着原激活时间，应按新版正式说明核对；本期只是阅读来源，没有修改任何节点。",
+        "whyItMatters": "升级计划需要支持撤销和替换。运维判断要追踪当前有效状态，不能把某次发版中的计划当作永远有效的确认。",
+        "risksAndLimits": [
+          "公告仅涉及 Hoodi 测试网，没有给出 Glamsterdam 主网日期，也不要求 ETH 持有人因此采取操作。",
+          "新排期仍未知；不能自行估计延期长度，也不能把旧公告的客户端表当成已包含延期变更的证明。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_protocol_announcement",
+            "name": "Ethereum Foundation: Glamsterdam on Hoodi Postponed",
+            "url": "https://blog.ethereum.org/2026/10/22/glamsterdam-hoodi-delay",
+            "publishedAt": "2026-10-22T00:00:00.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "节点清单能否确认旧激活时间已从执行层与共识层同时移除？",
+          "公告或配置被替代时，原来的操作计划如何及时标记失效？"
+        ]
+      },
+      {
+        "id": "web3-wavelength-public-mainnet",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "Wavelength 公开主网版：支付权限、确定失败与恢复分开看",
+        "whatHappened": "Lightning Labs 于 10 月 23 日宣布 Wavelength 首次公开主网版，无需邀请；同日 v0.2.0 release 列出付款状态、免费窗口自动续期、签名前检查和退出恢复改进。官方仍将项目标为 alpha；主网开放不等于完成独立安全或资金验收。",
+        "mechanism": "官方文章把收款权限与签名、恢复、管理权限分开；release 进一步区分确定失败与已承诺签名的操作，后者保留恢复路径。免费自动续期只接受免费窗口报价，关键退出仍可能产生链上费用。",
+        "workedExample": "一个只收取 API 使用费的服务，工程上可以只获得收款能力；支出和恢复由不同权限处理。再用隔离夹具模拟请求超时，检查原操作能否查询和恢复，避免产生第二次付款。本期未安装钱包或执行此例。",
+        "whyItMatters": "把支付接给 Agent，接口可调用只是起点。权限能否收窄、状态能否持久化、未知结果能否恢复，需要分别提供证据。",
+        "risksAndLimits": [
+          "本期核对的是厂商公告与 release notes，未审计代码或验证真实付款，不能把可靠性声明当作独立结果。",
+          "自动续期存在窗口与在线条件；服务费、路由费和链上费也须区分，不能概括为全面免费。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release_announcement",
+            "name": "Lightning Labs: Wavelength public mainnet launch",
+            "url": "https://lightning.engineering/posts/2026-10-23-wavelength-mainnet-launch/",
+            "publishedAt": "2026-10-23T00:00:00.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_release",
+            "name": "Wavelength v0.2.0 release notes",
+            "url": "https://github.com/lightninglabs/wavelength/releases/tag/v0.2.0",
+            "publishedAt": "2026-10-23T12:50:24.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "收款、支出、恢复与管理能力，是否能按服务实际需求分别授权？",
+          "请求结果不确定时，系统保存什么身份和证据来核对原操作？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-wavelength-operation-state-and-permissions",
+      "domain": "web3",
+      "topic": "wallet_cex",
+      "title": "专题：付款请求超时之后，先核对原操作到了哪一步",
+      "whatHappened": "Wavelength v0.2.0 的官方说明把确定失败、签名承诺和退出恢复分别描述：确定失败不再一直挂在 pending，已承诺签名的转账保留恢复路径，广播或手续费拒绝也不能被不确定响应误记为成功。",
+      "mechanism": "请求响应与资金操作状态不是同一件事。工程上的推论是，记录应能区分发出请求、已经承诺、确定失败、结果未知和后续恢复，并让权限边界覆盖这些阶段；一次网络超时本身不足以判断付款是否发生。",
+      "workedExample": "设想付款请求超时：先保留原操作身份与现有证据，再查询其状态；只有确认失败或满足既定恢复条件，才进入相应分支。用夹具覆盖“已承诺但响应丢失”和“尚未承诺已失败”两条路径，可以检查是否误计成功或重复执行。这是拟议测试，没有真实付款。",
+      "whyItMatters": "Agent 可以快速重试，但状态不清楚时，更快并不等于正确。权限、操作身份和恢复记录放在可核对的接口层，才能让主流程判断下一步。",
+      "risksAndLimits": [
+        "release notes 说明改进方向，没有替任何接入方证明完整恢复或对账已通过；本期也没有完成这类验收。",
+        "收款专用权限无法代替支出审批；免费自动续期也不能消除关键退出的链上费用或离线条件。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "Wavelength v0.2.0 release notes",
+          "url": "https://github.com/lightninglabs/wavelength/releases/tag/v0.2.0",
+          "publishedAt": "2026-10-23T12:50:24.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_release_announcement",
+          "name": "Lightning Labs: Wavelength public mainnet launch",
+          "url": "https://lightning.engineering/posts/2026-10-23-wavelength-mainnet-launch/",
+          "publishedAt": "2026-10-23T00:00:00.000Z"
+        }
+      ],
+      "nextQuestions": [
+        "状态未知时，日志和持久化记录能否把后续查询接回原操作？",
+        "恢复测试是否分别覆盖响应丢失、确定失败和已承诺签名的操作？"
+      ],
+      "basedOnBriefId": "web3-wavelength-public-mainnet"
+    },
+    "sourceUrls": [
+      "https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop",
+      "https://arxiv.org/abs/2610.30755",
+      "https://arxiv.org/html/2610.30755v1",
+      "https://blog.ethereum.org/2026/10/22/glamsterdam-hoodi-delay",
+      "https://lightning.engineering/posts/2026-10-23-wavelength-mainnet-launch/",
+      "https://github.com/lightninglabs/wavelength/releases/tag/v0.2.0"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-10-25-f87ef45cb9bec9ae",
+    "asOf": "2026-10-24T21:33:36.459Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
+  {
     "date": "2026-10-24",
     "slug": "2026-10-24",
     "title": "学习雷达恢复版 · 2026-10-24",
@@ -2282,191 +2523,6 @@ export const latestRadars: DailyRadar[] = [
     ],
     "marketSignals": [],
     "snapshotId": "learning-2026-08-11-1b2e89b6a2014ce0",
-    "asOf": "2026-08-12T05:27:51.000Z",
-    "origin": "research",
-    "publicationState": "published"
-  },
-  {
-    "date": "2026-08-10",
-    "slug": "2026-08-10",
-    "title": "学习雷达 · 2026-08-10",
-    "summary": "AI 关注实时推理关键路径与可证据化改进闭环；Web3 关注签名降级防线与清晰签名上下文。",
-    "publish": true,
-    "reviewStatus": "automated",
-    "schemaVersion": 2,
-    "editionMode": "backfill",
-    "researchedAt": "2026-08-12T05:27:51.000Z",
-    "generatedAt": "2026-08-12T05:27:51.000Z",
-    "sourceSections": [
-      "ai",
-      "web3",
-      "deepDive"
-    ],
-    "missingSections": [],
-    "briefs": [
-      {
-        "id": "ai-realtime-critical-path",
-        "domain": "ai",
-        "topic": "model_inference",
-        "title": "实时语音 AI：先保护连续媒体关键路径",
-        "whatHappened": "OpenAI 在 2026-08-03 公开 GPT-Live 的实时系统复盘，说明团队如何把连续音频、推理、工具委派与会话恢复拆成不同延迟路径。",
-        "mechanism": "音频走独立快路径，较慢的推理、工具调用和持久化跨异步边界运行；替代实例提前预热，媒体握手通过 WARP 减少网络往返，避免所有工作阻塞同一条链。",
-        "workedExample": "如果语音助手需要查订单，前台音频流继续接收并给出短确认，订单工具在后台执行；工具返回后再把结果注入会话，而不是暂停音频等待数据库。",
-        "whyItMatters": "它给 AI 工程学习提供了可迁移的系统设计范式：先定义用户真正感知的关键路径，再把可重试、可恢复、可降级的工作移出该路径。",
-        "risksAndLimits": [
-          "文中的延迟与容量结果来自 OpenAI 自有系统，不能直接外推到其他网络、模型和并发规模。",
-          "异步拆分增加状态同步与故障定位复杂度，必须保存可恢复事件而不是只保留内存状态。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_engineering",
-            "name": "OpenAI · Continuous voice interaction with GPT-Live",
-            "url": "https://openai.com/index/continuous-voice-interaction-with-gpt-live/",
-            "publishedAt": "2026-08-03T00:00:00.000Z"
-          }
-        ],
-        "nextQuestions": [
-          "如何用每帧准时率而不是平均请求延迟衡量实时 AI 的用户体验？",
-          "哪些会话状态必须同步持久化，哪些可以在故障后重新计算？"
-        ]
-      },
-      {
-        "id": "ai-evidence-improvement-loop",
-        "domain": "ai",
-        "topic": "evaluation",
-        "title": "Agent 改进闭环：先把专家纠错变成证据",
-        "whatHappened": "OpenAI 与 Thrive Holdings 在 2026-05-27 公开 Tax AI 案例，展示专家纠错、生产 trace、定向 eval 与 Codex 修复任务如何组成持续改进闭环。",
-        "mechanism": "系统先保存来源、预测、专家修改和最终提交的完整路径，再把重复且经审阅的差异聚类为失败模式；只有可行动模式才进入定向评测与有边界的工程任务。",
-        "workedExample": "当多个税表都漏掉 fair rental days，团队不会直接改提示词，而是先确认这不是流程噪声，再构建代表性样本、预期输出和回归集，让修复同时通过定向与全量评测。",
-        "whyItMatters": "学习雷达也需要同样的证据闭环：保留来源与拒绝原因，区分偶发误差和重复模式，再决定 ResearchOps 门禁是否需要修改。",
-        "risksAndLimits": [
-          "税务案例依赖专业人员和结构化流程，其准确率不能外推到开放网络研究。",
-          "如果专家判断或 grader 本身错误，闭环会稳定强化错误目标。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_engineering",
-            "name": "OpenAI · Building self-improving tax agents with Codex",
-            "url": "https://openai.com/index/building-self-improving-tax-agents-with-codex/",
-            "publishedAt": "2026-05-27T00:00:00.000Z"
-          }
-        ],
-        "nextQuestions": [
-          "学习雷达应记录哪些拒绝原因，才能把编辑判断转成可复用评测？",
-          "如何避免把来源稀缺误判成模型生成质量问题？"
-        ]
-      },
-      {
-        "id": "web3-signature-fail-closed",
-        "domain": "web3",
-        "topic": "security",
-        "title": "OpenZeppelin 5.7：签名与权限不能静默降级",
-        "whatHappened": "OpenZeppelin 在 2026-07-29 发布 Contracts 5.7.0，修复 AccessManager 权限绕过、ERC-7739 畸形描述降级和跨链地址静默误解析等安全边界。",
-        "mechanism": "关键策略是 fail closed：无法正确绑定消息内容、域或目标链时直接拒绝，而不是退回一个表面可用但语义更弱的验证路径。",
-        "workedExample": "一个 EIP-712 域的 name 超过内联边界时，调用方必须显式处理失败并重新编码；测试还要提交畸形 ERC-7739 描述，确认验证不会退化为与消息无关的签名检查。",
-        "whyItMatters": "钱包与交易所后端经常组合代理、权限和签名库；理解静默降级能帮助你把安全不变量写进依赖升级与回归测试。",
-        "risksAndLimits": [
-          "升级 npm 依赖不会自动修复已经部署且未升级的代理合约。",
-          "新版本仍需与自定义扩展、存储布局和既有签名域做兼容性回放。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "OpenZeppelin Contracts v5.7.0",
-            "url": "https://github.com/OpenZeppelin/openzeppelin-contracts/releases/tag/v5.7.0",
-            "publishedAt": "2026-07-29T16:43:07.000Z"
-          }
-        ],
-        "nextQuestions": [
-          "哪些钱包签名流程仍在错误时自动回退到更弱的验证模式？",
-          "如何为代理升级建立可重复的权限绕过回归向量？"
-        ]
-      },
-      {
-        "id": "web3-clear-signing-context",
-        "domain": "web3",
-        "topic": "wallet_cex",
-        "title": "ERC-7730：清晰签名必须绑定链与合约上下文",
-        "whatHappened": "Ethereum ERCs 仓库在 2026-07-22 更新 ERC-7730，继续收敛清晰签名元数据的版本与所有者字段，使钱包能按明确上下文解释调用数据。",
-        "mechanism": "钱包先匹配链、合约地址、函数 selector 与元数据版本，再把原始 calldata 映射成人类可读动作；任一上下文不匹配都应展示原始字段或拒绝，而不是套用相似模板。",
-        "workedExample": "同一个 transfer selector 出现在两条链的不同合约时，钱包不能只显示‘转账 100’，而要确认 chainId、合约和 token decimals 后显示资产与接收方。",
-        "whyItMatters": "这直接关联钱包确认页、交易所提币审核和钓鱼防护：用户看到的意图必须与真正签名的字节属于同一上下文。",
-        "risksAndLimits": [
-          "清晰展示不能替代交易模拟，恶意合约仍可能在执行期产生不同效果。",
-          "元数据发布者、版本和更新机制本身也需要信任与撤销策略。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "protocol_commit",
-            "name": "ERC-7730 owner field update",
-            "url": "https://github.com/ethereum/ERCs/commit/73672565aeb10e615905663ad457d75a19eae0c2",
-            "publishedAt": "2026-07-22T13:23:46.000Z"
-          }
-        ],
-        "nextQuestions": [
-          "钱包如何在元数据缺失时清楚展示不确定性而不是制造安全感？",
-          "清晰签名元数据的发布、审核和撤销应由谁负责？"
-        ]
-      }
-    ],
-    "deepDive": {
-      "id": "deep-ai-realtime-architecture",
-      "domain": "ai",
-      "topic": "infrastructure",
-      "title": "专题：把实时 AI 拆成快路径、异步工作与可恢复状态",
-      "whatHappened": "GPT-Live 的工程复盘把实时体验从单一模型延迟问题，扩展成媒体传输、连续推理、工具委派、状态恢复与影子验证的完整系统问题。",
-      "mechanism": "先画出端到端关键路径并定义每段预算；媒体与最低限度响应留在快路径，工具和重计算通过事件边界异步执行，持久会话保存恢复点，影子流量只读验证新实现。",
-      "workedExample": "构建一个语音研究助手时，可让 WebRTC 音轨持续流动，模型先确认收到问题；检索任务写入事件日志并异步执行，断线后按 sessionId 从最后事件恢复，避免重复发起外部动作。",
-      "whyItMatters": "这个专题把模型、网络和分布式系统知识连成一个可练习的架构题，也能用于判断所谓‘低延迟模型’是否真的改善用户感知。",
-      "risksAndLimits": [
-        "快慢路径共享状态时容易出现乱序、重复执行和旧结果覆盖，需要幂等键与版本检查。",
-        "影子流量必须只读并去除敏感数据，否则性能验证会扩大隐私与副作用风险。"
-      ],
-      "sources": [
-        {
-          "tier": "tier1",
-          "role": "event",
-          "kind": "official_engineering",
-          "name": "OpenAI · Continuous voice interaction with GPT-Live",
-          "url": "https://openai.com/index/continuous-voice-interaction-with-gpt-live/",
-          "publishedAt": "2026-08-03T00:00:00.000Z"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "web_standard",
-          "name": "W3C WebRTC 1.0 specification",
-          "url": "https://www.w3.org/TR/webrtc/"
-        }
-      ],
-      "nextQuestions": [
-        "如何为音频、首 token、工具完成和恢复分别定义 SLO？",
-        "什么样的事件日志足以支持恢复，同时不会无限放大会话存储？"
-      ],
-      "basedOnBriefId": "ai-realtime-critical-path"
-    },
-    "sourceUrls": [
-      "https://openai.com/index/continuous-voice-interaction-with-gpt-live/",
-      "https://openai.com/index/building-self-improving-tax-agents-with-codex/",
-      "https://github.com/OpenZeppelin/openzeppelin-contracts/releases/tag/v5.7.0",
-      "https://github.com/ethereum/ERCs/commit/73672565aeb10e615905663ad457d75a19eae0c2",
-      "https://www.w3.org/TR/webrtc/"
-    ],
-    "relatedProjectSlugs": [
-      "wallet-core",
-      "exchange-wallet-system",
-      "web3-wallet-engineer-lab"
-    ],
-    "marketSignals": [],
-    "snapshotId": "learning-2026-08-10-2e30ddbe6dfe7ed5",
     "asOf": "2026-08-12T05:27:51.000Z",
     "origin": "research",
     "publicationState": "published"

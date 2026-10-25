@@ -2,7 +2,7 @@ import assert from 'node:assert/strict'
 import test from 'node:test'
 import { articleReadingRows, filterArticleRows } from '../src/data/articlePresentation.ts'
 import { aboutEvidenceRows, aboutReadingLinks } from '../src/data/aboutPresentation.ts'
-import { filterMarketEvents, formatMarketTime, marketSnapshotSummary } from '../src/data/marketRadarPresentation.ts'
+import { filterMarketEvents, formatMarketTime, marketSnapshotSummary, readMarketQuery, marketQueryParams, marketQueueHash, marketListHref } from '../src/data/marketRadarPresentation.ts'
 import { getSnapshotFreshness } from '../src/data/snapshotFreshness.ts'
 import { evidenceRecords } from '../src/data/generatedEvidence.ts'
 import { deliveryRecords } from '../src/data/generatedDeliveries.ts'
@@ -57,4 +57,23 @@ test('market filtering retains immutable snapshot facts, provenance and invalida
   assert.equal(formatMarketTime(), '持续观察')
   assert.equal(formatMarketTime('bad-date'), '时间待核对')
   assert.equal(formatMarketTime('2026-10-23T00:00:00Z'), '10/23 08:00')
+})
+
+
+test('market query normalization round-trips category and encoded search without unrelated fields', () => {
+  const query = readMarketQuery({ category: 'crypto', q: 'Hoodi & RPC', unknown: 'discard', from: '//evil.example' })
+  assert.deepEqual(query, { category: 'crypto', query: 'Hoodi & RPC' })
+  assert.deepEqual(readMarketQuery(marketQueryParams(query)), query)
+  assert.equal(marketListHref(query, '#queue-reth-280-hoodi'), '/market-radar?category=crypto&q=Hoodi+%26+RPC#queue-reth-280-hoodi')
+  assert.deepEqual(readMarketQuery({ category: ['crypto'], q: ['Hoodi'] }), { category: 'all', query: '' })
+  assert.deepEqual(readMarketQuery({ category: 'unknown', q: null }), { category: 'all', query: '' })
+  assert.deepEqual(marketQueryParams({ category: 'unknown', query: '   ' }), {})
+  assert.equal(marketListHref({ category: 'all', query: '' }, '#unrelated'), '/market-radar')
+})
+
+test('market list anchors accept only queue-prefixed static event slugs', () => {
+  assert.equal(marketQueueHash('#queue-reth-280-hoodi'), '#queue-reth-280-hoodi')
+  for (const value of [undefined, ['#queue-event'], '#queue-', '#queue-event/other', '#queue-event%2Fother', '#queue-event?from=//evil.example', '#intel-item-event']) {
+    assert.equal(marketQueueHash(value), '', String(value))
+  }
 })

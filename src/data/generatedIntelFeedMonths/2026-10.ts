@@ -5,6 +5,103 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "learning:ai-single-loop-progressive-disclosure",
+    "kind": "learning",
+    "date": "2026-10-25",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "何时把子 Agent 收回主循环：先用完整任务评测比较",
+    "summary": "选择单循环或多个 Agent，需要看任务之间共享多少上下文，以及完整任务的实际结果；团队组织方式本身不是效果证据。",
+    "href": "/radar/2026-10-25#ai-single-loop-progressive-disclosure",
+    "source": {
+      "name": "Anthropic: Building agents — When to fold subagents into your main agent loop",
+      "tier": "tier1",
+      "url": "https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop"
+    }
+  },
+  {
+    "id": "learning:ai-raw-rag-source-preservation",
+    "kind": "learning",
+    "date": "2026-10-25",
+    "domain": "ai",
+    "topic": "data",
+    "title": "Raw-RAG：先保留原始证据，再证明复杂记忆的增益",
+    "summary": "增加记忆管理复杂度之前，一个保留来源的检索基线能帮助分清：收益来自更好的证据，还是来自更复杂的组织方式。",
+    "href": "/radar/2026-10-25#ai-raw-rag-source-preservation",
+    "source": {
+      "name": "Raw-RAG arXiv v1 submission and abstract",
+      "tier": "tier1",
+      "url": "https://arxiv.org/abs/2610.30755"
+    }
+  },
+  {
+    "id": "learning:web3-hoodi-glamsterdam-postponed",
+    "kind": "learning",
+    "date": "2026-10-25",
+    "domain": "web3",
+    "topic": "protocol",
+    "title": "Hoodi 正式延期：10 月 26 日的激活配置已经撤销",
+    "summary": "升级计划需要支持撤销和替换。运维判断要追踪当前有效状态，不能把某次发版中的计划当作永远有效的确认。",
+    "href": "/radar/2026-10-25#web3-hoodi-glamsterdam-postponed",
+    "source": {
+      "name": "Ethereum Foundation: Glamsterdam on Hoodi Postponed",
+      "tier": "tier1",
+      "url": "https://blog.ethereum.org/2026/10/22/glamsterdam-hoodi-delay"
+    }
+  },
+  {
+    "id": "learning:web3-wavelength-public-mainnet",
+    "kind": "learning",
+    "date": "2026-10-25",
+    "domain": "web3",
+    "topic": "wallet_cex",
+    "title": "Wavelength 公开主网版：支付权限、确定失败与恢复分开看",
+    "summary": "把支付接给 Agent，接口可调用只是起点。权限能否收窄、状态能否持久化、未知结果能否恢复，需要分别提供证据。",
+    "href": "/radar/2026-10-25#web3-wavelength-public-mainnet",
+    "source": {
+      "name": "Lightning Labs: Wavelength public mainnet launch",
+      "tier": "tier1",
+      "url": "https://lightning.engineering/posts/2026-10-23-wavelength-mainnet-launch/"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "market:2026-10-25:hoodi-glamsterdam-postponed-2026-10-22",
+    "kind": "market",
+    "date": "2026-10-25",
+    "domain": "market",
+    "topic": "market_crypto",
+    "title": "Hoodi Glamsterdam 延期，旧 10 月 26 日激活安排已撤销",
+    "summary": "系统观察：旧客户端或自定义配置、节点升级和测试网运行构成待验证的传导链。配置修订本身不能证明运营方已全部更新，也不能单独说明主网或 ETH 的市场变化。",
+    "href": "/market-radar/2026-10-25#hoodi-glamsterdam-postponed-2026-10-22",
+    "source": {
+      "name": "Ethereum Foundation Protocol Cluster",
+      "url": "https://blog.ethereum.org/2026/10/22/glamsterdam-hoodi-delay"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
+  {
+    "id": "market:2026-10-25:occ-genius-final-rule-announced-2026-10-21",
+    "kind": "market",
+    "date": "2026-10-25",
+    "domain": "market",
+    "topic": "market_regulation",
+    "title": "OCC 公布 GENIUS 最终规则，生效与受理仍有各自门槛",
+    "summary": "系统观察：规则、申请与主体批准、储备及赎回安排、实际服务准入需要逐环核对。公告可能改变业务准备的依据，但不是稳定币采用增长、实际资金流或单一发行方合规状态的证据。",
+    "href": "/market-radar/2026-10-25#occ-genius-final-rule-announced-2026-10-21",
+    "source": {
+      "name": "OCC News Release 2026-92",
+      "url": "https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-92.html"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
+  {
     "id": "learning:ai-aisi-assessment-scope-persistence",
     "kind": "learning",
     "date": "2026-10-24",

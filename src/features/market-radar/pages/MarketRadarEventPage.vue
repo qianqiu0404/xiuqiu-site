@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { allMarketRadars, findStaticMarketRadarEvent, getSnapshotFreshness } from '../data'
+import { allMarketRadars, findStaticMarketRadarEvent, getSnapshotFreshness, readingReturnLink, withReadingReturn } from '../data'
 import type { StaticMarketRadarEvent, StaticMarketRadarEventMatch } from '../data'
 import type { MarketRadarEvent } from '../../../market-radar/contracts'
 import { setSeoMeta } from '../../../utils/seo'
@@ -9,6 +9,7 @@ import '../../../styles/market-radar.css'
 import '../../../design/market-skin.css'
 
 const route = useRoute()
+const returnLink = computed(() => route.query.from ? readingReturnLink(route.query.from) : { href: '/market-radar', label: '← 返回市场雷达' })
 interface EventPresentation {
   origin: 'api' | 'static'
   priority: MarketRadarEvent['priority']
@@ -136,7 +137,7 @@ watch(() => String(route.params.id || ''), async (id) => {
 <template>
   <div class="trade-radar-page trade-radar-event-page" lang="zh-CN" :data-snapshot-state="eventFreshness.state">
     <div class="container trade-radar-shell">
-      <router-link class="trade-radar-back" to="/market-radar">← 返回 Trade Radar</router-link>
+      <router-link class="trade-radar-back" :to="returnLink.href">{{ returnLink.label }}</router-link>
 
       <section v-if="loading" class="trade-radar-state trade-radar-event-state" aria-busy="true" aria-live="polite">
         <p class="trade-radar-kicker">Loading event record</p><h1>正在读取事件记录…</h1>
@@ -146,7 +147,7 @@ watch(() => String(route.params.id || ''), async (id) => {
         <p class="trade-radar-kicker">Event unavailable</p>
         <h1>事件记录暂时不可读取。</h1>
         <p>{{ error }}</p>
-        <router-link class="trade-radar-primary-link" to="/market-radar">查看静态交易雷达</router-link>
+        <router-link class="trade-radar-primary-link" :to="returnLink.href">{{ returnLink.label }}</router-link>
       </section>
 
       <article v-else-if="event" class="trade-radar-event-detail">
@@ -223,7 +224,7 @@ watch(() => String(route.params.id || ''), async (id) => {
           <div><p class="trade-radar-kicker">Evidence count</p><h2>{{ event.sourceCount }} 个公开来源</h2><p>资产映射、来源证据和系统边界可能继续更新，但不会自动转成交易指令。</p></div>
         </section>
 
-        <router-link v-if="event.snapshotSlug" class="trade-radar-primary-link trade-radar-event-snapshot-link" :to="`/market-radar/${event.snapshotSlug}`">
+        <router-link v-if="event.snapshotSlug" class="trade-radar-primary-link trade-radar-event-snapshot-link" :to="withReadingReturn(`/market-radar/${event.snapshotSlug}`, route.query.from)">
           查看所属日期快照 <span aria-hidden="true">→</span>
         </router-link>
 

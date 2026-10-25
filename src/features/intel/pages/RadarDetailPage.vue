@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
-import { loadRadarBySlug, getLearningBriefs, getRadarDetailSections, isLearningEditionV2, radarSourceStatus, getProjectByKey, getSnapshotFreshness, readingReturnLink, sourceDisplayLabel } from '../data'
+import { loadRadarBySlug, getLearningBriefs, getRadarDetailSections, isLearningEditionV2, radarSourceStatus, getProjectByKey, getSnapshotFreshness, getRadarCorrections, readingReturnLink, sourceDisplayLabel } from '../data'
 import type { DailyRadar } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
 import '../../../design/brief.css'
@@ -43,6 +43,7 @@ const aiBriefs = computed(() => radar.value ? getLearningBriefs(radar.value, 'ai
 const web3Briefs = computed(() => radar.value ? getLearningBriefs(radar.value, 'web3') : [])
 const relatedProjects = computed(() => radar.value?.relatedProjectSlugs.map(getProjectByKey).filter(Boolean) || [])
 const radarFreshness = computed(() => getSnapshotFreshness(radar.value?.date))
+const corrections = computed(() => getRadarCorrections('learning', radar.value?.slug))
 
 watchEffect(() => {
   if (loading.value) return
@@ -69,6 +70,12 @@ watchEffect(() => {
           <span>{{ isV2 ? 'ResearchOps v2 门禁通过' : 'AI 自动汇总 · 未经人工复核' }}</span>
         </p>
         <h1>{{ radar.title }}</h1>
+        <aside v-for="correction in corrections" :key="correction.id" class="brief-state" role="note" :aria-labelledby="`correction-${correction.id}`">
+          <strong :id="`correction-${correction.id}`"><time :datetime="correction.date">{{ correction.date }}</time> 更正</strong>
+          <p>{{ correction.summary }}</p>
+          <p>{{ correction.boundary }}</p>
+          <a class="brief-button" :href="correction.source.url" target="_blank" rel="noopener noreferrer">{{ correction.source.label }} · {{ correction.source.publishedAt }} ↗</a>
+        </aside>
         <p class="brief-lede">{{ radar.summary }}</p>
         <dl class="reader-facts">
           <div><dt>{{ isV2 ? 'Researched' : 'Generated' }}</dt><dd><time :datetime="radar.researchedAt || radar.generatedAt">{{ radar.researchedAt || radar.generatedAt }}</time></dd></div>
