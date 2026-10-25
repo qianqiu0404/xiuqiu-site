@@ -5,6 +5,69 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "learning:ai-akv-cache-operation-history",
+    "kind": "learning",
+    "date": "2026-10-26",
+    "domain": "ai",
+    "topic": "model_inference",
+    "title": "AKV：相同文本前缀，未必对应相同缓存状态",
+    "summary": "长任务的缓存优化需要同时核对任务质量、延迟和状态正确性；只看提示文本或缓存命中率，可能漏掉操作顺序造成的差异。",
+    "href": "/radar/2026-10-26#ai-akv-cache-operation-history",
+    "source": {
+      "name": "Cache Engineering for Agents: arXiv v1 submission",
+      "tier": "tier1",
+      "url": "https://arxiv.org/abs/2610.28577"
+    }
+  },
+  {
+    "id": "learning:ai-aratest-claim-contract",
+    "kind": "learning",
+    "date": "2026-10-26",
+    "domain": "ai",
+    "topic": "evaluation",
+    "title": "ARATest：先固定声明的范围，再解释验证结果",
+    "summary": "Agent 生成结论后，需要让后续检查仍回答同一个问题。保留声明、证据和可重放的反例，有助于定位错误来自解释、数据绑定还是实验。",
+    "href": "/radar/2026-10-26#ai-aratest-claim-contract",
+    "source": {
+      "name": "From Prose to Properties: ARATest arXiv v1 submission",
+      "tier": "tier1",
+      "url": "https://arxiv.org/abs/2610.30495"
+    }
+  },
+  {
+    "id": "learning:web3-bitcoin-easily-discoverable-policy",
+    "kind": "learning",
+    "date": "2026-10-26",
+    "domain": "web3",
+    "topic": "security",
+    "title": "Bitcoin Core：易发现漏洞走同步修复与披露分支",
+    "summary": "维护者认为易被重新发现的问题若长期等待披露，会延迟用户取得修复版。工程上应按实际公告和版本记录核对可用修复，不能只等待下一次大版本。",
+    "href": "/radar/2026-10-26#web3-bitcoin-easily-discoverable-policy",
+    "source": {
+      "name": "Antoine Poinsot: Bitcoin Core security policy update",
+      "tier": "tier1",
+      "url": "https://mirror.b10c.me/lists/bitcoindev/1ehBdwhbU-1cUjU5SjRxn75XNUBvIfNbkfqPCJRFPlOfsBu5gHWotmNRNxcMirTl1baT2H-zBfJMeWM6rl-XJG8zV6gHf8vQ9b_TRB9vnIk=@antoinep.com/T/"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "learning:web3-sui-checkpoint-consistent-read",
+    "kind": "learning",
+    "date": "2026-10-26",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "Sui v1.82.3：给读取指定 checkpoint 条件，并核对 API 迁移",
+    "summary": "应用可以把读副本尚未追上与业务无数据分开处理；接入升级还需核对自身 SDK、服务端与错误处理是否使用兼容接口。",
+    "href": "/radar/2026-10-26#web3-sui-checkpoint-consistent-read",
+    "source": {
+      "name": "Sui mainnet-v1.82.3 release notes",
+      "tier": "tier1",
+      "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.82.3"
+    }
+  },
+  {
     "id": "market:2026-10-26:treasury-oisp-coins-proposal-2026-10-22",
     "kind": "market",
     "date": "2026-10-26",

@@ -10,6 +10,10 @@
 
 ## Recent briefs
 
+- [AKV：相同文本前缀，未必对应相同缓存状态](https://xiuqiu-site.vercel.app/radar/2026-10-26#ai-akv-cache-operation-history) (2026-10-26, ai/model_inference): 长任务的缓存优化需要同时核对任务质量、延迟和状态正确性；只看提示文本或缓存命中率，可能漏掉操作顺序造成的差异。
+- [ARATest：先固定声明的范围，再解释验证结果](https://xiuqiu-site.vercel.app/radar/2026-10-26#ai-aratest-claim-contract) (2026-10-26, ai/evaluation): Agent 生成结论后，需要让后续检查仍回答同一个问题。保留声明、证据和可重放的反例，有助于定位错误来自解释、数据绑定还是实验。
+- [Bitcoin Core：易发现漏洞走同步修复与披露分支](https://xiuqiu-site.vercel.app/radar/2026-10-26#web3-bitcoin-easily-discoverable-policy) (2026-10-26, web3/security): 维护者认为易被重新发现的问题若长期等待披露，会延迟用户取得修复版。工程上应按实际公告和版本记录核对可用修复，不能只等待下一次大版本。
+- [Sui v1.82.3：给读取指定 checkpoint 条件，并核对 API 迁移](https://xiuqiu-site.vercel.app/radar/2026-10-26#web3-sui-checkpoint-consistent-read) (2026-10-26, web3/onchain_infrastructure): 应用可以把读副本尚未追上与业务无数据分开处理；接入升级还需核对自身 SDK、服务端与错误处理是否使用兼容接口。
 - [何时把子 Agent 收回主循环：先用完整任务评测比较](https://xiuqiu-site.vercel.app/radar/2026-10-25#ai-single-loop-progressive-disclosure) (2026-10-25, ai/agent): 选择单循环或多个 Agent，需要看任务之间共享多少上下文，以及完整任务的实际结果；团队组织方式本身不是效果证据。
 - [Raw-RAG：先保留原始证据，再证明复杂记忆的增益](https://xiuqiu-site.vercel.app/radar/2026-10-25#ai-raw-rag-source-preservation) (2026-10-25, ai/data): 增加记忆管理复杂度之前，一个保留来源的检索基线能帮助分清：收益来自更好的证据，还是来自更复杂的组织方式。
 - [Hoodi 正式延期：10 月 26 日的激活配置已经撤销](https://xiuqiu-site.vercel.app/radar/2026-10-25#web3-hoodi-glamsterdam-postponed) (2026-10-25, web3/protocol): 升级计划需要支持撤销和替换。运维判断要追踪当前有效状态，不能把某次发版中的计划当作永远有效的确认。
@@ -18,10 +22,6 @@
 - [科研 Agent 的验证：生成候选、实验命中与有效治疗分开计数](https://xiuqiu-site.vercel.app/radar/2026-10-24#ai-protein-agent-independent-measurement) (2026-10-24, ai/evaluation): 这项实验的工程启发是把模型自己的评分与外部验证分开。读者可以检查公开数据，而不必只接受模型或供应商对成果的概括。
 - [Reth 2.8：Hoodi 分叉配置与 RPC 行为要一起演练](https://xiuqiu-site.vercel.app/radar/2026-10-24#web3-reth-280-hoodi-operational-boundaries) (2026-10-24, web3/onchain_infrastructure): 只看到节点进程启动，不足以证明接入它的钱包或交易所服务可用。升级验证需要覆盖调用方实际使用的 RPC 路径。
 - [OP Stack 安全发布：证书风险同时进入 Go 与镜像信任库](https://xiuqiu-site.vercel.app/radar/2026-10-24#web3-opnode-11911-certificate-trust) (2026-10-24, web3/security): 节点依赖外部 HTTPS 服务时，协议共识正确并不覆盖传输认证风险。依赖清单应包含镜像里的信任材料，而不只列应用版本号。
-- [Agents SDK 0.24：审批没结束前，不压缩上下文](https://xiuqiu-site.vercel.app/radar/2026-10-17#ai-agents-sdk-024-approval-compaction) (2026-10-17, ai/agent): 带人工门禁的 Agent，审批对象必须是稳定、可核对的原始调用。上下文管理和审批流程的先后顺序，本身就是安全边界的一部分。
-- [用模型复原 NIST 曲线种子：不是后门，是 1997 年的时钟](https://xiuqiu-site.vercel.app/radar/2026-10-17#ai-anthropic-ecdsa-curve-origins) (2026-10-17, ai/safety): 这既说明 P-256、P-384 等曲线的种子来源是普通、可复现的，反而降低了后门疑虑；也说明强模型已经能独立完成多步骤的密码学取证，安全团队需要把这类能力算进威胁模型和审计流程。
-- [Agave 4.3.2：验证者客户端的依赖也是攻击面](https://xiuqiu-site.vercel.app/radar/2026-10-17#web3-agave-432-dependency-security) (2026-10-17, web3/security): 节点安全不只看协议本身，传输层和基础库同样决定节点能不能被打挂。把依赖公告的处理方式写成可检查的规则，比单纯升级版本号更可靠。
-- [op-supernode 1.0.4：L1 重组后，safe 不能跑到未验证的块上](https://xiuqiu-site.vercel.app/radar/2026-10-17#web3-op-supernode-safe-head-reorg) (2026-10-17, web3/l2): L2 的“已确认”有好几种含义。钱包和交易所后端如果只看一个标签，重组时就可能把不该入账的资金算成安全；这次修复说明这几层确认要分开读、分开监控。
 
 ## Boundaries
 

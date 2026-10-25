@@ -6,7 +6,43 @@
     <atom:link href="https://xiuqiu-site.vercel.app/radar/rss.xml" rel="self" type="application/rss+xml" />
     <description>每天 2 条 AI、2 条 Web3 工程简报：先讲机制，再给例子和边界。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Sun, 25 Oct 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 26 Oct 2026 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>AKV：相同文本前缀，未必对应相同缓存状态</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-26#ai-akv-cache-operation-history</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-akv-cache-operation-history</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>model_inference</category>
+      <description>长任务的缓存优化需要同时核对任务质量、延迟和状态正确性；只看提示文本或缓存命中率，可能漏掉操作顺序造成的差异。</description>
+    </item>
+    <item>
+      <title>ARATest：先固定声明的范围，再解释验证结果</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-26#ai-aratest-claim-contract</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-aratest-claim-contract</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>evaluation</category>
+      <description>Agent 生成结论后，需要让后续检查仍回答同一个问题。保留声明、证据和可重放的反例，有助于定位错误来自解释、数据绑定还是实验。</description>
+    </item>
+    <item>
+      <title>Bitcoin Core：易发现漏洞走同步修复与披露分支</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-26#web3-bitcoin-easily-discoverable-policy</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-bitcoin-easily-discoverable-policy</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>security</category>
+      <description>维护者认为易被重新发现的问题若长期等待披露，会延迟用户取得修复版。工程上应按实际公告和版本记录核对可用修复，不能只等待下一次大版本。</description>
+    </item>
+    <item>
+      <title>Sui v1.82.3：给读取指定 checkpoint 条件，并核对 API 迁移</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-26#web3-sui-checkpoint-consistent-read</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-sui-checkpoint-consistent-read</guid>
+      <pubDate>Mon, 26 Oct 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>onchain_infrastructure</category>
+      <description>应用可以把读副本尚未追上与业务无数据分开处理；接入升级还需核对自身 SDK、服务端与错误处理是否使用兼容接口。</description>
+    </item>
     <item>
       <title>何时把子 Agent 收回主循环：先用完整任务评测比较</title>
       <link>https://xiuqiu-site.vercel.app/radar/2026-10-25#ai-single-loop-progressive-disclosure</link>
@@ -510,42 +546,6 @@
       <category>AI</category>
       <category>reading</category>
       <description>文章用外部 key-to-file/row 索引和精确 ranged read 让 Parquet 同时支持分析与在线点查，并写明分区、PageIndex、blob、列交错和 covering index 的代价。思考题：为真实单键查询列…</description>
-    </item>
-    <item>
-      <title>Solana Agave 4.2 将多项主网变化拆成 feature gate</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-05#industry-signals</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-05-signal</guid>
-      <pubDate>Wed, 05 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>market_signal</category>
-      <description>官方计划分阶段降低账户存储保证金、引入更大的 v1 交易格式并缩短 slot；页面仍标为开发中，钱包、RPC 与索引服务需分别验证编码、原始字节解析、状态增长和性能指标。</description>
-    </item>
-    <item>
-      <title>Sui testnet v1.77.1 收紧源码复现的工具链与依赖身份</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-05#industry-signals</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-05-signal-1</guid>
-      <pubDate>Wed, 05 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>market_signal</category>
-      <description>verify-source 默认使用发布时工具链并读取链上地址，annotated tag 依赖会固定到实际 commit；这是 testnet 发布，既有锁文件仍需显式更新且不能外推为主网激活。</description>
-    </item>
-    <item>
-      <title>NEAR 2.13.3 用分层出站缓冲限制隔离慢连接</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-05#industry-signals</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-05-signal-2</guid>
-      <pubDate>Wed, 05 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>market_signal</category>
-      <description>版本为单连接与全局出站写缓冲设置独立可配置上限，避免慢 peer 独占额度；官方明确它不是协议、数据库或安全升级，默认容量也不构成所有负载的通用保证。</description>
-    </item>
-    <item>
-      <title>把结果正确与工具过程合规分开评分</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-05#ai-engineering</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-05-ai</guid>
-      <pubDate>Wed, 05 Aug 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>ai_engineering</category>
-      <description>保留人工裁决的端到端轨迹，分别标注工具选择、参数范围、写前校验和成功状态一致性，再用同一回归集比较模型或编排变更。轨迹 grader 可能误判，权限和副作用仍需确定性约束。</description>
     </item>
   </channel>
 </rss>

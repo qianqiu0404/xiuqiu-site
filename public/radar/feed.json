@@ -6,6 +6,58 @@
   "language": "zh-CN",
   "items": [
     {
+      "id": "xiuqiu-radar:ai-akv-cache-operation-history",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-26#ai-akv-cache-operation-history",
+      "title": "AKV：相同文本前缀，未必对应相同缓存状态",
+      "summary": "长任务的缓存优化需要同时核对任务质量、延迟和状态正确性；只看提示文本或缓存命中率，可能漏掉操作顺序造成的差异。",
+      "content_text": "长任务的缓存优化需要同时核对任务质量、延迟和状态正确性；只看提示文本或缓存命中率，可能漏掉操作顺序造成的差异。",
+      "date_published": "2026-10-26T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "model_inference"
+      ],
+      "external_url": "https://arxiv.org/abs/2610.28577"
+    },
+    {
+      "id": "xiuqiu-radar:ai-aratest-claim-contract",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-26#ai-aratest-claim-contract",
+      "title": "ARATest：先固定声明的范围，再解释验证结果",
+      "summary": "Agent 生成结论后，需要让后续检查仍回答同一个问题。保留声明、证据和可重放的反例，有助于定位错误来自解释、数据绑定还是实验。",
+      "content_text": "Agent 生成结论后，需要让后续检查仍回答同一个问题。保留声明、证据和可重放的反例，有助于定位错误来自解释、数据绑定还是实验。",
+      "date_published": "2026-10-26T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "evaluation"
+      ],
+      "external_url": "https://arxiv.org/abs/2610.30495"
+    },
+    {
+      "id": "xiuqiu-radar:web3-bitcoin-easily-discoverable-policy",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-26#web3-bitcoin-easily-discoverable-policy",
+      "title": "Bitcoin Core：易发现漏洞走同步修复与披露分支",
+      "summary": "维护者认为易被重新发现的问题若长期等待披露，会延迟用户取得修复版。工程上应按实际公告和版本记录核对可用修复，不能只等待下一次大版本。",
+      "content_text": "维护者认为易被重新发现的问题若长期等待披露，会延迟用户取得修复版。工程上应按实际公告和版本记录核对可用修复，不能只等待下一次大版本。",
+      "date_published": "2026-10-26T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "security"
+      ],
+      "external_url": "https://mirror.b10c.me/lists/bitcoindev/1ehBdwhbU-1cUjU5SjRxn75XNUBvIfNbkfqPCJRFPlOfsBu5gHWotmNRNxcMirTl1baT2H-zBfJMeWM6rl-XJG8zV6gHf8vQ9b_TRB9vnIk=@antoinep.com/T/"
+    },
+    {
+      "id": "xiuqiu-radar:web3-sui-checkpoint-consistent-read",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-26#web3-sui-checkpoint-consistent-read",
+      "title": "Sui v1.82.3：给读取指定 checkpoint 条件，并核对 API 迁移",
+      "summary": "应用可以把读副本尚未追上与业务无数据分开处理；接入升级还需核对自身 SDK、服务端与错误处理是否使用兼容接口。",
+      "content_text": "应用可以把读副本尚未追上与业务无数据分开处理；接入升级还需核对自身 SDK、服务端与错误处理是否使用兼容接口。",
+      "date_published": "2026-10-26T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "onchain_infrastructure"
+      ],
+      "external_url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.82.3"
+    },
+    {
       "id": "xiuqiu-radar:ai-single-loop-progressive-disclosure",
       "url": "https://xiuqiu-site.vercel.app/radar/2026-10-25#ai-single-loop-progressive-disclosure",
       "title": "何时把子 Agent 收回主循环：先用完整任务评测比较",
@@ -732,58 +784,6 @@
         "reading"
       ],
       "external_url": "https://engineering.atspotify.com/2026/7/indexing-the-data-lake-for-online-point-queries"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-05-signal",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-05#industry-signals",
-      "title": "Solana Agave 4.2 将多项主网变化拆成 feature gate",
-      "summary": "官方计划分阶段降低账户存储保证金、引入更大的 v1 交易格式并缩短 slot；页面仍标为开发中，钱包、RPC 与索引服务需分别验证编码、原始字节解析、状态增长和性能指标。",
-      "content_text": "官方计划分阶段降低账户存储保证金、引入更大的 v1 交易格式并缩短 slot；页面仍标为开发中，钱包、RPC 与索引服务需分别验证编码、原始字节解析、状态增长和性能指标。",
-      "date_published": "2026-08-05T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "market_signal"
-      ],
-      "external_url": "https://solana.com/zh/upgrades/agave-4-2-release-overview"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-05-signal-1",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-05#industry-signals",
-      "title": "Sui testnet v1.77.1 收紧源码复现的工具链与依赖身份",
-      "summary": "verify-source 默认使用发布时工具链并读取链上地址，annotated tag 依赖会固定到实际 commit；这是 testnet 发布，既有锁文件仍需显式更新且不能外推为主网激活。",
-      "content_text": "verify-source 默认使用发布时工具链并读取链上地址，annotated tag 依赖会固定到实际 commit；这是 testnet 发布，既有锁文件仍需显式更新且不能外推为主网激活。",
-      "date_published": "2026-08-05T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "market_signal"
-      ],
-      "external_url": "https://github.com/MystenLabs/sui/releases/tag/testnet-v1.77.1"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-05-signal-2",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-05#industry-signals",
-      "title": "NEAR 2.13.3 用分层出站缓冲限制隔离慢连接",
-      "summary": "版本为单连接与全局出站写缓冲设置独立可配置上限，避免慢 peer 独占额度；官方明确它不是协议、数据库或安全升级，默认容量也不构成所有负载的通用保证。",
-      "content_text": "版本为单连接与全局出站写缓冲设置独立可配置上限，避免慢 peer 独占额度；官方明确它不是协议、数据库或安全升级，默认容量也不构成所有负载的通用保证。",
-      "date_published": "2026-08-05T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "market_signal"
-      ],
-      "external_url": "https://github.com/near/nearcore/releases/tag/2.13.3"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-05-ai",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-05#ai-engineering",
-      "title": "把结果正确与工具过程合规分开评分",
-      "summary": "保留人工裁决的端到端轨迹，分别标注工具选择、参数范围、写前校验和成功状态一致性，再用同一回归集比较模型或编排变更。轨迹 grader 可能误判，权限和副作用仍需确定性约束。",
-      "content_text": "保留人工裁决的端到端轨迹，分别标注工具选择、参数范围、写前校验和成功状态一致性，再用同一回归集比较模型或编排变更。轨迹 grader 可能误判，权限和副作用仍需确定性约束。",
-      "date_published": "2026-08-05T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "ai_engineering"
-      ],
-      "external_url": "https://developers.openai.com/api/docs/guides/trace-grading"
     }
   ]
 }
