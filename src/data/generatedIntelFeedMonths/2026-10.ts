@@ -5,6 +5,40 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-10-26:treasury-oisp-coins-proposal-2026-10-22",
+    "kind": "market",
+    "date": "2026-10-26",
+    "domain": "market",
+    "topic": "market_regulation",
+    "title": "美国财政部提出 OISP 更新草案，适用范围与生效仍待核验",
+    "summary": "系统观察：主体范围、技术门槛、交易例外和信息义务共同决定适用性；提案可能影响跨境融资的尽调准备，但没有证明具体公司融资或真实资金流已经变化。",
+    "href": "/market-radar/2026-10-26#treasury-oisp-coins-proposal-2026-10-22",
+    "source": {
+      "name": "U.S. Treasury Press Release",
+      "url": "https://home.treasury.gov/news/press-releases/sb0667/"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
+  {
+    "id": "market:2026-10-26:ecb-september-ces-inflation-expectations-2026-10-23",
+    "kind": "market",
+    "date": "2026-10-26",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "ECB 九月 CES：近端通胀预期小升，三年与五年预期未变",
+    "summary": "系统观察：近端与中长期预期的差异可用于检验持续性解释；单次家庭调查不能替代实际通胀、就业数据与正式政策决定，也不能单独解释欧元或债券变化。",
+    "href": "/market-radar/2026-10-26#ecb-september-ces-inflation-expectations-2026-10-23",
+    "source": {
+      "name": "European Central Bank CES Release",
+      "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261023~a3d201c97c.en.html"
+    },
+    "flags": {
+      "priority": "P2"
+    }
+  },
+  {
     "id": "learning:ai-single-loop-progressive-disclosure",
     "kind": "learning",
     "date": "2026-10-25",
