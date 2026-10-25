@@ -1,0 +1,33 @@
+name: External Source Health
+
+# Read-only probe of the two vercel.json rewrite targets. No secrets, no
+# environment, no deploy, database or notification. Keeps one tracking issue.
+on:
+  schedule:
+    - cron: '17 */3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+  issues: write
+
+concurrency:
+  group: external-source-health
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Probe external sources and sync tracking issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/external-sources-issue.mjs
