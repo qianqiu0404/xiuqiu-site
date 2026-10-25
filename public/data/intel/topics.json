@@ -1,8 +1,24 @@
 {
   "schemaVersion": 1,
-  "latestDate": "2026-10-25",
+  "latestDate": "2026-10-26",
   "homePageUrl": "https://xiuqiu-site.vercel.app/",
   "topics": [
+    {
+      "topic": "market_macro",
+      "domain": "market",
+      "count": 7,
+      "lastSeen": "2026-10-26",
+      "firstSeen": "2026-08-09",
+      "url": "https://xiuqiu-site.vercel.app/topics/market_macro"
+    },
+    {
+      "topic": "market_regulation",
+      "domain": "market",
+      "count": 2,
+      "lastSeen": "2026-10-26",
+      "firstSeen": "2026-10-25",
+      "url": "https://xiuqiu-site.vercel.app/topics/market_regulation"
+    },
     {
       "topic": "market_crypto",
       "domain": "market",
@@ -42,14 +58,6 @@
       "lastSeen": "2026-10-25",
       "firstSeen": "2026-08-12",
       "url": "https://xiuqiu-site.vercel.app/topics/data"
-    },
-    {
-      "topic": "market_regulation",
-      "domain": "market",
-      "count": 1,
-      "lastSeen": "2026-10-25",
-      "firstSeen": "2026-10-25",
-      "url": "https://xiuqiu-site.vercel.app/topics/market_regulation"
     },
     {
       "topic": "security",
@@ -98,14 +106,6 @@
       "lastSeen": "2026-10-13",
       "firstSeen": "2026-08-10",
       "url": "https://xiuqiu-site.vercel.app/topics/model_inference"
-    },
-    {
-      "topic": "market_macro",
-      "domain": "market",
-      "count": 6,
-      "lastSeen": "2026-08-13",
-      "firstSeen": "2026-08-09",
-      "url": "https://xiuqiu-site.vercel.app/topics/market_macro"
     },
     {
       "topic": "market_signal",

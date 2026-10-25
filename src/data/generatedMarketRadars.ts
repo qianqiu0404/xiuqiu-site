@@ -16,6 +16,17 @@ export interface MarketRadarDaily { schemaVersion?: 2; date: string; slug: strin
 export interface MarketRadarIndexEntry { date: string; slug: string; snapshotId: string; asOf: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
 export const marketRadarIndex: MarketRadarIndexEntry[] = [
   {
+    "date": "2026-10-26",
+    "slug": "2026-10-26",
+    "title": "交易研究雷达 · 2026-10-26",
+    "summary": "美国财政部的对外投资制度更新仍处提案阶段；ECB 消费者调查显示近端通胀预期小幅上升，中长期预期未变。本期区分拟议要求、调查结果与尚未验证的融资及市场影响。",
+    "snapshotId": "market-2026-10-26-6057fb6ba75c3cc3",
+    "asOf": "2026-10-25T21:41:09.000Z",
+    "eventCount": 2,
+    "assetCount": 4,
+    "leadTitle": "美国财政部提出 OISP 更新草案，适用范围与生效仍待核验"
+  },
+  {
     "date": "2026-10-25",
     "slug": "2026-10-25",
     "title": "交易研究雷达 · 2026-10-25",
@@ -94,6 +105,177 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
   }
 ]
 export const latestMarketRadars: MarketRadarDaily[] = [
+  {
+    "date": "2026-10-26",
+    "slug": "2026-10-26",
+    "title": "交易研究雷达 · 2026-10-26",
+    "summary": "美国财政部的对外投资制度更新仍处提案阶段；ECB 消费者调查显示近端通胀预期小幅上升，中长期预期未变。本期区分拟议要求、调查结果与尚未验证的融资及市场影响。",
+    "snapshotId": "market-2026-10-26-6057fb6ba75c3cc3",
+    "asOf": "2026-10-25T21:41:09.000Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-10-26T05:41:09+08:00",
+    "events": [
+      {
+        "id": "treasury-oisp-coins-proposal-2026-10-22",
+        "priority": "P1",
+        "status": "released",
+        "category": "regulation",
+        "title": "美国财政部提出 OISP 更新草案，适用范围与生效仍待核验",
+        "fact": "美国财政部于 10 月 22 日发布依据 COINS 法案更新既有 OISP 的拟议规则，涉及美国主体（U.S. persons）的特定对外投资申报与禁止边界，以及半导体、人工智能、高性能计算和生物技术等技术范围。公告说明将征求意见，之后另发最终实施规则并确定本次更新的生效日。提案公布不等于拟议要求已经生效。",
+        "whyWatch": "系统观察：主体范围、技术门槛、交易例外和信息义务共同决定适用性；提案可能影响跨境融资的尽调准备，但没有证明具体公司融资或真实资金流已经变化。",
+        "assets": [
+          "科技股",
+          "半导体"
+        ],
+        "watchFor": "核对正式提案的意见截止、最终条文与生效日，逐项区分适用主体、技术门槛和例外；将既有运行制度与这次拟议更新分开记录。",
+        "invalidation": "若最终规则或官方说明改变范围与时点，应重设观察口径。缺少具体主体、技术和交易证据时，不把整个行业统称为受禁，不推断融资或资金流影响已经发生。",
+        "sourceName": "U.S. Treasury Press Release",
+        "sourceUrl": "https://home.treasury.gov/news/press-releases/sb0667/",
+        "sourcePublishedAt": "2026-10-22"
+      },
+      {
+        "id": "ecb-september-ces-inflation-expectations-2026-10-23",
+        "priority": "P2",
+        "status": "released",
+        "category": "macro",
+        "title": "ECB 九月 CES：近端通胀预期小升，三年与五年预期未变",
+        "fact": "ECB 于 10 月 23 日公布九月消费者预期调查：未来 12 个月通胀预期中位数由八月的 3.0% 升至 3.1%，三年与五年预期中位数分别维持 2.9% 和 2.5%。这些是受访消费者的预期，不代表 ECB 决策机构或员工的观点，也不是已实现通胀。",
+        "whyWatch": "系统观察：近端与中长期预期的差异可用于检验持续性解释；单次家庭调查不能替代实际通胀、就业数据与正式政策决定，也不能单独解释欧元或债券变化。",
+        "assets": [
+          "欧元",
+          "欧元区利率"
+        ],
+        "watchFor": "跟踪后续 CES、官方通胀和就业数据及 ECB 决定；固定调查窗口、统计口径与数据发布时间，区分预期、已实现数据和政策表态。",
+        "invalidation": "样本或统计口径修订、后续调查反向及实际数据不符时，应重新评估持续性。没有相同事件窗口与其他因素核对，不把资产变动归因于这一份问卷。",
+        "sourceName": "European Central Bank CES Release",
+        "sourceUrl": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261023~a3d201c97c.en.html",
+        "sourcePublishedAt": "2026-10-23"
+      }
+    ],
+    "sourceUrls": [
+      "https://home.treasury.gov/news/press-releases/sb0667/",
+      "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261023~a3d201c97c.en.html"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "只登记一手事实与验证方法；尚未建立同类事件、固定窗口和跨资产结果的历史样本，量化样本门禁保持关闭。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "拟议规则和消费者预期不能单独解释资产变化；本期没有测量实际融资、资金流或股票、黄金与加密资产的同窗口反应。",
+      "nextValidation": "先固定法规阶段、调查统计和事件窗口的口径，记录同期其他事件；取得可比样本前只保留弱信号状态。",
+      "invalidation": "来源修订、适用范围不符或观察窗口不一致时停止比较；缺失证据不能补成确定性结论。",
+      "sourceUrls": [
+        "https://home.treasury.gov/news/press-releases/sb0667/",
+        "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261023~a3d201c97c.en.html"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "OISP 提案中的主体范围、技术门槛和交易例外，将经哪些可验证环节影响跨境融资准备，哪些环节尚无落地证据？",
+        "focusEventIds": [
+          "treasury-oisp-coins-proposal-2026-10-22"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "若有人把近端通胀预期小幅上升解释为持续通胀压力，哪些后续 CES 与实际数据最能反驳这一解释？",
+        "focusEventIds": [
+          "ecb-september-ces-inflation-expectations-2026-10-23"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "如果最终规则缩小范围或延后生效，后续观察哪些条文与交易披露，哪些证据会终止把本次提案解释为融资约束已经增强？",
+        "focusEventIds": [
+          "treasury-oisp-coins-proposal-2026-10-22"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-10-26",
+      "snapshotId": "market-2026-10-26-6057fb6ba75c3cc3",
+      "asOf": "2026-10-25T21:41:09.000Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-10-26",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "OISP 提案中的主体范围、技术门槛和交易例外，将经哪些可验证环节影响跨境融资准备，哪些环节尚无落地证据？",
+          "focusEventIds": [
+            "treasury-oisp-coins-proposal-2026-10-22"
+          ],
+          "prompt": "研究任务：OISP 提案中的主体范围、技术门槛和交易例外，将经哪些可验证环节影响跨境融资准备，哪些环节尚无落地证据？\n证据快照：2026-10-26；asOf=2026-10-25T21:41:09.000Z；snapshotId=market-2026-10-26-6057fb6ba75c3cc3\n\n材料 1｜美国财政部提出 OISP 更新草案，适用范围与生效仍待核验\n已确认事实：美国财政部于 10 月 22 日发布依据 COINS 法案更新既有 OISP 的拟议规则，涉及美国主体（U.S. persons）的特定对外投资申报与禁止边界，以及半导体、人工智能、高性能计算和生物技术等技术范围。公告说明将征求意见，之后另发最终实施规则并确定本次更新的生效日。提案公布不等于拟议要求已经生效。\n关注机制：系统观察：主体范围、技术门槛、交易例外和信息义务共同决定适用性；提案可能影响跨境融资的尽调准备，但没有证明具体公司融资或真实资金流已经变化。\n接下来验证：核对正式提案的意见截止、最终条文与生效日，逐项区分适用主体、技术门槛和例外；将既有运行制度与这次拟议更新分开记录。\n失效条件：若最终规则或官方说明改变范围与时点，应重设观察口径。缺少具体主体、技术和交易证据时，不把整个行业统称为受禁，不推断融资或资金流影响已经发生。\n一手来源：https://home.treasury.gov/news/press-releases/sb0667/\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "f41be8e2638f57fa7d014c92500336e3d46e859ec4b53de9d7f400688730cccb",
+          "sourceUrls": [
+            "https://home.treasury.gov/news/press-releases/sb0667/"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "若有人把近端通胀预期小幅上升解释为持续通胀压力，哪些后续 CES 与实际数据最能反驳这一解释？",
+          "focusEventIds": [
+            "ecb-september-ces-inflation-expectations-2026-10-23"
+          ],
+          "prompt": "研究任务：若有人把近端通胀预期小幅上升解释为持续通胀压力，哪些后续 CES 与实际数据最能反驳这一解释？\n证据快照：2026-10-26；asOf=2026-10-25T21:41:09.000Z；snapshotId=market-2026-10-26-6057fb6ba75c3cc3\n\n材料 1｜ECB 九月 CES：近端通胀预期小升，三年与五年预期未变\n已确认事实：ECB 于 10 月 23 日公布九月消费者预期调查：未来 12 个月通胀预期中位数由八月的 3.0% 升至 3.1%，三年与五年预期中位数分别维持 2.9% 和 2.5%。这些是受访消费者的预期，不代表 ECB 决策机构或员工的观点，也不是已实现通胀。\n关注机制：系统观察：近端与中长期预期的差异可用于检验持续性解释；单次家庭调查不能替代实际通胀、就业数据与正式政策决定，也不能单独解释欧元或债券变化。\n接下来验证：跟踪后续 CES、官方通胀和就业数据及 ECB 决定；固定调查窗口、统计口径与数据发布时间，区分预期、已实现数据和政策表态。\n失效条件：样本或统计口径修订、后续调查反向及实际数据不符时，应重新评估持续性。没有相同事件窗口与其他因素核对，不把资产变动归因于这一份问卷。\n一手来源：https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261023~a3d201c97c.en.html\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "7bc8d5e463e91075ff8d69dfb430225f5acb6501c272745810e838bbbfd7188b",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261023~a3d201c97c.en.html"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "如果最终规则缩小范围或延后生效，后续观察哪些条文与交易披露，哪些证据会终止把本次提案解释为融资约束已经增强？",
+          "focusEventIds": [
+            "treasury-oisp-coins-proposal-2026-10-22"
+          ],
+          "prompt": "研究任务：如果最终规则缩小范围或延后生效，后续观察哪些条文与交易披露，哪些证据会终止把本次提案解释为融资约束已经增强？\n证据快照：2026-10-26；asOf=2026-10-25T21:41:09.000Z；snapshotId=market-2026-10-26-6057fb6ba75c3cc3\n\n材料 1｜美国财政部提出 OISP 更新草案，适用范围与生效仍待核验\n已确认事实：美国财政部于 10 月 22 日发布依据 COINS 法案更新既有 OISP 的拟议规则，涉及美国主体（U.S. persons）的特定对外投资申报与禁止边界，以及半导体、人工智能、高性能计算和生物技术等技术范围。公告说明将征求意见，之后另发最终实施规则并确定本次更新的生效日。提案公布不等于拟议要求已经生效。\n关注机制：系统观察：主体范围、技术门槛、交易例外和信息义务共同决定适用性；提案可能影响跨境融资的尽调准备，但没有证明具体公司融资或真实资金流已经变化。\n接下来验证：核对正式提案的意见截止、最终条文与生效日，逐项区分适用主体、技术门槛和例外；将既有运行制度与这次拟议更新分开记录。\n失效条件：若最终规则或官方说明改变范围与时点，应重设观察口径。缺少具体主体、技术和交易证据时，不把整个行业统称为受禁，不推断融资或资金流影响已经发生。\n一手来源：https://home.treasury.gov/news/press-releases/sb0667/\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "371730d77cf034daa031b9dcb6b168dd6d90333501e78123f6495a75c00f6e15",
+          "sourceUrls": [
+            "https://home.treasury.gov/news/press-releases/sb0667/"
+          ]
+        }
+      ]
+    }
+  },
   {
     "date": "2026-10-25",
     "slug": "2026-10-25",
@@ -897,79 +1079,5 @@ export const latestMarketRadars: MarketRadarDaily[] = [
         "https://home.treasury.gov/system/files/221/TentativeAuctionScheduleQ22026.pdf"
       ]
     }
-  },
-  {
-    "date": "2026-08-09",
-    "slug": "2026-08-09",
-    "title": "交易研究雷达 · 2026-08-09",
-    "summary": "先锁定本周通胀双节点，再观察 Aptos 热修复透明度与 lnd 候选版迁移风险；只记录可验证事件，不输出仓位指令。",
-    "snapshotId": "market-2026-08-09-f1e87e6fb078dc86",
-    "asOf": "2026-08-09T04:30:00.000Z",
-    "origin": "research",
-    "publicationState": "published",
-    "reviewStatus": "automated",
-    "generatedAt": "2026-08-09T12:30:00+08:00",
-    "events": [
-      {
-        "id": "us-inflation-releases-2026-08",
-        "priority": "P0",
-        "status": "scheduled",
-        "category": "macro",
-        "eventAt": "2026-08-12T20:30:00+08:00",
-        "title": "美国 CPI 与 PPI 将在 8 月 12–13 日连续发布",
-        "fact": "美国劳工统计局日程显示，7 月 CPI 与实际收入定于 8 月 12 日 08:30 ET 发布，7 月 PPI 定于 8 月 13 日 08:30 ET 发布。",
-        "whyWatch": "连续两天的通胀数据可能改变市场对利率路径的判断，并影响美元、权益与加密资产的风险偏好；日程本身不预设数据方向。",
-        "assets": [
-          "BTC",
-          "ETH",
-          "SPY",
-          "DXY"
-        ],
-        "watchFor": "发布后只记录官方标题与核心分项方向，并人工核对 BTC、ETH、SPY 与美元指数在 30 分钟和 4 小时窗口的公开行情表现。",
-        "invalidation": "若官方调整发布时间，以 BLS 最新日程为准；在数据发布前不把市场传闻或预测值当成事实。",
-        "sourceName": "U.S. Bureau of Labor Statistics",
-        "sourceUrl": "https://www.bls.gov/schedule/2026/08_sched_list.htm",
-        "sourcePublishedAt": "2026-06-10"
-      },
-      {
-        "id": "aptos-node-1-48-6-private-hotfix",
-        "priority": "P1",
-        "status": "monitoring",
-        "category": "crypto",
-        "title": "Aptos 1.48.6 热修复要求验证节点升级，但源码未公开",
-        "fact": "Aptos 官方发布页将 1.48.6 标为主网热修复，要求验证节点升级、建议全节点升级，同时明确说明这是私有热修复，源码不可用。",
-        "whyWatch": "强制性验证节点升级与不可审查源码同时出现，首先是网络运行和供应链透明度事件；它不自动构成 APT 的方向信号。",
-        "assets": [
-          "APT"
-        ],
-        "watchFor": "继续观察官方网络状态、验证节点升级反馈、后续公开说明以及是否出现可审查的修复细节。",
-        "invalidation": "在没有公开故障说明、网络指标或复盘前，不推断漏洞范围，也不把版本发布等同于链上异常。",
-        "sourceName": "Aptos Core Releases",
-        "sourceUrl": "https://github.com/aptos-labs/aptos-core/releases/tag/aptos-node-v1.48.6-hotfix",
-        "sourcePublishedAt": "2026-08-05"
-      },
-      {
-        "id": "lnd-0-21-2-beta-rc1",
-        "priority": "P2",
-        "status": "released",
-        "category": "crypto",
-        "title": "lnd 0.21.2-beta.rc1 修复历史迁移路径，仍只是候选版",
-        "fact": "lnd 官方候选版说明修复 KV 到 SQL 的历史支付迁移，以及缺少版本键时被跳过的 waiting-proof 迁移；发布物提供签名和可复现构建验证路径。",
-        "whyWatch": "迁移修复关系到 Lightning 节点升级可用性，但候选版的工程进展不能直接外推为 BTC 市场催化。",
-        "assets": [
-          "BTC"
-        ],
-        "watchFor": "观察稳定版是否继承修复、节点运营者是否报告启动或迁移问题，以及发布说明是否补充回归边界。",
-        "invalidation": "在稳定版发布和真实运营反馈出现前，只把它作为 Lightning 基础设施观察项，不写成价格方向判断。",
-        "sourceName": "lnd Releases",
-        "sourceUrl": "https://github.com/lightningnetwork/lnd/releases/tag/v0.21.2-beta.rc1",
-        "sourcePublishedAt": "2026-08-08"
-      }
-    ],
-    "sourceUrls": [
-      "https://www.bls.gov/schedule/2026/08_sched_list.htm",
-      "https://github.com/aptos-labs/aptos-core/releases/tag/aptos-node-v1.48.6-hotfix",
-      "https://github.com/lightningnetwork/lnd/releases/tag/v0.21.2-beta.rc1"
-    ]
   }
 ]
