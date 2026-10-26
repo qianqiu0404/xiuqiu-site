@@ -7,8 +7,71 @@ export interface IntelItem { id: string; kind: IntelKind; date: string; domain: 
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
 export const intelLatestDate: string | null = "2026-10-27"
-export const intelItemCount = 244
+export const intelItemCount = 248
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "learning:ai-signals-work-activity-denominator",
+    "kind": "learning",
+    "date": "2026-10-27",
+    "domain": "ai",
+    "topic": "data",
+    "title": "OpenAI Signals：工作消息占比，不能直接当成劳动产出",
+    "summary": "公开分类和统计口径能帮助研究 AI 被用于哪些工作，但结论需要与采样范围匹配；消息分布、用户采用和实际工作效果是不同指标。",
+    "href": "/radar/2026-10-27#ai-signals-work-activity-denominator",
+    "source": {
+      "name": "OpenAI: ChatGPT’s expanding world of work",
+      "tier": "tier1",
+      "url": "https://openai.com/index/chatgpt-expanding-world-of-work/"
+    }
+  },
+  {
+    "id": "learning:ai-terra-model-and-tool-contract",
+    "kind": "learning",
+    "date": "2026-10-27",
+    "domain": "ai",
+    "topic": "model_inference",
+    "title": "GPT-6.1 Terra 发布：先分别核对模型能力与工具契约",
+    "summary": "接入新模型时，把输入输出、推理设置、工具通道和任务验收分别列清，可以避免只更换模型名，却沿用不兼容的调用假设。",
+    "href": "/radar/2026-10-27#ai-terra-model-and-tool-contract",
+    "source": {
+      "name": "OpenAI API changelog: GPT-6.1 Terra release",
+      "tier": "tier1",
+      "url": "https://developers.openai.com/api/docs/changelog"
+    }
+  },
+  {
+    "id": "learning:web3-nethermind-bundled-runtime-patch",
+    "kind": "learning",
+    "date": "2026-10-27",
+    "domain": "web3",
+    "topic": "security",
+    "title": "Nethermind 2.2.2：上游安全补丁要进入实际运行的制品",
+    "summary": "节点客户端的安全边界包含随制品交付的基础运行时。补丁已发布、可安装制品已更新与运行进程已采用，需要各自留下证据。",
+    "href": "/radar/2026-10-27#web3-nethermind-bundled-runtime-patch",
+    "source": {
+      "name": "Nethermind v2.2.2 release notes",
+      "tier": "tier1",
+      "url": "https://github.com/NethermindEth/nethermind/releases/tag/2.2.2"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "learning:web3-avalanchego-plugin-upgrade-boundary",
+    "kind": "learning",
+    "date": "2026-10-27",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "AvalancheGo 1.15.2：可选客户端更新也有插件兼容要求",
+    "summary": "“版本向后兼容”不能代替插件、API、配置和已有数据库状态的逐项检查；长期停机后恢复的节点，还可能有不同的过渡路径。",
+    "href": "/radar/2026-10-27#web3-avalanchego-plugin-upgrade-boundary",
+    "source": {
+      "name": "AvalancheGo v1.15.2: Helicon.2 — Removed Coreth",
+      "tier": "tier1",
+      "url": "https://github.com/ava-labs/avalanchego/releases/tag/v1.15.2"
+    }
+  },
   {
     "id": "market:2026-10-27:ecb-safe-q3-financing-conditions-2026-10-26",
     "kind": "market",
@@ -354,6 +417,34 @@ export const intelTopics: IntelTopic[] = [
     "firstSeen": "2026-08-09"
   },
   {
+    "topic": "security",
+    "domain": "web3",
+    "count": 6,
+    "lastSeen": "2026-10-27",
+    "firstSeen": "2026-08-10"
+  },
+  {
+    "topic": "model_inference",
+    "domain": "ai",
+    "count": 5,
+    "lastSeen": "2026-10-27",
+    "firstSeen": "2026-08-10"
+  },
+  {
+    "topic": "onchain_infrastructure",
+    "domain": "web3",
+    "count": 5,
+    "lastSeen": "2026-10-27",
+    "firstSeen": "2026-08-11"
+  },
+  {
+    "topic": "data",
+    "domain": "ai",
+    "count": 3,
+    "lastSeen": "2026-10-27",
+    "firstSeen": "2026-08-12"
+  },
+  {
     "topic": "market_regulation",
     "domain": "market",
     "count": 3,
@@ -361,32 +452,11 @@ export const intelTopics: IntelTopic[] = [
     "firstSeen": "2026-10-25"
   },
   {
-    "topic": "security",
-    "domain": "web3",
-    "count": 5,
-    "lastSeen": "2026-10-26",
-    "firstSeen": "2026-08-10"
-  },
-  {
     "topic": "evaluation",
     "domain": "ai",
     "count": 4,
     "lastSeen": "2026-10-26",
     "firstSeen": "2026-08-10"
-  },
-  {
-    "topic": "model_inference",
-    "domain": "ai",
-    "count": 4,
-    "lastSeen": "2026-10-26",
-    "firstSeen": "2026-08-10"
-  },
-  {
-    "topic": "onchain_infrastructure",
-    "domain": "web3",
-    "count": 4,
-    "lastSeen": "2026-10-26",
-    "firstSeen": "2026-08-11"
   },
   {
     "topic": "market_crypto",
@@ -415,13 +485,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 3,
     "lastSeen": "2026-10-25",
     "firstSeen": "2026-08-10"
-  },
-  {
-    "topic": "data",
-    "domain": "ai",
-    "count": 2,
-    "lastSeen": "2026-10-25",
-    "firstSeen": "2026-08-12"
   },
   {
     "topic": "safety",
