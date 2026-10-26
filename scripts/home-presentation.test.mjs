@@ -218,9 +218,13 @@ test('repository and homepage keep historical wallet work out of the current-pro
 
   assert.match(engineeringPageSource, /Current product、Current direction 与 Historical evidence/)
   assert.match(engineeringPageSource, /currentProjectCount.*historicalProjectCount/)
-  assert.match(evidencePageSource, /projectPublicRoleLabels\[project\.publicRole\]/)
-  assert.match(evidencePageSource, /projectClaimStateLabels\[project\.claimState\]/)
-  assert.match(evidencePageSource, /Historical delivery \/ run/)
+  // Each linked project still shows its public role and claim state, and
+  // historical deliveries stay a separate, labelled relation.
+  assert.match(evidencePageSource, /readerRoleLabels\[project\.publicRole\]/)
+  assert.match(evidencePageSource, /readerClaimLabels\[project\.claimState\]/)
+  assert.match(evidencePageSource, /'current-direction': '当前方向'/)
+  assert.match(evidencePageSource, /locked: '公开结论待补证据'/)
+  assert.match(evidencePageSource, /<dt>历史交付<\/dt>/)
 
   assert.match(deliveryListSource, /AI 历史公开交付记录｜xiuqiu/)
   assert.match(deliveryListSource, /不代表当前 Wallet Infrastructure 已实现/)
@@ -379,8 +383,8 @@ test('cinematic evidence pages preserve their source-backed interaction contract
   assert.match(projectAtlasSource, /target="_blank"/)
   assert.match(projectAtlasSource, /rel="noopener"/)
 
-  assert.match(evidencePageSource, /Verification Ledger/)
-  assert.match(evidencePageSource, /class="verification-ledger-row"/)
+  assert.match(evidencePageSource, /<h2 id="ledger-title" tabindex="-1">证据记录<\/h2>/)
+  assert.match(evidencePageSource, /class="reader-disclosure verification-ledger-row"/)
   assert.match(evidencePageSource, /projectFilter/)
   assert.match(evidencePageSource, /kindFilter/)
   assert.match(evidencePageSource, /statusFilter/)
@@ -389,7 +393,8 @@ test('cinematic evidence pages preserve their source-backed interaction contract
   assert.match(evidencePageSource, /record\.deliveries/)
   assert.match(evidencePageSource, /record\.failures/)
   assert.match(evidencePageSource, /record\.articles/)
-  assert.match(evidencePageSource, /Coverage Map/)
+  assert.match(evidencePageSource, /<h2 id="coverage-title" tabindex="-1">能力覆盖<\/h2>/)
+  assert.doesNotMatch(evidencePageSource, /locked 当前方向|<style scoped/)
   assert.match(evidencePageSource, /role="table"/)
   assert.match(evidencePageSource, /role="columnheader"/)
   assert.match(evidencePageSource, /role="rowheader"/)

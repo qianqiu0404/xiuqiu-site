@@ -6,6 +6,7 @@ export { deliveryStatusLabels, evidenceKindLabels, evidenceLedgerRecords, eviden
 export { deliveryRecords } from '../../data/generatedDeliveries'
 export { evidenceRecords } from '../../data/generatedEvidence'
 export type { EvidenceKind, EvidenceStatus, EvidenceVisibility } from '../../data/generatedEvidence'
+export type { ProjectClaimState, ProjectPublicRole } from '../../data/generatedProjects'
 export { failureCases } from '../../data/generatedFailureCases'
 export type { FailureAction, FailureCase, FailureCategory, FailureEvidenceStatus, FailurePriority } from '../../data/generatedFailureCases'
 export { getArticleBySlug, getProjectByKey, projectClaimStateLabels, projectPublicRoleLabels, siteProjects } from '../../data/siteKnowledge'
