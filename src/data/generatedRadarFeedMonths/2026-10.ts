@@ -5,6 +5,55 @@ import type { RadarFeedItem } from '../generatedRadarFeed.ts'
 
 export const monthlyFeedItems: RadarFeedItem[] = [
   {
+    "id": "ai-signals-work-activity-denominator",
+    "date": "2026-10-27",
+    "domain": "ai",
+    "topic": "data",
+    "title": "OpenAI Signals：工作消息占比，不能直接当成劳动产出",
+    "summary": "公开分类和统计口径能帮助研究 AI 被用于哪些工作，但结论需要与采样范围匹配；消息分布、用户采用和实际工作效果是不同指标。",
+    "anchor": "ai-signals-work-activity-denominator",
+    "sourceName": "OpenAI: ChatGPT’s expanding world of work",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://openai.com/index/chatgpt-expanding-world-of-work/"
+  },
+  {
+    "id": "ai-terra-model-and-tool-contract",
+    "date": "2026-10-27",
+    "domain": "ai",
+    "topic": "model_inference",
+    "title": "GPT-6.1 Terra 发布：先分别核对模型能力与工具契约",
+    "summary": "接入新模型时，把输入输出、推理设置、工具通道和任务验收分别列清，可以避免只更换模型名，却沿用不兼容的调用假设。",
+    "anchor": "ai-terra-model-and-tool-contract",
+    "sourceName": "OpenAI API changelog: GPT-6.1 Terra release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://developers.openai.com/api/docs/changelog"
+  },
+  {
+    "id": "web3-nethermind-bundled-runtime-patch",
+    "date": "2026-10-27",
+    "domain": "web3",
+    "topic": "security",
+    "title": "Nethermind 2.2.2：上游安全补丁要进入实际运行的制品",
+    "summary": "节点客户端的安全边界包含随制品交付的基础运行时。补丁已发布、可安装制品已更新与运行进程已采用，需要各自留下证据。",
+    "anchor": "web3-nethermind-bundled-runtime-patch",
+    "sourceName": "Nethermind v2.2.2 release notes",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/NethermindEth/nethermind/releases/tag/2.2.2",
+    "isDeepDive": true
+  },
+  {
+    "id": "web3-avalanchego-plugin-upgrade-boundary",
+    "date": "2026-10-27",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "AvalancheGo 1.15.2：可选客户端更新也有插件兼容要求",
+    "summary": "“版本向后兼容”不能代替插件、API、配置和已有数据库状态的逐项检查；长期停机后恢复的节点，还可能有不同的过渡路径。",
+    "anchor": "web3-avalanchego-plugin-upgrade-boundary",
+    "sourceName": "AvalancheGo v1.15.2: Helicon.2 — Removed Coreth",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/ava-labs/avalanchego/releases/tag/v1.15.2"
+  },
+  {
     "id": "ai-akv-cache-operation-history",
     "date": "2026-10-26",
     "domain": "ai",

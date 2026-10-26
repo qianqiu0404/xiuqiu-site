@@ -10,6 +10,10 @@
 
 ## Recent briefs
 
+- [OpenAI Signals：工作消息占比，不能直接当成劳动产出](https://xiuqiu-site.vercel.app/radar/2026-10-27#ai-signals-work-activity-denominator) (2026-10-27, ai/data): 公开分类和统计口径能帮助研究 AI 被用于哪些工作，但结论需要与采样范围匹配；消息分布、用户采用和实际工作效果是不同指标。
+- [GPT-6.1 Terra 发布：先分别核对模型能力与工具契约](https://xiuqiu-site.vercel.app/radar/2026-10-27#ai-terra-model-and-tool-contract) (2026-10-27, ai/model_inference): 接入新模型时，把输入输出、推理设置、工具通道和任务验收分别列清，可以避免只更换模型名，却沿用不兼容的调用假设。
+- [Nethermind 2.2.2：上游安全补丁要进入实际运行的制品](https://xiuqiu-site.vercel.app/radar/2026-10-27#web3-nethermind-bundled-runtime-patch) (2026-10-27, web3/security): 节点客户端的安全边界包含随制品交付的基础运行时。补丁已发布、可安装制品已更新与运行进程已采用，需要各自留下证据。
+- [AvalancheGo 1.15.2：可选客户端更新也有插件兼容要求](https://xiuqiu-site.vercel.app/radar/2026-10-27#web3-avalanchego-plugin-upgrade-boundary) (2026-10-27, web3/onchain_infrastructure): “版本向后兼容”不能代替插件、API、配置和已有数据库状态的逐项检查；长期停机后恢复的节点，还可能有不同的过渡路径。
 - [AKV：相同文本前缀，未必对应相同缓存状态](https://xiuqiu-site.vercel.app/radar/2026-10-26#ai-akv-cache-operation-history) (2026-10-26, ai/model_inference): 长任务的缓存优化需要同时核对任务质量、延迟和状态正确性；只看提示文本或缓存命中率，可能漏掉操作顺序造成的差异。
 - [ARATest：先固定声明的范围，再解释验证结果](https://xiuqiu-site.vercel.app/radar/2026-10-26#ai-aratest-claim-contract) (2026-10-26, ai/evaluation): Agent 生成结论后，需要让后续检查仍回答同一个问题。保留声明、证据和可重放的反例，有助于定位错误来自解释、数据绑定还是实验。
 - [Bitcoin Core：易发现漏洞走同步修复与披露分支](https://xiuqiu-site.vercel.app/radar/2026-10-26#web3-bitcoin-easily-discoverable-policy) (2026-10-26, web3/security): 维护者认为易被重新发现的问题若长期等待披露，会延迟用户取得修复版。工程上应按实际公告和版本记录核对可用修复，不能只等待下一次大版本。
@@ -18,10 +22,6 @@
 - [Raw-RAG：先保留原始证据，再证明复杂记忆的增益](https://xiuqiu-site.vercel.app/radar/2026-10-25#ai-raw-rag-source-preservation) (2026-10-25, ai/data): 增加记忆管理复杂度之前，一个保留来源的检索基线能帮助分清：收益来自更好的证据，还是来自更复杂的组织方式。
 - [Hoodi 正式延期：10 月 26 日的激活配置已经撤销](https://xiuqiu-site.vercel.app/radar/2026-10-25#web3-hoodi-glamsterdam-postponed) (2026-10-25, web3/protocol): 升级计划需要支持撤销和替换。运维判断要追踪当前有效状态，不能把某次发版中的计划当作永远有效的确认。
 - [Wavelength 公开主网版：支付权限、确定失败与恢复分开看](https://xiuqiu-site.vercel.app/radar/2026-10-25#web3-wavelength-public-mainnet) (2026-10-25, web3/wallet_cex): 把支付接给 Agent，接口可调用只是起点。权限能否收窄、状态能否持久化、未知结果能否恢复，需要分别提供证据。
-- [AISI 事件复盘：任务做不通，不代表可以扩大授权范围](https://xiuqiu-site.vercel.app/radar/2026-10-24#ai-aisi-assessment-scope-persistence) (2026-10-24, ai/safety): 长任务的成功标准需要同时包含目标完成和范围约束。单看任务分数，会遗漏它是否在失败后改动了不属于任务的资源。
-- [科研 Agent 的验证：生成候选、实验命中与有效治疗分开计数](https://xiuqiu-site.vercel.app/radar/2026-10-24#ai-protein-agent-independent-measurement) (2026-10-24, ai/evaluation): 这项实验的工程启发是把模型自己的评分与外部验证分开。读者可以检查公开数据，而不必只接受模型或供应商对成果的概括。
-- [Reth 2.8：Hoodi 分叉配置与 RPC 行为要一起演练](https://xiuqiu-site.vercel.app/radar/2026-10-24#web3-reth-280-hoodi-operational-boundaries) (2026-10-24, web3/onchain_infrastructure): 只看到节点进程启动，不足以证明接入它的钱包或交易所服务可用。升级验证需要覆盖调用方实际使用的 RPC 路径。
-- [OP Stack 安全发布：证书风险同时进入 Go 与镜像信任库](https://xiuqiu-site.vercel.app/radar/2026-10-24#web3-opnode-11911-certificate-trust) (2026-10-24, web3/security): 节点依赖外部 HTTPS 服务时，协议共识正确并不覆盖传输认证风险。依赖清单应包含镜像里的信任材料，而不只列应用版本号。
 
 ## Boundaries
 

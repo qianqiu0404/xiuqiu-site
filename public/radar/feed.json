@@ -6,6 +6,58 @@
   "language": "zh-CN",
   "items": [
     {
+      "id": "xiuqiu-radar:ai-signals-work-activity-denominator",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-27#ai-signals-work-activity-denominator",
+      "title": "OpenAI Signals：工作消息占比，不能直接当成劳动产出",
+      "summary": "公开分类和统计口径能帮助研究 AI 被用于哪些工作，但结论需要与采样范围匹配；消息分布、用户采用和实际工作效果是不同指标。",
+      "content_text": "公开分类和统计口径能帮助研究 AI 被用于哪些工作，但结论需要与采样范围匹配；消息分布、用户采用和实际工作效果是不同指标。",
+      "date_published": "2026-10-27T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "data"
+      ],
+      "external_url": "https://openai.com/index/chatgpt-expanding-world-of-work/"
+    },
+    {
+      "id": "xiuqiu-radar:ai-terra-model-and-tool-contract",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-27#ai-terra-model-and-tool-contract",
+      "title": "GPT-6.1 Terra 发布：先分别核对模型能力与工具契约",
+      "summary": "接入新模型时，把输入输出、推理设置、工具通道和任务验收分别列清，可以避免只更换模型名，却沿用不兼容的调用假设。",
+      "content_text": "接入新模型时，把输入输出、推理设置、工具通道和任务验收分别列清，可以避免只更换模型名，却沿用不兼容的调用假设。",
+      "date_published": "2026-10-27T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "model_inference"
+      ],
+      "external_url": "https://developers.openai.com/api/docs/changelog"
+    },
+    {
+      "id": "xiuqiu-radar:web3-nethermind-bundled-runtime-patch",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-27#web3-nethermind-bundled-runtime-patch",
+      "title": "Nethermind 2.2.2：上游安全补丁要进入实际运行的制品",
+      "summary": "节点客户端的安全边界包含随制品交付的基础运行时。补丁已发布、可安装制品已更新与运行进程已采用，需要各自留下证据。",
+      "content_text": "节点客户端的安全边界包含随制品交付的基础运行时。补丁已发布、可安装制品已更新与运行进程已采用，需要各自留下证据。",
+      "date_published": "2026-10-27T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "security"
+      ],
+      "external_url": "https://github.com/NethermindEth/nethermind/releases/tag/2.2.2"
+    },
+    {
+      "id": "xiuqiu-radar:web3-avalanchego-plugin-upgrade-boundary",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-27#web3-avalanchego-plugin-upgrade-boundary",
+      "title": "AvalancheGo 1.15.2：可选客户端更新也有插件兼容要求",
+      "summary": "“版本向后兼容”不能代替插件、API、配置和已有数据库状态的逐项检查；长期停机后恢复的节点，还可能有不同的过渡路径。",
+      "content_text": "“版本向后兼容”不能代替插件、API、配置和已有数据库状态的逐项检查；长期停机后恢复的节点，还可能有不同的过渡路径。",
+      "date_published": "2026-10-27T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "onchain_infrastructure"
+      ],
+      "external_url": "https://github.com/ava-labs/avalanchego/releases/tag/v1.15.2"
+    },
+    {
       "id": "xiuqiu-radar:ai-akv-cache-operation-history",
       "url": "https://xiuqiu-site.vercel.app/radar/2026-10-26#ai-akv-cache-operation-history",
       "title": "AKV：相同文本前缀，未必对应相同缓存状态",
@@ -732,58 +784,6 @@
         "market_signal"
       ],
       "external_url": "https://github.com/OpenZeppelin/openzeppelin-foundry-upgrades/releases/tag/v0.4.2"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-06-ai",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-06#ai-engineering",
-      "title": "只把可判定的数据归并交给程序化工具调用",
-      "summary": "把过滤、连接、排序、去重或字段校验限定为固定 schema、只读工具、并发和停止条件明确的子流程，再由模型完成取舍。程序输出和最终回答都要回归验证，写入与授权仍走确定性门禁。",
-      "content_text": "把过滤、连接、排序、去重或字段校验限定为固定 schema、只读工具、并发和停止条件明确的子流程，再由模型完成取舍。程序输出和最终回答都要回归验证，写入与授权仍走确定性门禁。",
-      "date_published": "2026-08-06T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "ai_engineering"
-      ],
-      "external_url": "https://developers.openai.com/api/docs/guides/latest-model#programmatic-tool-calling"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-06-web3",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-06#web3-design",
-      "title": "把签名算法迁移建模为不可逆控制权切换",
-      "summary": "EIP-8164 草案会在账户写入 ML-DSA-44 公钥后永久关闭旧 ECDSA 路径。钱包服务应绑定链、账户、nonce、算法和公钥指纹，分离旧密钥迁移授权与新密钥签名；草案未激活且无链上恢复，不能用于生产。",
-      "content_text": "EIP-8164 草案会在账户写入 ML-DSA-44 公钥后永久关闭旧 ECDSA 路径。钱包服务应绑定链、账户、nonce、算法和公钥指纹，分离旧密钥迁移授权与新密钥签名；草案未激活且无链上恢复，不能用于生产。",
-      "date_published": "2026-08-06T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "web3_design"
-      ],
-      "external_url": "https://eips.ethereum.org/EIPS/eip-8164"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-06-tools",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-06#tools",
-      "title": "OpenCode · 多端可扩展 coding agent 运行时",
-      "summary": "OpenCode 把终端、桌面、LSP、MCP、权限审批、headless server 和 SDK 集成到同一运行时；固定版 1.18.14 已复现 CLI 与本地健康端点。默认开发权限、无认证 server 和长输出丢失风险要求隔离、…",
-      "content_text": "OpenCode 把终端、桌面、LSP、MCP、权限审批、headless server 和 SDK 集成到同一运行时；固定版 1.18.14 已复现 CLI 与本地健康端点。默认开发权限、无认证 server 和长输出丢失风险要求隔离、…",
-      "date_published": "2026-08-06T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "tools"
-      ],
-      "external_url": "https://github.com/anomalyco/opencode"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-06-reading",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-06#reading",
-      "title": "Indexing the Data Lake for Online Point Queries",
-      "summary": "文章用外部 key-to-file/row 索引和精确 ranged read 让 Parquet 同时支持分析与在线点查，并写明分区、PageIndex、blob、列交错和 covering index 的代价。思考题：为真实单键查询列…",
-      "content_text": "文章用外部 key-to-file/row 索引和精确 ranged read 让 Parquet 同时支持分析与在线点查，并写明分区、PageIndex、blob、列交错和 covering index 的代价。思考题：为真实单键查询列…",
-      "date_published": "2026-08-06T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "reading"
-      ],
-      "external_url": "https://engineering.atspotify.com/2026/7/indexing-the-data-lake-for-online-point-queries"
     }
   ]
 }

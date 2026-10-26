@@ -6,7 +6,43 @@
     <atom:link href="https://xiuqiu-site.vercel.app/radar/rss.xml" rel="self" type="application/rss+xml" />
     <description>每天 2 条 AI、2 条 Web3 工程简报：先讲机制，再给例子和边界。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Mon, 26 Oct 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Tue, 27 Oct 2026 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>OpenAI Signals：工作消息占比，不能直接当成劳动产出</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-27#ai-signals-work-activity-denominator</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-signals-work-activity-denominator</guid>
+      <pubDate>Tue, 27 Oct 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>data</category>
+      <description>公开分类和统计口径能帮助研究 AI 被用于哪些工作，但结论需要与采样范围匹配；消息分布、用户采用和实际工作效果是不同指标。</description>
+    </item>
+    <item>
+      <title>GPT-6.1 Terra 发布：先分别核对模型能力与工具契约</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-27#ai-terra-model-and-tool-contract</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-terra-model-and-tool-contract</guid>
+      <pubDate>Tue, 27 Oct 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>model_inference</category>
+      <description>接入新模型时，把输入输出、推理设置、工具通道和任务验收分别列清，可以避免只更换模型名，却沿用不兼容的调用假设。</description>
+    </item>
+    <item>
+      <title>Nethermind 2.2.2：上游安全补丁要进入实际运行的制品</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-27#web3-nethermind-bundled-runtime-patch</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-nethermind-bundled-runtime-patch</guid>
+      <pubDate>Tue, 27 Oct 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>security</category>
+      <description>节点客户端的安全边界包含随制品交付的基础运行时。补丁已发布、可安装制品已更新与运行进程已采用，需要各自留下证据。</description>
+    </item>
+    <item>
+      <title>AvalancheGo 1.15.2：可选客户端更新也有插件兼容要求</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-27#web3-avalanchego-plugin-upgrade-boundary</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-avalanchego-plugin-upgrade-boundary</guid>
+      <pubDate>Tue, 27 Oct 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>onchain_infrastructure</category>
+      <description>“版本向后兼容”不能代替插件、API、配置和已有数据库状态的逐项检查；长期停机后恢复的节点，还可能有不同的过渡路径。</description>
+    </item>
     <item>
       <title>AKV：相同文本前缀，未必对应相同缓存状态</title>
       <link>https://xiuqiu-site.vercel.app/radar/2026-10-26#ai-akv-cache-operation-history</link>
@@ -510,42 +546,6 @@
       <category>WEB3</category>
       <category>market_signal</category>
       <description>v0.4.2 为新版 memory-safe assembly 语法把最低 Solidity 提升到 0.8.13。官方标注其 potentially breaking，依赖升级前需要验证编译器矩阵，不能因 patch 版本而忽略兼容性。</description>
-    </item>
-    <item>
-      <title>只把可判定的数据归并交给程序化工具调用</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-06#ai-engineering</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-06-ai</guid>
-      <pubDate>Thu, 06 Aug 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>ai_engineering</category>
-      <description>把过滤、连接、排序、去重或字段校验限定为固定 schema、只读工具、并发和停止条件明确的子流程，再由模型完成取舍。程序输出和最终回答都要回归验证，写入与授权仍走确定性门禁。</description>
-    </item>
-    <item>
-      <title>把签名算法迁移建模为不可逆控制权切换</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-06#web3-design</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-06-web3</guid>
-      <pubDate>Thu, 06 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>web3_design</category>
-      <description>EIP-8164 草案会在账户写入 ML-DSA-44 公钥后永久关闭旧 ECDSA 路径。钱包服务应绑定链、账户、nonce、算法和公钥指纹，分离旧密钥迁移授权与新密钥签名；草案未激活且无链上恢复，不能用于生产。</description>
-    </item>
-    <item>
-      <title>OpenCode · 多端可扩展 coding agent 运行时</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-06#tools</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-06-tools</guid>
-      <pubDate>Thu, 06 Aug 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>tools</category>
-      <description>OpenCode 把终端、桌面、LSP、MCP、权限审批、headless server 和 SDK 集成到同一运行时；固定版 1.18.14 已复现 CLI 与本地健康端点。默认开发权限、无认证 server 和长输出丢失风险要求隔离、…</description>
-    </item>
-    <item>
-      <title>Indexing the Data Lake for Online Point Queries</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-06#reading</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-06-reading</guid>
-      <pubDate>Thu, 06 Aug 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>reading</category>
-      <description>文章用外部 key-to-file/row 索引和精确 ranged read 让 Parquet 同时支持分析与在线点查，并写明分区、PageIndex、blob、列交错和 covering index 的代价。思考题：为真实单键查询列…</description>
     </item>
   </channel>
 </rss>

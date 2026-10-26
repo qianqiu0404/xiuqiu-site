@@ -12,6 +12,48 @@ export interface RadarIndexEntry { date: string; slug: string; snapshotId: strin
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-10-27",
+    "slug": "2026-10-27",
+    "snapshotId": "learning-2026-10-27-dfdda78c8260cea0",
+    "asOf": "2026-10-26T21:41:04.220Z",
+    "title": "学习雷达 · 2026-10-27",
+    "summary": "AI 关注 OpenAI Signals 的消息统计口径，以及 GPT-6.1 Terra 的能力与工具调用契约；Web3 看 Nethermind 如何交付上游运行时补丁，及 AvalancheGo 的插件和升级路径边界。专题讨论宿主机更新为何不能代替节点制品核验。",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "briefs": [
+      {
+        "id": "ai-signals-work-activity-denominator",
+        "domain": "ai",
+        "topic": "data",
+        "title": "OpenAI Signals：工作消息占比，不能直接当成劳动产出"
+      },
+      {
+        "id": "ai-terra-model-and-tool-contract",
+        "domain": "ai",
+        "topic": "model_inference",
+        "title": "GPT-6.1 Terra 发布：先分别核对模型能力与工具契约"
+      },
+      {
+        "id": "web3-nethermind-bundled-runtime-patch",
+        "domain": "web3",
+        "topic": "security",
+        "title": "Nethermind 2.2.2：上游安全补丁要进入实际运行的制品"
+      },
+      {
+        "id": "web3-avalanchego-plugin-upgrade-boundary",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "AvalancheGo 1.15.2：可选客户端更新也有插件兼容要求"
+      }
+    ],
+    "deepDive": {
+      "id": "deep-nethermind-runtime-delivery-evidence",
+      "title": "专题：宿主机更新，不等于节点所携运行时已经更新",
+      "basedOnBriefId": "web3-nethermind-bundled-runtime-patch"
+    },
+    "marketSignals": []
+  },
+  {
     "date": "2026-10-26",
     "slug": "2026-10-26",
     "snapshotId": "learning-2026-10-26-2ca3bd796c6d6d5a",
@@ -1237,6 +1279,212 @@ export const radarIndex: RadarIndexEntry[] = [
 
 export const latestRadars: DailyRadar[] = [
   {
+    "date": "2026-10-27",
+    "slug": "2026-10-27",
+    "title": "学习雷达 · 2026-10-27",
+    "summary": "AI 关注 OpenAI Signals 的消息统计口径，以及 GPT-6.1 Terra 的能力与工具调用契约；Web3 看 Nethermind 如何交付上游运行时补丁，及 AvalancheGo 的插件和升级路径边界。专题讨论宿主机更新为何不能代替节点制品核验。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-10-26T21:41:04.220Z",
+    "generatedAt": "2026-10-26T21:41:04.220Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-signals-work-activity-denominator",
+        "domain": "ai",
+        "topic": "data",
+        "title": "OpenAI Signals：工作消息占比，不能直接当成劳动产出",
+        "whatHappened": "OpenAI 于 10 月 26 日发布 Signals 新数据，把个人 ChatGPT 计划中的工作相关消息映射到 165 类 O*NET 中间工作活动，覆盖近百个国家、2025 年第一季度至 2026 年第三季度。该数据不含 Enterprise 消息或 Codex 使用。",
+        "mechanism": "去标识后的消息由自动分类器标注，再做加权聚合、隐私保护和发布。数据字典把 IWA 表的单位写为国家、季度和活动组合，数值是该组工作相关消息的占比；低频活动会并入 Other IWA。",
+        "workedExample": "若某国某季度的编程相关消息占比上升，研究示例应先核对分母、活动映射和同一比较窗口，再与外部职业数据对照。不能据此说编程用户人数、工时或产出同比增长；本期未重算数据或进行因果分析。",
+        "whyItMatters": "公开分类和统计口径能帮助研究 AI 被用于哪些工作，但结论需要与采样范围匹配；消息分布、用户采用和实际工作效果是不同指标。",
+        "risksAndLimits": [
+          "165 类不覆盖全部工作活动；模型分类存在误差，细分样本、隐私噪声和舍入也会影响解释。",
+          "个人计划消息不能代表全部企业使用；跨国和跨期差异不证明 AI 导致就业、生产率或职业结构变化。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_research_data",
+            "name": "OpenAI: ChatGPT’s expanding world of work",
+            "url": "https://openai.com/index/chatgpt-expanding-world-of-work/",
+            "publishedAt": "2026-10-26T00:00:00.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_data_methodology",
+            "name": "OpenAI Signals v3.0 data dictionary",
+            "url": "https://cdn.openai.com/signals/data-dictionary.pdf"
+          }
+        ],
+        "nextQuestions": [
+          "比较图表前，是否明确占比的分母、时间窗口和未单列活动的去向？",
+          "需要哪些独立的采用、工时或产出数据，才能检验消息变化背后的解释？"
+        ]
+      },
+      {
+        "id": "ai-terra-model-and-tool-contract",
+        "domain": "ai",
+        "topic": "model_inference",
+        "title": "GPT-6.1 Terra 发布：先分别核对模型能力与工具契约",
+        "whatHappened": "OpenAI 的 10 月 26 日 API changelog 宣布 GPT-6.1 Terra，定位于视觉推理、计算机操作与自然语言写作。当前模型文档列出文本和图像输入、文本输出，以及从 none 到 max 的推理设置；这些是官方规格，本期未测试模型。",
+        "mechanism": "公开接口允许选择推理投入，但不同端点的工具契约并不相同：文档明确 tool calling 需要 Responses API。支持 Chat Completions、图像输入或 computer use，不等于所有调用方式和权限条件都一致。",
+        "workedExample": "一个识别应用界面并准备填写表单的流程，可先用同一批截图核对字段识别，再单独检查工具调用、权限和保存结果。不能只因模型看懂截图，就认定任务已经完成；这是未执行的工程示例。",
+        "whyItMatters": "接入新模型时，把输入输出、推理设置、工具通道和任务验收分别列清，可以避免只更换模型名，却沿用不兼容的调用假设。",
+        "risksAndLimits": [
+          "发行方定位和公开规格不是本系统的成功率、延迟或成本证据；本期没有运行比较或调用付费模型。",
+          "computer-use 支持不构成无人监督安全保证；工具权限、访问范围和结果核对仍由接入系统承担。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_api_changelog",
+            "name": "OpenAI API changelog: GPT-6.1 Terra release",
+            "url": "https://developers.openai.com/api/docs/changelog",
+            "publishedAt": "2026-10-26T00:00:00.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_model_documentation",
+            "name": "GPT-6.1 Terra model contract",
+            "url": "https://developers.openai.com/api/docs/models/gpt-6.1-terra"
+          }
+        ],
+        "nextQuestions": [
+          "使用的端点是否支持实际需要的工具，而不只是支持该模型名称？",
+          "同一任务的识别正确、动作成功与最终保存结果，是否有分别可核对的证据？"
+        ]
+      },
+      {
+        "id": "web3-nethermind-bundled-runtime-patch",
+        "domain": "web3",
+        "topic": "security",
+        "title": "Nethermind 2.2.2：上游安全补丁要进入实际运行的制品",
+        "whatHappened": "Nethermind 于 10 月 26 日（UTC）发布 v2.2.2，把 .NET 10.0.14 安全更新带入 Docker 镜像、自包含二进制及相关包。release notes 称没有 Nethermind 代码、数据库格式或配置变更，共识行为和分叉安排沿用 2.2.1。",
+        "mechanism": "微软的 10 月 25 日 OOB 公告区分部署方式：框架依赖应用使用宿主运行时，自包含应用和容器则携带自己的运行时。只更新宿主机，不会自动替换已经随应用或镜像交付的旧运行时。",
+        "workedExample": "一个节点发布清单可以分别记录部署类型、实际制品摘要和所用运行时，再对照修复版本。仓库依赖已经更新，不能单独证明运行进程已采用补丁；本期未拉取镜像、运行节点或验证漏洞。",
+        "whyItMatters": "节点客户端的安全边界包含随制品交付的基础运行时。补丁已发布、可安装制品已更新与运行进程已采用，需要各自留下证据。",
+        "risksAndLimits": [
+          "微软指出请求解压和 HTTP 客户端自动响应解压默认未启用；未核对实际部署，不能推断具体节点可被利用。",
+          "这是指定上游补丁的交付说明，不证明所有漏洞已修复，也不等于本期完成了节点安全验收。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Nethermind v2.2.2 release notes",
+            "url": "https://github.com/NethermindEth/nethermind/releases/tag/2.2.2",
+            "publishedAt": "2026-10-26T16:59:58.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_security_announcement",
+            "name": "Microsoft: .NET October 2026 Out-of-Band Security Updates",
+            "url": "https://devblogs.microsoft.com/dotnet/dotnet-october-2026-oob-security-updates/",
+            "publishedAt": "2026-10-25T00:00:00.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "核验运行时版本时，证据来自宿主机、镜像还是实际运行进程？",
+          "制品更新或回滚后，补丁采用状态能否随实际制品重新核对？"
+        ]
+      },
+      {
+        "id": "web3-avalanchego-plugin-upgrade-boundary",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "AvalancheGo 1.15.2：可选客户端更新也有插件兼容要求",
+        "whatHappened": "AvalancheGo 于 10 月 22 日（UTC）发布 v1.15.2，标为与 v1.15.0 向后兼容、可选但建议更新；同时把插件版本升到 47，要求所有插件更新以保持兼容。这是客户端发布，不是宣布一个新分叉。",
+        "mechanism": "兼容性要分别看链协议、插件和接口：本版移除旧的 avax.getAtomicTxStatus，改用仅对已接受交易成功的 avax.getAtomicTx；旧 eth-apis 配置也被移除，应使用 apis，旧键会被忽略并告警。",
+        "workedExample": "对最后运行时间早于 Helicon 激活的节点，官方要求先运行 1.15.0 或 1.15.1，直到 C-Chain 已完成跨过 Helicon 的引导同步，或选择从空数据库重新同步。拟议清单还应核对插件 47 与调用方接口；本期未执行升级或重同步。",
+        "whyItMatters": "“版本向后兼容”不能代替插件、API、配置和已有数据库状态的逐项检查；长期停机后恢复的节点，还可能有不同的过渡路径。",
+        "risksAndLimits": [
+          "可选更新不表示插件版本要求可以忽略；上述过渡条件只针对官方指定的 Helicon 前运行状态。",
+          "release notes 不证明任意节点已完成引导同步或接入迁移，也不能据此推断网络或资金状态。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "AvalancheGo v1.15.2: Helicon.2 — Removed Coreth",
+            "url": "https://github.com/ava-labs/avalanchego/releases/tag/v1.15.2",
+            "publishedAt": "2026-10-22T21:49:24.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "升级记录是否同时覆盖客户端、插件版本、旧 API 与失效配置键？",
+          "恢复节点的历史运行状态，是否满足直接升级所需的引导同步条件？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-nethermind-runtime-delivery-evidence",
+      "domain": "web3",
+      "topic": "security",
+      "title": "专题：宿主机更新，不等于节点所携运行时已经更新",
+      "whatHappened": "Nethermind 2.2.2 把 .NET 安全更新打包到镜像和自包含二进制；微软的 OOB 公告则明确，框架依赖、自包含和容器部署需要分别处理。两份说明一起界定了这次补丁的交付边界。",
+      "mechanism": "框架依赖应用使用宿主运行时，自包含应用携带运行时，容器还需要采用更新后的镜像。工程上的推论是：依赖声明、构建制品与运行进程是三份证据，不能用其中一份替代其他两份。",
+      "workedExample": "假设宿主运行时已经更新，但节点仍由旧自包含包启动，清单应继续标记该制品待核对；宿主机列出新版运行时，不能替该进程证明补丁采用。可用隔离夹具比对制品摘要与运行时来源；这是拟议测试，没有执行。",
+      "whyItMatters": "安全更新是否真正到达节点，需要追到具体交付物和运行状态。这个检查方法也能帮助避免回滚到旧镜像后，仍沿用先前的“已修复”记录。",
+      "risksAndLimits": [
+        "不能把上游漏洞清单直接套到每个节点；微软对 .NET 10/11 的 tarball 权限问题限定为 source-build，解压相关风险也取决于实际使用路径。",
+        "本期没有验证具体节点的漏洞曝光、补丁效果或运行状态；官方发布说明不等于独立安全审计。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "Nethermind v2.2.2 release notes",
+          "url": "https://github.com/NethermindEth/nethermind/releases/tag/2.2.2",
+          "publishedAt": "2026-10-26T16:59:58.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_security_announcement",
+          "name": "Microsoft: .NET October 2026 Out-of-Band Security Updates",
+          "url": "https://devblogs.microsoft.com/dotnet/dotnet-october-2026-oob-security-updates/",
+          "publishedAt": "2026-10-25T00:00:00.000Z"
+        }
+      ],
+      "nextQuestions": [
+        "“已采用修复”记录是否绑定具体制品与实际运行时，而不是只绑定宿主版本？",
+        "回滚或更换部署方式时，如何让补丁状态回到需要重新核对的流程？"
+      ],
+      "basedOnBriefId": "web3-nethermind-bundled-runtime-patch"
+    },
+    "sourceUrls": [
+      "https://openai.com/index/chatgpt-expanding-world-of-work/",
+      "https://cdn.openai.com/signals/data-dictionary.pdf",
+      "https://developers.openai.com/api/docs/changelog",
+      "https://developers.openai.com/api/docs/models/gpt-6.1-terra",
+      "https://github.com/NethermindEth/nethermind/releases/tag/2.2.2",
+      "https://devblogs.microsoft.com/dotnet/dotnet-october-2026-oob-security-updates/",
+      "https://github.com/ava-labs/avalanchego/releases/tag/v1.15.2"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-10-27-dfdda78c8260cea0",
+    "asOf": "2026-10-26T21:41:04.220Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
+  {
     "date": "2026-10-26",
     "slug": "2026-10-26",
     "title": "学习雷达 · 2026-10-26",
@@ -2402,191 +2650,6 @@ export const latestRadars: DailyRadar[] = [
     "marketSignals": [],
     "snapshotId": "learning-2026-08-13-34d6285dd374d3b6",
     "asOf": "2026-08-13T00:02:17.000Z",
-    "origin": "research",
-    "publicationState": "published"
-  },
-  {
-    "date": "2026-08-12",
-    "slug": "2026-08-12",
-    "title": "学习雷达 · 2026-08-12",
-    "summary": "AI 关注生成器—评估器闭环与长任务使用边界；Web3 关注隐私资产执行路径和账户认证协议。",
-    "publish": true,
-    "reviewStatus": "automated",
-    "schemaVersion": 2,
-    "editionMode": "backfill",
-    "researchedAt": "2026-08-12T05:27:51.000Z",
-    "generatedAt": "2026-08-12T05:27:51.000Z",
-    "sourceSections": [
-      "ai",
-      "web3",
-      "deepDive"
-    ],
-    "missingSections": [],
-    "briefs": [
-      {
-        "id": "ai-generator-evaluator-loop",
-        "domain": "ai",
-        "topic": "agent",
-        "title": "长任务 Harness：生成器与评估器要分工",
-        "whatHappened": "Anthropic 在 2026-03-24 公开长任务应用开发 harness 设计，说明生成器、评估器与结构化交接如何提升前端和可验证软件任务的完成质量。",
-        "mechanism": "生成器负责推进实现，独立评估器按可检查标准寻找缺口；阶段结果写入结构化工件，在上下文重置后恢复目标、已完成项、失败证据和下一步。",
-        "workedExample": "实现网页时，生成器提交页面后不自行宣称完成；评估器按可用性、视觉层级和浏览器错误逐项检查，把失败项写入下一轮任务，直到门禁满足或明确停止。",
-        "whyItMatters": "它帮助你理解 Agent 不是一次长提示，而是角色、状态和评测组成的控制系统；同样适用于研究内容的采集—编辑—门禁链路。",
-        "risksAndLimits": [
-          "生成器和评估器可能共享同一盲点，角色分离不等于真正独立证据。",
-          "更多循环会增加延迟与 token，必须有停止条件和失败上限。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_engineering",
-            "name": "Anthropic · Harness design for long-running application development",
-            "url": "https://www.anthropic.com/engineering/harness-design-long-running-apps",
-            "publishedAt": "2026-03-24T00:00:00.000Z"
-          }
-        ],
-        "nextQuestions": [
-          "什么情况下应使用独立模型评估器，什么情况下确定性测试更可靠？",
-          "结构化交接最少需要保存哪些字段才能跨上下文恢复？"
-        ]
-      },
-      {
-        "id": "ai-long-horizon-adoption",
-        "domain": "ai",
-        "topic": "data",
-        "title": "Agent 使用研究：任务时长只是方向性估计",
-        "whatHappened": "OpenAI 在 2026-06-25 发布 Codex 使用研究，报告样本用户越来越多地委派长时、跨工具任务，并明确任务时长由模型根据 transcript 估计。",
-        "mechanism": "研究从匿名样本中推断任务类别与人类完成时间，再观察不同时间阈值和岗位的采用变化；这些指标衡量使用模式，不直接证明生产率或输出正确性。",
-        "workedExample": "一个被估计为八小时的人类任务可能由 Agent 在并行环境中更快完成，但验收仍要看可用产物、返工和失败成本，不能把估计时长直接当作节省工时。",
-        "whyItMatters": "它训练你区分产品使用指标与因果结论，也提醒学习 Agent 系统时应关注验收率、返工和边界，而不是只看运行时长或 token。",
-        "risksAndLimits": [
-          "样本只覆盖特定用户群，且人类任务时长来自模型估计而非逐项实测。",
-          "使用量增长可能来自产品可用性和组织政策，不能单独归因于能力提升。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_research",
-            "name": "OpenAI · How agents are transforming work",
-            "url": "https://openai.com/index/how-agents-are-transforming-work/",
-            "publishedAt": "2026-06-25T00:00:00.000Z"
-          }
-        ],
-        "nextQuestions": [
-          "如何用交付验收率与返工成本校准模型估计的人类任务时长？",
-          "并行 Agent 的总计算量与真实生产率应该如何同时报告？"
-        ]
-      },
-      {
-        "id": "web3-zcash-execution-boundary",
-        "domain": "web3",
-        "topic": "wallet_cex",
-        "title": "Ledger Live 4.15：隐私资产路径要单独门禁",
-        "whatHappened": "Ledger 在 2026-08-11 发布 Live Desktop 4.15.0，将 Zcash 屏蔽转账纳入独立 coin-module，并加入功能开关、原生构造签名路径和遥测脱敏修复。",
-        "mechanism": "隐私币执行不复用普通 token 路径，而由专用模块处理 PCZT 构造、硬件签名与广播；功能开关和双实现差分测试控制迁移，地址与账户标识从 RUM 中移除。",
-        "workedExample": "上线前分别回放 t→t、t→z、z→t、z→z，比较旧桥与新模块的交易字节、费用和广播结果；关闭开关时必须能回到已知路径且不残留敏感遥测。",
-        "whyItMatters": "它把钱包隐私、签名和发布控制放在同一个具体案例中，适合学习 coin adapter、硬件边界和敏感数据最小化。",
-        "risksAndLimits": [
-          "发布说明明确仍有未完成路径，不能把版本号理解为所有 Zcash 流程已齐备。",
-          "遥测字段移除需要验证历史日志、第三方采集器和错误消息是否仍泄露标识。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "Ledger Live Desktop 4.15.0",
-            "url": "https://github.com/LedgerHQ/ledger-live/releases/tag/%40ledgerhq/live-desktop%404.15.0",
-            "publishedAt": "2026-08-11T08:57:07.000Z"
-          }
-        ],
-        "nextQuestions": [
-          "隐私币模块的差分测试应比较哪些字节级和状态级不变量？",
-          "钱包遥测如何证明地址与账户标识没有通过间接字段泄露？"
-        ]
-      },
-      {
-        "id": "web3-canonical-authenticator",
-        "domain": "web3",
-        "topic": "protocol",
-        "title": "EIP-8130：把账户认证从任意代码中拆出",
-        "whatHappened": "Ethereum EIPs 仓库在 2026-08-11 更新 EIP-8130，对齐 keystore 合约、交易有效期与精简协议边界，继续定义 canonical authenticator。",
-        "mechanism": "交易显式声明受协议认可的认证器，节点可在执行任意账户代码前完成有界认证；账户策略再用 actor、scope、有效期、二维 nonce 与 epoch 管理会话权限。",
-        "workedExample": "会话键只获准在一小时内调用特定合约的 transfer，交易携带 actor 与 scope；节点先验证认证器和有效期，再由账户策略检查额度，撤权时提升 epoch 使旧会话立即失效。",
-        "whyItMatters": "它把账户抽象最难的认证、并发 nonce 与会话权限集中到可讨论协议中，适合训练从交易格式到钱包策略的全链路思考。",
-        "risksAndLimits": [
-          "该提案仍是 Draft，字段、交易类型与共识成本都可能继续变化。",
-          "更复杂的 nonce、epoch 和跨链配置扩大实现与审计面积。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "protocol_commit",
-            "name": "EIP-8130 keystore and validity update",
-            "url": "https://github.com/ethereum/EIPs/commit/054078969965674643d7cf4e22460c438d09dd07",
-            "publishedAt": "2026-08-11T17:12:36.000Z"
-          }
-        ],
-        "nextQuestions": [
-          "canonical authenticator 的允许集如何升级而不破坏旧账户？",
-          "二维 nonce 与 epoch 撤权在并发交易中有哪些竞态？"
-        ]
-      }
-    ],
-    "deepDive": {
-      "id": "deep-web3-eip8130-auth",
-      "domain": "web3",
-      "topic": "protocol",
-      "title": "专题：从认证器到会话权限的完整状态机",
-      "whatHappened": "EIP-8130 的最新提交与规范页面把交易认证前置、账户策略读取、会话有效期、scope 和 nonce 组合成一套可验证账户认证框架。",
-      "mechanism": "协议层先用 canonical authenticator 验证签名与交易外壳，账户层再读取 actor 配置并检查 scope、有效期和策略；nonce 维度允许并发，epoch 为整组会话提供快速撤权。",
-      "workedExample": "用户给交易机器人创建 session actor：只允许调用 DEX A、单笔不超过 100 USDC、08:00 前有效。机器人并发发两笔不同 nonce 的交易；用户提升 epoch 后，未上链旧交易全部失效。",
-      "whyItMatters": "这个状态机能把会话键从模糊的‘临时授权’变成可枚举条件，连接钱包 UI、签名服务、节点验证和链上策略四个学习层次。",
-      "risksAndLimits": [
-        "前端若省略 scope、额度或失效时间，协议安全性无法转化为用户可理解的授权。",
-        "跨链复制 actor 配置可能造成不同链上 epoch 与 nonce 状态分叉。"
-      ],
-      "sources": [
-        {
-          "tier": "tier1",
-          "role": "event",
-          "kind": "protocol_commit",
-          "name": "EIP-8130 keystore and validity update",
-          "url": "https://github.com/ethereum/EIPs/commit/054078969965674643d7cf4e22460c438d09dd07",
-          "publishedAt": "2026-08-11T17:12:36.000Z"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "protocol_specification",
-          "name": "EIP-8130 canonical transaction authentication",
-          "url": "https://eips.ethereum.org/EIPS/eip-8130"
-        }
-      ],
-      "nextQuestions": [
-        "钱包确认页如何把 actor、scope、额度、有效期和撤权入口压缩成可理解交互？",
-        "需要哪些属性测试覆盖过期、撤权、重放、并发 nonce 和错误 scope？"
-      ],
-      "basedOnBriefId": "web3-canonical-authenticator"
-    },
-    "sourceUrls": [
-      "https://www.anthropic.com/engineering/harness-design-long-running-apps",
-      "https://openai.com/index/how-agents-are-transforming-work/",
-      "https://github.com/LedgerHQ/ledger-live/releases/tag/%40ledgerhq/live-desktop%404.15.0",
-      "https://github.com/ethereum/EIPs/commit/054078969965674643d7cf4e22460c438d09dd07",
-      "https://eips.ethereum.org/EIPS/eip-8130"
-    ],
-    "relatedProjectSlugs": [
-      "wallet-core",
-      "exchange-wallet-system",
-      "web3-wallet-engineer-lab"
-    ],
-    "marketSignals": [],
-    "snapshotId": "learning-2026-08-12-802ca3adfabc99c8",
-    "asOf": "2026-08-12T05:27:51.000Z",
     "origin": "research",
     "publicationState": "published"
   }
