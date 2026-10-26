@@ -5,8 +5,9 @@ import { allMarketRadars, findStaticMarketRadarEvent, getSnapshotFreshness, read
 import type { StaticMarketRadarEvent, StaticMarketRadarEventMatch } from '../data'
 import type { MarketRadarEvent } from '../../../market-radar/contracts'
 import { setSeoMeta } from '../../../utils/seo'
-import '../../../styles/market-radar.css'
-import '../../../design/market-skin.css'
+import '../../../design/brief.css'
+import '../../../design/reader.css'
+import '../../../design/market-reader.css'
 
 const route = useRoute()
 const returnLink = computed(() => route.query.from ? readingReturnLink(route.query.from) : { href: '/market-radar', label: '← 返回市场雷达' })
@@ -135,101 +136,97 @@ watch(() => String(route.params.id || ''), async (id) => {
 </script>
 
 <template>
-  <div class="trade-radar-page trade-radar-event-page" lang="zh-CN" :data-snapshot-state="eventFreshness.state">
-    <div class="container trade-radar-shell">
-      <router-link class="trade-radar-back" :to="returnLink.href">{{ returnLink.label }}</router-link>
+  <div class="brief market-reader" lang="zh-CN" :data-snapshot-state="eventFreshness.state">
+    <header class="brief-masthead">
+      <div class="brief-shell">
+        <router-link class="brief-back" :to="returnLink.href">{{ returnLink.label }}</router-link>
 
-      <section v-if="loading" class="trade-radar-state trade-radar-event-state" aria-busy="true" aria-live="polite">
-        <p class="trade-radar-kicker">Loading event record</p><h1>正在读取事件记录…</h1>
-      </section>
+        <template v-if="loading">
+          <p class="brief-dateline"><span>市场雷达</span><span>事件记录</span></p>
+          <h1 aria-busy="true" aria-live="polite">正在读取事件记录…</h1>
+        </template>
 
-      <section v-else-if="error" class="trade-radar-state trade-radar-event-state" role="alert">
-        <p class="trade-radar-kicker">Event unavailable</p>
-        <h1>事件记录暂时不可读取。</h1>
-        <p>{{ error }}</p>
-        <router-link class="trade-radar-primary-link" :to="returnLink.href">{{ returnLink.label }}</router-link>
-      </section>
+        <template v-else-if="error">
+          <p class="brief-dateline"><span>市场雷达</span><span>事件记录</span></p>
+          <h1>事件记录暂时不可读取。</h1>
+          <p class="brief-state" role="alert">{{ error }}</p>
+          <router-link class="brief-button brief-button--primary" :to="returnLink.href">{{ returnLink.label }}</router-link>
+        </template>
 
-      <article v-else-if="event" class="trade-radar-event-detail">
-        <header class="trade-radar-event-detail-header">
-          <div class="trade-event-classification">
-            <strong>{{ event.priority }}</strong>
-            <span v-if="event.score !== undefined">Score {{ event.score }}</span>
-            <span v-if="event.horizon">{{ horizonLabels[event.horizon] }}</span>
+        <template v-else-if="event">
+          <p class="brief-dateline">
+            <span>市场雷达</span>
+            <span>{{ eventFreshness.isArchive ? '历史事件记录' : event.origin === 'api' ? '数据库事件记录' : '静态快照事件' }}</span>
+            <time :datetime="event.publishedAt">{{ event.origin === 'api' ? `发布 ${formatDateTime(event.publishedAt)}（北京时间）` : `来源发布 ${event.publishedAt}` }}</time>
+          </p>
+          <p class="brief-card-meta">
+            <b :class="`brief-tag brief-tag--${event.priority.toLowerCase()}`">{{ event.priority }}</b>
+            <b v-if="event.category" class="brief-tag brief-tag--market">{{ categoryLabels[event.category] }}</b>
             <span v-if="event.status">{{ eventFreshness.isArchive ? `快照时：${statusLabels[event.status]}` : statusLabels[event.status] }}</span>
-            <span v-if="event.category">{{ categoryLabels[event.category] }}</span>
+            <span v-if="event.score !== undefined">评分 {{ event.score }}</span>
+            <span v-if="event.horizon">观察周期 {{ horizonLabels[event.horizon] }}</span>
+            <time v-if="event.eventAt" :datetime="event.eventAt">事件时间 {{ formatDateTime(event.eventAt) }}（北京时间）</time>
+          </p>
+          <h1>{{ event.title }}</h1>
+          <p class="brief-lede">{{ event.summary }}</p>
+          <p v-if="eventFreshness.isArchive" class="brief-fresh brief-fresh--stale" role="status">
+            {{ eventFreshness.label }} · 这条记录来自历史快照；事件状态和观察条件只描述当时，不代表今天仍然有效。
+          </p>
+        </template>
+      </div>
+    </header>
+
+    <div v-if="event && !loading && !error" class="brief-shell market-event-body">
+      <article class="reader-article">
+        <p class="reader-why">{{ event.whyItMatters }}</p>
+
+        <dl class="reader-answers trade-radar-event-boundaries">
+          <div>
+            <dt>原始来源</dt>
+            <dd>
+              <ul v-if="event.sources.length" class="reader-sources">
+                <li v-for="source in event.sources" :key="source.url"><a :href="source.url" target="_blank" rel="noopener"><span class="market-source-name">{{ source.name }}</span><i aria-hidden="true">↗</i></a></li>
+              </ul>
+              <p v-else class="market-legacy">当前记录没有可公开的原始来源。</p>
+            </dd>
           </div>
-          <div class="trade-radar-event-dates">
-            <time :datetime="event.publishedAt">{{ event.origin === 'api' ? `发布 ${formatDateTime(event.publishedAt)} CST` : `来源发布 ${event.publishedAt}` }}</time>
-            <time v-if="event.eventAt" :datetime="event.eventAt">事件时间 {{ formatDateTime(event.eventAt) }} CST</time>
+          <div>
+            <dt>接下来观察</dt>
+            <dd><p :class="{ 'market-legacy': !event.watchFor }">{{ event.watchFor || legacyWatchFor }}</p></dd>
           </div>
-        </header>
-
-        <p class="trade-radar-kicker">{{ eventFreshness.isArchive ? 'Archived event record' : event.origin === 'api' ? 'Database-backed event record' : 'Generated static event fallback' }}</p>
-        <h1>{{ event.title }}</h1>
-        <p class="trade-radar-event-lead">{{ event.summary }}</p>
-        <div v-if="eventFreshness.isArchive" class="trade-radar-snapshot-notice" role="status">
-          <strong>{{ eventFreshness.label }}</strong>
-          <p>这条记录来自历史快照；事件状态和观察条件只描述当时，不代表今天仍然有效。</p>
-        </div>
-
-        <section class="trade-radar-event-fact"><h2>为什么重要</h2><p>{{ event.whyItMatters }}</p></section>
-
-        <section class="trade-radar-event-boundaries" aria-labelledby="event-boundaries-title">
-          <header>
-            <p class="trade-radar-kicker">System observation boundaries</p>
-            <h2 id="event-boundaries-title">来源、观察与失效边界始终分开。</h2>
-            <p>下列观察条件由系统结构化生成，不是原始来源的原文。</p>
-          </header>
-          <dl>
-            <div>
-              <dt>原始来源</dt>
-              <dd>
-                <ul v-if="event.sources.length">
-                  <li v-for="source in event.sources" :key="source.url"><a :href="source.url" target="_blank" rel="noopener"><span class="trade-radar-source-name">{{ source.name }}</span><span aria-hidden="true">↗</span></a></li>
-                </ul>
-                <p v-else class="is-legacy">当前记录没有可公开的原始来源。</p>
-              </dd>
-            </div>
-            <div>
-              <dt>接下来观察</dt>
-              <dd><p :class="{ 'is-legacy': !event.watchFor }">{{ event.watchFor || legacyWatchFor }}</p></dd>
-            </div>
-            <div>
-              <dt>何时失效</dt>
-              <dd><p :class="{ 'is-legacy': !event.invalidation }">{{ event.invalidation || legacyInvalidation }}</p></dd>
-            </div>
-          </dl>
-        </section>
-
-        <section v-if="event.origin === 'api'" class="trade-radar-event-reaction" aria-labelledby="event-reaction-title">
-          <header><p class="trade-radar-kicker">Three-layer judgment</p><h2 id="event-reaction-title">把新闻、行情与系统判断分开。</h2></header>
-          <dl>
-            <div><dt>新闻倾向</dt><dd><span>{{ event.newsDirection ? directionLabels[event.newsDirection] : '未记录' }}</span><small>{{ event.newsDirection || 'unavailable' }}</small></dd></div>
-            <div><dt>真实行情反应</dt><dd><span>{{ event.reaction ? reactionLabels[event.reaction.status] : '待观察' }}</span><small>5m {{ percent(event.reaction?.excess5m) }} · 30m {{ percent(event.reaction?.excess30m) }} · 4h {{ percent(event.reaction?.excess4h) }}</small></dd></div>
-            <div><dt>系统判断</dt><dd><span>{{ event.systemJudgment }}</span><small>观察周期 · {{ event.horizon ? horizonLabels[event.horizon] : '未记录' }}</small></dd></div>
-          </dl>
-        </section>
-
-        <section v-else class="trade-radar-event-reaction trade-radar-event-reaction--unavailable" aria-labelledby="event-reaction-title">
-          <header>
-            <p class="trade-radar-kicker">Static record boundary</p>
-            <h2 id="event-reaction-title">行情反应与系统判断尚未记录。</h2>
-            <p>静态快照没有 score、行情反应或系统判断字段；本页不会推测这些值。</p>
-          </header>
-        </section>
-
-        <section class="trade-radar-event-evidence">
-          <div><p class="trade-radar-kicker">Affected assets</p><h2>相关资产</h2><div class="trade-event-assets"><span v-for="asset in event.assets" :key="asset">{{ asset }}</span></div></div>
-          <div><p class="trade-radar-kicker">Evidence count</p><h2>{{ event.sourceCount }} 个公开来源</h2><p>资产映射、来源证据和系统边界可能继续更新，但不会自动转成交易指令。</p></div>
-        </section>
-
-        <router-link v-if="event.snapshotSlug" class="trade-radar-primary-link trade-radar-event-snapshot-link" :to="withReadingReturn(`/market-radar/${event.snapshotSlug}`, route.query.from)">
-          查看所属日期快照 <span aria-hidden="true">→</span>
-        </router-link>
-
-        <p class="trade-radar-disclaimer">这是一条事件研究记录，不构成投资建议。来源、行情和系统判断可能继续更新。</p>
+          <div>
+            <dt>何时失效</dt>
+            <dd><p :class="{ 'market-legacy': !event.invalidation }">{{ event.invalidation || legacyInvalidation }}</p></dd>
+          </div>
+          <div v-if="event.assets.length">
+            <dt>相关资产</dt>
+            <dd><ul class="market-assets"><li v-for="asset in event.assets" :key="asset">{{ asset }}</li></ul></dd>
+          </div>
+        </dl>
+        <p class="market-note">观察与失效条件由系统结构化生成，不是原始来源的原文。共 {{ event.sourceCount }} 个公开来源。</p>
       </article>
+
+      <section v-if="event.origin === 'api'" class="reader-section" aria-labelledby="event-reaction-title">
+        <header class="reader-section-header">
+          <h2 id="event-reaction-title">新闻、行情与系统判断</h2>
+          <small>三层分开记录</small>
+        </header>
+        <dl class="reader-answers">
+          <div><dt>新闻倾向</dt><dd>{{ event.newsDirection ? directionLabels[event.newsDirection] : '未记录' }}</dd></div>
+          <div><dt>行情反应</dt><dd>{{ event.reaction ? reactionLabels[event.reaction.status] : '待观察' }} · 5 分钟 {{ percent(event.reaction?.excess5m) }} · 30 分钟 {{ percent(event.reaction?.excess30m) }} · 4 小时 {{ percent(event.reaction?.excess4h) }}</dd></div>
+          <div><dt>系统判断</dt><dd>{{ event.systemJudgment }}</dd></div>
+        </dl>
+      </section>
+
+      <p v-else class="market-note">静态快照没有 score、行情反应或系统判断字段；本页不会推测这些值。</p>
+
+      <div class="market-event-links">
+        <router-link v-if="event.snapshotSlug" :to="withReadingReturn(`/market-radar/${event.snapshotSlug}`, route.query.from)">查看所属日期快照 <span aria-hidden="true">→</span></router-link>
+      </div>
+
+      <footer class="market-footer">
+        <p>这是一条事件研究记录，不构成投资建议。来源、行情和系统判断可能继续更新。</p>
+      </footer>
     </div>
   </div>
 </template>

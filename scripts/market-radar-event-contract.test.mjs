@@ -53,7 +53,7 @@ test('static event fallback preserves only generated source-backed fields', () =
 test('the event reader keeps source, observation and invalidation visible without raw HTML', async () => {
   const [page, styles] = await Promise.all([
     readFile(new URL('../src/features/market-radar/pages/MarketRadarEventPage.vue', import.meta.url), 'utf8'),
-    readFile(new URL('../src/styles/market-radar.css', import.meta.url), 'utf8'),
+    readFile(new URL('../src/design/market-reader.css', import.meta.url), 'utf8'),
   ])
   assert.match(page, /<dt>原始来源<\/dt>/)
   assert.match(page, /<dt>接下来观察<\/dt>/)
@@ -63,7 +63,7 @@ test('the event reader keeps source, observation and invalidation visible withou
   assert.match(page, /历史记录未提供独立观察条件。/)
   assert.match(page, /历史记录未提供独立失效条件。/)
   assert.match(page, /target="_blank" rel="noopener"/)
-  assert.match(page, /class="trade-radar-source-name"/)
+  assert.match(page, /class="market-source-name"/)
   assert.match(page, /findStaticMarketRadarEvent\(allMarketRadars, id\)/)
   assert.match(page, /event\.score !== undefined/)
   assert.match(page, /event\.origin === 'api'/)
@@ -72,10 +72,12 @@ test('the event reader keeps source, observation and invalidation visible withou
   assert.match(page, /:data-snapshot-state="eventFreshness\.state"/)
   assert.match(page, /这条记录来自历史快照/)
   assert.doesNotMatch(page, /v-html|innerHTML/)
-  assert.match(styles, /\.trade-radar-event-boundaries dl \{[\s\S]*grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/)
-  assert.match(styles, /\.trade-radar-event-boundaries a \{[\s\S]*min-height: 3\.25rem/)
-  assert.match(styles, /\.trade-radar-source-name \{[\s\S]*overflow-wrap: anywhere/)
-  assert.match(styles, /@media \(max-width: 980px\)[\s\S]*\.trade-radar-event-boundaries dl \{ grid-template-columns: minmax\(0, 1fr\); \}/)
+  // Source, observation and invalidation share the reader's answer list,
+  // which stacks to one column on small screens (reader.css).
+  assert.match(page, /class="reader-answers trade-radar-event-boundaries"/)
+  assert.match(page, /import '\.\.\/\.\.\/\.\.\/design\/reader\.css'/)
+  assert.match(styles, /\.market-source-name \{[\s\S]*overflow-wrap: anywhere/)
+  assert.match(styles, /\.market-event-links a \{[\s\S]*min-height: var\(--touch-target\)/)
 })
 
 test('event detail errors are no-store while successful public responses retain CDN caching', async () => {
