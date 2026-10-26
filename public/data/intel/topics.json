@@ -1,15 +1,23 @@
 {
   "schemaVersion": 1,
-  "latestDate": "2026-10-26",
+  "latestDate": "2026-10-27",
   "homePageUrl": "https://xiuqiu-site.vercel.app/",
   "topics": [
     {
       "topic": "market_macro",
       "domain": "market",
-      "count": 7,
-      "lastSeen": "2026-10-26",
+      "count": 8,
+      "lastSeen": "2026-10-27",
       "firstSeen": "2026-08-09",
       "url": "https://xiuqiu-site.vercel.app/topics/market_macro"
+    },
+    {
+      "topic": "market_regulation",
+      "domain": "market",
+      "count": 3,
+      "lastSeen": "2026-10-27",
+      "firstSeen": "2026-10-25",
+      "url": "https://xiuqiu-site.vercel.app/topics/market_regulation"
     },
     {
       "topic": "security",
@@ -42,14 +50,6 @@
       "lastSeen": "2026-10-26",
       "firstSeen": "2026-08-11",
       "url": "https://xiuqiu-site.vercel.app/topics/onchain_infrastructure"
-    },
-    {
-      "topic": "market_regulation",
-      "domain": "market",
-      "count": 2,
-      "lastSeen": "2026-10-26",
-      "firstSeen": "2026-10-25",
-      "url": "https://xiuqiu-site.vercel.app/topics/market_regulation"
     },
     {
       "topic": "market_crypto",

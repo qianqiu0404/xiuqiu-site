@@ -3,6 +3,177 @@
 import type { MarketRadarDaily } from '../generatedMarketRadars.ts'
 export const monthlyMarketRadars: MarketRadarDaily[] = [
   {
+    "date": "2026-10-27",
+    "slug": "2026-10-27",
+    "title": "交易研究雷达 · 2026-10-27",
+    "summary": "ECB 企业融资调查显示受访融资条件进一步净收紧，但样本更替限制数值预期的解释；OFAC 更新冻结、拒绝与报告指南。本期区分企业问卷、实际贷款数据及具体制裁义务，不推断资产方向。",
+    "snapshotId": "market-2026-10-27-06f93d0fd6830972",
+    "asOf": "2026-10-26T21:38:20.000Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-10-27T05:38:20+08:00",
+    "events": [
+      {
+        "id": "ecb-safe-q3-financing-conditions-2026-10-26",
+        "priority": "P1",
+        "status": "released",
+        "category": "macro",
+        "title": "ECB 三季度 SAFE：融资条件净收紧，样本更替须单独核对",
+        "fact": "ECB 于 10 月 26 日发布三季度 SAFE 企业融资调查。受访企业报告银行贷款利率及其他融资条件进一步净收紧；在申请过相关银行融资的企业中，报告贷款利率上升与下降的占比之差为 46%（上轮 42%），不是利率幅度。本轮首次受访者占多数，官方提示数值型预期需审慎解释；复访企业的通胀预期大致稳定。",
+        "whyWatch": "系统观察：资金价格、可得性与融资需求是不同环节；企业感受、实际成交利率和政策利率也属不同证据。一次全样本变化不能单独证明持续融资压力或解释市场反应。",
+        "assets": [
+          "欧元区银行业",
+          "欧元区利率"
+        ],
+        "watchFor": "跟踪后续同口径 SAFE、复访样本与企业规模分组，再核对公开贷款数据；区别三个月和六个月的回溯窗口，先检验样本变化，再讨论持续性。",
+        "invalidation": "若后续同口径调查或实际贷款数据不再支持持续收紧，应重估解释。样本与回溯窗口未对齐时不直接比较季度，也不外推个别企业融资状况。",
+        "sourceName": "European Central Bank SAFE Release",
+        "sourceUrl": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261026~bde7b6d11a.en.html",
+        "sourcePublishedAt": "2026-10-26"
+      },
+      {
+        "id": "ofac-blocking-rejection-faqs-updated-2026-10-26",
+        "priority": "P2",
+        "status": "released",
+        "category": "regulation",
+        "title": "OFAC 更新冻结与拒绝交易指南，询问、指令和报告须区分",
+        "fact": "OFAC 于 10 月 26 日更新冻结、拒绝交易及报告相关 FAQ。在适用美国制裁义务的情境下，FAQ 53 区分客户询问与支付指令；FAQ 49 说明冻结财产或拒绝交易报告须经 ORS 在行动后 10 个工作日内提交。本条记录指南更新，不据此认定新增禁令或制裁名单。",
+        "whyWatch": "系统观察：身份核对、受阻利益判断、资金处置与报告是不同环节。指南更新可作为核对流程的依据，但不能证明支付受限范围、误报率、处理时延或资金流已经变化。",
+        "assets": [
+          "跨境支付",
+          "银行业"
+        ],
+        "watchFor": "核对具体制裁项目、适用主体及许可或豁免，观察公开披露的筛查、资金处置和报告流程；将身份误报排除与真正制裁命中分开。",
+        "invalidation": "后续官方解释、许可或适用范围变化时，应按新材料重设观察。没有完整主体和交易事实时不决定真实交易如何处置，缺少运行数据时不宣称误报或时延改善。",
+        "sourceName": "OFAC Updated FAQs 2026-10-26",
+        "sourceUrl": "https://ofac.treasury.gov/faqs/updated/2026-10-26",
+        "sourcePublishedAt": "2026-10-26"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261026~bde7b6d11a.en.html",
+      "https://ofac.treasury.gov/faqs/updated/2026-10-26"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "只登记一手事实与验证方法；尚未建立同类事件、固定窗口和跨资产结果的历史样本，量化样本门禁保持关闭。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "企业问卷与合规指南不能单独解释资产变化；本期没有测量实际支付流程、融资资金流或股票、黄金与加密资产的同窗口反应。",
+      "nextValidation": "先固定调查样本、法规适用和事件窗口的口径，记录同期其他事件；取得可比样本前只保留弱信号状态。",
+      "invalidation": "来源修订、适用范围不符或观察窗口不一致时停止比较；缺失证据不能补成确定性结论。",
+      "sourceUrls": [
+        "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261026~bde7b6d11a.en.html",
+        "https://ofac.treasury.gov/faqs/updated/2026-10-26"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "OFAC 指南中的身份核对、资金处置与报告环节，如何分别影响支付可用性，哪些公开证据才能支持这些传导？",
+        "focusEventIds": [
+          "ofac-blocking-rejection-faqs-updated-2026-10-26"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些同口径的复访样本、企业规模分组与实际贷款数据，最能支持或推翻 SAFE 显示融资条件持续收紧的解释？",
+        "focusEventIds": [
+          "ecb-safe-q3-financing-conditions-2026-10-26"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "如果后续贷款可得性改善且复访样本预期稳定，接下来观察什么，哪些证据会终止持续融资压力的解释？",
+        "focusEventIds": [
+          "ecb-safe-q3-financing-conditions-2026-10-26"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-10-27",
+      "snapshotId": "market-2026-10-27-06f93d0fd6830972",
+      "asOf": "2026-10-26T21:38:20.000Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-10-27",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "OFAC 指南中的身份核对、资金处置与报告环节，如何分别影响支付可用性，哪些公开证据才能支持这些传导？",
+          "focusEventIds": [
+            "ofac-blocking-rejection-faqs-updated-2026-10-26"
+          ],
+          "prompt": "研究任务：OFAC 指南中的身份核对、资金处置与报告环节，如何分别影响支付可用性，哪些公开证据才能支持这些传导？\n证据快照：2026-10-27；asOf=2026-10-26T21:38:20.000Z；snapshotId=market-2026-10-27-06f93d0fd6830972\n\n材料 1｜OFAC 更新冻结与拒绝交易指南，询问、指令和报告须区分\n已确认事实：OFAC 于 10 月 26 日更新冻结、拒绝交易及报告相关 FAQ。在适用美国制裁义务的情境下，FAQ 53 区分客户询问与支付指令；FAQ 49 说明冻结财产或拒绝交易报告须经 ORS 在行动后 10 个工作日内提交。本条记录指南更新，不据此认定新增禁令或制裁名单。\n关注机制：系统观察：身份核对、受阻利益判断、资金处置与报告是不同环节。指南更新可作为核对流程的依据，但不能证明支付受限范围、误报率、处理时延或资金流已经变化。\n接下来验证：核对具体制裁项目、适用主体及许可或豁免，观察公开披露的筛查、资金处置和报告流程；将身份误报排除与真正制裁命中分开。\n失效条件：后续官方解释、许可或适用范围变化时，应按新材料重设观察。没有完整主体和交易事实时不决定真实交易如何处置，缺少运行数据时不宣称误报或时延改善。\n一手来源：https://ofac.treasury.gov/faqs/updated/2026-10-26\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "6927f15d9069d57bf8f5c5f0b7ffd535edc776787be941f790e82a313214c521",
+          "sourceUrls": [
+            "https://ofac.treasury.gov/faqs/updated/2026-10-26"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些同口径的复访样本、企业规模分组与实际贷款数据，最能支持或推翻 SAFE 显示融资条件持续收紧的解释？",
+          "focusEventIds": [
+            "ecb-safe-q3-financing-conditions-2026-10-26"
+          ],
+          "prompt": "研究任务：哪些同口径的复访样本、企业规模分组与实际贷款数据，最能支持或推翻 SAFE 显示融资条件持续收紧的解释？\n证据快照：2026-10-27；asOf=2026-10-26T21:38:20.000Z；snapshotId=market-2026-10-27-06f93d0fd6830972\n\n材料 1｜ECB 三季度 SAFE：融资条件净收紧，样本更替须单独核对\n已确认事实：ECB 于 10 月 26 日发布三季度 SAFE 企业融资调查。受访企业报告银行贷款利率及其他融资条件进一步净收紧；在申请过相关银行融资的企业中，报告贷款利率上升与下降的占比之差为 46%（上轮 42%），不是利率幅度。本轮首次受访者占多数，官方提示数值型预期需审慎解释；复访企业的通胀预期大致稳定。\n关注机制：系统观察：资金价格、可得性与融资需求是不同环节；企业感受、实际成交利率和政策利率也属不同证据。一次全样本变化不能单独证明持续融资压力或解释市场反应。\n接下来验证：跟踪后续同口径 SAFE、复访样本与企业规模分组，再核对公开贷款数据；区别三个月和六个月的回溯窗口，先检验样本变化，再讨论持续性。\n失效条件：若后续同口径调查或实际贷款数据不再支持持续收紧，应重估解释。样本与回溯窗口未对齐时不直接比较季度，也不外推个别企业融资状况。\n一手来源：https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261026~bde7b6d11a.en.html\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "fb72a994d394394edee3cf174fa69b817ade7f98d3f30ebf1e43293d8f32e81f",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261026~bde7b6d11a.en.html"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "如果后续贷款可得性改善且复访样本预期稳定，接下来观察什么，哪些证据会终止持续融资压力的解释？",
+          "focusEventIds": [
+            "ecb-safe-q3-financing-conditions-2026-10-26"
+          ],
+          "prompt": "研究任务：如果后续贷款可得性改善且复访样本预期稳定，接下来观察什么，哪些证据会终止持续融资压力的解释？\n证据快照：2026-10-27；asOf=2026-10-26T21:38:20.000Z；snapshotId=market-2026-10-27-06f93d0fd6830972\n\n材料 1｜ECB 三季度 SAFE：融资条件净收紧，样本更替须单独核对\n已确认事实：ECB 于 10 月 26 日发布三季度 SAFE 企业融资调查。受访企业报告银行贷款利率及其他融资条件进一步净收紧；在申请过相关银行融资的企业中，报告贷款利率上升与下降的占比之差为 46%（上轮 42%），不是利率幅度。本轮首次受访者占多数，官方提示数值型预期需审慎解释；复访企业的通胀预期大致稳定。\n关注机制：系统观察：资金价格、可得性与融资需求是不同环节；企业感受、实际成交利率和政策利率也属不同证据。一次全样本变化不能单独证明持续融资压力或解释市场反应。\n接下来验证：跟踪后续同口径 SAFE、复访样本与企业规模分组，再核对公开贷款数据；区别三个月和六个月的回溯窗口，先检验样本变化，再讨论持续性。\n失效条件：若后续同口径调查或实际贷款数据不再支持持续收紧，应重估解释。样本与回溯窗口未对齐时不直接比较季度，也不外推个别企业融资状况。\n一手来源：https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261026~bde7b6d11a.en.html\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "530b3f078891d33763b18be90f737ac800a8820a3f5d371f83c9ee696915a36a",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261026~bde7b6d11a.en.html"
+          ]
+        }
+      ]
+    }
+  },
+  {
     "date": "2026-10-26",
     "slug": "2026-10-26",
     "title": "交易研究雷达 · 2026-10-26",

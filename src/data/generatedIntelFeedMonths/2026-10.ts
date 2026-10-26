@@ -5,6 +5,40 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-10-27:ecb-safe-q3-financing-conditions-2026-10-26",
+    "kind": "market",
+    "date": "2026-10-27",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "ECB 三季度 SAFE：融资条件净收紧，样本更替须单独核对",
+    "summary": "系统观察：资金价格、可得性与融资需求是不同环节；企业感受、实际成交利率和政策利率也属不同证据。一次全样本变化不能单独证明持续融资压力或解释市场反应。",
+    "href": "/market-radar/2026-10-27#ecb-safe-q3-financing-conditions-2026-10-26",
+    "source": {
+      "name": "European Central Bank SAFE Release",
+      "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261026~bde7b6d11a.en.html"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
+  {
+    "id": "market:2026-10-27:ofac-blocking-rejection-faqs-updated-2026-10-26",
+    "kind": "market",
+    "date": "2026-10-27",
+    "domain": "market",
+    "topic": "market_regulation",
+    "title": "OFAC 更新冻结与拒绝交易指南，询问、指令和报告须区分",
+    "summary": "系统观察：身份核对、受阻利益判断、资金处置与报告是不同环节。指南更新可作为核对流程的依据，但不能证明支付受限范围、误报率、处理时延或资金流已经变化。",
+    "href": "/market-radar/2026-10-27#ofac-blocking-rejection-faqs-updated-2026-10-26",
+    "source": {
+      "name": "OFAC Updated FAQs 2026-10-26",
+      "url": "https://ofac.treasury.gov/faqs/updated/2026-10-26"
+    },
+    "flags": {
+      "priority": "P2"
+    }
+  },
+  {
     "id": "learning:ai-akv-cache-operation-history",
     "kind": "learning",
     "date": "2026-10-26",
