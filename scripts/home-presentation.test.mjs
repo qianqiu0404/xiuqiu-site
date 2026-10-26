@@ -304,7 +304,7 @@ test('primary navigation keeps its structural contract', () => {
   assert.match(appSource, /currentRoute\.name === 'learning'\) return 'learn-radar'/)
   assert.match(appSource, /aria-current="location"/)
   assert.match(appSource, /class="nav-mobile-context"/)
-  assert.match(appSource, /'trade-radar': 'Trade Radar'/)
+  assert.match(appSource, /'trade-radar': '市场雷达'/)
   assert.match(appSource, /@click="toggleNav"/)
   assert.equal((appSource.match(/@keydown\.space\.prevent="activateLinkOnSpace"/g) || []).length, 9)
   assert.match(appSource, /navToggle\.value\?\.focus\(\)/)
