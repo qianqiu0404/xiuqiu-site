@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { latestRadars, radarIndex, loadRadarFeed, radarFeedItemCount, radarWeeklies, radarReviews, getRadarReviewBoundary, getLearningBriefs, getSupportingRadarItems, isLearningEditionV2, radarSignalCountLabel, radarSourceStatus, radarTopicLabel, filterRadarFeed, groupRadarFeedByDate, countRadarFeedTopics, continuingRadarTopics, getRadarCollectionSeo, getSnapshotFreshness } from '../data'
-import type { RadarFeedItem, RadarFeedDomain } from '../data'
+import { radarIndex, createLatestRadarLoader, loadRadarBySlug, loadRadarFeed, radarFeedItemCount, radarWeeklies, radarReviews, getRadarReviewBoundary, getLearningBriefs, getSupportingRadarItems, isLearningEditionV2, radarSignalCountLabel, radarSourceStatus, radarTopicLabel, filterRadarFeed, groupRadarFeedByDate, countRadarFeedTopics, continuingRadarTopics, getRadarCollectionSeo, getSnapshotFreshness } from '../data'
+import type { RadarFeedItem, RadarFeedDomain, LatestRadarState } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
 import '../../../design/brief.css'
 import '../../../design/reader.css'
@@ -12,7 +12,15 @@ import LoadState from '../../../design/components/LoadState.vue'
 import SearchBox from '../../../design/components/SearchBox.vue'
 import SubscribeBar from '../../../design/components/SubscribeBar.vue'
 
-const latestRadar = latestRadars[0]
+const latestRadarIndex = radarIndex[0]
+const latestLoad = shallowRef<LatestRadarState>({ status: latestRadarIndex ? 'loading' : 'empty' })
+const latestRadar = computed(() => latestLoad.value.radar)
+const latestRequest = createLatestRadarLoader(state => { latestLoad.value = state }, loadRadarBySlug)
+const loadLatestRadar = () => latestRequest.load(latestRadarIndex)
+// Failed native module imports can remain cached for this document.
+const reloadLatestRadarPage = () => window.location.reload()
+onBeforeUnmount(() => latestRequest.dispose())
+void loadLatestRadar()
 const latestWeekly = radarWeeklies[0]
 const latestReview = radarReviews[0]
 const archiveLimit = 10
@@ -45,14 +53,14 @@ async function loadFeed() {
 
 loadFeed()
 const supportingSignals = computed(() =>
-  latestRadar ? getSupportingRadarItems(latestRadar) : [],
+  latestRadar.value ? getSupportingRadarItems(latestRadar.value) : [],
 )
-const latestIsV2 = computed(() => Boolean(latestRadar && isLearningEditionV2(latestRadar)))
-const aiBriefs = computed(() => latestRadar ? getLearningBriefs(latestRadar, 'ai') : [])
-const web3Briefs = computed(() => latestRadar ? getLearningBriefs(latestRadar, 'web3') : [])
-const latestSignalLabel = computed(() => radarSignalCountLabel(latestRadar?.marketSignals.length ?? 0))
-const latestFreshness = computed(() => getSnapshotFreshness(latestRadar?.date))
-const radarSeo = computed(() => getRadarCollectionSeo('learning', latestRadar?.date))
+const latestIsV2 = computed(() => Boolean(latestRadar.value && isLearningEditionV2(latestRadar.value)))
+const aiBriefs = computed(() => latestRadar.value ? getLearningBriefs(latestRadar.value, 'ai') : [])
+const web3Briefs = computed(() => latestRadar.value ? getLearningBriefs(latestRadar.value, 'web3') : [])
+const latestSignalLabel = computed(() => radarSignalCountLabel(latestRadar.value?.marketSignals.length ?? 0))
+const latestFreshness = computed(() => getSnapshotFreshness(latestRadarIndex?.date))
+const radarSeo = computed(() => getRadarCollectionSeo('learning', latestRadarIndex?.date))
 const latestDailyTitle = computed(() => {
   if (latestIsV2.value) {
     if (latestFreshness.value.isToday) return '今天：4 条快报 + 1 篇专题。'
@@ -67,7 +75,7 @@ const latestDailyTitle = computed(() => {
 })
 const latestReviewBoundary = computed(() =>
   latestWeekly
-    ? getRadarReviewBoundary(latestWeekly.reviewedAt, latestRadar?.date)
+    ? getRadarReviewBoundary(latestWeekly.reviewedAt, latestRadarIndex?.date)
     : undefined,
 )
 
@@ -119,8 +127,8 @@ onMounted(() =>
   <div
     class="brief radar-intelligence-page"
     lang="zh-CN"
-    :data-snapshot-id="latestRadar?.snapshotId"
-    :data-snapshot-as-of="latestRadar?.asOf"
+    :data-snapshot-id="latestRadarIndex?.snapshotId"
+    :data-snapshot-as-of="latestRadarIndex?.asOf"
     :data-snapshot-state="latestFreshness.state"
   >
     <header class="brief-masthead radar-intelligence-hero">
@@ -150,7 +158,13 @@ onMounted(() =>
     </header>
 
     <div class="brief-shell">
-      <section v-if="latestRadar" class="radar-section" aria-labelledby="radar-daily-title">
+      <section v-if="latestLoad.status === 'loading'" class="radar-section" aria-label="最近一期简报载入状态">
+        <LoadState state="loading" message="正在载入最近一期简报…" />
+      </section>
+      <section v-else-if="latestLoad.status === 'error'" class="radar-section" aria-label="最近一期简报载入状态">
+        <LoadState state="error" message="最近一期简报暂时无法载入。" action-label="重新载入页面" @action="reloadLatestRadarPage" />
+      </section>
+      <section v-else-if="latestRadar" class="radar-section" aria-labelledby="radar-daily-title">
         <header class="reader-section-header radar-section-header">
           <span>01</span>
           <h2 id="radar-daily-title">{{ latestDailyTitle }}</h2>

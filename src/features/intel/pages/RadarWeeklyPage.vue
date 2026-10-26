@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
-import { radarWeeklies, latestRadars, getRadarReviewBoundary, getProjectByKey, readingReturnLink } from '../data'
+import { radarWeeklies, radarIndex, getRadarReviewBoundary, getProjectByKey, readingReturnLink } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
 import '../../../design/brief.css'
 import '../../../design/reader.css'
@@ -14,7 +14,7 @@ const relatedProjects = computed(() =>
 )
 const reviewBoundary = computed(() =>
   weekly.value
-    ? getRadarReviewBoundary(weekly.value.reviewedAt, latestRadars[0]?.date)
+    ? getRadarReviewBoundary(weekly.value.reviewedAt, radarIndex[0]?.date)
     : undefined,
 )
 const sections = computed(() =>

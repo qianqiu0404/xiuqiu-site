@@ -13,6 +13,7 @@ import {
 import { dailyRadars } from '../src/data/generatedRadarAll.ts'
 import { latestRadars, radarIndex } from '../src/data/generatedRadars.ts'
 import { loadRadarBySlug } from '../src/data/generatedRadarLoader.ts'
+import { createLatestRadarLoader } from '../src/data/radarLatestPresentation.ts'
 import {
   selectPublishableRadarWeeklies,
   validateRadarWeekly,
@@ -124,8 +125,8 @@ test('Learn Radar routes rely on the single application main landmark', () => {
 })
 
 test('Learn Radar exposes generated, review, loading, empty and error boundaries', () => {
-  assert.match(radarPageSource, /radarSignalCountLabel\(latestRadar\?\.marketSignals\.length \?\? 0\)/)
-  assert.match(radarPageSource, /latestRadar\.date[\s\S]*latestWeekly\.reviewedAt|latestWeekly\.reviewedAt[\s\S]*latestRadar\?\.date/)
+  assert.match(radarPageSource, /radarSignalCountLabel\(latestRadar\.value\?\.marketSignals\.length \?\? 0\)/)
+  assert.match(radarPageSource, /latestWeekly\.reviewedAt[\s\S]*latestRadarIndex\?\.date/)
   assert.match(radarDetailSource, /aria-busy="true"/)
   assert.match(radarDetailSource, /role="alert"/)
   assert.match(radarDetailSource, /AI 自动汇总 · 未经人工复核/)
@@ -135,8 +136,8 @@ test('Learn Radar exposes generated, review, loading, empty and error boundaries
 })
 
 test('Learn Radar exposes the immutable publication snapshot in the rendered DOM', () => {
-  assert.match(radarPageSource, /:data-snapshot-id="latestRadar\?\.snapshotId"/)
-  assert.match(radarPageSource, /:data-snapshot-as-of="latestRadar\?\.asOf"/)
+  assert.match(radarPageSource, /:data-snapshot-id="latestRadarIndex\?\.snapshotId"/)
+  assert.match(radarPageSource, /:data-snapshot-as-of="latestRadarIndex\?\.asOf"/)
   assert.match(radarPageSource, /:data-snapshot-state="latestFreshness\.state"/)
   assert.match(radarPageSource, /最新公开简报停留在/)
   assert.match(radarDetailSource, /这是 \{\{ radar\.date \}\} 的冻结简报/)
@@ -306,4 +307,89 @@ test('the existing W29 reviewed snapshot satisfies the weekly publication contra
 
   assert.deepEqual(published.map(item => item.slug), ['2026-W29'])
   assert.equal(published[0].reviewedAt, '2026-07-24')
+})
+
+
+function deferredRadarResponse() {
+  let resolve, reject
+  const promise = new Promise((done, fail) => { resolve = done; reject = fail })
+  return { promise, resolve, reject }
+}
+
+test('latest collection content loads behind its index and preserves the complete edition', async () => {
+  const pending = deferredRadarResponse()
+  const states = [], calls = []
+  const loader = createLatestRadarLoader(state => states.push(state), slug => {
+    calls.push(slug)
+    return pending.promise
+  })
+  const task = loader.load(radarIndex[0])
+  assert.deepEqual(calls, [radarIndex[0].slug])
+  assert.deepEqual(states, [{ status: 'loading' }])
+  pending.resolve(dailyRadars[0])
+  await task
+  assert.equal(states.at(-1).status, 'ready')
+  assert.strictEqual(states.at(-1).radar, dailyRadars[0])
+  assert.equal(states.at(-1).radar.snapshotId, radarIndex[0].snapshotId)
+})
+
+test('an empty index is empty without requesting a body', async () => {
+  const states = []
+  const loader = createLatestRadarLoader(state => states.push(state), async () => {
+    assert.fail('No full body should be requested for an empty index')
+  })
+  await loader.load(undefined)
+  assert.deepEqual(states, [{ status: 'empty' }])
+})
+
+test('indexed missing or mismatched content is an error and never a false empty edition', async () => {
+  for (const result of [undefined, { ...dailyRadars[0], slug: '2025-01-01' }, { ...dailyRadars[0], snapshotId: 'wrong-snapshot' }]) {
+    const states = []
+    const loader = createLatestRadarLoader(state => states.push(state), async () => result)
+    await loader.load(radarIndex[0])
+    assert.deepEqual(states, [{ status: 'loading' }, { status: 'error' }])
+  }
+})
+
+test('a failed latest body can retry without keeping stale data', async () => {
+  const states = []
+  let attempts = 0
+  const loader = createLatestRadarLoader(state => states.push(state), async () => {
+    if (++attempts === 1) throw new Error('chunk unavailable')
+    return dailyRadars[0]
+  })
+  await loader.load(radarIndex[0])
+  await loader.load(radarIndex[0])
+  assert.deepEqual(states.map(state => state.status), ['loading', 'error', 'loading', 'ready'])
+  assert.strictEqual(states.at(-1).radar, dailyRadars[0])
+})
+
+test('late success or failure cannot overwrite a more recent request', async () => {
+  for (const rejectStale of [false, true]) {
+    const first = deferredRadarResponse(), second = deferredRadarResponse(), states = []
+    let calls = 0
+    const loader = createLatestRadarLoader(state => states.push(state), () => (++calls === 1 ? first.promise : second.promise))
+    const oldTask = loader.load(radarIndex[1])
+    const newTask = loader.load(radarIndex[0])
+    second.resolve(dailyRadars[0])
+    await newTask
+    if (rejectStale) first.reject(new Error('stale failure'))
+    else first.resolve(dailyRadars[1])
+    await oldTask
+    assert.deepEqual(states.map(state => state.status), ['loading', 'loading', 'ready'])
+    assert.strictEqual(states.at(-1).radar, dailyRadars[0])
+  }
+})
+
+test('disposing the collection consumer ignores pending work and prevents future state writes', async () => {
+  const pending = deferredRadarResponse(), states = []
+  let calls = 0
+  const loader = createLatestRadarLoader(state => states.push(state), () => { calls += 1; return pending.promise })
+  const task = loader.load(radarIndex[0])
+  loader.dispose()
+  pending.resolve(dailyRadars[0])
+  await task
+  await loader.load(radarIndex[0])
+  assert.equal(calls, 1)
+  assert.deepEqual(states, [{ status: 'loading' }])
 })
