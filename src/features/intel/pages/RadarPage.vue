@@ -17,6 +17,8 @@ const latestLoad = shallowRef<LatestRadarState>({ status: latestRadarIndex ? 'lo
 const latestRadar = computed(() => latestLoad.value.radar)
 const latestRequest = createLatestRadarLoader(state => { latestLoad.value = state }, loadRadarBySlug)
 const loadLatestRadar = () => latestRequest.load(latestRadarIndex)
+// Failed native module imports can remain cached for this document.
+const reloadLatestRadarPage = () => window.location.reload()
 onBeforeUnmount(() => latestRequest.dispose())
 void loadLatestRadar()
 const latestWeekly = radarWeeklies[0]
@@ -160,7 +162,7 @@ onMounted(() =>
         <LoadState state="loading" message="正在载入最近一期简报…" />
       </section>
       <section v-else-if="latestLoad.status === 'error'" class="radar-section" aria-label="最近一期简报载入状态">
-        <LoadState state="error" message="最近一期简报暂时无法载入。" action-label="重试" @action="loadLatestRadar" />
+        <LoadState state="error" message="最近一期简报暂时无法载入。" action-label="重新载入页面" @action="reloadLatestRadarPage" />
       </section>
       <section v-else-if="latestRadar" class="radar-section" aria-labelledby="radar-daily-title">
         <header class="reader-section-header radar-section-header">
