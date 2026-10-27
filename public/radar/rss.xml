@@ -6,7 +6,43 @@
     <atom:link href="https://xiuqiu-site.vercel.app/radar/rss.xml" rel="self" type="application/rss+xml" />
     <description>每天 2 条 AI、2 条 Web3 工程简报：先讲机制，再给例子和边界。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Tue, 27 Oct 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 28 Oct 2026 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>LangGraph 1.2.18：用更多完整快照，缩短长会话的重放链</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-28#ai-langgraph-delta-replay-window</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-langgraph-delta-replay-window</guid>
+      <pubDate>Wed, 28 Oct 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>agent</category>
+      <description>Agent 能继续工作，既取决于保存了什么，也取决于重建这些状态要花多久。升级清单应同时记录默认值、显式配置和存储开销，避免把可恢复直接等同于低延迟恢复。</description>
+    </item>
+    <item>
+      <title>Verified autoresearch：先验证评测器，再让 Agent 搜索更优程序</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-28#ai-verified-autoresearch-evaluator</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-verified-autoresearch-evaluator</guid>
+      <pubDate>Wed, 28 Oct 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>evaluation</category>
+      <description>Agent 优化的是评测器给出的反馈。若有效性判定本身缺项，更高分也可能只说明候选找到了缺口；让评测规则和候选版本都可追溯，有助于解释分数究竟证明了什么。</description>
+    </item>
+    <item>
+      <title>LND 0.21.5-beta：发票订阅死锁，出在事务内又借了一条连接</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-28#web3-lnd-sql-invoice-transaction-scope</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-lnd-sql-invoice-transaction-scope</guid>
+      <pubDate>Wed, 28 Oct 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>wallet_cex</category>
+      <description>钱包和支付服务的订阅恢复常与其他请求并发。事务已经开始，不意味着随后每个查询都在使用同一事务；把连接借用范围纳入检查，有助于定位看似全局卡死的问题。</description>
+    </item>
+    <item>
+      <title>Nitro 3.12.2：回到旧分支再升级，也要核对区块保留</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-28#web3-nitro-version-transition-head-retention</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-nitro-version-transition-head-retention</guid>
+      <pubDate>Wed, 28 Oct 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>l2</category>
+      <description>客户端恢复可能跨越多个版本分支，节点状态又会随运行改变。记录完整转换路径和前后区块状态，比只记录升级终点更有助于判断这条修复是否适用。</description>
+    </item>
     <item>
       <title>OpenAI Signals：工作消息占比，不能直接当成劳动产出</title>
       <link>https://xiuqiu-site.vercel.app/radar/2026-10-27#ai-signals-work-activity-denominator</link>
@@ -510,42 +546,6 @@
       <category>AI</category>
       <category>tools</category>
       <description>Pi 同时提供交互、print/JSON、RPC 与 SDK 入口，并开放工具、权限门、沙箱、MCP 与 UI 扩展。固定版 0.84.0 已复现 CLI；默认写入与 bash、package 全系统权限、安装脚本和极端长会话资源风险要求…</description>
-    </item>
-    <item>
-      <title>Scientific computing in the age of agentic AI</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-07#reading</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-07-reading</guid>
-      <pubDate>Fri, 07 Aug 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>reading</category>
-      <description>八个科研软件案例表明，agent 可加速初版，但科学有效性、数值边界、兼容性和长期所有权仍由人定义与验收。思考题：为一次真实重构列出目标行为、独立真值、最难边界与长期所有者。</description>
-    </item>
-    <item>
-      <title>Safe Wallet 为旧版 Safe 的 Guard 配置增加客户端检查</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-06#industry-signals</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-06-signal</guid>
-      <pubDate>Thu, 06 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>market_signal</category>
-      <description>web-v1.97.0 会解析直接调用和 MultiSend 内的 setGuard，并对低于 v1.4.1 的 Safe 检查目标接口；这仍是可被用户继续确认的客户端提示，不是链上强制拒绝。</description>
-    </item>
-    <item>
-      <title>Parity Contract Dependency Manager 明确注册表控制面</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-06#industry-signals</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-06-signal-1</guid>
-      <pubDate>Thu, 06 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>market_signal</category>
-      <description>v0.12.0 用 EIP-1967 代理维持稳定地址，并显式提供实现升级、紧急冻结与 ABI 漂移测试；冻结不约束管理员，仍需独立审计实现、密钥和治理流程。</description>
-    </item>
-    <item>
-      <title>OpenZeppelin Foundry Upgrades 补丁版提高 Solidity 下限</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-06#industry-signals</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-06-signal-2</guid>
-      <pubDate>Thu, 06 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>market_signal</category>
-      <description>v0.4.2 为新版 memory-safe assembly 语法把最低 Solidity 提升到 0.8.13。官方标注其 potentially breaking，依赖升级前需要验证编译器矩阵，不能因 patch 版本而忽略兼容性。</description>
     </item>
   </channel>
 </rss>

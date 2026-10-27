@@ -5,6 +5,69 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "learning:ai-langgraph-delta-replay-window",
+    "kind": "learning",
+    "date": "2026-10-28",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "LangGraph 1.2.18：用更多完整快照，缩短长会话的重放链",
+    "summary": "Agent 能继续工作，既取决于保存了什么，也取决于重建这些状态要花多久。升级清单应同时记录默认值、显式配置和存储开销，避免把可恢复直接等同于低延迟恢复。",
+    "href": "/radar/2026-10-28#ai-langgraph-delta-replay-window",
+    "source": {
+      "name": "LangGraph 1.2.18 release notes",
+      "tier": "tier1",
+      "url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.18"
+    }
+  },
+  {
+    "id": "learning:ai-verified-autoresearch-evaluator",
+    "kind": "learning",
+    "date": "2026-10-28",
+    "domain": "ai",
+    "topic": "evaluation",
+    "title": "Verified autoresearch：先验证评测器，再让 Agent 搜索更优程序",
+    "summary": "Agent 优化的是评测器给出的反馈。若有效性判定本身缺项，更高分也可能只说明候选找到了缺口；让评测规则和候选版本都可追溯，有助于解释分数究竟证明了什么。",
+    "href": "/radar/2026-10-28#ai-verified-autoresearch-evaluator",
+    "source": {
+      "name": "Automating quantum circuit optimization with AI agents — arXiv v1",
+      "tier": "tier1",
+      "url": "https://arxiv.org/abs/2610.31352"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "learning:web3-lnd-sql-invoice-transaction-scope",
+    "kind": "learning",
+    "date": "2026-10-28",
+    "domain": "web3",
+    "topic": "wallet_cex",
+    "title": "LND 0.21.5-beta：发票订阅死锁，出在事务内又借了一条连接",
+    "summary": "钱包和支付服务的订阅恢复常与其他请求并发。事务已经开始，不意味着随后每个查询都在使用同一事务；把连接借用范围纳入检查，有助于定位看似全局卡死的问题。",
+    "href": "/radar/2026-10-28#web3-lnd-sql-invoice-transaction-scope",
+    "source": {
+      "name": "LND v0.21.5-beta release",
+      "tier": "tier1",
+      "url": "https://github.com/lightningnetwork/lnd/releases/tag/v0.21.5-beta"
+    }
+  },
+  {
+    "id": "learning:web3-nitro-version-transition-head-retention",
+    "kind": "learning",
+    "date": "2026-10-28",
+    "domain": "web3",
+    "topic": "l2",
+    "title": "Nitro 3.12.2：回到旧分支再升级，也要核对区块保留",
+    "summary": "客户端恢复可能跨越多个版本分支，节点状态又会随运行改变。记录完整转换路径和前后区块状态，比只记录升级终点更有助于判断这条修复是否适用。",
+    "href": "/radar/2026-10-28#web3-nitro-version-transition-head-retention",
+    "source": {
+      "name": "Arbitrum Nitro v3.12.2 release notes",
+      "tier": "tier1",
+      "url": "https://github.com/OffchainLabs/nitro/releases/tag/v3.12.2"
+    }
+  },
+  {
     "id": "market:2026-10-28:ecb-bls-q3-credit-standards-demand-2026-10-27",
     "kind": "market",
     "date": "2026-10-28",
