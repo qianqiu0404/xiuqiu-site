@@ -1,0 +1,20 @@
+{
+  "origin_id": "chatgpt-daily:2026-10-27:d025fd57b3e663f665ad",
+  "revision": 1,
+  "bot_id": "chatgpt-daily",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-26T01:06:48.994Z",
+  "published_at": null,
+  "event_date": null,
+  "domain": "ai",
+  "title": "GitHub 升级密钥泄露监控，支持有效性检查和自动通知",
+  "summary": "GitHub 宣布扩展 Public Monitoring 功能，帮助企业持续发现与自身相关的公开凭据泄露。\n\n新功能支持检查部分密钥是否仍然有效，并提供 Active、Inactive、Unknown 状态，方便团队优先处理仍可被使用的凭据。\n\nGitHub 还增加了告警处理记录、REST API 和 Webhook，让企业能够把密钥泄露事件接入自动化安全响应流程。\n\n该功能目前仍属于 GitHub Enterprise Cloud 的公开预览，需要相应的 GitHub Advanced Security 或 Secret Protection 授权。",
+  "source_url": "https://github.blog/changelog/2026-10-23-public-monitoring-adds-triage-validity-api-and-webhooks/",
+  "source_name": "GitHub Changelog",
+  "source_access": "not_checked",
+  "source_excerpt": null,
+  "bot_analysis": "真正可靠的响应还需要独立完成密钥失效确认。",
+  "id": "chatgpt-05f09a206830f6deba70db21",
+  "fingerprint": "4e6e60ca487f437eb3ce329d5a4149ec5fae250c5ea92b56dbc46bfe51d88c4b"
+}

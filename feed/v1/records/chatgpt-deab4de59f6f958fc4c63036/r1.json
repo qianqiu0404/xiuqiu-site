@@ -1,0 +1,20 @@
+{
+  "origin_id": "chatgpt-daily:2026-10-27:5dbf3c4e76eb49a9e2d9",
+  "revision": 1,
+  "bot_id": "chatgpt-daily",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-26T01:06:48.994Z",
+  "published_at": null,
+  "event_date": null,
+  "domain": "market",
+  "title": "BTC ETF 上周仍净流入约 3 亿美元，但周末前连续两日出现大规模资金流出",
+  "summary": "Farside 最新数据显示，美国现货 BTC ETF 在 10 月 19—23 日累计净流入约 3.012 亿美元。\n\n其中，19 日和 21 日分别录得 5.267 亿美元、5.248 亿美元净流入，但 22 日出现 6.356 亿美元净流出，23 日继续净流出约 1.379 亿美元。\n\n同一交易周，以太坊现货 ETF 累计净流出约 2.207 亿美元。\n\n需要注意，部分基金仍存在未报告记录，最终统计可能继续调整。",
+  "source_url": "https://farside.co.uk/btc/",
+  "source_name": "Farside",
+  "source_access": "not_checked",
+  "source_excerpt": null,
+  "bot_analysis": "ETF 资金流并不覆盖所有 Crypto 交易活动，无法直接证明价格的后续方向。",
+  "id": "chatgpt-deab4de59f6f958fc4c63036",
+  "fingerprint": "56927b4144d0c37327ea3e0227942c28f8250220d9df7caedf7f35468f36e331"
+}

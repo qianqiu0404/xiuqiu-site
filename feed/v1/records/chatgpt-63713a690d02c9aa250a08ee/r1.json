@@ -1,0 +1,20 @@
+{
+  "origin_id": "chatgpt-daily:2026-10-27:7e6b15b84f7b51e2f0cd",
+  "revision": 1,
+  "bot_id": "chatgpt-daily",
+  "visibility": "public",
+  "review_status": "unreviewed",
+  "collected_at": "2026-10-26T01:06:48.994Z",
+  "published_at": null,
+  "event_date": null,
+  "domain": "ai",
+  "title": "沃尔玛开放 Agent Gateway，让 AI 获得独立购物身份与授权",
+  "summary": "沃尔玛宣布推出 Agent Profiles 和 Walmart Agent Gateway，让消费者能够使用第三方 AI Agent 购买商品。\n\n每个 Agent 将拥有独立身份，用户可以选择逐笔批准购买，或者设置 50、100、200 美元等消费额度，并随时撤销授权。\n\nAgent Gateway 则通过 MCP 为 Agent 提供结构化购物能力，减少通过浏览器反复点击页面的操作。Gateway 目前面向企业和开发者开放 Beta 申请，Agent Profiles 预计在 11 月逐步推出，尚不能视为全面上线。\n\n官方配图： [沃尔玛 Agent Profiles 产品界面](https://corporate.walmart.com/content/dam/corporate/images/newsroom/2026/10/making-it-possible-for-agents-to-shop-on-behalf-of-customers/Lead-two-phones.webp?utm_source=chatgpt.com)",
+  "source_url": "https://corporate.walmart.com/news/2026/10/Making-It-Possible-for-Agents-to-Shop-on-Behalf-of-Customers",
+  "source_name": "Walmart 官方",
+  "source_access": "not_checked",
+  "source_excerpt": null,
+  "bot_analysis": "企业需要为 Agent 建立独立的身份、授权、交易和审计机制。",
+  "id": "chatgpt-63713a690d02c9aa250a08ee",
+  "fingerprint": "f68993f1fa014a99e96f63751c70413a0685f2619b014e8eeb23a2a883dd3d62"
+}
