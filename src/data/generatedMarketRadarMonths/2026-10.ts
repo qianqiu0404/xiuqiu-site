@@ -3,6 +3,157 @@
 import type { MarketRadarDaily } from '../generatedMarketRadars.ts'
 export const monthlyMarketRadars: MarketRadarDaily[] = [
   {
+    "date": "2026-10-28",
+    "slug": "2026-10-28",
+    "title": "交易研究雷达 · 2026-10-28",
+    "summary": "ECB 银行贷款调查显示，三季度企业信贷标准继续净收紧，需求转为净下降。本期分别核对银行回答、实际贷款变化与未来预期，净比例不等于贷款规模或利率的变动幅度。",
+    "snapshotId": "market-2026-10-28-c8021246fdf24f6b",
+    "asOf": "2026-10-27T21:39:16.000Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-10-28T05:39:16+08:00",
+    "events": [
+      {
+        "id": "ecb-bls-q3-credit-standards-demand-2026-10-27",
+        "priority": "P1",
+        "status": "released",
+        "category": "macro",
+        "title": "ECB 三季度 BLS：企业标准净收紧，需求转为净下降",
+        "fact": "ECB 于 10 月 27 日发布三季度银行贷款调查 BLS。企业贷款或信贷额度的审批标准净收紧比例为 9%（上季 7%），企业贷款需求净比例为 -6%（上季 3%）。调查于 9 月 21 日至 10 月 6 日进行，159 家银行全部回应；这些指标反映银行回答的占比差，不是贷款量或利率变化。",
+        "whyWatch": "系统观察：审批标准与融资需求分别对应供给和需求环节。两者同时转弱值得与后续贷款数据对照，但银行问卷不能单独证明已发生信贷收缩，也不能据此解释某项资产的价格变化。",
+        "assets": [
+          "欧元区银行业",
+          "欧元区企业融资"
+        ],
+        "watchFor": "跟踪下一轮同口径 BLS、企业规模和国家分组，再与实际贷款存量、流量和贷款利率核对；将三季度已报告变化与四季度银行预期分开，不把净比例当成交贷款增速。",
+        "invalidation": "若后续同口径调查显示标准不再净收紧，或实际贷款与融资需求不支持持续压力，应重估解释。国家样本、指标定义或观察期间未对齐时停止直接比较；本期未测量资产反应。",
+        "sourceName": "European Central Bank October 2026 BLS Release",
+        "sourceUrl": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261027~506ef03145.en.html",
+        "sourcePublishedAt": "2026-10-27"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261027~506ef03145.en.html"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "只登记公开事实与待检验机制；尚未建立同类调查事件、固定观察窗口及跨资产结果的历史样本，量化样本门禁保持关闭。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "银行问卷的净比例不是实际信贷量或资产回报；本期没有对同期政策、贷款数据或资产反应做因果识别。",
+      "nextValidation": "先固定调查样本、指标定义和观察期间，再记录后续贷款存量、流量与利率；取得可比样本前只保留弱信号状态。",
+      "invalidation": "来源修订、样本和期间不一致时停止比较；不能用缺失数据补出确定性结论。",
+      "sourceUrls": [
+        "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261027~506ef03145.en.html"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "银行审批标准、融资需求与实际贷款之间有哪些可检验的传导环节，哪些证据才能支持企业融资压力持续的解释？",
+        "focusEventIds": [
+          "ecb-bls-q3-credit-standards-demand-2026-10-27"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些同口径 BLS 分组、实际贷款和贷款利率数据，最能支持或推翻问卷净收紧意味着实际信贷收缩的解释？",
+        "focusEventIds": [
+          "ecb-bls-q3-credit-standards-demand-2026-10-27"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若银行标准仍净收紧但实际贷款保持扩张，可能有哪些替代解释，后续观察什么会使持续融资压力的判断失效？",
+        "focusEventIds": [
+          "ecb-bls-q3-credit-standards-demand-2026-10-27"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-10-28",
+      "snapshotId": "market-2026-10-28-c8021246fdf24f6b",
+      "asOf": "2026-10-27T21:39:16.000Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-10-28",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "银行审批标准、融资需求与实际贷款之间有哪些可检验的传导环节，哪些证据才能支持企业融资压力持续的解释？",
+          "focusEventIds": [
+            "ecb-bls-q3-credit-standards-demand-2026-10-27"
+          ],
+          "prompt": "研究任务：银行审批标准、融资需求与实际贷款之间有哪些可检验的传导环节，哪些证据才能支持企业融资压力持续的解释？\n证据快照：2026-10-28；asOf=2026-10-27T21:39:16.000Z；snapshotId=market-2026-10-28-c8021246fdf24f6b\n\n材料 1｜ECB 三季度 BLS：企业标准净收紧，需求转为净下降\n已确认事实：ECB 于 10 月 27 日发布三季度银行贷款调查 BLS。企业贷款或信贷额度的审批标准净收紧比例为 9%（上季 7%），企业贷款需求净比例为 -6%（上季 3%）。调查于 9 月 21 日至 10 月 6 日进行，159 家银行全部回应；这些指标反映银行回答的占比差，不是贷款量或利率变化。\n关注机制：系统观察：审批标准与融资需求分别对应供给和需求环节。两者同时转弱值得与后续贷款数据对照，但银行问卷不能单独证明已发生信贷收缩，也不能据此解释某项资产的价格变化。\n接下来验证：跟踪下一轮同口径 BLS、企业规模和国家分组，再与实际贷款存量、流量和贷款利率核对；将三季度已报告变化与四季度银行预期分开，不把净比例当成交贷款增速。\n失效条件：若后续同口径调查显示标准不再净收紧，或实际贷款与融资需求不支持持续压力，应重估解释。国家样本、指标定义或观察期间未对齐时停止直接比较；本期未测量资产反应。\n一手来源：https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261027~506ef03145.en.html\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "bbcb22f14537d76a717037ac0524d21ffed67e7c0396bc5db528d2aeabb5ec68",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261027~506ef03145.en.html"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些同口径 BLS 分组、实际贷款和贷款利率数据，最能支持或推翻问卷净收紧意味着实际信贷收缩的解释？",
+          "focusEventIds": [
+            "ecb-bls-q3-credit-standards-demand-2026-10-27"
+          ],
+          "prompt": "研究任务：哪些同口径 BLS 分组、实际贷款和贷款利率数据，最能支持或推翻问卷净收紧意味着实际信贷收缩的解释？\n证据快照：2026-10-28；asOf=2026-10-27T21:39:16.000Z；snapshotId=market-2026-10-28-c8021246fdf24f6b\n\n材料 1｜ECB 三季度 BLS：企业标准净收紧，需求转为净下降\n已确认事实：ECB 于 10 月 27 日发布三季度银行贷款调查 BLS。企业贷款或信贷额度的审批标准净收紧比例为 9%（上季 7%），企业贷款需求净比例为 -6%（上季 3%）。调查于 9 月 21 日至 10 月 6 日进行，159 家银行全部回应；这些指标反映银行回答的占比差，不是贷款量或利率变化。\n关注机制：系统观察：审批标准与融资需求分别对应供给和需求环节。两者同时转弱值得与后续贷款数据对照，但银行问卷不能单独证明已发生信贷收缩，也不能据此解释某项资产的价格变化。\n接下来验证：跟踪下一轮同口径 BLS、企业规模和国家分组，再与实际贷款存量、流量和贷款利率核对；将三季度已报告变化与四季度银行预期分开，不把净比例当成交贷款增速。\n失效条件：若后续同口径调查显示标准不再净收紧，或实际贷款与融资需求不支持持续压力，应重估解释。国家样本、指标定义或观察期间未对齐时停止直接比较；本期未测量资产反应。\n一手来源：https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261027~506ef03145.en.html\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "6989f26282141e8c4c5c3b1eb78c8a6532842a7887c48da1c192114f20246351",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261027~506ef03145.en.html"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若银行标准仍净收紧但实际贷款保持扩张，可能有哪些替代解释，后续观察什么会使持续融资压力的判断失效？",
+          "focusEventIds": [
+            "ecb-bls-q3-credit-standards-demand-2026-10-27"
+          ],
+          "prompt": "研究任务：若银行标准仍净收紧但实际贷款保持扩张，可能有哪些替代解释，后续观察什么会使持续融资压力的判断失效？\n证据快照：2026-10-28；asOf=2026-10-27T21:39:16.000Z；snapshotId=market-2026-10-28-c8021246fdf24f6b\n\n材料 1｜ECB 三季度 BLS：企业标准净收紧，需求转为净下降\n已确认事实：ECB 于 10 月 27 日发布三季度银行贷款调查 BLS。企业贷款或信贷额度的审批标准净收紧比例为 9%（上季 7%），企业贷款需求净比例为 -6%（上季 3%）。调查于 9 月 21 日至 10 月 6 日进行，159 家银行全部回应；这些指标反映银行回答的占比差，不是贷款量或利率变化。\n关注机制：系统观察：审批标准与融资需求分别对应供给和需求环节。两者同时转弱值得与后续贷款数据对照，但银行问卷不能单独证明已发生信贷收缩，也不能据此解释某项资产的价格变化。\n接下来验证：跟踪下一轮同口径 BLS、企业规模和国家分组，再与实际贷款存量、流量和贷款利率核对；将三季度已报告变化与四季度银行预期分开，不把净比例当成交贷款增速。\n失效条件：若后续同口径调查显示标准不再净收紧，或实际贷款与融资需求不支持持续压力，应重估解释。国家样本、指标定义或观察期间未对齐时停止直接比较；本期未测量资产反应。\n一手来源：https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261027~506ef03145.en.html\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "0453b1546ede536f08f63fcc194f5709c53000c0c7300f7229505aed20599113",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261027~506ef03145.en.html"
+          ]
+        }
+      ]
+    }
+  },
+  {
     "date": "2026-10-27",
     "slug": "2026-10-27",
     "title": "交易研究雷达 · 2026-10-27",

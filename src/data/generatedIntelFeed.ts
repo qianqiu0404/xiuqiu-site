@@ -6,9 +6,26 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-10-27"
-export const intelItemCount = 248
+export const intelLatestDate: string | null = "2026-10-28"
+export const intelItemCount = 249
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "market:2026-10-28:ecb-bls-q3-credit-standards-demand-2026-10-27",
+    "kind": "market",
+    "date": "2026-10-28",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "ECB 三季度 BLS：企业标准净收紧，需求转为净下降",
+    "summary": "系统观察：审批标准与融资需求分别对应供给和需求环节。两者同时转弱值得与后续贷款数据对照，但银行问卷不能单独证明已发生信贷收缩，也不能据此解释某项资产的价格变化。",
+    "href": "/market-radar/2026-10-28#ecb-bls-q3-credit-standards-demand-2026-10-27",
+    "source": {
+      "name": "European Central Bank October 2026 BLS Release",
+      "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261027~506ef03145.en.html"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
   {
     "id": "learning:ai-signals-work-activity-denominator",
     "kind": "learning",
@@ -412,8 +429,8 @@ export const intelTopics: IntelTopic[] = [
   {
     "topic": "market_macro",
     "domain": "market",
-    "count": 8,
-    "lastSeen": "2026-10-27",
+    "count": 9,
+    "lastSeen": "2026-10-28",
     "firstSeen": "2026-08-09"
   },
   {
