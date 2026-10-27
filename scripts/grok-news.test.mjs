@@ -1,7 +1,13 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { parseGrokBatch, parseGrokIndex } from '../shared/grokNews.ts'
-import { mergeGrokNews, publishGrokNews, NEWS_REPO, NEWS_BRANCH } from './publish-grok-news.mjs'
+import { createHash } from 'node:crypto'
+import { spawnSync } from 'node:child_process'
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { CHATGPT_BOT_ID, NEWS_PRODUCERS, parseGrokBatch, parseGrokIndex, parseNewsBatch, parseNewsIndex, parseNewsItem } from '../shared/grokNews.ts'
+import { mergeGrokNews, publishGrokNews, mergeNews, publishNews, NEWS_REPO, NEWS_BRANCH } from './publish-grok-news.mjs'
 import { createGrokNewsClient, grokReadingItems, grokDetail } from '../src/data/grokNews.ts'
 import { filterIntel, intelSourceLabel } from '../src/data/intelPresentation.ts'
 import { mergeReadingItems } from '../src/data/sharedResearchPresentation.ts'
@@ -11,6 +17,10 @@ const item = (extra = {}) => ({ origin_id: 'x-ai-digest:fixture:001', revision: 
   source_url: 'https://example.org/fixture', source_name: '测试来源', source_access: 'not_checked', source_excerpt: null, bot_analysis: null, ...extra })
 const batch = (...items) => ({ schema_version: 1, bot_id: 'x-ai-digest', items })
 const empty = () => ({ schema_version: 1, bot_id: 'x-ai-digest', updated_at: null, records: [] })
+const chatItem = (extra = {}) => item({ origin_id: 'chatgpt-daily:fixture:001', bot_id: CHATGPT_BOT_ID, ...extra })
+const chatBatch = (...items) => ({ schema_version: 1, bot_id: CHATGPT_BOT_ID, items })
+const chatEmpty = () => ({ ...empty(), bot_id: CHATGPT_BOT_ID })
+const hash = value => createHash('sha256').update(value).digest('hex')
 
 test('Grok ingress accepts only specified public unreviewed data and validates before network', async () => {
   for (const extra of [{ bot_id: 'other' }, { visibility: 'private' }, { review_status: 'verified' }, { source_url: 'javascript:alert(1)' },
@@ -38,20 +48,21 @@ test('stable origins are idempotent, conflicts stop and corrections retain ident
 })
 
 function fakeGitHub(push = true, options = {}) {
-  const blobs = new Map(), trees = new Map(), commits = new Map(), calls = []
-  let head, serial = 0
+  const blobs = new Map(), trees = new Map(), commits = new Map(), calls = [], heads = new Map()
+  let serial = 0
   const request = async (method, path, body) => {
     calls.push({ method, path, body })
     const prefix = `repos/${NEWS_REPO}`
     assert.ok(path.startsWith(prefix))
     if (method === 'GET' && path === prefix) return { permissions: { push } }
     if (method === 'GET' && path.includes('/git/ref/')) {
+      const head = heads.get(path.split('/git/ref/heads/')[1])
       if (!head) throw Object.assign(new Error('missing'), { status: 404 })
       return { object: { sha: head } }
     }
     if (method === 'GET' && path.includes('/git/commits/')) return commits.get(path.split('/').pop())
     if (method === 'GET' && path.includes('/contents/')) {
-      const ref = decodeURIComponent(path.split('?ref=')[1]), sha = ref === NEWS_BRANCH ? head : ref
+      const ref = decodeURIComponent(path.split('?ref=')[1]), sha = heads.get(ref) || ref
       const filePath = path.split('/contents/')[1].split('?')[0]
       const blobSha = trees.get(commits.get(sha).tree.sha)[filePath]
       if (!blobSha || (options.missingHistory && filePath.startsWith('feed/v1/records/'))) throw Object.assign(new Error('missing'), { status: 404 })
@@ -68,17 +79,162 @@ function fakeGitHub(push = true, options = {}) {
     if (path.endsWith('/git/blobs')) { blobs.set(sha, body.content); return { sha } }
     if (path.endsWith('/git/trees')) { trees.set(sha, { ...(trees.get(body.base_tree) || {}), ...Object.fromEntries(body.tree.map(entry => [entry.path, entry.sha])) }); return { sha } }
     if (path.endsWith('/git/commits')) { commits.set(sha, { tree: { sha: body.tree }, parents: body.parents }); return { sha } }
-    if (method === 'POST' && path.endsWith('/git/refs')) { assert.equal(body.ref, `refs/heads/${NEWS_BRANCH}`); head = body.sha; return {} }
-    if (method === 'PATCH' && path.endsWith(`/git/refs/heads/${NEWS_BRANCH}`)) {
-      assert.equal(body.force, false); assert.equal(commits.get(body.sha).parents[0], head); head = body.sha
+    if (method === 'POST' && path.endsWith('/git/refs')) {
+      const branch = body.ref.replace(/^refs\/heads\//, '')
+      assert.ok(Object.values(NEWS_PRODUCERS).some(config => config.branch === branch))
+      assert.ok(!heads.has(branch)); heads.set(branch, body.sha); return {}
+    }
+    if (method === 'PATCH' && path.includes('/git/refs/heads/')) {
+      const branch = path.split('/git/refs/heads/')[1]
+      assert.ok(Object.values(NEWS_PRODUCERS).some(config => config.branch === branch))
+      assert.equal(body.force, false); assert.equal(commits.get(body.sha).parents[0], heads.get(branch)); heads.set(branch, body.sha)
       if (options.failAfterRef) { options.failAfterRef = false; throw new Error('simulated response lost after ref update') }
       return {}
     }
     throw new Error(`Unexpected request ${method} ${path}`)
   }
-  return { request, calls, trees, blobs, commits,
-    currentIndex: () => JSON.parse(blobs.get(trees.get(commits.get(head).tree.sha)['feed/v1/index.json'])) }
+  return { request, calls, trees, blobs, commits, heads,
+    currentIndex: (branch = NEWS_BRANCH) => JSON.parse(blobs.get(trees.get(commits.get(heads.get(branch)).tree.sha)['feed/v1/index.json'])) }
 }
+
+test('Grok defaults retain the original serialized bytes, IDs, fingerprints and request sequence', async () => {
+  // Recorded from the pre-adapter schema and publisher, before adding another producer.
+  const expected = { id: 'grok-2be6e210f8b599e19bb5c411', fingerprint: '9e2623fc606651f8967cf5ef03465143378fea8c14a53c7a3f938f8ac1c52c8f',
+    indexFileSha256: 'aa6708dd9722a0356651b7880c18c68499bc815a578529fdf035bd0c170e2285', recordFileSha256: 'e6b503fb14df680067699dafe1eafe683bc512197dd267626ee9dcc6bffc48fb' }
+  const legacy = mergeGrokNews(empty(), batch(item())), generic = mergeNews(empty(), batch(item()))
+  assert.deepEqual(generic, legacy)
+  assert.equal(legacy.changed[0].id, expected.id)
+  assert.equal(legacy.changed[0].fingerprint, expected.fingerprint)
+  assert.equal(hash(JSON.stringify(legacy.index, null, 2) + '\n'), expected.indexFileSha256)
+  assert.equal(hash(JSON.stringify(legacy.changed[0], null, 2) + '\n'), expected.recordFileSha256)
+  const oldApi = fakeGitHub(), newApi = fakeGitHub()
+  assert.deepEqual(await publishNews(batch(item()), newApi.request), await publishGrokNews(batch(item()), oldApi.request))
+  assert.deepEqual(newApi.calls, oldApi.calls)
+  const contents = newApi.calls.filter(call => call.path.endsWith('/git/blobs')).map(call => hash(call.body.content))
+  assert.deepEqual(contents, [expected.indexFileSha256, expected.recordFileSha256])
+  assert.equal(NEWS_BRANCH, 'news/x-ai-digest')
+})
+
+test('ChatGPT ingress requires an explicit producer and rejects cross-producer batches, origins, indexes and IDs', async () => {
+  assert.equal(parseNewsItem(chatItem(), 'chatgpt').bot_id, CHATGPT_BOT_ID)
+  assert.equal(parseNewsBatch(chatBatch(chatItem()), 'chatgpt').length, 1)
+  assert.throws(() => parseGrokBatch(chatBatch(chatItem())))
+  assert.throws(() => parseNewsItem(chatItem({ origin_id: item().origin_id }), 'chatgpt'))
+  assert.throws(() => parseNewsBatch(chatBatch(item()), 'chatgpt'))
+  assert.throws(() => parseNewsBatch(batch(chatItem()), 'chatgpt'))
+  assert.throws(() => parseNewsBatch(chatBatch(chatItem()), 'other'), /来源不受支持/)
+  assert.throws(() => parseNewsBatch(chatBatch(chatItem()), 'toString'), /来源不受支持/)
+  assert.throws(() => parseNewsBatch(chatBatch(chatItem()), undefined), /来源不受支持/)
+  const first = mergeNews(chatEmpty(), chatBatch(chatItem()), new Map(), 'chatgpt')
+  assert.match(first.changed[0].id, /^chatgpt-[a-f0-9]{24}$/)
+  assert.equal(first.changed[0].id, `chatgpt-${hash(chatItem().origin_id).slice(0, 24)}`)
+  assert.deepEqual(parseNewsIndex(first.index, 'chatgpt'), first.index)
+  assert.throws(() => parseGrokIndex(first.index))
+  assert.throws(() => parseNewsIndex({ ...first.index, records: [{ ...first.changed[0], id: first.changed[0].id.replace('chatgpt-', 'grok-') }] }, 'chatgpt'), /标识/)
+  assert.throws(() => mergeNews(empty(), chatBatch(chatItem()), new Map(), 'chatgpt'))
+  assert.throws(() => mergeNews(chatEmpty(), batch(item()), new Map(), 'chatgpt'))
+  for (const [payload, producer] of [[chatBatch(chatItem()), undefined], [batch(item()), 'chatgpt'], [chatBatch(chatItem({ bot_id: 'x-ai-digest' })), 'chatgpt'], [chatBatch(chatItem()), 'other']]) {
+    let requests = 0
+    await assert.rejects(publishNews(payload, async () => { requests++; return {} }, producer))
+    assert.equal(requests, 0)
+  }
+  assert.ok(Object.isFrozen(NEWS_PRODUCERS) && Object.isFrozen(NEWS_PRODUCERS.chatgpt))
+})
+
+test('each producer atomically publishes to its own branch and retains immutable revision history', async () => {
+  const api = fakeGitHub(), branch = NEWS_PRODUCERS.chatgpt.branch
+  const grok = await publishGrokNews(batch(item()), api.request)
+  const chat = await publishNews(chatBatch(chatItem()), api.request, 'chatgpt')
+  assert.equal(chat.status, 'data_verified')
+  assert.equal(chat.branch, 'news/chatgpt-daily')
+  assert.equal(chat.website, 'not_verified')
+  assert.equal(api.heads.get(NEWS_BRANCH), grok.commit)
+  assert.equal(api.currentIndex(branch).bot_id, CHATGPT_BOT_ID)
+  assert.ok(api.currentIndex(branch).records.every(record => record.id.startsWith('chatgpt-')))
+  assert.deepEqual(api.currentIndex(), mergeGrokNews(empty(), batch(item())).index)
+  const writes = api.calls.filter(call => call.method !== 'GET').length
+  assert.equal((await publishNews(chatBatch(chatItem()), api.request, 'chatgpt')).status, 'unchanged')
+  assert.equal(api.calls.filter(call => call.method !== 'GET').length, writes)
+  const correction = chatBatch(chatItem({ revision: 2, summary: '更正' }))
+  await publishNews(correction, api.request, 'chatgpt')
+  const head = api.heads.get(branch), tree = api.trees.get(api.commits.get(head).tree.sha), current = api.currentIndex(branch).records[0]
+  assert.equal(current.revision, 2)
+  assert.equal(current.id, `chatgpt-${hash(chatItem().origin_id).slice(0, 24)}`)
+  for (const revision of [1, 2]) assert.ok(tree[`feed/v1/records/${current.id}/r${revision}.json`])
+  const refUpdates = api.calls.filter(call => call.method === 'PATCH')
+  assert.deepEqual(refUpdates.map(call => call.path), [`repos/${NEWS_REPO}/git/refs/heads/${branch}`])
+  assert.equal(api.calls.at(-1).path, `repos/${NEWS_REPO}/contents/feed/v1/index.json?ref=${encodeURIComponent(branch)}`)
+  assert.ok(!api.calls.some(call => /refs\/heads\/main|actions|deployments/.test(call.path)))
+  const denied = fakeGitHub(false)
+  await assert.rejects(publishNews(chatBatch(chatItem()), denied.request, 'chatgpt'), /没有本站写权限/)
+  assert.equal(denied.calls.filter(call => call.method !== 'GET').length, 0)
+})
+
+test('ChatGPT replays, revision conflicts and stale history preserve newer records', async () => {
+  for (const missingHistory of [false, true]) {
+    const api = fakeGitHub(true, { missingHistory }), payload = chatBatch(chatItem())
+    await publishNews(payload, api.request, 'chatgpt')
+    await publishNews(chatBatch(chatItem({ revision: 2, summary: '更正' })), api.request, 'chatgpt')
+    const writes = api.calls.filter(call => call.method !== 'GET').length
+    const replay = await publishNews(payload, api.request, 'chatgpt')
+    assert.equal(replay.status, missingHistory ? 'stale_ignored' : 'unchanged')
+    assert.deepEqual(replay.ignored, [{ origin_id: chatItem().origin_id, revision: 1, current_revision: 2, status: missingHistory ? 'stale_ignored' : 'verified_replay' }])
+    assert.equal(api.calls.filter(call => call.method !== 'GET').length, writes)
+    await assert.rejects(publishNews(chatBatch(chatItem({ revision: 2, summary: 'conflict' })), api.request, 'chatgpt'), /冲突/)
+    await assert.rejects(publishNews(chatBatch(chatItem({ revision: 4 })), api.request, 'chatgpt'), /逐版/)
+    if (!missingHistory) await assert.rejects(publishNews(chatBatch(chatItem({ summary: 'old conflict' })), api.request, 'chatgpt'), /冲突/)
+    const mixed = await publishNews(chatBatch(chatItem(), chatItem({ origin_id: 'chatgpt-daily:fixture:new' })), api.request, 'chatgpt')
+    assert.equal(mixed.status, 'data_verified')
+    assert.equal(mixed.changed, 1)
+    assert.equal(api.currentIndex(NEWS_PRODUCERS.chatgpt.branch).records.find(record => record.origin_id === chatItem().origin_id).revision, 2)
+  }
+})
+
+test('ChatGPT publication requires moving-branch readback and safely retries a lost ref response', async () => {
+  const api = fakeGitHub(), branch = NEWS_PRODUCERS.chatgpt.branch
+  const request = async (method, path, body) => {
+    const result = await api.request(method, path, body)
+    if (method === 'GET' && path.endsWith(`?ref=${encodeURIComponent(branch)}`)) {
+      return { encoding: 'base64', content: Buffer.from(JSON.stringify(chatEmpty())).toString('base64') }
+    }
+    return result
+  }
+  await assert.rejects(publishNews(chatBatch(chatItem()), request, 'chatgpt'), /投递结果待核对/)
+  const options = {}, retryApi = fakeGitHub(true, options)
+  await publishNews(chatBatch(chatItem()), retryApi.request, 'chatgpt')
+  options.failAfterRef = true
+  const correction = chatBatch(chatItem({ revision: 2, summary: '更正' }))
+  await assert.rejects(publishNews(correction, retryApi.request, 'chatgpt'), /response lost/)
+  const writes = retryApi.calls.filter(call => call.method !== 'GET').length
+  assert.equal((await publishNews(correction, retryApi.request, 'chatgpt')).status, 'unchanged')
+  assert.equal(retryApi.calls.filter(call => call.method !== 'GET').length, writes)
+})
+
+test('the legacy and explicit-producer check CLI remains offline and rejects unknown or duplicate flags', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'news-cli-'))
+  try {
+    const grokFile = join(directory, 'grok.json'), chatFile = join(directory, 'chatgpt.json'), log = join(directory, 'gh-called')
+    writeFileSync(grokFile, JSON.stringify(batch(item())))
+    writeFileSync(chatFile, JSON.stringify(chatBatch(chatItem())))
+    writeFileSync(join(directory, 'gh'), '#!/bin/sh\nprintf "called\\n" >> "$NEWS_TEST_GH_LOG"\nexit 97\n', { mode: 0o755 })
+    const run = args => spawnSync(process.execPath, [fileURLToPath(new URL('./publish-grok-news.mjs', import.meta.url)), ...args], {
+      encoding: 'utf8', env: { ...process.env, PATH: `${directory}:${process.env.PATH}`, NEWS_TEST_GH_LOG: log }, timeout: 10000,
+    })
+    for (const args of [['--check', grokFile], ['--check', grokFile, '--producer', 'grok'], ['--check', chatFile, '--producer', 'chatgpt'], ['--producer', 'chatgpt', '--check', chatFile]]) {
+      const result = run(args)
+      assert.equal(result.status, 0, result.stderr)
+      assert.deepEqual(JSON.parse(result.stdout), { status: 'valid', items: 1, network: false })
+    }
+    for (const args of [['--check', chatFile], ['--check', grokFile, '--producer', 'chatgpt'], ['--check', chatFile, '--producer', 'unknown'],
+      ['--check', chatFile, '--producer', 'chatgpt', '--producer', 'grok'], ['--check', grokFile, '--check', grokFile],
+      ['--check', grokFile, '--unknown', 'x'], ['--check', grokFile, '--producer'], ['--check', grokFile, 'extra'], ['--producer', 'chatgpt']]) {
+      const result = run(args)
+      assert.equal(result.status, 1, `${args}: ${result.stderr}`)
+      assert.equal(result.stdout, '')
+    }
+    assert.ok(!existsSync(log), 'all check and invalid argument paths must avoid GitHub entirely')
+  } finally { rmSync(directory, { recursive: true, force: true }) }
+})
 
 test('publication is atomic on the data branch, reads back and never deploys the website', async () => {
   const api = fakeGitHub()

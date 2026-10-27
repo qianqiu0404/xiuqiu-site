@@ -1,8 +1,12 @@
-// Health, freshness and snapshot rules for the two read-only feeds that
+// Health, freshness and snapshot rules for read-only feeds that
 // vercel.json rewrites to other origins. Pure: callers inject fetch, clock and
 // parsers, so the browser, the Vite build and the health script share one rule.
 
-export type ExternalSourceId = 'grok' | 'research'
+export type ExternalSourceId = 'grok' | 'research' | 'chatgpt'
+
+// Keep the existing scheduled health check and build snapshots on their
+// established sources. A new source is checked only when explicitly selected.
+export const DEFAULT_EXTERNAL_SOURCES: readonly ExternalSourceId[] = ['grok', 'research']
 
 export interface ExternalSourceDef {
   id: ExternalSourceId
@@ -33,6 +37,14 @@ export const EXTERNAL_SOURCES: Record<ExternalSourceId, ExternalSourceDef> = {
     upstream: 'https://shared-research.vercel.app/feed/v1/index.json',
     snapshotPath: '/external-snapshots/research.json',
     maxAgeHours: 72,
+  },
+  chatgpt: {
+    id: 'chatgpt',
+    label: 'ChatGPT推荐',
+    livePath: '/chatgpt-news-data/index.json',
+    upstream: 'https://raw.githubusercontent.com/qianqiu0404/xiuqiu-site/refs/heads/news/chatgpt-daily/feed/v1/index.json',
+    snapshotPath: '/external-snapshots/chatgpt-news.json',
+    maxAgeHours: 48,
   },
 }
 
@@ -134,8 +146,10 @@ export async function probeExternalSource(
 
 export type ExternalParsers = Record<ExternalSourceId, (value: unknown) => ExternalIndexShape>
 
-export async function probeAllExternalSources(parsers: ExternalParsers, options: { base?: string; fetcher?: typeof fetch; now?: () => number; timeoutMs?: number } = {}) {
-  return Promise.all(Object.values(EXTERNAL_SOURCES).map(def =>
+export interface ExternalProbeOptions { sources?: readonly ExternalSourceId[]; base?: string; fetcher?: typeof fetch; now?: () => number; timeoutMs?: number }
+
+export async function probeAllExternalSources(parsers: ExternalParsers, options: ExternalProbeOptions = {}) {
+  return Promise.all((options.sources ?? DEFAULT_EXTERNAL_SOURCES).map(id => EXTERNAL_SOURCES[id]).map(def =>
     probeExternalSource(def, options.base ? new URL(def.livePath, options.base).href : def.upstream, parsers[def.id], options)))
 }
 
@@ -145,7 +159,7 @@ export interface ExternalSnapshotFile { source: ExternalSourceId; fileName: stri
  * Snapshots go into the build output only. They are never committed, so they
  * stay outside the frozen public/data contract and the generated-data check.
  */
-export async function buildExternalSnapshotFiles(parsers: ExternalParsers, options: { fetcher?: typeof fetch; now?: () => number; timeoutMs?: number } = {}): Promise<ExternalSnapshotFile[]> {
+export async function buildExternalSnapshotFiles(parsers: ExternalParsers, options: Omit<ExternalProbeOptions, 'base'> = {}): Promise<ExternalSnapshotFile[]> {
   const now = options.now ?? Date.now
   const probes = await probeAllExternalSources(parsers, { ...options, now })
   // One retry per failed source: a transient network error should not drop

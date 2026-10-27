@@ -1,8 +1,15 @@
 export const GROK_BOT_ID = 'x-ai-digest' as const
-export interface GrokNewsItem {
+export const CHATGPT_BOT_ID = 'chatgpt-daily' as const
+export const NEWS_PRODUCERS = Object.freeze({
+  grok: Object.freeze({ botId: GROK_BOT_ID, originPrefix: 'x-ai-digest:', idPrefix: 'grok-', branch: 'news/x-ai-digest', label: 'Grok Bot', dataPath: '/grok-news-data/index.json' }),
+  chatgpt: Object.freeze({ botId: CHATGPT_BOT_ID, originPrefix: 'chatgpt-daily:', idPrefix: 'chatgpt-', branch: 'news/chatgpt-daily', label: 'ChatGPT 推荐', dataPath: '/chatgpt-news-data/index.json' }),
+})
+export type NewsProducer = keyof typeof NEWS_PRODUCERS
+export type NewsBotId<P extends NewsProducer = NewsProducer> = (typeof NEWS_PRODUCERS)[P]['botId']
+export interface NewsItem<P extends NewsProducer = NewsProducer> {
   origin_id: string
   revision: number
-  bot_id: typeof GROK_BOT_ID
+  bot_id: NewsBotId<P>
   visibility: 'public'
   review_status: 'unreviewed'
   collected_at: string
@@ -17,8 +24,16 @@ export interface GrokNewsItem {
   source_excerpt: string | null
   bot_analysis: string | null
 }
-export interface GrokNewsRecord extends GrokNewsItem { id: string; fingerprint: string }
-export interface GrokNewsIndex { schema_version: 1; bot_id: typeof GROK_BOT_ID; updated_at: string | null; records: GrokNewsRecord[] }
+export interface NewsRecord<P extends NewsProducer = NewsProducer> extends NewsItem<P> { id: string; fingerprint: string }
+export interface NewsIndex<P extends NewsProducer = NewsProducer> { schema_version: 1; bot_id: NewsBotId<P>; updated_at: string | null; records: NewsRecord<P>[] }
+export interface GrokNewsItem extends NewsItem<'grok'> {}
+export interface GrokNewsRecord extends NewsRecord<'grok'> {}
+export interface GrokNewsIndex extends NewsIndex<'grok'> {}
+
+export function newsProducerConfig<P extends NewsProducer>(producer: P): (typeof NEWS_PRODUCERS)[P] {
+  if (typeof producer !== 'string' || !Object.prototype.hasOwnProperty.call(NEWS_PRODUCERS, producer)) throw new Error('新闻来源不受支持')
+  return NEWS_PRODUCERS[producer]
+}
 
 function obj(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('新闻资料格式不正确')
@@ -52,11 +67,13 @@ export function grokSourceUrl(value: unknown): string {
     || /\.(?:local|internal|localhost)$/.test(url.hostname)) throw new Error('新闻必须使用公开原始链接')
   return url.href
 }
-export function parseGrokItem(value: unknown): GrokNewsItem {
+export function parseNewsItem<P extends NewsProducer>(value: unknown, producer: P): NewsItem<P> {
+  const config = newsProducerConfig(producer)
   const item = obj(value), origin = text(item.origin_id, 180)
-  if (!/^x-ai-digest:[a-z0-9:_.-]+$/i.test(origin) || !Number.isSafeInteger(item.revision) || Number(item.revision) < 1) throw new Error('新闻标识或版本不正确')
+  if (!origin.toLowerCase().startsWith(config.originPrefix) || !/^[a-z0-9:_.-]+$/i.test(origin.slice(config.originPrefix.length))
+    || !Number.isSafeInteger(item.revision) || Number(item.revision) < 1) throw new Error('新闻标识或版本不正确')
   return {
-    origin_id: origin, revision: Number(item.revision), bot_id: choice(item.bot_id, [GROK_BOT_ID]),
+    origin_id: origin, revision: Number(item.revision), bot_id: choice(item.bot_id, [config.botId]) as NewsBotId<P>,
     visibility: choice(item.visibility, ['public']), review_status: choice(item.review_status, ['unreviewed']),
     collected_at: timestamp(item.collected_at), published_at: item.published_at == null ? null : timestamp(item.published_at),
     event_date: item.event_date == null ? null : date(item.event_date),
@@ -66,21 +83,27 @@ export function parseGrokItem(value: unknown): GrokNewsItem {
     source_excerpt: optional(item.source_excerpt, 200), bot_analysis: optional(item.bot_analysis, 3000),
   }
 }
-export function parseGrokBatch(value: unknown): GrokNewsItem[] {
+export function parseNewsBatch<P extends NewsProducer>(value: unknown, producer: P): NewsItem<P>[] {
+  const config = newsProducerConfig(producer)
   const batch = obj(value)
-  if (batch.schema_version !== 1 || batch.bot_id !== GROK_BOT_ID || !Array.isArray(batch.items) || !batch.items.length || batch.items.length > 50) throw new Error('新闻批次不正确')
-  const items = batch.items.map(parseGrokItem)
+  if (batch.schema_version !== 1 || batch.bot_id !== config.botId || !Array.isArray(batch.items) || !batch.items.length || batch.items.length > 50) throw new Error('新闻批次不正确')
+  const items = batch.items.map(item => parseNewsItem(item, producer))
   if (new Set(items.map(item => item.origin_id)).size !== items.length) throw new Error('同批次新闻标识重复')
   return items
 }
-export function parseGrokIndex(value: unknown): GrokNewsIndex {
+export function parseNewsIndex<P extends NewsProducer>(value: unknown, producer: P): NewsIndex<P> {
+  const config = newsProducerConfig(producer)
   const index = obj(value)
-  if (index.schema_version !== 1 || index.bot_id !== GROK_BOT_ID || !Array.isArray(index.records) || index.records.length > 2000) throw new Error('新闻索引版本不受支持')
+  if (index.schema_version !== 1 || index.bot_id !== config.botId || !Array.isArray(index.records) || index.records.length > 2000) throw new Error('新闻索引版本不受支持')
   const records = index.records.map(value => {
     const record = obj(value), id = text(record.id, 40), fingerprint = text(record.fingerprint, 64)
-    if (!/^grok-[a-f0-9]{24}$/.test(id) || !/^[a-f0-9]{64}$/.test(fingerprint)) throw new Error('新闻索引标识不正确')
-    return { ...parseGrokItem(value), id, fingerprint }
+    if (!id.startsWith(config.idPrefix) || !/^[a-f0-9]{24}$/.test(id.slice(config.idPrefix.length)) || !/^[a-f0-9]{64}$/.test(fingerprint)) throw new Error('新闻索引标识不正确')
+    return { ...parseNewsItem(value, producer), id, fingerprint }
   })
   if (new Set(records.map(r => r.id)).size !== records.length || new Set(records.map(r => r.origin_id)).size !== records.length) throw new Error('新闻索引标识重复')
-  return { schema_version: 1, bot_id: GROK_BOT_ID, updated_at: index.updated_at == null ? null : timestamp(index.updated_at), records }
+  return { schema_version: 1, bot_id: config.botId as NewsBotId<P>, updated_at: index.updated_at == null ? null : timestamp(index.updated_at), records }
 }
+
+export function parseGrokItem(value: unknown): GrokNewsItem { return parseNewsItem(value, 'grok') }
+export function parseGrokBatch(value: unknown): GrokNewsItem[] { return parseNewsBatch(value, 'grok') }
+export function parseGrokIndex(value: unknown): GrokNewsIndex { return parseNewsIndex(value, 'grok') }

@@ -10,7 +10,7 @@ export const intelHomeSeo = {
   description: '每天 2 条 AI、2 条 Web3 工程简报和市场事件，按主题筛选、搜索与订阅；每条都回到一手来源。',
 } as const
 
-export type IntelFilter = 'all' | 'ai' | 'web3' | 'market' | 'research' | 'grok'
+export type IntelFilter = 'all' | 'ai' | 'web3' | 'market' | 'research' | 'grok' | 'chatgpt'
 
 export const intelFilters: { key: IntelFilter; label: string }[] = [
   { key: 'all', label: '全部' },
@@ -19,6 +19,7 @@ export const intelFilters: { key: IntelFilter; label: string }[] = [
   { key: 'market', label: '市场' },
   { key: 'research', label: '共享研究' },
   { key: 'grok', label: 'Grok Bot' },
+  { key: 'chatgpt', label: 'ChatGPT推荐' },
 ]
 
 const marketTopicLabels: Record<string, string> = {
@@ -32,8 +33,9 @@ const marketTopicLabels: Record<string, string> = {
 const domainLabels: Record<IntelDomain, string> = { ai: 'AI', web3: 'WEB3', market: '市场', review: '回顾', research: '资料' }
 
 export function intelTopicLabel(topic: string): string {
-  const grokTopics: Record<string, string> = { 'grok-ai': 'AI 新闻', 'grok-web3': 'Web3 新闻', 'grok-market': '市场新闻', 'grok-research': '其他新闻资料' }
-  if (grokTopics[topic]) return grokTopics[topic]
+  const newsTopic = topic.match(/^(?:grok|chatgpt)-(ai|web3|market|research)$/)
+  const newsTopics: Record<string, string> = { ai: 'AI 新闻', web3: 'Web3 新闻', market: '市场新闻', research: '其他新闻资料' }
+  if (newsTopic) return newsTopics[newsTopic[1]]!
   return researchTopicLabel(topic) || marketTopicLabels[topic] || radarTopicLabel(topic)
 }
 
@@ -42,14 +44,15 @@ export function intelDomainLabel(domain: IntelDomain): string {
 }
 
 export function intelTopicHref(topic: string): string {
-  return topic.startsWith('grok-') ? `/?domain=grok&topic=${encodeURIComponent(topic)}` : `/topics/${encodeURIComponent(topic)}`
+  const producer = topic.startsWith('grok-') ? 'grok' : topic.startsWith('chatgpt-') ? 'chatgpt' : undefined
+  return producer ? `/?domain=${producer}&topic=${encodeURIComponent(topic)}` : `/topics/${encodeURIComponent(topic)}`
 }
 
 // Reviews summarise every domain, so they stay visible under any domain filter.
 export function filterIntel(items: readonly IntelItem[], query: { filter: IntelFilter; topic?: string; search?: string }): IntelItem[] {
   const needle = query.search?.trim().toLowerCase()
   return items.filter(item =>
-    (query.filter === 'all' || (query.filter === 'research' || query.filter === 'grok' ? item.kind === query.filter : item.domain === query.filter || item.kind === 'review'))
+    (query.filter === 'all' || (query.filter === 'research' || query.filter === 'grok' || query.filter === 'chatgpt' ? item.kind === query.filter : item.domain === query.filter || item.kind === 'review'))
     && (!query.topic || item.topic === query.topic)
     && (!needle || `${item.title} ${item.summary}`.toLowerCase().includes(needle)),
   )
@@ -100,13 +103,14 @@ export function getIntelFreshness(latestDate: string | null | undefined, now = n
 }
 
 export function topicsForFilter(topics: readonly IntelTopic[], filter: IntelFilter): IntelTopic[] {
-  return topics.filter(topic => filter === 'all' || (filter === 'research' || filter === 'grok' ? topic.topic.startsWith(`${filter}-`) : topic.domain === filter))
+  return topics.filter(topic => filter === 'all' || (filter === 'research' || filter === 'grok' || filter === 'chatgpt' ? topic.topic.startsWith(`${filter}-`) : topic.domain === filter))
 }
 
 export function intelSourceLabel(item: IntelItem): string | undefined {
-  if (item.kind === 'grok' && item.research) {
+  if ((item.kind === 'grok' || item.kind === 'chatgpt') && item.research) {
     const material = item.research.materials[0]
-    return `Grok Bot 搜索整理 · ${researchCardLabel(item.research)}${material?.source_url ? ` · ${sourceDisplayLabel(material.source_url, material.title)}` : ''}`
+    const producer = item.kind === 'grok' ? 'Grok Bot 搜索整理' : 'ChatGPT推荐 · 未经人工复核'
+    return `${producer} · ${researchCardLabel(item.research)}${material?.source_url ? ` · ${sourceDisplayLabel(material.source_url, material.title)}` : ''}`
   }
   if (item.research) return researchCardLabel(item.research)
   if (!item.source) return undefined
@@ -134,7 +138,7 @@ export function shanghaiToday(now = new Date()): string {
   return `${parts.year}-${parts.month}-${parts.day}`
 }
 
-const KIND_LABELS: Record<IntelItem['kind'], string> = { learning: '学习雷达', market: '市场雷达', review: '趋势回顾', research: '共享研究', grok: 'Grok Bot' }
+const KIND_LABELS: Record<IntelItem['kind'], string> = { learning: '学习雷达', market: '市场雷达', review: '趋势回顾', research: '共享研究', grok: 'Grok Bot', chatgpt: 'ChatGPT推荐' }
 
 export function intelKindLabel(kind: IntelItem['kind']): string {
   return KIND_LABELS[kind]

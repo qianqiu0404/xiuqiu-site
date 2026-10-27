@@ -1,51 +1,37 @@
-import { parseGrokIndex } from '../../shared/grokNews.ts'
-import type { GrokNewsIndex, GrokNewsRecord } from '../../shared/grokNews.ts'
+import { NEWS_PRODUCERS, parseGrokIndex, parseNewsIndex } from '../../shared/grokNews.ts'
+import type { GrokNewsIndex, GrokNewsRecord, NewsIndex, NewsProducer } from '../../shared/grokNews.ts'
 import type { ReadingItem, ResearchCard, ResearchDetail } from './readingFeed.ts'
-import { researchCalendarDate } from './sharedResearchPresentation.ts'
 import { createExternalLoader } from './externalSourceStatus.ts'
+import { newsCard, newsReadingItems, newsUpdateLabel, newsDetail } from './newsPresentation.ts'
+
+export { newsDetailContext, newsReadingItems, newsUpdateLabel } from './newsPresentation.ts'
 
 export function grokCard(record: GrokNewsRecord): ResearchCard {
-  const href = `/research?producer=grok&id=${record.id}`
-  return { id: record.id, kind: 'capture', title: record.title, summary: record.summary, category: record.domain,
-    date: record.event_date || researchCalendarDate(record.published_at || record.collected_at),
-    date_basis: record.event_date ? 'event' : record.published_at ? 'published' : 'collected',
-    collected_at: record.collected_at, published_at: record.published_at, event_date: record.event_date, updated_at: record.collected_at,
-    evidence_status: 'unverified', url: href,
-    materials: [{ id: record.id, title: record.source_name, url: href, source_url: record.source_url, source_type: 'model_output', source_access: record.source_access }],
-    topic_ids: [], coverage: null }
+  return newsCard(record, 'grok')
 }
 export function grokReadingItems(index?: GrokNewsIndex): ReadingItem[] {
-  return (index?.records || []).map(record => {
-    const card = grokCard(record)
-    return { id: record.id, kind: 'grok', domain: record.domain, topic: `grok-${record.domain}`, date: card.date,
-      title: record.title, summary: record.summary, href: card.url, research: card }
-  })
+  return newsReadingItems(index, 'grok')
 }
 export function grokUpdateLabel(index: GrokNewsIndex): string {
-  return `Grok Bot 直投 · ${index.records.length} 条 · ${index.updated_at ? `最近收录 ${researchCalendarDate(index.updated_at)}` : '暂无资料'} · 搜索整理未经人工复核。`
+  return newsUpdateLabel(index, 'grok')
 }
 export function grokDetail(record: GrokNewsRecord): ResearchDetail {
-  const p = (value: string) => ({ tag: 'p', children: [{ text: value }] })
-  const h = (value: string) => ({ tag: 'h2', children: [{ text: value }] })
-  return { schema_version: 1, record: grokCard(record), content: [h('Grok Bot 整理'), p(record.summary),
-    ...(record.source_excerpt ? [h('原文摘录'), { tag: 'blockquote', children: [p(record.source_excerpt)] }] : []),
-    ...(record.bot_analysis ? [h('Bot 分析与待核对事项'), p(record.bot_analysis)] : []),
-    p('以上由 x-ai-digest 搜索整理，未经人工复核。原文可访问不等于所述事实已证实。')] }
+  return newsDetail(record, 'grok')
 }
-export function createGrokNewsClient(fetcher: typeof fetch = fetch, now = Date.now) {
-  let cached: GrokNewsIndex | undefined, expires = 0, pending: Promise<GrokNewsIndex> | undefined
-  function load(force = false): Promise<GrokNewsIndex> {
+export function createNewsClient<P extends NewsProducer>(producer: P, fetcher: typeof fetch = fetch, now = Date.now) {
+  let cached: NewsIndex<P> | undefined, expires = 0, pending: Promise<NewsIndex<P>> | undefined
+  function load(force = false): Promise<NewsIndex<P>> {
     if (!force && cached && now() < expires) return Promise.resolve(cached)
     if (pending) return pending
     pending = (async () => {
       const controller = new AbortController(), timer = setTimeout(() => controller.abort(), 10000)
       try {
-        const response = await fetcher(`/grok-news-data/index.json?v=${Math.floor(now() / (force ? 1 : 60000))}`, { signal: controller.signal, credentials: 'omit', cache: 'no-store' })
-        if (!response.ok) throw new Error('Grok Bot 资料暂时无法读取')
+        const response = await fetcher(`${NEWS_PRODUCERS[producer].dataPath}?v=${Math.floor(now() / (force ? 1 : 60000))}`, { signal: controller.signal, credentials: 'omit', cache: 'no-store' })
+        if (!response.ok) throw new Error(`${producer === 'grok' ? 'Grok Bot 资料' : 'ChatGPT推荐来源尚未接入或'}暂时无法读取`)
         if (Number(response.headers.get('content-length')) > 2 * 1024 * 1024) throw new Error('新闻索引过大')
         const text = await response.text()
         if (new TextEncoder().encode(text).length > 2 * 1024 * 1024) throw new Error('新闻索引过大')
-        const value = parseGrokIndex(JSON.parse(text))
+        const value = parseNewsIndex(JSON.parse(text), producer)
         cached = value
         expires = now() + 60000
         return value
@@ -55,12 +41,21 @@ export function createGrokNewsClient(fetcher: typeof fetch = fetch, now = Date.n
   }
   return { load }
 }
+export function createGrokNewsClient(fetcher: typeof fetch = fetch, now = Date.now) {
+  return createNewsClient('grok', fetcher, now)
+}
 const client = createGrokNewsClient()
 export const loadGrokNews = client.load
 // Live index first; the build-time snapshot only when the rewrite fails.
 export const loadGrokNewsWithFallback = createExternalLoader('grok', loadGrokNews, parseGrokIndex)
-export async function loadGrokDetail(id: string, force = false): Promise<ResearchDetail | undefined> {
-  const record = (await loadGrokNewsWithFallback(force)).value.records.find(record => record.id === id)
-  return record ? grokDetail(record) : undefined
+const chatgptClient = createNewsClient('chatgpt')
+export const loadChatGPTNewsWithFallback = createExternalLoader('chatgpt', chatgptClient.load, value => parseNewsIndex(value, 'chatgpt'))
+export async function loadNewsDetail(producer: NewsProducer, id: string, force = false): Promise<ResearchDetail | undefined> {
+  const load = producer === 'grok' ? await loadGrokNewsWithFallback(force) : await loadChatGPTNewsWithFallback(force)
+  const record = load.value.records.find(record => record.id === id)
+  return record ? newsDetail(record, producer) : undefined
 }
-export type { GrokNewsIndex }
+export async function loadGrokDetail(id: string, force = false): Promise<ResearchDetail | undefined> {
+  return loadNewsDetail('grok', id, force)
+}
+export type { GrokNewsIndex, NewsIndex }
