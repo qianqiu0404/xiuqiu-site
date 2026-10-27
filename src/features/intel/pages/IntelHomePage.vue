@@ -8,7 +8,6 @@ import {
   groupIntelByDate,
   intelDayLabel,
   intelDomainLabel,
-  intelFilters,
   intelHomeSeo,
   intelItemCount,
   intelLatestDate,
@@ -40,8 +39,15 @@ import {
   grokReadingItems,
   grokUpdateLabel,
   intelTopicHref,
+  loadChatGPTNewsWithFallback,
+  newsReadingItems,
+  newsUpdateLabel,
+  intelFeedStates,
+  intelCanShowEmpty,
+  intelFilterOptions,
+  intelReadingReady,
 } from '../data'
-import type { IntelFilter, IntelItem, IntelQuery, ResearchIndex, GrokNewsIndex, ExternalLoad } from '../data'
+import type { IntelFilter, IntelItem, IntelQuery, ResearchIndex, GrokNewsIndex, NewsIndex, ExternalLoad } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
 import '../../../design/brief.css'
 import ChipGroup from '../../../design/components/ChipGroup.vue'
@@ -75,14 +81,19 @@ const researchState = ref<'loading' | 'ready' | 'error'>('loading')
 const grok = ref<GrokNewsIndex>()
 const grokState = ref<'loading' | 'ready' | 'error'>('loading')
 const grokLoad = ref<ExternalLoad<GrokNewsIndex>>()
+const chatgpt = ref<NewsIndex<'chatgpt'>>()
+const chatgptState = ref<'loading' | 'ready' | 'error'>('loading')
+const chatgptLoad = ref<ExternalLoad<NewsIndex<'chatgpt'>>>()
 const researchLoad = ref<ExternalLoad<ResearchIndex>>()
 // Live and current is the normal case and needs no extra line.
 const externalNotices = computed(() => [
   grokLoad.value && { id: 'grok', ...externalSourceNotice('grok', grokLoad.value, Date.now()) },
+  chatgptLoad.value && { id: 'chatgpt', ...externalSourceNotice('chatgpt', chatgptLoad.value, Date.now()) },
   researchLoad.value && { id: 'research', ...externalSourceNotice('research', researchLoad.value, Date.now()) },
 ].filter(notice => notice && notice.tone === 'warn') as { id: string; text: string }[])
-const items = computed(() => mergeReadingItems([...nativeItems.value, ...grokReadingItems(grok.value)], research.value))
-const combinedTopics = computed(() => archiveState.value === 'ready' ? readingTopics(items.value) : [...intelTopics, ...readingTopics(mergeReadingItems([], research.value))])
+const newsItems = computed(() => [...grokReadingItems(grok.value), ...newsReadingItems(chatgpt.value, 'chatgpt')])
+const items = computed(() => mergeReadingItems([...nativeItems.value, ...newsItems.value], research.value))
+const combinedTopics = computed(() => archiveState.value === 'ready' ? readingTopics(items.value) : [...intelTopics, ...readingTopics(mergeReadingItems(newsItems.value, research.value))])
 const archiveState = ref<'loading' | 'ready' | 'error'>('loading')
 
 async function refreshGrok(force = false) {
@@ -93,6 +104,16 @@ async function refreshGrok(force = false) {
     grokLoad.value = load
     grokState.value = 'ready'
   } catch { grokState.value = 'error' }
+}
+
+async function refreshChatGPT(force = false) {
+  chatgptState.value = 'loading'
+  try {
+    const load = await loadChatGPTNewsWithFallback(force)
+    chatgpt.value = load.value
+    chatgptLoad.value = load
+    chatgptState.value = 'ready'
+  } catch { chatgptState.value = 'error' }
 }
 
 async function loadResearch(force = false) {
@@ -130,7 +151,7 @@ const topicOptions = computed(() =>
   topicsForFilter(combinedTopics.value, filter.value).map(entry => ({ key: entry.topic, label: intelTopicLabel(entry.topic), count: entry.count })),
 )
 const filterOptions = computed(() =>
-  intelFilters.map(option => ({ ...option, count: filterIntel(items.value, { filter: option.key }).filter(item => item.kind !== 'review').length })),
+  intelFilterOptions(items.value, { research: researchState.value, grok: grokState.value, chatgpt: chatgptState.value }),
 )
 const continuingTopics = computed(() =>
   combinedTopics.value.filter(entry => continuing.value.has(entry.topic)).slice(0, 6),
@@ -145,15 +166,17 @@ function reset() {
   updateQuery({ filter: 'all', topic: undefined, search: '' })
 }
 
-const readingReady = computed(() => archiveState.value !== 'loading' && researchState.value !== 'loading' && grokState.value !== 'loading')
-const resultLabel = computed(() => intelResultLabel(filtered.value.length, visibleCount.value,
-  filter.value === 'grok' ? [grokState.value] : filter.value === 'research' ? [researchState.value] : [archiveState.value, researchState.value, grokState.value]))
+const feedStates = computed(() => intelFeedStates(filter.value, { archive: archiveState.value, research: researchState.value, grok: grokState.value, chatgpt: chatgptState.value }))
+const readingReady = computed(() => intelReadingReady(feedStates.value))
+const resultLabel = computed(() => intelResultLabel(filtered.value.length, visibleCount.value, feedStates.value))
+const canShowEmpty = computed(() => intelCanShowEmpty(feedStates.value))
 
 onMounted(() => {
   setSeoMeta({ ...intelHomeSeo, path: '/' })
   loadArchive()
   loadResearch()
   refreshGrok()
+  refreshChatGPT()
 })
 </script>
 
@@ -168,16 +191,17 @@ onMounted(() => {
         <div class="brief-masthead-row">
           <div>
             <h1>AI 与 Web3 工程情报</h1>
-            <p class="brief-lede">工程简报、市场事件、Grok Bot 新闻与共享研究资料，在这里一起阅读。保留来源和核实范围，按领域、主题或关键词筛选。</p>
+            <p class="brief-lede">工程简报、市场事件、Grok Bot 新闻、ChatGPT推荐与共享研究资料，在这里一起阅读。保留来源和核实范围，按领域、主题或关键词筛选。</p>
           </div>
           <dl class="brief-stats">
             <div><dt>雷达最新一期</dt><dd>{{ latestDayCount }} 条</dd></div>
-            <div><dt>累计阅读条目</dt><dd>{{ intelItemCount + (research?.cards.length || 0) + (grok?.records.length || 0) }}</dd></div>
+            <div><dt>累计阅读条目</dt><dd>{{ intelItemCount + (research?.cards.length || 0) + (grok?.records.length || 0) + (chatgpt?.records.length || 0) }}</dd></div>
             <div><dt>主题</dt><dd>{{ combinedTopics.length }}</dd></div>
           </dl>
         </div>
         <p :class="`brief-fresh brief-fresh--${freshness.state}`" role="status">原有雷达 · {{ freshness.label }}</p>
         <p v-if="grok" class="brief-note" role="status">{{ grokUpdateLabel(grok) }}</p>
+        <p v-if="chatgpt" class="brief-note" role="status">{{ newsUpdateLabel(chatgpt, 'chatgpt') }}</p>
         <p v-if="research" class="brief-note" role="status">{{ researchUpdateLabel(research) }} · 收录时间不代表事件发生时间。</p>
         <p v-for="notice in externalNotices" :key="notice.id" class="brief-note intel-source-warning" role="status">{{ notice.text }}</p>
       </div>
@@ -212,6 +236,8 @@ onMounted(() => {
         </div>
         <LoadState v-if="grokState === 'loading'" state="loading" message="正在载入 Grok Bot 新闻…" />
         <LoadState v-else-if="grokState === 'error'" state="error" :message="grok ? 'Grok Bot 刷新失败，仍保留上次资料。' : 'Grok Bot 直投资料暂不可读，其他资料仍可阅读。'" action-label="重试 Grok Bot" @action="refreshGrok(true)" />
+        <LoadState v-if="chatgptState === 'loading'" state="loading" message="正在载入 ChatGPT推荐…" />
+        <LoadState v-else-if="chatgptState === 'error'" state="error" :message="chatgpt ? 'ChatGPT推荐刷新失败，仍保留上次资料。' : 'ChatGPT推荐来源尚未接入或暂时无法读取，当前无法确认推荐数量。'" action-label="重试 ChatGPT推荐" @action="refreshChatGPT(true)" />
         <LoadState v-if="researchState === 'loading'" state="loading" message="正在载入共享研究资料…" />
         <LoadState
           v-else-if="researchState === 'error'"
@@ -248,9 +274,9 @@ onMounted(() => {
             </ol>
           </section>
         </template>
-        <LoadState v-else-if="archiveState === 'loading' || researchState === 'loading' || grokState === 'loading'" state="loading" message="正在载入情报…" />
+        <LoadState v-else-if="feedStates.includes('loading')" state="loading" message="正在载入情报…" />
         <LoadState
-          v-else-if="archiveState !== 'error' && (filter !== 'research' || researchState !== 'error') && (filter !== 'grok' || grokState !== 'error')"
+          v-else-if="canShowEmpty"
           state="empty"
           message="没有符合条件的条目。"
           :action-label="hasActiveFilter ? '清除筛选' : undefined"
@@ -273,6 +299,12 @@ onMounted(() => {
       </section>
 
       <aside class="brief-aside" aria-label="趋势、主题与订阅">
+        <section class="brief-panel" aria-labelledby="intel-chatgpt-title">
+          <h2 id="intel-chatgpt-title">ChatGPT推荐</h2>
+          <p>独立收录 ChatGPT 搜索整理的公开资料，保留原始出处、摘录与分析的归属。</p>
+          <button type="button" class="brief-button" :disabled="chatgptState === 'loading'" @click="refreshChatGPT(true)">刷新推荐</button>
+          <p class="brief-note">ChatGPT推荐未经人工复核，与 Grok Bot 新闻各自更新。</p>
+        </section>
         <section class="brief-panel" aria-labelledby="intel-grok-title">
           <h2 id="intel-grok-title">Grok Bot 新闻</h2>
           <p>由 x-ai-digest 搜索并直接投递本站，保留原始出处、整理说明与核实范围。</p>

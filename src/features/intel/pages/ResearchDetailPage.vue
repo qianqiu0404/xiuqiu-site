@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch, watchEffect } from 'vue'
 import { useRoute } from 'vue-router'
-import { loadResearchDetail, researchHref, researchEvidenceLabel, researchAccessLabel, researchTypeLabel, researchDateLabel, researchCalendarDate, RESEARCH_HOME, ResearchRequestError, readingReturnLink, sourceDisplayLabel, withReadingReturn, loadGrokDetail } from '../data'
+import { loadResearchDetail, researchHref, researchEvidenceLabel, researchAccessLabel, researchTypeLabel, researchDateLabel, researchCalendarDate, RESEARCH_HOME, ResearchRequestError, readingReturnLink, sourceDisplayLabel, withReadingReturn, loadNewsDetail, newsDetailContext } from '../data'
 import type { ResearchDetail } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
 import LoadState from '../../../design/components/LoadState.vue'
@@ -11,9 +11,10 @@ import '../../../design/reader.css'
 import '../../../design/research.css'
 
 const route = useRoute()
-const isGrok = computed(() => route.query.producer === 'grok')
-const sourceLabel = computed(() => isGrok.value ? 'Grok Bot 新闻' : '共享研究')
-const returnLink = computed(() => readingReturnLink(route.query.from || (isGrok.value ? '/?domain=grok' : '/?domain=research')))
+const context = computed(() => newsDetailContext(route.query.producer))
+const isNews = computed(() => Boolean(context.value.producer))
+const sourceLabel = computed(() => context.value.sourceLabel)
+const returnLink = computed(() => readingReturnLink(route.query.from || context.value.listPath))
 const detail = ref<ResearchDetail>()
 const state = ref<'loading' | 'ready' | 'error' | 'missing'>('loading')
 const record = computed(() => detail.value?.record)
@@ -23,7 +24,8 @@ async function load(force = false) {
   detail.value = undefined
   state.value = 'loading'
   try {
-    const value = isGrok.value ? await loadGrokDetail(String(route.query.id || ''), force) : await loadResearchDetail(String(route.query.id || ''), force)
+    const producer = context.value.producer
+    const value = producer ? await loadNewsDetail(producer, String(route.query.id || ''), force) : await loadResearchDetail(String(route.query.id || ''), force)
     if (request !== version) return
     detail.value = value
     state.value = value ? 'ready' : 'missing'
@@ -32,7 +34,7 @@ async function load(force = false) {
     state.value = error instanceof ResearchRequestError && error.status === 404 ? 'missing' : 'error'
   }
 }
-watch(() => [route.query.id, isGrok.value], () => load(), { immediate: true })
+watch(() => [route.query.id, context.value.producer], () => load(), { immediate: true })
 watchEffect(() => {
   setSeoMeta({ title: record.value ? `${record.value.title}｜${sourceLabel.value}｜xiuqiu` : `${sourceLabel.value}｜xiuqiu`,
     description: record.value?.summary, path: route.path, type: 'article', indexable: false })
@@ -67,16 +69,16 @@ watchEffect(() => {
           <h2 id="research-materials-title">来源与原始材料 · {{ record.materials.length }}</h2>
           <ul>
             <li v-for="material in record.materials" :key="material.id">
-              <router-link v-if="!isGrok" :to="withReadingReturn(researchHref(material.id), returnLink.href)">{{ material.title }}</router-link>
+              <router-link v-if="!isNews" :to="withReadingReturn(researchHref(material.id), returnLink.href)">{{ material.title }}</router-link>
               <strong v-else>{{ material.title }}</strong>
               <p>{{ researchTypeLabel(material.source_type) }} · {{ researchAccessLabel(material.source_access) }}</p>
-              <a v-if="material.source_url" :href="material.source_url" rel="noopener noreferrer">{{ sourceDisplayLabel(material.source_url, isGrok ? material.title : undefined) }} ↗</a>
+              <a v-if="material.source_url" :href="material.source_url" rel="noopener noreferrer">{{ sourceDisplayLabel(material.source_url, isNews ? material.title : undefined) }} ↗</a>
             </li>
           </ul>
         </section>
-        <p v-if="!isGrok" class="research-original"><a :href="record.url" rel="noopener noreferrer">在共享研究原站查看这条资料 ↗</a></p>
+        <p v-if="!isNews" class="research-original"><a :href="record.url" rel="noopener noreferrer">在共享研究原站查看这条资料 ↗</a></p>
       </template>
-      <p v-if="!isGrok && (state === 'error' || state === 'missing')" class="research-original"><a :href="RESEARCH_HOME" rel="noopener noreferrer">打开共享研究原站 ↗</a></p>
+      <p v-if="!isNews && (state === 'error' || state === 'missing')" class="research-original"><a :href="RESEARCH_HOME" rel="noopener noreferrer">打开共享研究原站 ↗</a></p>
     </div>
   </div>
 </template>

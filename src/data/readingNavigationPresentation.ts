@@ -1,5 +1,5 @@
 import { SITE_URL } from '../../shared/site.ts'
-import { intelFilters, intelTopicLabel } from './intelPresentation.ts'
+import { filterIntel, intelFilters, intelTopicLabel } from './intelPresentation.ts'
 import type { IntelFilter } from './intelPresentation.ts'
 import type { ReadingItem } from './readingFeed.ts'
 import { readMarketQuery, marketListHref, marketCategoryLabel } from './marketRadarPresentation.ts'
@@ -35,9 +35,32 @@ export function intelQueryLabel(query: IntelQuery): string {
 }
 
 export function intelResultLabel(total: number, shown: number, states: readonly string[]): string {
-  if (states.includes('loading')) return `正在载入资料，已匹配 ${total} 条`
+  if (states.includes('loading')) return total ? `正在载入资料，已匹配 ${total} 条` : '正在载入资料'
+  if (!total && states.includes('error')) return '资料源暂不可读，无法确认匹配数量'
   const count = states.includes('error') ? `已载入资料中匹配 ${total} 条` : `找到 ${total} 条`
   return shown < total ? `${count} · 当前显示 ${shown} 条` : count
+}
+
+export type IntelLoadState = 'loading' | 'ready' | 'error'
+
+/** Only a successful read can establish an empty source. */
+export function intelFeedStates(filter: IntelFilter, states: { archive: IntelLoadState; research: IntelLoadState; grok: IntelLoadState; chatgpt: IntelLoadState }): IntelLoadState[] {
+  return filter === 'grok' || filter === 'chatgpt' || filter === 'research'
+    ? [states[filter]] : [states.archive, states.research, states.grok, states.chatgpt]
+}
+
+export function intelCanShowEmpty(states: readonly IntelLoadState[]): boolean {
+  return states.every(state => state === 'ready')
+}
+
+/** Finished errors also settle the list, so return anchors can regain focus. */
+export function intelReadingReady(states: readonly IntelLoadState[]): boolean {
+  return !states.includes('loading')
+}
+
+export function intelFilterOptions(items: readonly ReadingItem[], states: { research: IntelLoadState; grok: IntelLoadState; chatgpt: IntelLoadState }) {
+  return intelFilters.map(option => ({ ...option, count: (option.key === 'research' || option.key === 'grok' || option.key === 'chatgpt') && states[option.key] !== 'ready'
+    ? undefined : filterIntel(items, { filter: option.key }).filter(item => item.kind !== 'review').length }))
 }
 
 export function intelItemId(id: string): string { return `intel-item-${id}` }
@@ -73,7 +96,7 @@ export function intelReadingHref(item: ReadingItem, listPath: string): string {
 }
 
 export function intelReadingLabel(kind: ReadingItem['kind']): string {
-  return kind === 'learning' ? '阅读当期日报 →' : kind === 'market' ? '阅读当期市场快照 →' : kind === 'review' ? '阅读趋势回顾 →' : kind === 'grok' ? '阅读 Bot 新闻与来源 →' : '阅读研究资料 →'
+  return kind === 'learning' ? '阅读当期日报 →' : kind === 'market' ? '阅读当期市场快照 →' : kind === 'review' ? '阅读趋势回顾 →' : kind === 'grok' ? '阅读 Bot 新闻与来源 →' : kind === 'chatgpt' ? '阅读推荐与来源 →' : '阅读研究资料 →'
 }
 
 export function withReadingReturn(href: string, from: unknown): string {

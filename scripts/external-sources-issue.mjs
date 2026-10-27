@@ -13,7 +13,7 @@
 import { appendFileSync } from 'node:fs'
 import { execFileSync } from 'node:child_process'
 import { pathToFileURL } from 'node:url'
-import { EXTERNAL_SOURCES } from '../shared/externalSources.ts'
+import { DEFAULT_EXTERNAL_SOURCES, EXTERNAL_SOURCES } from '../shared/externalSources.ts'
 import { exitCode, formatReport, probeAll } from './external-sources.mjs'
 
 export const ISSUE_LABEL = 'external-source-health'
@@ -32,7 +32,8 @@ export function decideIssueAction({ failing, previousFailed, openIssue }) {
 
 /** Names the failing layer so the issue says where to look first. */
 export function diagnose(site, upstream) {
-  return Object.keys(EXTERNAL_SOURCES).map(id => {
+  const sources = new Set([...DEFAULT_EXTERNAL_SOURCES, ...site.map(p => p.source), ...upstream.map(p => p.source)])
+  return [...sources].map(id => {
     const s = site.find(p => p.source === id), u = upstream.find(p => p.source === id)
     const label = EXTERNAL_SOURCES[id].label
     if (s?.ok && u?.ok) return null

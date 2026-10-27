@@ -3,13 +3,15 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { EXTERNAL_SOURCES, buildExternalSnapshotFiles, externalFreshness, fetchBoundedJson, parseExternalSnapshot } from '../shared/externalSources.ts'
 import { createExternalLoader, externalSourceNotice } from '../src/data/externalSourceStatus.ts'
-import { PARSERS, exitCode, formatReport, probeAll } from './external-sources.mjs'
+import { PARSERS, exitCode, formatReport, probeAll, readProbeOptions } from './external-sources.mjs'
+import { diagnose } from './external-sources-issue.mjs'
 
 const NOW = Date.parse('2026-10-24T12:00:00Z')
 const HOUR = 3_600_000
 const iso = offsetHours => new Date(NOW - offsetHours * HOUR).toISOString()
 
 const grokIndex = (updated_at = iso(1)) => ({ schema_version: 1, bot_id: 'x-ai-digest', updated_at, records: [] })
+const chatgptIndex = (updated_at = iso(1)) => ({ ...grokIndex(updated_at), bot_id: 'chatgpt-daily' })
 const researchIndex = (updated_at = iso(1)) => ({
   schema_version: 1, source: { name: 'shared-research', home_url: 'https://shared-research.vercel.app/', revision: 'a'.repeat(40) },
   updated_at, record_count: 0, cards: [], briefs: [],
@@ -83,6 +85,56 @@ test('probe can go through the site rewrites with --base', async () => {
   const { fetcher, calls } = routedFetch({})
   await probeAll({ base: 'https://example.org', fetcher, now: () => NOW })
   assert.deepEqual(calls.sort(), ['https://example.org/grok-news-data/index.json', 'https://example.org/research-data/index.json'])
+})
+
+test('ChatGPT probes are explicitly selected and do not expand the scheduled two-source default', async () => {
+  assert.deepEqual(readProbeOptions([]), {})
+  assert.deepEqual(readProbeOptions(['--base', 'https://example.org', '--source', 'chatgpt', '--source', 'chatgpt']), { base: 'https://example.org', sources: ['chatgpt'] })
+  assert.throws(() => readProbeOptions(['--source', 'missing']), /未知资料源/)
+  assert.throws(() => readProbeOptions(['--source']), /未知资料源/)
+  assert.throws(() => readProbeOptions(['--base']), /需要站点地址/)
+  const { fetcher, calls } = routedFetch({ [EXTERNAL_SOURCES.chatgpt.upstream]: async () => jsonResponse(chatgptIndex()) })
+  const probes = await probeAll({ sources: ['chatgpt'], fetcher, now: () => NOW })
+  assert.deepEqual(calls, [EXTERNAL_SOURCES.chatgpt.upstream])
+  assert.deepEqual(probes.map(p => [p.source, p.ok, p.records]), [['chatgpt', true, 0]])
+  assert.equal(exitCode(probes), 0)
+  const missing = await probeAll({ sources: ['chatgpt'], fetcher: routedFetch({}).fetcher, now: () => NOW })
+  assert.deepEqual(missing.map(p => [p.source, p.ok, p.status, p.records]), [['chatgpt', false, 404, null]])
+  assert.equal(exitCode(missing), 1)
+})
+
+test('health diagnosis keeps required sources fail-closed without inventing an unselected ChatGPT failure', () => {
+  const ok = source => ({ source, ok: true })
+  assert.deepEqual(diagnose([ok('grok'), ok('research')], [ok('grok'), ok('research')]), [])
+  const missingGrok = diagnose([ok('research')], [ok('research')])
+  assert.equal(missingGrok.length, 1)
+  assert.match(missingGrok[0], /Grok Bot 新闻.*都失败/)
+  assert.equal(diagnose([], []).length, 2)
+  const optedIn = diagnose([ok('grok'), ok('research'), { source: 'chatgpt', ok: false }], [ok('grok'), ok('research'), { source: 'chatgpt', ok: false }])
+  assert.equal(optedIn.length, 1)
+  assert.match(optedIn[0], /ChatGPT推荐.*都失败/)
+})
+
+test('ChatGPT snapshot is opt-in and an unconnected source never emits a fabricated empty index', async () => {
+  const { fetcher, calls } = routedFetch({ [EXTERNAL_SOURCES.grok.upstream]: async () => jsonResponse(grokIndex()), [EXTERNAL_SOURCES.research.upstream]: async () => jsonResponse(researchIndex()) })
+  const defaults = await buildExternalSnapshotFiles(PARSERS, { fetcher, now: () => NOW })
+  assert.deepEqual(defaults.map(file => file.source), ['grok', 'research'])
+  assert.equal(calls.includes(EXTERNAL_SOURCES.chatgpt.upstream), false)
+  const files = await buildExternalSnapshotFiles(PARSERS, { sources: ['chatgpt'], fetcher, now: () => NOW })
+  assert.equal(files[0].fileName, null)
+  assert.equal(files[0].json, undefined)
+  assert.match(files[0].error, /HTTP 404/)
+  const connected = await buildExternalSnapshotFiles(PARSERS, { sources: ['chatgpt'], fetcher: async () => jsonResponse(chatgptIndex()), now: () => NOW })
+  assert.equal(connected[0].fileName, 'external-snapshots/chatgpt-news.json')
+  assert.equal(parseExternalSnapshot(JSON.parse(connected[0].json), 'chatgpt', PARSERS.chatgpt).data.bot_id, 'chatgpt-daily')
+})
+
+test('an unavailable ChatGPT index and absent snapshot preserve the source error', async () => {
+  const failure = new Error('ChatGPT source HTTP 404')
+  const { fetcher, calls } = routedFetch({})
+  const load = createExternalLoader('chatgpt', async () => { throw failure }, PARSERS.chatgpt, fetcher)
+  await assert.rejects(load(), error => error === failure)
+  assert.deepEqual(calls, [EXTERNAL_SOURCES.chatgpt.snapshotPath])
 })
 
 test('build snapshots wrap valid upstream data and skip a failing source without throwing', async () => {
