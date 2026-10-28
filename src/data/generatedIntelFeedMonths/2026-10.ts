@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-10-29:fomc-october-hold-two-hike-dissents-2026-10-28",
+    "kind": "market",
+    "date": "2026-10-29",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "FOMC 维持 3.75%–4.00% 区间，两票偏好加息",
+    "summary": "系统观察：目标区间、实施工具和实际融资价格属于不同证据。政策区间不变不能单独证明银行、企业或资产市场的融资条件未变；两票异议也不足以判断后续政策或资产方向。",
+    "href": "/market-radar/2026-10-29#fomc-october-hold-two-hike-dissents-2026-10-28",
+    "source": {
+      "name": "Federal Reserve FOMC Statement 2026-10-28",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
+  {
     "id": "learning:ai-langgraph-delta-replay-window",
     "kind": "learning",
     "date": "2026-10-28",
