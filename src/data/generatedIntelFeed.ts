@@ -6,9 +6,26 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-10-28"
-export const intelItemCount = 253
+export const intelLatestDate: string | null = "2026-10-29"
+export const intelItemCount = 254
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "market:2026-10-29:fomc-october-hold-two-hike-dissents-2026-10-28",
+    "kind": "market",
+    "date": "2026-10-29",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "FOMC 维持 3.75%–4.00% 区间，两票偏好加息",
+    "summary": "系统观察：目标区间、实施工具和实际融资价格属于不同证据。政策区间不变不能单独证明银行、企业或资产市场的融资条件未变；两票异议也不足以判断后续政策或资产方向。",
+    "href": "/market-radar/2026-10-29#fomc-october-hold-two-hike-dissents-2026-10-28",
+    "source": {
+      "name": "Federal Reserve FOMC Statement 2026-10-28",
+      "url": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
   {
     "id": "learning:ai-langgraph-delta-replay-window",
     "kind": "learning",
@@ -492,8 +509,8 @@ export const intelTopics: IntelTopic[] = [
   {
     "topic": "market_macro",
     "domain": "market",
-    "count": 9,
-    "lastSeen": "2026-10-28",
+    "count": 10,
+    "lastSeen": "2026-10-29",
     "firstSeen": "2026-08-09"
   },
   {
