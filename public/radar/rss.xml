@@ -6,7 +6,43 @@
     <atom:link href="https://xiuqiu-site.vercel.app/radar/rss.xml" rel="self" type="application/rss+xml" />
     <description>每天 2 条 AI、2 条 Web3 工程简报：先讲机制，再给例子和边界。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Wed, 28 Oct 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 29 Oct 2026 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>AMIE：保留记忆原文，让检索的访问状态随使用演化</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-29#ai-amie-persistent-access-state</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-amie-persistent-access-state</guid>
+      <pubDate>Thu, 29 Oct 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>agent</category>
+      <description>排查 Agent 总是读到旧记录时，既要查内容是否保存正确，也要查候选如何进入上下文。把内容版本、候选池和持久访问状态分开记录，才能判断变化来自信息更新、检索覆盖，还是排序调整。</description>
+    </item>
+    <item>
+      <title>langchain-quickjs 0.3.11：首次执行 JavaScript 时才启动解释器</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-29#ai-quickjs-lazy-evaluation-runtime</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-quickjs-lazy-evaluation-runtime</guid>
+      <pubDate>Thu, 29 Oct 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>infrastructure</category>
+      <description>Agent 工具的固定准备成本会落在根本没用到工具的轮次上。把无需执行、首次执行、恢复成功和恢复失败分开观测，比用单一启动耗时描述所有轮次更有助于定位延迟。</description>
+    </item>
+    <item>
+      <title>op-proposer 1.17.0：指标被移除后，空图表不能当成零流量</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-29#web3-op-proposer-rpc-metric-removal</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-op-proposer-rpc-metric-removal</guid>
+      <pubDate>Thu, 29 Oct 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>l2</category>
+      <description>链上基础设施是否工作与监控能否继续测到它，是两个需要独立证据的问题。把指标名称和告警查询视为升级契约，能减少因接口消失而失去告警覆盖的情况。</description>
+    </item>
+    <item>
+      <title>Sui 合并历史验签修复：RPC 接受两种受支持的 zkLogin 电路</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-29#web3-sui-zklogin-historical-verification</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-sui-zklogin-historical-verification</guid>
+      <pubDate>Thu, 29 Oct 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>security</category>
+      <description>钱包、审计工具和历史凭证读取可能需要验证过去有效的签名。接口应说明验证的是哪种历史证明，以及结果能证明什么，避免把离线验签成功误当成当前可以提交同类交易。</description>
+    </item>
     <item>
       <title>LangGraph 1.2.18：用更多完整快照，缩短长会话的重放链</title>
       <link>https://xiuqiu-site.vercel.app/radar/2026-10-28#ai-langgraph-delta-replay-window</link>
@@ -510,42 +546,6 @@
       <category>WEB3</category>
       <category>market_signal</category>
       <description>typed-data 校验与哈希现在要求 uint256、int256 等完整位宽，避免非规范类型哈希或 RangeError。它只改变 viem 相关调用路径，不代表 EVM 或链上合约规则统一升级。</description>
-    </item>
-    <item>
-      <title>欧盟扩展加密资产服务实体的治理控制限制</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-07#industry-signals</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-07-signal-2</guid>
-      <pubDate>Fri, 07 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>market_signal</category>
-      <description>Regulation (EU) 2026/1848 自 8 月 25 日起把特定所有、控制和治理席位禁令扩展到其他 MiCA 加密资产服务。适用仍取决于主体、设立地、控制关系、豁免与主管机关解释。</description>
-    </item>
-    <item>
-      <title>把评测容器的资源保证值与硬终止上限分开校准</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-07#ai-engineering</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-07-ai</guid>
-      <pubDate>Fri, 07 Aug 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>ai_engineering</category>
-      <description>固定模型、提示、任务集与 harness，只逐级调整硬上限，分别统计答案错误和容器被杀；选择能降低基础设施失败、又未显著抬高正确率的最窄区间。Anthropic 的约 3 倍上限只是特定实验示例，不是通用倍率。</description>
-    </item>
-    <item>
-      <title>把 P-256 硬件密钥接入拆成链能力、验签与账户授权三层</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-07#web3-design</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-07-web3</guid>
-      <pubDate>Fri, 07 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>web3_design</category>
-      <description>EIP-7951 的 P256VERIFY 只证明签名匹配公钥。钱包基础设施还应逐链绑定预编译能力，规范化 r、s 与公钥坐标，重算动作摘要，并独立校验账户、额度、nonce、有效期及恢复策略。</description>
-    </item>
-    <item>
-      <title>Pi · 可组合的 coding agent 最小运行时</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-07#tools</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-07-tools</guid>
-      <pubDate>Fri, 07 Aug 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>tools</category>
-      <description>Pi 同时提供交互、print/JSON、RPC 与 SDK 入口，并开放工具、权限门、沙箱、MCP 与 UI 扩展。固定版 0.84.0 已复现 CLI；默认写入与 bash、package 全系统权限、安装脚本和极端长会话资源风险要求…</description>
     </item>
   </channel>
 </rss>

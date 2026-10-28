@@ -5,6 +5,69 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "learning:ai-amie-persistent-access-state",
+    "kind": "learning",
+    "date": "2026-10-29",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "AMIE：保留记忆原文，让检索的访问状态随使用演化",
+    "summary": "排查 Agent 总是读到旧记录时，既要查内容是否保存正确，也要查候选如何进入上下文。把内容版本、候选池和持久访问状态分开记录，才能判断变化来自信息更新、检索覆盖，还是排序调整。",
+    "href": "/radar/2026-10-29#ai-amie-persistent-access-state",
+    "source": {
+      "name": "Adaptive Memory Index Evolution for Agents — arXiv v1",
+      "tier": "tier1",
+      "url": "https://arxiv.org/abs/2610.34977"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "learning:ai-quickjs-lazy-evaluation-runtime",
+    "kind": "learning",
+    "date": "2026-10-29",
+    "domain": "ai",
+    "topic": "infrastructure",
+    "title": "langchain-quickjs 0.3.11：首次执行 JavaScript 时才启动解释器",
+    "summary": "Agent 工具的固定准备成本会落在根本没用到工具的轮次上。把无需执行、首次执行、恢复成功和恢复失败分开观测，比用单一启动耗时描述所有轮次更有助于定位延迟。",
+    "href": "/radar/2026-10-29#ai-quickjs-lazy-evaluation-runtime",
+    "source": {
+      "name": "langchain-quickjs 0.3.11 release",
+      "tier": "tier1",
+      "url": "https://github.com/langchain-ai/deepagents/releases/tag/langchain-quickjs%3D%3D0.3.11"
+    }
+  },
+  {
+    "id": "learning:web3-op-proposer-rpc-metric-removal",
+    "kind": "learning",
+    "date": "2026-10-29",
+    "domain": "web3",
+    "topic": "l2",
+    "title": "op-proposer 1.17.0：指标被移除后，空图表不能当成零流量",
+    "summary": "链上基础设施是否工作与监控能否继续测到它，是两个需要独立证据的问题。把指标名称和告警查询视为升级契约，能减少因接口消失而失去告警覆盖的情况。",
+    "href": "/radar/2026-10-29#web3-op-proposer-rpc-metric-removal",
+    "source": {
+      "name": "Optimism op-proposer v1.17.0 release notes",
+      "tier": "tier1",
+      "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-proposer%2Fv1.17.0"
+    }
+  },
+  {
+    "id": "learning:web3-sui-zklogin-historical-verification",
+    "kind": "learning",
+    "date": "2026-10-29",
+    "domain": "web3",
+    "topic": "security",
+    "title": "Sui 合并历史验签修复：RPC 接受两种受支持的 zkLogin 电路",
+    "summary": "钱包、审计工具和历史凭证读取可能需要验证过去有效的签名。接口应说明验证的是哪种历史证明，以及结果能证明什么，避免把离线验签成功误当成当前可以提交同类交易。",
+    "href": "/radar/2026-10-29#web3-sui-zklogin-historical-verification",
+    "source": {
+      "name": "Sui merged PR 28412: grpc verify both supported zkLogin circuits",
+      "tier": "tier1",
+      "url": "https://github.com/MystenLabs/sui/pull/28412"
+    }
+  },
+  {
     "id": "market:2026-10-29:fomc-october-hold-two-hike-dissents-2026-10-28",
     "kind": "market",
     "date": "2026-10-29",

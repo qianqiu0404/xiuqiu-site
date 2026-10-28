@@ -10,6 +10,10 @@
 
 ## Recent briefs
 
+- [AMIE：保留记忆原文，让检索的访问状态随使用演化](https://xiuqiu-site.vercel.app/radar/2026-10-29#ai-amie-persistent-access-state) (2026-10-29, ai/agent): 排查 Agent 总是读到旧记录时，既要查内容是否保存正确，也要查候选如何进入上下文。把内容版本、候选池和持久访问状态分开记录，才能判断变化来自信息更新、检索覆盖，还是排序调整。
+- [langchain-quickjs 0.3.11：首次执行 JavaScript 时才启动解释器](https://xiuqiu-site.vercel.app/radar/2026-10-29#ai-quickjs-lazy-evaluation-runtime) (2026-10-29, ai/infrastructure): Agent 工具的固定准备成本会落在根本没用到工具的轮次上。把无需执行、首次执行、恢复成功和恢复失败分开观测，比用单一启动耗时描述所有轮次更有助于定位延迟。
+- [op-proposer 1.17.0：指标被移除后，空图表不能当成零流量](https://xiuqiu-site.vercel.app/radar/2026-10-29#web3-op-proposer-rpc-metric-removal) (2026-10-29, web3/l2): 链上基础设施是否工作与监控能否继续测到它，是两个需要独立证据的问题。把指标名称和告警查询视为升级契约，能减少因接口消失而失去告警覆盖的情况。
+- [Sui 合并历史验签修复：RPC 接受两种受支持的 zkLogin 电路](https://xiuqiu-site.vercel.app/radar/2026-10-29#web3-sui-zklogin-historical-verification) (2026-10-29, web3/security): 钱包、审计工具和历史凭证读取可能需要验证过去有效的签名。接口应说明验证的是哪种历史证明，以及结果能证明什么，避免把离线验签成功误当成当前可以提交同类交易。
 - [LangGraph 1.2.18：用更多完整快照，缩短长会话的重放链](https://xiuqiu-site.vercel.app/radar/2026-10-28#ai-langgraph-delta-replay-window) (2026-10-28, ai/agent): Agent 能继续工作，既取决于保存了什么，也取决于重建这些状态要花多久。升级清单应同时记录默认值、显式配置和存储开销，避免把可恢复直接等同于低延迟恢复。
 - [Verified autoresearch：先验证评测器，再让 Agent 搜索更优程序](https://xiuqiu-site.vercel.app/radar/2026-10-28#ai-verified-autoresearch-evaluator) (2026-10-28, ai/evaluation): Agent 优化的是评测器给出的反馈。若有效性判定本身缺项，更高分也可能只说明候选找到了缺口；让评测规则和候选版本都可追溯，有助于解释分数究竟证明了什么。
 - [LND 0.21.5-beta：发票订阅死锁，出在事务内又借了一条连接](https://xiuqiu-site.vercel.app/radar/2026-10-28#web3-lnd-sql-invoice-transaction-scope) (2026-10-28, web3/wallet_cex): 钱包和支付服务的订阅恢复常与其他请求并发。事务已经开始，不意味着随后每个查询都在使用同一事务；把连接借用范围纳入检查，有助于定位看似全局卡死的问题。
@@ -18,10 +22,6 @@
 - [GPT-6.1 Terra 发布：先分别核对模型能力与工具契约](https://xiuqiu-site.vercel.app/radar/2026-10-27#ai-terra-model-and-tool-contract) (2026-10-27, ai/model_inference): 接入新模型时，把输入输出、推理设置、工具通道和任务验收分别列清，可以避免只更换模型名，却沿用不兼容的调用假设。
 - [Nethermind 2.2.2：上游安全补丁要进入实际运行的制品](https://xiuqiu-site.vercel.app/radar/2026-10-27#web3-nethermind-bundled-runtime-patch) (2026-10-27, web3/security): 节点客户端的安全边界包含随制品交付的基础运行时。补丁已发布、可安装制品已更新与运行进程已采用，需要各自留下证据。
 - [AvalancheGo 1.15.2：可选客户端更新也有插件兼容要求](https://xiuqiu-site.vercel.app/radar/2026-10-27#web3-avalanchego-plugin-upgrade-boundary) (2026-10-27, web3/onchain_infrastructure): “版本向后兼容”不能代替插件、API、配置和已有数据库状态的逐项检查；长期停机后恢复的节点，还可能有不同的过渡路径。
-- [AKV：相同文本前缀，未必对应相同缓存状态](https://xiuqiu-site.vercel.app/radar/2026-10-26#ai-akv-cache-operation-history) (2026-10-26, ai/model_inference): 长任务的缓存优化需要同时核对任务质量、延迟和状态正确性；只看提示文本或缓存命中率，可能漏掉操作顺序造成的差异。
-- [ARATest：先固定声明的范围，再解释验证结果](https://xiuqiu-site.vercel.app/radar/2026-10-26#ai-aratest-claim-contract) (2026-10-26, ai/evaluation): Agent 生成结论后，需要让后续检查仍回答同一个问题。保留声明、证据和可重放的反例，有助于定位错误来自解释、数据绑定还是实验。
-- [Bitcoin Core：易发现漏洞走同步修复与披露分支](https://xiuqiu-site.vercel.app/radar/2026-10-26#web3-bitcoin-easily-discoverable-policy) (2026-10-26, web3/security): 维护者认为易被重新发现的问题若长期等待披露，会延迟用户取得修复版。工程上应按实际公告和版本记录核对可用修复，不能只等待下一次大版本。
-- [Sui v1.82.3：给读取指定 checkpoint 条件，并核对 API 迁移](https://xiuqiu-site.vercel.app/radar/2026-10-26#web3-sui-checkpoint-consistent-read) (2026-10-26, web3/onchain_infrastructure): 应用可以把读副本尚未追上与业务无数据分开处理；接入升级还需核对自身 SDK、服务端与错误处理是否使用兼容接口。
 
 ## Boundaries
 
