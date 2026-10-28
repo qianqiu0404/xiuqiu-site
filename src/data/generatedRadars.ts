@@ -12,6 +12,48 @@ export interface RadarIndexEntry { date: string; slug: string; snapshotId: strin
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-10-29",
+    "slug": "2026-10-29",
+    "snapshotId": "learning-2026-10-29-b2dcbd92a877e0a1",
+    "asOf": "2026-10-28T21:39:29.790Z",
+    "title": "学习雷达 · 2026-10-29",
+    "summary": "AI 看 AMIE 如何用持久访问状态调整未来检索，以及 QuickJS 延迟初始化的成本与失败边界；Web3 看 op-proposer 指标移除和 Sui 历史 zkLogin 验签的代码合并。专题梳理跨查询记忆更新的收益归因。",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "briefs": [
+      {
+        "id": "ai-amie-persistent-access-state",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "AMIE：保留记忆原文，让检索的访问状态随使用演化"
+      },
+      {
+        "id": "ai-quickjs-lazy-evaluation-runtime",
+        "domain": "ai",
+        "topic": "infrastructure",
+        "title": "langchain-quickjs 0.3.11：首次执行 JavaScript 时才启动解释器"
+      },
+      {
+        "id": "web3-op-proposer-rpc-metric-removal",
+        "domain": "web3",
+        "topic": "l2",
+        "title": "op-proposer 1.17.0：指标被移除后，空图表不能当成零流量"
+      },
+      {
+        "id": "web3-sui-zklogin-historical-verification",
+        "domain": "web3",
+        "topic": "security",
+        "title": "Sui 合并历史验签修复：RPC 接受两种受支持的 zkLogin 电路"
+      }
+    ],
+    "deepDive": {
+      "id": "deep-amie-forward-state-attribution",
+      "title": "专题：记忆状态在本轮更新，收益要到后续查询中核对",
+      "basedOnBriefId": "ai-amie-persistent-access-state"
+    },
+    "marketSignals": []
+  },
+  {
     "date": "2026-10-28",
     "slug": "2026-10-28",
     "snapshotId": "learning-2026-10-28-083648fa9c9b5250",
@@ -1321,6 +1363,210 @@ export const radarIndex: RadarIndexEntry[] = [
 
 export const latestRadars: DailyRadar[] = [
   {
+    "date": "2026-10-29",
+    "slug": "2026-10-29",
+    "title": "学习雷达 · 2026-10-29",
+    "summary": "AI 看 AMIE 如何用持久访问状态调整未来检索，以及 QuickJS 延迟初始化的成本与失败边界；Web3 看 op-proposer 指标移除和 Sui 历史 zkLogin 验签的代码合并。专题梳理跨查询记忆更新的收益归因。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-10-28T21:39:29.790Z",
+    "generatedAt": "2026-10-28T21:39:29.790Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-amie-persistent-access-state",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "AMIE：保留记忆原文，让检索的访问状态随使用演化",
+        "whatHappened": "10 月 26 日提交的 AMIE 预印本研究另一种 Agent 记忆更新：不改已存内容，而是为稳定的记忆 ID 保存跨查询的访问状态，改变后续检索排序。作者在五种记忆宿主、三个对话记忆基准上比较这一方法；这些是论文报告，尚非本期复现实验。",
+        "mechanism": "宿主先返回带分数的候选池，AMIE 用既有状态重排并封存当前回答上下文，再根据原生检索反馈提交 keep／suppress 动作，供后续查询使用。抑制计数映射成有界状态，再折减原分数；该状态是累计动作的记录，不是不相关概率。部署时策略参数固定，变化的是访问状态。",
+        "workedExample": "设候选池含两条同项目记录：旧部署步骤和当前验收依据。一次查询后，策略可以给旧步骤追加抑制，让后续查询中其他候选相对上升；它不会改写原文，也不能找回不在候选池里的依据。这是机制示例，本期未运行记忆宿主或测量任务收益。",
+        "whyItMatters": "排查 Agent 总是读到旧记录时，既要查内容是否保存正确，也要查候选如何进入上下文。把内容版本、候选池和持久访问状态分开记录，才能判断变化来自信息更新、检索覆盖，还是排序调整。",
+        "risksAndLimits": [
+          "这是特定记忆基准上的预印本结果，不能外推为通用长期记忆效果或生产任务成功率；有用证据被误抑制时，后续访问也会受损。",
+          "更新发生在当前上下文封存之后，不能把当前回答的得分归功于本轮刚提交的动作；keep 只是不追加抑制，不撤销已有惩罚。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "research_preprint",
+            "name": "Adaptive Memory Index Evolution for Agents — arXiv v1",
+            "url": "https://arxiv.org/abs/2610.34977",
+            "publishedAt": "2026-10-26T07:50:16.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "research_preprint_fulltext",
+            "name": "AMIE: index policy, bounded access state and post-sealing updates",
+            "url": "https://arxiv.org/html/2610.34977v1"
+          }
+        ],
+        "nextQuestions": [
+          "故障来自候选池没有召回依据，还是已有依据在池内排名过低？",
+          "记录查询顺序和访问状态后，能否在固定内容、候选池与回答模型的条件下比较后续查询？"
+        ]
+      },
+      {
+        "id": "ai-quickjs-lazy-evaluation-runtime",
+        "domain": "ai",
+        "topic": "infrastructure",
+        "title": "langchain-quickjs 0.3.11：首次执行 JavaScript 时才启动解释器",
+        "whatHappened": "langchain-quickjs 于 10 月 27 日（UTC）发布 0.3.11，包含把运行时初始化延后到首次求值的改动。关联 PR 说明，不调用 JavaScript 的 Agent 轮次曾经也会启动解释器并保存状态；现在这类轮次可跳过这些工作。",
+        "mechanism": "解释器启动和已存状态恢复都延至首次执行，跨越未执行代码的轮次及会话恢复时仍保留已存变量。PR 明确保持既有提示、工具绑定、持久化模式与快照认证；若状态无法恢复，清除快照及 HMAC 并返回工具错误，不执行此次请求的代码。",
+        "workedExample": "设想一段对话先问候、再恢复会话、最后要求计算：前两轮无需启动解释器，最后一轮才承担初始化和恢复代价。隔离检查还应包含损坏快照，观察是否返回错误且没有执行请求代码；本期只读发布说明与 PR，没有运行该用例。",
+        "whyItMatters": "Agent 工具的固定准备成本会落在根本没用到工具的轮次上。把无需执行、首次执行、恢复成功和恢复失败分开观测，比用单一启动耗时描述所有轮次更有助于定位延迟。",
+        "risksAndLimits": [
+          "PR 的性能数据来自本地无网络、无模型调用的解释器钩子计时，排除了导入和中间件构造；不能据此宣称端到端 Agent 同幅加速。",
+          "第一次执行仍需初始化；恢复失败时拒绝执行的行为也不构成对整个 JavaScript 沙箱、宿主进程或外部工具的绝对安全保证。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "langchain-quickjs 0.3.11 release",
+            "url": "https://github.com/langchain-ai/deepagents/releases/tag/langchain-quickjs%3D%3D0.3.11",
+            "publishedAt": "2026-10-27T17:02:22.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Deep Agents PR 7301: defer runtime initialization until evaluation",
+            "url": "https://github.com/langchain-ai/deepagents/pull/7301"
+          }
+        ],
+        "nextQuestions": [
+          "性能记录是否分别统计未执行代码、首次执行和后续执行，而不是混成一个平均值？",
+          "恢复失败后，请求代码、旧快照和后续新状态各处于什么状态，是否能分别核对？"
+        ]
+      },
+      {
+        "id": "web3-op-proposer-rpc-metric-removal",
+        "domain": "web3",
+        "topic": "l2",
+        "title": "op-proposer 1.17.0：指标被移除后，空图表不能当成零流量",
+        "whatHappened": "Optimism 于 10 月 28 日（UTC）发布 op-proposer 1.17.0，移除一组 RPC 指标，并要求升级前移除引用它们的仪表盘与告警。这是监控接口变更；本期不把版本继承的旧证书修复重新当成新事件，也不将其描述为协议升级。",
+        "mechanism": "发布说明列出七个停止导出的指标：六个 op_proposer_rpc_server_* 指标，以及客户端的通知接收计数（使用 rpc_client 前缀）。其余 op_proposer_rpc_client_* 保持不变。关联 PR 移除服务端 RPC 记录逻辑；其中提到的 HTTP 记录选项当时没有服务启用，不能视为已生效的替代指标。",
+        "workedExample": "如果告警仍查询 op_proposer_rpc_server_requests_total，升级后可能拿不到序列。应先检查指标是否仍被导出和查询是否有效，再用独立服务检查判断 RPC 状态；没有序列不能解释为请求数为零。这是拟议核对步骤，本期没有运行节点、查询生产监控或执行升级。",
+        "whyItMatters": "链上基础设施是否工作与监控能否继续测到它，是两个需要独立证据的问题。把指标名称和告警查询视为升级契约，能减少因接口消失而失去告警覆盖的情况。",
+        "risksAndLimits": [
+          "不能笼统写成所有客户端指标都不变：被移除的通知接收计数使用 rpc_client 前缀。其余客户端指标不变，也不保证既有仪表盘仍然完整。",
+          "发布材料不证明任何实际节点已升级、链已同步或提案已成功；关联 PR 的实现日期也不是 10 月 28 日版本发布的日期。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Optimism op-proposer v1.17.0 release notes",
+            "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-proposer%2Fv1.17.0",
+            "publishedAt": "2026-10-28T21:12:41.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Optimism PR 23114: remove RPC server metrics",
+            "url": "https://github.com/ethereum-optimism/optimism/pull/23114"
+          }
+        ],
+        "nextQuestions": [
+          "仪表盘和告警是否还查询这七个已移除指标，遇到缺失序列时会怎样显示？",
+          "服务可用性、节点同步和提案结果各由哪些仍然有效的独立信号确认？"
+        ]
+      },
+      {
+        "id": "web3-sui-zklogin-historical-verification",
+        "domain": "web3",
+        "topic": "security",
+        "title": "Sui 合并历史验签修复：RPC 接受两种受支持的 zkLogin 电路",
+        "whatHappened": "Sui 官方 PR 28412 于 10 月 28 日 13:06:26 UTC 合并到 main，调整 gRPC 签名验证服务，使其能验证两种受支持的 zkLogin 电路。这里确认的是代码合并；本期没有确认该改动已在主网服务上线，也不把 CI 标签当成正式发行。",
+        "mechanism": "改动不再按当前链的 ProtocolConfig 在 V1Only、Both、V2Only 之间选择验证模式，而是固定使用 Both，保留链别对应的验证环境及 JWK 赋值。这样历史签名的 RPC 验证范围可以与当前网络允许的新交易分开；当前链上交易准入规则没有随这处 RPC 验签逻辑一起改变。",
+        "workedExample": "一个隔离回归场景可让网络配置仅接受 v2 新交易，再向签名验证接口提交历史 v1 与 v2 证明，分别检查正确消息、错误地址和被修改消息。PR 新增了这一类回归覆盖；通过情况是维护者报告，本期没有执行测试、连接钱包或运行节点。",
+        "whyItMatters": "钱包、审计工具和历史凭证读取可能需要验证过去有效的签名。接口应说明验证的是哪种历史证明，以及结果能证明什么，避免把离线验签成功误当成当前可以提交同类交易。",
+        "risksAndLimits": [
+          "Both 只指两种受支持电路，不能理解成任意历史签名都有效；消息、地址、证明环境与 JWK 等条件仍需满足。",
+          "合并状态与主网部署是独立事实；该 PR 不证明旧电路交易重新获准上链，也不证明任意第三方 RPC 已采用修复。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_implementation_change",
+            "name": "Sui merged PR 28412: grpc verify both supported zkLogin circuits",
+            "url": "https://github.com/MystenLabs/sui/pull/28412",
+            "publishedAt": "2026-10-28T13:06:26.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "调用者要判断的是历史签名真实性，还是当前网络是否接收一笔新交易？",
+          "目标 RPC 的实际部署版本与链别验证环境，是否有独立证据可核对？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-amie-forward-state-attribution",
+      "domain": "ai",
+      "topic": "agent",
+      "title": "专题：记忆状态在本轮更新，收益要到后续查询中核对",
+      "whatHappened": "AMIE 将已存内容与访问状态分开，也把当前回答的依据与影响未来的更新分开。本期从它的封存顺序和有界抑制规则出发，讨论如何为跨查询适应建立可追溯的收益归因，而不是把每次状态更新都视为有效学习。",
+      "mechanism": "每轮先用更新前状态确定回答上下文，再提交本轮抑制动作；后续查询才读取新状态。累计次数 n 经 n/(n+κ) 映射成抑制状态 u，排序分数乘以 (1−λu)。u 记录历史动作，不是相关性概率；keep 不增加 n，也不把 n 清零。策略只重排宿主候选池，不扩展其覆盖。",
+      "workedExample": "取演示参数 κ=2、λ=0.8：某记忆累计两次抑制时 u=0.5，原分数乘以 0.6；下一轮若选 keep，这个折减不会自动撤销。当前轮封存后才增加计数，因此评估应在固定内容、宿主候选池、查询顺序和回答模型的回放中，比较后续查询。这是纸面机制示例，本期未运行实验。",
+      "whyItMatters": "同一状态动作可能减少干扰，也可能压低反复需要的依据。保留记忆 ID、更新前状态、封存上下文与更新后状态，能解释后续答案读到了什么；候选池遗漏、池内排序和答案生成应分别排查。",
+      "risksAndLimits": [
+        "论文的条件性排名性质不等于总体召回率或任务效用单调上升；一次查询后若不再访问同一状态，这次更新也无法改善已经生成的唯一答案。",
+        "作者的三基准结果、选择器比较与诊断回放有各自设置；不能把有标签的诊断当作无标签在线策略，或把局部策略计时当作端到端成本。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "research_preprint",
+          "name": "Adaptive Memory Index Evolution for Agents — arXiv v1",
+          "url": "https://arxiv.org/abs/2610.34977",
+          "publishedAt": "2026-10-26T07:50:16.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "research_preprint_fulltext",
+          "name": "AMIE: index policy, bounded access state and post-sealing updates",
+          "url": "https://arxiv.org/html/2610.34977v1"
+        }
+      ],
+      "nextQuestions": [
+        "一条看似干扰的记忆，是否在后续任务中又成为必要依据，误抑制如何被发现？",
+        "访问状态和内容分别变化时，哪些比较需要重置状态并按相同查询顺序重放？"
+      ],
+      "basedOnBriefId": "ai-amie-persistent-access-state"
+    },
+    "sourceUrls": [
+      "https://arxiv.org/abs/2610.34977",
+      "https://arxiv.org/html/2610.34977v1",
+      "https://github.com/langchain-ai/deepagents/releases/tag/langchain-quickjs%3D%3D0.3.11",
+      "https://github.com/langchain-ai/deepagents/pull/7301",
+      "https://github.com/ethereum-optimism/optimism/releases/tag/op-proposer%2Fv1.17.0",
+      "https://github.com/ethereum-optimism/optimism/pull/23114",
+      "https://github.com/MystenLabs/sui/pull/28412"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-10-29-b2dcbd92a877e0a1",
+    "asOf": "2026-10-28T21:39:29.790Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
+  {
     "date": "2026-10-28",
     "slug": "2026-10-28",
     "title": "学习雷达 · 2026-10-28",
@@ -2505,204 +2751,6 @@ export const latestRadars: DailyRadar[] = [
     "marketSignals": [],
     "snapshotId": "learning-2026-10-17-d53fe47a385f286a",
     "asOf": "2026-10-17T03:00:00.000Z",
-    "origin": "research",
-    "publicationState": "published"
-  },
-  {
-    "date": "2026-10-13",
-    "slug": "2026-10-13",
-    "title": "学习雷达 · 2026-10-13",
-    "summary": "AI 关注推理引擎热重启与多租户缓存隔离、推理过程的防蒸馏；Web3 关注区块访问列表进入客户端存储，以及它带来的新 DoS 面。",
-    "publish": true,
-    "reviewStatus": "automated",
-    "schemaVersion": 2,
-    "editionMode": "daily",
-    "researchedAt": "2026-10-13T03:30:00.000Z",
-    "generatedAt": "2026-10-13T03:30:00.000Z",
-    "sourceSections": [
-      "ai",
-      "web3",
-      "deepDive"
-    ],
-    "missingSections": [],
-    "briefs": [
-      {
-        "id": "ai-vllm-031-preload-cache-isolation",
-        "domain": "ai",
-        "topic": "model_inference",
-        "title": "vLLM 0.31：重启不重载权重，缓存键先分清来源",
-        "whatHappened": "vLLM 在 2026-10-05 发布 0.31.0。新增 vllm preload 守护进程，把已量化权重留在 GPU 显存里，引擎重启后直接复用，并提供 /health 和就绪等待；基于 CRIU 的 snapshot create/restore 仍是实验功能，目前只支持 TP1。同一版本收紧多租户边界：按请求传入的 mm_processor_kwargs 默认报错，前缀缓存的块哈希按来源打标签，LoRA 路径也计入哈希。",
-        "mechanism": "重启慢的主要成本是权重加载和量化，preload 把这一步从引擎生命周期里拆出去，由常驻进程持有显存，引擎只负责调度和执行。缓存一侧，前缀缓存靠块哈希判断能否复用；如果 LoRA 名称、cache_salt 等额外键不区分来源，不同租户的请求可能算出同一个哈希并命中对方的 KV 块，按来源打标签就是给这个哈希加命名空间。",
-        "workedExample": "滚动升级推理集群时，先在每台机器起 preload 并等它就绪，再逐个重启引擎进程，健康检查过了才把流量切回来；同时用两个租户、同一前缀但不同 LoRA 的请求做回归，确认缓存命中统计里两者不会互相命中。",
-        "whyItMatters": "这把推理服务的可用性和隔离性拆成两件可以分别验收的事：重启时间看权重是否常驻，多租户安全看缓存键是否带命名空间，不能只靠吞吐基准判断升级是否安全。",
-        "risksAndLimits": [
-          "preload 让权重常驻显存，进程崩溃或显存泄漏会影响同机所有引擎；CRIU 快照目前只覆盖 TP1，不能当作多卡部署的恢复方案。",
-          "按请求传入多模态参数从默认放行改为默认报错，依赖这项能力的客户端要显式加 --trust-request-mm-kwargs，否则升级后直接失败。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "vLLM v0.31.0 release notes",
-            "url": "https://github.com/vllm-project/vllm/releases/tag/v0.31.0",
-            "publishedAt": "2026-10-05T06:44:55.000Z"
-          }
-        ],
-        "nextQuestions": [
-          "preload 守护进程和引擎之间的显存所有权怎么划分，引擎异常退出时谁负责回收？",
-          "除了 LoRA 和 cache_salt，还有哪些请求级参数会进入块哈希，需要按租户隔离？"
-        ]
-      },
-      {
-        "id": "ai-anthropic-distillation-defenses",
-        "domain": "ai",
-        "topic": "safety",
-        "title": "Anthropic 防蒸馏：推理过程成为需要保护的资产",
-        "whatHappened": "Anthropic 在 2026-10-12 公布防蒸馏措施，称蒸馏方能拿到的可用数据下降约 90% 到 99%。措施分三层：限制编辑历史上下文和跨模型读取推理过程，两阶段分类器识别提取推理的请求，以及对持续提取的账号限流和封禁；分类器误报率低于 0.1%。",
-        "mechanism": "推理过程是训练仿制模型最有价值的数据。文中给的对照是：用完整 Opus 4.8 推理过程蒸馏的模型在 SWE-bench Verified 上得 80.4%，只用摘要版本时是 71.8%。所以防线集中在推理过程本身：缩小可读范围，在请求侧识别提取意图，再用账号级处罚提高持续攻击的成本。",
-        "workedExample": "如果你在做一个把模型推理过程暴露给用户或下游服务的产品，可以照这个思路分层：先决定推理过程对谁可见、能否被二次编辑，再在网关记录提取型请求的特征，最后按账号累计风险而不是逐条拦截，避免误伤正常用户。",
-        "whyItMatters": "这说明模型服务的安全边界已经从输出内容扩展到推理过程和上下文可编辑性。做 Agent 平台时，推理日志、可回放上下文和导出接口都要按数据资产来设计访问控制。",
-        "risksAndLimits": [
-          "文中明确说不知道这些效果能维持多久，预计会是持续的攻防；90% 到 99% 的降幅是 Anthropic 自己的早期数据，没有外部复现。",
-          "限制编辑历史上下文会影响依赖改写对话历史的正常集成，文中只对 2026-08-31 之后创建的 API 账号生效。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_research",
-            "name": "Anthropic: Strengthening our defenses against distillation attacks",
-            "url": "https://www.anthropic.com/research/distillation-defenses",
-            "publishedAt": "2026-10-11T16:00:00.000Z"
-          }
-        ],
-        "nextQuestions": [
-          "Agent 平台里哪些日志和导出接口实际上暴露了完整推理过程？",
-          "按账号累计风险的处罚，怎么和正常的高频调用区分开？"
-        ]
-      },
-      {
-        "id": "web3-reth-bal-persistence",
-        "domain": "web3",
-        "topic": "protocol",
-        "title": "Reth 2.7：区块访问列表进入客户端存储",
-        "whatHappened": "Reth 在 2026-09-28 发布 2.7.0，为 Sepolia 排定 Amsterdam（Glamsterdam 执行层）激活，要求运营方在 2026-10-06 13:53:36 UTC 前升级。同一版本把 EIP-7928 区块访问列表（BAL）持久化到 RocksDB，新增 --rpc-cache.max-bals-bytes 和 --rpc-cache.idle-timeout 限制缓存，并把默认区块缓存从 5000 降到 1000、收据缓存从 2000 降到 500。",
-        "mechanism": "EIP-7928 让每个区块附带一份访问列表，记录本块访问过的每个账户，以及写入的存储槽、只读的存储槽、余额、nonce、代码在每笔交易后的值，并按地址、槽位和交易序号确定性排序，哈希写进区块头的 block_access_list_hash。节点拿到 BAL 后可以提前并行读盘、并行执行，甚至不执行就同步状态；但这也意味着 BAL 本身变成需要存储、校验和缓存的新数据。",
-        "workedExample": "交易所或钱包后端如果自己跑 Reth 节点做追踪，升级到 2.7 后要先检查 RPC 缓存是否因为默认值降低而频繁回源，再按实际追踪负载设置 max-bals-bytes；同时确认 trace_filter 不带范围时现在默认是 latest，避免原有脚本悄悄扫错区块。",
-        "whyItMatters": "Glamsterdam 的并行执行不是只改共识规则，而是让每个客户端多出一份要落盘、要限流的结构化数据。跑自建节点的后端要把 BAL 的存储和缓存成本算进容量规划。",
-        "risksAndLimits": [
-          "EIP-7928 仍处于 Last Call（截止 2026-11-01），Hoodi 和主网的激活时间尚未排定，字段细节在主网前仍可能变化。",
-          "默认缓存大幅调低后，追踪密集型的 RPC 服务可能出现延迟上升，需要按自己的负载重新调参。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "Reth v2.7.0 release notes",
-            "url": "https://github.com/paradigmxyz/reth/releases/tag/v2.7.0",
-            "publishedAt": "2026-09-28T12:45:27.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "protocol_spec",
-            "name": "EIP-7928: Block-Level Access Lists",
-            "url": "https://eips.ethereum.org/EIPS/eip-7928"
-          }
-        ],
-        "nextQuestions": [
-          "BAL 的存储增量在主网规模下每年大概多少，归档节点要不要单独规划？",
-          "不执行就同步状态时，节点如何证明 BAL 和区块头承诺一致？"
-        ]
-      },
-      {
-        "id": "web3-geth-1178-dos-fixes",
-        "domain": "web3",
-        "topic": "security",
-        "title": "geth 1.17.8：Amsterdam 之后才出现的 DoS 面",
-        "whatHappened": "go-ethereum 在 2026-10-08 发布 1.17.8，是一个以安全为主的版本，建议所有用户升级。修复包括 eth 和 snap 协议多个 p2p 消息处理器的 DoS 加固、JUMPDEST 分析缓存加固、IP 地址预测器先校验再采信，以及一个 BAL 账户相关的 DoS 和恶意 STUN 响应导致的崩溃。发布说明写明大部分问题只有在 Amsterdam 激活后才会出现。",
-        "mechanism": "新硬分叉引入的数据结构会带来新的资源消耗路径。BAL 账户和 JUMPDEST 缓存两项被明确标注为 Amsterdam 之后的攻击场景：攻击者可以构造让节点做大量额外工作的区块或消息。客户端在测试网激活后、主网激活前修掉这类问题，是硬分叉发布节奏的一部分。",
-        "workedExample": "运营 Sepolia 节点的团队，应在测试网激活后跟进每一个客户端补丁版本，而不是等主网日期临近再升级；内部可以把客户端版本号和已知 DoS 修复列表绑定，部署前自动检查是否落后于最新安全版本。",
-        "whyItMatters": "这提醒钱包和交易所后端：硬分叉风险不止在激活那一刻，测试网阶段暴露的 DoS 面会在主网前通过补丁版本关闭，节点运维需要按补丁节奏升级。",
-        "risksAndLimits": [
-          "发布说明只明确标注了两项依赖 Amsterdam，其余 p2p、IP 预测器和 STUN 修复没有说明是否和分叉有关，不能假设旧版本在主网上不受影响。",
-          "这些修复只覆盖 geth；混合部署多个客户端的团队需要分别跟进各客户端的安全公告。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "security_release",
-            "name": "go-ethereum v1.17.8 release notes",
-            "url": "https://github.com/ethereum/go-ethereum/releases/tag/v1.17.8",
-            "publishedAt": "2026-10-08T16:35:36.000Z"
-          }
-        ],
-        "nextQuestions": [
-          "BAL 账户相关的 DoS 是因为列表过大，还是因为校验顺序不当？",
-          "主网激活前还需要几轮客户端安全版本，怎么跟踪？"
-        ]
-      }
-    ],
-    "deepDive": {
-      "id": "deep-web3-bal-parallel-execution",
-      "domain": "web3",
-      "topic": "protocol",
-      "title": "区块访问列表：并行执行的前提，也是新的攻击面",
-      "whatHappened": "Glamsterdam 的执行层核心之一是 EIP-7928 区块访问列表。截至 2026-10-13，它处于 Last Call（截止 2026-11-01），客户端已为它排定 2026-10-06 13:53:36 UTC 在 Sepolia 随 Amsterdam 激活（Lighthouse 8.3.0-rc.0 同时给出共识层的 Gloas 配置）；Reth 2.7 把它持久化进 RocksDB，geth 1.17.8 修复了一个只在 Amsterdam 之后出现的 BAL 账户 DoS。",
-      "mechanism": "BAL 把本块的状态访问预先公开：哪些账户被访问、哪些槽被读或写、每笔交易之后的余额、nonce 和代码是什么。执行客户端因此可以在执行前就并行读盘，把互不冲突的交易并行执行，或者跳过执行直接应用状态变化。代价是区块多出一份必须和 block_access_list_hash 对得上的数据：节点要校验它、存储它、在 RPC 里缓存它，攻击者也可以构造访问面很大的区块，让校验和存储成为新的资源消耗点。",
-      "workedExample": "把一个区块想成 3 笔交易：A 转账给 B、C 调用合约写槽 s1、D 只读槽 s2。没有 BAL 时节点只能按顺序执行；有了 BAL，节点提前知道三者没有共享写入，可以同时加载 A、B、C、D 的账户和 s1、s2 的槽位并并行执行，最后用 BAL 里的交易后值逐项比对。如果攻击者塞入大量只读访问，BAL 会变大，节点在执行前就要先承受读取和校验成本，这正是客户端需要限额和缓存上界的原因。",
-      "whyItMatters": "对钱包和交易所后端来说，BAL 改变的不是业务逻辑，而是节点的性能和容量模型：同步更快、追踪更便宜，但磁盘、缓存和 DoS 防护都要重新评估。",
-      "risksAndLimits": [
-        "EIP-7928 仍在 Last Call，Hoodi 和主网尚未排定，字段与限额在主网前仍可能调整。",
-        "并行执行的收益取决于区块内交易的冲突程度，高冲突的区块（比如热门合约集中写入）收益有限。"
-      ],
-      "sources": [
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "protocol_spec",
-          "name": "EIP-7928: Block-Level Access Lists (Last Call)",
-          "url": "https://raw.githubusercontent.com/ethereum/EIPs/master/EIPS/eip-7928.md"
-        },
-        {
-          "tier": "tier1",
-          "role": "event",
-          "kind": "official_release",
-          "name": "Lighthouse v8.3.0-rc.0 release notes (Gloas on Sepolia)",
-          "url": "https://github.com/sigp/lighthouse/releases/tag/v8.3.0-rc.0",
-          "publishedAt": "2026-10-01T04:47:48.000Z"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_docs",
-          "name": "ethereum.org: Glamsterdam upgrade",
-          "url": "https://ethereum.org/roadmap/glamsterdam/"
-        }
-      ],
-      "nextQuestions": [
-        "客户端对单个区块的 BAL 大小有没有硬上限，超过时如何拒绝？",
-        "高冲突区块下，BAL 带来的并行收益和校验成本如何权衡？"
-      ],
-      "basedOnBriefId": "web3-reth-bal-persistence"
-    },
-    "sourceUrls": [
-      "https://github.com/vllm-project/vllm/releases/tag/v0.31.0",
-      "https://www.anthropic.com/research/distillation-defenses",
-      "https://github.com/paradigmxyz/reth/releases/tag/v2.7.0",
-      "https://eips.ethereum.org/EIPS/eip-7928",
-      "https://github.com/ethereum/go-ethereum/releases/tag/v1.17.8",
-      "https://raw.githubusercontent.com/ethereum/EIPs/master/EIPS/eip-7928.md",
-      "https://github.com/sigp/lighthouse/releases/tag/v8.3.0-rc.0",
-      "https://ethereum.org/roadmap/glamsterdam/"
-    ],
-    "relatedProjectSlugs": [],
-    "marketSignals": [],
-    "snapshotId": "learning-2026-10-13-4b2864a4daf8a900",
-    "asOf": "2026-10-13T03:30:00.000Z",
     "origin": "research",
     "publicationState": "published"
   }
