@@ -5,6 +5,73 @@
   "windowDays": 7,
   "items": [
     {
+      "id": "learning:ai-acr-method-diversity",
+      "kind": "learning",
+      "date": "2026-10-30",
+      "domain": "ai",
+      "topic": "model_inference",
+      "title": "ACR：同一模型的四条轨迹，要分别核对解法与正确性",
+      "summary": "并行 Agent 数量增加，不自动带来独立证据。若要用多条轨迹降低同一种推理盲点，应同时记录不同方法的数量、每条轨迹的正确性与生成预算，避免只奖励措辞变化。",
+      "href": "/radar/2026-10-30#ai-acr-method-diversity",
+      "source": {
+        "name": "Agent-Conditioned Routing — arXiv v1",
+        "tier": "tier1",
+        "url": "https://arxiv.org/abs/2610.37375"
+      },
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-30#ai-acr-method-diversity"
+    },
+    {
+      "id": "learning:ai-tao-tool-aware-admission",
+      "kind": "learning",
+      "date": "2026-10-30",
+      "domain": "ai",
+      "topic": "infrastructure",
+      "title": "TAO：工具即将返回，才可能需要下一轮 GPU 准入",
+      "summary": "工具期间保留了多少上下文、何时再需要推理、目标节点还有多少容量，是不同观测。把这些量分开，才能解释调度是在利用真实缓存、预测短期需求，还是只在统计更大的会话。",
+      "href": "/radar/2026-10-30#ai-tao-tool-aware-admission",
+      "source": {
+        "name": "TAO: Tool-Aware Joint Scheduling — arXiv v1",
+        "tier": "tier1",
+        "url": "https://arxiv.org/abs/2610.37230"
+      },
+      "flags": {
+        "deepDive": true
+      },
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-30#ai-tao-tool-aware-admission"
+    },
+    {
+      "id": "learning:web3-viem-chain-scoped-config",
+      "kind": "learning",
+      "date": "2026-10-30",
+      "domain": "web3",
+      "topic": "wallet_cex",
+      "title": "viem 2.57.13：账户配置缓存要把链 ID 纳入键",
+      "summary": "账户地址相同不意味着配置可跨链共享。钱包与中继的缓存契约要同时说明命名空间、选中配置的链上依据和未命中时的行为，避免把缓存内容当成当前授权状态。",
+      "href": "/radar/2026-10-30#web3-viem-chain-scoped-config",
+      "source": {
+        "name": "viem 2.57.13 official release",
+        "tier": "tier1",
+        "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.13"
+      },
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-30#web3-viem-chain-scoped-config"
+    },
+    {
+      "id": "learning:web3-agave-padded-vote-state",
+      "kind": "learning",
+      "date": "2026-10-30",
+      "domain": "web3",
+      "topic": "onchain_infrastructure",
+      "title": "Agave 4.4.0：先编码投票状态，再只补零尾部",
+      "summary": "降低重复内存写入时，仍需核对序列化输出的字节内容、长度及错误边界。把这些契约与部署建议分别检查，能避免将一个局部实现优化夸成整网性能或兼容性结论。",
+      "href": "/radar/2026-10-30#web3-agave-padded-vote-state",
+      "source": {
+        "name": "Agave v4.4.0 stable release",
+        "tier": "tier1",
+        "url": "https://github.com/anza-xyz/agave/releases/tag/v4.4.0"
+      },
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-30#web3-agave-padded-vote-state"
+    },
+    {
       "id": "market:2026-10-30:bea-q3-gdp-advance-estimate-2026-10-29",
       "kind": "market",
       "date": "2026-10-30",
