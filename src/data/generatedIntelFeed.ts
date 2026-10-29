@@ -6,9 +6,26 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-10-29"
-export const intelItemCount = 258
+export const intelLatestDate: string | null = "2026-10-30"
+export const intelItemCount = 259
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "market:2026-10-30:bea-q3-gdp-advance-estimate-2026-10-29",
+    "kind": "market",
+    "date": "2026-10-30",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "美国三季度 GDP 初值：年化 3.4%，普通季比 0.8%",
+    "summary": "研究判断：GDP 与私人最终需求不同，存货和贸易也影响总量。初值不证明需求持续、利润改善或资产方向。",
+    "href": "/market-radar/2026-10-30#bea-q3-gdp-advance-estimate-2026-10-29",
+    "source": {
+      "name": "BEA GDP (Advance Estimate), 3rd Quarter 2026",
+      "url": "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
   {
     "id": "learning:ai-amie-persistent-access-state",
     "kind": "learning",
@@ -556,24 +573,14 @@ export const intelLatestItems: IntelItem[] = [
     "flags": {
       "priority": "P1"
     }
-  },
-  {
-    "id": "review:2026-10-18--2026-10-23",
-    "kind": "review",
-    "date": "2026-10-23",
-    "domain": "review",
-    "topic": "trend_review",
-    "title": "恢复期趋势观察 · 2026-10-18 至 2026-10-23",
-    "summary": "六天的有限样本中，AI 事件分析把任务惯性和外部范围约束放到一起看；Web3 的客户端准备同时涉及测试网分叉、RPC 行为与证书信任。这是公开材料的短窗口观察，不能代表全行业变化。",
-    "href": "/radar/review/2026-10-18--2026-10-23"
   }
 ]
 export const intelTopics: IntelTopic[] = [
   {
     "topic": "market_macro",
     "domain": "market",
-    "count": 10,
-    "lastSeen": "2026-10-29",
+    "count": 11,
+    "lastSeen": "2026-10-30",
     "firstSeen": "2026-08-09"
   },
   {
