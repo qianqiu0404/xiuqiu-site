@@ -10,6 +10,10 @@
 
 ## Recent briefs
 
+- [ACR：同一模型的四条轨迹，要分别核对解法与正确性](https://xiuqiu-site.vercel.app/radar/2026-10-30#ai-acr-method-diversity) (2026-10-30, ai/model_inference): 并行 Agent 数量增加，不自动带来独立证据。若要用多条轨迹降低同一种推理盲点，应同时记录不同方法的数量、每条轨迹的正确性与生成预算，避免只奖励措辞变化。
+- [TAO：工具即将返回，才可能需要下一轮 GPU 准入](https://xiuqiu-site.vercel.app/radar/2026-10-30#ai-tao-tool-aware-admission) (2026-10-30, ai/infrastructure): 工具期间保留了多少上下文、何时再需要推理、目标节点还有多少容量，是不同观测。把这些量分开，才能解释调度是在利用真实缓存、预测短期需求，还是只在统计更大的会话。
+- [viem 2.57.13：账户配置缓存要把链 ID 纳入键](https://xiuqiu-site.vercel.app/radar/2026-10-30#web3-viem-chain-scoped-config) (2026-10-30, web3/wallet_cex): 账户地址相同不意味着配置可跨链共享。钱包与中继的缓存契约要同时说明命名空间、选中配置的链上依据和未命中时的行为，避免把缓存内容当成当前授权状态。
+- [Agave 4.4.0：先编码投票状态，再只补零尾部](https://xiuqiu-site.vercel.app/radar/2026-10-30#web3-agave-padded-vote-state) (2026-10-30, web3/onchain_infrastructure): 降低重复内存写入时，仍需核对序列化输出的字节内容、长度及错误边界。把这些契约与部署建议分别检查，能避免将一个局部实现优化夸成整网性能或兼容性结论。
 - [AMIE：保留记忆原文，让检索的访问状态随使用演化](https://xiuqiu-site.vercel.app/radar/2026-10-29#ai-amie-persistent-access-state) (2026-10-29, ai/agent): 排查 Agent 总是读到旧记录时，既要查内容是否保存正确，也要查候选如何进入上下文。把内容版本、候选池和持久访问状态分开记录，才能判断变化来自信息更新、检索覆盖，还是排序调整。
 - [langchain-quickjs 0.3.11：首次执行 JavaScript 时才启动解释器](https://xiuqiu-site.vercel.app/radar/2026-10-29#ai-quickjs-lazy-evaluation-runtime) (2026-10-29, ai/infrastructure): Agent 工具的固定准备成本会落在根本没用到工具的轮次上。把无需执行、首次执行、恢复成功和恢复失败分开观测，比用单一启动耗时描述所有轮次更有助于定位延迟。
 - [op-proposer 1.17.0：指标被移除后，空图表不能当成零流量](https://xiuqiu-site.vercel.app/radar/2026-10-29#web3-op-proposer-rpc-metric-removal) (2026-10-29, web3/l2): 链上基础设施是否工作与监控能否继续测到它，是两个需要独立证据的问题。把指标名称和告警查询视为升级契约，能减少因接口消失而失去告警覆盖的情况。
@@ -18,10 +22,6 @@
 - [Verified autoresearch：先验证评测器，再让 Agent 搜索更优程序](https://xiuqiu-site.vercel.app/radar/2026-10-28#ai-verified-autoresearch-evaluator) (2026-10-28, ai/evaluation): Agent 优化的是评测器给出的反馈。若有效性判定本身缺项，更高分也可能只说明候选找到了缺口；让评测规则和候选版本都可追溯，有助于解释分数究竟证明了什么。
 - [LND 0.21.5-beta：发票订阅死锁，出在事务内又借了一条连接](https://xiuqiu-site.vercel.app/radar/2026-10-28#web3-lnd-sql-invoice-transaction-scope) (2026-10-28, web3/wallet_cex): 钱包和支付服务的订阅恢复常与其他请求并发。事务已经开始，不意味着随后每个查询都在使用同一事务；把连接借用范围纳入检查，有助于定位看似全局卡死的问题。
 - [Nitro 3.12.2：回到旧分支再升级，也要核对区块保留](https://xiuqiu-site.vercel.app/radar/2026-10-28#web3-nitro-version-transition-head-retention) (2026-10-28, web3/l2): 客户端恢复可能跨越多个版本分支，节点状态又会随运行改变。记录完整转换路径和前后区块状态，比只记录升级终点更有助于判断这条修复是否适用。
-- [OpenAI Signals：工作消息占比，不能直接当成劳动产出](https://xiuqiu-site.vercel.app/radar/2026-10-27#ai-signals-work-activity-denominator) (2026-10-27, ai/data): 公开分类和统计口径能帮助研究 AI 被用于哪些工作，但结论需要与采样范围匹配；消息分布、用户采用和实际工作效果是不同指标。
-- [GPT-6.1 Terra 发布：先分别核对模型能力与工具契约](https://xiuqiu-site.vercel.app/radar/2026-10-27#ai-terra-model-and-tool-contract) (2026-10-27, ai/model_inference): 接入新模型时，把输入输出、推理设置、工具通道和任务验收分别列清，可以避免只更换模型名，却沿用不兼容的调用假设。
-- [Nethermind 2.2.2：上游安全补丁要进入实际运行的制品](https://xiuqiu-site.vercel.app/radar/2026-10-27#web3-nethermind-bundled-runtime-patch) (2026-10-27, web3/security): 节点客户端的安全边界包含随制品交付的基础运行时。补丁已发布、可安装制品已更新与运行进程已采用，需要各自留下证据。
-- [AvalancheGo 1.15.2：可选客户端更新也有插件兼容要求](https://xiuqiu-site.vercel.app/radar/2026-10-27#web3-avalanchego-plugin-upgrade-boundary) (2026-10-27, web3/onchain_infrastructure): “版本向后兼容”不能代替插件、API、配置和已有数据库状态的逐项检查；长期停机后恢复的节点，还可能有不同的过渡路径。
 
 ## Boundaries
 

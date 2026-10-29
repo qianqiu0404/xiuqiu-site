@@ -6,6 +6,58 @@
   "language": "zh-CN",
   "items": [
     {
+      "id": "xiuqiu-radar:ai-acr-method-diversity",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-30#ai-acr-method-diversity",
+      "title": "ACR：同一模型的四条轨迹，要分别核对解法与正确性",
+      "summary": "并行 Agent 数量增加，不自动带来独立证据。若要用多条轨迹降低同一种推理盲点，应同时记录不同方法的数量、每条轨迹的正确性与生成预算，避免只奖励措辞变化。",
+      "content_text": "并行 Agent 数量增加，不自动带来独立证据。若要用多条轨迹降低同一种推理盲点，应同时记录不同方法的数量、每条轨迹的正确性与生成预算，避免只奖励措辞变化。",
+      "date_published": "2026-10-30T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "model_inference"
+      ],
+      "external_url": "https://arxiv.org/abs/2610.37375"
+    },
+    {
+      "id": "xiuqiu-radar:ai-tao-tool-aware-admission",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-30#ai-tao-tool-aware-admission",
+      "title": "TAO：工具即将返回，才可能需要下一轮 GPU 准入",
+      "summary": "工具期间保留了多少上下文、何时再需要推理、目标节点还有多少容量，是不同观测。把这些量分开，才能解释调度是在利用真实缓存、预测短期需求，还是只在统计更大的会话。",
+      "content_text": "工具期间保留了多少上下文、何时再需要推理、目标节点还有多少容量，是不同观测。把这些量分开，才能解释调度是在利用真实缓存、预测短期需求，还是只在统计更大的会话。",
+      "date_published": "2026-10-30T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "infrastructure"
+      ],
+      "external_url": "https://arxiv.org/abs/2610.37230"
+    },
+    {
+      "id": "xiuqiu-radar:web3-viem-chain-scoped-config",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-30#web3-viem-chain-scoped-config",
+      "title": "viem 2.57.13：账户配置缓存要把链 ID 纳入键",
+      "summary": "账户地址相同不意味着配置可跨链共享。钱包与中继的缓存契约要同时说明命名空间、选中配置的链上依据和未命中时的行为，避免把缓存内容当成当前授权状态。",
+      "content_text": "账户地址相同不意味着配置可跨链共享。钱包与中继的缓存契约要同时说明命名空间、选中配置的链上依据和未命中时的行为，避免把缓存内容当成当前授权状态。",
+      "date_published": "2026-10-30T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "wallet_cex"
+      ],
+      "external_url": "https://github.com/wevm/viem/releases/tag/viem%402.57.13"
+    },
+    {
+      "id": "xiuqiu-radar:web3-agave-padded-vote-state",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-30#web3-agave-padded-vote-state",
+      "title": "Agave 4.4.0：先编码投票状态，再只补零尾部",
+      "summary": "降低重复内存写入时，仍需核对序列化输出的字节内容、长度及错误边界。把这些契约与部署建议分别检查，能避免将一个局部实现优化夸成整网性能或兼容性结论。",
+      "content_text": "降低重复内存写入时，仍需核对序列化输出的字节内容、长度及错误边界。把这些契约与部署建议分别检查，能避免将一个局部实现优化夸成整网性能或兼容性结论。",
+      "date_published": "2026-10-30T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "onchain_infrastructure"
+      ],
+      "external_url": "https://github.com/anza-xyz/agave/releases/tag/v4.4.0"
+    },
+    {
       "id": "xiuqiu-radar:ai-amie-persistent-access-state",
       "url": "https://xiuqiu-site.vercel.app/radar/2026-10-29#ai-amie-persistent-access-state",
       "title": "AMIE：保留记忆原文，让检索的访问状态随使用演化",
@@ -732,58 +784,6 @@
         "web3_design"
       ],
       "external_url": "https://eips.ethereum.org/EIPS/eip-7930"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-08-tools",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-08#tools",
-      "title": "GitHub Spec Kit 0.16.1 · 把 Agent 开发交接变成可审阅规格",
-      "summary": "它把 constitution、spec、plan、tasks 与实现收敛为版本化工件，并收紧畸形输入和临时文件边界。临时环境已验证 0.16.1；生成规格仍须审查差异。",
-      "content_text": "它把 constitution、spec、plan、tasks 与实现收敛为版本化工件，并收紧畸形输入和临时文件边界。临时环境已验证 0.16.1；生成规格仍须审查差异。",
-      "date_published": "2026-08-08T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "tools"
-      ],
-      "external_url": "https://github.com/github/spec-kit/releases/tag/v0.16.1"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-08-reading",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-08#reading",
-      "title": "How agents are transforming work",
-      "summary": "样本中 70.2% 的个人用户曾发起估算超过一小时的人类工作任务。应衡量可验收产出和失败成本，而非 token 或时长；样本与模型估算不能外推为普遍生产率。",
-      "content_text": "样本中 70.2% 的个人用户曾发起估算超过一小时的人类工作任务。应衡量可验收产出和失败成本，而非 token 或时长；样本与模型估算不能外推为普遍生产率。",
-      "date_published": "2026-08-08T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "reading"
-      ],
-      "external_url": "https://openai.com/index/how-agents-are-transforming-work/"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-07-signal",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-07#industry-signals",
-      "title": "Nethermind 1.39.3 封住畸形 ABI 输入的超大内存分配路径",
-      "summary": "强制节点补丁会在创建托管数组前拒绝异常动态 bytes 与数组长度，并补齐多条异常路径的池化内存清理。官方未披露 CVE 或利用事件，升级仍需验证制品、回滚与本地负载。",
-      "content_text": "强制节点补丁会在创建托管数组前拒绝异常动态 bytes 与数组长度，并补齐多条异常路径的池化内存清理。官方未披露 CVE 或利用事件，升级仍需验证制品、回滚与本地负载。",
-      "date_published": "2026-08-07T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "market_signal"
-      ],
-      "external_url": "https://github.com/NethermindEth/nethermind/releases/tag/1.39.3"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-07-signal-1",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-07#industry-signals",
-      "title": "viem 2.55.11 拒绝 EIP-712 裸写 uint 与 int",
-      "summary": "typed-data 校验与哈希现在要求 uint256、int256 等完整位宽，避免非规范类型哈希或 RangeError。它只改变 viem 相关调用路径，不代表 EVM 或链上合约规则统一升级。",
-      "content_text": "typed-data 校验与哈希现在要求 uint256、int256 等完整位宽，避免非规范类型哈希或 RangeError。它只改变 viem 相关调用路径，不代表 EVM 或链上合约规则统一升级。",
-      "date_published": "2026-08-07T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "market_signal"
-      ],
-      "external_url": "https://github.com/wevm/viem/releases/tag/viem%402.55.11"
     }
   ]
 }

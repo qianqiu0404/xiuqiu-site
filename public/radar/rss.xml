@@ -6,7 +6,43 @@
     <atom:link href="https://xiuqiu-site.vercel.app/radar/rss.xml" rel="self" type="application/rss+xml" />
     <description>每天 2 条 AI、2 条 Web3 工程简报：先讲机制，再给例子和边界。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Thu, 29 Oct 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 30 Oct 2026 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>ACR：同一模型的四条轨迹，要分别核对解法与正确性</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-30#ai-acr-method-diversity</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-acr-method-diversity</guid>
+      <pubDate>Fri, 30 Oct 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>model_inference</category>
+      <description>并行 Agent 数量增加，不自动带来独立证据。若要用多条轨迹降低同一种推理盲点，应同时记录不同方法的数量、每条轨迹的正确性与生成预算，避免只奖励措辞变化。</description>
+    </item>
+    <item>
+      <title>TAO：工具即将返回，才可能需要下一轮 GPU 准入</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-30#ai-tao-tool-aware-admission</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-tao-tool-aware-admission</guid>
+      <pubDate>Fri, 30 Oct 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>infrastructure</category>
+      <description>工具期间保留了多少上下文、何时再需要推理、目标节点还有多少容量，是不同观测。把这些量分开，才能解释调度是在利用真实缓存、预测短期需求，还是只在统计更大的会话。</description>
+    </item>
+    <item>
+      <title>viem 2.57.13：账户配置缓存要把链 ID 纳入键</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-30#web3-viem-chain-scoped-config</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-viem-chain-scoped-config</guid>
+      <pubDate>Fri, 30 Oct 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>wallet_cex</category>
+      <description>账户地址相同不意味着配置可跨链共享。钱包与中继的缓存契约要同时说明命名空间、选中配置的链上依据和未命中时的行为，避免把缓存内容当成当前授权状态。</description>
+    </item>
+    <item>
+      <title>Agave 4.4.0：先编码投票状态，再只补零尾部</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-10-30#web3-agave-padded-vote-state</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-agave-padded-vote-state</guid>
+      <pubDate>Fri, 30 Oct 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>onchain_infrastructure</category>
+      <description>降低重复内存写入时，仍需核对序列化输出的字节内容、长度及错误边界。把这些契约与部署建议分别检查，能避免将一个局部实现优化夸成整网性能或兼容性结论。</description>
+    </item>
     <item>
       <title>AMIE：保留记忆原文，让检索的访问状态随使用演化</title>
       <link>https://xiuqiu-site.vercel.app/radar/2026-10-29#ai-amie-persistent-access-state</link>
@@ -510,42 +546,6 @@
       <category>WEB3</category>
       <category>web3_design</category>
       <description>ERC-7930 把链类型、链引用和地址封进版本化二进制对象。钱包应让链语境共同进入确认、签名与策略键；规范仍在 Review，部分命名空间未必能唯一规范化。</description>
-    </item>
-    <item>
-      <title>GitHub Spec Kit 0.16.1 · 把 Agent 开发交接变成可审阅规格</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-08#tools</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-08-tools</guid>
-      <pubDate>Sat, 08 Aug 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>tools</category>
-      <description>它把 constitution、spec、plan、tasks 与实现收敛为版本化工件，并收紧畸形输入和临时文件边界。临时环境已验证 0.16.1；生成规格仍须审查差异。</description>
-    </item>
-    <item>
-      <title>How agents are transforming work</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-08#reading</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-08-reading</guid>
-      <pubDate>Sat, 08 Aug 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>reading</category>
-      <description>样本中 70.2% 的个人用户曾发起估算超过一小时的人类工作任务。应衡量可验收产出和失败成本，而非 token 或时长；样本与模型估算不能外推为普遍生产率。</description>
-    </item>
-    <item>
-      <title>Nethermind 1.39.3 封住畸形 ABI 输入的超大内存分配路径</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-07#industry-signals</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-07-signal</guid>
-      <pubDate>Fri, 07 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>market_signal</category>
-      <description>强制节点补丁会在创建托管数组前拒绝异常动态 bytes 与数组长度，并补齐多条异常路径的池化内存清理。官方未披露 CVE 或利用事件，升级仍需验证制品、回滚与本地负载。</description>
-    </item>
-    <item>
-      <title>viem 2.55.11 拒绝 EIP-712 裸写 uint 与 int</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-07#industry-signals</link>
-      <guid isPermaLink="false">xiuqiu-radar:2026-08-07-signal-1</guid>
-      <pubDate>Fri, 07 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>market_signal</category>
-      <description>typed-data 校验与哈希现在要求 uint256、int256 等完整位宽，避免非规范类型哈希或 RangeError。它只改变 viem 相关调用路径，不代表 EVM 或链上合约规则统一升级。</description>
     </item>
   </channel>
 </rss>
