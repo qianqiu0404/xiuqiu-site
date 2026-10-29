@@ -3,6 +3,157 @@
 import type { MarketRadarDaily } from '../generatedMarketRadars.ts'
 export const monthlyMarketRadars: MarketRadarDaily[] = [
   {
+    "date": "2026-10-30",
+    "slug": "2026-10-30",
+    "title": "交易研究雷达 · 2026-10-30",
+    "summary": "BEA 发布美国三季度 GDP 初值，实际增长季调年率为 3.4%。本期核对年化与季比口径、总量与私人最终需求，以及初值未来修订的边界，不由单期数据推断资产方向。",
+    "snapshotId": "market-2026-10-30-99398550dff9d224",
+    "asOf": "2026-10-29T21:35:50.000Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-10-30T05:35:50+08:00",
+    "events": [
+      {
+        "id": "bea-q3-gdp-advance-estimate-2026-10-29",
+        "priority": "P1",
+        "status": "released",
+        "category": "macro",
+        "title": "美国三季度 GDP 初值：年化 3.4%，普通季比 0.8%",
+        "fact": "BEA 于 10 月 29 日公布三季度实际 GDP 初值：季调年率增 3.4%，未折年季比增 0.8%；上季年率增 2.2%。私人国内最终销售（消费及私人固定投资）年率增 4.9%，上季增 4.6%；它不含存货、政府与净出口。这不是全年或同比增速。",
+        "whyWatch": "研究判断：GDP 与私人最终需求不同，存货和贸易也影响总量。初值不证明需求持续、利润改善或资产方向。",
+        "assets": [
+          "美国国债",
+          "美国股票"
+        ],
+        "watchFor": "按同一版本核对消费、固定投资、存货和净出口贡献，接续月度需求与利润资料及 11 月 25 日第二次估计；保留统计期、发布日和年化口径。",
+        "invalidation": "官方修订取代本版本。后续分项或月份不支持需求持续时重估；口径或窗口未对齐，不把同步行情当作因果。",
+        "sourceName": "BEA GDP (Advance Estimate), 3rd Quarter 2026",
+        "sourceUrl": "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026",
+        "sourcePublishedAt": "2026-10-29"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "只登记初值与口径；未建立同版本、固定窗口的跨资产历史样本，量化门禁关闭。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "季度总量不能验证三日资产反应；本期未测行情、资金流或识别因果。",
+      "nextValidation": "固定版本和事件窗口，核对需求、修订与市场反应；样本不足时仅显示弱信号。",
+      "invalidation": "官方修订、口径或窗口不符时重估；缺失数据不补结论。",
+      "sourceUrls": [
+        "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "需求分项如何经企业收入和融资需求联系相关资产，各环需要什么公开证据？",
+        "focusEventIds": [
+          "bea-q3-gdp-advance-estimate-2026-10-29"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些同版本分项、月度需求与利润资料最能推翻私人最终需求持续增强的解释？",
+        "focusEventIds": [
+          "bea-q3-gdp-advance-estimate-2026-10-29"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "如果初值被修订或增长主要来自存货，哪些替代解释成立，什么证据使传导假设失效？",
+        "focusEventIds": [
+          "bea-q3-gdp-advance-estimate-2026-10-29"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-10-30",
+      "snapshotId": "market-2026-10-30-99398550dff9d224",
+      "asOf": "2026-10-29T21:35:50.000Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-10-30",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "需求分项如何经企业收入和融资需求联系相关资产，各环需要什么公开证据？",
+          "focusEventIds": [
+            "bea-q3-gdp-advance-estimate-2026-10-29"
+          ],
+          "prompt": "研究任务：需求分项如何经企业收入和融资需求联系相关资产，各环需要什么公开证据？\n证据快照：2026-10-30；asOf=2026-10-29T21:35:50.000Z；snapshotId=market-2026-10-30-99398550dff9d224\n\n材料 1｜美国三季度 GDP 初值：年化 3.4%，普通季比 0.8%\n已确认事实：BEA 于 10 月 29 日公布三季度实际 GDP 初值：季调年率增 3.4%，未折年季比增 0.8%；上季年率增 2.2%。私人国内最终销售（消费及私人固定投资）年率增 4.9%，上季增 4.6%；它不含存货、政府与净出口。这不是全年或同比增速。\n关注机制：研究判断：GDP 与私人最终需求不同，存货和贸易也影响总量。初值不证明需求持续、利润改善或资产方向。\n接下来验证：按同一版本核对消费、固定投资、存货和净出口贡献，接续月度需求与利润资料及 11 月 25 日第二次估计；保留统计期、发布日和年化口径。\n失效条件：官方修订取代本版本。后续分项或月份不支持需求持续时重估；口径或窗口未对齐，不把同步行情当作因果。\n一手来源：https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "7164ddd308666b2a6b41d7f46eb09e405f23c0afd5fc1021aa1608b8f6e8acfc",
+          "sourceUrls": [
+            "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些同版本分项、月度需求与利润资料最能推翻私人最终需求持续增强的解释？",
+          "focusEventIds": [
+            "bea-q3-gdp-advance-estimate-2026-10-29"
+          ],
+          "prompt": "研究任务：哪些同版本分项、月度需求与利润资料最能推翻私人最终需求持续增强的解释？\n证据快照：2026-10-30；asOf=2026-10-29T21:35:50.000Z；snapshotId=market-2026-10-30-99398550dff9d224\n\n材料 1｜美国三季度 GDP 初值：年化 3.4%，普通季比 0.8%\n已确认事实：BEA 于 10 月 29 日公布三季度实际 GDP 初值：季调年率增 3.4%，未折年季比增 0.8%；上季年率增 2.2%。私人国内最终销售（消费及私人固定投资）年率增 4.9%，上季增 4.6%；它不含存货、政府与净出口。这不是全年或同比增速。\n关注机制：研究判断：GDP 与私人最终需求不同，存货和贸易也影响总量。初值不证明需求持续、利润改善或资产方向。\n接下来验证：按同一版本核对消费、固定投资、存货和净出口贡献，接续月度需求与利润资料及 11 月 25 日第二次估计；保留统计期、发布日和年化口径。\n失效条件：官方修订取代本版本。后续分项或月份不支持需求持续时重估；口径或窗口未对齐，不把同步行情当作因果。\n一手来源：https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "a7f59f8590073c96c44126d63f56c99b6dc6499882348a02e0439fa319c19656",
+          "sourceUrls": [
+            "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "如果初值被修订或增长主要来自存货，哪些替代解释成立，什么证据使传导假设失效？",
+          "focusEventIds": [
+            "bea-q3-gdp-advance-estimate-2026-10-29"
+          ],
+          "prompt": "研究任务：如果初值被修订或增长主要来自存货，哪些替代解释成立，什么证据使传导假设失效？\n证据快照：2026-10-30；asOf=2026-10-29T21:35:50.000Z；snapshotId=market-2026-10-30-99398550dff9d224\n\n材料 1｜美国三季度 GDP 初值：年化 3.4%，普通季比 0.8%\n已确认事实：BEA 于 10 月 29 日公布三季度实际 GDP 初值：季调年率增 3.4%，未折年季比增 0.8%；上季年率增 2.2%。私人国内最终销售（消费及私人固定投资）年率增 4.9%，上季增 4.6%；它不含存货、政府与净出口。这不是全年或同比增速。\n关注机制：研究判断：GDP 与私人最终需求不同，存货和贸易也影响总量。初值不证明需求持续、利润改善或资产方向。\n接下来验证：按同一版本核对消费、固定投资、存货和净出口贡献，接续月度需求与利润资料及 11 月 25 日第二次估计；保留统计期、发布日和年化口径。\n失效条件：官方修订取代本版本。后续分项或月份不支持需求持续时重估；口径或窗口未对齐，不把同步行情当作因果。\n一手来源：https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "c8ff61b17acf77a0ebd1c32a48de4d110cf868db9bf0b8be842c842b532a03bd",
+          "sourceUrls": [
+            "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026"
+          ]
+        }
+      ]
+    }
+  },
+  {
     "date": "2026-10-29",
     "slug": "2026-10-29",
     "title": "交易研究雷达 · 2026-10-29",

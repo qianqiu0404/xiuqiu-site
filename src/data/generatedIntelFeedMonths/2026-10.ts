@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-10-30:bea-q3-gdp-advance-estimate-2026-10-29",
+    "kind": "market",
+    "date": "2026-10-30",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "美国三季度 GDP 初值：年化 3.4%，普通季比 0.8%",
+    "summary": "研究判断：GDP 与私人最终需求不同，存货和贸易也影响总量。初值不证明需求持续、利润改善或资产方向。",
+    "href": "/market-radar/2026-10-30#bea-q3-gdp-advance-estimate-2026-10-29",
+    "source": {
+      "name": "BEA GDP (Advance Estimate), 3rd Quarter 2026",
+      "url": "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
+  {
     "id": "learning:ai-amie-persistent-access-state",
     "kind": "learning",
     "date": "2026-10-29",
