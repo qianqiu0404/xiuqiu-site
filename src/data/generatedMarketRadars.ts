@@ -16,6 +16,17 @@ export interface MarketRadarDaily { schemaVersion?: 2; date: string; slug: strin
 export interface MarketRadarIndexEntry { date: string; slug: string; snapshotId: string; asOf: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
 export const marketRadarIndex: MarketRadarIndexEntry[] = [
   {
+    "date": "2026-11-02",
+    "slug": "2026-11-02",
+    "title": "交易研究雷达 · 2026-11-02",
+    "summary": "美国九月名义消费支出增长 0.5%，实际增幅不足 0.1%。本期区分消费金额、购买量与价格变化，并核对实际可支配收入及后续修订。",
+    "snapshotId": "market-2026-11-02-f597a0bfb6746463",
+    "asOf": "2026-11-01T21:32:18.000Z",
+    "eventCount": 1,
+    "assetCount": 2,
+    "leadTitle": "美国九月消费：名义增 0.5%，实际不足 0.1%"
+  },
+  {
     "date": "2026-10-30",
     "slug": "2026-10-30",
     "title": "交易研究雷达 · 2026-10-30",
@@ -149,6 +160,157 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
   }
 ]
 export const latestMarketRadars: MarketRadarDaily[] = [
+  {
+    "date": "2026-11-02",
+    "slug": "2026-11-02",
+    "title": "交易研究雷达 · 2026-11-02",
+    "summary": "美国九月名义消费支出增长 0.5%，实际增幅不足 0.1%。本期区分消费金额、购买量与价格变化，并核对实际可支配收入及后续修订。",
+    "snapshotId": "market-2026-11-02-f597a0bfb6746463",
+    "asOf": "2026-11-01T21:32:18.000Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-02T05:32:18+08:00",
+    "events": [
+      {
+        "id": "bea-september-pio-2026-10-29",
+        "priority": "P1",
+        "status": "released",
+        "category": "macro",
+        "title": "美国九月消费：名义增 0.5%，实际不足 0.1%",
+        "fact": "BEA 于 10 月 29 日公布九月 PIO：名义 PCE 环比增 0.5%，实际增幅不足 0.1%；PCE 价格环比增 0.5%、同比增 3.6%，剔除食品和能源后分别增 0.3%、3.1%。实际可支配收入环比降 0.3%，储蓄率为 3.8%。",
+        "whyWatch": "研究判断：消费金额增长不等于购买量同幅增长。价格、实际收入和储蓄约束应分别观察，单月资料不能证明需求趋势或资产方向。",
+        "assets": [
+          "美国国债",
+          "美国股票"
+        ],
+        "watchFor": "固定九月版本，核对消费分项和修订，接续就业及实际收入；11 月 25 日下期发布后再比较。",
+        "invalidation": "官方修订取代本版本；统计期、环比和同比不一致时不直接比较，也不以同步行情认定因果。",
+        "sourceName": "BEA Personal Income and Outlays, September 2026",
+        "sourceUrl": "https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026",
+        "sourcePublishedAt": "2026-10-29"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "只登记同版本月度消费、价格和收入；未建立固定窗口的跨资产历史样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "单月宏观资料不足以验证三日资产反应；本期未测行情、资金流或因果。",
+      "nextValidation": "固定版本和窗口，核对后续分项、修订及市场反应；样本不足只显示弱信号。",
+      "invalidation": "修订、口径或窗口不符时重估；缺失数据不补结论。",
+      "sourceUrls": [
+        "https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "名义支出、实际购买量和实际收入如何经需求与利润联系相关资产，各环需要什么证据？",
+        "focusEventIds": [
+          "bea-september-pio-2026-10-29"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些同版本分项、就业及收入数据最能推翻消费金额增长代表实际需求增强的解释？",
+        "focusEventIds": [
+          "bea-september-pio-2026-10-29"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若价格、收入或历史估计发生修订，哪些替代解释成立，什么证据使需求传导假设失效？",
+        "focusEventIds": [
+          "bea-september-pio-2026-10-29"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-02",
+      "snapshotId": "market-2026-11-02-f597a0bfb6746463",
+      "asOf": "2026-11-01T21:32:18.000Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-02",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "名义支出、实际购买量和实际收入如何经需求与利润联系相关资产，各环需要什么证据？",
+          "focusEventIds": [
+            "bea-september-pio-2026-10-29"
+          ],
+          "prompt": "研究任务：名义支出、实际购买量和实际收入如何经需求与利润联系相关资产，各环需要什么证据？\n证据快照：2026-11-02；asOf=2026-11-01T21:32:18.000Z；snapshotId=market-2026-11-02-f597a0bfb6746463\n\n材料 1｜美国九月消费：名义增 0.5%，实际不足 0.1%\n已确认事实：BEA 于 10 月 29 日公布九月 PIO：名义 PCE 环比增 0.5%，实际增幅不足 0.1%；PCE 价格环比增 0.5%、同比增 3.6%，剔除食品和能源后分别增 0.3%、3.1%。实际可支配收入环比降 0.3%，储蓄率为 3.8%。\n关注机制：研究判断：消费金额增长不等于购买量同幅增长。价格、实际收入和储蓄约束应分别观察，单月资料不能证明需求趋势或资产方向。\n接下来验证：固定九月版本，核对消费分项和修订，接续就业及实际收入；11 月 25 日下期发布后再比较。\n失效条件：官方修订取代本版本；统计期、环比和同比不一致时不直接比较，也不以同步行情认定因果。\n一手来源：https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "8718f837e1e3a5afa4abea156af560606db782f2ea443c714eb47bdb880b3883",
+          "sourceUrls": [
+            "https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些同版本分项、就业及收入数据最能推翻消费金额增长代表实际需求增强的解释？",
+          "focusEventIds": [
+            "bea-september-pio-2026-10-29"
+          ],
+          "prompt": "研究任务：哪些同版本分项、就业及收入数据最能推翻消费金额增长代表实际需求增强的解释？\n证据快照：2026-11-02；asOf=2026-11-01T21:32:18.000Z；snapshotId=market-2026-11-02-f597a0bfb6746463\n\n材料 1｜美国九月消费：名义增 0.5%，实际不足 0.1%\n已确认事实：BEA 于 10 月 29 日公布九月 PIO：名义 PCE 环比增 0.5%，实际增幅不足 0.1%；PCE 价格环比增 0.5%、同比增 3.6%，剔除食品和能源后分别增 0.3%、3.1%。实际可支配收入环比降 0.3%，储蓄率为 3.8%。\n关注机制：研究判断：消费金额增长不等于购买量同幅增长。价格、实际收入和储蓄约束应分别观察，单月资料不能证明需求趋势或资产方向。\n接下来验证：固定九月版本，核对消费分项和修订，接续就业及实际收入；11 月 25 日下期发布后再比较。\n失效条件：官方修订取代本版本；统计期、环比和同比不一致时不直接比较，也不以同步行情认定因果。\n一手来源：https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "09e0c8a0aca98b0dc615d58ba5634b16acfd0c0f18bb30b670f01f7f889b66a3",
+          "sourceUrls": [
+            "https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若价格、收入或历史估计发生修订，哪些替代解释成立，什么证据使需求传导假设失效？",
+          "focusEventIds": [
+            "bea-september-pio-2026-10-29"
+          ],
+          "prompt": "研究任务：若价格、收入或历史估计发生修订，哪些替代解释成立，什么证据使需求传导假设失效？\n证据快照：2026-11-02；asOf=2026-11-01T21:32:18.000Z；snapshotId=market-2026-11-02-f597a0bfb6746463\n\n材料 1｜美国九月消费：名义增 0.5%，实际不足 0.1%\n已确认事实：BEA 于 10 月 29 日公布九月 PIO：名义 PCE 环比增 0.5%，实际增幅不足 0.1%；PCE 价格环比增 0.5%、同比增 3.6%，剔除食品和能源后分别增 0.3%、3.1%。实际可支配收入环比降 0.3%，储蓄率为 3.8%。\n关注机制：研究判断：消费金额增长不等于购买量同幅增长。价格、实际收入和储蓄约束应分别观察，单月资料不能证明需求趋势或资产方向。\n接下来验证：固定九月版本，核对消费分项和修订，接续就业及实际收入；11 月 25 日下期发布后再比较。\n失效条件：官方修订取代本版本；统计期、环比和同比不一致时不直接比较，也不以同步行情认定因果。\n一手来源：https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "a7f25581ec8586d114177c812e36ee7aa9c10e881da0fe31db38f04502d92364",
+          "sourceUrls": [
+            "https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026"
+          ]
+        }
+      ]
+    }
+  },
   {
     "date": "2026-10-30",
     "slug": "2026-10-30",
@@ -1108,181 +1270,6 @@ export const latestMarketRadars: MarketRadarDaily[] = [
           "promptChecksum": "4e59b80adbe6448815a16371bed4271565ca18ec815ec833497c1738fa84662d",
           "sourceUrls": [
             "https://blog.ethereum.org/2026/10/22/glamsterdam-hoodi-delay"
-          ]
-        }
-      ]
-    }
-  },
-  {
-    "date": "2026-10-24",
-    "slug": "2026-10-24",
-    "title": "交易研究雷达恢复版 · 2026-10-24",
-    "summary": "恢复版仅收录两项经核对的节点基础设施事件：Hoodi 的 Amsterdam 准备与 OP Stack 证书修复。尚无采用率、实际故障范围或跨资产样本，不从版本发布推导价格方向。",
-    "snapshotId": "market-2026-10-24-e026dee65590246f",
-    "asOf": "2026-10-24T06:30:25.000Z",
-    "origin": "research",
-    "publicationState": "published",
-    "reviewStatus": "automated",
-    "generatedAt": "2026-10-24T14:30:25+08:00",
-    "events": [
-      {
-        "id": "reth-280-hoodi-amsterdam-readiness-2026-10-20",
-        "priority": "P1",
-        "status": "released",
-        "category": "crypto",
-        "eventAt": "2026-10-21T03:34:03+08:00",
-        "title": "Reth 2.8.0 排定 Hoodi Amsterdam，要求测试网运营方提前升级",
-        "fact": "Reth 于 10 月 20 日 19:34 UTC 发布 v2.8.0，配置 Hoodi 在 10 月 26 日 17:42:48 UTC 激活 Amsterdam，并要求 Hoodi 运营方提前升级；版本还改变部分 RPC 与费用估算默认行为。此项事实是客户端发布和测试网计划，不代表主网激活。",
-        "whyWatch": "可能的传导先经过节点采用、测试网稳定性与接入兼容性，才可能改变后续主网准备的预期；每一环都需要独立证据，发布本身无法推出 ETH 或相关资产的价格反应。",
-        "assets": [
-          "ETH"
-        ],
-        "watchFor": "核对后续正式客户端配置、Hoodi 激活后的出块与最终性、公开故障记录，以及钱包和 RPC 服务的兼容反馈；单独记录同窗口 ETH 与 BTC 变化及其他同期事件，避免把相关性写成因果。",
-        "invalidation": "若官方修订或撤回激活配置，以新公告为准；若缺少节点采用和运行数据，就不能从发版推断准备完成，也不能把测试网问题直接外推到主网资金安全。",
-        "sourceName": "Reth v2.8.0 official release",
-        "sourceUrl": "https://github.com/paradigmxyz/reth/releases/tag/v2.8.0",
-        "sourcePublishedAt": "2026-10-20"
-      },
-      {
-        "id": "op-node-11911-certificate-fix-2026-10-22",
-        "priority": "P1",
-        "status": "released",
-        "category": "crypto",
-        "eventAt": "2026-10-22T10:51:39+08:00",
-        "title": "OP Stack 发布 op-node 证书修复，建议运营方升级",
-        "fact": "Optimism 于 10 月 22 日发布 op-node v1.19.11，强烈建议运营方升级。发布说明列出针对 CVE-2026-111943 的 Go 证书验证修复和镜像 CA 根移除，并修复特定长出块时间链的 L1 origin 漂移；本期未验证真实利用或全网采用率。",
-        "whyWatch": "需要观察的链路是依赖风险、节点更新、服务可用性和用户存取款体验。官方补丁说明证明存在修复行动，不能单独证明链停摆、资金损失或 OP 的市场影响。",
-        "assets": [
-          "ETH",
-          "OP"
-        ],
-        "watchFor": "关注官方状态、后续补丁、可验证的节点运营反馈与存取款延迟；区分证书连接错误、特定出块参数的漂移及无关故障，再与 ETH、BTC 的同窗口变化作对照。",
-        "invalidation": "若后续公告缩小或扩大影响范围，应修订暴露面；没有运行证据时不发布受影响节点数。正常运行也不能证明所有自制镜像已完成更新。",
-        "sourceName": "Optimism op-node v1.19.11 official release",
-        "sourceUrl": "https://github.com/ethereum-optimism/optimism/releases/tag/op-node/v1.19.11",
-        "sourcePublishedAt": "2026-10-22"
-      }
-    ],
-    "sourceUrls": [
-      "https://github.com/paradigmxyz/reth/releases/tag/v2.8.0",
-      "https://github.com/ethereum-optimism/optimism/releases/tag/op-node/v1.19.11"
-    ],
-    "quantStrategy": {
-      "horizonTradingDays": 3,
-      "status": "historical_samples_insufficient",
-      "methodology": "只登记可复核事件与观察方法；未建立同类事件、固定窗口和跨资产结果的历史样本，继续隐藏精确概率。",
-      "assets": [
-        {
-          "symbol": "SPY",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "QQQ",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "BTC",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "ETH",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "GLD",
-          "group": "gold_etf",
-          "signalQuality": "weak"
-        }
-      ],
-      "sampleSize": 0,
-      "rationale": "两项节点发布不能单独解释市场变化；股票、黄金与加密资产的相关性也没有在本期测量。",
-      "nextValidation": "先定义节点采用、运行异常和资产观察窗口，收集可复核公开数据，并登记同期其他事件；样本达到既有门禁前不补概率。",
-      "invalidation": "来源修订、窗口不一致或数据缺失时停止比较；未经独立证据不能把运维事件当成跨资产因果结论。",
-      "sourceUrls": [
-        "https://github.com/paradigmxyz/reth/releases/tag/v2.8.0",
-        "https://github.com/ethereum-optimism/optimism/releases/tag/op-node/v1.19.11"
-      ]
-    },
-    "schemaVersion": 2,
-    "researchQuestions": [
-      {
-        "id": "1",
-        "lens": "transmission",
-        "shortQuestion": "Hoodi 的客户端准备通过节点采用、测试网运行和接入兼容性哪些环节影响后续预期，每一环需要什么公开证据？",
-        "focusEventIds": [
-          "reth-280-hoodi-amsterdam-readiness-2026-10-20"
-        ]
-      },
-      {
-        "id": "2",
-        "lens": "falsification",
-        "shortQuestion": "哪些节点运行、存取款和 ETH/BTC 同窗口证据，能支持或推翻证书修复已产生市场影响的解释？",
-        "focusEventIds": [
-          "op-node-11911-certificate-fix-2026-10-22"
-        ]
-      },
-      {
-        "id": "3",
-        "lens": "scenario",
-        "shortQuestion": "如果升级按期完成且用户服务没有异常，与升级延迟或兼容故障相比应观察什么，何时必须放弃原解释？",
-        "focusEventIds": [
-          "reth-280-hoodi-amsterdam-readiness-2026-10-20",
-          "op-node-11911-certificate-fix-2026-10-22"
-        ]
-      }
-    ],
-    "researchPack": {
-      "schemaVersion": 2,
-      "date": "2026-10-24",
-      "snapshotId": "market-2026-10-24-e026dee65590246f",
-      "asOf": "2026-10-24T06:30:25.000Z",
-      "origin": "research",
-      "publicationState": "published",
-      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-10-24",
-      "questions": [
-        {
-          "id": "1",
-          "lens": "transmission",
-          "shortQuestion": "Hoodi 的客户端准备通过节点采用、测试网运行和接入兼容性哪些环节影响后续预期，每一环需要什么公开证据？",
-          "focusEventIds": [
-            "reth-280-hoodi-amsterdam-readiness-2026-10-20"
-          ],
-          "prompt": "研究任务：Hoodi 的客户端准备通过节点采用、测试网运行和接入兼容性哪些环节影响后续预期，每一环需要什么公开证据？\n证据快照：2026-10-24；asOf=2026-10-24T06:30:25.000Z；snapshotId=market-2026-10-24-e026dee65590246f\n\n材料 1｜Reth 2.8.0 排定 Hoodi Amsterdam，要求测试网运营方提前升级\n已确认事实：Reth 于 10 月 20 日 19:34 UTC 发布 v2.8.0，配置 Hoodi 在 10 月 26 日 17:42:48 UTC 激活 Amsterdam，并要求 Hoodi 运营方提前升级；版本还改变部分 RPC 与费用估算默认行为。此项事实是客户端发布和测试网计划，不代表主网激活。\n关注机制：可能的传导先经过节点采用、测试网稳定性与接入兼容性，才可能改变后续主网准备的预期；每一环都需要独立证据，发布本身无法推出 ETH 或相关资产的价格反应。\n接下来验证：核对后续正式客户端配置、Hoodi 激活后的出块与最终性、公开故障记录，以及钱包和 RPC 服务的兼容反馈；单独记录同窗口 ETH 与 BTC 变化及其他同期事件，避免把相关性写成因果。\n失效条件：若官方修订或撤回激活配置，以新公告为准；若缺少节点采用和运行数据，就不能从发版推断准备完成，也不能把测试网问题直接外推到主网资金安全。\n一手来源：https://github.com/paradigmxyz/reth/releases/tag/v2.8.0\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "e055645ecefba2330749ebd99e8984a6e0c96105b0d38b957e21b009edcd8ee3",
-          "sourceUrls": [
-            "https://github.com/paradigmxyz/reth/releases/tag/v2.8.0"
-          ]
-        },
-        {
-          "id": "2",
-          "lens": "falsification",
-          "shortQuestion": "哪些节点运行、存取款和 ETH/BTC 同窗口证据，能支持或推翻证书修复已产生市场影响的解释？",
-          "focusEventIds": [
-            "op-node-11911-certificate-fix-2026-10-22"
-          ],
-          "prompt": "研究任务：哪些节点运行、存取款和 ETH/BTC 同窗口证据，能支持或推翻证书修复已产生市场影响的解释？\n证据快照：2026-10-24；asOf=2026-10-24T06:30:25.000Z；snapshotId=market-2026-10-24-e026dee65590246f\n\n材料 1｜OP Stack 发布 op-node 证书修复，建议运营方升级\n已确认事实：Optimism 于 10 月 22 日发布 op-node v1.19.11，强烈建议运营方升级。发布说明列出针对 CVE-2026-111943 的 Go 证书验证修复和镜像 CA 根移除，并修复特定长出块时间链的 L1 origin 漂移；本期未验证真实利用或全网采用率。\n关注机制：需要观察的链路是依赖风险、节点更新、服务可用性和用户存取款体验。官方补丁说明证明存在修复行动，不能单独证明链停摆、资金损失或 OP 的市场影响。\n接下来验证：关注官方状态、后续补丁、可验证的节点运营反馈与存取款延迟；区分证书连接错误、特定出块参数的漂移及无关故障，再与 ETH、BTC 的同窗口变化作对照。\n失效条件：若后续公告缩小或扩大影响范围，应修订暴露面；没有运行证据时不发布受影响节点数。正常运行也不能证明所有自制镜像已完成更新。\n一手来源：https://github.com/ethereum-optimism/optimism/releases/tag/op-node/v1.19.11\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "e13c3dd4d9504c2efdb092dfeb78d75ed2888f26c465c184e656ac9f02ec66e7",
-          "sourceUrls": [
-            "https://github.com/ethereum-optimism/optimism/releases/tag/op-node/v1.19.11"
-          ]
-        },
-        {
-          "id": "3",
-          "lens": "scenario",
-          "shortQuestion": "如果升级按期完成且用户服务没有异常，与升级延迟或兼容故障相比应观察什么，何时必须放弃原解释？",
-          "focusEventIds": [
-            "reth-280-hoodi-amsterdam-readiness-2026-10-20",
-            "op-node-11911-certificate-fix-2026-10-22"
-          ],
-          "prompt": "研究任务：如果升级按期完成且用户服务没有异常，与升级延迟或兼容故障相比应观察什么，何时必须放弃原解释？\n证据快照：2026-10-24；asOf=2026-10-24T06:30:25.000Z；snapshotId=market-2026-10-24-e026dee65590246f\n\n材料 1｜Reth 2.8.0 排定 Hoodi Amsterdam，要求测试网运营方提前升级\n已确认事实：Reth 于 10 月 20 日 19:34 UTC 发布 v2.8.0，配置 Hoodi 在 10 月 26 日 17:42:48 UTC 激活 Amsterdam，并要求 Hoodi 运营方提前升级；版本还改变部分 RPC 与费用估算默认行为。此项事实是客户端发布和测试网计划，不代表主网激活。\n关注机制：可能的传导先经过节点采用、测试网稳定性与接入兼容性，才可能改变后续主网准备的预期；每一环都需要独立证据，发布本身无法推出 ETH 或相关资产的价格反应。\n接下来验证：核对后续正式客户端配置、Hoodi 激活后的出块与最终性、公开故障记录，以及钱包和 RPC 服务的兼容反馈；单独记录同窗口 ETH 与 BTC 变化及其他同期事件，避免把相关性写成因果。\n失效条件：若官方修订或撤回激活配置，以新公告为准；若缺少节点采用和运行数据，就不能从发版推断准备完成，也不能把测试网问题直接外推到主网资金安全。\n一手来源：https://github.com/paradigmxyz/reth/releases/tag/v2.8.0\n\n材料 2｜OP Stack 发布 op-node 证书修复，建议运营方升级\n已确认事实：Optimism 于 10 月 22 日发布 op-node v1.19.11，强烈建议运营方升级。发布说明列出针对 CVE-2026-111943 的 Go 证书验证修复和镜像 CA 根移除，并修复特定长出块时间链的 L1 origin 漂移；本期未验证真实利用或全网采用率。\n关注机制：需要观察的链路是依赖风险、节点更新、服务可用性和用户存取款体验。官方补丁说明证明存在修复行动，不能单独证明链停摆、资金损失或 OP 的市场影响。\n接下来验证：关注官方状态、后续补丁、可验证的节点运营反馈与存取款延迟；区分证书连接错误、特定出块参数的漂移及无关故障，再与 ETH、BTC 的同窗口变化作对照。\n失效条件：若后续公告缩小或扩大影响范围，应修订暴露面；没有运行证据时不发布受影响节点数。正常运行也不能证明所有自制镜像已完成更新。\n一手来源：https://github.com/ethereum-optimism/optimism/releases/tag/op-node/v1.19.11\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "f44776422bdf04cd64ef6fc5c0fcf8cc824abdeeed94ea5d17d6bfd93736cb04",
-          "sourceUrls": [
-            "https://github.com/paradigmxyz/reth/releases/tag/v2.8.0",
-            "https://github.com/ethereum-optimism/optimism/releases/tag/op-node/v1.19.11"
           ]
         }
       ]

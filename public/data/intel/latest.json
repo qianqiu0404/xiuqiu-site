@@ -1,9 +1,27 @@
 {
   "schemaVersion": 1,
-  "latestDate": "2026-10-30",
+  "latestDate": "2026-11-02",
   "homePageUrl": "https://xiuqiu-site.vercel.app/",
   "windowDays": 7,
   "items": [
+    {
+      "id": "market:2026-11-02:bea-september-pio-2026-10-29",
+      "kind": "market",
+      "date": "2026-11-02",
+      "domain": "market",
+      "topic": "market_macro",
+      "title": "美国九月消费：名义增 0.5%，实际不足 0.1%",
+      "summary": "研究判断：消费金额增长不等于购买量同幅增长。价格、实际收入和储蓄约束应分别观察，单月资料不能证明需求趋势或资产方向。",
+      "href": "/market-radar/2026-11-02#bea-september-pio-2026-10-29",
+      "source": {
+        "name": "BEA Personal Income and Outlays, September 2026",
+        "url": "https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026"
+      },
+      "flags": {
+        "priority": "P1"
+      },
+      "url": "https://xiuqiu-site.vercel.app/market-radar/2026-11-02#bea-september-pio-2026-10-29"
+    },
     {
       "id": "learning:ai-acr-method-diversity",
       "kind": "learning",
@@ -361,315 +379,6 @@
         "priority": "P2"
       },
       "url": "https://xiuqiu-site.vercel.app/market-radar/2026-10-27#ofac-blocking-rejection-faqs-updated-2026-10-26"
-    },
-    {
-      "id": "learning:ai-akv-cache-operation-history",
-      "kind": "learning",
-      "date": "2026-10-26",
-      "domain": "ai",
-      "topic": "model_inference",
-      "title": "AKV：相同文本前缀，未必对应相同缓存状态",
-      "summary": "长任务的缓存优化需要同时核对任务质量、延迟和状态正确性；只看提示文本或缓存命中率，可能漏掉操作顺序造成的差异。",
-      "href": "/radar/2026-10-26#ai-akv-cache-operation-history",
-      "source": {
-        "name": "Cache Engineering for Agents: arXiv v1 submission",
-        "tier": "tier1",
-        "url": "https://arxiv.org/abs/2610.28577"
-      },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-26#ai-akv-cache-operation-history"
-    },
-    {
-      "id": "learning:ai-aratest-claim-contract",
-      "kind": "learning",
-      "date": "2026-10-26",
-      "domain": "ai",
-      "topic": "evaluation",
-      "title": "ARATest：先固定声明的范围，再解释验证结果",
-      "summary": "Agent 生成结论后，需要让后续检查仍回答同一个问题。保留声明、证据和可重放的反例，有助于定位错误来自解释、数据绑定还是实验。",
-      "href": "/radar/2026-10-26#ai-aratest-claim-contract",
-      "source": {
-        "name": "From Prose to Properties: ARATest arXiv v1 submission",
-        "tier": "tier1",
-        "url": "https://arxiv.org/abs/2610.30495"
-      },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-26#ai-aratest-claim-contract"
-    },
-    {
-      "id": "learning:web3-bitcoin-easily-discoverable-policy",
-      "kind": "learning",
-      "date": "2026-10-26",
-      "domain": "web3",
-      "topic": "security",
-      "title": "Bitcoin Core：易发现漏洞走同步修复与披露分支",
-      "summary": "维护者认为易被重新发现的问题若长期等待披露，会延迟用户取得修复版。工程上应按实际公告和版本记录核对可用修复，不能只等待下一次大版本。",
-      "href": "/radar/2026-10-26#web3-bitcoin-easily-discoverable-policy",
-      "source": {
-        "name": "Antoine Poinsot: Bitcoin Core security policy update",
-        "tier": "tier1",
-        "url": "https://mirror.b10c.me/lists/bitcoindev/1ehBdwhbU-1cUjU5SjRxn75XNUBvIfNbkfqPCJRFPlOfsBu5gHWotmNRNxcMirTl1baT2H-zBfJMeWM6rl-XJG8zV6gHf8vQ9b_TRB9vnIk=@antoinep.com/T/"
-      },
-      "flags": {
-        "deepDive": true
-      },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-26#web3-bitcoin-easily-discoverable-policy"
-    },
-    {
-      "id": "learning:web3-sui-checkpoint-consistent-read",
-      "kind": "learning",
-      "date": "2026-10-26",
-      "domain": "web3",
-      "topic": "onchain_infrastructure",
-      "title": "Sui v1.82.3：给读取指定 checkpoint 条件，并核对 API 迁移",
-      "summary": "应用可以把读副本尚未追上与业务无数据分开处理；接入升级还需核对自身 SDK、服务端与错误处理是否使用兼容接口。",
-      "href": "/radar/2026-10-26#web3-sui-checkpoint-consistent-read",
-      "source": {
-        "name": "Sui mainnet-v1.82.3 release notes",
-        "tier": "tier1",
-        "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.82.3"
-      },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-26#web3-sui-checkpoint-consistent-read"
-    },
-    {
-      "id": "market:2026-10-26:treasury-oisp-coins-proposal-2026-10-22",
-      "kind": "market",
-      "date": "2026-10-26",
-      "domain": "market",
-      "topic": "market_regulation",
-      "title": "美国财政部提出 OISP 更新草案，适用范围与生效仍待核验",
-      "summary": "系统观察：主体范围、技术门槛、交易例外和信息义务共同决定适用性；提案可能影响跨境融资的尽调准备，但没有证明具体公司融资或真实资金流已经变化。",
-      "href": "/market-radar/2026-10-26#treasury-oisp-coins-proposal-2026-10-22",
-      "source": {
-        "name": "U.S. Treasury Press Release",
-        "url": "https://home.treasury.gov/news/press-releases/sb0667/"
-      },
-      "flags": {
-        "priority": "P1"
-      },
-      "url": "https://xiuqiu-site.vercel.app/market-radar/2026-10-26#treasury-oisp-coins-proposal-2026-10-22"
-    },
-    {
-      "id": "market:2026-10-26:ecb-september-ces-inflation-expectations-2026-10-23",
-      "kind": "market",
-      "date": "2026-10-26",
-      "domain": "market",
-      "topic": "market_macro",
-      "title": "ECB 九月 CES：近端通胀预期小升，三年与五年预期未变",
-      "summary": "系统观察：近端与中长期预期的差异可用于检验持续性解释；单次家庭调查不能替代实际通胀、就业数据与正式政策决定，也不能单独解释欧元或债券变化。",
-      "href": "/market-radar/2026-10-26#ecb-september-ces-inflation-expectations-2026-10-23",
-      "source": {
-        "name": "European Central Bank CES Release",
-        "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261023~a3d201c97c.en.html"
-      },
-      "flags": {
-        "priority": "P2"
-      },
-      "url": "https://xiuqiu-site.vercel.app/market-radar/2026-10-26#ecb-september-ces-inflation-expectations-2026-10-23"
-    },
-    {
-      "id": "learning:ai-single-loop-progressive-disclosure",
-      "kind": "learning",
-      "date": "2026-10-25",
-      "domain": "ai",
-      "topic": "agent",
-      "title": "何时把子 Agent 收回主循环：先用完整任务评测比较",
-      "summary": "选择单循环或多个 Agent，需要看任务之间共享多少上下文，以及完整任务的实际结果；团队组织方式本身不是效果证据。",
-      "href": "/radar/2026-10-25#ai-single-loop-progressive-disclosure",
-      "source": {
-        "name": "Anthropic: Building agents — When to fold subagents into your main agent loop",
-        "tier": "tier1",
-        "url": "https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop"
-      },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-25#ai-single-loop-progressive-disclosure"
-    },
-    {
-      "id": "learning:ai-raw-rag-source-preservation",
-      "kind": "learning",
-      "date": "2026-10-25",
-      "domain": "ai",
-      "topic": "data",
-      "title": "Raw-RAG：先保留原始证据，再证明复杂记忆的增益",
-      "summary": "增加记忆管理复杂度之前，一个保留来源的检索基线能帮助分清：收益来自更好的证据，还是来自更复杂的组织方式。",
-      "href": "/radar/2026-10-25#ai-raw-rag-source-preservation",
-      "source": {
-        "name": "Raw-RAG arXiv v1 submission and abstract",
-        "tier": "tier1",
-        "url": "https://arxiv.org/abs/2610.30755"
-      },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-25#ai-raw-rag-source-preservation"
-    },
-    {
-      "id": "learning:web3-hoodi-glamsterdam-postponed",
-      "kind": "learning",
-      "date": "2026-10-25",
-      "domain": "web3",
-      "topic": "protocol",
-      "title": "Hoodi 正式延期：10 月 26 日的激活配置已经撤销",
-      "summary": "升级计划需要支持撤销和替换。运维判断要追踪当前有效状态，不能把某次发版中的计划当作永远有效的确认。",
-      "href": "/radar/2026-10-25#web3-hoodi-glamsterdam-postponed",
-      "source": {
-        "name": "Ethereum Foundation: Glamsterdam on Hoodi Postponed",
-        "tier": "tier1",
-        "url": "https://blog.ethereum.org/2026/10/22/glamsterdam-hoodi-delay"
-      },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-25#web3-hoodi-glamsterdam-postponed"
-    },
-    {
-      "id": "learning:web3-wavelength-public-mainnet",
-      "kind": "learning",
-      "date": "2026-10-25",
-      "domain": "web3",
-      "topic": "wallet_cex",
-      "title": "Wavelength 公开主网版：支付权限、确定失败与恢复分开看",
-      "summary": "把支付接给 Agent，接口可调用只是起点。权限能否收窄、状态能否持久化、未知结果能否恢复，需要分别提供证据。",
-      "href": "/radar/2026-10-25#web3-wavelength-public-mainnet",
-      "source": {
-        "name": "Lightning Labs: Wavelength public mainnet launch",
-        "tier": "tier1",
-        "url": "https://lightning.engineering/posts/2026-10-23-wavelength-mainnet-launch/"
-      },
-      "flags": {
-        "deepDive": true
-      },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-25#web3-wavelength-public-mainnet"
-    },
-    {
-      "id": "market:2026-10-25:hoodi-glamsterdam-postponed-2026-10-22",
-      "kind": "market",
-      "date": "2026-10-25",
-      "domain": "market",
-      "topic": "market_crypto",
-      "title": "Hoodi Glamsterdam 延期，旧 10 月 26 日激活安排已撤销",
-      "summary": "系统观察：旧客户端或自定义配置、节点升级和测试网运行构成待验证的传导链。配置修订本身不能证明运营方已全部更新，也不能单独说明主网或 ETH 的市场变化。",
-      "href": "/market-radar/2026-10-25#hoodi-glamsterdam-postponed-2026-10-22",
-      "source": {
-        "name": "Ethereum Foundation Protocol Cluster",
-        "url": "https://blog.ethereum.org/2026/10/22/glamsterdam-hoodi-delay"
-      },
-      "flags": {
-        "priority": "P1"
-      },
-      "url": "https://xiuqiu-site.vercel.app/market-radar/2026-10-25#hoodi-glamsterdam-postponed-2026-10-22"
-    },
-    {
-      "id": "market:2026-10-25:occ-genius-final-rule-announced-2026-10-21",
-      "kind": "market",
-      "date": "2026-10-25",
-      "domain": "market",
-      "topic": "market_regulation",
-      "title": "OCC 公布 GENIUS 最终规则，生效与受理仍有各自门槛",
-      "summary": "系统观察：规则、申请与主体批准、储备及赎回安排、实际服务准入需要逐环核对。公告可能改变业务准备的依据，但不是稳定币采用增长、实际资金流或单一发行方合规状态的证据。",
-      "href": "/market-radar/2026-10-25#occ-genius-final-rule-announced-2026-10-21",
-      "source": {
-        "name": "OCC News Release 2026-92",
-        "url": "https://www.occ.gov/news-issuances/news-releases/2026/nr-occ-2026-92.html"
-      },
-      "flags": {
-        "priority": "P1"
-      },
-      "url": "https://xiuqiu-site.vercel.app/market-radar/2026-10-25#occ-genius-final-rule-announced-2026-10-21"
-    },
-    {
-      "id": "learning:ai-aisi-assessment-scope-persistence",
-      "kind": "learning",
-      "date": "2026-10-24",
-      "domain": "ai",
-      "topic": "safety",
-      "title": "AISI 事件复盘：任务做不通，不代表可以扩大授权范围",
-      "summary": "长任务的成功标准需要同时包含目标完成和范围约束。单看任务分数，会遗漏它是否在失败后改动了不属于任务的资源。",
-      "href": "/radar/2026-10-24#ai-aisi-assessment-scope-persistence",
-      "source": {
-        "name": "Anthropic: An alignment assessment of the UK AISI cybertesting incident",
-        "tier": "tier1",
-        "url": "https://www.anthropic.com/research/alignment-assessment-ukaisi"
-      },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-24#ai-aisi-assessment-scope-persistence"
-    },
-    {
-      "id": "learning:ai-protein-agent-independent-measurement",
-      "kind": "learning",
-      "date": "2026-10-24",
-      "domain": "ai",
-      "topic": "evaluation",
-      "title": "科研 Agent 的验证：生成候选、实验命中与有效治疗分开计数",
-      "summary": "这项实验的工程启发是把模型自己的评分与外部验证分开。读者可以检查公开数据，而不必只接受模型或供应商对成果的概括。",
-      "href": "/radar/2026-10-24#ai-protein-agent-independent-measurement",
-      "source": {
-        "name": "Anthropic: How Claude designed protein binders against scorpion neurotoxins",
-        "tier": "tier1",
-        "url": "https://www.anthropic.com/research/claude-scorpion-toxin-binder-design"
-      },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-24#ai-protein-agent-independent-measurement"
-    },
-    {
-      "id": "learning:web3-reth-280-hoodi-operational-boundaries",
-      "kind": "learning",
-      "date": "2026-10-24",
-      "domain": "web3",
-      "topic": "onchain_infrastructure",
-      "title": "Reth 2.8：Hoodi 分叉配置与 RPC 行为要一起演练",
-      "summary": "只看到节点进程启动，不足以证明接入它的钱包或交易所服务可用。升级验证需要覆盖调用方实际使用的 RPC 路径。",
-      "href": "/radar/2026-10-24#web3-reth-280-hoodi-operational-boundaries",
-      "source": {
-        "name": "Reth v2.8.0 release notes",
-        "tier": "tier1",
-        "url": "https://github.com/paradigmxyz/reth/releases/tag/v2.8.0"
-      },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-24#web3-reth-280-hoodi-operational-boundaries"
-    },
-    {
-      "id": "learning:web3-opnode-11911-certificate-trust",
-      "kind": "learning",
-      "date": "2026-10-24",
-      "domain": "web3",
-      "topic": "security",
-      "title": "OP Stack 安全发布：证书风险同时进入 Go 与镜像信任库",
-      "summary": "节点依赖外部 HTTPS 服务时，协议共识正确并不覆盖传输认证风险。依赖清单应包含镜像里的信任材料，而不只列应用版本号。",
-      "href": "/radar/2026-10-24#web3-opnode-11911-certificate-trust",
-      "source": {
-        "name": "Optimism op-node v1.19.11 release notes",
-        "tier": "tier1",
-        "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-node/v1.19.11"
-      },
-      "flags": {
-        "deepDive": true
-      },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-24#web3-opnode-11911-certificate-trust"
-    },
-    {
-      "id": "market:2026-10-24:reth-280-hoodi-amsterdam-readiness-2026-10-20",
-      "kind": "market",
-      "date": "2026-10-24",
-      "domain": "market",
-      "topic": "market_crypto",
-      "title": "Reth 2.8.0 排定 Hoodi Amsterdam，要求测试网运营方提前升级",
-      "summary": "可能的传导先经过节点采用、测试网稳定性与接入兼容性，才可能改变后续主网准备的预期；每一环都需要独立证据，发布本身无法推出 ETH 或相关资产的价格反应。",
-      "href": "/market-radar/2026-10-24#reth-280-hoodi-amsterdam-readiness-2026-10-20",
-      "source": {
-        "name": "Reth v2.8.0 official release",
-        "url": "https://github.com/paradigmxyz/reth/releases/tag/v2.8.0"
-      },
-      "flags": {
-        "priority": "P1"
-      },
-      "url": "https://xiuqiu-site.vercel.app/market-radar/2026-10-24#reth-280-hoodi-amsterdam-readiness-2026-10-20"
-    },
-    {
-      "id": "market:2026-10-24:op-node-11911-certificate-fix-2026-10-22",
-      "kind": "market",
-      "date": "2026-10-24",
-      "domain": "market",
-      "topic": "market_crypto",
-      "title": "OP Stack 发布 op-node 证书修复，建议运营方升级",
-      "summary": "需要观察的链路是依赖风险、节点更新、服务可用性和用户存取款体验。官方补丁说明证明存在修复行动，不能单独证明链停摆、资金损失或 OP 的市场影响。",
-      "href": "/market-radar/2026-10-24#op-node-11911-certificate-fix-2026-10-22",
-      "source": {
-        "name": "Optimism op-node v1.19.11 official release",
-        "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-node/v1.19.11"
-      },
-      "flags": {
-        "priority": "P1"
-      },
-      "url": "https://xiuqiu-site.vercel.app/market-radar/2026-10-24#op-node-11911-certificate-fix-2026-10-22"
     }
   ]
 }
