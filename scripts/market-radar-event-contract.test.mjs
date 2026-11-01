@@ -2,7 +2,9 @@ import assert from 'node:assert/strict'
 import { readFile } from 'node:fs/promises'
 import test from 'node:test'
 import { allMarketRadars } from '../src/data/generatedMarketRadarAll.ts'
-import { findStaticMarketRadarEvent } from '../src/data/marketRadarPresentation.ts'
+import { marketRadarIndex } from '../src/data/generatedMarketRadars.ts'
+import { loadMarketRadarBySlug } from '../src/data/generatedMarketRadarLoader.ts'
+import { findStaticMarketRadarEvent, loadStaticMarketRadarEvent } from '../src/data/marketRadarPresentation.ts'
 import { mapPublicEventRow } from '../src/market-radar/public-event.ts'
 import { publicEventRowLegacy, publicEventRowV2 } from './fixtures/market-radar-public-event-row.mjs'
 
@@ -64,7 +66,6 @@ test('the event reader keeps source, observation and invalidation visible withou
   assert.match(page, /历史记录未提供独立失效条件。/)
   assert.match(page, /target="_blank" rel="noopener"/)
   assert.match(page, /class="market-source-name"/)
-  assert.match(page, /findStaticMarketRadarEvent\(allMarketRadars, id\)/)
   assert.match(page, /event\.score !== undefined/)
   assert.match(page, /event\.origin === 'api'/)
   assert.match(page, /静态快照没有 score、行情反应或系统判断字段/)
@@ -94,4 +95,45 @@ test('event detail errors are no-store while successful public responses retain 
   assert.match(http, /prepareNoStoreResponse\(res\)/)
   assert.match(repository, /select \* from market_radar\.public_events/)
   assert.doesNotMatch(repository, /raw_items\.payload|prompt|private_note|ai_schema_version|cluster_key/i)
+})
+
+
+test('lazy event lookup preserves newest-first duplicate precedence and stops after a match', async () => {
+  const newest = { ...allMarketRadars[0], slug: '2026-11-02', events: [{ ...allMarketRadars[0].events[0], id: 'same-id' }] }
+  const older = { ...allMarketRadars[1], events: [{ ...allMarketRadars[1].events[0], id: 'same-id' }] }
+  const calls = []
+  const match = await loadStaticMarketRadarEvent([newest, older], 'same-id', async slug => {
+    calls.push(slug)
+    return [newest, older].find(entry => entry.slug === slug)
+  })
+  assert.equal(match.snapshotSlug, newest.slug)
+  assert.deepEqual(match.event, newest.events[0])
+  assert.deepEqual(calls, [newest.slug])
+})
+
+test('lazy lookup reaches historical month events and reports no match only after complete reads', async () => {
+  const calls = []
+  const load = async slug => {
+    calls.push(slug)
+    return loadMarketRadarBySlug(slug)
+  }
+  const match = await loadStaticMarketRadarEvent(marketRadarIndex, 'us-inflation-releases-2026-08', load)
+  assert.deepEqual(match, findStaticMarketRadarEvent(allMarketRadars, 'us-inflation-releases-2026-08'))
+  assert.ok(calls.length > 1)
+  calls.length = 0
+  assert.equal(await loadStaticMarketRadarEvent(marketRadarIndex, 'missing-event', load), undefined)
+  assert.deepEqual(calls, marketRadarIndex.map(entry => entry.slug))
+})
+
+test('lazy lookup keeps load failures distinct from absent events and can retry a failed read', async () => {
+  let attempts = 0
+  const entries = [allMarketRadars[0]]
+  const id = entries[0].events[0].id
+  const load = async () => {
+    if (++attempts === 1) throw new Error('month module unavailable')
+    return entries[0]
+  }
+  await assert.rejects(loadStaticMarketRadarEvent(entries, id, load), /month module unavailable/)
+  assert.equal((await loadStaticMarketRadarEvent(entries, id, load)).event.id, id)
+  await assert.rejects(loadStaticMarketRadarEvent(entries, 'missing', async () => undefined), /could not be loaded/)
 })

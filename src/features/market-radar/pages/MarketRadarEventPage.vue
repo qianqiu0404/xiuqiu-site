@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { allMarketRadars, findStaticMarketRadarEvent, getSnapshotFreshness, readingReturnLink, withReadingReturn } from '../data'
+import { loadStaticMarketRadarEvent, getSnapshotFreshness, readingReturnLink, withReadingReturn } from '../data'
 import type { StaticMarketRadarEvent, StaticMarketRadarEventMatch } from '../data'
 import type { MarketRadarEvent } from '../../../market-radar/contracts'
 import { setSeoMeta } from '../../../utils/seo'
@@ -37,6 +37,7 @@ interface EventPresentation {
 const event = ref<EventPresentation | null>(null)
 const error = ref('')
 const loading = ref(true)
+const archiveLoadFailed = ref(false)
 const eventFreshness = computed(() => getSnapshotFreshness(event.value?.snapshotSlug || event.value?.publishedAt))
 let requestVersion = 0
 
@@ -100,8 +101,8 @@ function fromStaticEvent(match: StaticMarketRadarEventMatch): EventPresentation 
   }
 }
 
-function loadStaticFallback(id: string): EventPresentation | undefined {
-  const match = findStaticMarketRadarEvent(allMarketRadars, id)
+async function loadStaticFallback(id: string): Promise<EventPresentation | undefined> {
+  const match = await loadStaticMarketRadarEvent(id)
   return match ? fromStaticEvent(match) : undefined
 }
 
@@ -109,6 +110,7 @@ watch(() => String(route.params.id || ''), async (id) => {
   const version = ++requestVersion
   event.value = null
   error.value = ''
+  archiveLoadFailed.value = false
   loading.value = true
   setSeoMeta({ title: '交易事件｜xiuqiu', description: '交易雷达事件、来源、资产映射与真实市场反应。', path: `/market-radar/events/${id}`, indexable: false })
   try {
@@ -122,7 +124,16 @@ watch(() => String(route.params.id || ''), async (id) => {
     setSeoMeta({ title: `${event.value.title}｜交易雷达`, description: event.value.summary, path: `/market-radar/events/${id}`, indexable: false })
   } catch {
     if (version !== requestVersion) return
-    const fallback = loadStaticFallback(id)
+    let fallback: EventPresentation | undefined
+    try {
+      fallback = await loadStaticFallback(id)
+    } catch {
+      if (version !== requestVersion) return
+      archiveLoadFailed.value = true
+      error.value = '研究服务没有返回可用记录，静态研究资料也未能载入。请重新载入页面后再试。'
+      return
+    }
+    if (version !== requestVersion) return
     if (fallback) {
       event.value = fallback
       setSeoMeta({ title: `${fallback.title}｜交易雷达`, description: fallback.summary, path: `/market-radar/events/${id}`, indexable: false })
@@ -133,6 +144,9 @@ watch(() => String(route.params.id || ''), async (id) => {
     if (version === requestVersion) loading.value = false
   }
 }, { immediate: true })
+function reloadPage() {
+  window.location.reload()
+}
 </script>
 
 <template>
@@ -148,8 +162,9 @@ watch(() => String(route.params.id || ''), async (id) => {
 
         <template v-else-if="error">
           <p class="brief-dateline"><span>市场雷达</span><span>事件记录</span></p>
-          <h1>事件记录暂时不可读取。</h1>
+          <h1>{{ archiveLoadFailed ? '静态研究资料暂时未能载入。' : '未找到可用的事件记录。' }}</h1>
           <p class="brief-state" role="alert">{{ error }}</p>
+          <button v-if="archiveLoadFailed" class="brief-button brief-button--primary" type="button" @click="reloadPage">重新载入页面</button>
           <router-link class="brief-button brief-button--primary" :to="returnLink.href">{{ returnLink.label }}</router-link>
         </template>
 
