@@ -12,44 +12,44 @@
       "url": "https://xiuqiu-site.vercel.app/topics/market_macro"
     },
     {
-      "topic": "model_inference",
+      "topic": "agent",
       "domain": "ai",
-      "count": 6,
-      "lastSeen": "2026-10-30",
-      "firstSeen": "2026-08-10",
-      "url": "https://xiuqiu-site.vercel.app/topics/model_inference"
+      "count": 8,
+      "lastSeen": "2026-11-02",
+      "firstSeen": "2026-08-11",
+      "url": "https://xiuqiu-site.vercel.app/topics/agent"
     },
     {
       "topic": "onchain_infrastructure",
       "domain": "web3",
-      "count": 6,
-      "lastSeen": "2026-10-30",
+      "count": 7,
+      "lastSeen": "2026-11-02",
       "firstSeen": "2026-08-11",
       "url": "https://xiuqiu-site.vercel.app/topics/onchain_infrastructure"
     },
     {
       "topic": "wallet_cex",
       "domain": "web3",
-      "count": 5,
-      "lastSeen": "2026-10-30",
+      "count": 6,
+      "lastSeen": "2026-11-02",
       "firstSeen": "2026-08-10",
       "url": "https://xiuqiu-site.vercel.app/topics/wallet_cex"
     },
     {
       "topic": "infrastructure",
       "domain": "ai",
-      "count": 2,
-      "lastSeen": "2026-10-30",
+      "count": 3,
+      "lastSeen": "2026-11-02",
       "firstSeen": "2026-10-29",
       "url": "https://xiuqiu-site.vercel.app/topics/infrastructure"
     },
     {
-      "topic": "agent",
+      "topic": "model_inference",
       "domain": "ai",
-      "count": 7,
-      "lastSeen": "2026-10-29",
-      "firstSeen": "2026-08-11",
-      "url": "https://xiuqiu-site.vercel.app/topics/agent"
+      "count": 6,
+      "lastSeen": "2026-10-30",
+      "firstSeen": "2026-08-10",
+      "url": "https://xiuqiu-site.vercel.app/topics/model_inference"
     },
     {
       "topic": "security",

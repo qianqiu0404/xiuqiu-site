@@ -6,6 +6,58 @@
   "language": "zh-CN",
   "items": [
     {
+      "id": "xiuqiu-radar:ai-langgraph-paused-tool-stream",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-02#ai-langgraph-paused-tool-stream",
+      "title": "LangGraph 1.2.19：等待批准的工具，不再被流事件误报成失败",
+      "summary": "Agent 状态面板需要区分等待、执行失败和业务完成。异常类型、图状态与流事件是不同证据；单看一条结束事件或一段没有输出的流，可能错误地触发重试或显示完成。",
+      "content_text": "Agent 状态面板需要区分等待、执行失败和业务完成。异常类型、图状态与流事件是不同证据；单看一条结束事件或一段没有输出的流，可能错误地触发重试或显示完成。",
+      "date_published": "2026-11-02T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "agent"
+      ],
+      "external_url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.19"
+    },
+    {
+      "id": "xiuqiu-radar:ai-openai-sdk-websocket-policy",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-02#ai-openai-sdk-websocket-policy",
+      "title": "openai-python 3.42.1：连接策略要随代码生成保留下来",
+      "summary": "自动生成的接口和手工维护的传输行为需要共同交付。只确认方法或类型存在，不能证明请求头、恢复预算与取消清理仍遵守原来的契约。",
+      "content_text": "自动生成的接口和手工维护的传输行为需要共同交付。只确认方法或类型存在，不能证明请求头、恢复预算与取消清理仍遵守原来的契约。",
+      "date_published": "2026-11-02T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "infrastructure"
+      ],
+      "external_url": "https://github.com/openai/openai-python/releases/tag/v3.42.1"
+    },
+    {
+      "id": "xiuqiu-radar:web3-metamask-author-comment-authority",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-02#web3-metamask-author-comment-authority",
+      "title": "MetaMask 社交组件：作者评论由后端选择，客户端保留缺失与 null",
+      "summary": "钱包展示的资料应保留字段的权威来源与未知状态。缺失、明确为空和校验失败分别影响界面及排障，不能统一转成没有评论。",
+      "content_text": "钱包展示的资料应保留字段的权威来源与未知状态。缺失、明确为空和校验失败分别影响界面及排障，不能统一转成没有评论。",
+      "date_published": "2026-11-02T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "wallet_cex"
+      ],
+      "external_url": "https://github.com/MetaMask/core/releases/tag/v1378.0.0"
+    },
+    {
+      "id": "xiuqiu-radar:web3-reth-evm2-sdk-boundary",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-02#web3-reth-evm2-sdk-boundary",
+      "title": "Reth 2.9.0：节点配置可沿用，自定义执行组件仍要迁移",
+      "summary": "同一版本对节点运营方和 SDK 开发者可能有不同迁移成本。升级验收应按实际使用的接口划分，避免把无需改配置理解为所有自定义组件都保持兼容。",
+      "content_text": "同一版本对节点运营方和 SDK 开发者可能有不同迁移成本。升级验收应按实际使用的接口划分，避免把无需改配置理解为所有自定义组件都保持兼容。",
+      "date_published": "2026-11-02T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "onchain_infrastructure"
+      ],
+      "external_url": "https://github.com/paradigmxyz/reth/releases/tag/v2.9.0"
+    },
+    {
       "id": "xiuqiu-radar:ai-acr-method-diversity",
       "url": "https://xiuqiu-site.vercel.app/radar/2026-10-30#ai-acr-method-diversity",
       "title": "ACR：同一模型的四条轨迹，要分别核对解法与正确性",
@@ -732,58 +784,6 @@
         "tools"
       ],
       "external_url": "https://github.com/QwenLM/qwen-code/releases/tag/v0.21.8"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-09-reading",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-09#reading",
-      "title": "How we built our multi-agent research system",
-      "summary": "主 Agent 规划，子 Agent 分头压缩证据，引用再独立核验。内部广度评测提升 90.2%，但约耗普通聊天 15 倍 token；必须给角色明确来源、停止条件和 schema。",
-      "content_text": "主 Agent 规划，子 Agent 分头压缩证据，引用再独立核验。内部广度评测提升 90.2%，但约耗普通聊天 15 倍 token；必须给角色明确来源、停止条件和 schema。",
-      "date_published": "2026-08-09T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "reading"
-      ],
-      "external_url": "https://www.anthropic.com/engineering/multi-agent-research-system"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-08-signal",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-08#industry-signals",
-      "title": "Algorand BetaNet 5.0.0 预演 Falcon-1024 后量子账户",
-      "summary": "BetaNet 引入 Falcon-1024 签名、大交易按字节计费与 AVM v13。钱包需联动迁移密钥、费用和工具链；这仍是测试网预览，不代表主网已激活。",
-      "content_text": "BetaNet 引入 Falcon-1024 签名、大交易按字节计费与 AVM v13。钱包需联动迁移密钥、费用和工具链；这仍是测试网预览，不代表主网已激活。",
-      "date_published": "2026-08-08T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "market_signal"
-      ],
-      "external_url": "https://github.com/algorand/go-algorand/releases/tag/v5.0.0-beta"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-08-ai",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-08#ai-engineering",
-      "title": "让长任务 Agent 在生成、评估和上下文重置之间形成闭环",
-      "summary": "planner、generator、evaluator 分工并用结构化交接跨越上下文重置。采集只交证据、独立检查器反驳；代价是更多延迟与 token，错误评分标准仍会稳定误导。",
-      "content_text": "planner、generator、evaluator 分工并用结构化交接跨越上下文重置。采集只交证据、独立检查器反驳；代价是更多延迟与 token，错误评分标准仍会稳定误导。",
-      "date_published": "2026-08-08T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "ai_engineering"
-      ],
-      "external_url": "https://www.anthropic.com/engineering/harness-design-long-running-apps"
-    },
-    {
-      "id": "xiuqiu-radar:2026-08-08-web3",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-08#web3-design",
-      "title": "跨链地址必须把链语境与账户字节绑定成同一对象",
-      "summary": "ERC-7930 把链类型、链引用和地址封进版本化二进制对象。钱包应让链语境共同进入确认、签名与策略键；规范仍在 Review，部分命名空间未必能唯一规范化。",
-      "content_text": "ERC-7930 把链类型、链引用和地址封进版本化二进制对象。钱包应让链语境共同进入确认、签名与策略键；规范仍在 Review，部分命名空间未必能唯一规范化。",
-      "date_published": "2026-08-08T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "web3_design"
-      ],
-      "external_url": "https://eips.ethereum.org/EIPS/eip-7930"
     }
   ]
 }
