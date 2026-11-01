@@ -91,3 +91,22 @@ export function findStaticMarketRadarEvent(
   }
   return undefined
 }
+
+
+// Preserve newest-first archive precedence while letting the existing month loader
+// keep historical full snapshots out of the event reader's initial bundle.
+export async function loadStaticMarketRadarEvent(
+  entries: readonly { slug: string }[],
+  eventId: string,
+  loadSnapshot: (slug: string) => Promise<MarketRadarDaily | undefined>,
+): Promise<StaticMarketRadarEventMatch | undefined> {
+  if (!eventId) return undefined
+  for (const { slug } of entries) {
+    const snapshot = await loadSnapshot(slug)
+    // An indexed snapshot that failed to load is not proof of an absent event.
+    if (!snapshot) throw new Error('Static market snapshot could not be loaded')
+    const match = findStaticMarketRadarEvent([snapshot], eventId)
+    if (match) return match
+  }
+  return undefined
+}
