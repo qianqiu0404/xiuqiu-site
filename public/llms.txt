@@ -10,6 +10,10 @@
 
 ## Recent briefs
 
+- [langchain-anthropic 1.7.9：没有 token 回调，不等于模型没有输出](https://xiuqiu-site.vercel.app/radar/2026-11-03#ai-langchain-block-token-callbacks) (2026-11-03, ai/infrastructure): Agent 可观测性常依赖回调计算首 token 时间。传输有内容而观测链没有事件，会让面板、告警和性能比较得出不同结论；先核对测量路径，才能解释延迟。
+- [Claude Code 2.1.316：会话自动退出后，子 shell 也要有收尾证据](https://xiuqiu-site.vercel.app/radar/2026-11-03#ai-claude-exit-shell-lifecycle) (2026-11-03, ai/agent): 多 Agent 面板显示会话结束，并不自动证明它启动的计算、构建或网络工作已停止。把宿主和子进程的状态分别留证，可以避免下一次接手时重复启动仍在运行的任务。
+- [viem 2.57.14：余额预览改为显式请求，缺失不能显示成零变化](https://xiuqiu-site.vercel.app/radar/2026-11-03#web3-viem-preview-opt-in) (2026-11-03, web3/wallet_cex): 钱包的费用估算与资产影响预览是两个不同能力。升级后若界面把缺失字段补成空列表，用户可能把未请求或不可用的预览误读为已经验证不会动用资产。
+- [Foundry 1.9.0：记录过 revert 后，不再继续发送脚本本会阻止的操作](https://xiuqiu-site.vercel.app/radar/2026-11-03#web3-foundry-resume-recorded-revert) (2026-11-03, web3/onchain_infrastructure): 本地计划里列出下一步，不代表前一步失败后它仍然被授权执行。恢复工具必须结合链上回执和脚本控制流，不能把跳过失败项当成继续剩余计划的充分依据。
 - [LangGraph 1.2.19：等待批准的工具，不再被流事件误报成失败](https://xiuqiu-site.vercel.app/radar/2026-11-02#ai-langgraph-paused-tool-stream) (2026-11-02, ai/agent): Agent 状态面板需要区分等待、执行失败和业务完成。异常类型、图状态与流事件是不同证据；单看一条结束事件或一段没有输出的流，可能错误地触发重试或显示完成。
 - [openai-python 3.42.1：连接策略要随代码生成保留下来](https://xiuqiu-site.vercel.app/radar/2026-11-02#ai-openai-sdk-websocket-policy) (2026-11-02, ai/infrastructure): 自动生成的接口和手工维护的传输行为需要共同交付。只确认方法或类型存在，不能证明请求头、恢复预算与取消清理仍遵守原来的契约。
 - [MetaMask 社交组件：作者评论由后端选择，客户端保留缺失与 null](https://xiuqiu-site.vercel.app/radar/2026-11-02#web3-metamask-author-comment-authority) (2026-11-02, web3/wallet_cex): 钱包展示的资料应保留字段的权威来源与未知状态。缺失、明确为空和校验失败分别影响界面及排障，不能统一转成没有评论。
@@ -18,10 +22,6 @@
 - [TAO：工具即将返回，才可能需要下一轮 GPU 准入](https://xiuqiu-site.vercel.app/radar/2026-10-30#ai-tao-tool-aware-admission) (2026-10-30, ai/infrastructure): 工具期间保留了多少上下文、何时再需要推理、目标节点还有多少容量，是不同观测。把这些量分开，才能解释调度是在利用真实缓存、预测短期需求，还是只在统计更大的会话。
 - [viem 2.57.13：账户配置缓存要把链 ID 纳入键](https://xiuqiu-site.vercel.app/radar/2026-10-30#web3-viem-chain-scoped-config) (2026-10-30, web3/wallet_cex): 账户地址相同不意味着配置可跨链共享。钱包与中继的缓存契约要同时说明命名空间、选中配置的链上依据和未命中时的行为，避免把缓存内容当成当前授权状态。
 - [Agave 4.4.0：先编码投票状态，再只补零尾部](https://xiuqiu-site.vercel.app/radar/2026-10-30#web3-agave-padded-vote-state) (2026-10-30, web3/onchain_infrastructure): 降低重复内存写入时，仍需核对序列化输出的字节内容、长度及错误边界。把这些契约与部署建议分别检查，能避免将一个局部实现优化夸成整网性能或兼容性结论。
-- [AMIE：保留记忆原文，让检索的访问状态随使用演化](https://xiuqiu-site.vercel.app/radar/2026-10-29#ai-amie-persistent-access-state) (2026-10-29, ai/agent): 排查 Agent 总是读到旧记录时，既要查内容是否保存正确，也要查候选如何进入上下文。把内容版本、候选池和持久访问状态分开记录，才能判断变化来自信息更新、检索覆盖，还是排序调整。
-- [langchain-quickjs 0.3.11：首次执行 JavaScript 时才启动解释器](https://xiuqiu-site.vercel.app/radar/2026-10-29#ai-quickjs-lazy-evaluation-runtime) (2026-10-29, ai/infrastructure): Agent 工具的固定准备成本会落在根本没用到工具的轮次上。把无需执行、首次执行、恢复成功和恢复失败分开观测，比用单一启动耗时描述所有轮次更有助于定位延迟。
-- [op-proposer 1.17.0：指标被移除后，空图表不能当成零流量](https://xiuqiu-site.vercel.app/radar/2026-10-29#web3-op-proposer-rpc-metric-removal) (2026-10-29, web3/l2): 链上基础设施是否工作与监控能否继续测到它，是两个需要独立证据的问题。把指标名称和告警查询视为升级契约，能减少因接口消失而失去告警覆盖的情况。
-- [Sui 合并历史验签修复：RPC 接受两种受支持的 zkLogin 电路](https://xiuqiu-site.vercel.app/radar/2026-10-29#web3-sui-zklogin-historical-verification) (2026-10-29, web3/security): 钱包、审计工具和历史凭证读取可能需要验证过去有效的签名。接口应说明验证的是哪种历史证明，以及结果能证明什么，避免把离线验签成功误当成当前可以提交同类交易。
 
 ## Boundaries
 
