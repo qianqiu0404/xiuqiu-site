@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-11-03:treasury-november-borrowing-cash-assumptions-2026-11-02",
+    "kind": "market",
+    "date": "2026-11-03",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "四季度借款估计降至6180亿美元，现金假设须分开看",
+    "summary": "研究判断：现金缓冲变化会改变借款总额，不能直接据此认定赤字改善或长期债券供给减少。融资需求、期限结构与市场吸收需分别核验。",
+    "href": "/market-radar/2026-11-03#treasury-november-borrowing-cash-assumptions-2026-11-02",
+    "source": {
+      "name": "U.S. Treasury Marketable Borrowing Estimates, November 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0675/"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
+  {
     "id": "learning:ai-langgraph-paused-tool-stream",
     "kind": "learning",
     "date": "2026-11-02",
