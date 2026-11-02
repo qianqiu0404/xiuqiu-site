@@ -5,6 +5,55 @@ import type { RadarFeedItem } from '../generatedRadarFeed.ts'
 
 export const monthlyFeedItems: RadarFeedItem[] = [
   {
+    "id": "ai-langchain-block-token-callbacks",
+    "date": "2026-11-03",
+    "domain": "ai",
+    "topic": "infrastructure",
+    "title": "langchain-anthropic 1.7.9：没有 token 回调，不等于模型没有输出",
+    "summary": "Agent 可观测性常依赖回调计算首 token 时间。传输有内容而观测链没有事件，会让面板、告警和性能比较得出不同结论；先核对测量路径，才能解释延迟。",
+    "anchor": "ai-langchain-block-token-callbacks",
+    "sourceName": "langchain-anthropic 1.7.9 official release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/langchain-ai/langchain/releases/tag/langchain-anthropic%3D%3D1.7.9"
+  },
+  {
+    "id": "ai-claude-exit-shell-lifecycle",
+    "date": "2026-11-03",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "Claude Code 2.1.316：会话自动退出后，子 shell 也要有收尾证据",
+    "summary": "多 Agent 面板显示会话结束，并不自动证明它启动的计算、构建或网络工作已停止。把宿主和子进程的状态分别留证，可以避免下一次接手时重复启动仍在运行的任务。",
+    "anchor": "ai-claude-exit-shell-lifecycle",
+    "sourceName": "Claude Code 2.1.316 official release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/anthropics/claude-code/releases/tag/v2.1.316"
+  },
+  {
+    "id": "web3-viem-preview-opt-in",
+    "date": "2026-11-03",
+    "domain": "web3",
+    "topic": "wallet_cex",
+    "title": "viem 2.57.14：余额预览改为显式请求，缺失不能显示成零变化",
+    "summary": "钱包的费用估算与资产影响预览是两个不同能力。升级后若界面把缺失字段补成空列表，用户可能把未请求或不可用的预览误读为已经验证不会动用资产。",
+    "anchor": "web3-viem-preview-opt-in",
+    "sourceName": "viem 2.57.14 official release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/wevm/viem/releases/tag/viem%402.57.14"
+  },
+  {
+    "id": "web3-foundry-resume-recorded-revert",
+    "date": "2026-11-03",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "Foundry 1.9.0：记录过 revert 后，不再继续发送脚本本会阻止的操作",
+    "summary": "本地计划里列出下一步，不代表前一步失败后它仍然被授权执行。恢复工具必须结合链上回执和脚本控制流，不能把跳过失败项当成继续剩余计划的充分依据。",
+    "anchor": "web3-foundry-resume-recorded-revert",
+    "sourceName": "Foundry 1.9.0 official release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/foundry-rs/foundry/releases/tag/v1.9.0",
+    "isDeepDive": true
+  },
+  {
     "id": "ai-langgraph-paused-tool-stream",
     "date": "2026-11-02",
     "domain": "ai",

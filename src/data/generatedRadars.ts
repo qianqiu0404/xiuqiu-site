@@ -12,6 +12,48 @@ export interface RadarIndexEntry { date: string; slug: string; snapshotId: strin
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-11-03",
+    "slug": "2026-11-03",
+    "snapshotId": "learning-2026-11-03-0635468cb58de125",
+    "asOf": "2026-11-02T21:36:19.670Z",
+    "title": "学习雷达 · 2026-11-03",
+    "summary": "AI 看流式回调的测量缺口与会话退出后的进程收尾；Web3 看钱包预览的显式选择与 Foundry 广播恢复的停止条件。专题核对计划、链上回执和失败后的控制流。",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "briefs": [
+      {
+        "id": "ai-langchain-block-token-callbacks",
+        "domain": "ai",
+        "topic": "infrastructure",
+        "title": "langchain-anthropic 1.7.9：没有 token 回调，不等于模型没有输出"
+      },
+      {
+        "id": "ai-claude-exit-shell-lifecycle",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "Claude Code 2.1.316：会话自动退出后，子 shell 也要有收尾证据"
+      },
+      {
+        "id": "web3-viem-preview-opt-in",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "viem 2.57.14：余额预览改为显式请求，缺失不能显示成零变化"
+      },
+      {
+        "id": "web3-foundry-resume-recorded-revert",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Foundry 1.9.0：记录过 revert 后，不再继续发送脚本本会阻止的操作"
+      }
+    ],
+    "deepDive": {
+      "id": "deep-foundry-recovery-control-flow",
+      "title": "专题：恢复广播前，要同时核对计划、回执与失败后的控制流",
+      "basedOnBriefId": "web3-foundry-resume-recorded-revert"
+    },
+    "marketSignals": []
+  },
+  {
     "date": "2026-11-02",
     "slug": "2026-11-02",
     "snapshotId": "learning-2026-11-02-773b3caad47cde16",
@@ -1447,6 +1489,210 @@ export const radarIndex: RadarIndexEntry[] = [
 
 export const latestRadars: DailyRadar[] = [
   {
+    "date": "2026-11-03",
+    "slug": "2026-11-03",
+    "title": "学习雷达 · 2026-11-03",
+    "summary": "AI 看流式回调的测量缺口与会话退出后的进程收尾；Web3 看钱包预览的显式选择与 Foundry 广播恢复的停止条件。专题核对计划、链上回执和失败后的控制流。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-11-02T21:36:19.670Z",
+    "generatedAt": "2026-11-02T21:36:19.670Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-langchain-block-token-callbacks",
+        "domain": "ai",
+        "topic": "infrastructure",
+        "title": "langchain-anthropic 1.7.9：没有 token 回调，不等于模型没有输出",
+        "whatHappened": "langchain-anthropic 于11月2日（UTC）发布1.7.9，修复工具、文档或扩展思考请求使用内容块列表时缺失流式 token 回调的问题。即使模型只回复文字、实际没有调用工具，内容仍可能是列表，旧的字符串判断就会跳过回调。",
+        "mechanism": "存在 run_manager 时，同步与异步流现在对每个 chunk 触发 on_llm_new_token，token 参数使用 chunk.text，完整块内容仍随 chunk 传递。上游测试包含空字符串、正文、空字符串三个回调，说明回调次数不能直接当作非空文本 token 数。",
+        "workedExample": "纸面回归可以为同一请求分别启用和关闭工具定义，记录正文流、回调事件和首个非空文本时间。正文相同而回调缺失时先定位适配层，不把它计为模型卡住。本期仅阅读补丁和上游测试，没有安装库或调用模型。",
+        "whyItMatters": "Agent 可观测性常依赖回调计算首 token 时间。传输有内容而观测链没有事件，会让面板、告警和性能比较得出不同结论；先核对测量路径，才能解释延迟。",
+        "risksAndLimits": [
+          "修复的是客户端事件报告，不证明模型推理更快，也不证明全部流式指标已端到端准确。",
+          "空 token 仍可触发回调；消费者应区分事件到达、文字出现和工具调用完成，不能只数回调。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "langchain-anthropic 1.7.9 official release",
+            "url": "https://github.com/langchain-ai/langchain/releases/tag/langchain-anthropic%3D%3D1.7.9",
+            "publishedAt": "2026-11-02T20:14:18.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "LangChain PR 41643: streamed block token callbacks",
+            "url": "https://github.com/langchain-ai/langchain/pull/41643"
+          }
+        ],
+        "nextQuestions": [
+          "启用工具后，正文、完整chunk和回调事件能否按同一次请求关联？",
+          "首事件时间与首个非空文本时间是否被混成一个性能指标？"
+        ]
+      },
+      {
+        "id": "ai-claude-exit-shell-lifecycle",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "Claude Code 2.1.316：会话自动退出后，子 shell 也要有收尾证据",
+        "whatHappened": "Anthropic 于10月31日（UTC）发布 Claude Code 2.1.316。官方说明修复了 macOS 与 Linux 上 Claude Code 自行退出后 shell 命令仍遗留运行的问题，举例包括凭据被拒绝和云会话被归档。",
+        "mechanism": "发布说明把修复范围限定在宿主会话自行退出与它启动的 shell 生命周期之间。公开说明没有给出内部终止实现，因此这里只确认这一行为变更，不推断信号、进程组或跨机器清理策略。",
+        "workedExample": "拟议验收可在隔离环境启动一个可识别的长命令，触发受控宿主退出后，分别核对宿主状态、子进程是否仍在、输出文件和退出记录。该例是验证设计，本期未启动 Claude、制造鉴权故障或归档真实会话。",
+        "whyItMatters": "多 Agent 面板显示会话结束，并不自动证明它启动的计算、构建或网络工作已停止。把宿主和子进程的状态分别留证，可以避免下一次接手时重复启动仍在运行的任务。",
+        "risksAndLimits": [
+          "官方所述平台是 macOS 与 Linux；没有据此声称 Windows、所有异常退出或独立外部服务都已覆盖。",
+          "进程停止不撤销它已完成的文件写入或远端副作用；本期没有验证本机安装版本或真实清理结果。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Claude Code 2.1.316 official release",
+            "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.316",
+            "publishedAt": "2026-10-31T01:01:35.000Z"
+          }
+        ],
+        "nextQuestions": [
+          "会话完成或失败时，是否保存了所属子进程的独立退出证据？",
+          "恢复工作前，怎样区分残留进程、已完成副作用和可安全重试的操作？"
+        ]
+      },
+      {
+        "id": "web3-viem-preview-opt-in",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "viem 2.57.14：余额预览改为显式请求，缺失不能显示成零变化",
+        "whatHappened": "viem 于11月1日（UTC）发布2.57.14，Tempo Relay 的余额变化预览从默认开启改为请求显式选择；费用估算继续默认提供。普通填充请求的格式化也修复为保留 capabilities，避免调用方声明在传输时丢失。",
+        "mechanism": "Relay.simulate 只在 capabilities.balanceDiffs 严格等于 true 时执行余额差异模拟。预览同时将同一代币的流入和流出分开保留，收到后又转出的代币不再因净额为零而消失。",
+        "workedExample": "纸面检查可比较未传选项、false 和 true 三种请求：前两者不能把缺失的预览解释为余额没变化；第三种再核对同币流入与流出是否分别可见。这里只检查代码与上游用例，没有连接 RPC、账户或发送交易。",
+        "whyItMatters": "钱包的费用估算与资产影响预览是两个不同能力。升级后若界面把缺失字段补成空列表，用户可能把未请求或不可用的预览误读为已经验证不会动用资产。",
+        "risksAndLimits": [
+          "显式请求仍不保证预览始终可得；上游代码保留超预算或元数据不可用时省略预览的路径。",
+          "余额预览的选择不等于批准自动换币；autoSwap 使用独立请求能力，模拟结果也不证明链上执行成功。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "viem 2.57.14 official release",
+            "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.14",
+            "publishedAt": "2026-11-01T05:20:24.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "viem PR 5356: explicit relay preview capabilities",
+            "url": "https://github.com/wevm/viem/pull/5356"
+          }
+        ],
+        "nextQuestions": [
+          "界面能否分别显示未请求、不可用和已模拟的空结果？",
+          "序列化之后 capabilities 是否仍存在，预览与待签交易是否对应同一版本？"
+        ]
+      },
+      {
+        "id": "web3-foundry-resume-recorded-revert",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Foundry 1.9.0：记录过 revert 后，不再继续发送脚本本会阻止的操作",
+        "whatHappened": "Foundry 于11月2日21:28（UTC）正式发布1.9.0。此前恢复广播会跳过已记录的 revert，再发送其后的操作；修复使存在已记录 revert 且仍有未完成操作的序列拒绝 resume，保留脚本失败后原本会停止的控制流。",
+        "mechanism": "恢复路径同时检查部署序列的 reverted 与 remaining_operation_indices：二者均非空时返回错误，不发送剩余操作。若序列记录过 revert、但已无剩余操作，仍沿用警告；这不是把所有带 revert 的历史一概判为可重发。",
+        "workedExample": "上游回归构造失败调用之后的两次转账，连续恢复两次均应失败，成功回执仍为空，发送方交易计数保持只有原失败交易。本期只阅读这一补丁和测试，没有运行 Foundry、连接链或广播操作。",
+        "whyItMatters": "本地计划里列出下一步，不代表前一步失败后它仍然被授权执行。恢复工具必须结合链上回执和脚本控制流，不能把跳过失败项当成继续剩余计划的充分依据。",
+        "risksAndLimits": [
+          "上游的拒绝保护不能回滚已经上链的结果，也不能替代对仍在pending交易的核对。",
+          "发布说明指向重新广播路径，但重新运行仍需核对既有副作用和授权；本期没有给出可直接执行的重播指令。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Foundry 1.9.0 official release",
+            "url": "https://github.com/foundry-rs/foundry/releases/tag/v1.9.0",
+            "publishedAt": "2026-11-02T21:28:02.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Foundry PR 18031: refuse operations after a recorded revert",
+            "url": "https://github.com/foundry-rs/foundry/pull/18031"
+          }
+        ],
+        "nextQuestions": [
+          "恢复前是否同时保存成功回执、失败记录、未决交易和脚本停止条件？",
+          "新开广播之前，怎样证明旧广播没有尚未确认的操作，并避免重复副作用？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-foundry-recovery-control-flow",
+      "domain": "web3",
+      "topic": "onchain_infrastructure",
+      "title": "专题：恢复广播前，要同时核对计划、回执与失败后的控制流",
+      "whatHappened": "Foundry 的修复针对一种危险的恢复歧义：原脚本的失败条件会阻止后续操作，但磁盘序列仍保存了这些已规划操作。旧的 resume 跳过失败交易后继续发送，恢复行为反而越过了原执行逻辑。",
+      "mechanism": "新的门禁把已记录失败和仍有剩余操作作为联合拒绝条件。链上成功交易保留成功回执，revert 单独进入 reverted，pending 则仍需确认。磁盘计划是否存在、操作是否已发送、脚本是否允许继续是不同状态，不能用一个完成标记替代。",
+      "workedExample": "设脚本先检查依赖合约，再执行两个后续动作；检查交易失败后，本地仍有两个计划。纸面恢复台账分别列出原失败交易、其余计划和pending核对结果，再决定停止、恢复已有流程或重新审查新计划。本例没有接入钱包或产生交易。",
+      "whyItMatters": "Agent 生成的计划和可恢复执行器容易被误当成同一授权。把前置条件和每项外部结果一起保存，才能解释任务为什么停止，以及下一次启动是否仍在执行用户批准的原路径。",
+      "risksAndLimits": [
+        "没有剩余操作时的警告不把失败变成成功；已经上链的失败仍应保留在结果中。",
+        "缺失恢复快照时，工具不能判断哪些未完成操作已发送。上游要求重新广播前确认没有仍在pending的交易；这不自动证明所有业务副作用可重复。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "Foundry 1.9.0 official release",
+          "url": "https://github.com/foundry-rs/foundry/releases/tag/v1.9.0",
+          "publishedAt": "2026-11-02T21:28:02.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "Foundry PR 18031: refuse operations after a recorded revert",
+          "url": "https://github.com/foundry-rs/foundry/pull/18031"
+        }
+      ],
+      "nextQuestions": [
+        "恢复台账是否能够区分未计划、已计划未发送、pending、成功与revert？",
+        "当原前置条件失效时，系统会停止并重新审查，还是继续执行磁盘里剩下的动作？"
+      ],
+      "basedOnBriefId": "web3-foundry-resume-recorded-revert"
+    },
+    "sourceUrls": [
+      "https://github.com/langchain-ai/langchain/releases/tag/langchain-anthropic%3D%3D1.7.9",
+      "https://github.com/langchain-ai/langchain/pull/41643",
+      "https://github.com/anthropics/claude-code/releases/tag/v2.1.316",
+      "https://github.com/wevm/viem/releases/tag/viem%402.57.14",
+      "https://github.com/wevm/viem/pull/5356",
+      "https://github.com/foundry-rs/foundry/releases/tag/v1.9.0",
+      "https://github.com/foundry-rs/foundry/pull/18031"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-11-03-0635468cb58de125",
+    "asOf": "2026-11-02T21:36:19.670Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
+  {
     "date": "2026-11-02",
     "slug": "2026-11-02",
     "title": "学习雷达 · 2026-11-02",
@@ -2695,205 +2941,6 @@ export const latestRadars: DailyRadar[] = [
     "marketSignals": [],
     "snapshotId": "learning-2026-10-26-2ca3bd796c6d6d5a",
     "asOf": "2026-10-25T21:43:06.660Z",
-    "origin": "research",
-    "publicationState": "published"
-  },
-  {
-    "date": "2026-10-25",
-    "slug": "2026-10-25",
-    "title": "学习雷达 · 2026-10-25",
-    "summary": "AI 关注用完整任务评测选择 Agent 结构，以及 Raw-RAG 的原始证据基线；Web3 补充 Hoodi 已延期的正式更正，并看 Wavelength 公开主网版如何区分支付权限、失败与恢复。专题讨论不确定付款结果的记录边界。",
-    "publish": true,
-    "reviewStatus": "automated",
-    "schemaVersion": 2,
-    "editionMode": "daily",
-    "researchedAt": "2026-10-24T21:33:36.459Z",
-    "generatedAt": "2026-10-24T21:33:36.459Z",
-    "sourceSections": [
-      "ai",
-      "web3",
-      "deepDive"
-    ],
-    "missingSections": [],
-    "briefs": [
-      {
-        "id": "ai-single-loop-progressive-disclosure",
-        "domain": "ai",
-        "topic": "agent",
-        "title": "何时把子 Agent 收回主循环：先用完整任务评测比较",
-        "whatHappened": "Anthropic 的 Diane Sarkis 于 10 月 22 日发布工程指南，建议部分企业应用把路由、规划和领域子 Agent 逐步收回主循环，通过按需加载 skills 和 tools 提供能力；同时保留并行独立工作、上下文膨胀或指令冲突时使用子 Agent 的理由。",
-        "mechanism": "作者认为，共享上下文能减少摘要交接的信息损失，按需加载则避免把全部规则和工具一次塞入提示词。迁移方法是先建共享的端到端评测，再逐个比较保留子 Agent 与改用 skill/tool 的结果。",
-        "workedExample": "一个客服流程先查订单、再查配送日期。工程示例可以让两种结构处理同一批任务，检查最终答案是否真正调用配送信息，同时记录延迟和权限违规；局部步骤得分高，不保证整条流程正确。此例未在本期执行。",
-        "whyItMatters": "选择单循环或多个 Agent，需要看任务之间共享多少上下文，以及完整任务的实际结果；团队组织方式本身不是效果证据。",
-        "risksAndLimits": [
-          "这是供应商经验指南，未提供统一公开样本和可复跑实验，不能推出所有多 Agent 结构都更差。",
-          "结构简化不等于权限合并；工具层的校验、审批和用户访问范围仍需独立成立。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_engineering",
-            "name": "Anthropic: Building agents — When to fold subagents into your main agent loop",
-            "url": "https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop",
-            "publishedAt": "2026-10-22T00:00:00.000Z"
-          }
-        ],
-        "nextQuestions": [
-          "比较两种 Agent 结构时，是否使用同一组完整任务和权限约束？",
-          "哪些步骤必须共享原始上下文，哪些任务适合独立并行后返回紧凑结果？"
-        ]
-      },
-      {
-        "id": "ai-raw-rag-source-preservation",
-        "domain": "ai",
-        "topic": "data",
-        "title": "Raw-RAG：先保留原始证据，再证明复杂记忆的增益",
-        "whatHappened": "10 月 22 日提交的 Raw-RAG 预印本，用原始历史检索和重排作为记忆基线。作者在四个离线对话基准的七个基准与模型组合中，报告六组领先所比较的记忆系统；这里的领先比较明确排除了 Full-context，不能改写成胜过所有方案。",
-        "mechanism": "方法保留带时间的原始历史，切窗后做向量检索与重排，再让 reader 处理状态变化，不预先依赖模型抽取或改写事实。作者的解释是：必要证据的覆盖可以弥补利用率不足，关系和时序路径也属于证据。",
-        "workedExample": "用户先约定周一开会，后来改到周二。工程示例可以比较原文检索与结构化记忆是否同时找到两次变更及其先后关系，再检查最终回答；只存一个日期值，会丢掉为什么以新值为准的依据。此例未运行。",
-        "whyItMatters": "增加记忆管理复杂度之前，一个保留来源的检索基线能帮助分清：收益来自更好的证据，还是来自更复杂的组织方式。",
-        "risksAndLimits": [
-          "这是尚未独立复现的预印本，证据限于离线对话基准，不证明互动 Agent 或生产系统普遍更优。",
-          "原始历史也有存储、隐私和删除成本；作者明确要求考虑这些约束，不能据此主张永久保存全部对话。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "research_preprint",
-            "name": "Raw-RAG arXiv v1 submission and abstract",
-            "url": "https://arxiv.org/abs/2610.30755",
-            "publishedAt": "2026-10-22T05:23:16.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "research_preprint",
-            "name": "Raw-RAG v1: methods, main results and limitations",
-            "url": "https://arxiv.org/html/2610.30755v1",
-            "publishedAt": "2026-10-22T05:23:16.000Z"
-          }
-        ],
-        "nextQuestions": [
-          "记忆评测是否同时衡量证据覆盖、最终正确性和删除要求？",
-          "相同 reader 和证据预算下，结构化记忆具体改善了哪类任务？"
-        ]
-      },
-      {
-        "id": "web3-hoodi-glamsterdam-postponed",
-        "domain": "web3",
-        "topic": "protocol",
-        "title": "Hoodi 正式延期：10 月 26 日的激活配置已经撤销",
-        "whatHappened": "本期补充此前遗漏的正式更正：EF Protocol Cluster 已于 10 月 22 日宣布 Hoodi Glamsterdam 延期，撤销原定 10 月 26 日 17:42:48 UTC 的激活，尚未设新日期。公告明确取代旧计划与操作指引；不是 10 月 25 日才发生延期。",
-        "mechanism": "EF 称延期用于进一步调查 EIP-8037 与主网合约的交互，同时移除 Amsterdam、Gloas 和对应 gas-limit 的未来计划。撤销未来配置不等于回滚 Hoodi 历史，旧 release 中曾存在排期也不代表它仍有效。",
-        "workedExample": "节点升级清单可分别记录有效公告、执行层配置和共识层配置，再检查验证者与构建服务是否一致。若旧版本仍写着原激活时间，应按新版正式说明核对；本期只是阅读来源，没有修改任何节点。",
-        "whyItMatters": "升级计划需要支持撤销和替换。运维判断要追踪当前有效状态，不能把某次发版中的计划当作永远有效的确认。",
-        "risksAndLimits": [
-          "公告仅涉及 Hoodi 测试网，没有给出 Glamsterdam 主网日期，也不要求 ETH 持有人因此采取操作。",
-          "新排期仍未知；不能自行估计延期长度，也不能把旧公告的客户端表当成已包含延期变更的证明。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_protocol_announcement",
-            "name": "Ethereum Foundation: Glamsterdam on Hoodi Postponed",
-            "url": "https://blog.ethereum.org/2026/10/22/glamsterdam-hoodi-delay",
-            "publishedAt": "2026-10-22T00:00:00.000Z"
-          }
-        ],
-        "nextQuestions": [
-          "节点清单能否确认旧激活时间已从执行层与共识层同时移除？",
-          "公告或配置被替代时，原来的操作计划如何及时标记失效？"
-        ]
-      },
-      {
-        "id": "web3-wavelength-public-mainnet",
-        "domain": "web3",
-        "topic": "wallet_cex",
-        "title": "Wavelength 公开主网版：支付权限、确定失败与恢复分开看",
-        "whatHappened": "Lightning Labs 于 10 月 23 日宣布 Wavelength 首次公开主网版，无需邀请；同日 v0.2.0 release 列出付款状态、免费窗口自动续期、签名前检查和退出恢复改进。官方仍将项目标为 alpha；主网开放不等于完成独立安全或资金验收。",
-        "mechanism": "官方文章把收款权限与签名、恢复、管理权限分开；release 进一步区分确定失败与已承诺签名的操作，后者保留恢复路径。免费自动续期只接受免费窗口报价，关键退出仍可能产生链上费用。",
-        "workedExample": "一个只收取 API 使用费的服务，工程上可以只获得收款能力；支出和恢复由不同权限处理。再用隔离夹具模拟请求超时，检查原操作能否查询和恢复，避免产生第二次付款。本期未安装钱包或执行此例。",
-        "whyItMatters": "把支付接给 Agent，接口可调用只是起点。权限能否收窄、状态能否持久化、未知结果能否恢复，需要分别提供证据。",
-        "risksAndLimits": [
-          "本期核对的是厂商公告与 release notes，未审计代码或验证真实付款，不能把可靠性声明当作独立结果。",
-          "自动续期存在窗口与在线条件；服务费、路由费和链上费也须区分，不能概括为全面免费。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release_announcement",
-            "name": "Lightning Labs: Wavelength public mainnet launch",
-            "url": "https://lightning.engineering/posts/2026-10-23-wavelength-mainnet-launch/",
-            "publishedAt": "2026-10-23T00:00:00.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_release",
-            "name": "Wavelength v0.2.0 release notes",
-            "url": "https://github.com/lightninglabs/wavelength/releases/tag/v0.2.0",
-            "publishedAt": "2026-10-23T12:50:24.000Z"
-          }
-        ],
-        "nextQuestions": [
-          "收款、支出、恢复与管理能力，是否能按服务实际需求分别授权？",
-          "请求结果不确定时，系统保存什么身份和证据来核对原操作？"
-        ]
-      }
-    ],
-    "deepDive": {
-      "id": "deep-wavelength-operation-state-and-permissions",
-      "domain": "web3",
-      "topic": "wallet_cex",
-      "title": "专题：付款请求超时之后，先核对原操作到了哪一步",
-      "whatHappened": "Wavelength v0.2.0 的官方说明把确定失败、签名承诺和退出恢复分别描述：确定失败不再一直挂在 pending，已承诺签名的转账保留恢复路径，广播或手续费拒绝也不能被不确定响应误记为成功。",
-      "mechanism": "请求响应与资金操作状态不是同一件事。工程上的推论是，记录应能区分发出请求、已经承诺、确定失败、结果未知和后续恢复，并让权限边界覆盖这些阶段；一次网络超时本身不足以判断付款是否发生。",
-      "workedExample": "设想付款请求超时：先保留原操作身份与现有证据，再查询其状态；只有确认失败或满足既定恢复条件，才进入相应分支。用夹具覆盖“已承诺但响应丢失”和“尚未承诺已失败”两条路径，可以检查是否误计成功或重复执行。这是拟议测试，没有真实付款。",
-      "whyItMatters": "Agent 可以快速重试，但状态不清楚时，更快并不等于正确。权限、操作身份和恢复记录放在可核对的接口层，才能让主流程判断下一步。",
-      "risksAndLimits": [
-        "release notes 说明改进方向，没有替任何接入方证明完整恢复或对账已通过；本期也没有完成这类验收。",
-        "收款专用权限无法代替支出审批；免费自动续期也不能消除关键退出的链上费用或离线条件。"
-      ],
-      "sources": [
-        {
-          "tier": "tier1",
-          "role": "event",
-          "kind": "official_release",
-          "name": "Wavelength v0.2.0 release notes",
-          "url": "https://github.com/lightninglabs/wavelength/releases/tag/v0.2.0",
-          "publishedAt": "2026-10-23T12:50:24.000Z"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_release_announcement",
-          "name": "Lightning Labs: Wavelength public mainnet launch",
-          "url": "https://lightning.engineering/posts/2026-10-23-wavelength-mainnet-launch/",
-          "publishedAt": "2026-10-23T00:00:00.000Z"
-        }
-      ],
-      "nextQuestions": [
-        "状态未知时，日志和持久化记录能否把后续查询接回原操作？",
-        "恢复测试是否分别覆盖响应丢失、确定失败和已承诺签名的操作？"
-      ],
-      "basedOnBriefId": "web3-wavelength-public-mainnet"
-    },
-    "sourceUrls": [
-      "https://claude.com/resources/articles/building-agents-when-to-fold-subagents-into-your-main-agent-loop",
-      "https://arxiv.org/abs/2610.30755",
-      "https://arxiv.org/html/2610.30755v1",
-      "https://blog.ethereum.org/2026/10/22/glamsterdam-hoodi-delay",
-      "https://lightning.engineering/posts/2026-10-23-wavelength-mainnet-launch/",
-      "https://github.com/lightninglabs/wavelength/releases/tag/v0.2.0"
-    ],
-    "relatedProjectSlugs": [],
-    "marketSignals": [],
-    "snapshotId": "learning-2026-10-25-f87ef45cb9bec9ae",
-    "asOf": "2026-10-24T21:33:36.459Z",
     "origin": "research",
     "publicationState": "published"
   }

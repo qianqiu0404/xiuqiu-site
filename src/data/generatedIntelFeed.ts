@@ -7,8 +7,71 @@ export interface IntelItem { id: string; kind: IntelKind; date: string; domain: 
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
 export const intelLatestDate: string | null = "2026-11-03"
-export const intelItemCount = 269
+export const intelItemCount = 273
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "learning:ai-langchain-block-token-callbacks",
+    "kind": "learning",
+    "date": "2026-11-03",
+    "domain": "ai",
+    "topic": "infrastructure",
+    "title": "langchain-anthropic 1.7.9：没有 token 回调，不等于模型没有输出",
+    "summary": "Agent 可观测性常依赖回调计算首 token 时间。传输有内容而观测链没有事件，会让面板、告警和性能比较得出不同结论；先核对测量路径，才能解释延迟。",
+    "href": "/radar/2026-11-03#ai-langchain-block-token-callbacks",
+    "source": {
+      "name": "langchain-anthropic 1.7.9 official release",
+      "tier": "tier1",
+      "url": "https://github.com/langchain-ai/langchain/releases/tag/langchain-anthropic%3D%3D1.7.9"
+    }
+  },
+  {
+    "id": "learning:ai-claude-exit-shell-lifecycle",
+    "kind": "learning",
+    "date": "2026-11-03",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "Claude Code 2.1.316：会话自动退出后，子 shell 也要有收尾证据",
+    "summary": "多 Agent 面板显示会话结束，并不自动证明它启动的计算、构建或网络工作已停止。把宿主和子进程的状态分别留证，可以避免下一次接手时重复启动仍在运行的任务。",
+    "href": "/radar/2026-11-03#ai-claude-exit-shell-lifecycle",
+    "source": {
+      "name": "Claude Code 2.1.316 official release",
+      "tier": "tier1",
+      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.316"
+    }
+  },
+  {
+    "id": "learning:web3-viem-preview-opt-in",
+    "kind": "learning",
+    "date": "2026-11-03",
+    "domain": "web3",
+    "topic": "wallet_cex",
+    "title": "viem 2.57.14：余额预览改为显式请求，缺失不能显示成零变化",
+    "summary": "钱包的费用估算与资产影响预览是两个不同能力。升级后若界面把缺失字段补成空列表，用户可能把未请求或不可用的预览误读为已经验证不会动用资产。",
+    "href": "/radar/2026-11-03#web3-viem-preview-opt-in",
+    "source": {
+      "name": "viem 2.57.14 official release",
+      "tier": "tier1",
+      "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.14"
+    }
+  },
+  {
+    "id": "learning:web3-foundry-resume-recorded-revert",
+    "kind": "learning",
+    "date": "2026-11-03",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "Foundry 1.9.0：记录过 revert 后，不再继续发送脚本本会阻止的操作",
+    "summary": "本地计划里列出下一步，不代表前一步失败后它仍然被授权执行。恢复工具必须结合链上回执和脚本控制流，不能把跳过失败项当成继续剩余计划的充分依据。",
+    "href": "/radar/2026-11-03#web3-foundry-resume-recorded-revert",
+    "source": {
+      "name": "Foundry 1.9.0 official release",
+      "tier": "tier1",
+      "url": "https://github.com/foundry-rs/foundry/releases/tag/v1.9.0"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
   {
     "id": "market:2026-11-03:treasury-november-borrowing-cash-assumptions-2026-11-02",
     "kind": "market",
@@ -358,29 +421,29 @@ export const intelTopics: IntelTopic[] = [
   {
     "topic": "agent",
     "domain": "ai",
-    "count": 8,
-    "lastSeen": "2026-11-02",
+    "count": 9,
+    "lastSeen": "2026-11-03",
     "firstSeen": "2026-08-11"
   },
   {
     "topic": "onchain_infrastructure",
     "domain": "web3",
-    "count": 7,
-    "lastSeen": "2026-11-02",
+    "count": 8,
+    "lastSeen": "2026-11-03",
     "firstSeen": "2026-08-11"
   },
   {
     "topic": "wallet_cex",
     "domain": "web3",
-    "count": 6,
-    "lastSeen": "2026-11-02",
+    "count": 7,
+    "lastSeen": "2026-11-03",
     "firstSeen": "2026-08-10"
   },
   {
     "topic": "infrastructure",
     "domain": "ai",
-    "count": 3,
-    "lastSeen": "2026-11-02",
+    "count": 4,
+    "lastSeen": "2026-11-03",
     "firstSeen": "2026-10-29"
   },
   {
