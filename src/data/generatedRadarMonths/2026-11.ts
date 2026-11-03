@@ -5,6 +5,218 @@ import type { DailyRadar } from '../generatedRadars.ts'
 
 export const monthlyRadars: DailyRadar[] = [
   {
+    "date": "2026-11-04",
+    "slug": "2026-11-04",
+    "title": "学习雷达 · 2026-11-04",
+    "summary": "AI 看中断消息的来源标记与推理计时的覆盖边界；Web3 看重连订阅的代际隔离与 Sui 测试网的检查点分页回退。专题拆解异步订阅何时真正恢复。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-11-03T21:36:40.000Z",
+    "generatedAt": "2026-11-03T21:36:40.000Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-deepagents-interrupt-provenance",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "deepagents-code 0.2.4：给系统合成的中断消息保留来源",
+        "whatHappened": "LangChain 于11月2日（UTC）发布 deepagents-code 0.2.4，为保存进会话的“Task interrupted by user”消息补充来源元数据。它在消息类型上仍是 HumanMessage，外部读取者可以通过标记识别这条由系统合成的中断记录。",
+        "mechanism": "中断清理路径把消息交给 add_notification_metadata，写入 lc_source 对应的 task_interrupted 来源。CLI 原本已按系统前缀和来源过滤通知，本次没有改变其既有显示行为；变化主要让持久化消息的外部消费者得到可检查的来源。",
+        "workedExample": "纸面回放可并排保存真实用户输入与系统生成的同文中断消息，读取时同时检查消息内容、类型和来源元数据。只按 HumanMessage 或固定文字分类都会留下歧义。本期仅阅读发布、补丁和上游断言，没有运行 Agent 或中断真实任务。",
+        "whyItMatters": "Agent 记忆、审计和下一轮提示词可能把所有 HumanMessage 都当作用户意图。保留系统生成记录的来源，有助于解释任务为何停止，并减少将状态通知重新当成新指令的机会。",
+        "risksAndLimits": [
+          "来源标记只描述这条记录的生成路径，不是用户授权、消息真实性或可信内容的背书。",
+          "中断消息存在不证明工具、子进程或远端副作用已停止；执行结果仍需分别核对。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "deepagents-code 0.2.4 official release",
+            "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.4",
+            "publishedAt": "2026-11-02T23:13:54.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "DeepAgents PR 7501: provenance for synthetic interruption messages",
+            "url": "https://github.com/langchain-ai/deepagents/pull/7501"
+          }
+        ],
+        "nextQuestions": [
+          "持久化和导出之后，系统合成消息的来源标记是否仍然保留？",
+          "消费方是否把消息类型、生成来源与实际授权分开处理？"
+        ]
+      },
+      {
+        "id": "ai-sglang-result-owned-fpm",
+        "domain": "ai",
+        "topic": "infrastructure",
+        "title": "SGLang 0.5.23：推理指标跟随本次结果，延后发布仍保留原始状态",
+        "whatHappened": "SGLang 于11月2日（UTC）发布0.5.23，收录此前10月21日合入的 FPM 可观测性修复：为每次前向结果保留自己的计时，修正推测解码的长度统计，并由调度器状态决定是否允许发送空闲心跳。",
+        "mechanism": "计时读取同一设备流中首个已埋点区间开始到最后一个区间结束的跨度，包含区间间隙；跨流跨度会被跳过。EAGLE、EAGLE3 和 DSPARK 路径在结算前冻结 req.seqlen-1 的统计，延后发布只持有不可变标量，避免后续请求状态变化改写旧结果。",
+        "workedExample": "纸面检查可让两次前向的计时延后完成，再改变请求长度，核对每条指标仍对应自己的跨度和原长度。另把持续计算但发布队列暂时安静的情况列为忙碌，不能据队列超时直接报空闲。本期未启动推理服务或执行 GPU 基准。",
+        "whyItMatters": "异步计算完成、统计采样与指标发布并不同时发生。先固定指标属于哪一次结果、覆盖哪个计时区间，才能解释观测值；否则服务可能仍在计算，面板却报告空闲或把新长度配给旧耗时。",
+        "risksAndLimits": [
+          "该跨度只覆盖已有设备计时区间，不是完整请求延迟或首 token 时间；没有计时区间的路径不据此补造耗时，长度快照也有限定算法。",
+          "上游 GPU 验证对应较早代码头，当前代码头未重跑 GPU；新增流水线路径的覆盖仅为 CPU 用例。本期没有重跑这些验证，也不据发布说明承诺速度提升。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "SGLang 0.5.23 official release",
+            "url": "https://github.com/sgl-project/sglang/releases/tag/v0.5.23",
+            "publishedAt": "2026-11-02T22:14:10.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "SGLang PR 38711: result-owned FPM timing and decode-length snapshots",
+            "url": "https://github.com/sgl-project/sglang/pull/38711"
+          }
+        ],
+        "nextQuestions": [
+          "延后到达的耗时、请求长度与队列快照能否追溯到同一次前向结果？",
+          "监控是否注明计时覆盖范围，并把调度器忙闲状态与发布队列安静分开？"
+        ]
+      },
+      {
+        "id": "web3-metamask-reconnect-generation",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "MetaMask perps-controller 22.1.1：重连后，旧订阅不能接管新数据",
+        "whatHappened": "MetaMask core 于11月3日（UTC）发布 v1384.0.0，其中 @metamask/perps-controller 22.1.1 修复 HyperLiquid userFills 订阅在 WebSocket 重连后静默的问题。触发点是尚未完成的订阅创建与恢复订阅并发，旧监听器可能晚到并占用位置。",
+        "mechanism": "服务按账户保留共享的在途订阅 Promise，并在重连、最后一个订阅者离开或清空时推进 generation。每次创建在握手前捕获这一代号；旧代的回调被丢弃，晚到的旧句柄被取消，只有仍有订阅者且代号有效的结果才登记为活动订阅。",
+        "workedExample": "纸面时间线让旧订阅握手停住，随后发生重连并创建新订阅，最后才返回旧句柄。核对旧句柄被取消、旧帧不写入缓存、新帧交给现有订阅者。这来自补丁和上游用例，本期未连接交易账户、钱包或真实 WebSocket。",
+        "whyItMatters": "连接重新建立只是传输状态。数据监听器是否属于当前连接、是否仍有消费者、晚到结果能否覆盖新状态，需要独立判断；否则界面可能继续正常显示，却一直不再收到成交更新。",
+        "risksAndLimits": [
+          "v1384.0.0 是 core 仓库发布号，22.1.1 是控制器包版本，不证明扩展或移动钱包已经采用；上游针对旧包打补丁的端到端记录也不等于该版本钱包验收。",
+          "代际隔离防止旧监听器干扰当前状态，不负责补回断线期间遗漏的成交，也不证明真实场所数据已恢复。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "MetaMask core v1384.0.0: perps-controller 22.1.1",
+            "url": "https://github.com/MetaMask/core/releases/tag/v1384.0.0",
+            "publishedAt": "2026-11-03T21:23:24.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "MetaMask core PR 11160: reconnect subscription generation guards",
+            "url": "https://github.com/MetaMask/core/pull/11160"
+          }
+        ],
+        "nextQuestions": [
+          "连接重建后，是否有独立证据确认当前代订阅收到了新帧？",
+          "旧握手晚到、订阅者归零与创建失败重试是否各有清理路径？"
+        ]
+      },
+      {
+        "id": "web3-sui-checkpoint-paged-fallback",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Sui testnet v1.83.1：整包同步失败后，分段校验检查点内容",
+        "whatHappened": "Mysten Labs 于11月3日（UTC）发布 Sui testnet v1.83.1，加入检查点内容的分页下载回退。常见路径仍先逐一向对等节点请求完整内容；只有整包请求尝试失败并记录失败标记后，才改用摘要元数据及分页交易、effects 下载。",
+        "mechanism": "客户端先核对检查点内容摘要，再逐页检查交易与 effects 的摘要，已验证页可先写入。直到全部内容保存后才写入完成标记，表示该检查点内容可用；换对等节点时保留已验证进度。没有对等节点持有所需内容时直接返回失败，不进入分页。",
+        "workedExample": "纸面回归可让整包请求失败，分页收到两页合法内容后插入一页摘要不符的数据。预期只保留已验证页，检查点仍不能标为完整可用；找到兼容对等节点后再从进度继续。本期仅阅读实现和上游用例，没有运行节点或连接链。",
+        "whyItMatters": "可恢复下载需要分清局部数据已写入与整个对象已完整。将检查点可用标记放到最后，有助于避免下游把部分内容当成完整状态；分页减少单次整包路径的约束，但不能创造缺失的数据源。",
+        "risksAndLimits": [
+          "这是 testnet 发布记录，不能据此推定主网已经部署、协议升级已生效或节点同步已经恢复。",
+          "分页仍依赖持有数据并支持相应接口的对等节点；校验与局部进度不保证一定完成，也不是共识、最终性或性能验收。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Sui testnet v1.83.1 official release",
+            "url": "https://github.com/MystenLabs/sui/releases/tag/testnet-v1.83.1",
+            "publishedAt": "2026-11-03T19:26:27.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Sui PR 28546: paged checkpoint contents fallback",
+            "url": "https://github.com/MystenLabs/sui/pull/28546"
+          }
+        ],
+        "nextQuestions": [
+          "内容可用标记是否始终晚于全部交易与 effects 的校验和落盘？",
+          "整包失败、没有可用对等节点与分页校验失败能否分别观测？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-subscription-generation-ownership",
+      "domain": "web3",
+      "topic": "wallet_cex",
+      "title": "专题：重连完成之后，怎样证明数据订阅属于这一代连接",
+      "whatHappened": "MetaMask 的修复揭示一个异步恢复问题：旧连接发起的订阅还在等待，新连接已经开始恢复。若旧请求较晚返回，它仍可能登记为活动订阅；表面上连接和订阅对象都存在，后续数据却不再进入正确消费者。",
+      "mechanism": "实现把订阅的有效性绑定到账户代号，并在握手前捕获代号。共享在途 Promise 约束并发创建，等待者醒来后重新读取当前 Promise；成功结果仍要核对代号、活动句柄和订阅者。清理在途记录时也比较 Promise 身份，避免旧操作删除新一轮创建记录。",
+      "workedExample": "设账户 A 的第7代订阅尚未完成，第8代因重连开始。第7代握手最终成功时，应取消旧句柄且不登记；其后即使再到旧帧，也应被代号检查挡住。第8代只有收到独立的新帧后才有数据路径恢复证据；若断线期间需要历史补齐，应另查补数结果。本例是代码推演，未执行真实账户操作。",
+      "whyItMatters": "同一模式也适用于 Agent 会话切换、搜索结果返回和后台任务恢复：异步操作成功只说明它完成了，还要判断结果是否仍属于当前任务。将结果归属、订阅生命期和首个新数据分别留证，才能解释恢复到了哪一步。",
+      "risksAndLimits": [
+        "代号检查不撤销旧操作已经产生的外部副作用，也不能把来源标记当作授权；应用到其他系统需要结合实际生命周期审查。",
+        "取消旧句柄、当前订阅登记成功与断线数据补齐是不同结果；本期没有证明钱包 App 已发布该包或线上成交订阅已恢复。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "MetaMask core v1384.0.0: perps-controller 22.1.1",
+          "url": "https://github.com/MetaMask/core/releases/tag/v1384.0.0",
+          "publishedAt": "2026-11-03T21:23:24.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "MetaMask core PR 11160: reconnect subscription generation guards",
+          "url": "https://github.com/MetaMask/core/pull/11160"
+        }
+      ],
+      "nextQuestions": [
+        "重连改变代号后，所有旧回调、晚到句柄和在途清理是否都仍检查归属？",
+        "验收是否分别保存连接建立、当前代订阅首帧与断线补数的证据？"
+      ],
+      "basedOnBriefId": "web3-metamask-reconnect-generation"
+    },
+    "sourceUrls": [
+      "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.4",
+      "https://github.com/langchain-ai/deepagents/pull/7501",
+      "https://github.com/sgl-project/sglang/releases/tag/v0.5.23",
+      "https://github.com/sgl-project/sglang/pull/38711",
+      "https://github.com/MetaMask/core/releases/tag/v1384.0.0",
+      "https://github.com/MetaMask/core/pull/11160",
+      "https://github.com/MystenLabs/sui/releases/tag/testnet-v1.83.1",
+      "https://github.com/MystenLabs/sui/pull/28546"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-11-04-ee1a315c21a15b0e",
+    "asOf": "2026-11-03T21:36:40.000Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
+  {
     "date": "2026-11-03",
     "slug": "2026-11-03",
     "title": "学习雷达 · 2026-11-03",

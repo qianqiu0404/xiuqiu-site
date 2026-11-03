@@ -5,6 +5,69 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "learning:ai-deepagents-interrupt-provenance",
+    "kind": "learning",
+    "date": "2026-11-04",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "deepagents-code 0.2.4：给系统合成的中断消息保留来源",
+    "summary": "Agent 记忆、审计和下一轮提示词可能把所有 HumanMessage 都当作用户意图。保留系统生成记录的来源，有助于解释任务为何停止，并减少将状态通知重新当成新指令的机会。",
+    "href": "/radar/2026-11-04#ai-deepagents-interrupt-provenance",
+    "source": {
+      "name": "deepagents-code 0.2.4 official release",
+      "tier": "tier1",
+      "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.4"
+    }
+  },
+  {
+    "id": "learning:ai-sglang-result-owned-fpm",
+    "kind": "learning",
+    "date": "2026-11-04",
+    "domain": "ai",
+    "topic": "infrastructure",
+    "title": "SGLang 0.5.23：推理指标跟随本次结果，延后发布仍保留原始状态",
+    "summary": "异步计算完成、统计采样与指标发布并不同时发生。先固定指标属于哪一次结果、覆盖哪个计时区间，才能解释观测值；否则服务可能仍在计算，面板却报告空闲或把新长度配给旧耗时。",
+    "href": "/radar/2026-11-04#ai-sglang-result-owned-fpm",
+    "source": {
+      "name": "SGLang 0.5.23 official release",
+      "tier": "tier1",
+      "url": "https://github.com/sgl-project/sglang/releases/tag/v0.5.23"
+    }
+  },
+  {
+    "id": "learning:web3-metamask-reconnect-generation",
+    "kind": "learning",
+    "date": "2026-11-04",
+    "domain": "web3",
+    "topic": "wallet_cex",
+    "title": "MetaMask perps-controller 22.1.1：重连后，旧订阅不能接管新数据",
+    "summary": "连接重新建立只是传输状态。数据监听器是否属于当前连接、是否仍有消费者、晚到结果能否覆盖新状态，需要独立判断；否则界面可能继续正常显示，却一直不再收到成交更新。",
+    "href": "/radar/2026-11-04#web3-metamask-reconnect-generation",
+    "source": {
+      "name": "MetaMask core v1384.0.0: perps-controller 22.1.1",
+      "tier": "tier1",
+      "url": "https://github.com/MetaMask/core/releases/tag/v1384.0.0"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "learning:web3-sui-checkpoint-paged-fallback",
+    "kind": "learning",
+    "date": "2026-11-04",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "Sui testnet v1.83.1：整包同步失败后，分段校验检查点内容",
+    "summary": "可恢复下载需要分清局部数据已写入与整个对象已完整。将检查点可用标记放到最后，有助于避免下游把部分内容当成完整状态；分页减少单次整包路径的约束，但不能创造缺失的数据源。",
+    "href": "/radar/2026-11-04#web3-sui-checkpoint-paged-fallback",
+    "source": {
+      "name": "Sui testnet v1.83.1 official release",
+      "tier": "tier1",
+      "url": "https://github.com/MystenLabs/sui/releases/tag/testnet-v1.83.1"
+    }
+  },
+  {
     "id": "market:2026-11-04:rba-cash-rate-decision-2026-11-03",
     "kind": "market",
     "date": "2026-11-04",

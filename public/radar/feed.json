@@ -6,6 +6,58 @@
   "language": "zh-CN",
   "items": [
     {
+      "id": "xiuqiu-radar:ai-deepagents-interrupt-provenance",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-04#ai-deepagents-interrupt-provenance",
+      "title": "deepagents-code 0.2.4：给系统合成的中断消息保留来源",
+      "summary": "Agent 记忆、审计和下一轮提示词可能把所有 HumanMessage 都当作用户意图。保留系统生成记录的来源，有助于解释任务为何停止，并减少将状态通知重新当成新指令的机会。",
+      "content_text": "Agent 记忆、审计和下一轮提示词可能把所有 HumanMessage 都当作用户意图。保留系统生成记录的来源，有助于解释任务为何停止，并减少将状态通知重新当成新指令的机会。",
+      "date_published": "2026-11-04T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "agent"
+      ],
+      "external_url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.4"
+    },
+    {
+      "id": "xiuqiu-radar:ai-sglang-result-owned-fpm",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-04#ai-sglang-result-owned-fpm",
+      "title": "SGLang 0.5.23：推理指标跟随本次结果，延后发布仍保留原始状态",
+      "summary": "异步计算完成、统计采样与指标发布并不同时发生。先固定指标属于哪一次结果、覆盖哪个计时区间，才能解释观测值；否则服务可能仍在计算，面板却报告空闲或把新长度配给旧耗时。",
+      "content_text": "异步计算完成、统计采样与指标发布并不同时发生。先固定指标属于哪一次结果、覆盖哪个计时区间，才能解释观测值；否则服务可能仍在计算，面板却报告空闲或把新长度配给旧耗时。",
+      "date_published": "2026-11-04T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "infrastructure"
+      ],
+      "external_url": "https://github.com/sgl-project/sglang/releases/tag/v0.5.23"
+    },
+    {
+      "id": "xiuqiu-radar:web3-metamask-reconnect-generation",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-04#web3-metamask-reconnect-generation",
+      "title": "MetaMask perps-controller 22.1.1：重连后，旧订阅不能接管新数据",
+      "summary": "连接重新建立只是传输状态。数据监听器是否属于当前连接、是否仍有消费者、晚到结果能否覆盖新状态，需要独立判断；否则界面可能继续正常显示，却一直不再收到成交更新。",
+      "content_text": "连接重新建立只是传输状态。数据监听器是否属于当前连接、是否仍有消费者、晚到结果能否覆盖新状态，需要独立判断；否则界面可能继续正常显示，却一直不再收到成交更新。",
+      "date_published": "2026-11-04T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "wallet_cex"
+      ],
+      "external_url": "https://github.com/MetaMask/core/releases/tag/v1384.0.0"
+    },
+    {
+      "id": "xiuqiu-radar:web3-sui-checkpoint-paged-fallback",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-04#web3-sui-checkpoint-paged-fallback",
+      "title": "Sui testnet v1.83.1：整包同步失败后，分段校验检查点内容",
+      "summary": "可恢复下载需要分清局部数据已写入与整个对象已完整。将检查点可用标记放到最后，有助于避免下游把部分内容当成完整状态；分页减少单次整包路径的约束，但不能创造缺失的数据源。",
+      "content_text": "可恢复下载需要分清局部数据已写入与整个对象已完整。将检查点可用标记放到最后，有助于避免下游把部分内容当成完整状态；分页减少单次整包路径的约束，但不能创造缺失的数据源。",
+      "date_published": "2026-11-04T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "onchain_infrastructure"
+      ],
+      "external_url": "https://github.com/MystenLabs/sui/releases/tag/testnet-v1.83.1"
+    },
+    {
       "id": "xiuqiu-radar:ai-langchain-block-token-callbacks",
       "url": "https://xiuqiu-site.vercel.app/radar/2026-11-03#ai-langchain-block-token-callbacks",
       "title": "langchain-anthropic 1.7.9：没有 token 回调，不等于模型没有输出",
@@ -732,58 +784,6 @@
         "l2"
       ],
       "external_url": "https://github.com/lightningnetwork/lnd/releases/tag/v0.21.2-beta.rc1"
-    },
-    {
-      "id": "xiuqiu-radar:ai-realtime-critical-path",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-10#ai-realtime-critical-path",
-      "title": "实时语音 AI：先保护连续媒体关键路径",
-      "summary": "它给 AI 工程学习提供了可迁移的系统设计范式：先定义用户真正感知的关键路径，再把可重试、可恢复、可降级的工作移出该路径。",
-      "content_text": "它给 AI 工程学习提供了可迁移的系统设计范式：先定义用户真正感知的关键路径，再把可重试、可恢复、可降级的工作移出该路径。",
-      "date_published": "2026-08-10T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "model_inference"
-      ],
-      "external_url": "https://openai.com/index/continuous-voice-interaction-with-gpt-live/"
-    },
-    {
-      "id": "xiuqiu-radar:ai-evidence-improvement-loop",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-10#ai-evidence-improvement-loop",
-      "title": "Agent 改进闭环：先把专家纠错变成证据",
-      "summary": "学习雷达也需要同样的证据闭环：保留来源与拒绝原因，区分偶发误差和重复模式，再决定 ResearchOps 门禁是否需要修改。",
-      "content_text": "学习雷达也需要同样的证据闭环：保留来源与拒绝原因，区分偶发误差和重复模式，再决定 ResearchOps 门禁是否需要修改。",
-      "date_published": "2026-08-10T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "evaluation"
-      ],
-      "external_url": "https://openai.com/index/building-self-improving-tax-agents-with-codex/"
-    },
-    {
-      "id": "xiuqiu-radar:web3-signature-fail-closed",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-10#web3-signature-fail-closed",
-      "title": "OpenZeppelin 5.7：签名与权限不能静默降级",
-      "summary": "钱包与交易所后端经常组合代理、权限和签名库；理解静默降级能帮助你把安全不变量写进依赖升级与回归测试。",
-      "content_text": "钱包与交易所后端经常组合代理、权限和签名库；理解静默降级能帮助你把安全不变量写进依赖升级与回归测试。",
-      "date_published": "2026-08-10T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "security"
-      ],
-      "external_url": "https://github.com/OpenZeppelin/openzeppelin-contracts/releases/tag/v5.7.0"
-    },
-    {
-      "id": "xiuqiu-radar:web3-clear-signing-context",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-10#web3-clear-signing-context",
-      "title": "ERC-7730：清晰签名必须绑定链与合约上下文",
-      "summary": "这直接关联钱包确认页、交易所提币审核和钓鱼防护：用户看到的意图必须与真正签名的字节属于同一上下文。",
-      "content_text": "这直接关联钱包确认页、交易所提币审核和钓鱼防护：用户看到的意图必须与真正签名的字节属于同一上下文。",
-      "date_published": "2026-08-10T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "wallet_cex"
-      ],
-      "external_url": "https://github.com/ethereum/ERCs/commit/73672565aeb10e615905663ad457d75a19eae0c2"
     }
   ]
 }

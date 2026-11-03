@@ -10,6 +10,10 @@
 
 ## Recent briefs
 
+- [deepagents-code 0.2.4：给系统合成的中断消息保留来源](https://xiuqiu-site.vercel.app/radar/2026-11-04#ai-deepagents-interrupt-provenance) (2026-11-04, ai/agent): Agent 记忆、审计和下一轮提示词可能把所有 HumanMessage 都当作用户意图。保留系统生成记录的来源，有助于解释任务为何停止，并减少将状态通知重新当成新指令的机会。
+- [SGLang 0.5.23：推理指标跟随本次结果，延后发布仍保留原始状态](https://xiuqiu-site.vercel.app/radar/2026-11-04#ai-sglang-result-owned-fpm) (2026-11-04, ai/infrastructure): 异步计算完成、统计采样与指标发布并不同时发生。先固定指标属于哪一次结果、覆盖哪个计时区间，才能解释观测值；否则服务可能仍在计算，面板却报告空闲或把新长度配给旧耗时。
+- [MetaMask perps-controller 22.1.1：重连后，旧订阅不能接管新数据](https://xiuqiu-site.vercel.app/radar/2026-11-04#web3-metamask-reconnect-generation) (2026-11-04, web3/wallet_cex): 连接重新建立只是传输状态。数据监听器是否属于当前连接、是否仍有消费者、晚到结果能否覆盖新状态，需要独立判断；否则界面可能继续正常显示，却一直不再收到成交更新。
+- [Sui testnet v1.83.1：整包同步失败后，分段校验检查点内容](https://xiuqiu-site.vercel.app/radar/2026-11-04#web3-sui-checkpoint-paged-fallback) (2026-11-04, web3/onchain_infrastructure): 可恢复下载需要分清局部数据已写入与整个对象已完整。将检查点可用标记放到最后，有助于避免下游把部分内容当成完整状态；分页减少单次整包路径的约束，但不能创造缺失的数据源。
 - [langchain-anthropic 1.7.9：没有 token 回调，不等于模型没有输出](https://xiuqiu-site.vercel.app/radar/2026-11-03#ai-langchain-block-token-callbacks) (2026-11-03, ai/infrastructure): Agent 可观测性常依赖回调计算首 token 时间。传输有内容而观测链没有事件，会让面板、告警和性能比较得出不同结论；先核对测量路径，才能解释延迟。
 - [Claude Code 2.1.316：会话自动退出后，子 shell 也要有收尾证据](https://xiuqiu-site.vercel.app/radar/2026-11-03#ai-claude-exit-shell-lifecycle) (2026-11-03, ai/agent): 多 Agent 面板显示会话结束，并不自动证明它启动的计算、构建或网络工作已停止。把宿主和子进程的状态分别留证，可以避免下一次接手时重复启动仍在运行的任务。
 - [viem 2.57.14：余额预览改为显式请求，缺失不能显示成零变化](https://xiuqiu-site.vercel.app/radar/2026-11-03#web3-viem-preview-opt-in) (2026-11-03, web3/wallet_cex): 钱包的费用估算与资产影响预览是两个不同能力。升级后若界面把缺失字段补成空列表，用户可能把未请求或不可用的预览误读为已经验证不会动用资产。
@@ -18,10 +22,6 @@
 - [openai-python 3.42.1：连接策略要随代码生成保留下来](https://xiuqiu-site.vercel.app/radar/2026-11-02#ai-openai-sdk-websocket-policy) (2026-11-02, ai/infrastructure): 自动生成的接口和手工维护的传输行为需要共同交付。只确认方法或类型存在，不能证明请求头、恢复预算与取消清理仍遵守原来的契约。
 - [MetaMask 社交组件：作者评论由后端选择，客户端保留缺失与 null](https://xiuqiu-site.vercel.app/radar/2026-11-02#web3-metamask-author-comment-authority) (2026-11-02, web3/wallet_cex): 钱包展示的资料应保留字段的权威来源与未知状态。缺失、明确为空和校验失败分别影响界面及排障，不能统一转成没有评论。
 - [Reth 2.9.0：节点配置可沿用，自定义执行组件仍要迁移](https://xiuqiu-site.vercel.app/radar/2026-11-02#web3-reth-evm2-sdk-boundary) (2026-11-02, web3/onchain_infrastructure): 同一版本对节点运营方和 SDK 开发者可能有不同迁移成本。升级验收应按实际使用的接口划分，避免把无需改配置理解为所有自定义组件都保持兼容。
-- [ACR：同一模型的四条轨迹，要分别核对解法与正确性](https://xiuqiu-site.vercel.app/radar/2026-10-30#ai-acr-method-diversity) (2026-10-30, ai/model_inference): 并行 Agent 数量增加，不自动带来独立证据。若要用多条轨迹降低同一种推理盲点，应同时记录不同方法的数量、每条轨迹的正确性与生成预算，避免只奖励措辞变化。
-- [TAO：工具即将返回，才可能需要下一轮 GPU 准入](https://xiuqiu-site.vercel.app/radar/2026-10-30#ai-tao-tool-aware-admission) (2026-10-30, ai/infrastructure): 工具期间保留了多少上下文、何时再需要推理、目标节点还有多少容量，是不同观测。把这些量分开，才能解释调度是在利用真实缓存、预测短期需求，还是只在统计更大的会话。
-- [viem 2.57.13：账户配置缓存要把链 ID 纳入键](https://xiuqiu-site.vercel.app/radar/2026-10-30#web3-viem-chain-scoped-config) (2026-10-30, web3/wallet_cex): 账户地址相同不意味着配置可跨链共享。钱包与中继的缓存契约要同时说明命名空间、选中配置的链上依据和未命中时的行为，避免把缓存内容当成当前授权状态。
-- [Agave 4.4.0：先编码投票状态，再只补零尾部](https://xiuqiu-site.vercel.app/radar/2026-10-30#web3-agave-padded-vote-state) (2026-10-30, web3/onchain_infrastructure): 降低重复内存写入时，仍需核对序列化输出的字节内容、长度及错误边界。把这些契约与部署建议分别检查，能避免将一个局部实现优化夸成整网性能或兼容性结论。
 
 ## Boundaries
 
