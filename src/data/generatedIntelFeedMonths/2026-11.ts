@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-11-04:rba-cash-rate-decision-2026-11-03",
+    "kind": "market",
+    "date": "2026-11-04",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "RBA加息25个基点至4.85%，六比三表决保留分歧",
+    "summary": "研究判断：政策目标变化与贷款重定价、需求和通胀的实际变化属于不同证据。投票分歧与供需风险需共同观察，不能据单次决议推定澳元或国债方向。",
+    "href": "/market-radar/2026-11-04#rba-cash-rate-decision-2026-11-03",
+    "source": {
+      "name": "RBA Monetary Policy Decision, 3 November 2026",
+      "url": "https://www.rba.gov.au/media-releases/2026/mr-26-30.html"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
+  {
     "id": "learning:ai-langchain-block-token-callbacks",
     "kind": "learning",
     "date": "2026-11-03",

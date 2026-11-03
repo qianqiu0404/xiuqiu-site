@@ -6,9 +6,26 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-11-03"
-export const intelItemCount = 273
+export const intelLatestDate: string | null = "2026-11-04"
+export const intelItemCount = 274
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "market:2026-11-04:rba-cash-rate-decision-2026-11-03",
+    "kind": "market",
+    "date": "2026-11-04",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "RBA加息25个基点至4.85%，六比三表决保留分歧",
+    "summary": "研究判断：政策目标变化与贷款重定价、需求和通胀的实际变化属于不同证据。投票分歧与供需风险需共同观察，不能据单次决议推定澳元或国债方向。",
+    "href": "/market-radar/2026-11-04#rba-cash-rate-decision-2026-11-03",
+    "source": {
+      "name": "RBA Monetary Policy Decision, 3 November 2026",
+      "url": "https://www.rba.gov.au/media-releases/2026/mr-26-30.html"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
   {
     "id": "learning:ai-langchain-block-token-callbacks",
     "kind": "learning",
@@ -328,94 +345,14 @@ export const intelLatestItems: IntelItem[] = [
     "flags": {
       "priority": "P1"
     }
-  },
-  {
-    "id": "learning:ai-langgraph-delta-replay-window",
-    "kind": "learning",
-    "date": "2026-10-28",
-    "domain": "ai",
-    "topic": "agent",
-    "title": "LangGraph 1.2.18：用更多完整快照，缩短长会话的重放链",
-    "summary": "Agent 能继续工作，既取决于保存了什么，也取决于重建这些状态要花多久。升级清单应同时记录默认值、显式配置和存储开销，避免把可恢复直接等同于低延迟恢复。",
-    "href": "/radar/2026-10-28#ai-langgraph-delta-replay-window",
-    "source": {
-      "name": "LangGraph 1.2.18 release notes",
-      "tier": "tier1",
-      "url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.18"
-    }
-  },
-  {
-    "id": "learning:ai-verified-autoresearch-evaluator",
-    "kind": "learning",
-    "date": "2026-10-28",
-    "domain": "ai",
-    "topic": "evaluation",
-    "title": "Verified autoresearch：先验证评测器，再让 Agent 搜索更优程序",
-    "summary": "Agent 优化的是评测器给出的反馈。若有效性判定本身缺项，更高分也可能只说明候选找到了缺口；让评测规则和候选版本都可追溯，有助于解释分数究竟证明了什么。",
-    "href": "/radar/2026-10-28#ai-verified-autoresearch-evaluator",
-    "source": {
-      "name": "Automating quantum circuit optimization with AI agents — arXiv v1",
-      "tier": "tier1",
-      "url": "https://arxiv.org/abs/2610.31352"
-    },
-    "flags": {
-      "deepDive": true
-    }
-  },
-  {
-    "id": "learning:web3-lnd-sql-invoice-transaction-scope",
-    "kind": "learning",
-    "date": "2026-10-28",
-    "domain": "web3",
-    "topic": "wallet_cex",
-    "title": "LND 0.21.5-beta：发票订阅死锁，出在事务内又借了一条连接",
-    "summary": "钱包和支付服务的订阅恢复常与其他请求并发。事务已经开始，不意味着随后每个查询都在使用同一事务；把连接借用范围纳入检查，有助于定位看似全局卡死的问题。",
-    "href": "/radar/2026-10-28#web3-lnd-sql-invoice-transaction-scope",
-    "source": {
-      "name": "LND v0.21.5-beta release",
-      "tier": "tier1",
-      "url": "https://github.com/lightningnetwork/lnd/releases/tag/v0.21.5-beta"
-    }
-  },
-  {
-    "id": "learning:web3-nitro-version-transition-head-retention",
-    "kind": "learning",
-    "date": "2026-10-28",
-    "domain": "web3",
-    "topic": "l2",
-    "title": "Nitro 3.12.2：回到旧分支再升级，也要核对区块保留",
-    "summary": "客户端恢复可能跨越多个版本分支，节点状态又会随运行改变。记录完整转换路径和前后区块状态，比只记录升级终点更有助于判断这条修复是否适用。",
-    "href": "/radar/2026-10-28#web3-nitro-version-transition-head-retention",
-    "source": {
-      "name": "Arbitrum Nitro v3.12.2 release notes",
-      "tier": "tier1",
-      "url": "https://github.com/OffchainLabs/nitro/releases/tag/v3.12.2"
-    }
-  },
-  {
-    "id": "market:2026-10-28:ecb-bls-q3-credit-standards-demand-2026-10-27",
-    "kind": "market",
-    "date": "2026-10-28",
-    "domain": "market",
-    "topic": "market_macro",
-    "title": "ECB 三季度 BLS：企业标准净收紧，需求转为净下降",
-    "summary": "系统观察：审批标准与融资需求分别对应供给和需求环节。两者同时转弱值得与后续贷款数据对照，但银行问卷不能单独证明已发生信贷收缩，也不能据此解释某项资产的价格变化。",
-    "href": "/market-radar/2026-10-28#ecb-bls-q3-credit-standards-demand-2026-10-27",
-    "source": {
-      "name": "European Central Bank October 2026 BLS Release",
-      "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261027~506ef03145.en.html"
-    },
-    "flags": {
-      "priority": "P1"
-    }
   }
 ]
 export const intelTopics: IntelTopic[] = [
   {
     "topic": "market_macro",
     "domain": "market",
-    "count": 13,
-    "lastSeen": "2026-11-03",
+    "count": 14,
+    "lastSeen": "2026-11-04",
     "firstSeen": "2026-08-09"
   },
   {
