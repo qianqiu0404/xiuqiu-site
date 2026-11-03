@@ -6,7 +6,43 @@
     <atom:link href="https://xiuqiu-site.vercel.app/radar/rss.xml" rel="self" type="application/rss+xml" />
     <description>每天 2 条 AI、2 条 Web3 工程简报：先讲机制，再给例子和边界。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Tue, 03 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 04 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>deepagents-code 0.2.4：给系统合成的中断消息保留来源</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-04#ai-deepagents-interrupt-provenance</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-deepagents-interrupt-provenance</guid>
+      <pubDate>Wed, 04 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>agent</category>
+      <description>Agent 记忆、审计和下一轮提示词可能把所有 HumanMessage 都当作用户意图。保留系统生成记录的来源，有助于解释任务为何停止，并减少将状态通知重新当成新指令的机会。</description>
+    </item>
+    <item>
+      <title>SGLang 0.5.23：推理指标跟随本次结果，延后发布仍保留原始状态</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-04#ai-sglang-result-owned-fpm</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-sglang-result-owned-fpm</guid>
+      <pubDate>Wed, 04 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>infrastructure</category>
+      <description>异步计算完成、统计采样与指标发布并不同时发生。先固定指标属于哪一次结果、覆盖哪个计时区间，才能解释观测值；否则服务可能仍在计算，面板却报告空闲或把新长度配给旧耗时。</description>
+    </item>
+    <item>
+      <title>MetaMask perps-controller 22.1.1：重连后，旧订阅不能接管新数据</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-04#web3-metamask-reconnect-generation</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-metamask-reconnect-generation</guid>
+      <pubDate>Wed, 04 Nov 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>wallet_cex</category>
+      <description>连接重新建立只是传输状态。数据监听器是否属于当前连接、是否仍有消费者、晚到结果能否覆盖新状态，需要独立判断；否则界面可能继续正常显示，却一直不再收到成交更新。</description>
+    </item>
+    <item>
+      <title>Sui testnet v1.83.1：整包同步失败后，分段校验检查点内容</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-04#web3-sui-checkpoint-paged-fallback</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-sui-checkpoint-paged-fallback</guid>
+      <pubDate>Wed, 04 Nov 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>onchain_infrastructure</category>
+      <description>可恢复下载需要分清局部数据已写入与整个对象已完整。将检查点可用标记放到最后，有助于避免下游把部分内容当成完整状态；分页减少单次整包路径的约束，但不能创造缺失的数据源。</description>
+    </item>
     <item>
       <title>langchain-anthropic 1.7.9：没有 token 回调，不等于模型没有输出</title>
       <link>https://xiuqiu-site.vercel.app/radar/2026-11-03#ai-langchain-block-token-callbacks</link>
@@ -510,42 +546,6 @@
       <category>WEB3</category>
       <category>l2</category>
       <description>Lightning 节点承载真实通道状态，迁移错误与普通应用回滚不同；学习恢复顺序能建立对不可逆状态和候选版本边界的直觉。</description>
-    </item>
-    <item>
-      <title>实时语音 AI：先保护连续媒体关键路径</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-10#ai-realtime-critical-path</link>
-      <guid isPermaLink="false">xiuqiu-radar:ai-realtime-critical-path</guid>
-      <pubDate>Mon, 10 Aug 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>model_inference</category>
-      <description>它给 AI 工程学习提供了可迁移的系统设计范式：先定义用户真正感知的关键路径，再把可重试、可恢复、可降级的工作移出该路径。</description>
-    </item>
-    <item>
-      <title>Agent 改进闭环：先把专家纠错变成证据</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-10#ai-evidence-improvement-loop</link>
-      <guid isPermaLink="false">xiuqiu-radar:ai-evidence-improvement-loop</guid>
-      <pubDate>Mon, 10 Aug 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>evaluation</category>
-      <description>学习雷达也需要同样的证据闭环：保留来源与拒绝原因，区分偶发误差和重复模式，再决定 ResearchOps 门禁是否需要修改。</description>
-    </item>
-    <item>
-      <title>OpenZeppelin 5.7：签名与权限不能静默降级</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-10#web3-signature-fail-closed</link>
-      <guid isPermaLink="false">xiuqiu-radar:web3-signature-fail-closed</guid>
-      <pubDate>Mon, 10 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>security</category>
-      <description>钱包与交易所后端经常组合代理、权限和签名库；理解静默降级能帮助你把安全不变量写进依赖升级与回归测试。</description>
-    </item>
-    <item>
-      <title>ERC-7730：清晰签名必须绑定链与合约上下文</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-10#web3-clear-signing-context</link>
-      <guid isPermaLink="false">xiuqiu-radar:web3-clear-signing-context</guid>
-      <pubDate>Mon, 10 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>wallet_cex</category>
-      <description>这直接关联钱包确认页、交易所提币审核和钓鱼防护：用户看到的意图必须与真正签名的字节属于同一上下文。</description>
     </item>
   </channel>
 </rss>
