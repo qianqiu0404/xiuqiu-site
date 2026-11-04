@@ -10,6 +10,10 @@
 
 ## Recent briefs
 
+- [Pydantic AI 1.107.10：返回长度有限，格式化过程仍需要预算](https://xiuqiu-site.vercel.app/radar/2026-11-05#ai-pydantic-json-format-budget) (2026-11-05, ai/safety): Agent 的输入处理发生在模型看到正文之前。下载字节数与返回字符数限制不同阶段，不能只因最终文本很短，就推定解析、缩进等中间步骤耗时和内存也很小。
+- [Archestra 1.4.18：流已结束，缺失的 token 用量仍是未知](https://xiuqiu-site.vercel.app/radar/2026-11-05#ai-archestra-unknown-stream-usage) (2026-11-05, ai/infrastructure): 模型内容、连接结束与用量上报可能分别到达。把缺失值填成零，会让成本分析、失败调查或使用量比较把缺证据误当成没有消耗；记录应保留这种区别。
+- [Akash 通知服务2.81.10：新地址确认之后，才进入告警投递集合](https://xiuqiu-site.vercel.app/radar/2026-11-05#web3-akash-confirmed-alert-addresses) (2026-11-05, web3/onchain_infrastructure): 基础设施告警包含运营信息。通道编辑者填入一个地址，不代表地址接收方已确认；把待确认与可投递集合分开，才能解释配置保存、接收方确认和实际送达各发生到了哪一步。
+- [op-deployer 0.9.0-rc.3：许可型 super-root 链也从真实起始锚开始](https://xiuqiu-site.vercel.app/radar/2026-11-05#web3-opdeployer-real-super-root-anchor) (2026-11-05, web3/l2): 部署工具预测地址、生成创世状态与提交起始锚需要对应同一组配置。一个外形合法的占位值不能替代真实状态承诺；在继续阶段重验已保存锚，有助于定位准备数据与部署输入不一致。
 - [deepagents-code 0.2.4：给系统合成的中断消息保留来源](https://xiuqiu-site.vercel.app/radar/2026-11-04#ai-deepagents-interrupt-provenance) (2026-11-04, ai/agent): Agent 记忆、审计和下一轮提示词可能把所有 HumanMessage 都当作用户意图。保留系统生成记录的来源，有助于解释任务为何停止，并减少将状态通知重新当成新指令的机会。
 - [SGLang 0.5.23：推理指标跟随本次结果，延后发布仍保留原始状态](https://xiuqiu-site.vercel.app/radar/2026-11-04#ai-sglang-result-owned-fpm) (2026-11-04, ai/infrastructure): 异步计算完成、统计采样与指标发布并不同时发生。先固定指标属于哪一次结果、覆盖哪个计时区间，才能解释观测值；否则服务可能仍在计算，面板却报告空闲或把新长度配给旧耗时。
 - [MetaMask perps-controller 22.1.1：重连后，旧订阅不能接管新数据](https://xiuqiu-site.vercel.app/radar/2026-11-04#web3-metamask-reconnect-generation) (2026-11-04, web3/wallet_cex): 连接重新建立只是传输状态。数据监听器是否属于当前连接、是否仍有消费者、晚到结果能否覆盖新状态，需要独立判断；否则界面可能继续正常显示，却一直不再收到成交更新。
@@ -18,10 +22,6 @@
 - [Claude Code 2.1.316：会话自动退出后，子 shell 也要有收尾证据](https://xiuqiu-site.vercel.app/radar/2026-11-03#ai-claude-exit-shell-lifecycle) (2026-11-03, ai/agent): 多 Agent 面板显示会话结束，并不自动证明它启动的计算、构建或网络工作已停止。把宿主和子进程的状态分别留证，可以避免下一次接手时重复启动仍在运行的任务。
 - [viem 2.57.14：余额预览改为显式请求，缺失不能显示成零变化](https://xiuqiu-site.vercel.app/radar/2026-11-03#web3-viem-preview-opt-in) (2026-11-03, web3/wallet_cex): 钱包的费用估算与资产影响预览是两个不同能力。升级后若界面把缺失字段补成空列表，用户可能把未请求或不可用的预览误读为已经验证不会动用资产。
 - [Foundry 1.9.0：记录过 revert 后，不再继续发送脚本本会阻止的操作](https://xiuqiu-site.vercel.app/radar/2026-11-03#web3-foundry-resume-recorded-revert) (2026-11-03, web3/onchain_infrastructure): 本地计划里列出下一步，不代表前一步失败后它仍然被授权执行。恢复工具必须结合链上回执和脚本控制流，不能把跳过失败项当成继续剩余计划的充分依据。
-- [LangGraph 1.2.19：等待批准的工具，不再被流事件误报成失败](https://xiuqiu-site.vercel.app/radar/2026-11-02#ai-langgraph-paused-tool-stream) (2026-11-02, ai/agent): Agent 状态面板需要区分等待、执行失败和业务完成。异常类型、图状态与流事件是不同证据；单看一条结束事件或一段没有输出的流，可能错误地触发重试或显示完成。
-- [openai-python 3.42.1：连接策略要随代码生成保留下来](https://xiuqiu-site.vercel.app/radar/2026-11-02#ai-openai-sdk-websocket-policy) (2026-11-02, ai/infrastructure): 自动生成的接口和手工维护的传输行为需要共同交付。只确认方法或类型存在，不能证明请求头、恢复预算与取消清理仍遵守原来的契约。
-- [MetaMask 社交组件：作者评论由后端选择，客户端保留缺失与 null](https://xiuqiu-site.vercel.app/radar/2026-11-02#web3-metamask-author-comment-authority) (2026-11-02, web3/wallet_cex): 钱包展示的资料应保留字段的权威来源与未知状态。缺失、明确为空和校验失败分别影响界面及排障，不能统一转成没有评论。
-- [Reth 2.9.0：节点配置可沿用，自定义执行组件仍要迁移](https://xiuqiu-site.vercel.app/radar/2026-11-02#web3-reth-evm2-sdk-boundary) (2026-11-02, web3/onchain_infrastructure): 同一版本对节点运营方和 SDK 开发者可能有不同迁移成本。升级验收应按实际使用的接口划分，避免把无需改配置理解为所有自定义组件都保持兼容。
 
 ## Boundaries
 
