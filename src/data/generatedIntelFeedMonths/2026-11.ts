@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-11-05:treasury-november-refunding-issuance-plan-2026-11-04",
+    "kind": "market",
+    "date": "2026-11-05",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "财政部公布1250亿美元再融资计划，7年券拟改季度新发",
+    "summary": "研究判断：总发行额、置换到期债务与新增现金属于不同口径；新发和续发节奏也不同于拍卖频率。供给安排是否改变实际市场吸收，须经拍卖与结算等证据核验。",
+    "href": "/market-radar/2026-11-05#treasury-november-refunding-issuance-plan-2026-11-04",
+    "source": {
+      "name": "U.S. Treasury Quarterly Refunding Statement, November 2026",
+      "url": "https://home.treasury.gov/news/press-releases/sb0678"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
+  {
     "id": "learning:ai-deepagents-interrupt-provenance",
     "kind": "learning",
     "date": "2026-11-04",
