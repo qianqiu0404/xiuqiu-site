@@ -6,6 +6,58 @@
   "language": "zh-CN",
   "items": [
     {
+      "id": "xiuqiu-radar:ai-pydantic-json-format-budget",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-05#ai-pydantic-json-format-budget",
+      "title": "Pydantic AI 1.107.10：返回长度有限，格式化过程仍需要预算",
+      "summary": "Agent 的输入处理发生在模型看到正文之前。下载字节数与返回字符数限制不同阶段，不能只因最终文本很短，就推定解析、缩进等中间步骤耗时和内存也很小。",
+      "content_text": "Agent 的输入处理发生在模型看到正文之前。下载字节数与返回字符数限制不同阶段，不能只因最终文本很短，就推定解析、缩进等中间步骤耗时和内存也很小。",
+      "date_published": "2026-11-05T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "safety"
+      ],
+      "external_url": "https://github.com/pydantic/pydantic-ai/releases/tag/v1.107.10"
+    },
+    {
+      "id": "xiuqiu-radar:ai-archestra-unknown-stream-usage",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-05#ai-archestra-unknown-stream-usage",
+      "title": "Archestra 1.4.18：流已结束，缺失的 token 用量仍是未知",
+      "summary": "模型内容、连接结束与用量上报可能分别到达。把缺失值填成零，会让成本分析、失败调查或使用量比较把缺证据误当成没有消耗；记录应保留这种区别。",
+      "content_text": "模型内容、连接结束与用量上报可能分别到达。把缺失值填成零，会让成本分析、失败调查或使用量比较把缺证据误当成没有消耗；记录应保留这种区别。",
+      "date_published": "2026-11-05T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "infrastructure"
+      ],
+      "external_url": "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.4.18"
+    },
+    {
+      "id": "xiuqiu-radar:web3-akash-confirmed-alert-addresses",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-05#web3-akash-confirmed-alert-addresses",
+      "title": "Akash 通知服务2.81.10：新地址确认之后，才进入告警投递集合",
+      "summary": "基础设施告警包含运营信息。通道编辑者填入一个地址，不代表地址接收方已确认；把待确认与可投递集合分开，才能解释配置保存、接收方确认和实际送达各发生到了哪一步。",
+      "content_text": "基础设施告警包含运营信息。通道编辑者填入一个地址，不代表地址接收方已确认；把待确认与可投递集合分开，才能解释配置保存、接收方确认和实际送达各发生到了哪一步。",
+      "date_published": "2026-11-05T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "onchain_infrastructure"
+      ],
+      "external_url": "https://github.com/akash-network/console/releases/tag/notifications%2Fv2.81.10"
+    },
+    {
+      "id": "xiuqiu-radar:web3-opdeployer-real-super-root-anchor",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-05#web3-opdeployer-real-super-root-anchor",
+      "title": "op-deployer 0.9.0-rc.3：许可型 super-root 链也从真实起始锚开始",
+      "summary": "部署工具预测地址、生成创世状态与提交起始锚需要对应同一组配置。一个外形合法的占位值不能替代真实状态承诺；在继续阶段重验已保存锚，有助于定位准备数据与部署输入不一致。",
+      "content_text": "部署工具预测地址、生成创世状态与提交起始锚需要对应同一组配置。一个外形合法的占位值不能替代真实状态承诺；在继续阶段重验已保存锚，有助于定位准备数据与部署输入不一致。",
+      "date_published": "2026-11-05T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "l2"
+      ],
+      "external_url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-deployer%2Fv0.9.0-rc.3"
+    },
+    {
       "id": "xiuqiu-radar:ai-deepagents-interrupt-provenance",
       "url": "https://xiuqiu-site.vercel.app/radar/2026-11-04#ai-deepagents-interrupt-provenance",
       "title": "deepagents-code 0.2.4：给系统合成的中断消息保留来源",
@@ -732,58 +784,6 @@
         "protocol"
       ],
       "external_url": "https://github.com/ethereum/EIPs/commit/054078969965674643d7cf4e22460c438d09dd07"
-    },
-    {
-      "id": "xiuqiu-radar:ai-managed-agent-boundaries",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-11#ai-managed-agent-boundaries",
-      "title": "Managed Agents：把大脑、双手与会话拆开",
-      "summary": "它把 Agent 可靠性与安全从提示词问题变成结构问题，适合用来学习会话持久化、工具权限、故障恢复和凭据隔离。",
-      "content_text": "它把 Agent 可靠性与安全从提示词问题变成结构问题，适合用来学习会话持久化、工具权限、故障恢复和凭据隔离。",
-      "date_published": "2026-08-11T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "agent"
-      ],
-      "external_url": "https://www.anthropic.com/engineering/managed-agents"
-    },
-    {
-      "id": "xiuqiu-radar:ai-evaluation-signal-decay",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-11#ai-evaluation-signal-decay",
-      "title": "AI-resistant Eval：旧考题会失去区分能力",
-      "summary": "学习雷达未来若用模型评估内容，也要监控门禁是否仍能区分真实机制研究与流畅复述，不能迷信一次建立的测试集。",
-      "content_text": "学习雷达未来若用模型评估内容，也要监控门禁是否仍能区分真实机制研究与流畅复述，不能迷信一次建立的测试集。",
-      "date_published": "2026-08-11T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "evaluation"
-      ],
-      "external_url": "https://www.anthropic.com/engineering/AI-resistant-technical-evaluations"
-    },
-    {
-      "id": "xiuqiu-radar:web3-confidential-token-observability",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-11#web3-confidential-token-observability",
-      "title": "Agave 4.2：机密代币意图进入节点可观测面",
-      "summary": "钱包、交易所和风控系统依赖节点解析结果；理解协议升级如何改变可观测面，有助于避免把‘无法解析’误判为‘没有发生’。",
-      "content_text": "钱包、交易所和风控系统依赖节点解析结果；理解协议升级如何改变可观测面，有助于避免把‘无法解析’误判为‘没有发生’。",
-      "date_published": "2026-08-11T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "onchain_infrastructure"
-      ],
-      "external_url": "https://github.com/anza-xyz/agave/releases/tag/v4.2.0"
-    },
-    {
-      "id": "xiuqiu-radar:web3-lightning-migration-recovery",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-11#web3-lightning-migration-recovery",
-      "title": "lnd 0.21.2 RC：迁移失败必须可恢复",
-      "summary": "Lightning 节点承载真实通道状态，迁移错误与普通应用回滚不同；学习恢复顺序能建立对不可逆状态和候选版本边界的直觉。",
-      "content_text": "Lightning 节点承载真实通道状态，迁移错误与普通应用回滚不同；学习恢复顺序能建立对不可逆状态和候选版本边界的直觉。",
-      "date_published": "2026-08-11T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "l2"
-      ],
-      "external_url": "https://github.com/lightningnetwork/lnd/releases/tag/v0.21.2-beta.rc1"
     }
   ]
 }
