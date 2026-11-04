@@ -3,6 +3,156 @@
 import type { MarketRadarDaily } from '../generatedMarketRadars.ts'
 export const monthlyMarketRadars: MarketRadarDaily[] = [
   {
+    "date": "2026-11-05",
+    "slug": "2026-11-05",
+    "title": "交易研究雷达 · 2026-11-05",
+    "summary": "美国财政部公布1250亿美元再融资计划，其中约280亿为新现金；7年券拟自2027年3月起改为季度新发。本期区分发行安排、实际执行与待验证的市场吸收。",
+    "snapshotId": "market-2026-11-05-85d18bce65b28045",
+    "asOf": "2026-11-04T21:37:10.000Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-05T05:37:10+08:00",
+    "events": [
+      {
+        "id": "treasury-november-refunding-issuance-plan-2026-11-04",
+        "priority": "P1",
+        "status": "released",
+        "category": "macro",
+        "title": "财政部公布1250亿美元再融资计划，7年券拟改季度新发",
+        "fact": "财政部11月4日公布1250亿美元的3年、10年及30年期国债再融资安排，置换约970亿到期债务，拟筹约280亿新现金；预计未来数季维持名义附息债与浮息债拍卖规模，并计划自2027年3月起将7年券改为季度新发、随后两月续发，仍每月拍卖。",
+        "whyWatch": "研究判断：总发行额、置换到期债务与新增现金属于不同口径；新发和续发节奏也不同于拍卖频率。供给安排是否改变实际市场吸收，须经拍卖与结算等证据核验。",
+        "assets": [
+          "美国国债"
+        ],
+        "watchFor": "核对11月9日、10日、12日拍卖及16日结算的实际结果，跟进短债与现金管理券调整；7年券变更到2027年3月再核对实施公告。",
+        "invalidation": "官方改期、规模或融资假设修订时重估；计划未执行或市场数据口径不同时暂停传导解释，不以同步收益率变化认定因果。",
+        "sourceName": "U.S. Treasury Quarterly Refunding Statement, November 2026",
+        "sourceUrl": "https://home.treasury.gov/news/press-releases/sb0678",
+        "sourcePublishedAt": "2026-11-04"
+      }
+    ],
+    "sourceUrls": [
+      "https://home.treasury.gov/news/press-releases/sb0678"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "只登记官方再融资声明与未来发行安排；未建立固定窗口的跨资产历史样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "发行计划不能替代实际结算、市场需求或价格反应；本期未验证因果。",
+      "nextValidation": "按同版本、同口径核对拍卖与结算，再建立固定窗口样本；不足时不显示概率。",
+      "invalidation": "官方修订、口径或观察窗口不一致时重估；缺失数据不补推断。",
+      "sourceUrls": [
+        "https://home.treasury.gov/news/press-releases/sb0678"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "总发行额、到期置换和新现金如何经拍卖与结算形成实际供给，各环需要什么证据？",
+        "focusEventIds": [
+          "treasury-november-refunding-issuance-plan-2026-11-04"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些拍卖、现金与期限结构数据，能推翻发行安排已改变市场吸收的解释？",
+        "focusEventIds": [
+          "treasury-november-refunding-issuance-plan-2026-11-04"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若融资需求、短债调整或7年券实施安排改变，哪些替代情景成立，什么证据使原假设失效？",
+        "focusEventIds": [
+          "treasury-november-refunding-issuance-plan-2026-11-04"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-05",
+      "snapshotId": "market-2026-11-05-85d18bce65b28045",
+      "asOf": "2026-11-04T21:37:10.000Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-05",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "总发行额、到期置换和新现金如何经拍卖与结算形成实际供给，各环需要什么证据？",
+          "focusEventIds": [
+            "treasury-november-refunding-issuance-plan-2026-11-04"
+          ],
+          "prompt": "研究任务：总发行额、到期置换和新现金如何经拍卖与结算形成实际供给，各环需要什么证据？\n证据快照：2026-11-05；asOf=2026-11-04T21:37:10.000Z；snapshotId=market-2026-11-05-85d18bce65b28045\n\n材料 1｜财政部公布1250亿美元再融资计划，7年券拟改季度新发\n已确认事实：财政部11月4日公布1250亿美元的3年、10年及30年期国债再融资安排，置换约970亿到期债务，拟筹约280亿新现金；预计未来数季维持名义附息债与浮息债拍卖规模，并计划自2027年3月起将7年券改为季度新发、随后两月续发，仍每月拍卖。\n关注机制：研究判断：总发行额、置换到期债务与新增现金属于不同口径；新发和续发节奏也不同于拍卖频率。供给安排是否改变实际市场吸收，须经拍卖与结算等证据核验。\n接下来验证：核对11月9日、10日、12日拍卖及16日结算的实际结果，跟进短债与现金管理券调整；7年券变更到2027年3月再核对实施公告。\n失效条件：官方改期、规模或融资假设修订时重估；计划未执行或市场数据口径不同时暂停传导解释，不以同步收益率变化认定因果。\n一手来源：https://home.treasury.gov/news/press-releases/sb0678\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "18736c794e8e0f680bc3c3428c952b661a123b7512c4f3c2a89c85a1c8c760cb",
+          "sourceUrls": [
+            "https://home.treasury.gov/news/press-releases/sb0678"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些拍卖、现金与期限结构数据，能推翻发行安排已改变市场吸收的解释？",
+          "focusEventIds": [
+            "treasury-november-refunding-issuance-plan-2026-11-04"
+          ],
+          "prompt": "研究任务：哪些拍卖、现金与期限结构数据，能推翻发行安排已改变市场吸收的解释？\n证据快照：2026-11-05；asOf=2026-11-04T21:37:10.000Z；snapshotId=market-2026-11-05-85d18bce65b28045\n\n材料 1｜财政部公布1250亿美元再融资计划，7年券拟改季度新发\n已确认事实：财政部11月4日公布1250亿美元的3年、10年及30年期国债再融资安排，置换约970亿到期债务，拟筹约280亿新现金；预计未来数季维持名义附息债与浮息债拍卖规模，并计划自2027年3月起将7年券改为季度新发、随后两月续发，仍每月拍卖。\n关注机制：研究判断：总发行额、置换到期债务与新增现金属于不同口径；新发和续发节奏也不同于拍卖频率。供给安排是否改变实际市场吸收，须经拍卖与结算等证据核验。\n接下来验证：核对11月9日、10日、12日拍卖及16日结算的实际结果，跟进短债与现金管理券调整；7年券变更到2027年3月再核对实施公告。\n失效条件：官方改期、规模或融资假设修订时重估；计划未执行或市场数据口径不同时暂停传导解释，不以同步收益率变化认定因果。\n一手来源：https://home.treasury.gov/news/press-releases/sb0678\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "b00cd67f18569703528eeae7aebabd6734ba34b1fb80a19deb35b4ee839ed391",
+          "sourceUrls": [
+            "https://home.treasury.gov/news/press-releases/sb0678"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若融资需求、短债调整或7年券实施安排改变，哪些替代情景成立，什么证据使原假设失效？",
+          "focusEventIds": [
+            "treasury-november-refunding-issuance-plan-2026-11-04"
+          ],
+          "prompt": "研究任务：若融资需求、短债调整或7年券实施安排改变，哪些替代情景成立，什么证据使原假设失效？\n证据快照：2026-11-05；asOf=2026-11-04T21:37:10.000Z；snapshotId=market-2026-11-05-85d18bce65b28045\n\n材料 1｜财政部公布1250亿美元再融资计划，7年券拟改季度新发\n已确认事实：财政部11月4日公布1250亿美元的3年、10年及30年期国债再融资安排，置换约970亿到期债务，拟筹约280亿新现金；预计未来数季维持名义附息债与浮息债拍卖规模，并计划自2027年3月起将7年券改为季度新发、随后两月续发，仍每月拍卖。\n关注机制：研究判断：总发行额、置换到期债务与新增现金属于不同口径；新发和续发节奏也不同于拍卖频率。供给安排是否改变实际市场吸收，须经拍卖与结算等证据核验。\n接下来验证：核对11月9日、10日、12日拍卖及16日结算的实际结果，跟进短债与现金管理券调整；7年券变更到2027年3月再核对实施公告。\n失效条件：官方改期、规模或融资假设修订时重估；计划未执行或市场数据口径不同时暂停传导解释，不以同步收益率变化认定因果。\n一手来源：https://home.treasury.gov/news/press-releases/sb0678\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "03257c48215ad2497f3a35198e387775d3376673e7ad2424da19e039cc52a886",
+          "sourceUrls": [
+            "https://home.treasury.gov/news/press-releases/sb0678"
+          ]
+        }
+      ]
+    }
+  },
+  {
     "date": "2026-11-04",
     "slug": "2026-11-04",
     "title": "交易研究雷达 · 2026-11-04",
