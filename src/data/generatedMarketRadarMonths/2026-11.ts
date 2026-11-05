@@ -3,6 +3,157 @@
 import type { MarketRadarDaily } from '../generatedMarketRadars.ts'
 export const monthlyMarketRadars: MarketRadarDaily[] = [
   {
+    "date": "2026-11-06",
+    "slug": "2026-11-06",
+    "title": "交易研究雷达 · 2026-11-06",
+    "summary": "英国央行以8比1通过加息25个基点至4%，另一票偏好加息50个基点。纪要称二轮效应证据仍有限；本期区分利率决定、通胀判断与待验证的市场传导。",
+    "snapshotId": "market-2026-11-06-d7d45f948a9c4d75",
+    "asOf": "2026-11-05T21:38:07.000Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-06T05:38:07+08:00",
+    "events": [
+      {
+        "id": "boe-bank-rate-increase-2026-11-05",
+        "priority": "P1",
+        "status": "released",
+        "category": "macro",
+        "title": "英国央行以8比1通过加息25个基点至4%",
+        "fact": "英国央行11月5日发布11月4日结束会议的纪要：八名成员支持加息0.25个百分点至4%，Catherine Mann偏好加息0.5个百分点至4.25%。委员会称其他价格与工资的二轮效应证据仍有限，政策路径未预设。",
+        "whyWatch": "研究判断：政策利率调整与能源成本传导属于不同链条；汇率、国债期限结构及融资条件要分别核验，单次决定不能直接证明跨资产反应。",
+        "assets": [
+          "英镑",
+          "英国国债"
+        ],
+        "watchFor": "跟踪12月17日下一次纪要及工资、企业定价和经济闲置度数据；区分能源直接贡献与二轮效应，核对英债和英镑同一观察窗口。",
+        "invalidation": "官方修订或数据口径不同时重估；若工资和定价未持续响应或需求转弱，暂停能源冲击已造成广泛持续通胀的解释，不以同步市场变化认定因果。",
+        "sourceName": "Bank of England November 2026 Monetary Policy Summary and Minutes",
+        "sourceUrl": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/november-2026",
+        "sourcePublishedAt": "2026-11-05"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/november-2026"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "只登记英国央行利率决定与纪要；未建立固定窗口的跨资产历史样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "利率决定不能替代传导或价格反应证据；本期未验证跨资产因果。",
+      "nextValidation": "按同口径核对工资、定价、需求与融资条件，再建立固定窗口样本；不足时不显示概率。",
+      "invalidation": "官方修订、口径或观察窗口不一致时重估；缺失数据不补推断。",
+      "sourceUrls": [
+        "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/november-2026"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "此次利率决定如何经英镑、国债期限结构与融资条件传导，各环需要哪些同窗口证据？",
+        "focusEventIds": [
+          "boe-bank-rate-increase-2026-11-05"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些工资、企业定价与需求数据，能推翻能源冲击已形成广泛二轮效应的解释？",
+        "focusEventIds": [
+          "boe-bank-rate-increase-2026-11-05"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若能源回落或需求走弱，哪些替代情景成立，什么新证据会改变对持续通胀的判断？",
+        "focusEventIds": [
+          "boe-bank-rate-increase-2026-11-05"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-06",
+      "snapshotId": "market-2026-11-06-d7d45f948a9c4d75",
+      "asOf": "2026-11-05T21:38:07.000Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-06",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "此次利率决定如何经英镑、国债期限结构与融资条件传导，各环需要哪些同窗口证据？",
+          "focusEventIds": [
+            "boe-bank-rate-increase-2026-11-05"
+          ],
+          "prompt": "研究任务：此次利率决定如何经英镑、国债期限结构与融资条件传导，各环需要哪些同窗口证据？\n证据快照：2026-11-06；asOf=2026-11-05T21:38:07.000Z；snapshotId=market-2026-11-06-d7d45f948a9c4d75\n\n材料 1｜英国央行以8比1通过加息25个基点至4%\n已确认事实：英国央行11月5日发布11月4日结束会议的纪要：八名成员支持加息0.25个百分点至4%，Catherine Mann偏好加息0.5个百分点至4.25%。委员会称其他价格与工资的二轮效应证据仍有限，政策路径未预设。\n关注机制：研究判断：政策利率调整与能源成本传导属于不同链条；汇率、国债期限结构及融资条件要分别核验，单次决定不能直接证明跨资产反应。\n接下来验证：跟踪12月17日下一次纪要及工资、企业定价和经济闲置度数据；区分能源直接贡献与二轮效应，核对英债和英镑同一观察窗口。\n失效条件：官方修订或数据口径不同时重估；若工资和定价未持续响应或需求转弱，暂停能源冲击已造成广泛持续通胀的解释，不以同步市场变化认定因果。\n一手来源：https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/november-2026\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "9f79da0dc2939f04e7adb6b49dee275a4bd5d74ae62840c62d649a2cca87d8e9",
+          "sourceUrls": [
+            "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/november-2026"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些工资、企业定价与需求数据，能推翻能源冲击已形成广泛二轮效应的解释？",
+          "focusEventIds": [
+            "boe-bank-rate-increase-2026-11-05"
+          ],
+          "prompt": "研究任务：哪些工资、企业定价与需求数据，能推翻能源冲击已形成广泛二轮效应的解释？\n证据快照：2026-11-06；asOf=2026-11-05T21:38:07.000Z；snapshotId=market-2026-11-06-d7d45f948a9c4d75\n\n材料 1｜英国央行以8比1通过加息25个基点至4%\n已确认事实：英国央行11月5日发布11月4日结束会议的纪要：八名成员支持加息0.25个百分点至4%，Catherine Mann偏好加息0.5个百分点至4.25%。委员会称其他价格与工资的二轮效应证据仍有限，政策路径未预设。\n关注机制：研究判断：政策利率调整与能源成本传导属于不同链条；汇率、国债期限结构及融资条件要分别核验，单次决定不能直接证明跨资产反应。\n接下来验证：跟踪12月17日下一次纪要及工资、企业定价和经济闲置度数据；区分能源直接贡献与二轮效应，核对英债和英镑同一观察窗口。\n失效条件：官方修订或数据口径不同时重估；若工资和定价未持续响应或需求转弱，暂停能源冲击已造成广泛持续通胀的解释，不以同步市场变化认定因果。\n一手来源：https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/november-2026\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "89ded7a4404d58c5420e89db7f2be2f3b5f11dd41f37ca9bf06065b18639d48f",
+          "sourceUrls": [
+            "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/november-2026"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若能源回落或需求走弱，哪些替代情景成立，什么新证据会改变对持续通胀的判断？",
+          "focusEventIds": [
+            "boe-bank-rate-increase-2026-11-05"
+          ],
+          "prompt": "研究任务：若能源回落或需求走弱，哪些替代情景成立，什么新证据会改变对持续通胀的判断？\n证据快照：2026-11-06；asOf=2026-11-05T21:38:07.000Z；snapshotId=market-2026-11-06-d7d45f948a9c4d75\n\n材料 1｜英国央行以8比1通过加息25个基点至4%\n已确认事实：英国央行11月5日发布11月4日结束会议的纪要：八名成员支持加息0.25个百分点至4%，Catherine Mann偏好加息0.5个百分点至4.25%。委员会称其他价格与工资的二轮效应证据仍有限，政策路径未预设。\n关注机制：研究判断：政策利率调整与能源成本传导属于不同链条；汇率、国债期限结构及融资条件要分别核验，单次决定不能直接证明跨资产反应。\n接下来验证：跟踪12月17日下一次纪要及工资、企业定价和经济闲置度数据；区分能源直接贡献与二轮效应，核对英债和英镑同一观察窗口。\n失效条件：官方修订或数据口径不同时重估；若工资和定价未持续响应或需求转弱，暂停能源冲击已造成广泛持续通胀的解释，不以同步市场变化认定因果。\n一手来源：https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/november-2026\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "16a7814a56693f57c3fa0d381726a7987dc5434b1a92f9a75dde3727c4589f5c",
+          "sourceUrls": [
+            "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/november-2026"
+          ]
+        }
+      ]
+    }
+  },
+  {
     "date": "2026-11-05",
     "slug": "2026-11-05",
     "title": "交易研究雷达 · 2026-11-05",

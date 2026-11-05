@@ -6,9 +6,26 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-11-05"
-export const intelItemCount = 283
+export const intelLatestDate: string | null = "2026-11-06"
+export const intelItemCount = 284
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "market:2026-11-06:boe-bank-rate-increase-2026-11-05",
+    "kind": "market",
+    "date": "2026-11-06",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "英国央行以8比1通过加息25个基点至4%",
+    "summary": "研究判断：政策利率调整与能源成本传导属于不同链条；汇率、国债期限结构及融资条件要分别核验，单次决定不能直接证明跨资产反应。",
+    "href": "/market-radar/2026-11-06#boe-bank-rate-increase-2026-11-05",
+    "source": {
+      "name": "Bank of England November 2026 Monetary Policy Summary and Minutes",
+      "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/november-2026"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
   {
     "id": "learning:ai-pydantic-json-format-budget",
     "kind": "learning",
@@ -328,94 +345,14 @@ export const intelLatestItems: IntelItem[] = [
     "flags": {
       "priority": "P1"
     }
-  },
-  {
-    "id": "learning:ai-acr-method-diversity",
-    "kind": "learning",
-    "date": "2026-10-30",
-    "domain": "ai",
-    "topic": "model_inference",
-    "title": "ACR：同一模型的四条轨迹，要分别核对解法与正确性",
-    "summary": "并行 Agent 数量增加，不自动带来独立证据。若要用多条轨迹降低同一种推理盲点，应同时记录不同方法的数量、每条轨迹的正确性与生成预算，避免只奖励措辞变化。",
-    "href": "/radar/2026-10-30#ai-acr-method-diversity",
-    "source": {
-      "name": "Agent-Conditioned Routing — arXiv v1",
-      "tier": "tier1",
-      "url": "https://arxiv.org/abs/2610.37375"
-    }
-  },
-  {
-    "id": "learning:ai-tao-tool-aware-admission",
-    "kind": "learning",
-    "date": "2026-10-30",
-    "domain": "ai",
-    "topic": "infrastructure",
-    "title": "TAO：工具即将返回，才可能需要下一轮 GPU 准入",
-    "summary": "工具期间保留了多少上下文、何时再需要推理、目标节点还有多少容量，是不同观测。把这些量分开，才能解释调度是在利用真实缓存、预测短期需求，还是只在统计更大的会话。",
-    "href": "/radar/2026-10-30#ai-tao-tool-aware-admission",
-    "source": {
-      "name": "TAO: Tool-Aware Joint Scheduling — arXiv v1",
-      "tier": "tier1",
-      "url": "https://arxiv.org/abs/2610.37230"
-    },
-    "flags": {
-      "deepDive": true
-    }
-  },
-  {
-    "id": "learning:web3-viem-chain-scoped-config",
-    "kind": "learning",
-    "date": "2026-10-30",
-    "domain": "web3",
-    "topic": "wallet_cex",
-    "title": "viem 2.57.13：账户配置缓存要把链 ID 纳入键",
-    "summary": "账户地址相同不意味着配置可跨链共享。钱包与中继的缓存契约要同时说明命名空间、选中配置的链上依据和未命中时的行为，避免把缓存内容当成当前授权状态。",
-    "href": "/radar/2026-10-30#web3-viem-chain-scoped-config",
-    "source": {
-      "name": "viem 2.57.13 official release",
-      "tier": "tier1",
-      "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.13"
-    }
-  },
-  {
-    "id": "learning:web3-agave-padded-vote-state",
-    "kind": "learning",
-    "date": "2026-10-30",
-    "domain": "web3",
-    "topic": "onchain_infrastructure",
-    "title": "Agave 4.4.0：先编码投票状态，再只补零尾部",
-    "summary": "降低重复内存写入时，仍需核对序列化输出的字节内容、长度及错误边界。把这些契约与部署建议分别检查，能避免将一个局部实现优化夸成整网性能或兼容性结论。",
-    "href": "/radar/2026-10-30#web3-agave-padded-vote-state",
-    "source": {
-      "name": "Agave v4.4.0 stable release",
-      "tier": "tier1",
-      "url": "https://github.com/anza-xyz/agave/releases/tag/v4.4.0"
-    }
-  },
-  {
-    "id": "market:2026-10-30:bea-q3-gdp-advance-estimate-2026-10-29",
-    "kind": "market",
-    "date": "2026-10-30",
-    "domain": "market",
-    "topic": "market_macro",
-    "title": "美国三季度 GDP 初值：年化 3.4%，普通季比 0.8%",
-    "summary": "研究判断：GDP 与私人最终需求不同，存货和贸易也影响总量。初值不证明需求持续、利润改善或资产方向。",
-    "href": "/market-radar/2026-10-30#bea-q3-gdp-advance-estimate-2026-10-29",
-    "source": {
-      "name": "BEA GDP (Advance Estimate), 3rd Quarter 2026",
-      "url": "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026"
-    },
-    "flags": {
-      "priority": "P1"
-    }
   }
 ]
 export const intelTopics: IntelTopic[] = [
   {
     "topic": "market_macro",
     "domain": "market",
-    "count": 15,
-    "lastSeen": "2026-11-05",
+    "count": 16,
+    "lastSeen": "2026-11-06",
     "firstSeen": "2026-08-09"
   },
   {
