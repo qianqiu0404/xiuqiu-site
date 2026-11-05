@@ -6,6 +6,58 @@
   "language": "zh-CN",
   "items": [
     {
+      "id": "xiuqiu-radar:ai-langgraph-strict-interrupt-resume",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-06#ai-langgraph-strict-interrupt-resume",
+      "title": "LangGraph 1.2.20：严格恢复模式先核对回答是否仍在等待集合",
+      "summary": "长任务的回答可能因客户端重试而迟到。恢复协议需要保留它回答的是哪一次问题；仅把一个yes交回仍在暂停的任务，不能解释批准范围是否仍然对应当前问题。这项检查也不替代业务权限与执行确认。",
+      "content_text": "长任务的回答可能因客户端重试而迟到。恢复协议需要保留它回答的是哪一次问题；仅把一个yes交回仍在暂停的任务，不能解释批准范围是否仍然对应当前问题。这项检查也不替代业务权限与执行确认。",
+      "date_published": "2026-11-06T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "safety"
+      ],
+      "external_url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.20"
+    },
+    {
+      "id": "xiuqiu-radar:ai-deepagents-message-id-summary-cutoff",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-06#ai-deepagents-message-id-summary-cutoff",
+      "title": "Deep Agents 0.7.34：历史列表变动后，摘要截点仍跟随同一条消息",
+      "summary": "长期Agent的原始会话、摘要事件和模型可见消息是不同层。边界引用稳定的消息身份，可以解释历史编辑后模型到底看到了哪一段，减少仅因列表位置改变而静默遗漏仍应保留的上下文。",
+      "content_text": "长期Agent的原始会话、摘要事件和模型可见消息是不同层。边界引用稳定的消息身份，可以解释历史编辑后模型到底看到了哪一段，减少仅因列表位置改变而静默遗漏仍应保留的上下文。",
+      "date_published": "2026-11-06T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "agent"
+      ],
+      "external_url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents%3D%3D0.7.34"
+    },
+    {
+      "id": "xiuqiu-radar:web3-reth-callbundle-shared-work-budget",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-06#web3-reth-callbundle-shared-work-budget",
+      "title": "Reth 2.10.0：整组模拟共用gas预算，并进入阻塞任务并发限制",
+      "summary": "钱包和基础设施服务常把多笔操作组合成一次只读模拟。单笔允许的工作量、整组累计工作量与同时运行多少组是三个约束；有gas限制并不自动说明请求进入了服务的并发控制。",
+      "content_text": "钱包和基础设施服务常把多笔操作组合成一次只读模拟。单笔允许的工作量、整组累计工作量与同时运行多少组是三个约束；有gas限制并不自动说明请求进入了服务的并发控制。",
+      "date_published": "2026-11-06T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "onchain_infrastructure"
+      ],
+      "external_url": "https://github.com/paradigmxyz/reth/releases/tag/v2.10.0"
+    },
+    {
+      "id": "xiuqiu-radar:web3-foundry-snapshot-invariant-fuzzing",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-06#web3-foundry-snapshot-invariant-fuzzing",
+      "title": "Foundry 11月5日nightly：从有价值的旧状态继续探索不变量",
+      "summary": "合约失效条件可能需要多轮调用积累状态。测试深度参数与整个活动能到达的状态范围不能简单画等号；保留失败路径的完整前缀，才能让更深探索产出的反例继续被审查和重放。",
+      "content_text": "合约失效条件可能需要多轮调用积累状态。测试深度参数与整个活动能到达的状态范围不能简单画等号；保留失败路径的完整前缀，才能让更深探索产出的反例继续被审查和重放。",
+      "date_published": "2026-11-06T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "security"
+      ],
+      "external_url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-fb90b1c0940ebe8d8e6db70edf01941f0ab860dd"
+    },
+    {
       "id": "xiuqiu-radar:ai-pydantic-json-format-budget",
       "url": "https://xiuqiu-site.vercel.app/radar/2026-11-05#ai-pydantic-json-format-budget",
       "title": "Pydantic AI 1.107.10：返回长度有限，格式化过程仍需要预算",
@@ -732,58 +784,6 @@
         "protocol"
       ],
       "external_url": "https://github.com/ethereum/EIPs/commit/b325d33d61f18c8bc9f5f2b9b9c59f8bf702141a"
-    },
-    {
-      "id": "xiuqiu-radar:ai-generator-evaluator-loop",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-12#ai-generator-evaluator-loop",
-      "title": "长任务 Harness：生成器与评估器要分工",
-      "summary": "它帮助你理解 Agent 不是一次长提示，而是角色、状态和评测组成的控制系统；同样适用于研究内容的采集—编辑—门禁链路。",
-      "content_text": "它帮助你理解 Agent 不是一次长提示，而是角色、状态和评测组成的控制系统；同样适用于研究内容的采集—编辑—门禁链路。",
-      "date_published": "2026-08-12T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "agent"
-      ],
-      "external_url": "https://www.anthropic.com/engineering/harness-design-long-running-apps"
-    },
-    {
-      "id": "xiuqiu-radar:ai-long-horizon-adoption",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-12#ai-long-horizon-adoption",
-      "title": "Agent 使用研究：任务时长只是方向性估计",
-      "summary": "它训练你区分产品使用指标与因果结论，也提醒学习 Agent 系统时应关注验收率、返工和边界，而不是只看运行时长或 token。",
-      "content_text": "它训练你区分产品使用指标与因果结论，也提醒学习 Agent 系统时应关注验收率、返工和边界，而不是只看运行时长或 token。",
-      "date_published": "2026-08-12T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "data"
-      ],
-      "external_url": "https://openai.com/index/how-agents-are-transforming-work/"
-    },
-    {
-      "id": "xiuqiu-radar:web3-zcash-execution-boundary",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-12#web3-zcash-execution-boundary",
-      "title": "Ledger Live 4.15：隐私资产路径要单独门禁",
-      "summary": "它把钱包隐私、签名和发布控制放在同一个具体案例中，适合学习 coin adapter、硬件边界和敏感数据最小化。",
-      "content_text": "它把钱包隐私、签名和发布控制放在同一个具体案例中，适合学习 coin adapter、硬件边界和敏感数据最小化。",
-      "date_published": "2026-08-12T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "wallet_cex"
-      ],
-      "external_url": "https://github.com/LedgerHQ/ledger-live/releases/tag/%40ledgerhq/live-desktop%404.15.0"
-    },
-    {
-      "id": "xiuqiu-radar:web3-canonical-authenticator",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-12#web3-canonical-authenticator",
-      "title": "EIP-8130：把账户认证从任意代码中拆出",
-      "summary": "它把账户抽象最难的认证、并发 nonce 与会话权限集中到可讨论协议中，适合训练从交易格式到钱包策略的全链路思考。",
-      "content_text": "它把账户抽象最难的认证、并发 nonce 与会话权限集中到可讨论协议中，适合训练从交易格式到钱包策略的全链路思考。",
-      "date_published": "2026-08-12T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "protocol"
-      ],
-      "external_url": "https://github.com/ethereum/EIPs/commit/054078969965674643d7cf4e22460c438d09dd07"
     }
   ]
 }

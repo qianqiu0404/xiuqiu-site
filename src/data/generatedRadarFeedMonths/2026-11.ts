@@ -5,6 +5,55 @@ import type { RadarFeedItem } from '../generatedRadarFeed.ts'
 
 export const monthlyFeedItems: RadarFeedItem[] = [
   {
+    "id": "ai-langgraph-strict-interrupt-resume",
+    "date": "2026-11-06",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "LangGraph 1.2.20：严格恢复模式先核对回答是否仍在等待集合",
+    "summary": "长任务的回答可能因客户端重试而迟到。恢复协议需要保留它回答的是哪一次问题；仅把一个yes交回仍在暂停的任务，不能解释批准范围是否仍然对应当前问题。这项检查也不替代业务权限与执行确认。",
+    "anchor": "ai-langgraph-strict-interrupt-resume",
+    "sourceName": "LangGraph 1.2.20 official release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.20",
+    "isDeepDive": true
+  },
+  {
+    "id": "ai-deepagents-message-id-summary-cutoff",
+    "date": "2026-11-06",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "Deep Agents 0.7.34：历史列表变动后，摘要截点仍跟随同一条消息",
+    "summary": "长期Agent的原始会话、摘要事件和模型可见消息是不同层。边界引用稳定的消息身份，可以解释历史编辑后模型到底看到了哪一段，减少仅因列表位置改变而静默遗漏仍应保留的上下文。",
+    "anchor": "ai-deepagents-message-id-summary-cutoff",
+    "sourceName": "Deep Agents SDK 0.7.34 official release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents%3D%3D0.7.34"
+  },
+  {
+    "id": "web3-reth-callbundle-shared-work-budget",
+    "date": "2026-11-06",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "Reth 2.10.0：整组模拟共用gas预算，并进入阻塞任务并发限制",
+    "summary": "钱包和基础设施服务常把多笔操作组合成一次只读模拟。单笔允许的工作量、整组累计工作量与同时运行多少组是三个约束；有gas限制并不自动说明请求进入了服务的并发控制。",
+    "anchor": "web3-reth-callbundle-shared-work-budget",
+    "sourceName": "Reth v2.10.0 official release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/paradigmxyz/reth/releases/tag/v2.10.0"
+  },
+  {
+    "id": "web3-foundry-snapshot-invariant-fuzzing",
+    "date": "2026-11-06",
+    "domain": "web3",
+    "topic": "security",
+    "title": "Foundry 11月5日nightly：从有价值的旧状态继续探索不变量",
+    "summary": "合约失效条件可能需要多轮调用积累状态。测试深度参数与整个活动能到达的状态范围不能简单画等号；保留失败路径的完整前缀，才能让更深探索产出的反例继续被审查和重放。",
+    "anchor": "web3-foundry-snapshot-invariant-fuzzing",
+    "sourceName": "Foundry fixed-commit November 5 nightly prerelease",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/foundry-rs/foundry/releases/tag/nightly-fb90b1c0940ebe8d8e6db70edf01941f0ab860dd"
+  },
+  {
     "id": "ai-pydantic-json-format-budget",
     "date": "2026-11-05",
     "domain": "ai",

@@ -10,6 +10,10 @@
 
 ## Recent briefs
 
+- [LangGraph 1.2.20：严格恢复模式先核对回答是否仍在等待集合](https://xiuqiu-site.vercel.app/radar/2026-11-06#ai-langgraph-strict-interrupt-resume) (2026-11-06, ai/safety): 长任务的回答可能因客户端重试而迟到。恢复协议需要保留它回答的是哪一次问题；仅把一个yes交回仍在暂停的任务，不能解释批准范围是否仍然对应当前问题。这项检查也不替代业务权限与执行确认。
+- [Deep Agents 0.7.34：历史列表变动后，摘要截点仍跟随同一条消息](https://xiuqiu-site.vercel.app/radar/2026-11-06#ai-deepagents-message-id-summary-cutoff) (2026-11-06, ai/agent): 长期Agent的原始会话、摘要事件和模型可见消息是不同层。边界引用稳定的消息身份，可以解释历史编辑后模型到底看到了哪一段，减少仅因列表位置改变而静默遗漏仍应保留的上下文。
+- [Reth 2.10.0：整组模拟共用gas预算，并进入阻塞任务并发限制](https://xiuqiu-site.vercel.app/radar/2026-11-06#web3-reth-callbundle-shared-work-budget) (2026-11-06, web3/onchain_infrastructure): 钱包和基础设施服务常把多笔操作组合成一次只读模拟。单笔允许的工作量、整组累计工作量与同时运行多少组是三个约束；有gas限制并不自动说明请求进入了服务的并发控制。
+- [Foundry 11月5日nightly：从有价值的旧状态继续探索不变量](https://xiuqiu-site.vercel.app/radar/2026-11-06#web3-foundry-snapshot-invariant-fuzzing) (2026-11-06, web3/security): 合约失效条件可能需要多轮调用积累状态。测试深度参数与整个活动能到达的状态范围不能简单画等号；保留失败路径的完整前缀，才能让更深探索产出的反例继续被审查和重放。
 - [Pydantic AI 1.107.10：返回长度有限，格式化过程仍需要预算](https://xiuqiu-site.vercel.app/radar/2026-11-05#ai-pydantic-json-format-budget) (2026-11-05, ai/safety): Agent 的输入处理发生在模型看到正文之前。下载字节数与返回字符数限制不同阶段，不能只因最终文本很短，就推定解析、缩进等中间步骤耗时和内存也很小。
 - [Archestra 1.4.18：流已结束，缺失的 token 用量仍是未知](https://xiuqiu-site.vercel.app/radar/2026-11-05#ai-archestra-unknown-stream-usage) (2026-11-05, ai/infrastructure): 模型内容、连接结束与用量上报可能分别到达。把缺失值填成零，会让成本分析、失败调查或使用量比较把缺证据误当成没有消耗；记录应保留这种区别。
 - [Akash 通知服务2.81.10：新地址确认之后，才进入告警投递集合](https://xiuqiu-site.vercel.app/radar/2026-11-05#web3-akash-confirmed-alert-addresses) (2026-11-05, web3/onchain_infrastructure): 基础设施告警包含运营信息。通道编辑者填入一个地址，不代表地址接收方已确认；把待确认与可投递集合分开，才能解释配置保存、接收方确认和实际送达各发生到了哪一步。
@@ -18,10 +22,6 @@
 - [SGLang 0.5.23：推理指标跟随本次结果，延后发布仍保留原始状态](https://xiuqiu-site.vercel.app/radar/2026-11-04#ai-sglang-result-owned-fpm) (2026-11-04, ai/infrastructure): 异步计算完成、统计采样与指标发布并不同时发生。先固定指标属于哪一次结果、覆盖哪个计时区间，才能解释观测值；否则服务可能仍在计算，面板却报告空闲或把新长度配给旧耗时。
 - [MetaMask perps-controller 22.1.1：重连后，旧订阅不能接管新数据](https://xiuqiu-site.vercel.app/radar/2026-11-04#web3-metamask-reconnect-generation) (2026-11-04, web3/wallet_cex): 连接重新建立只是传输状态。数据监听器是否属于当前连接、是否仍有消费者、晚到结果能否覆盖新状态，需要独立判断；否则界面可能继续正常显示，却一直不再收到成交更新。
 - [Sui testnet v1.83.1：整包同步失败后，分段校验检查点内容](https://xiuqiu-site.vercel.app/radar/2026-11-04#web3-sui-checkpoint-paged-fallback) (2026-11-04, web3/onchain_infrastructure): 可恢复下载需要分清局部数据已写入与整个对象已完整。将检查点可用标记放到最后，有助于避免下游把部分内容当成完整状态；分页减少单次整包路径的约束，但不能创造缺失的数据源。
-- [langchain-anthropic 1.7.9：没有 token 回调，不等于模型没有输出](https://xiuqiu-site.vercel.app/radar/2026-11-03#ai-langchain-block-token-callbacks) (2026-11-03, ai/infrastructure): Agent 可观测性常依赖回调计算首 token 时间。传输有内容而观测链没有事件，会让面板、告警和性能比较得出不同结论；先核对测量路径，才能解释延迟。
-- [Claude Code 2.1.316：会话自动退出后，子 shell 也要有收尾证据](https://xiuqiu-site.vercel.app/radar/2026-11-03#ai-claude-exit-shell-lifecycle) (2026-11-03, ai/agent): 多 Agent 面板显示会话结束，并不自动证明它启动的计算、构建或网络工作已停止。把宿主和子进程的状态分别留证，可以避免下一次接手时重复启动仍在运行的任务。
-- [viem 2.57.14：余额预览改为显式请求，缺失不能显示成零变化](https://xiuqiu-site.vercel.app/radar/2026-11-03#web3-viem-preview-opt-in) (2026-11-03, web3/wallet_cex): 钱包的费用估算与资产影响预览是两个不同能力。升级后若界面把缺失字段补成空列表，用户可能把未请求或不可用的预览误读为已经验证不会动用资产。
-- [Foundry 1.9.0：记录过 revert 后，不再继续发送脚本本会阻止的操作](https://xiuqiu-site.vercel.app/radar/2026-11-03#web3-foundry-resume-recorded-revert) (2026-11-03, web3/onchain_infrastructure): 本地计划里列出下一步，不代表前一步失败后它仍然被授权执行。恢复工具必须结合链上回执和脚本控制流，不能把跳过失败项当成继续剩余计划的充分依据。
 
 ## Boundaries
 
