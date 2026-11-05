@@ -12,6 +12,48 @@ export interface RadarIndexEntry { date: string; slug: string; snapshotId: strin
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-11-06",
+    "slug": "2026-11-06",
+    "snapshotId": "learning-2026-11-06-76bb74905e43f384",
+    "asOf": "2026-11-05T21:34:40.000Z",
+    "title": "学习雷达 · 2026-11-06",
+    "summary": "AI 看恢复回答与当前中断的对应关系、摘要边界如何跟随消息身份；Web3 看整组模拟的资源约束与跨轮状态探索。专题拆解重复回答为什么不能自动变成下一题的批准。",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "briefs": [
+      {
+        "id": "ai-langgraph-strict-interrupt-resume",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "LangGraph 1.2.20：严格恢复模式先核对回答是否仍在等待集合"
+      },
+      {
+        "id": "ai-deepagents-message-id-summary-cutoff",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "Deep Agents 0.7.34：历史列表变动后，摘要截点仍跟随同一条消息"
+      },
+      {
+        "id": "web3-reth-callbundle-shared-work-budget",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Reth 2.10.0：整组模拟共用gas预算，并进入阻塞任务并发限制"
+      },
+      {
+        "id": "web3-foundry-snapshot-invariant-fuzzing",
+        "domain": "web3",
+        "topic": "security",
+        "title": "Foundry 11月5日nightly：从有价值的旧状态继续探索不变量"
+      }
+    ],
+    "deepDive": {
+      "id": "deep-interrupt-answer-identity",
+      "title": "专题：第一题的重复回答，为什么不能自动成为第二题的批准",
+      "basedOnBriefId": "ai-langgraph-strict-interrupt-resume"
+    },
+    "marketSignals": []
+  },
+  {
     "date": "2026-11-05",
     "slug": "2026-11-05",
     "snapshotId": "learning-2026-11-05-67d464635ae88e1c",
@@ -1573,6 +1615,286 @@ export const radarIndex: RadarIndexEntry[] = [
 
 export const latestRadars: DailyRadar[] = [
   {
+    "date": "2026-11-06",
+    "slug": "2026-11-06",
+    "title": "学习雷达 · 2026-11-06",
+    "summary": "AI 看恢复回答与当前中断的对应关系、摘要边界如何跟随消息身份；Web3 看整组模拟的资源约束与跨轮状态探索。专题拆解重复回答为什么不能自动变成下一题的批准。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-11-05T21:34:40.000Z",
+    "generatedAt": "2026-11-05T21:34:40.000Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-langgraph-strict-interrupt-resume",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "LangGraph 1.2.20：严格恢复模式先核对回答是否仍在等待集合",
+        "whatHappened": "LangGraph 于11月5日（UTC）发布1.2.20，新增可选的严格恢复模式：按中断ID提交的回答若已不在等待集合，根图在写入前报错。同版也让同一任务先后提出的问题使用不同ID，避免第一题的重复回答被第二题接收。",
+        "mechanism": "严格检查通过私有配置键启用，比较本次恢复映射与当前待答中断；空映射、多项待答却只给一个值也有明确错误。中断ID结合任务命名空间和已收到的回答数；节点自动重试时重置调用计数，以复用已有回答。",
+        "workedExample": "纸面流程可让一个节点先问“草稿是否通过”，收到ID A的回答后，再问“是否发送”并给出ID B。在当前检查点启用严格模式后，重复提交A应得到not_pending，再用B回答第二题。本期只读发布、固定版本代码和上游断言，未执行图或发送消息。",
+        "whyItMatters": "长任务的回答可能因客户端重试而迟到。恢复协议需要保留它回答的是哪一次问题；仅把一个yes交回仍在暂停的任务，不能解释批准范围是否仍然对应当前问题。这项检查也不替代业务权限与执行确认。",
+        "risksAndLimits": [
+          "严格模式默认未启用，入口是私有配置键；RemoteGraph会移除该键，远端由自身决定，不能据客户端配置宣称服务端已启用。",
+          "检查跳过嵌套图及已被后续状态取代的旧检查点；旧版本保存的共用ID有兼容路径，因此不能概括为所有重复回答、所有历史回放都一律拒绝。",
+          "没有待答中断的单值恢复仍可用于静态断点；本期未重跑上游测试，也未核验任何应用已经采用该模式。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "LangGraph 1.2.20 official release",
+            "url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.20",
+            "publishedAt": "2026-11-05T02:20:53.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "LangGraph PR 9574: opt-in strict resume validation",
+            "url": "https://github.com/langchain-ai/langgraph/pull/9574"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "LangGraph PR 9589: distinct interrupt IDs within one task",
+            "url": "https://github.com/langchain-ai/langgraph/pull/9589"
+          }
+        ],
+        "nextQuestions": [
+          "客户端提交的是本轮状态返回的中断ID，还是先前缓存的回答入口？",
+          "检查点回放、远端执行与自动重试时，批准和实际副作用分别留下了哪些证据？"
+        ]
+      },
+      {
+        "id": "ai-deepagents-message-id-summary-cutoff",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "Deep Agents 0.7.34：历史列表变动后，摘要截点仍跟随同一条消息",
+        "whatHappened": "Deep Agents 于11月5日21:15（UTC）发布0.7.34，修复摘要边界仅靠列表下标定位的问题。摘要事件新增cutoff_message_id，记录摘要之后第一条完整保留消息的ID，供后续模型输入与再次摘要定位边界。",
+        "mechanism": "自动摘要的同步、异步路径和compact_conversation工具都会保存该ID。重建模型可见消息时先在当前历史中查找ID，找不到或旧事件没有此字段时才回退到cutoff_index；串联摘要也先解析旧边界，再换算新位置。",
+        "workedExample": "设A至D已被摘要，E、F保留原文。若之后删除B，E从下标4移到3；继续从旧下标4切片会漏掉E，按E的ID定位则保留E、F。上游新增了相应断言和检查点样例，本期只阅读，未调用模型或重跑这些测试。",
+        "whyItMatters": "长期Agent的原始会话、摘要事件和模型可见消息是不同层。边界引用稳定的消息身份，可以解释历史编辑后模型到底看到了哪一段，减少仅因列表位置改变而静默遗漏仍应保留的上下文。",
+        "risksAndLimits": [
+          "消息没有ID、边界消息已不存在或旧事件缺字段时，仍回退到位置下标；不能声称任意编辑历史后边界都绝对正确。",
+          "该补丁不删除或重排存储的会话，也不会从既有摘要中清除已删除内容；计划中的分页Turns API和界面摘要标记并未由此实现。",
+          "这是deepagents SDK的0.7.34，不是此前deepagents-code 0.2.4的中断消息来源修复；版本发布也不证明下游已经升级。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Deep Agents SDK 0.7.34 official release",
+            "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents%3D%3D0.7.34",
+            "publishedAt": "2026-11-05T21:15:33.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Deep Agents PR 7567: anchor summarization cutoff by message ID",
+            "url": "https://github.com/langchain-ai/deepagents/pull/7567"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Deep Agents 0.7.34 summarization implementation",
+            "url": "https://github.com/langchain-ai/deepagents/blob/9ea3f1912abd8b7eecb504d78ef99fcf279bf561/libs/deepagents/deepagents/middleware/summarization.py"
+          }
+        ],
+        "nextQuestions": [
+          "边界消息被删除、没有ID或来自旧检查点时，回退行为是否能被审计？",
+          "原文删除、模型输入裁剪和摘要内容更新，是否分别完成了所需的数据处置？"
+        ]
+      },
+      {
+        "id": "web3-reth-callbundle-shared-work-budget",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Reth 2.10.0：整组模拟共用gas预算，并进入阻塞任务并发限制",
+        "whatHappened": "Reth 于11月5日（UTC）发布2.10.0，收紧eth_callBundle模拟的工作范围。此前每笔交易分别检查gas，整组请求未取得阻塞IO许可，也不检查取消；新版本让整组模拟取得许可、共享gas池，并在每笔交易前检查取消状态。",
+        "mechanism": "请求先取得受rpc.max-blocking-io-requests约束的许可，在线程中的模拟结束前持有。每笔交易的gas准入与已用预算共同决定能否继续；EIP-8037生效的环境分别核对常规gas和状态gas池。显式gasLimit仍不能超过节点配置的调用上限。",
+        "workedExample": "上游新增样例用两笔各需21,000 gas的转账：整组预算41,999时要求报错，42,000时允许完成；另占住唯一阻塞许可，要求模拟等待。这里报告的是源码中的测试意图，本期未运行节点、模拟或广播交易。",
+        "whyItMatters": "钱包和基础设施服务常把多笔操作组合成一次只读模拟。单笔允许的工作量、整组累计工作量与同时运行多少组是三个约束；有gas限制并不自动说明请求进入了服务的并发控制。",
+        "risksAndLimits": [
+          "timeout请求字段仍被忽略，取消只在交易之间检查；这不是每笔执行途中立即停止，也不是以秒计的硬超时保证。",
+          "该行为针对eth_callBundle，不能扩展为所有RPC都已获得同样约束；分叉后的双gas池语义应按实际模拟环境核对。",
+          "本期核对的是正式发布与固定版本实现，没有独立验证生产节点升级、断连取消延迟或服务容量。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Reth v2.10.0 official release",
+            "url": "https://github.com/paradigmxyz/reth/releases/tag/v2.10.0",
+            "publishedAt": "2026-11-05T16:18:11.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Reth PR 28253: bound eth_callBundle work",
+            "url": "https://github.com/paradigmxyz/reth/pull/28253"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Reth 2.10.0 bundle simulation implementation",
+            "url": "https://github.com/paradigmxyz/reth/blob/f5192ac72d92bc1e656a6939796421af76544af4/crates/rpc/rpc/src/eth/bundle.rs"
+          }
+        ],
+        "nextQuestions": [
+          "部署节点实际的调用gas上限和阻塞请求并发数各是多少，组合请求是否共同遵守？",
+          "取消发生在排队、交易之间还是单笔执行途中，分别何时释放许可？"
+        ]
+      },
+      {
+        "id": "web3-foundry-snapshot-invariant-fuzzing",
+        "domain": "web3",
+        "topic": "security",
+        "title": "Foundry 11月5日nightly：从有价值的旧状态继续探索不变量",
+        "whatHappened": "Foundry 于11月5日（UTC）发布固定提交fb90b1c的nightly预发布，包含快照式不变量模糊测试。测试轮次可以从先前探索中保存的状态继续发起新调用，使整个测试活动有机会到达超过单轮depth的状态，而非每轮都回到setUp之后。",
+        "mechanism": "成功调用的存储变化被压成状态特征，出现新特征时保存执行器和到达该状态的调用前缀，再按特征稀有度与探索收益选择起点。每个槽先保留小规模精确值集合，超过64个不同值后改用分布桶；反例仍携带可从setUp重放的前缀。",
+        "workedExample": "固定版本的上游回归把depth设为10，要求找到计数达到20时的不变量失败，再要求保存的反例从setUp重放仍失败。这是对跨轮探索和失败可复现性的两条源码断言，本期没有编译Foundry、执行测试或复现其性能报告。",
+        "whyItMatters": "合约失效条件可能需要多轮调用积累状态。测试深度参数与整个活动能到达的状态范围不能简单画等号；保留失败路径的完整前缀，才能让更深探索产出的反例继续被审查和重放。",
+        "risksAndLimits": [
+          "这是nightly预发布，不能写成稳定版已包含或主网已验证；实现默认启用，依赖每轮全新状态的handler或afterInvariant假设可能需要调整。",
+          "快照筛选是启发式搜索，不能证明未发现问题就没有漏洞；前缀长度、动态创建目标与快照保留规则都会限制探索。",
+          "快照池按存储槽预算淘汰但至少保留两个，并非进程内存的硬上限；本期未采用上游性能数字作为自行实测结论。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_prerelease",
+            "name": "Foundry fixed-commit November 5 nightly prerelease",
+            "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-fb90b1c0940ebe8d8e6db70edf01941f0ab860dd",
+            "publishedAt": "2026-11-05T07:17:38.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Foundry PR 18018: snapshot invariant fuzzing",
+            "url": "https://github.com/foundry-rs/foundry/pull/18018"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Foundry November 5 nightly state snapshot implementation",
+            "url": "https://github.com/foundry-rs/foundry/blob/fb90b1c0940ebe8d8e6db70edf01941f0ab860dd/crates/evm/evm/src/executors/invariant/snapshot.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Foundry fixed-commit snapshot replay regression assertions",
+            "url": "https://github.com/foundry-rs/foundry/blob/fb90b1c0940ebe8d8e6db70edf01941f0ab860dd/crates/forge/tests/cli/test_cmd/invariant/snapshot.rs"
+          }
+        ],
+        "nextQuestions": [
+          "现有handler或收尾钩子是否暗中假设每轮都从setUp状态开始？",
+          "深状态反例保存的前缀能否在同一版本、种子与配置下独立重放？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-interrupt-answer-identity",
+      "domain": "ai",
+      "topic": "safety",
+      "title": "专题：第一题的重复回答，为什么不能自动成为第二题的批准",
+      "whatHappened": "LangGraph 1.2.20把两个配套变化放在同一发布中：严格恢复检查回答的ID是否仍待处理，同一任务的后续中断则获得新的ID。仅做前一项仍会留缺口：如果第一题和第二题共用ID，第一题的重复回答看起来仍然匹配待答集合。",
+      "mechanism": "新版按任务命名空间与已有回答数量生成中断ID，而不按并行调用的先后次序；第一题沿用旧命名空间哈希。根图在当前检查点、严格模式下先核对恢复映射，再写入状态；自动重试从节点首行重跑时重置中断调用计数，使已保存的回答按原槽位复用。",
+      "workedExample": "纸面审查可记录五步：读取问题A及ID A、提交A的回答、重新读取问题B及ID B、重发A、再提交B。对新版当前检查点的严格路径，第四步应得到not_pending并保留B待答，第五步才对应B。另列旧ID兼容回放、静态断点和节点重试，分别核对行为；本期未执行这些场景。",
+      "whyItMatters": "同一个会话或任务仍在运行，不能证明一份旧回答仍对当前问题有效。编辑推论是：审批界面应显示本轮具体对象，并把回答、待答状态、业务参数与副作用回执关联起来；中断ID检查只解决其中的恢复匹配问题，不替应用定义完整授权协议。",
+      "risksAndLimits": [
+        "私有严格开关、远端配置过滤、嵌套执行与旧检查点回放各有边界；不能把这个局部机制包装成所有部署默认具备的审批安全保证。",
+        "为旧版保存的共用ID保留了兼容路径，静态断点也允许无待答中断的单值恢复。应用仍需区分正常恢复、历史重放与新的业务授权。",
+        "上游测试文件包含重复回答拒绝、第二题ID、自动重试复用等断言；本期未重跑，也未独立核验其运行结果，不据此宣称消息发送或其他外部操作已做到恰好一次。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "LangGraph 1.2.20 official release",
+          "url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.20",
+          "publishedAt": "2026-11-05T02:20:53.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "LangGraph PR 9574: opt-in strict resume validation",
+          "url": "https://github.com/langchain-ai/langgraph/pull/9574"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "LangGraph PR 9589: distinct interrupt IDs within one task",
+          "url": "https://github.com/langchain-ai/langgraph/pull/9589"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "LangGraph 1.2.20 interrupt identity implementation",
+          "url": "https://github.com/langchain-ai/langgraph/blob/a4d4187e82cdb0a73d68c76d70d655dd73a6db0b/libs/langgraph/langgraph/types.py"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "LangGraph 1.2.20 root resume validation implementation",
+          "url": "https://github.com/langchain-ai/langgraph/blob/a4d4187e82cdb0a73d68c76d70d655dd73a6db0b/libs/langgraph/langgraph/pregel/_loop.py"
+        }
+      ],
+      "nextQuestions": [
+        "批准回答所绑定的业务参数变化后，应用会重新提问，还是沿用旧恢复入口？",
+        "重试与历史重放能否复用计算状态，同时让外部副作用保持可审计？"
+      ],
+      "basedOnBriefId": "ai-langgraph-strict-interrupt-resume"
+    },
+    "sourceUrls": [
+      "https://github.com/langchain-ai/langgraph/releases/tag/1.2.20",
+      "https://github.com/langchain-ai/langgraph/pull/9574",
+      "https://github.com/langchain-ai/langgraph/pull/9589",
+      "https://github.com/langchain-ai/deepagents/releases/tag/deepagents%3D%3D0.7.34",
+      "https://github.com/langchain-ai/deepagents/pull/7567",
+      "https://github.com/langchain-ai/deepagents/blob/9ea3f1912abd8b7eecb504d78ef99fcf279bf561/libs/deepagents/deepagents/middleware/summarization.py",
+      "https://github.com/paradigmxyz/reth/releases/tag/v2.10.0",
+      "https://github.com/paradigmxyz/reth/pull/28253",
+      "https://github.com/paradigmxyz/reth/blob/f5192ac72d92bc1e656a6939796421af76544af4/crates/rpc/rpc/src/eth/bundle.rs",
+      "https://github.com/foundry-rs/foundry/releases/tag/nightly-fb90b1c0940ebe8d8e6db70edf01941f0ab860dd",
+      "https://github.com/foundry-rs/foundry/pull/18018",
+      "https://github.com/foundry-rs/foundry/blob/fb90b1c0940ebe8d8e6db70edf01941f0ab860dd/crates/evm/evm/src/executors/invariant/snapshot.rs",
+      "https://github.com/foundry-rs/foundry/blob/fb90b1c0940ebe8d8e6db70edf01941f0ab860dd/crates/forge/tests/cli/test_cmd/invariant/snapshot.rs",
+      "https://github.com/langchain-ai/langgraph/blob/a4d4187e82cdb0a73d68c76d70d655dd73a6db0b/libs/langgraph/langgraph/types.py",
+      "https://github.com/langchain-ai/langgraph/blob/a4d4187e82cdb0a73d68c76d70d655dd73a6db0b/libs/langgraph/langgraph/pregel/_loop.py"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-11-06-76bb74905e43f384",
+    "asOf": "2026-11-05T21:34:40.000Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
+  {
     "date": "2026-11-05",
     "slug": "2026-11-05",
     "title": "学习雷达 · 2026-11-05",
@@ -2856,210 +3178,6 @@ export const latestRadars: DailyRadar[] = [
     "marketSignals": [],
     "snapshotId": "learning-2026-10-29-b2dcbd92a877e0a1",
     "asOf": "2026-10-28T21:39:29.790Z",
-    "origin": "research",
-    "publicationState": "published"
-  },
-  {
-    "date": "2026-10-28",
-    "slug": "2026-10-28",
-    "title": "学习雷达 · 2026-10-28",
-    "summary": "AI 看 LangGraph 长会话增量快照的恢复代价，以及 Agent 搜索前如何验证和冻结评测器；Web3 看 LND 并发发票订阅的事务连接死锁，及 Nitro 跨版本恢复的区块保留边界。专题梳理分数与验收范围的对应关系。",
-    "publish": true,
-    "reviewStatus": "automated",
-    "schemaVersion": 2,
-    "editionMode": "daily",
-    "researchedAt": "2026-10-27T21:40:17.187Z",
-    "generatedAt": "2026-10-27T21:40:17.187Z",
-    "sourceSections": [
-      "ai",
-      "web3",
-      "deepDive"
-    ],
-    "missingSections": [],
-    "briefs": [
-      {
-        "id": "ai-langgraph-delta-replay-window",
-        "domain": "ai",
-        "topic": "agent",
-        "title": "LangGraph 1.2.18：用更多完整快照，缩短长会话的重放链",
-        "whatHappened": "LangGraph 于 10 月 26 日（UTC）发布 1.2.18。发布说明把 DeltaChannel 的默认完整快照间隔从 1,000 次更新改为 100 次；这是状态持久化的默认值变化，不是对任意 Agent 任务成功率的承诺。",
-        "mechanism": "增量状态需要从完整快照重放后续更新。关联 PR 说明，更频繁的完整快照用于限制长线程的重放延迟，代价是增加存储；显式设置的间隔不变，仍可用 snapshot_frequency=1000 保留旧行为。",
-        "workedExample": "一个长会话恢复演练，可固定相同输入与状态，在隔离环境比较恢复耗时、快照字节和重放更新数。间隔缩短十倍，不代表恢复一定快十倍；本期没有运行 LangGraph、读写业务数据库或做性能测试。",
-        "whyItMatters": "Agent 能继续工作，既取决于保存了什么，也取决于重建这些状态要花多久。升级清单应同时记录默认值、显式配置和存储开销，避免把可恢复直接等同于低延迟恢复。",
-        "risksAndLimits": [
-          "发布说明没有给出通用于所有后端和会话的延迟或存储增幅；需要用自己的状态大小和访问模式验证。",
-          "只讨论本版 DeltaChannel 行为，不能据此认定外部工具副作用已幂等、任务已完成或生产恢复已通过。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "LangGraph 1.2.18 release notes",
-            "url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.18",
-            "publishedAt": "2026-10-26T20:04:45.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "LangGraph PR 9420: delta snapshot frequency",
-            "url": "https://github.com/langchain-ai/langgraph/pull/9420"
-          }
-        ],
-        "nextQuestions": [
-          "实际工作流使用默认间隔，还是已有显式覆盖？",
-          "恢复时的重放长度、读取耗时和快照存储量，能否在同一组任务中分别观测？"
-        ]
-      },
-      {
-        "id": "ai-verified-autoresearch-evaluator",
-        "domain": "ai",
-        "topic": "evaluation",
-        "title": "Verified autoresearch：先验证评测器，再让 Agent 搜索更优程序",
-        "whatHappened": "10 月 22 日提交的一篇预印本研究 Agent 如何自动优化量子编译程序。作者将候选搜索与冻结的精确验证器分开，并在搜索前用已解实例、故意损坏的解和文献基准核验评测器。",
-        "mechanism": "Agent 修改候选程序，验证器先判有效，再由评分器计算成本；分数绑定冻结文件的 SHA-256 指纹，评测器变化会使旧分数失效。论文把验证器构建与验证也纳入流程，并保留问题契约和验证器的用户签核。",
-        "workedExample": "论文报告，初版幺正综合验证器只比对相位，可能接受实现了错误线性变换的电路，搜索前的验证门禁发现了这个问题。工程上的对应做法是给评测器喂入应被拒绝的已知坏解；本期没有复现该实验。",
-        "whyItMatters": "Agent 优化的是评测器给出的反馈。若有效性判定本身缺项，更高分也可能只说明候选找到了缺口；让评测规则和候选版本都可追溯，有助于解释分数究竟证明了什么。",
-        "risksAndLimits": [
-          "这是作者报告的预印本，适用范围限定为能在经典计算机上精确、高效验证且成本确定的任务，不能直接推广到开放网页任务。",
-          "多数大实例的最优值未知；某些基线较弱，电路深度没有作为优化目标，不能把指定成本下降说成所有指标改善。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "research_preprint",
-            "name": "Automating quantum circuit optimization with AI agents — arXiv v1",
-            "url": "https://arxiv.org/abs/2610.31352",
-            "publishedAt": "2026-10-22T14:33:13.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "research_preprint_fulltext",
-            "name": "Verified autoresearch: approach, discussion and limitations",
-            "url": "https://arxiv.org/html/2610.31352v1"
-          }
-        ],
-        "nextQuestions": [
-          "评测器是否通过已知正确解、故意坏解与参考结果的独立检查？",
-          "规则变化后，旧分数是否失效并按同一新规则重新计算？"
-        ]
-      },
-      {
-        "id": "web3-lnd-sql-invoice-transaction-scope",
-        "domain": "web3",
-        "topic": "wallet_cex",
-        "title": "LND 0.21.5-beta：发票订阅死锁，出在事务内又借了一条连接",
-        "whatHappened": "LND 于 10 月 27 日（UTC）发布 v0.21.5-beta。该标签的发布说明修复了原生 SQL 连接池死锁：查询某个结算索引之后的发票时，AMP 子发票查询额外借用连接，而没有复用已打开的只读事务。",
-        "mechanism": "官方说明给出的触发场景是 SQLite 节点同时启动两个非零 settle_index 的 SubscribeInvoices 调用。它们可能耗尽连接池并阻塞其他数据库访问；修复复用事务，还增加 txscope 检查以发现事务回调误用外层执行器。",
-        "workedExample": "一个隔离回归用例可以并发恢复两条发票订阅，设置非零结算索引，同时检查独立只读请求能否完成。只看订阅接口已返回，不足以证明连接池可继续服务；这是拟议用例，本期未运行节点或连接钱包。",
-        "whyItMatters": "钱包和支付服务的订阅恢复常与其他请求并发。事务已经开始，不意味着随后每个查询都在使用同一事务；把连接借用范围纳入检查，有助于定位看似全局卡死的问题。",
-        "risksAndLimits": [
-          "该触发描述针对发布说明所指的原生 SQL 路径与 SQLite 并发订阅，不应泛称所有 LND 部署都会死锁。",
-          "beta 是项目的版本命名；本期只核对发布资料，没有验证任意节点、资金状态、升级安全性或生产修复效果。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "LND v0.21.5-beta release",
-            "url": "https://github.com/lightningnetwork/lnd/releases/tag/v0.21.5-beta",
-            "publishedAt": "2026-10-27T18:20:27.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_release_notes",
-            "name": "LND v0.21.5-beta fixed-tag release notes",
-            "url": "https://raw.githubusercontent.com/lightningnetwork/lnd/v0.21.5-beta/docs/release-notes/release-notes-0.21.5.md"
-          }
-        ],
-        "nextQuestions": [
-          "事务回调内的嵌套查询，实际使用事务对象还是重新向连接池借连接？",
-          "并发恢复订阅时，其他 RPC 与数据库写入是否仍能在预期时间内完成？"
-        ]
-      },
-      {
-        "id": "web3-nitro-version-transition-head-retention",
-        "domain": "web3",
-        "topic": "l2",
-        "title": "Nitro 3.12.2：回到旧分支再升级，也要核对区块保留",
-        "whatHappened": "Arbitrum Nitro 的 GitHub v3.12.2 发布页于 10 月 27 日（UTC）公开，正文 changelog 标为 10 月 14 日。本期分别保留这两个日期：该版说明修复从 3.11.x 返回 3.12.x 时删除近期区块的问题。",
-        "mechanism": "版本迁移的行为需要连同节点先前运行的分支一起理解。说明还列出延迟消息排序发生 panic 后继续运行并在一分钟后重试，以及 head 截断相关修复；这些是维护者的修复描述，不是本期运行观察。",
-        "workedExample": "一次隔离升级演练可先保存近期区块标识，再走 3.12.x、3.11.x、3.12.2 的转换路径，逐步比较保留范围和同步状态。仅核对最终版本号不能验证该路径；本期没有拉取镜像、运行节点或执行回退。",
-        "whyItMatters": "客户端恢复可能跨越多个版本分支，节点状态又会随运行改变。记录完整转换路径和前后区块状态，比只记录升级终点更有助于判断这条修复是否适用。",
-        "risksAndLimits": [
-          "10 月 27 日是 GitHub 发布时刻，不能当成所有修复的首次编写日期；10 月 14 日也不自动代表当日已对外发布该制品。",
-          "修复说明不证明任意节点不会丢数据，也不证明消息已且仅处理一次、链已同步或可任意降级。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "Arbitrum Nitro v3.12.2 release notes",
-            "url": "https://github.com/OffchainLabs/nitro/releases/tag/v3.12.2",
-            "publishedAt": "2026-10-27T13:27:32.000Z"
-          }
-        ],
-        "nextQuestions": [
-          "复现和验收是否覆盖真实发生过的版本转换路径，而不只是全新启动？",
-          "延迟消息重试后，哪些独立状态可确认处理结果和持续运行状态？"
-        ]
-      }
-    ],
-    "deepDive": {
-      "id": "deep-verified-evaluator-evidence-boundary",
-      "domain": "ai",
-      "topic": "evaluation",
-      "title": "专题：一个更高的 Agent 分数，需要哪些前提",
-      "whatHappened": "这篇预印本把问题契约、评测器验证与候选搜索分成阶段。作者报告搜索前的检查发现了初版评测器缺陷，随后才冻结评测器并接受候选；本期关注的是这个评测流程，而非量子硬件进展。",
-      "mechanism": "有效性验证回答候选是否满足声明的问题，评分回答有效候选在指定成本上有多好。冻结文件指纹用于绑定规则；执行环境把候选视为不可信代码，以只读评测器和无网络方式运行。论文仍要求用户确认契约和验证器。",
-      "workedExample": "设想评测器只检查输出格式而漏查最终状态，Agent 可能得到高分却没有完成任务。可先加入一个格式正确、最终状态错误的坏解，确认拒绝后再冻结规则；这只是由论文方法推导的工程示例，没有执行或验证本项目。",
-      "whyItMatters": "可追溯分数至少需要问题定义、候选、评测器版本与验收范围相互对应。规则被修正后重新评分，才能在同一依据上比较结果；分数本身不能替代对问题定义是否完整的判断。",
-      "risksAndLimits": [
-        "精确检查只覆盖契约内的性质；论文指出某些单实例构造不能视为通用算法，较大实例多数没有已知最优值。",
-        "论文的容器隔离不保护侧信道或运行时自身漏洞；本期没有复现隔离或性能结果，也不把这些设置当成通用安全保证。"
-      ],
-      "sources": [
-        {
-          "tier": "tier1",
-          "role": "event",
-          "kind": "research_preprint",
-          "name": "Automating quantum circuit optimization with AI agents — arXiv v1",
-          "url": "https://arxiv.org/abs/2610.31352",
-          "publishedAt": "2026-10-22T14:33:13.000Z"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "research_preprint_fulltext",
-          "name": "Verified autoresearch: approach, discussion and limitations",
-          "url": "https://arxiv.org/html/2610.31352v1"
-        }
-      ],
-      "nextQuestions": [
-        "目标中有哪些重要性质没有进入有效性检查或优化成本？",
-        "更换规则或测试实例后，哪些旧结论必须重新验收，而不能直接沿用？"
-      ],
-      "basedOnBriefId": "ai-verified-autoresearch-evaluator"
-    },
-    "sourceUrls": [
-      "https://github.com/langchain-ai/langgraph/releases/tag/1.2.18",
-      "https://github.com/langchain-ai/langgraph/pull/9420",
-      "https://arxiv.org/abs/2610.31352",
-      "https://arxiv.org/html/2610.31352v1",
-      "https://github.com/lightningnetwork/lnd/releases/tag/v0.21.5-beta",
-      "https://raw.githubusercontent.com/lightningnetwork/lnd/v0.21.5-beta/docs/release-notes/release-notes-0.21.5.md",
-      "https://github.com/OffchainLabs/nitro/releases/tag/v3.12.2"
-    ],
-    "relatedProjectSlugs": [],
-    "marketSignals": [],
-    "snapshotId": "learning-2026-10-28-083648fa9c9b5250",
-    "asOf": "2026-10-27T21:40:17.187Z",
     "origin": "research",
     "publicationState": "published"
   }

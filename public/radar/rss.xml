@@ -6,7 +6,43 @@
     <atom:link href="https://xiuqiu-site.vercel.app/radar/rss.xml" rel="self" type="application/rss+xml" />
     <description>每天 2 条 AI、2 条 Web3 工程简报：先讲机制，再给例子和边界。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Thu, 05 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Fri, 06 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>LangGraph 1.2.20：严格恢复模式先核对回答是否仍在等待集合</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-06#ai-langgraph-strict-interrupt-resume</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-langgraph-strict-interrupt-resume</guid>
+      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>safety</category>
+      <description>长任务的回答可能因客户端重试而迟到。恢复协议需要保留它回答的是哪一次问题；仅把一个yes交回仍在暂停的任务，不能解释批准范围是否仍然对应当前问题。这项检查也不替代业务权限与执行确认。</description>
+    </item>
+    <item>
+      <title>Deep Agents 0.7.34：历史列表变动后，摘要截点仍跟随同一条消息</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-06#ai-deepagents-message-id-summary-cutoff</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-deepagents-message-id-summary-cutoff</guid>
+      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>agent</category>
+      <description>长期Agent的原始会话、摘要事件和模型可见消息是不同层。边界引用稳定的消息身份，可以解释历史编辑后模型到底看到了哪一段，减少仅因列表位置改变而静默遗漏仍应保留的上下文。</description>
+    </item>
+    <item>
+      <title>Reth 2.10.0：整组模拟共用gas预算，并进入阻塞任务并发限制</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-06#web3-reth-callbundle-shared-work-budget</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-reth-callbundle-shared-work-budget</guid>
+      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>onchain_infrastructure</category>
+      <description>钱包和基础设施服务常把多笔操作组合成一次只读模拟。单笔允许的工作量、整组累计工作量与同时运行多少组是三个约束；有gas限制并不自动说明请求进入了服务的并发控制。</description>
+    </item>
+    <item>
+      <title>Foundry 11月5日nightly：从有价值的旧状态继续探索不变量</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-06#web3-foundry-snapshot-invariant-fuzzing</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-foundry-snapshot-invariant-fuzzing</guid>
+      <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>security</category>
+      <description>合约失效条件可能需要多轮调用积累状态。测试深度参数与整个活动能到达的状态范围不能简单画等号；保留失败路径的完整前缀，才能让更深探索产出的反例继续被审查和重放。</description>
+    </item>
     <item>
       <title>Pydantic AI 1.107.10：返回长度有限，格式化过程仍需要预算</title>
       <link>https://xiuqiu-site.vercel.app/radar/2026-11-05#ai-pydantic-json-format-budget</link>
@@ -510,42 +546,6 @@
       <category>WEB3</category>
       <category>protocol</category>
       <description>它展示了数据可用性协议如何把恢复职责、传播网络和攻击成本写成显式状态机，也能帮助理解 L2 扩容为何不仅是提高 Blob 数量。</description>
-    </item>
-    <item>
-      <title>长任务 Harness：生成器与评估器要分工</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-12#ai-generator-evaluator-loop</link>
-      <guid isPermaLink="false">xiuqiu-radar:ai-generator-evaluator-loop</guid>
-      <pubDate>Wed, 12 Aug 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>agent</category>
-      <description>它帮助你理解 Agent 不是一次长提示，而是角色、状态和评测组成的控制系统；同样适用于研究内容的采集—编辑—门禁链路。</description>
-    </item>
-    <item>
-      <title>Agent 使用研究：任务时长只是方向性估计</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-12#ai-long-horizon-adoption</link>
-      <guid isPermaLink="false">xiuqiu-radar:ai-long-horizon-adoption</guid>
-      <pubDate>Wed, 12 Aug 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>data</category>
-      <description>它训练你区分产品使用指标与因果结论，也提醒学习 Agent 系统时应关注验收率、返工和边界，而不是只看运行时长或 token。</description>
-    </item>
-    <item>
-      <title>Ledger Live 4.15：隐私资产路径要单独门禁</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-12#web3-zcash-execution-boundary</link>
-      <guid isPermaLink="false">xiuqiu-radar:web3-zcash-execution-boundary</guid>
-      <pubDate>Wed, 12 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>wallet_cex</category>
-      <description>它把钱包隐私、签名和发布控制放在同一个具体案例中，适合学习 coin adapter、硬件边界和敏感数据最小化。</description>
-    </item>
-    <item>
-      <title>EIP-8130：把账户认证从任意代码中拆出</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-12#web3-canonical-authenticator</link>
-      <guid isPermaLink="false">xiuqiu-radar:web3-canonical-authenticator</guid>
-      <pubDate>Wed, 12 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>protocol</category>
-      <description>它把账户抽象最难的认证、并发 nonce 与会话权限集中到可讨论协议中，适合训练从交易格式到钱包策略的全链路思考。</description>
     </item>
   </channel>
 </rss>
