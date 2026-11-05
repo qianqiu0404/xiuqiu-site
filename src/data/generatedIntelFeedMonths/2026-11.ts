@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-11-06:boe-bank-rate-increase-2026-11-05",
+    "kind": "market",
+    "date": "2026-11-06",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "英国央行以8比1通过加息25个基点至4%",
+    "summary": "研究判断：政策利率调整与能源成本传导属于不同链条；汇率、国债期限结构及融资条件要分别核验，单次决定不能直接证明跨资产反应。",
+    "href": "/market-radar/2026-11-06#boe-bank-rate-increase-2026-11-05",
+    "source": {
+      "name": "Bank of England November 2026 Monetary Policy Summary and Minutes",
+      "url": "https://www.bankofengland.co.uk/monetary-policy-summary-and-minutes/2026/november-2026"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
+  {
     "id": "learning:ai-pydantic-json-format-budget",
     "kind": "learning",
     "date": "2026-11-05",
