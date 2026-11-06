@@ -6,9 +6,43 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-11-06"
-export const intelItemCount = 288
+export const intelLatestDate: string | null = "2026-11-07"
+export const intelItemCount = 290
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "market:2026-11-07:bls-october-employment-revisions-2026-11-06",
+    "kind": "market",
+    "date": "2026-11-07",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "美国10月非农增16.5万，前两月合计上修8.4万",
+    "summary": "研究判断：就业数量、工资与政策预期是不同证据层。非农与失业率来自不同调查，先核对修订、行业构成和工时，再检验国债收益率与美元的同窗口反应。",
+    "href": "/market-radar/2026-11-07#bls-october-employment-revisions-2026-11-06",
+    "source": {
+      "name": "U.S. Bureau of Labor Statistics Employment Situation — October 2026",
+      "url": "https://www.bls.gov/news.release/archives/empsit_11062026.htm"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
+  {
+    "id": "market:2026-11-07:statcan-october-lfs-employment-unemployment-2026-11-06",
+    "kind": "market",
+    "date": "2026-11-07",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "加拿大10月就业基本持平，失业率升至6.7%",
+    "summary": "研究判断：就业总量基本持平可与行业、私营及公共部门变化并存；需分别检验劳动力供给与需求，再核对本国利率和加元反应，不能直接据此比较两国强弱。",
+    "href": "/market-radar/2026-11-07#statcan-october-lfs-employment-unemployment-2026-11-06",
+    "source": {
+      "name": "Statistics Canada The Daily — Labour Force Survey, October 2026",
+      "url": "https://www150.statcan.gc.ca/n1/daily-quotidien/261106/dq261106a-eng.htm"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
   {
     "id": "learning:ai-langgraph-strict-interrupt-resume",
     "kind": "learning",
@@ -414,8 +448,8 @@ export const intelTopics: IntelTopic[] = [
   {
     "topic": "market_macro",
     "domain": "market",
-    "count": 16,
-    "lastSeen": "2026-11-06",
+    "count": 18,
+    "lastSeen": "2026-11-07",
     "firstSeen": "2026-08-09"
   },
   {
