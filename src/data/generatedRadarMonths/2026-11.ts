@@ -5,6 +5,300 @@ import type { DailyRadar } from '../generatedRadars.ts'
 
 export const monthlyRadars: DailyRadar[] = [
   {
+    "date": "2026-11-07",
+    "slug": "2026-11-07",
+    "title": "学习雷达 · 2026-11-07",
+    "summary": "AI 看流式工具参数的累计成本与沙箱命令缓存的身份；Web3 看删除请求的认证凭据与隐式账户的数据计量下界。专题拆解新执行与历史回放为什么需要不同的缓存判断。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-11-06T21:31:30.000Z",
+    "generatedAt": "2026-11-06T21:31:30.000Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-langchain-stream-chunk-accumulation",
+        "domain": "ai",
+        "topic": "infrastructure",
+        "title": "LangChain Core 1.7.6：读取累计结果时，再一次合并流式消息",
+        "whatHappened": "LangChain Core 于11月5日（UTC）发布1.7.6，包含 Runnable 流累计的性能修复。此前每收到一个 AIMessageChunk 就加到总值，反复解析已经收到的工具参数；新版先保存开头连续的消息块，读取累计值时再合并。",
+        "mechanism": "新增 _ChunkAccumulator 在尚无累计值且块仍是 AIMessageChunk 时收集列表，读取 value 或遇到其他类型时调用 first + rest，一次构建合并消息。同步与异步的流追踪、默认 transform 和 RunnableLambda 接入此路径；批量相加抛出 TypeError 时退回逐块相加。",
+        "workedExample": "固定版本的上游回归把包含5,000个字符的工具参数分成每块10字符，检查最终工具调用参数和回调总值，并累计送入解析函数的字符数，要求小于完整参数长度的10倍。本期只阅读这些断言，未运行模型、上游测试或性能测量。",
+        "whyItMatters": "模型分块输出正常，不代表消费端累计结果的代价也稳定。工具参数越长，重复解析整个前缀可能越慢；区分逐块交付与最终累计，可以解释流畅度问题究竟出在模型服务还是本地消息处理。",
+        "risksAndLimits": [
+          "AIMessageChunk 本身未改变；调用者自行 acc += chunk、嵌在字典内的消息块、astream_log 及若干 fallback、branch、passthrough 累计器不在该补丁覆盖内。",
+          "缓冲消息块不构成内存硬上限，也不是通用 kwargs 合并优化；上游 PR 的耗时数字未在本期复现，包发布不证明应用已升级。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "LangChain Core 1.7.6 official release",
+            "url": "https://github.com/langchain-ai/langchain/releases/tag/langchain-core%3D%3D1.7.6",
+            "publishedAt": "2026-11-05T00:22:12.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "LangChain PR 41697: merge accumulated AIMessageChunks once",
+            "url": "https://github.com/langchain-ai/langchain/pull/41697"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "LangChain Core 1.7.6 runnable chunk accumulator",
+            "url": "https://github.com/langchain-ai/langchain/blob/b4aa7e7d00c452251720ce30b8bc2c41ca44e1f5/libs/core/langchain_core/runnables/base.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "LangChain Core 1.7.6 stream accumulation regression assertions",
+            "url": "https://github.com/langchain-ai/langchain/blob/b4aa7e7d00c452251720ce30b8bc2c41ca44e1f5/libs/core/tests/unit_tests/runnables/test_runnable.py"
+          }
+        ],
+        "nextQuestions": [
+          "实际链路在哪一层累计消息，是否仍有手写的逐块相加？",
+          "流式交付、最终参数和追踪回调能否分别检查正确性与处理成本？"
+        ]
+      },
+      {
+        "id": "ai-archestra-command-id-cache",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "Archestra 1.4.22：用持久命令 ID 区分新执行与历史缓存",
+        "whatHappened": "Archestra 于11月6日（UTC）发布平台1.4.22，回补沙箱命令的缓存隔离修复。此前相同镜像、历史和命令文本可能被 Dagger 当成同一计算；平台现在为每次新命令预先生成 ID，并把它加入执行定义。",
+        "mechanism": "服务在执行前生成 randomUUID，把同一值传给运行时并保存为命令记录 ID。Dagger 的实时执行与回放都按工作目录、命令 ID、exec 的顺序构建；回放读取原记录 ID，使缓存仍在且链输入一致时可复用自身历史，新命令则使用新 ID。",
+        "workedExample": "上游可选实机测试让两个新沙箱执行相同的时间戳命令，断言输出不同；随后回放第一个命令并读取其文件，断言仍得到原输出。后端断言另核对运行时收到的 ID 等于持久记录 ID。本期只阅读，未启动 Dagger、容器或执行命令样例。",
+        "whyItMatters": "命令文本相同不等于执行属于同一任务。缓存既要阻止新任务借用别人的结果，又要在恢复历史时保留原执行身份；随意给每次回放重新加随机数，也可能让旧命令再次产生副作用。",
+        "risksAndLimits": [
+          "复用依赖缓存存在及完整链输入一致；引擎重建或缓存被清理后，历史仍可能重新执行。这项修复不保证外部副作用恰好一次。",
+          "这里核对的是平台服务生成并持久化 ID 的路径；ID 不是授权凭据，不替代租户访问控制。原生入口仅校验 ID 格式，无 ID 时生成新值，不能把格式检查当成身份认证。",
+          "稳定1.4.22包含回补 PR10275，原始变化在PR10272；发布与源码存在不证明任何具体部署已经采用。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Archestra platform 1.4.22 official stable release",
+            "url": "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.4.22",
+            "publishedAt": "2026-11-06T07:29:35.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Archestra PR 10275: command identity cache isolation backport",
+            "url": "https://github.com/archestra-ai/archestra/pull/10275"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Archestra PR 10272: original command cache isolation change and limits",
+            "url": "https://github.com/archestra-ai/archestra/pull/10272"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Archestra 1.4.22 live and replay Dagger execution definitions",
+            "url": "https://github.com/archestra-ai/archestra/blob/5b52e3248a10dcacd4c028eaafb1adffd861c778/platform/archestra-rs/sandbox-core/src/backends/dagger.rs"
+          }
+        ],
+        "nextQuestions": [
+          "恢复时使用的是原命令记录 ID，还是重新生成的 ID？",
+          "缓存丢失或执行成功但记录保存失败时，哪些外部副作用仍需独立核对？"
+        ]
+      },
+      {
+        "id": "web3-metamask-kyc-deletion-aal2",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "MetaMask KYC 0.16.0：删除准备与提交都传入 AAL2 凭据",
+        "whatHappened": "MetaMask core 于11月6日（UTC）发布v1402.0.0，其中 kyc-controller 0.16.0 将加密 KYC 存储删除接口改为显式接收 aal2Token。准备删除与最终提交两个请求都把它作为 Authorization bearer 值，空字符串在请求前报错。",
+        "mechanism": "Controller 先检查非空，再生成本次 X25519 密钥并调用 createDeletion，校验服务返回的能力令牌封装信息，随后把同一 aal2Token 传给 completeDeletion。两个 Service 方法也独立检查非空，通过 bearerToken 选项覆盖原请求认证值。",
+        "workedExample": "纸面审查可列三种情况：空字符串应在准备请求前失败；非空字符串会进入服务端认证；准备阶段失败时不应发最终删除请求。上游测试检查两个请求的 bearer header 和空值拒绝。本期未访问账户、请求令牌或执行删除。",
+        "whyItMatters": "钱包里可调用一个方法，不代表这次破坏性操作已完成所需认证。把调用方提供的凭据贯穿准备与提交，有助于审查两阶段操作的认证来源，并避免把普通钱包会话凭据自动沿用到更高认证要求的接口。",
+        "risksAndLimits": [
+          "客户端这里只检查非空，不验证 JWT 的签名、有效期或 ext.aal；AAL2 是否满足仍由服务端判断。本期未独立核验依赖 API 的门禁已经部署。",
+          "这是破坏调用签名兼容性的包更新；关联 PR 写明依赖服务端部署顺序，不能仅据客户端 release 宣称整个删除流程已上线。",
+          "该方法不清空 Controller 状态，也不证明备份或其他持有方数据已经删除；包发布、实际请求成功和数据处置结果需要分别核对。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "MetaMask core v1402.0.0: kyc-controller 0.16.0",
+            "url": "https://github.com/MetaMask/core/releases/tag/v1402.0.0",
+            "publishedAt": "2026-11-06T17:48:49.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "MetaMask core PR 11338: require AAL2 token for encrypted storage deletion",
+            "url": "https://github.com/MetaMask/core/pull/11338"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "MetaMask kyc-controller 0.16.0 deletion credential forwarding",
+            "url": "https://github.com/MetaMask/core/blob/8d460cecac3426fec6cbef6339b09609ada40504/packages/kyc-controller/src/KycService.ts"
+          }
+        ],
+        "nextQuestions": [
+          "调用方是否取得适用于当前删除操作的认证凭据，而非普通会话值？",
+          "准备、最终提交和实际数据处置分别留下了什么服务端回执？"
+        ]
+      },
+      {
+        "id": "web3-agave-programdata-size-floor",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Agave 4.4.1：隐式 ProgramData 载入也有计量下界",
+        "whatHappened": "Agave 于11月5日（UTC）发布稳定版4.4.1，加入 loaderv3_programdata_size_floor 支持。当对应 feature 开启时，Loader V3 程序隐式引用的 ProgramData 即使不存在或数据过短，也会按最小长度计入交易载入数据预算。",
+        "mechanism": "实现先排除已显式列入交易账户或已计数的 ProgramData。对其余引用，开启 feature 后计入账户基础开销加 max(实际数据长度或0，ProgramData 元数据最小长度)；未开启时保留存在才计入实际长度的旧路径。结果继续经过交易载入数据大小检查。",
+        "workedExample": "纸面比较同一隐式引用：账户缺失时取数据长度0，账户存在但短于元数据长度时取实际长度，两者开启 feature 后都至少计入基础开销与元数据下界；显式列入交易的账户不在这条额外计数路径重复加入。本期只读代码与开关两种取值的上游断言，未运行节点或交易。",
+        "whyItMatters": "节点资源核算不能只看交易显式列出的账户。程序还会引入额外依赖；把这些依赖的计数条件、去重和下界说明白，才能解释为什么同一份调用在不同 feature 状态下得到不同的载入数据预算结果。",
+        "risksAndLimits": [
+          "这是计量下界，不会补出有效账户、修复程序内容或把数据实际扩容；缺失或无效程序仍可能在后续执行失败。",
+          "新公式依赖 feature 已激活，且限定这条隐式额外载入路径。代码支持、辅助函数把 feature 设为 true、客户端发布，都不证明某个网络已经激活。",
+          "本期未核验主网激活状态、节点升级率或真实交易结果；4.4.1还含其他调度与兼容变化，不能把此公式当成完整升级验收。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Agave v4.4.1 official stable release",
+            "url": "https://github.com/anza-xyz/agave/releases/tag/v4.4.1",
+            "publishedAt": "2026-11-05T18:33:50.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Agave PR 16775: ProgramData loaded size floor backport",
+            "url": "https://github.com/anza-xyz/agave/pull/16775"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Agave 4.4.1 conditional ProgramData accounting and tests",
+            "url": "https://github.com/anza-xyz/agave/blob/5bb304027fe1a166b02cb26dc8c161593f416fca/svm/src/account_loader.rs"
+          }
+        ],
+        "nextQuestions": [
+          "目标网络实际的 feature 状态与运行版本是否分别有证据？",
+          "账户是显式加载、首次隐式依赖还是重复引用，预算记录能否区分？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-command-cache-execution-identity",
+      "domain": "ai",
+      "topic": "safety",
+      "title": "专题：缓存命中，怎样区分新命令与旧执行的回放",
+      "whatHappened": "Archestra 的修复同时面对两件事：两个新沙箱不能仅因命令文本相同就共用执行结果；一个沙箱恢复历史时，也不应仅因又走了一次恢复流程就把旧命令重新当作新执行。原始 PR 明确说明，只给实时命令添加随机数会破坏后续回放命中。",
+      "mechanism": "平台在运行前选定命令记录 ID，经适配层送到原生执行定义，完成后用同一 ID 落库；下一轮构建回放时从记录取回它。实时路径与回放路径都把该 ID 写入保留环境变量 ARCHESTRA_SANDBOX_COMMAND_ID，再调用 exec。原生层限制 ID 为1至128字节的字母、数字、连字符或下划线，并防止秘密环境变量覆盖它。",
+      "workedExample": "设沙箱 A 的首条命令 ID 为A1，沙箱 B 的同文命令为B1；二者定义因 ID 不同而分开。A 继续工作时回放A1，在其他链输入一致且缓存仍在的条件下复用A1；新命令使用A2。若引擎缓存已被清理，仍需把A1可能再执行单列检查。本例是代码推演，未操作沙箱或外部服务。",
+      "whyItMatters": "编辑推论是：执行身份应在发起工作前确定，并随日志跨过恢复边界；缓存是否命中、命令是否真的执行和外部操作是否已有回执，是三份不同证据。稳定 ID 让缓存判断可追溯，但不能代替支付、发信等外部系统自己的幂等与结果核对。",
+      "risksAndLimits": [
+        "这条链路依赖记录正确持久化；当前服务对执行后保存失败有独立错误路径，不能用一条缓存规则推导出崩溃、存储失败或冷缓存下不会重复副作用。",
+        "同一 ID 只有在其他执行定义也相同时才可能命中；工作目录、历史、环境与引擎生命周期仍要核对，不能把 ID 当作脱离输入的通用恢复令牌。",
+        "上游实机测试需要显式开启并连接 Dagger，后端测试还使用模拟运行时。本期只读这些断言，没有重跑，也没有独立验证其性能或生产租户隔离。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "Archestra platform 1.4.22 official stable release",
+          "url": "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.4.22",
+          "publishedAt": "2026-11-06T07:29:35.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "Archestra PR 10275: command identity cache isolation backport",
+          "url": "https://github.com/archestra-ai/archestra/pull/10275"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "Archestra PR 10272: original command cache isolation change and limits",
+          "url": "https://github.com/archestra-ai/archestra/pull/10272"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Archestra 1.4.22 live and replay Dagger execution definitions",
+          "url": "https://github.com/archestra-ai/archestra/blob/5b52e3248a10dcacd4c028eaafb1adffd861c778/platform/archestra-rs/sandbox-core/src/backends/dagger.rs"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Archestra 1.4.22 persisted command identity service",
+          "url": "https://github.com/archestra-ai/archestra/blob/5b52e3248a10dcacd4c028eaafb1adffd861c778/platform/backend/src/skills-sandbox/skill-sandbox-runtime-service.ts"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Archestra 1.4.22 opt-in live cache isolation assertions",
+          "url": "https://github.com/archestra-ai/archestra/blob/5b52e3248a10dcacd4c028eaafb1adffd861c778/platform/archestra-rs/sandbox-core/tests/live_cache_isolation.rs"
+        }
+      ],
+      "nextQuestions": [
+        "执行成功但日志未保存时，恢复流程如何获得原执行身份和外部回执？",
+        "缓存命中失败后，系统会重放哪些命令，哪些副作用需要额外的幂等约束？"
+      ],
+      "basedOnBriefId": "ai-archestra-command-id-cache"
+    },
+    "sourceUrls": [
+      "https://github.com/langchain-ai/langchain/releases/tag/langchain-core%3D%3D1.7.6",
+      "https://github.com/langchain-ai/langchain/pull/41697",
+      "https://github.com/langchain-ai/langchain/blob/b4aa7e7d00c452251720ce30b8bc2c41ca44e1f5/libs/core/langchain_core/runnables/base.py",
+      "https://github.com/langchain-ai/langchain/blob/b4aa7e7d00c452251720ce30b8bc2c41ca44e1f5/libs/core/tests/unit_tests/runnables/test_runnable.py",
+      "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.4.22",
+      "https://github.com/archestra-ai/archestra/pull/10275",
+      "https://github.com/archestra-ai/archestra/pull/10272",
+      "https://github.com/archestra-ai/archestra/blob/5b52e3248a10dcacd4c028eaafb1adffd861c778/platform/archestra-rs/sandbox-core/src/backends/dagger.rs",
+      "https://github.com/MetaMask/core/releases/tag/v1402.0.0",
+      "https://github.com/MetaMask/core/pull/11338",
+      "https://github.com/MetaMask/core/blob/8d460cecac3426fec6cbef6339b09609ada40504/packages/kyc-controller/src/KycService.ts",
+      "https://github.com/anza-xyz/agave/releases/tag/v4.4.1",
+      "https://github.com/anza-xyz/agave/pull/16775",
+      "https://github.com/anza-xyz/agave/blob/5bb304027fe1a166b02cb26dc8c161593f416fca/svm/src/account_loader.rs",
+      "https://github.com/archestra-ai/archestra/blob/5b52e3248a10dcacd4c028eaafb1adffd861c778/platform/backend/src/skills-sandbox/skill-sandbox-runtime-service.ts",
+      "https://github.com/archestra-ai/archestra/blob/5b52e3248a10dcacd4c028eaafb1adffd861c778/platform/archestra-rs/sandbox-core/tests/live_cache_isolation.rs"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-11-07-4ff423a39f0cc42c",
+    "asOf": "2026-11-06T21:31:30.000Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
+  {
     "date": "2026-11-06",
     "slug": "2026-11-06",
     "title": "学习雷达 · 2026-11-06",
