@@ -6,7 +6,43 @@
     <atom:link href="https://xiuqiu-site.vercel.app/radar/rss.xml" rel="self" type="application/rss+xml" />
     <description>每天 2 条 AI、2 条 Web3 工程简报：先讲机制，再给例子和边界。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Fri, 06 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 07 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>LangChain Core 1.7.6：读取累计结果时，再一次合并流式消息</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-07#ai-langchain-stream-chunk-accumulation</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-langchain-stream-chunk-accumulation</guid>
+      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>infrastructure</category>
+      <description>模型分块输出正常，不代表消费端累计结果的代价也稳定。工具参数越长，重复解析整个前缀可能越慢；区分逐块交付与最终累计，可以解释流畅度问题究竟出在模型服务还是本地消息处理。</description>
+    </item>
+    <item>
+      <title>Archestra 1.4.22：用持久命令 ID 区分新执行与历史缓存</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-07#ai-archestra-command-id-cache</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-archestra-command-id-cache</guid>
+      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>safety</category>
+      <description>命令文本相同不等于执行属于同一任务。缓存既要阻止新任务借用别人的结果，又要在恢复历史时保留原执行身份；随意给每次回放重新加随机数，也可能让旧命令再次产生副作用。</description>
+    </item>
+    <item>
+      <title>MetaMask KYC 0.16.0：删除准备与提交都传入 AAL2 凭据</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-07#web3-metamask-kyc-deletion-aal2</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-metamask-kyc-deletion-aal2</guid>
+      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>wallet_cex</category>
+      <description>钱包里可调用一个方法，不代表这次破坏性操作已完成所需认证。把调用方提供的凭据贯穿准备与提交，有助于审查两阶段操作的认证来源，并避免把普通钱包会话凭据自动沿用到更高认证要求的接口。</description>
+    </item>
+    <item>
+      <title>Agave 4.4.1：隐式 ProgramData 载入也有计量下界</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-07#web3-agave-programdata-size-floor</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-agave-programdata-size-floor</guid>
+      <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>onchain_infrastructure</category>
+      <description>节点资源核算不能只看交易显式列出的账户。程序还会引入额外依赖；把这些依赖的计数条件、去重和下界说明白，才能解释为什么同一份调用在不同 feature 状态下得到不同的载入数据预算结果。</description>
+    </item>
     <item>
       <title>LangGraph 1.2.20：严格恢复模式先核对回答是否仍在等待集合</title>
       <link>https://xiuqiu-site.vercel.app/radar/2026-11-06#ai-langgraph-strict-interrupt-resume</link>
@@ -510,42 +546,6 @@
       <category>WEB3</category>
       <category>security</category>
       <description>这提醒钱包和交易所后端：硬分叉风险不止在激活那一刻，测试网阶段暴露的 DoS 面会在主网前通过补丁版本关闭，节点运维需要按补丁节奏升级。</description>
-    </item>
-    <item>
-      <title>Agents SDK 0.20：恢复任务前先恢复调用身份</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-13#ai-durable-runstate-input</link>
-      <guid isPermaLink="false">xiuqiu-radar:ai-durable-runstate-input</guid>
-      <pubDate>Thu, 13 Aug 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>agent</category>
-      <description>它把长任务恢复从‘重放聊天记录’提升为可核验的状态机，适合用来审视 Hermes 接管、ResearchOps 发布和其他带外部副作用的 Agent 流程。</description>
-    </item>
-    <item>
-      <title>vLLM 0.27：首请求延迟与故障恢复要分别门禁</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-13#ai-vllm-serving-reliability</link>
-      <guid isPermaLink="false">xiuqiu-radar:ai-vllm-serving-reliability</guid>
-      <pubDate>Thu, 13 Aug 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>model_inference</category>
-      <description>它把‘模型快不快’拆成可部署的工程问题：首请求、稳态吞吐、故障转移和依赖兼容必须分别验收，才能避免只看单次 benchmark。</description>
-    </item>
-    <item>
-      <title>Sui testnet 1.77.2：源码验证要绑定发布工具链</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-13#web3-sui-source-reproduction</link>
-      <guid isPermaLink="false">xiuqiu-radar:web3-sui-source-reproduction</guid>
-      <pubDate>Thu, 13 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>onchain_infrastructure</category>
-      <description>钱包与交易所集成链上包时需要证明‘看到的源码’与‘实际发布字节’来自同一构建语境，这个变更提供了具体的供应链核验清单。</description>
-    </item>
-    <item>
-      <title>EIP-8371：把 Blob 重建从超级节点摊到行子网</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-08-13#web3-rowdas-reconstruction</link>
-      <guid isPermaLink="false">xiuqiu-radar:web3-rowdas-reconstruction</guid>
-      <pubDate>Thu, 13 Aug 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>protocol</category>
-      <description>它展示了数据可用性协议如何把恢复职责、传播网络和攻击成本写成显式状态机，也能帮助理解 L2 扩容为何不仅是提高 Blob 数量。</description>
     </item>
   </channel>
 </rss>

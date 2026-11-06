@@ -10,6 +10,10 @@
 
 ## Recent briefs
 
+- [LangChain Core 1.7.6：读取累计结果时，再一次合并流式消息](https://xiuqiu-site.vercel.app/radar/2026-11-07#ai-langchain-stream-chunk-accumulation) (2026-11-07, ai/infrastructure): 模型分块输出正常，不代表消费端累计结果的代价也稳定。工具参数越长，重复解析整个前缀可能越慢；区分逐块交付与最终累计，可以解释流畅度问题究竟出在模型服务还是本地消息处理。
+- [Archestra 1.4.22：用持久命令 ID 区分新执行与历史缓存](https://xiuqiu-site.vercel.app/radar/2026-11-07#ai-archestra-command-id-cache) (2026-11-07, ai/safety): 命令文本相同不等于执行属于同一任务。缓存既要阻止新任务借用别人的结果，又要在恢复历史时保留原执行身份；随意给每次回放重新加随机数，也可能让旧命令再次产生副作用。
+- [MetaMask KYC 0.16.0：删除准备与提交都传入 AAL2 凭据](https://xiuqiu-site.vercel.app/radar/2026-11-07#web3-metamask-kyc-deletion-aal2) (2026-11-07, web3/wallet_cex): 钱包里可调用一个方法，不代表这次破坏性操作已完成所需认证。把调用方提供的凭据贯穿准备与提交，有助于审查两阶段操作的认证来源，并避免把普通钱包会话凭据自动沿用到更高认证要求的接口。
+- [Agave 4.4.1：隐式 ProgramData 载入也有计量下界](https://xiuqiu-site.vercel.app/radar/2026-11-07#web3-agave-programdata-size-floor) (2026-11-07, web3/onchain_infrastructure): 节点资源核算不能只看交易显式列出的账户。程序还会引入额外依赖；把这些依赖的计数条件、去重和下界说明白，才能解释为什么同一份调用在不同 feature 状态下得到不同的载入数据预算结果。
 - [LangGraph 1.2.20：严格恢复模式先核对回答是否仍在等待集合](https://xiuqiu-site.vercel.app/radar/2026-11-06#ai-langgraph-strict-interrupt-resume) (2026-11-06, ai/safety): 长任务的回答可能因客户端重试而迟到。恢复协议需要保留它回答的是哪一次问题；仅把一个yes交回仍在暂停的任务，不能解释批准范围是否仍然对应当前问题。这项检查也不替代业务权限与执行确认。
 - [Deep Agents 0.7.34：历史列表变动后，摘要截点仍跟随同一条消息](https://xiuqiu-site.vercel.app/radar/2026-11-06#ai-deepagents-message-id-summary-cutoff) (2026-11-06, ai/agent): 长期Agent的原始会话、摘要事件和模型可见消息是不同层。边界引用稳定的消息身份，可以解释历史编辑后模型到底看到了哪一段，减少仅因列表位置改变而静默遗漏仍应保留的上下文。
 - [Reth 2.10.0：整组模拟共用gas预算，并进入阻塞任务并发限制](https://xiuqiu-site.vercel.app/radar/2026-11-06#web3-reth-callbundle-shared-work-budget) (2026-11-06, web3/onchain_infrastructure): 钱包和基础设施服务常把多笔操作组合成一次只读模拟。单笔允许的工作量、整组累计工作量与同时运行多少组是三个约束；有gas限制并不自动说明请求进入了服务的并发控制。
@@ -18,10 +22,6 @@
 - [Archestra 1.4.18：流已结束，缺失的 token 用量仍是未知](https://xiuqiu-site.vercel.app/radar/2026-11-05#ai-archestra-unknown-stream-usage) (2026-11-05, ai/infrastructure): 模型内容、连接结束与用量上报可能分别到达。把缺失值填成零，会让成本分析、失败调查或使用量比较把缺证据误当成没有消耗；记录应保留这种区别。
 - [Akash 通知服务2.81.10：新地址确认之后，才进入告警投递集合](https://xiuqiu-site.vercel.app/radar/2026-11-05#web3-akash-confirmed-alert-addresses) (2026-11-05, web3/onchain_infrastructure): 基础设施告警包含运营信息。通道编辑者填入一个地址，不代表地址接收方已确认；把待确认与可投递集合分开，才能解释配置保存、接收方确认和实际送达各发生到了哪一步。
 - [op-deployer 0.9.0-rc.3：许可型 super-root 链也从真实起始锚开始](https://xiuqiu-site.vercel.app/radar/2026-11-05#web3-opdeployer-real-super-root-anchor) (2026-11-05, web3/l2): 部署工具预测地址、生成创世状态与提交起始锚需要对应同一组配置。一个外形合法的占位值不能替代真实状态承诺；在继续阶段重验已保存锚，有助于定位准备数据与部署输入不一致。
-- [deepagents-code 0.2.4：给系统合成的中断消息保留来源](https://xiuqiu-site.vercel.app/radar/2026-11-04#ai-deepagents-interrupt-provenance) (2026-11-04, ai/agent): Agent 记忆、审计和下一轮提示词可能把所有 HumanMessage 都当作用户意图。保留系统生成记录的来源，有助于解释任务为何停止，并减少将状态通知重新当成新指令的机会。
-- [SGLang 0.5.23：推理指标跟随本次结果，延后发布仍保留原始状态](https://xiuqiu-site.vercel.app/radar/2026-11-04#ai-sglang-result-owned-fpm) (2026-11-04, ai/infrastructure): 异步计算完成、统计采样与指标发布并不同时发生。先固定指标属于哪一次结果、覆盖哪个计时区间，才能解释观测值；否则服务可能仍在计算，面板却报告空闲或把新长度配给旧耗时。
-- [MetaMask perps-controller 22.1.1：重连后，旧订阅不能接管新数据](https://xiuqiu-site.vercel.app/radar/2026-11-04#web3-metamask-reconnect-generation) (2026-11-04, web3/wallet_cex): 连接重新建立只是传输状态。数据监听器是否属于当前连接、是否仍有消费者、晚到结果能否覆盖新状态，需要独立判断；否则界面可能继续正常显示，却一直不再收到成交更新。
-- [Sui testnet v1.83.1：整包同步失败后，分段校验检查点内容](https://xiuqiu-site.vercel.app/radar/2026-11-04#web3-sui-checkpoint-paged-fallback) (2026-11-04, web3/onchain_infrastructure): 可恢复下载需要分清局部数据已写入与整个对象已完整。将检查点可用标记放到最后，有助于避免下游把部分内容当成完整状态；分页减少单次整包路径的约束，但不能创造缺失的数据源。
 
 ## Boundaries
 

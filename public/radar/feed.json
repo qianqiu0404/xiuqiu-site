@@ -6,6 +6,58 @@
   "language": "zh-CN",
   "items": [
     {
+      "id": "xiuqiu-radar:ai-langchain-stream-chunk-accumulation",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-07#ai-langchain-stream-chunk-accumulation",
+      "title": "LangChain Core 1.7.6：读取累计结果时，再一次合并流式消息",
+      "summary": "模型分块输出正常，不代表消费端累计结果的代价也稳定。工具参数越长，重复解析整个前缀可能越慢；区分逐块交付与最终累计，可以解释流畅度问题究竟出在模型服务还是本地消息处理。",
+      "content_text": "模型分块输出正常，不代表消费端累计结果的代价也稳定。工具参数越长，重复解析整个前缀可能越慢；区分逐块交付与最终累计，可以解释流畅度问题究竟出在模型服务还是本地消息处理。",
+      "date_published": "2026-11-07T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "infrastructure"
+      ],
+      "external_url": "https://github.com/langchain-ai/langchain/releases/tag/langchain-core%3D%3D1.7.6"
+    },
+    {
+      "id": "xiuqiu-radar:ai-archestra-command-id-cache",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-07#ai-archestra-command-id-cache",
+      "title": "Archestra 1.4.22：用持久命令 ID 区分新执行与历史缓存",
+      "summary": "命令文本相同不等于执行属于同一任务。缓存既要阻止新任务借用别人的结果，又要在恢复历史时保留原执行身份；随意给每次回放重新加随机数，也可能让旧命令再次产生副作用。",
+      "content_text": "命令文本相同不等于执行属于同一任务。缓存既要阻止新任务借用别人的结果，又要在恢复历史时保留原执行身份；随意给每次回放重新加随机数，也可能让旧命令再次产生副作用。",
+      "date_published": "2026-11-07T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "safety"
+      ],
+      "external_url": "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.4.22"
+    },
+    {
+      "id": "xiuqiu-radar:web3-metamask-kyc-deletion-aal2",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-07#web3-metamask-kyc-deletion-aal2",
+      "title": "MetaMask KYC 0.16.0：删除准备与提交都传入 AAL2 凭据",
+      "summary": "钱包里可调用一个方法，不代表这次破坏性操作已完成所需认证。把调用方提供的凭据贯穿准备与提交，有助于审查两阶段操作的认证来源，并避免把普通钱包会话凭据自动沿用到更高认证要求的接口。",
+      "content_text": "钱包里可调用一个方法，不代表这次破坏性操作已完成所需认证。把调用方提供的凭据贯穿准备与提交，有助于审查两阶段操作的认证来源，并避免把普通钱包会话凭据自动沿用到更高认证要求的接口。",
+      "date_published": "2026-11-07T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "wallet_cex"
+      ],
+      "external_url": "https://github.com/MetaMask/core/releases/tag/v1402.0.0"
+    },
+    {
+      "id": "xiuqiu-radar:web3-agave-programdata-size-floor",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-07#web3-agave-programdata-size-floor",
+      "title": "Agave 4.4.1：隐式 ProgramData 载入也有计量下界",
+      "summary": "节点资源核算不能只看交易显式列出的账户。程序还会引入额外依赖；把这些依赖的计数条件、去重和下界说明白，才能解释为什么同一份调用在不同 feature 状态下得到不同的载入数据预算结果。",
+      "content_text": "节点资源核算不能只看交易显式列出的账户。程序还会引入额外依赖；把这些依赖的计数条件、去重和下界说明白，才能解释为什么同一份调用在不同 feature 状态下得到不同的载入数据预算结果。",
+      "date_published": "2026-11-07T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "onchain_infrastructure"
+      ],
+      "external_url": "https://github.com/anza-xyz/agave/releases/tag/v4.4.1"
+    },
+    {
       "id": "xiuqiu-radar:ai-langgraph-strict-interrupt-resume",
       "url": "https://xiuqiu-site.vercel.app/radar/2026-11-06#ai-langgraph-strict-interrupt-resume",
       "title": "LangGraph 1.2.20：严格恢复模式先核对回答是否仍在等待集合",
@@ -732,58 +784,6 @@
         "security"
       ],
       "external_url": "https://github.com/ethereum/go-ethereum/releases/tag/v1.17.8"
-    },
-    {
-      "id": "xiuqiu-radar:ai-durable-runstate-input",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-13#ai-durable-runstate-input",
-      "title": "Agents SDK 0.20：恢复任务前先恢复调用身份",
-      "summary": "它把长任务恢复从‘重放聊天记录’提升为可核验的状态机，适合用来审视 Hermes 接管、ResearchOps 发布和其他带外部副作用的 Agent 流程。",
-      "content_text": "它把长任务恢复从‘重放聊天记录’提升为可核验的状态机，适合用来审视 Hermes 接管、ResearchOps 发布和其他带外部副作用的 Agent 流程。",
-      "date_published": "2026-08-13T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "agent"
-      ],
-      "external_url": "https://github.com/openai/openai-agents-python/releases/tag/v0.20.0"
-    },
-    {
-      "id": "xiuqiu-radar:ai-vllm-serving-reliability",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-13#ai-vllm-serving-reliability",
-      "title": "vLLM 0.27：首请求延迟与故障恢复要分别门禁",
-      "summary": "它把‘模型快不快’拆成可部署的工程问题：首请求、稳态吞吐、故障转移和依赖兼容必须分别验收，才能避免只看单次 benchmark。",
-      "content_text": "它把‘模型快不快’拆成可部署的工程问题：首请求、稳态吞吐、故障转移和依赖兼容必须分别验收，才能避免只看单次 benchmark。",
-      "date_published": "2026-08-13T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "model_inference"
-      ],
-      "external_url": "https://github.com/vllm-project/vllm/releases/tag/v0.27.0"
-    },
-    {
-      "id": "xiuqiu-radar:web3-sui-source-reproduction",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-13#web3-sui-source-reproduction",
-      "title": "Sui testnet 1.77.2：源码验证要绑定发布工具链",
-      "summary": "钱包与交易所集成链上包时需要证明‘看到的源码’与‘实际发布字节’来自同一构建语境，这个变更提供了具体的供应链核验清单。",
-      "content_text": "钱包与交易所集成链上包时需要证明‘看到的源码’与‘实际发布字节’来自同一构建语境，这个变更提供了具体的供应链核验清单。",
-      "date_published": "2026-08-13T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "onchain_infrastructure"
-      ],
-      "external_url": "https://github.com/MystenLabs/sui/releases/tag/testnet-v1.77.2"
-    },
-    {
-      "id": "xiuqiu-radar:web3-rowdas-reconstruction",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-08-13#web3-rowdas-reconstruction",
-      "title": "EIP-8371：把 Blob 重建从超级节点摊到行子网",
-      "summary": "它展示了数据可用性协议如何把恢复职责、传播网络和攻击成本写成显式状态机，也能帮助理解 L2 扩容为何不仅是提高 Blob 数量。",
-      "content_text": "它展示了数据可用性协议如何把恢复职责、传播网络和攻击成本写成显式状态机，也能帮助理解 L2 扩容为何不仅是提高 Blob 数量。",
-      "date_published": "2026-08-13T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "protocol"
-      ],
-      "external_url": "https://github.com/ethereum/EIPs/commit/b325d33d61f18c8bc9f5f2b9b9c59f8bf702141a"
     }
   ]
 }
