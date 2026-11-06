@@ -16,6 +16,17 @@ export interface MarketRadarDaily { schemaVersion?: 2; date: string; slug: strin
 export interface MarketRadarIndexEntry { date: string; slug: string; snapshotId: string; asOf: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
 export const marketRadarIndex: MarketRadarIndexEntry[] = [
   {
+    "date": "2026-11-07",
+    "slug": "2026-11-07",
+    "title": "交易研究雷达 · 2026-11-07",
+    "summary": "美国10月非农增16.5万、前两月上修8.4万；加拿大就业基本持平、失业率升至6.7%。两国各自的调查、工资与修订口径须分开，市场传导仍待验证。",
+    "snapshotId": "market-2026-11-07-ea30205abbc6c07e",
+    "asOf": "2026-11-06T21:36:00.000Z",
+    "eventCount": 2,
+    "assetCount": 4,
+    "leadTitle": "美国10月非农增16.5万，前两月合计上修8.4万"
+  },
+  {
     "date": "2026-11-06",
     "slug": "2026-11-06",
     "title": "交易研究雷达 · 2026-11-06",
@@ -204,6 +215,186 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
   }
 ]
 export const latestMarketRadars: MarketRadarDaily[] = [
+  {
+    "date": "2026-11-07",
+    "slug": "2026-11-07",
+    "title": "交易研究雷达 · 2026-11-07",
+    "summary": "美国10月非农增16.5万、前两月上修8.4万；加拿大就业基本持平、失业率升至6.7%。两国各自的调查、工资与修订口径须分开，市场传导仍待验证。",
+    "snapshotId": "market-2026-11-07-ea30205abbc6c07e",
+    "asOf": "2026-11-06T21:36:00.000Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-07T05:36:00+08:00",
+    "events": [
+      {
+        "id": "bls-october-employment-revisions-2026-11-06",
+        "priority": "P1",
+        "status": "released",
+        "category": "macro",
+        "title": "美国10月非农增16.5万，前两月合计上修8.4万",
+        "fact": "BLS于11月6日8:30 ET发布10月就业报告：季调非农就业增16.5万，失业率4.1%；私营非农雇员名义平均时薪环比增0.4%、同比增3.1%。八月与九月非农增量分别上修5.3万、3.1万，合计上修8.4万。",
+        "whyWatch": "研究判断：就业数量、工资与政策预期是不同证据层。非农与失业率来自不同调查，先核对修订、行业构成和工时，再检验国债收益率与美元的同窗口反应。",
+        "assets": [
+          "美元",
+          "美国国债"
+        ],
+        "watchFor": "跟踪后续非农修订、行业增减、工时与劳动参与；下一期计划于12月4日发布。市场观察须预先固定公布前后窗口，并核对同期其他信息。",
+        "invalidation": "后续修订、样本或季调口径改变时重估；平均时薪受人员构成影响，不能视为同一劳动者的实际工资。缺少同窗口市场数据时，不认定价格因果或政策结果。",
+        "sourceName": "U.S. Bureau of Labor Statistics Employment Situation — October 2026",
+        "sourceUrl": "https://www.bls.gov/news.release/archives/empsit_11062026.htm",
+        "sourcePublishedAt": "2026-11-06"
+      },
+      {
+        "id": "statcan-october-lfs-employment-unemployment-2026-11-06",
+        "priority": "P1",
+        "status": "released",
+        "category": "macro",
+        "title": "加拿大10月就业基本持平，失业率升至6.7%",
+        "fact": "加拿大统计局11月6日发布10月LFS：季调就业减少4700人（0.0%，官方称基本持平），失业率上升0.2个百分点至6.7%；雇员平均时薪同比增2.2%，该工资指标未季调。调查参考周为10月11日至17日。",
+        "whyWatch": "研究判断：就业总量基本持平可与行业、私营及公共部门变化并存；需分别检验劳动力供给与需求，再核对本国利率和加元反应，不能直接据此比较两国强弱。",
+        "assets": [
+          "加元",
+          "加拿大国债"
+        ],
+        "watchFor": "分开跟踪求职人数、私营及公共部门就业、行业、工时和工资口径；下一期12月4日仅为发布计划，资产传导仍需独立同窗口证据。",
+        "invalidation": "后续修订、参与率或行业构成改变时重估；单月抽样波动限制趋势判断。未季调工资同比不能与美国季调月比直接比较，也不能单独证明实际收入或政策行动。",
+        "sourceName": "Statistics Canada The Daily — Labour Force Survey, October 2026",
+        "sourceUrl": "https://www150.statcan.gc.ca/n1/daily-quotidien/261106/dq261106a-eng.htm",
+        "sourcePublishedAt": "2026-11-06"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.bls.gov/news.release/archives/empsit_11062026.htm",
+      "https://www150.statcan.gc.ca/n1/daily-quotidien/261106/dq261106a-eng.htm"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "只登记两国11月6日的就业发布；未建立统一事件窗口并保留国别与工资口径差异的跨资产样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "两国调查与工资口径各异；当月总量和修订不能替代后续趋势或资产传导证据。",
+      "nextValidation": "分别固定各国事件窗口，核对修订、工时、就业结构与市场数据；样本不足时不显示概率。",
+      "invalidation": "官方修订、国别口径或观察窗口不一致时重估；缺失数据不补推断。",
+      "sourceUrls": [
+        "https://www.bls.gov/news.release/archives/empsit_11062026.htm",
+        "https://www150.statcan.gc.ca/n1/daily-quotidien/261106/dq261106a-eng.htm"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "两国各自的就业和工资信息，如何经政策预期、国债期限结构与汇率传导，各环需要哪些独立证据？",
+        "focusEventIds": [
+          "bls-october-employment-revisions-2026-11-06",
+          "statcan-october-lfs-employment-unemployment-2026-11-06"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些本国后续修订、工时与就业结构证据，会推翻仅凭本月总量判断各自劳动力需求的解释？",
+        "focusEventIds": [
+          "bls-october-employment-revisions-2026-11-06",
+          "statcan-october-lfs-employment-unemployment-2026-11-06"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若就业、工资与需求后续分化，两国各自有哪些替代情景，哪些新证据会使传导判断失效？",
+        "focusEventIds": [
+          "bls-october-employment-revisions-2026-11-06",
+          "statcan-october-lfs-employment-unemployment-2026-11-06"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-07",
+      "snapshotId": "market-2026-11-07-ea30205abbc6c07e",
+      "asOf": "2026-11-06T21:36:00.000Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-07",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "两国各自的就业和工资信息，如何经政策预期、国债期限结构与汇率传导，各环需要哪些独立证据？",
+          "focusEventIds": [
+            "bls-october-employment-revisions-2026-11-06",
+            "statcan-october-lfs-employment-unemployment-2026-11-06"
+          ],
+          "prompt": "研究任务：两国各自的就业和工资信息，如何经政策预期、国债期限结构与汇率传导，各环需要哪些独立证据？\n证据快照：2026-11-07；asOf=2026-11-06T21:36:00.000Z；snapshotId=market-2026-11-07-ea30205abbc6c07e\n\n材料 1｜美国10月非农增16.5万，前两月合计上修8.4万\n已确认事实：BLS于11月6日8:30 ET发布10月就业报告：季调非农就业增16.5万，失业率4.1%；私营非农雇员名义平均时薪环比增0.4%、同比增3.1%。八月与九月非农增量分别上修5.3万、3.1万，合计上修8.4万。\n关注机制：研究判断：就业数量、工资与政策预期是不同证据层。非农与失业率来自不同调查，先核对修订、行业构成和工时，再检验国债收益率与美元的同窗口反应。\n接下来验证：跟踪后续非农修订、行业增减、工时与劳动参与；下一期计划于12月4日发布。市场观察须预先固定公布前后窗口，并核对同期其他信息。\n失效条件：后续修订、样本或季调口径改变时重估；平均时薪受人员构成影响，不能视为同一劳动者的实际工资。缺少同窗口市场数据时，不认定价格因果或政策结果。\n一手来源：https://www.bls.gov/news.release/archives/empsit_11062026.htm\n\n材料 2｜加拿大10月就业基本持平，失业率升至6.7%\n已确认事实：加拿大统计局11月6日发布10月LFS：季调就业减少4700人（0.0%，官方称基本持平），失业率上升0.2个百分点至6.7%；雇员平均时薪同比增2.2%，该工资指标未季调。调查参考周为10月11日至17日。\n关注机制：研究判断：就业总量基本持平可与行业、私营及公共部门变化并存；需分别检验劳动力供给与需求，再核对本国利率和加元反应，不能直接据此比较两国强弱。\n接下来验证：分开跟踪求职人数、私营及公共部门就业、行业、工时和工资口径；下一期12月4日仅为发布计划，资产传导仍需独立同窗口证据。\n失效条件：后续修订、参与率或行业构成改变时重估；单月抽样波动限制趋势判断。未季调工资同比不能与美国季调月比直接比较，也不能单独证明实际收入或政策行动。\n一手来源：https://www150.statcan.gc.ca/n1/daily-quotidien/261106/dq261106a-eng.htm\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "499f8d06b1b66789260669a4aaa4528cef56a8e0ba9cf27be8c4d851a0bca4d4",
+          "sourceUrls": [
+            "https://www.bls.gov/news.release/archives/empsit_11062026.htm",
+            "https://www150.statcan.gc.ca/n1/daily-quotidien/261106/dq261106a-eng.htm"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些本国后续修订、工时与就业结构证据，会推翻仅凭本月总量判断各自劳动力需求的解释？",
+          "focusEventIds": [
+            "bls-october-employment-revisions-2026-11-06",
+            "statcan-october-lfs-employment-unemployment-2026-11-06"
+          ],
+          "prompt": "研究任务：哪些本国后续修订、工时与就业结构证据，会推翻仅凭本月总量判断各自劳动力需求的解释？\n证据快照：2026-11-07；asOf=2026-11-06T21:36:00.000Z；snapshotId=market-2026-11-07-ea30205abbc6c07e\n\n材料 1｜美国10月非农增16.5万，前两月合计上修8.4万\n已确认事实：BLS于11月6日8:30 ET发布10月就业报告：季调非农就业增16.5万，失业率4.1%；私营非农雇员名义平均时薪环比增0.4%、同比增3.1%。八月与九月非农增量分别上修5.3万、3.1万，合计上修8.4万。\n关注机制：研究判断：就业数量、工资与政策预期是不同证据层。非农与失业率来自不同调查，先核对修订、行业构成和工时，再检验国债收益率与美元的同窗口反应。\n接下来验证：跟踪后续非农修订、行业增减、工时与劳动参与；下一期计划于12月4日发布。市场观察须预先固定公布前后窗口，并核对同期其他信息。\n失效条件：后续修订、样本或季调口径改变时重估；平均时薪受人员构成影响，不能视为同一劳动者的实际工资。缺少同窗口市场数据时，不认定价格因果或政策结果。\n一手来源：https://www.bls.gov/news.release/archives/empsit_11062026.htm\n\n材料 2｜加拿大10月就业基本持平，失业率升至6.7%\n已确认事实：加拿大统计局11月6日发布10月LFS：季调就业减少4700人（0.0%，官方称基本持平），失业率上升0.2个百分点至6.7%；雇员平均时薪同比增2.2%，该工资指标未季调。调查参考周为10月11日至17日。\n关注机制：研究判断：就业总量基本持平可与行业、私营及公共部门变化并存；需分别检验劳动力供给与需求，再核对本国利率和加元反应，不能直接据此比较两国强弱。\n接下来验证：分开跟踪求职人数、私营及公共部门就业、行业、工时和工资口径；下一期12月4日仅为发布计划，资产传导仍需独立同窗口证据。\n失效条件：后续修订、参与率或行业构成改变时重估；单月抽样波动限制趋势判断。未季调工资同比不能与美国季调月比直接比较，也不能单独证明实际收入或政策行动。\n一手来源：https://www150.statcan.gc.ca/n1/daily-quotidien/261106/dq261106a-eng.htm\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "611f8fb16a58d8691f459958a49c7e46c580e358601de951ea38f9fa41e536d1",
+          "sourceUrls": [
+            "https://www.bls.gov/news.release/archives/empsit_11062026.htm",
+            "https://www150.statcan.gc.ca/n1/daily-quotidien/261106/dq261106a-eng.htm"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若就业、工资与需求后续分化，两国各自有哪些替代情景，哪些新证据会使传导判断失效？",
+          "focusEventIds": [
+            "bls-october-employment-revisions-2026-11-06",
+            "statcan-october-lfs-employment-unemployment-2026-11-06"
+          ],
+          "prompt": "研究任务：若就业、工资与需求后续分化，两国各自有哪些替代情景，哪些新证据会使传导判断失效？\n证据快照：2026-11-07；asOf=2026-11-06T21:36:00.000Z；snapshotId=market-2026-11-07-ea30205abbc6c07e\n\n材料 1｜美国10月非农增16.5万，前两月合计上修8.4万\n已确认事实：BLS于11月6日8:30 ET发布10月就业报告：季调非农就业增16.5万，失业率4.1%；私营非农雇员名义平均时薪环比增0.4%、同比增3.1%。八月与九月非农增量分别上修5.3万、3.1万，合计上修8.4万。\n关注机制：研究判断：就业数量、工资与政策预期是不同证据层。非农与失业率来自不同调查，先核对修订、行业构成和工时，再检验国债收益率与美元的同窗口反应。\n接下来验证：跟踪后续非农修订、行业增减、工时与劳动参与；下一期计划于12月4日发布。市场观察须预先固定公布前后窗口，并核对同期其他信息。\n失效条件：后续修订、样本或季调口径改变时重估；平均时薪受人员构成影响，不能视为同一劳动者的实际工资。缺少同窗口市场数据时，不认定价格因果或政策结果。\n一手来源：https://www.bls.gov/news.release/archives/empsit_11062026.htm\n\n材料 2｜加拿大10月就业基本持平，失业率升至6.7%\n已确认事实：加拿大统计局11月6日发布10月LFS：季调就业减少4700人（0.0%，官方称基本持平），失业率上升0.2个百分点至6.7%；雇员平均时薪同比增2.2%，该工资指标未季调。调查参考周为10月11日至17日。\n关注机制：研究判断：就业总量基本持平可与行业、私营及公共部门变化并存；需分别检验劳动力供给与需求，再核对本国利率和加元反应，不能直接据此比较两国强弱。\n接下来验证：分开跟踪求职人数、私营及公共部门就业、行业、工时和工资口径；下一期12月4日仅为发布计划，资产传导仍需独立同窗口证据。\n失效条件：后续修订、参与率或行业构成改变时重估；单月抽样波动限制趋势判断。未季调工资同比不能与美国季调月比直接比较，也不能单独证明实际收入或政策行动。\n一手来源：https://www150.statcan.gc.ca/n1/daily-quotidien/261106/dq261106a-eng.htm\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "9b783814f98f0cbc06d92942cff205d61c6103ed17da9a6804860037f815c289",
+          "sourceUrls": [
+            "https://www.bls.gov/news.release/archives/empsit_11062026.htm",
+            "https://www150.statcan.gc.ca/n1/daily-quotidien/261106/dq261106a-eng.htm"
+          ]
+        }
+      ]
+    }
+  },
   {
     "date": "2026-11-06",
     "slug": "2026-11-06",
@@ -1103,157 +1294,6 @@ export const latestMarketRadars: MarketRadarDaily[] = [
           "promptChecksum": "c8ff61b17acf77a0ebd1c32a48de4d110cf868db9bf0b8be842c842b532a03bd",
           "sourceUrls": [
             "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026"
-          ]
-        }
-      ]
-    }
-  },
-  {
-    "date": "2026-10-29",
-    "slug": "2026-10-29",
-    "title": "交易研究雷达 · 2026-10-29",
-    "summary": "FOMC 维持联邦基金利率目标区间，两票异议偏好加息。本期区分政策决定、实施工具与实际融资价格，不把票数分歧外推为下一次会议承诺。",
-    "snapshotId": "market-2026-10-29-852bbd959f6a63d2",
-    "asOf": "2026-10-28T21:35:06.000Z",
-    "origin": "research",
-    "publicationState": "published",
-    "reviewStatus": "automated",
-    "generatedAt": "2026-10-29T05:35:06+08:00",
-    "events": [
-      {
-        "id": "fomc-october-hold-two-hike-dissents-2026-10-28",
-        "priority": "P1",
-        "status": "released",
-        "category": "macro",
-        "title": "FOMC 维持 3.75%–4.00% 区间，两票偏好加息",
-        "fact": "美联储 10 月 28 日声明以 10 比 2 通过维持联邦基金利率目标区间在 3.75%–4.00%，并继续维持充裕准备金。Cook 与 Hammack 两名反对者偏好本次上调 25 个基点；声明仍称通胀偏高。这是本次正式决定与表决记录，不是对下次行动的承诺。",
-        "whyWatch": "系统观察：目标区间、实施工具和实际融资价格属于不同证据。政策区间不变不能单独证明银行、企业或资产市场的融资条件未变；两票异议也不足以判断后续政策或资产方向。",
-        "assets": [
-          "美元短端利率",
-          "美国国债"
-        ],
-        "watchFor": "核对后续官方通胀与就业材料、会议纪要、有效联邦基金利率及准备金数据；分别记录决定公布、实施日与实际观测窗口，检验政策如何传递到融资条件。",
-        "invalidation": "新的 FOMC 决议或官方修订将取代本次记录。若实际融资价格和准备金变化不支持原先的传导解释，应重估；未对齐窗口或缺少观测时，不把市场波动归因于本次决定。",
-        "sourceName": "Federal Reserve FOMC Statement 2026-10-28",
-        "sourceUrl": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm",
-        "sourcePublishedAt": "2026-10-28"
-      }
-    ],
-    "sourceUrls": [
-      "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm"
-    ],
-    "quantStrategy": {
-      "horizonTradingDays": 3,
-      "status": "historical_samples_insufficient",
-      "methodology": "只登记正式决定、表决事实与待检验机制；尚未建立同类事件和固定窗口的跨资产历史样本，量化样本门禁保持关闭。",
-      "assets": [
-        {
-          "symbol": "SPY",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "QQQ",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "BTC",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "ETH",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "GLD",
-          "group": "gold_etf",
-          "signalQuality": "weak"
-        }
-      ],
-      "sampleSize": 0,
-      "rationale": "政策区间及委员票数不能单独确定实际融资条件或资产反应；本期没有测量行情、资金流或进行因果识别。",
-      "nextValidation": "先对齐决定、实施和实际数据的时间口径，再记录通胀、就业、准备金及融资价格；取得可比样本前只显示弱信号。",
-      "invalidation": "官方修订、新决定或观察窗口不一致时停止沿用；缺失数据不能补成确定性结论。",
-      "sourceUrls": [
-        "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm"
-      ]
-    },
-    "schemaVersion": 2,
-    "researchQuestions": [
-      {
-        "id": "1",
-        "lens": "transmission",
-        "shortQuestion": "目标区间和准备金相关实施工具如何连接实际短端融资条件，需要哪些公开数据才能检验这条传导链？",
-        "focusEventIds": [
-          "fomc-october-hold-two-hike-dissents-2026-10-28"
-        ]
-      },
-      {
-        "id": "2",
-        "lens": "falsification",
-        "shortQuestion": "哪些同窗口的有效联邦基金利率、准备金与银行融资数据，最能支持或推翻政策区间不变意味着融资条件不变的解释？",
-        "focusEventIds": [
-          "fomc-october-hold-two-hike-dissents-2026-10-28"
-        ]
-      },
-      {
-        "id": "3",
-        "lens": "scenario",
-        "shortQuestion": "若政策区间不变而实际融资条件发生变化，有哪些替代解释，后续什么证据会使当前传导假设失效？",
-        "focusEventIds": [
-          "fomc-october-hold-two-hike-dissents-2026-10-28"
-        ]
-      }
-    ],
-    "researchPack": {
-      "schemaVersion": 2,
-      "date": "2026-10-29",
-      "snapshotId": "market-2026-10-29-852bbd959f6a63d2",
-      "asOf": "2026-10-28T21:35:06.000Z",
-      "origin": "research",
-      "publicationState": "published",
-      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-10-29",
-      "questions": [
-        {
-          "id": "1",
-          "lens": "transmission",
-          "shortQuestion": "目标区间和准备金相关实施工具如何连接实际短端融资条件，需要哪些公开数据才能检验这条传导链？",
-          "focusEventIds": [
-            "fomc-october-hold-two-hike-dissents-2026-10-28"
-          ],
-          "prompt": "研究任务：目标区间和准备金相关实施工具如何连接实际短端融资条件，需要哪些公开数据才能检验这条传导链？\n证据快照：2026-10-29；asOf=2026-10-28T21:35:06.000Z；snapshotId=market-2026-10-29-852bbd959f6a63d2\n\n材料 1｜FOMC 维持 3.75%–4.00% 区间，两票偏好加息\n已确认事实：美联储 10 月 28 日声明以 10 比 2 通过维持联邦基金利率目标区间在 3.75%–4.00%，并继续维持充裕准备金。Cook 与 Hammack 两名反对者偏好本次上调 25 个基点；声明仍称通胀偏高。这是本次正式决定与表决记录，不是对下次行动的承诺。\n关注机制：系统观察：目标区间、实施工具和实际融资价格属于不同证据。政策区间不变不能单独证明银行、企业或资产市场的融资条件未变；两票异议也不足以判断后续政策或资产方向。\n接下来验证：核对后续官方通胀与就业材料、会议纪要、有效联邦基金利率及准备金数据；分别记录决定公布、实施日与实际观测窗口，检验政策如何传递到融资条件。\n失效条件：新的 FOMC 决议或官方修订将取代本次记录。若实际融资价格和准备金变化不支持原先的传导解释，应重估；未对齐窗口或缺少观测时，不把市场波动归因于本次决定。\n一手来源：https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "d5115c917feeba1a7fb058dee701df785723a8c511f81f2a3148ad1db5cf8826",
-          "sourceUrls": [
-            "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm"
-          ]
-        },
-        {
-          "id": "2",
-          "lens": "falsification",
-          "shortQuestion": "哪些同窗口的有效联邦基金利率、准备金与银行融资数据，最能支持或推翻政策区间不变意味着融资条件不变的解释？",
-          "focusEventIds": [
-            "fomc-october-hold-two-hike-dissents-2026-10-28"
-          ],
-          "prompt": "研究任务：哪些同窗口的有效联邦基金利率、准备金与银行融资数据，最能支持或推翻政策区间不变意味着融资条件不变的解释？\n证据快照：2026-10-29；asOf=2026-10-28T21:35:06.000Z；snapshotId=market-2026-10-29-852bbd959f6a63d2\n\n材料 1｜FOMC 维持 3.75%–4.00% 区间，两票偏好加息\n已确认事实：美联储 10 月 28 日声明以 10 比 2 通过维持联邦基金利率目标区间在 3.75%–4.00%，并继续维持充裕准备金。Cook 与 Hammack 两名反对者偏好本次上调 25 个基点；声明仍称通胀偏高。这是本次正式决定与表决记录，不是对下次行动的承诺。\n关注机制：系统观察：目标区间、实施工具和实际融资价格属于不同证据。政策区间不变不能单独证明银行、企业或资产市场的融资条件未变；两票异议也不足以判断后续政策或资产方向。\n接下来验证：核对后续官方通胀与就业材料、会议纪要、有效联邦基金利率及准备金数据；分别记录决定公布、实施日与实际观测窗口，检验政策如何传递到融资条件。\n失效条件：新的 FOMC 决议或官方修订将取代本次记录。若实际融资价格和准备金变化不支持原先的传导解释，应重估；未对齐窗口或缺少观测时，不把市场波动归因于本次决定。\n一手来源：https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "765e6ea48a0880e9d38fe959b71333371f29b451eaefcb7902d7321e092582c3",
-          "sourceUrls": [
-            "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm"
-          ]
-        },
-        {
-          "id": "3",
-          "lens": "scenario",
-          "shortQuestion": "若政策区间不变而实际融资条件发生变化，有哪些替代解释，后续什么证据会使当前传导假设失效？",
-          "focusEventIds": [
-            "fomc-october-hold-two-hike-dissents-2026-10-28"
-          ],
-          "prompt": "研究任务：若政策区间不变而实际融资条件发生变化，有哪些替代解释，后续什么证据会使当前传导假设失效？\n证据快照：2026-10-29；asOf=2026-10-28T21:35:06.000Z；snapshotId=market-2026-10-29-852bbd959f6a63d2\n\n材料 1｜FOMC 维持 3.75%–4.00% 区间，两票偏好加息\n已确认事实：美联储 10 月 28 日声明以 10 比 2 通过维持联邦基金利率目标区间在 3.75%–4.00%，并继续维持充裕准备金。Cook 与 Hammack 两名反对者偏好本次上调 25 个基点；声明仍称通胀偏高。这是本次正式决定与表决记录，不是对下次行动的承诺。\n关注机制：系统观察：目标区间、实施工具和实际融资价格属于不同证据。政策区间不变不能单独证明银行、企业或资产市场的融资条件未变；两票异议也不足以判断后续政策或资产方向。\n接下来验证：核对后续官方通胀与就业材料、会议纪要、有效联邦基金利率及准备金数据；分别记录决定公布、实施日与实际观测窗口，检验政策如何传递到融资条件。\n失效条件：新的 FOMC 决议或官方修订将取代本次记录。若实际融资价格和准备金变化不支持原先的传导解释，应重估；未对齐窗口或缺少观测时，不把市场波动归因于本次决定。\n一手来源：https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "e934981489b501937413c733ba95da85a26becfe12ebd908e527310cfb1ae907",
-          "sourceUrls": [
-            "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm"
           ]
         }
       ]
