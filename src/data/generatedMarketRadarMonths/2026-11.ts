@@ -3,6 +3,157 @@
 import type { MarketRadarDaily } from '../generatedMarketRadars.ts'
 export const monthlyMarketRadars: MarketRadarDaily[] = [
   {
+    "date": "2026-11-08",
+    "slug": "2026-11-08",
+    "title": "交易研究雷达 · 2026-11-08（恢复版）",
+    "summary": "恢复版：重新核对加拿大政府与央行11月5日公布的五年框架续约，2%通胀目标与1%–3%区间保持。保留原发布日期，区分目标框架、政策决定与资产传导证据。",
+    "snapshotId": "market-2026-11-08-8093d435e666346e",
+    "asOf": "2026-11-07T23:17:24.175Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-08T07:17:24.175995+08:00",
+    "events": [
+      {
+        "id": "boc-inflation-framework-renewal-2026-11-05",
+        "priority": "P1",
+        "status": "released",
+        "category": "macro",
+        "title": "加拿大续期通胀目标框架：2%目标与1%–3%区间保持",
+        "fact": "加拿大政府与央行11月5日联合声明续期货币政策框架：通胀目标保持2%，为1%至3%调控区间中点，以CPI12个月变动率衡量；政策对目标上下偏离对称处理，并保留应对冲击的灵活性。协议延续五年，至2031年12月31日结束。",
+        "whyWatch": "研究判断：目标框架、当次政策决定和市场定价是三层证据。续约可用于研究预期锚定，需独立核对通胀预期与加拿大国债、加元的同窗口数据，不能仅据目标未变推断利率路径或实际物价已达标。",
+        "assets": [
+          "加元",
+          "加拿大国债"
+        ],
+        "watchFor": "核对后续官方沟通、带日期与口径的CPI及预期调查，区分框架稳定与短期冲击调整。市场验证先固定11月5日公布窗口，并隔离同期其他消息；本期未取得资产反应样本。",
+        "invalidation": "后续正式协议改变框架时重估；预期、风险溢价或同期消息可另行解释资产变化时，不认定续约造成价格反应。1%–3%区间不等于目标可任取其一，对称原则也不规定相同利率步长或时点。",
+        "sourceName": "Bank of Canada — Government and Bank joint statement on framework renewal",
+        "sourceUrl": "https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/",
+        "sourcePublishedAt": "2026-11-05"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "本期只登记一项框架续约；未建立其对各资产传导的同窗口历史样本，也未采集实际市场反应。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "目标框架稳定、政策实施与市场预期是不同证据，不能用一项联合声明代替资产方向判断。",
+      "nextValidation": "固定公布窗口，分别核对通胀预期、国债期限结构、汇率与同期消息；样本不足时只记录证据质量。",
+      "invalidation": "框架后续变化、测量口径或事件窗口不一致时重估；缺失的价格与样本不补推断。",
+      "sourceUrls": [
+        "https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "框架续约如何经通胀预期、实际利率与风险溢价影响加元及国债，各环需要哪些独立证据？",
+        "focusEventIds": [
+          "boc-inflation-framework-renewal-2026-11-05"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些预期调查、通胀及同窗口消息，会推翻仅凭目标未变便判断市场传导未变的解释？",
+        "focusEventIds": [
+          "boc-inflation-framework-renewal-2026-11-05"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "供给冲击或通胀预期偏离目标时有哪些替代情景，什么证据会使框架仍有效锚定预期的判断失效？",
+        "focusEventIds": [
+          "boc-inflation-framework-renewal-2026-11-05"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-08",
+      "snapshotId": "market-2026-11-08-8093d435e666346e",
+      "asOf": "2026-11-07T23:17:24.175Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-08",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "框架续约如何经通胀预期、实际利率与风险溢价影响加元及国债，各环需要哪些独立证据？",
+          "focusEventIds": [
+            "boc-inflation-framework-renewal-2026-11-05"
+          ],
+          "prompt": "研究任务：框架续约如何经通胀预期、实际利率与风险溢价影响加元及国债，各环需要哪些独立证据？\n证据快照：2026-11-08；asOf=2026-11-07T23:17:24.175Z；snapshotId=market-2026-11-08-8093d435e666346e\n\n材料 1｜加拿大续期通胀目标框架：2%目标与1%–3%区间保持\n已确认事实：加拿大政府与央行11月5日联合声明续期货币政策框架：通胀目标保持2%，为1%至3%调控区间中点，以CPI12个月变动率衡量；政策对目标上下偏离对称处理，并保留应对冲击的灵活性。协议延续五年，至2031年12月31日结束。\n关注机制：研究判断：目标框架、当次政策决定和市场定价是三层证据。续约可用于研究预期锚定，需独立核对通胀预期与加拿大国债、加元的同窗口数据，不能仅据目标未变推断利率路径或实际物价已达标。\n接下来验证：核对后续官方沟通、带日期与口径的CPI及预期调查，区分框架稳定与短期冲击调整。市场验证先固定11月5日公布窗口，并隔离同期其他消息；本期未取得资产反应样本。\n失效条件：后续正式协议改变框架时重估；预期、风险溢价或同期消息可另行解释资产变化时，不认定续约造成价格反应。1%–3%区间不等于目标可任取其一，对称原则也不规定相同利率步长或时点。\n一手来源：https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "49ef4a47adfb411b699f8bbdb5836febeb3035311ef5fdd337bb28f7fe282c5a",
+          "sourceUrls": [
+            "https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些预期调查、通胀及同窗口消息，会推翻仅凭目标未变便判断市场传导未变的解释？",
+          "focusEventIds": [
+            "boc-inflation-framework-renewal-2026-11-05"
+          ],
+          "prompt": "研究任务：哪些预期调查、通胀及同窗口消息，会推翻仅凭目标未变便判断市场传导未变的解释？\n证据快照：2026-11-08；asOf=2026-11-07T23:17:24.175Z；snapshotId=market-2026-11-08-8093d435e666346e\n\n材料 1｜加拿大续期通胀目标框架：2%目标与1%–3%区间保持\n已确认事实：加拿大政府与央行11月5日联合声明续期货币政策框架：通胀目标保持2%，为1%至3%调控区间中点，以CPI12个月变动率衡量；政策对目标上下偏离对称处理，并保留应对冲击的灵活性。协议延续五年，至2031年12月31日结束。\n关注机制：研究判断：目标框架、当次政策决定和市场定价是三层证据。续约可用于研究预期锚定，需独立核对通胀预期与加拿大国债、加元的同窗口数据，不能仅据目标未变推断利率路径或实际物价已达标。\n接下来验证：核对后续官方沟通、带日期与口径的CPI及预期调查，区分框架稳定与短期冲击调整。市场验证先固定11月5日公布窗口，并隔离同期其他消息；本期未取得资产反应样本。\n失效条件：后续正式协议改变框架时重估；预期、风险溢价或同期消息可另行解释资产变化时，不认定续约造成价格反应。1%–3%区间不等于目标可任取其一，对称原则也不规定相同利率步长或时点。\n一手来源：https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "c3e2d6aadec7586aa2f6eca24ee89bbdd54116319aa285145518be02da5e0c53",
+          "sourceUrls": [
+            "https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "供给冲击或通胀预期偏离目标时有哪些替代情景，什么证据会使框架仍有效锚定预期的判断失效？",
+          "focusEventIds": [
+            "boc-inflation-framework-renewal-2026-11-05"
+          ],
+          "prompt": "研究任务：供给冲击或通胀预期偏离目标时有哪些替代情景，什么证据会使框架仍有效锚定预期的判断失效？\n证据快照：2026-11-08；asOf=2026-11-07T23:17:24.175Z；snapshotId=market-2026-11-08-8093d435e666346e\n\n材料 1｜加拿大续期通胀目标框架：2%目标与1%–3%区间保持\n已确认事实：加拿大政府与央行11月5日联合声明续期货币政策框架：通胀目标保持2%，为1%至3%调控区间中点，以CPI12个月变动率衡量；政策对目标上下偏离对称处理，并保留应对冲击的灵活性。协议延续五年，至2031年12月31日结束。\n关注机制：研究判断：目标框架、当次政策决定和市场定价是三层证据。续约可用于研究预期锚定，需独立核对通胀预期与加拿大国债、加元的同窗口数据，不能仅据目标未变推断利率路径或实际物价已达标。\n接下来验证：核对后续官方沟通、带日期与口径的CPI及预期调查，区分框架稳定与短期冲击调整。市场验证先固定11月5日公布窗口，并隔离同期其他消息；本期未取得资产反应样本。\n失效条件：后续正式协议改变框架时重估；预期、风险溢价或同期消息可另行解释资产变化时，不认定续约造成价格反应。1%–3%区间不等于目标可任取其一，对称原则也不规定相同利率步长或时点。\n一手来源：https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "4d83f1c2899eb8cb98196f064e03289323a1977e551c3818083f55334c10a150",
+          "sourceUrls": [
+            "https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/"
+          ]
+        }
+      ]
+    }
+  },
+  {
     "date": "2026-11-07",
     "slug": "2026-11-07",
     "title": "交易研究雷达 · 2026-11-07",
