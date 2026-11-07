@@ -16,6 +16,17 @@ export interface MarketRadarDaily { schemaVersion?: 2; date: string; slug: strin
 export interface MarketRadarIndexEntry { date: string; slug: string; snapshotId: string; asOf: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
 export const marketRadarIndex: MarketRadarIndexEntry[] = [
   {
+    "date": "2026-11-08",
+    "slug": "2026-11-08",
+    "title": "交易研究雷达 · 2026-11-08（恢复版）",
+    "summary": "恢复版：重新核对加拿大政府与央行11月5日公布的五年框架续约，2%通胀目标与1%–3%区间保持。保留原发布日期，区分目标框架、政策决定与资产传导证据。",
+    "snapshotId": "market-2026-11-08-8093d435e666346e",
+    "asOf": "2026-11-07T23:17:24.175Z",
+    "eventCount": 1,
+    "assetCount": 2,
+    "leadTitle": "加拿大续期通胀目标框架：2%目标与1%–3%区间保持"
+  },
+  {
     "date": "2026-11-07",
     "slug": "2026-11-07",
     "title": "交易研究雷达 · 2026-11-07",
@@ -215,6 +226,157 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
   }
 ]
 export const latestMarketRadars: MarketRadarDaily[] = [
+  {
+    "date": "2026-11-08",
+    "slug": "2026-11-08",
+    "title": "交易研究雷达 · 2026-11-08（恢复版）",
+    "summary": "恢复版：重新核对加拿大政府与央行11月5日公布的五年框架续约，2%通胀目标与1%–3%区间保持。保留原发布日期，区分目标框架、政策决定与资产传导证据。",
+    "snapshotId": "market-2026-11-08-8093d435e666346e",
+    "asOf": "2026-11-07T23:17:24.175Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-08T07:17:24.175995+08:00",
+    "events": [
+      {
+        "id": "boc-inflation-framework-renewal-2026-11-05",
+        "priority": "P1",
+        "status": "released",
+        "category": "macro",
+        "title": "加拿大续期通胀目标框架：2%目标与1%–3%区间保持",
+        "fact": "加拿大政府与央行11月5日联合声明续期货币政策框架：通胀目标保持2%，为1%至3%调控区间中点，以CPI12个月变动率衡量；政策对目标上下偏离对称处理，并保留应对冲击的灵活性。协议延续五年，至2031年12月31日结束。",
+        "whyWatch": "研究判断：目标框架、当次政策决定和市场定价是三层证据。续约可用于研究预期锚定，需独立核对通胀预期与加拿大国债、加元的同窗口数据，不能仅据目标未变推断利率路径或实际物价已达标。",
+        "assets": [
+          "加元",
+          "加拿大国债"
+        ],
+        "watchFor": "核对后续官方沟通、带日期与口径的CPI及预期调查，区分框架稳定与短期冲击调整。市场验证先固定11月5日公布窗口，并隔离同期其他消息；本期未取得资产反应样本。",
+        "invalidation": "后续正式协议改变框架时重估；预期、风险溢价或同期消息可另行解释资产变化时，不认定续约造成价格反应。1%–3%区间不等于目标可任取其一，对称原则也不规定相同利率步长或时点。",
+        "sourceName": "Bank of Canada — Government and Bank joint statement on framework renewal",
+        "sourceUrl": "https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/",
+        "sourcePublishedAt": "2026-11-05"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "本期只登记一项框架续约；未建立其对各资产传导的同窗口历史样本，也未采集实际市场反应。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "目标框架稳定、政策实施与市场预期是不同证据，不能用一项联合声明代替资产方向判断。",
+      "nextValidation": "固定公布窗口，分别核对通胀预期、国债期限结构、汇率与同期消息；样本不足时只记录证据质量。",
+      "invalidation": "框架后续变化、测量口径或事件窗口不一致时重估；缺失的价格与样本不补推断。",
+      "sourceUrls": [
+        "https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "框架续约如何经通胀预期、实际利率与风险溢价影响加元及国债，各环需要哪些独立证据？",
+        "focusEventIds": [
+          "boc-inflation-framework-renewal-2026-11-05"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些预期调查、通胀及同窗口消息，会推翻仅凭目标未变便判断市场传导未变的解释？",
+        "focusEventIds": [
+          "boc-inflation-framework-renewal-2026-11-05"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "供给冲击或通胀预期偏离目标时有哪些替代情景，什么证据会使框架仍有效锚定预期的判断失效？",
+        "focusEventIds": [
+          "boc-inflation-framework-renewal-2026-11-05"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-08",
+      "snapshotId": "market-2026-11-08-8093d435e666346e",
+      "asOf": "2026-11-07T23:17:24.175Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-08",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "框架续约如何经通胀预期、实际利率与风险溢价影响加元及国债，各环需要哪些独立证据？",
+          "focusEventIds": [
+            "boc-inflation-framework-renewal-2026-11-05"
+          ],
+          "prompt": "研究任务：框架续约如何经通胀预期、实际利率与风险溢价影响加元及国债，各环需要哪些独立证据？\n证据快照：2026-11-08；asOf=2026-11-07T23:17:24.175Z；snapshotId=market-2026-11-08-8093d435e666346e\n\n材料 1｜加拿大续期通胀目标框架：2%目标与1%–3%区间保持\n已确认事实：加拿大政府与央行11月5日联合声明续期货币政策框架：通胀目标保持2%，为1%至3%调控区间中点，以CPI12个月变动率衡量；政策对目标上下偏离对称处理，并保留应对冲击的灵活性。协议延续五年，至2031年12月31日结束。\n关注机制：研究判断：目标框架、当次政策决定和市场定价是三层证据。续约可用于研究预期锚定，需独立核对通胀预期与加拿大国债、加元的同窗口数据，不能仅据目标未变推断利率路径或实际物价已达标。\n接下来验证：核对后续官方沟通、带日期与口径的CPI及预期调查，区分框架稳定与短期冲击调整。市场验证先固定11月5日公布窗口，并隔离同期其他消息；本期未取得资产反应样本。\n失效条件：后续正式协议改变框架时重估；预期、风险溢价或同期消息可另行解释资产变化时，不认定续约造成价格反应。1%–3%区间不等于目标可任取其一，对称原则也不规定相同利率步长或时点。\n一手来源：https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "49ef4a47adfb411b699f8bbdb5836febeb3035311ef5fdd337bb28f7fe282c5a",
+          "sourceUrls": [
+            "https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些预期调查、通胀及同窗口消息，会推翻仅凭目标未变便判断市场传导未变的解释？",
+          "focusEventIds": [
+            "boc-inflation-framework-renewal-2026-11-05"
+          ],
+          "prompt": "研究任务：哪些预期调查、通胀及同窗口消息，会推翻仅凭目标未变便判断市场传导未变的解释？\n证据快照：2026-11-08；asOf=2026-11-07T23:17:24.175Z；snapshotId=market-2026-11-08-8093d435e666346e\n\n材料 1｜加拿大续期通胀目标框架：2%目标与1%–3%区间保持\n已确认事实：加拿大政府与央行11月5日联合声明续期货币政策框架：通胀目标保持2%，为1%至3%调控区间中点，以CPI12个月变动率衡量；政策对目标上下偏离对称处理，并保留应对冲击的灵活性。协议延续五年，至2031年12月31日结束。\n关注机制：研究判断：目标框架、当次政策决定和市场定价是三层证据。续约可用于研究预期锚定，需独立核对通胀预期与加拿大国债、加元的同窗口数据，不能仅据目标未变推断利率路径或实际物价已达标。\n接下来验证：核对后续官方沟通、带日期与口径的CPI及预期调查，区分框架稳定与短期冲击调整。市场验证先固定11月5日公布窗口，并隔离同期其他消息；本期未取得资产反应样本。\n失效条件：后续正式协议改变框架时重估；预期、风险溢价或同期消息可另行解释资产变化时，不认定续约造成价格反应。1%–3%区间不等于目标可任取其一，对称原则也不规定相同利率步长或时点。\n一手来源：https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "c3e2d6aadec7586aa2f6eca24ee89bbdd54116319aa285145518be02da5e0c53",
+          "sourceUrls": [
+            "https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "供给冲击或通胀预期偏离目标时有哪些替代情景，什么证据会使框架仍有效锚定预期的判断失效？",
+          "focusEventIds": [
+            "boc-inflation-framework-renewal-2026-11-05"
+          ],
+          "prompt": "研究任务：供给冲击或通胀预期偏离目标时有哪些替代情景，什么证据会使框架仍有效锚定预期的判断失效？\n证据快照：2026-11-08；asOf=2026-11-07T23:17:24.175Z；snapshotId=market-2026-11-08-8093d435e666346e\n\n材料 1｜加拿大续期通胀目标框架：2%目标与1%–3%区间保持\n已确认事实：加拿大政府与央行11月5日联合声明续期货币政策框架：通胀目标保持2%，为1%至3%调控区间中点，以CPI12个月变动率衡量；政策对目标上下偏离对称处理，并保留应对冲击的灵活性。协议延续五年，至2031年12月31日结束。\n关注机制：研究判断：目标框架、当次政策决定和市场定价是三层证据。续约可用于研究预期锚定，需独立核对通胀预期与加拿大国债、加元的同窗口数据，不能仅据目标未变推断利率路径或实际物价已达标。\n接下来验证：核对后续官方沟通、带日期与口径的CPI及预期调查，区分框架稳定与短期冲击调整。市场验证先固定11月5日公布窗口，并隔离同期其他消息；本期未取得资产反应样本。\n失效条件：后续正式协议改变框架时重估；预期、风险溢价或同期消息可另行解释资产变化时，不认定续约造成价格反应。1%–3%区间不等于目标可任取其一，对称原则也不规定相同利率步长或时点。\n一手来源：https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "4d83f1c2899eb8cb98196f064e03289323a1977e551c3818083f55334c10a150",
+          "sourceUrls": [
+            "https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/"
+          ]
+        }
+      ]
+    }
+  },
   {
     "date": "2026-11-07",
     "slug": "2026-11-07",
@@ -1143,157 +1305,6 @@ export const latestMarketRadars: MarketRadarDaily[] = [
           "promptChecksum": "a7f25581ec8586d114177c812e36ee7aa9c10e881da0fe31db38f04502d92364",
           "sourceUrls": [
             "https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026"
-          ]
-        }
-      ]
-    }
-  },
-  {
-    "date": "2026-10-30",
-    "slug": "2026-10-30",
-    "title": "交易研究雷达 · 2026-10-30",
-    "summary": "BEA 发布美国三季度 GDP 初值，实际增长季调年率为 3.4%。本期核对年化与季比口径、总量与私人最终需求，以及初值未来修订的边界，不由单期数据推断资产方向。",
-    "snapshotId": "market-2026-10-30-99398550dff9d224",
-    "asOf": "2026-10-29T21:35:50.000Z",
-    "origin": "research",
-    "publicationState": "published",
-    "reviewStatus": "automated",
-    "generatedAt": "2026-10-30T05:35:50+08:00",
-    "events": [
-      {
-        "id": "bea-q3-gdp-advance-estimate-2026-10-29",
-        "priority": "P1",
-        "status": "released",
-        "category": "macro",
-        "title": "美国三季度 GDP 初值：年化 3.4%，普通季比 0.8%",
-        "fact": "BEA 于 10 月 29 日公布三季度实际 GDP 初值：季调年率增 3.4%，未折年季比增 0.8%；上季年率增 2.2%。私人国内最终销售（消费及私人固定投资）年率增 4.9%，上季增 4.6%；它不含存货、政府与净出口。这不是全年或同比增速。",
-        "whyWatch": "研究判断：GDP 与私人最终需求不同，存货和贸易也影响总量。初值不证明需求持续、利润改善或资产方向。",
-        "assets": [
-          "美国国债",
-          "美国股票"
-        ],
-        "watchFor": "按同一版本核对消费、固定投资、存货和净出口贡献，接续月度需求与利润资料及 11 月 25 日第二次估计；保留统计期、发布日和年化口径。",
-        "invalidation": "官方修订取代本版本。后续分项或月份不支持需求持续时重估；口径或窗口未对齐，不把同步行情当作因果。",
-        "sourceName": "BEA GDP (Advance Estimate), 3rd Quarter 2026",
-        "sourceUrl": "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026",
-        "sourcePublishedAt": "2026-10-29"
-      }
-    ],
-    "sourceUrls": [
-      "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026"
-    ],
-    "quantStrategy": {
-      "horizonTradingDays": 3,
-      "status": "historical_samples_insufficient",
-      "methodology": "只登记初值与口径；未建立同版本、固定窗口的跨资产历史样本，量化门禁关闭。",
-      "assets": [
-        {
-          "symbol": "SPY",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "QQQ",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "BTC",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "ETH",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "GLD",
-          "group": "gold_etf",
-          "signalQuality": "weak"
-        }
-      ],
-      "sampleSize": 0,
-      "rationale": "季度总量不能验证三日资产反应；本期未测行情、资金流或识别因果。",
-      "nextValidation": "固定版本和事件窗口，核对需求、修订与市场反应；样本不足时仅显示弱信号。",
-      "invalidation": "官方修订、口径或窗口不符时重估；缺失数据不补结论。",
-      "sourceUrls": [
-        "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026"
-      ]
-    },
-    "schemaVersion": 2,
-    "researchQuestions": [
-      {
-        "id": "1",
-        "lens": "transmission",
-        "shortQuestion": "需求分项如何经企业收入和融资需求联系相关资产，各环需要什么公开证据？",
-        "focusEventIds": [
-          "bea-q3-gdp-advance-estimate-2026-10-29"
-        ]
-      },
-      {
-        "id": "2",
-        "lens": "falsification",
-        "shortQuestion": "哪些同版本分项、月度需求与利润资料最能推翻私人最终需求持续增强的解释？",
-        "focusEventIds": [
-          "bea-q3-gdp-advance-estimate-2026-10-29"
-        ]
-      },
-      {
-        "id": "3",
-        "lens": "scenario",
-        "shortQuestion": "如果初值被修订或增长主要来自存货，哪些替代解释成立，什么证据使传导假设失效？",
-        "focusEventIds": [
-          "bea-q3-gdp-advance-estimate-2026-10-29"
-        ]
-      }
-    ],
-    "researchPack": {
-      "schemaVersion": 2,
-      "date": "2026-10-30",
-      "snapshotId": "market-2026-10-30-99398550dff9d224",
-      "asOf": "2026-10-29T21:35:50.000Z",
-      "origin": "research",
-      "publicationState": "published",
-      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-10-30",
-      "questions": [
-        {
-          "id": "1",
-          "lens": "transmission",
-          "shortQuestion": "需求分项如何经企业收入和融资需求联系相关资产，各环需要什么公开证据？",
-          "focusEventIds": [
-            "bea-q3-gdp-advance-estimate-2026-10-29"
-          ],
-          "prompt": "研究任务：需求分项如何经企业收入和融资需求联系相关资产，各环需要什么公开证据？\n证据快照：2026-10-30；asOf=2026-10-29T21:35:50.000Z；snapshotId=market-2026-10-30-99398550dff9d224\n\n材料 1｜美国三季度 GDP 初值：年化 3.4%，普通季比 0.8%\n已确认事实：BEA 于 10 月 29 日公布三季度实际 GDP 初值：季调年率增 3.4%，未折年季比增 0.8%；上季年率增 2.2%。私人国内最终销售（消费及私人固定投资）年率增 4.9%，上季增 4.6%；它不含存货、政府与净出口。这不是全年或同比增速。\n关注机制：研究判断：GDP 与私人最终需求不同，存货和贸易也影响总量。初值不证明需求持续、利润改善或资产方向。\n接下来验证：按同一版本核对消费、固定投资、存货和净出口贡献，接续月度需求与利润资料及 11 月 25 日第二次估计；保留统计期、发布日和年化口径。\n失效条件：官方修订取代本版本。后续分项或月份不支持需求持续时重估；口径或窗口未对齐，不把同步行情当作因果。\n一手来源：https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "7164ddd308666b2a6b41d7f46eb09e405f23c0afd5fc1021aa1608b8f6e8acfc",
-          "sourceUrls": [
-            "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026"
-          ]
-        },
-        {
-          "id": "2",
-          "lens": "falsification",
-          "shortQuestion": "哪些同版本分项、月度需求与利润资料最能推翻私人最终需求持续增强的解释？",
-          "focusEventIds": [
-            "bea-q3-gdp-advance-estimate-2026-10-29"
-          ],
-          "prompt": "研究任务：哪些同版本分项、月度需求与利润资料最能推翻私人最终需求持续增强的解释？\n证据快照：2026-10-30；asOf=2026-10-29T21:35:50.000Z；snapshotId=market-2026-10-30-99398550dff9d224\n\n材料 1｜美国三季度 GDP 初值：年化 3.4%，普通季比 0.8%\n已确认事实：BEA 于 10 月 29 日公布三季度实际 GDP 初值：季调年率增 3.4%，未折年季比增 0.8%；上季年率增 2.2%。私人国内最终销售（消费及私人固定投资）年率增 4.9%，上季增 4.6%；它不含存货、政府与净出口。这不是全年或同比增速。\n关注机制：研究判断：GDP 与私人最终需求不同，存货和贸易也影响总量。初值不证明需求持续、利润改善或资产方向。\n接下来验证：按同一版本核对消费、固定投资、存货和净出口贡献，接续月度需求与利润资料及 11 月 25 日第二次估计；保留统计期、发布日和年化口径。\n失效条件：官方修订取代本版本。后续分项或月份不支持需求持续时重估；口径或窗口未对齐，不把同步行情当作因果。\n一手来源：https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "a7f59f8590073c96c44126d63f56c99b6dc6499882348a02e0439fa319c19656",
-          "sourceUrls": [
-            "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026"
-          ]
-        },
-        {
-          "id": "3",
-          "lens": "scenario",
-          "shortQuestion": "如果初值被修订或增长主要来自存货，哪些替代解释成立，什么证据使传导假设失效？",
-          "focusEventIds": [
-            "bea-q3-gdp-advance-estimate-2026-10-29"
-          ],
-          "prompt": "研究任务：如果初值被修订或增长主要来自存货，哪些替代解释成立，什么证据使传导假设失效？\n证据快照：2026-10-30；asOf=2026-10-29T21:35:50.000Z；snapshotId=market-2026-10-30-99398550dff9d224\n\n材料 1｜美国三季度 GDP 初值：年化 3.4%，普通季比 0.8%\n已确认事实：BEA 于 10 月 29 日公布三季度实际 GDP 初值：季调年率增 3.4%，未折年季比增 0.8%；上季年率增 2.2%。私人国内最终销售（消费及私人固定投资）年率增 4.9%，上季增 4.6%；它不含存货、政府与净出口。这不是全年或同比增速。\n关注机制：研究判断：GDP 与私人最终需求不同，存货和贸易也影响总量。初值不证明需求持续、利润改善或资产方向。\n接下来验证：按同一版本核对消费、固定投资、存货和净出口贡献，接续月度需求与利润资料及 11 月 25 日第二次估计；保留统计期、发布日和年化口径。\n失效条件：官方修订取代本版本。后续分项或月份不支持需求持续时重估；口径或窗口未对齐，不把同步行情当作因果。\n一手来源：https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "c8ff61b17acf77a0ebd1c32a48de4d110cf868db9bf0b8be842c842b532a03bd",
-          "sourceUrls": [
-            "https://www.bea.gov/news/2026/gdp-advance-estimate-3rd-quarter-2026"
           ]
         }
       ]

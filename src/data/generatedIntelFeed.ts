@@ -6,9 +6,26 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-11-07"
-export const intelItemCount = 294
+export const intelLatestDate: string | null = "2026-11-08"
+export const intelItemCount = 295
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "market:2026-11-08:boc-inflation-framework-renewal-2026-11-05",
+    "kind": "market",
+    "date": "2026-11-08",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "加拿大续期通胀目标框架：2%目标与1%–3%区间保持",
+    "summary": "研究判断：目标框架、当次政策决定和市场定价是三层证据。续约可用于研究预期锚定，需独立核对通胀预期与加拿大国债、加元的同窗口数据，不能仅据目标未变推断利率路径或实际物价已达标。",
+    "href": "/market-radar/2026-11-08#boc-inflation-framework-renewal-2026-11-05",
+    "source": {
+      "name": "Bank of Canada — Government and Bank joint statement on framework renewal",
+      "url": "https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
   {
     "id": "learning:ai-langchain-stream-chunk-accumulation",
     "kind": "learning",
@@ -511,8 +528,8 @@ export const intelTopics: IntelTopic[] = [
   {
     "topic": "market_macro",
     "domain": "market",
-    "count": 18,
-    "lastSeen": "2026-11-07",
+    "count": 19,
+    "lastSeen": "2026-11-08",
     "firstSeen": "2026-08-09"
   },
   {
