@@ -5,6 +5,69 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "learning:ai-quickjs-finalizing-destructor",
+    "kind": "learning",
+    "date": "2026-11-08",
+    "domain": "ai",
+    "topic": "infrastructure",
+    "title": "langchain-quickjs 0.3.12：Python 收尾时，析构不再等待工作线程",
+    "summary": "Agent 显示暂停、工具报错和宿主进程退出是不同的生命周期。把进程最终收尾与仍在运行时的资源回收分开，可以解释为什么业务调用已经返回，服务却一直不能结束。",
+    "href": "/radar/2026-11-08#ai-quickjs-finalizing-destructor",
+    "source": {
+      "name": "langchain-quickjs 0.3.12 official release",
+      "tier": "tier1",
+      "url": "https://github.com/langchain-ai/deepagents/releases/tag/langchain-quickjs%3D%3D0.3.12"
+    }
+  },
+  {
+    "id": "learning:ai-mastra-final-scope-set",
+    "kind": "learning",
+    "date": "2026-11-08",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "Mastra Core 1.82.0：动态 scopes 返回最终集合，身份范围不能丢",
+    "summary": "宿主传入了一个范围集合，不代表每个 Agent 都应照单使用。明确函数做替换、数组做追加，并保留运行身份，能让租户或工具范围的收敛有可检查的输入和输出。",
+    "href": "/radar/2026-11-08#ai-mastra-final-scope-set",
+    "source": {
+      "name": "Mastra Core 1.82.0 official release",
+      "tier": "tier1",
+      "url": "https://github.com/mastra-ai/mastra/releases/tag/%40mastra/core%401.82.0"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "learning:web3-viem-method-refusal-retry",
+    "kind": "learning",
+    "date": "2026-11-08",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "viem 2.57.16：方法已被明确拒绝时，HTTP 状态不再让请求重试",
+    "summary": "钱包或链上服务需要同时解释传输状态和协议错误。明确的能力拒绝若被当成瞬时故障，会推迟备用节点或错误处理；只看HTTP403又会把不同原因混在一起。",
+    "href": "/radar/2026-11-08#web3-viem-method-refusal-retry",
+    "source": {
+      "name": "viem 2.57.16 official release",
+      "tier": "tier1",
+      "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.16"
+    }
+  },
+  {
+    "id": "learning:web3-op-supernode-retired-max-safe-lag",
+    "kind": "learning",
+    "date": "2026-11-08",
+    "domain": "web3",
+    "topic": "l2",
+    "title": "op-supernode 1.1.1：旧的 max-safe-lag 参数退出启动与排序路径",
+    "summary": "升级前的配置能被解析，与升级后继续施加同一运行约束需要分别验证。参数被删除后，旧环境变量可能安静失效，不能因进程能启动就假定原来的运行策略还在。",
+    "href": "/radar/2026-11-08#web3-op-supernode-retired-max-safe-lag",
+    "source": {
+      "name": "op-supernode 1.1.1 official release",
+      "tier": "tier1",
+      "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-supernode/v1.1.1"
+    }
+  },
+  {
     "id": "market:2026-11-08:boc-inflation-framework-renewal-2026-11-05",
     "kind": "market",
     "date": "2026-11-08",

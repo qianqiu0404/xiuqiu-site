@@ -6,7 +6,43 @@
     <atom:link href="https://xiuqiu-site.vercel.app/radar/rss.xml" rel="self" type="application/rss+xml" />
     <description>每天 2 条 AI、2 条 Web3 工程简报：先讲机制，再给例子和边界。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Sat, 07 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 08 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>langchain-quickjs 0.3.12：Python 收尾时，析构不再等待工作线程</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-08#ai-quickjs-finalizing-destructor</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-quickjs-finalizing-destructor</guid>
+      <pubDate>Sun, 08 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>infrastructure</category>
+      <description>Agent 显示暂停、工具报错和宿主进程退出是不同的生命周期。把进程最终收尾与仍在运行时的资源回收分开，可以解释为什么业务调用已经返回，服务却一直不能结束。</description>
+    </item>
+    <item>
+      <title>Mastra Core 1.82.0：动态 scopes 返回最终集合，身份范围不能丢</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-08#ai-mastra-final-scope-set</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-mastra-final-scope-set</guid>
+      <pubDate>Sun, 08 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>safety</category>
+      <description>宿主传入了一个范围集合，不代表每个 Agent 都应照单使用。明确函数做替换、数组做追加，并保留运行身份，能让租户或工具范围的收敛有可检查的输入和输出。</description>
+    </item>
+    <item>
+      <title>viem 2.57.16：方法已被明确拒绝时，HTTP 状态不再让请求重试</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-08#web3-viem-method-refusal-retry</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-viem-method-refusal-retry</guid>
+      <pubDate>Sun, 08 Nov 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>onchain_infrastructure</category>
+      <description>钱包或链上服务需要同时解释传输状态和协议错误。明确的能力拒绝若被当成瞬时故障，会推迟备用节点或错误处理；只看HTTP403又会把不同原因混在一起。</description>
+    </item>
+    <item>
+      <title>op-supernode 1.1.1：旧的 max-safe-lag 参数退出启动与排序路径</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-08#web3-op-supernode-retired-max-safe-lag</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-op-supernode-retired-max-safe-lag</guid>
+      <pubDate>Sun, 08 Nov 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>l2</category>
+      <description>升级前的配置能被解析，与升级后继续施加同一运行约束需要分别验证。参数被删除后，旧环境变量可能安静失效，不能因进程能启动就假定原来的运行策略还在。</description>
+    </item>
     <item>
       <title>LangChain Core 1.7.6：读取累计结果时，再一次合并流式消息</title>
       <link>https://xiuqiu-site.vercel.app/radar/2026-11-07#ai-langchain-stream-chunk-accumulation</link>
@@ -510,42 +546,6 @@
       <category>WEB3</category>
       <category>l2</category>
       <description>L2 的“已确认”有好几种含义。钱包和交易所后端如果只看一个标签，重组时就可能把不该入账的资金算成安全；这次修复说明这几层确认要分开读、分开监控。</description>
-    </item>
-    <item>
-      <title>vLLM 0.31：重启不重载权重，缓存键先分清来源</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-13#ai-vllm-031-preload-cache-isolation</link>
-      <guid isPermaLink="false">xiuqiu-radar:ai-vllm-031-preload-cache-isolation</guid>
-      <pubDate>Tue, 13 Oct 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>model_inference</category>
-      <description>这把推理服务的可用性和隔离性拆成两件可以分别验收的事：重启时间看权重是否常驻，多租户安全看缓存键是否带命名空间，不能只靠吞吐基准判断升级是否安全。</description>
-    </item>
-    <item>
-      <title>Anthropic 防蒸馏：推理过程成为需要保护的资产</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-13#ai-anthropic-distillation-defenses</link>
-      <guid isPermaLink="false">xiuqiu-radar:ai-anthropic-distillation-defenses</guid>
-      <pubDate>Tue, 13 Oct 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>safety</category>
-      <description>这说明模型服务的安全边界已经从输出内容扩展到推理过程和上下文可编辑性。做 Agent 平台时，推理日志、可回放上下文和导出接口都要按数据资产来设计访问控制。</description>
-    </item>
-    <item>
-      <title>Reth 2.7：区块访问列表进入客户端存储</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-13#web3-reth-bal-persistence</link>
-      <guid isPermaLink="false">xiuqiu-radar:web3-reth-bal-persistence</guid>
-      <pubDate>Tue, 13 Oct 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>protocol</category>
-      <description>Glamsterdam 的并行执行不是只改共识规则，而是让每个客户端多出一份要落盘、要限流的结构化数据。跑自建节点的后端要把 BAL 的存储和缓存成本算进容量规划。</description>
-    </item>
-    <item>
-      <title>geth 1.17.8：Amsterdam 之后才出现的 DoS 面</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-13#web3-geth-1178-dos-fixes</link>
-      <guid isPermaLink="false">xiuqiu-radar:web3-geth-1178-dos-fixes</guid>
-      <pubDate>Tue, 13 Oct 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>security</category>
-      <description>这提醒钱包和交易所后端：硬分叉风险不止在激活那一刻，测试网阶段暴露的 DoS 面会在主网前通过补丁版本关闭，节点运维需要按补丁节奏升级。</description>
     </item>
   </channel>
 </rss>
