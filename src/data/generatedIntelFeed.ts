@@ -6,9 +6,26 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-11-08"
-export const intelItemCount = 299
+export const intelLatestDate: string | null = "2026-11-09"
+export const intelItemCount = 300
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "market:2026-11-09:fincen-mexc-funds-transfer-order-2026-11-06",
+    "kind": "market",
+    "date": "2026-11-09",
+    "domain": "market",
+    "topic": "market_regulation",
+    "title": "FinCEN公布MEXC资金传送限制命令，生效日期待核",
+    "summary": "研究判断：监管接入限制可能经金融机构的资金通道、结算安排与对手方风险管理传导到加密市场。需分别验证正式法律时点、机构执行与实际资金数据；链上仍能转移资产或平台仍可访问，不能单独证明美国金融接入状态。",
+    "href": "/market-radar/2026-11-09#fincen-mexc-funds-transfer-order-2026-11-06",
+    "source": {
+      "name": "U.S. Treasury — FinCEN MEXC Global order announcement",
+      "url": "https://home.treasury.gov/news/press-releases/sb0685/"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
   {
     "id": "learning:ai-quickjs-finalizing-destructor",
     "kind": "learning",
@@ -505,89 +522,16 @@ export const intelLatestItems: IntelItem[] = [
     "flags": {
       "priority": "P1"
     }
-  },
-  {
-    "id": "learning:ai-langgraph-paused-tool-stream",
-    "kind": "learning",
-    "date": "2026-11-02",
-    "domain": "ai",
-    "topic": "agent",
-    "title": "LangGraph 1.2.19：等待批准的工具，不再被流事件误报成失败",
-    "summary": "Agent 状态面板需要区分等待、执行失败和业务完成。异常类型、图状态与流事件是不同证据；单看一条结束事件或一段没有输出的流，可能错误地触发重试或显示完成。",
-    "href": "/radar/2026-11-02#ai-langgraph-paused-tool-stream",
-    "source": {
-      "name": "LangGraph 1.2.19 official release",
-      "tier": "tier1",
-      "url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.19"
-    },
-    "flags": {
-      "deepDive": true
-    }
-  },
-  {
-    "id": "learning:ai-openai-sdk-websocket-policy",
-    "kind": "learning",
-    "date": "2026-11-02",
-    "domain": "ai",
-    "topic": "infrastructure",
-    "title": "openai-python 3.42.1：连接策略要随代码生成保留下来",
-    "summary": "自动生成的接口和手工维护的传输行为需要共同交付。只确认方法或类型存在，不能证明请求头、恢复预算与取消清理仍遵守原来的契约。",
-    "href": "/radar/2026-11-02#ai-openai-sdk-websocket-policy",
-    "source": {
-      "name": "OpenAI Python SDK 3.42.1 official release",
-      "tier": "tier1",
-      "url": "https://github.com/openai/openai-python/releases/tag/v3.42.1"
-    }
-  },
-  {
-    "id": "learning:web3-metamask-author-comment-authority",
-    "kind": "learning",
-    "date": "2026-11-02",
-    "domain": "web3",
-    "topic": "wallet_cex",
-    "title": "MetaMask 社交组件：作者评论由后端选择，客户端保留缺失与 null",
-    "summary": "钱包展示的资料应保留字段的权威来源与未知状态。缺失、明确为空和校验失败分别影响界面及排障，不能统一转成没有评论。",
-    "href": "/radar/2026-11-02#web3-metamask-author-comment-authority",
-    "source": {
-      "name": "MetaMask core v1378.0.0: social-controllers 3.14.2",
-      "tier": "tier1",
-      "url": "https://github.com/MetaMask/core/releases/tag/v1378.0.0"
-    }
-  },
-  {
-    "id": "learning:web3-reth-evm2-sdk-boundary",
-    "kind": "learning",
-    "date": "2026-11-02",
-    "domain": "web3",
-    "topic": "onchain_infrastructure",
-    "title": "Reth 2.9.0：节点配置可沿用，自定义执行组件仍要迁移",
-    "summary": "同一版本对节点运营方和 SDK 开发者可能有不同迁移成本。升级验收应按实际使用的接口划分，避免把无需改配置理解为所有自定义组件都保持兼容。",
-    "href": "/radar/2026-11-02#web3-reth-evm2-sdk-boundary",
-    "source": {
-      "name": "Reth v2.9.0 official release",
-      "tier": "tier1",
-      "url": "https://github.com/paradigmxyz/reth/releases/tag/v2.9.0"
-    }
-  },
-  {
-    "id": "market:2026-11-02:bea-september-pio-2026-10-29",
-    "kind": "market",
-    "date": "2026-11-02",
-    "domain": "market",
-    "topic": "market_macro",
-    "title": "美国九月消费：名义增 0.5%，实际不足 0.1%",
-    "summary": "研究判断：消费金额增长不等于购买量同幅增长。价格、实际收入和储蓄约束应分别观察，单月资料不能证明需求趋势或资产方向。",
-    "href": "/market-radar/2026-11-02#bea-september-pio-2026-10-29",
-    "source": {
-      "name": "BEA Personal Income and Outlays, September 2026",
-      "url": "https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026"
-    },
-    "flags": {
-      "priority": "P1"
-    }
   }
 ]
 export const intelTopics: IntelTopic[] = [
+  {
+    "topic": "market_regulation",
+    "domain": "market",
+    "count": 4,
+    "lastSeen": "2026-11-09",
+    "firstSeen": "2026-10-25"
+  },
   {
     "topic": "market_macro",
     "domain": "market",
@@ -664,13 +608,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 3,
     "lastSeen": "2026-10-27",
     "firstSeen": "2026-08-12"
-  },
-  {
-    "topic": "market_regulation",
-    "domain": "market",
-    "count": 3,
-    "lastSeen": "2026-10-27",
-    "firstSeen": "2026-10-25"
   },
   {
     "topic": "market_crypto",
