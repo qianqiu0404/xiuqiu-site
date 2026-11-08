@@ -5,6 +5,55 @@ import type { RadarFeedItem } from '../generatedRadarFeed.ts'
 
 export const monthlyFeedItems: RadarFeedItem[] = [
   {
+    "id": "ai-sdk-telemetry-url-boundary",
+    "date": "2026-11-09",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "AI SDK 7.0.165：遥测拿到模型结果之前，先缩减请求 URL",
+    "summary": "最终输出不能覆盖更早的观察者；应逐接收者核对字段与脱敏时点。",
+    "anchor": "ai-sdk-telemetry-url-boundary",
+    "sourceName": "AI SDK release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
+    "isDeepDive": true
+  },
+  {
+    "id": "ai-deepagents-selected-model-budget",
+    "date": "2026-11-09",
+    "domain": "ai",
+    "topic": "infrastructure",
+    "title": "deepagents-code 0.2.5：压缩输入预算跟随当前选定模型",
+    "summary": "切换模型也改变预算；预算准备和最终执行要分开核验，保留下游配置。",
+    "anchor": "ai-deepagents-selected-model-budget",
+    "sourceName": "deepagents-code release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5"
+  },
+  {
+    "id": "web3-viem-http-batch-factory-identity",
+    "date": "2026-11-09",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "viem 2.57.17：同一 RPC URL，不再把不同 transport 的批次混用",
+    "summary": "相同地址不等于同一调用者；批处理仍需保持鉴权配置和响应归属。",
+    "anchor": "web3-viem-http-batch-factory-identity",
+    "sourceName": "viem release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/wevm/viem/releases/tag/viem%402.57.17"
+  },
+  {
+    "id": "web3-sui-object-funds-execution-abort",
+    "date": "2026-11-09",
+    "domain": "web3",
+    "topic": "protocol",
+    "title": "Sui mainnet 1.83.1：对象资金不足，在执行期间形成 Move abort",
+    "summary": "模拟成功不能代替执行回执；应区分状态视图、失败阶段与错误类型。",
+    "anchor": "web3-sui-object-funds-execution-abort",
+    "sourceName": "Sui mainnet release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1"
+  },
+  {
     "id": "ai-quickjs-finalizing-destructor",
     "date": "2026-11-08",
     "domain": "ai",

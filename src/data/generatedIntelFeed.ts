@@ -7,8 +7,71 @@ export interface IntelItem { id: string; kind: IntelKind; date: string; domain: 
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
 export const intelLatestDate: string | null = "2026-11-09"
-export const intelItemCount = 300
+export const intelItemCount = 304
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "learning:ai-sdk-telemetry-url-boundary",
+    "kind": "learning",
+    "date": "2026-11-09",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "AI SDK 7.0.165：遥测拿到模型结果之前，先缩减请求 URL",
+    "summary": "最终输出不能覆盖更早的观察者；应逐接收者核对字段与脱敏时点。",
+    "href": "/radar/2026-11-09#ai-sdk-telemetry-url-boundary",
+    "source": {
+      "name": "AI SDK release",
+      "tier": "tier1",
+      "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "learning:ai-deepagents-selected-model-budget",
+    "kind": "learning",
+    "date": "2026-11-09",
+    "domain": "ai",
+    "topic": "infrastructure",
+    "title": "deepagents-code 0.2.5：压缩输入预算跟随当前选定模型",
+    "summary": "切换模型也改变预算；预算准备和最终执行要分开核验，保留下游配置。",
+    "href": "/radar/2026-11-09#ai-deepagents-selected-model-budget",
+    "source": {
+      "name": "deepagents-code release",
+      "tier": "tier1",
+      "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5"
+    }
+  },
+  {
+    "id": "learning:web3-viem-http-batch-factory-identity",
+    "kind": "learning",
+    "date": "2026-11-09",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "viem 2.57.17：同一 RPC URL，不再把不同 transport 的批次混用",
+    "summary": "相同地址不等于同一调用者；批处理仍需保持鉴权配置和响应归属。",
+    "href": "/radar/2026-11-09#web3-viem-http-batch-factory-identity",
+    "source": {
+      "name": "viem release",
+      "tier": "tier1",
+      "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.17"
+    }
+  },
+  {
+    "id": "learning:web3-sui-object-funds-execution-abort",
+    "kind": "learning",
+    "date": "2026-11-09",
+    "domain": "web3",
+    "topic": "protocol",
+    "title": "Sui mainnet 1.83.1：对象资金不足，在执行期间形成 Move abort",
+    "summary": "模拟成功不能代替执行回执；应区分状态视图、失败阶段与错误类型。",
+    "href": "/radar/2026-11-09#web3-sui-object-funds-execution-abort",
+    "source": {
+      "name": "Sui mainnet release",
+      "tier": "tier1",
+      "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1"
+    }
+  },
   {
     "id": "market:2026-11-09:fincen-mexc-funds-transfer-order-2026-11-06",
     "kind": "market",
@@ -526,6 +589,34 @@ export const intelLatestItems: IntelItem[] = [
 ]
 export const intelTopics: IntelTopic[] = [
   {
+    "topic": "onchain_infrastructure",
+    "domain": "web3",
+    "count": 14,
+    "lastSeen": "2026-11-09",
+    "firstSeen": "2026-08-11"
+  },
+  {
+    "topic": "infrastructure",
+    "domain": "ai",
+    "count": 9,
+    "lastSeen": "2026-11-09",
+    "firstSeen": "2026-10-29"
+  },
+  {
+    "topic": "safety",
+    "domain": "ai",
+    "count": 8,
+    "lastSeen": "2026-11-09",
+    "firstSeen": "2026-10-13"
+  },
+  {
+    "topic": "protocol",
+    "domain": "web3",
+    "count": 5,
+    "lastSeen": "2026-11-09",
+    "firstSeen": "2026-08-12"
+  },
+  {
     "topic": "market_regulation",
     "domain": "market",
     "count": 4,
@@ -538,27 +629,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 19,
     "lastSeen": "2026-11-08",
     "firstSeen": "2026-08-09"
-  },
-  {
-    "topic": "onchain_infrastructure",
-    "domain": "web3",
-    "count": 13,
-    "lastSeen": "2026-11-08",
-    "firstSeen": "2026-08-11"
-  },
-  {
-    "topic": "infrastructure",
-    "domain": "ai",
-    "count": 8,
-    "lastSeen": "2026-11-08",
-    "firstSeen": "2026-10-29"
-  },
-  {
-    "topic": "safety",
-    "domain": "ai",
-    "count": 7,
-    "lastSeen": "2026-11-08",
-    "firstSeen": "2026-10-13"
   },
   {
     "topic": "l2",
@@ -615,13 +685,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 7,
     "lastSeen": "2026-10-25",
     "firstSeen": "2026-08-09"
-  },
-  {
-    "topic": "protocol",
-    "domain": "web3",
-    "count": 4,
-    "lastSeen": "2026-10-25",
-    "firstSeen": "2026-08-12"
   },
   {
     "topic": "market_signal",

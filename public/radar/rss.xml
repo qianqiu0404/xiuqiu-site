@@ -6,7 +6,43 @@
     <atom:link href="https://xiuqiu-site.vercel.app/radar/rss.xml" rel="self" type="application/rss+xml" />
     <description>每天 2 条 AI、2 条 Web3 工程简报：先讲机制，再给例子和边界。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Sun, 08 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 09 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>AI SDK 7.0.165：遥测拿到模型结果之前，先缩减请求 URL</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-09#ai-sdk-telemetry-url-boundary</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-sdk-telemetry-url-boundary</guid>
+      <pubDate>Mon, 09 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>safety</category>
+      <description>最终输出不能覆盖更早的观察者；应逐接收者核对字段与脱敏时点。</description>
+    </item>
+    <item>
+      <title>deepagents-code 0.2.5：压缩输入预算跟随当前选定模型</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-09#ai-deepagents-selected-model-budget</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-deepagents-selected-model-budget</guid>
+      <pubDate>Mon, 09 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>infrastructure</category>
+      <description>切换模型也改变预算；预算准备和最终执行要分开核验，保留下游配置。</description>
+    </item>
+    <item>
+      <title>viem 2.57.17：同一 RPC URL，不再把不同 transport 的批次混用</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-09#web3-viem-http-batch-factory-identity</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-viem-http-batch-factory-identity</guid>
+      <pubDate>Mon, 09 Nov 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>onchain_infrastructure</category>
+      <description>相同地址不等于同一调用者；批处理仍需保持鉴权配置和响应归属。</description>
+    </item>
+    <item>
+      <title>Sui mainnet 1.83.1：对象资金不足，在执行期间形成 Move abort</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-09#web3-sui-object-funds-execution-abort</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-sui-object-funds-execution-abort</guid>
+      <pubDate>Mon, 09 Nov 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>protocol</category>
+      <description>模拟成功不能代替执行回执；应区分状态视图、失败阶段与错误类型。</description>
+    </item>
     <item>
       <title>langchain-quickjs 0.3.12：Python 收尾时，析构不再等待工作线程</title>
       <link>https://xiuqiu-site.vercel.app/radar/2026-11-08#ai-quickjs-finalizing-destructor</link>
@@ -510,42 +546,6 @@
       <category>WEB3</category>
       <category>security</category>
       <description>节点依赖外部 HTTPS 服务时，协议共识正确并不覆盖传输认证风险。依赖清单应包含镜像里的信任材料，而不只列应用版本号。</description>
-    </item>
-    <item>
-      <title>Agents SDK 0.24：审批没结束前，不压缩上下文</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-17#ai-agents-sdk-024-approval-compaction</link>
-      <guid isPermaLink="false">xiuqiu-radar:ai-agents-sdk-024-approval-compaction</guid>
-      <pubDate>Sat, 17 Oct 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>agent</category>
-      <description>带人工门禁的 Agent，审批对象必须是稳定、可核对的原始调用。上下文管理和审批流程的先后顺序，本身就是安全边界的一部分。</description>
-    </item>
-    <item>
-      <title>用模型复原 NIST 曲线种子：不是后门，是 1997 年的时钟</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-17#ai-anthropic-ecdsa-curve-origins</link>
-      <guid isPermaLink="false">xiuqiu-radar:ai-anthropic-ecdsa-curve-origins</guid>
-      <pubDate>Sat, 17 Oct 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>safety</category>
-      <description>这既说明 P-256、P-384 等曲线的种子来源是普通、可复现的，反而降低了后门疑虑；也说明强模型已经能独立完成多步骤的密码学取证，安全团队需要把这类能力算进威胁模型和审计流程。</description>
-    </item>
-    <item>
-      <title>Agave 4.3.2：验证者客户端的依赖也是攻击面</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-17#web3-agave-432-dependency-security</link>
-      <guid isPermaLink="false">xiuqiu-radar:web3-agave-432-dependency-security</guid>
-      <pubDate>Sat, 17 Oct 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>security</category>
-      <description>节点安全不只看协议本身，传输层和基础库同样决定节点能不能被打挂。把依赖公告的处理方式写成可检查的规则，比单纯升级版本号更可靠。</description>
-    </item>
-    <item>
-      <title>op-supernode 1.0.4：L1 重组后，safe 不能跑到未验证的块上</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-17#web3-op-supernode-safe-head-reorg</link>
-      <guid isPermaLink="false">xiuqiu-radar:web3-op-supernode-safe-head-reorg</guid>
-      <pubDate>Sat, 17 Oct 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>l2</category>
-      <description>L2 的“已确认”有好几种含义。钱包和交易所后端如果只看一个标签，重组时就可能把不该入账的资金算成安全；这次修复说明这几层确认要分开读、分开监控。</description>
     </item>
   </channel>
 </rss>
