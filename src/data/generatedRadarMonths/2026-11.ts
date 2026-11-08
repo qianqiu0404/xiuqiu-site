@@ -5,6 +5,293 @@ import type { DailyRadar } from '../generatedRadars.ts'
 
 export const monthlyRadars: DailyRadar[] = [
   {
+    "date": "2026-11-09",
+    "slug": "2026-11-09",
+    "title": "学习雷达 · 2026-11-09",
+    "summary": "AI看遥测跨层前的URL净化与当前模型预算；Web3看HTTP批次配置归属与对象资金执行期失败。补读尚未覆盖的固定发布快照，保留原日期；专题核对观察者接收数据的时点。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-11-08T21:37:39.755Z",
+    "generatedAt": "2026-11-08T21:37:39.755Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-sdk-telemetry-url-boundary",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "AI SDK 7.0.165：遥测拿到模型结果之前，先缩减请求 URL",
+        "whatHappened": "AI SDK于11月7日（UTC）发布7.0.165：generateText与streamText此前虽已缩减公开结果URL，遥测integration和tracing subscriber仍可能更早看到原始端点。",
+        "mechanism": "provider回调返回前复制结果并净化request.url：HTTP(S)仅留origin，无效或非HTTP(S)地址省略url。用户信息、路径、query、fragment被去掉；body等元数据保留，原provider对象不变。",
+        "workedExample": "上游mock在两个观察者接收时即时复制request，检查URL净化及原对象未变。本期只读断言，未运行模型或本地复现。",
+        "whyItMatters": "最终输出不能覆盖更早的观察者；应逐接收者核对字段与脱敏时点。",
+        "risksAndLimits": [
+          "仅修两条文本生成路径的URL元数据，不保证headers、body、业务日志或WorkflowAgent安全。",
+          "origin仍暴露主机与端口；本期未验证生产部署或过去数据的撤回。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "AI SDK release",
+            "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
+            "publishedAt": "2026-11-07T19:27:48.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "PR24708",
+            "url": "https://github.com/vercel/ai/pull/24708"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "generateText boundary",
+            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/generate-text.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "URL sanitizer",
+            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/get-request-origin.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Immediate tracing tests",
+            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts"
+          }
+        ],
+        "nextQuestions": [
+          "接收者的字段范围与脱敏时点如何分别核验？"
+        ]
+      },
+      {
+        "id": "ai-deepagents-selected-model-budget",
+        "domain": "ai",
+        "topic": "infrastructure",
+        "title": "deepagents-code 0.2.5：压缩输入预算跟随当前选定模型",
+        "whatHappened": "0.2.5于11月5日（UTC）发布，修复切换模型仍按启动模型判断压缩的问题，与已刊摘要截点修复不同。",
+        "mechanism": "同步/异步用临时请求核算选定模型与运行期settings的预算；交给handler前恢复原model/settings，让下游中间件继续真正选择模型。",
+        "workedExample": "上游mock矩阵：启动128K转32K，26K输入加8K输出预留需压缩，改2K则不压缩；还检查下游与原请求。本期只读，未运行模型/测试。",
+        "whyItMatters": "切换模型也改变预算；预算准备和最终执行要分开核验，保留下游配置。",
+        "risksAndLimits": [
+          "数字是上游合成断言，不是本期实测窗口、精确token数或延迟收益；provider限制仍需另验。",
+          "预算依据主模型，摘要生成可另选模型；不证明摘要完整或会话恢复正确。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "deepagents-code release",
+            "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5",
+            "publishedAt": "2026-11-05T21:41:43.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "PR7545",
+            "url": "https://github.com/langchain-ai/deepagents/pull/7545"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Budget request code",
+            "url": "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/deepagents_code/offload_middleware.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Budget matrix tests",
+            "url": "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/tests/unit_tests/test_compact_tool.py"
+          }
+        ],
+        "nextQuestions": [
+          "预算来自当前配置，最终模型选择是否仍走原流程？"
+        ]
+      },
+      {
+        "id": "web3-viem-http-batch-factory-identity",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "viem 2.57.17：同一 RPC URL，不再把不同 transport 的批次混用",
+        "whatHappened": "viem于11月8日（UTC）发布2.57.17，修复同URL下独立HTTP工厂合批时混用鉴权头与fetch配置的问题。",
+        "mechanism": "调度键组合稳定工厂batchId、实际URL和AbortSignal身份。ID位于initializer外，fallback重初始化同工厂仍合批；独立工厂保留各自RPC配置。",
+        "workedExample": "上游本地鉴权A/B返回1和10，覆盖直接/fallback分离、同工厂共享与URL/signal分离。本期只读，未连RPC或发交易。",
+        "whyItMatters": "相同地址不等于同一调用者；批处理仍需保持鉴权配置和响应归属。",
+        "risksAndLimits": [
+          "这是工厂批次隔离，不是租户认证、链ID校验或WebSocket订阅路由；1和10为本地测试值。",
+          "相同配置的独立工厂也不自动合批；共享需复用工厂并审查配置，不表示写请求可安全重试。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "viem release",
+            "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.17",
+            "publishedAt": "2026-11-08T18:04:10.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "PR5389",
+            "url": "https://github.com/wevm/viem/pull/5389"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "HTTP factory code",
+            "url": "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "HTTP batch tests",
+            "url": "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.test.ts"
+          }
+        ],
+        "nextQuestions": [
+          "哪些客户端应共享工厂，如何核验配置归属？"
+        ]
+      },
+      {
+        "id": "web3-sui-object-funds-execution-abort",
+        "domain": "web3",
+        "topic": "protocol",
+        "title": "Sui mainnet 1.83.1：对象资金不足，在执行期间形成 Move abort",
+        "whatHappened": "Sui于11月4日（UTC）发布mainnet1.83.1，其protocol140配置让对象资金不足在执行期abort，替代旧检查/重执行。PR于10月20日合入，非当天首创。",
+        "mechanism": "版本化设计先看交易内owner/type余额；不足时按所需accumulator版本读取已结算余额、扣除同commit未结算提款。仍不足则abort；地址调度独立。",
+        "workedExample": "文档中dry-run/孤立replay缺少同commit未结算视图，可能成功而提交执行不足失败。本期只读配置/设计，未运行节点、模拟、回放或资金操作。",
+        "whyItMatters": "模拟成功不能代替执行回执；应区分状态视图、失败阶段与错误类型。",
+        "risksAndLimits": [
+          "对象虚拟余额不足形成Move abort；地址资金执行前调度仍可返回InsufficientFundsForWithdraw。",
+          "文档说明已执行失败可正常收gas；未验证真实主网部署、账户余额或资金安全，孤立replay差异另项追踪。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Sui mainnet release",
+            "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1",
+            "publishedAt": "2026-11-04T20:01:16.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "PR28290",
+            "url": "https://github.com/MystenLabs/sui/pull/28290"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Protocol140 config",
+            "url": "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-protocol-config/src/lib.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_design",
+            "name": "Object funds design",
+            "url": "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-core/src/accumulators/design_docs/object_funds_in_execution.md"
+          }
+        ],
+        "nextQuestions": [
+          "三种视图的版本、扣减及对象/地址错误如何分别识别？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-telemetry-observer-sanitization-order",
+      "domain": "ai",
+      "topic": "safety",
+      "title": "专题：最终结果已脱敏，为什么中途观察者仍可能看到原值",
+      "whatHappened": "7.0.165把URL净化前移至provider回调返回前；遥测integration/tracing不再早于公开API看到这一路径的原始request.url。",
+      "mechanism": "只在外层净化时，包装器await execute()后会先见原request。现在生成/流式启动先返回净化元数据，再入遥测；实际请求端点不变。",
+      "workedExample": "上游在integration/asyncEnd即时复制request，避免结束后只查可变引用；还冻结并检查原对象。本期只读，未运行模型或复现。",
+      "whyItMatters": "编辑推论：跨观察边界前处理并逐接收者留证，最终输出只证明自身。",
+      "risksAndLimits": [
+        "未审查全部sink、WorkflowAgent或业务日志；保留的body/其他元数据仍可能有敏感内容，URL净化不是全量隐私保证。",
+        "代码断言不证明已部署、已清理历史遥测或撤回已发送数据。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "AI SDK release",
+          "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
+          "publishedAt": "2026-11-07T19:27:48.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "streamText boundary",
+          "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/stream-language-model-call.ts"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Immediate tracing tests",
+          "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts"
+        }
+      ],
+      "nextQuestions": [
+        "即时接收的字段、处理时点与保留规则是否有证据？"
+      ],
+      "basedOnBriefId": "ai-sdk-telemetry-url-boundary"
+    },
+    "sourceUrls": [
+      "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
+      "https://github.com/vercel/ai/pull/24708",
+      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/generate-text.ts",
+      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/get-request-origin.ts",
+      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts",
+      "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5",
+      "https://github.com/langchain-ai/deepagents/pull/7545",
+      "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/deepagents_code/offload_middleware.py",
+      "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/tests/unit_tests/test_compact_tool.py",
+      "https://github.com/wevm/viem/releases/tag/viem%402.57.17",
+      "https://github.com/wevm/viem/pull/5389",
+      "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.ts",
+      "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.test.ts",
+      "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1",
+      "https://github.com/MystenLabs/sui/pull/28290",
+      "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-protocol-config/src/lib.rs",
+      "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-core/src/accumulators/design_docs/object_funds_in_execution.md",
+      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/stream-language-model-call.ts"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-11-09-bd83a5cc7fff3983",
+    "asOf": "2026-11-08T21:37:39.755Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
+  {
     "date": "2026-11-08",
     "slug": "2026-11-08",
     "title": "学习雷达恢复版 · 2026-11-08",

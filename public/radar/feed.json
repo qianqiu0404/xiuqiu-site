@@ -6,6 +6,58 @@
   "language": "zh-CN",
   "items": [
     {
+      "id": "xiuqiu-radar:ai-sdk-telemetry-url-boundary",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-09#ai-sdk-telemetry-url-boundary",
+      "title": "AI SDK 7.0.165：遥测拿到模型结果之前，先缩减请求 URL",
+      "summary": "最终输出不能覆盖更早的观察者；应逐接收者核对字段与脱敏时点。",
+      "content_text": "最终输出不能覆盖更早的观察者；应逐接收者核对字段与脱敏时点。",
+      "date_published": "2026-11-09T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "safety"
+      ],
+      "external_url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165"
+    },
+    {
+      "id": "xiuqiu-radar:ai-deepagents-selected-model-budget",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-09#ai-deepagents-selected-model-budget",
+      "title": "deepagents-code 0.2.5：压缩输入预算跟随当前选定模型",
+      "summary": "切换模型也改变预算；预算准备和最终执行要分开核验，保留下游配置。",
+      "content_text": "切换模型也改变预算；预算准备和最终执行要分开核验，保留下游配置。",
+      "date_published": "2026-11-09T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "infrastructure"
+      ],
+      "external_url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5"
+    },
+    {
+      "id": "xiuqiu-radar:web3-viem-http-batch-factory-identity",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-09#web3-viem-http-batch-factory-identity",
+      "title": "viem 2.57.17：同一 RPC URL，不再把不同 transport 的批次混用",
+      "summary": "相同地址不等于同一调用者；批处理仍需保持鉴权配置和响应归属。",
+      "content_text": "相同地址不等于同一调用者；批处理仍需保持鉴权配置和响应归属。",
+      "date_published": "2026-11-09T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "onchain_infrastructure"
+      ],
+      "external_url": "https://github.com/wevm/viem/releases/tag/viem%402.57.17"
+    },
+    {
+      "id": "xiuqiu-radar:web3-sui-object-funds-execution-abort",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-09#web3-sui-object-funds-execution-abort",
+      "title": "Sui mainnet 1.83.1：对象资金不足，在执行期间形成 Move abort",
+      "summary": "模拟成功不能代替执行回执；应区分状态视图、失败阶段与错误类型。",
+      "content_text": "模拟成功不能代替执行回执；应区分状态视图、失败阶段与错误类型。",
+      "date_published": "2026-11-09T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "protocol"
+      ],
+      "external_url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1"
+    },
+    {
       "id": "xiuqiu-radar:ai-quickjs-finalizing-destructor",
       "url": "https://xiuqiu-site.vercel.app/radar/2026-11-08#ai-quickjs-finalizing-destructor",
       "title": "langchain-quickjs 0.3.12：Python 收尾时，析构不再等待工作线程",
@@ -732,58 +784,6 @@
         "security"
       ],
       "external_url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-node/v1.19.11"
-    },
-    {
-      "id": "xiuqiu-radar:ai-agents-sdk-024-approval-compaction",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-17#ai-agents-sdk-024-approval-compaction",
-      "title": "Agents SDK 0.24：审批没结束前，不压缩上下文",
-      "summary": "带人工门禁的 Agent，审批对象必须是稳定、可核对的原始调用。上下文管理和审批流程的先后顺序，本身就是安全边界的一部分。",
-      "content_text": "带人工门禁的 Agent，审批对象必须是稳定、可核对的原始调用。上下文管理和审批流程的先后顺序，本身就是安全边界的一部分。",
-      "date_published": "2026-10-17T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "agent"
-      ],
-      "external_url": "https://github.com/openai/openai-agents-python/releases/tag/v0.24.0"
-    },
-    {
-      "id": "xiuqiu-radar:ai-anthropic-ecdsa-curve-origins",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-17#ai-anthropic-ecdsa-curve-origins",
-      "title": "用模型复原 NIST 曲线种子：不是后门，是 1997 年的时钟",
-      "summary": "这既说明 P-256、P-384 等曲线的种子来源是普通、可复现的，反而降低了后门疑虑；也说明强模型已经能独立完成多步骤的密码学取证，安全团队需要把这类能力算进威胁模型和审计流程。",
-      "content_text": "这既说明 P-256、P-384 等曲线的种子来源是普通、可复现的，反而降低了后门疑虑；也说明强模型已经能独立完成多步骤的密码学取证，安全团队需要把这类能力算进威胁模型和审计流程。",
-      "date_published": "2026-10-17T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "safety"
-      ],
-      "external_url": "https://www.anthropic.com/research/ecdsa-curve-origins"
-    },
-    {
-      "id": "xiuqiu-radar:web3-agave-432-dependency-security",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-17#web3-agave-432-dependency-security",
-      "title": "Agave 4.3.2：验证者客户端的依赖也是攻击面",
-      "summary": "节点安全不只看协议本身，传输层和基础库同样决定节点能不能被打挂。把依赖公告的处理方式写成可检查的规则，比单纯升级版本号更可靠。",
-      "content_text": "节点安全不只看协议本身，传输层和基础库同样决定节点能不能被打挂。把依赖公告的处理方式写成可检查的规则，比单纯升级版本号更可靠。",
-      "date_published": "2026-10-17T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "security"
-      ],
-      "external_url": "https://github.com/anza-xyz/agave/releases/tag/v4.3.2"
-    },
-    {
-      "id": "xiuqiu-radar:web3-op-supernode-safe-head-reorg",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-17#web3-op-supernode-safe-head-reorg",
-      "title": "op-supernode 1.0.4：L1 重组后，safe 不能跑到未验证的块上",
-      "summary": "L2 的“已确认”有好几种含义。钱包和交易所后端如果只看一个标签，重组时就可能把不该入账的资金算成安全；这次修复说明这几层确认要分开读、分开监控。",
-      "content_text": "L2 的“已确认”有好几种含义。钱包和交易所后端如果只看一个标签，重组时就可能把不该入账的资金算成安全；这次修复说明这几层确认要分开读、分开监控。",
-      "date_published": "2026-10-17T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "l2"
-      ],
-      "external_url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-supernode/v1.0.4"
     }
   ]
 }
