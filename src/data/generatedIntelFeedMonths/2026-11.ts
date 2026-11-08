@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-11-09:fincen-mexc-funds-transfer-order-2026-11-06",
+    "kind": "market",
+    "date": "2026-11-09",
+    "domain": "market",
+    "topic": "market_regulation",
+    "title": "FinCEN公布MEXC资金传送限制命令，生效日期待核",
+    "summary": "研究判断：监管接入限制可能经金融机构的资金通道、结算安排与对手方风险管理传导到加密市场。需分别验证正式法律时点、机构执行与实际资金数据；链上仍能转移资产或平台仍可访问，不能单独证明美国金融接入状态。",
+    "href": "/market-radar/2026-11-09#fincen-mexc-funds-transfer-order-2026-11-06",
+    "source": {
+      "name": "U.S. Treasury — FinCEN MEXC Global order announcement",
+      "url": "https://home.treasury.gov/news/press-releases/sb0685/"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
+  {
     "id": "learning:ai-quickjs-finalizing-destructor",
     "kind": "learning",
     "date": "2026-11-08",

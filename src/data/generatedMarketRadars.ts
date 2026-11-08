@@ -16,6 +16,17 @@ export interface MarketRadarDaily { schemaVersion?: 2; date: string; slug: strin
 export interface MarketRadarIndexEntry { date: string; slug: string; snapshotId: string; asOf: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
 export const marketRadarIndex: MarketRadarIndexEntry[] = [
   {
+    "date": "2026-11-09",
+    "slug": "2026-11-09",
+    "title": "交易研究雷达 · 2026-11-09",
+    "summary": "核对11月6日公布的MEXC资金传送限制命令，区分命令发行、联邦公报生效条件与机构实际执行；暂不判断资金流、平台安全或资产方向。",
+    "snapshotId": "market-2026-11-09-fc400a0f8bc17a31",
+    "asOf": "2026-11-08T21:36:14.579Z",
+    "eventCount": 1,
+    "assetCount": 2,
+    "leadTitle": "FinCEN公布MEXC资金传送限制命令，生效日期待核"
+  },
+  {
     "date": "2026-11-08",
     "slug": "2026-11-08",
     "title": "交易研究雷达 · 2026-11-08（恢复版）",
@@ -226,6 +237,157 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
   }
 ]
 export const latestMarketRadars: MarketRadarDaily[] = [
+  {
+    "date": "2026-11-09",
+    "slug": "2026-11-09",
+    "title": "交易研究雷达 · 2026-11-09",
+    "summary": "核对11月6日公布的MEXC资金传送限制命令，区分命令发行、联邦公报生效条件与机构实际执行；暂不判断资金流、平台安全或资产方向。",
+    "snapshotId": "market-2026-11-09-fc400a0f8bc17a31",
+    "asOf": "2026-11-08T21:36:14.579Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-08T21:36:14.579Z",
+    "events": [
+      {
+        "id": "fincen-mexc-funds-transfer-order-2026-11-06",
+        "priority": "P1",
+        "status": "released",
+        "category": "regulation",
+        "title": "FinCEN公布MEXC资金传送限制命令，生效日期待核",
+        "fact": "美国财政部11月6日宣布，FinCEN依据《打击俄罗斯洗钱法》第9714(a)条发布涉及MEXC Global的资金传送限制命令，范围包括适用美国金融机构与命令所定义境外MEXC实体之间的资金及可兑换虚拟货币传送。公告规定在《联邦公报》刊登30天后生效；本期未核定正式刊登与具体生效日。",
+        "whyWatch": "研究判断：监管接入限制可能经金融机构的资金通道、结算安排与对手方风险管理传导到加密市场。需分别验证正式法律时点、机构执行与实际资金数据；链上仍能转移资产或平台仍可访问，不能单独证明美国金融接入状态。",
+        "assets": [
+          "加密资产",
+          "美元资金通道"
+        ],
+        "watchFor": "继续核对《联邦公报》正式版本、生效日、FinCEN后续条件或豁免，以及相关机构公开执行说明。资金通道、成交与流动性观察需固定时间窗口并隔离其他消息；本期未采集资产反应或资金流样本。",
+        "invalidation": "正式版本、适用实体或后续豁免改变时重估；机构实际接入和市场资金数据不支持同一传导链时，不把变化归因于该命令。既有BSA与OFAC义务继续分别适用，本条不外推全球用户服务状态、平台偿付能力或资产安全。",
+        "sourceName": "U.S. Treasury — FinCEN MEXC Global order announcement",
+        "sourceUrl": "https://home.treasury.gov/news/press-releases/sb0685/",
+        "sourcePublishedAt": "2026-11-06"
+      }
+    ],
+    "sourceUrls": [
+      "https://home.treasury.gov/news/press-releases/sb0685/"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "本期只登记一项监管命令公布；未建立机构执行与市场资金反应的同窗口样本，也未采集价格或实际资金流。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "法律文本时点、机构实际执行和市场反应分别核验；单项公告不足以量化跨资产影响。",
+      "nextValidation": "先固定正式刊登与生效条件，再核对公开执行说明及同窗口资金通道和流动性证据，样本不足时仅记录信号质量。",
+      "invalidation": "正式范围、后续条件或豁免改变时重估；时间窗口、统计口径不一致或缺少反应样本时保留未知。",
+      "sourceUrls": [
+        "https://home.treasury.gov/news/press-releases/sb0685/"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "命令如何经资金通道、金融机构执行与对手方风险管理传导到加密市场，各环需要哪些独立证据？",
+        "focusEventIds": [
+          "fincen-mexc-funds-transfer-order-2026-11-06"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些正式文本、机构说明和同窗口资金数据，能推翻把市场变化直接归因于该命令的解释？",
+        "focusEventIds": [
+          "fincen-mexc-funds-transfer-order-2026-11-06"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "正式生效、执行差异或后续条件与豁免分别对应哪些情景，什么证据会使当前接入限制判断失效？",
+        "focusEventIds": [
+          "fincen-mexc-funds-transfer-order-2026-11-06"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-09",
+      "snapshotId": "market-2026-11-09-fc400a0f8bc17a31",
+      "asOf": "2026-11-08T21:36:14.579Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-09",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "命令如何经资金通道、金融机构执行与对手方风险管理传导到加密市场，各环需要哪些独立证据？",
+          "focusEventIds": [
+            "fincen-mexc-funds-transfer-order-2026-11-06"
+          ],
+          "prompt": "研究任务：命令如何经资金通道、金融机构执行与对手方风险管理传导到加密市场，各环需要哪些独立证据？\n证据快照：2026-11-09；asOf=2026-11-08T21:36:14.579Z；snapshotId=market-2026-11-09-fc400a0f8bc17a31\n\n材料 1｜FinCEN公布MEXC资金传送限制命令，生效日期待核\n已确认事实：美国财政部11月6日宣布，FinCEN依据《打击俄罗斯洗钱法》第9714(a)条发布涉及MEXC Global的资金传送限制命令，范围包括适用美国金融机构与命令所定义境外MEXC实体之间的资金及可兑换虚拟货币传送。公告规定在《联邦公报》刊登30天后生效；本期未核定正式刊登与具体生效日。\n关注机制：研究判断：监管接入限制可能经金融机构的资金通道、结算安排与对手方风险管理传导到加密市场。需分别验证正式法律时点、机构执行与实际资金数据；链上仍能转移资产或平台仍可访问，不能单独证明美国金融接入状态。\n接下来验证：继续核对《联邦公报》正式版本、生效日、FinCEN后续条件或豁免，以及相关机构公开执行说明。资金通道、成交与流动性观察需固定时间窗口并隔离其他消息；本期未采集资产反应或资金流样本。\n失效条件：正式版本、适用实体或后续豁免改变时重估；机构实际接入和市场资金数据不支持同一传导链时，不把变化归因于该命令。既有BSA与OFAC义务继续分别适用，本条不外推全球用户服务状态、平台偿付能力或资产安全。\n一手来源：https://home.treasury.gov/news/press-releases/sb0685/\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "177bc6a7bb1db818120fbf7ae7c38bb5664432b01094d1f2749372104c5d4bc5",
+          "sourceUrls": [
+            "https://home.treasury.gov/news/press-releases/sb0685/"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些正式文本、机构说明和同窗口资金数据，能推翻把市场变化直接归因于该命令的解释？",
+          "focusEventIds": [
+            "fincen-mexc-funds-transfer-order-2026-11-06"
+          ],
+          "prompt": "研究任务：哪些正式文本、机构说明和同窗口资金数据，能推翻把市场变化直接归因于该命令的解释？\n证据快照：2026-11-09；asOf=2026-11-08T21:36:14.579Z；snapshotId=market-2026-11-09-fc400a0f8bc17a31\n\n材料 1｜FinCEN公布MEXC资金传送限制命令，生效日期待核\n已确认事实：美国财政部11月6日宣布，FinCEN依据《打击俄罗斯洗钱法》第9714(a)条发布涉及MEXC Global的资金传送限制命令，范围包括适用美国金融机构与命令所定义境外MEXC实体之间的资金及可兑换虚拟货币传送。公告规定在《联邦公报》刊登30天后生效；本期未核定正式刊登与具体生效日。\n关注机制：研究判断：监管接入限制可能经金融机构的资金通道、结算安排与对手方风险管理传导到加密市场。需分别验证正式法律时点、机构执行与实际资金数据；链上仍能转移资产或平台仍可访问，不能单独证明美国金融接入状态。\n接下来验证：继续核对《联邦公报》正式版本、生效日、FinCEN后续条件或豁免，以及相关机构公开执行说明。资金通道、成交与流动性观察需固定时间窗口并隔离其他消息；本期未采集资产反应或资金流样本。\n失效条件：正式版本、适用实体或后续豁免改变时重估；机构实际接入和市场资金数据不支持同一传导链时，不把变化归因于该命令。既有BSA与OFAC义务继续分别适用，本条不外推全球用户服务状态、平台偿付能力或资产安全。\n一手来源：https://home.treasury.gov/news/press-releases/sb0685/\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "d6449d06e0e47b0055423685d7b2a6a232264f88148ca5a7f8d12089c3f5953c",
+          "sourceUrls": [
+            "https://home.treasury.gov/news/press-releases/sb0685/"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "正式生效、执行差异或后续条件与豁免分别对应哪些情景，什么证据会使当前接入限制判断失效？",
+          "focusEventIds": [
+            "fincen-mexc-funds-transfer-order-2026-11-06"
+          ],
+          "prompt": "研究任务：正式生效、执行差异或后续条件与豁免分别对应哪些情景，什么证据会使当前接入限制判断失效？\n证据快照：2026-11-09；asOf=2026-11-08T21:36:14.579Z；snapshotId=market-2026-11-09-fc400a0f8bc17a31\n\n材料 1｜FinCEN公布MEXC资金传送限制命令，生效日期待核\n已确认事实：美国财政部11月6日宣布，FinCEN依据《打击俄罗斯洗钱法》第9714(a)条发布涉及MEXC Global的资金传送限制命令，范围包括适用美国金融机构与命令所定义境外MEXC实体之间的资金及可兑换虚拟货币传送。公告规定在《联邦公报》刊登30天后生效；本期未核定正式刊登与具体生效日。\n关注机制：研究判断：监管接入限制可能经金融机构的资金通道、结算安排与对手方风险管理传导到加密市场。需分别验证正式法律时点、机构执行与实际资金数据；链上仍能转移资产或平台仍可访问，不能单独证明美国金融接入状态。\n接下来验证：继续核对《联邦公报》正式版本、生效日、FinCEN后续条件或豁免，以及相关机构公开执行说明。资金通道、成交与流动性观察需固定时间窗口并隔离其他消息；本期未采集资产反应或资金流样本。\n失效条件：正式版本、适用实体或后续豁免改变时重估；机构实际接入和市场资金数据不支持同一传导链时，不把变化归因于该命令。既有BSA与OFAC义务继续分别适用，本条不外推全球用户服务状态、平台偿付能力或资产安全。\n一手来源：https://home.treasury.gov/news/press-releases/sb0685/\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "6f5a3414b2c99d063758d8a6bc17fc8d325cf8eba03e9696a6df122eb0a05784",
+          "sourceUrls": [
+            "https://home.treasury.gov/news/press-releases/sb0685/"
+          ]
+        }
+      ]
+    }
+  },
   {
     "date": "2026-11-08",
     "slug": "2026-11-08",
@@ -1154,157 +1316,6 @@ export const latestMarketRadars: MarketRadarDaily[] = [
           "promptChecksum": "d41836d1f57b67b39222c4c9e846f58b9cef5c11d4c9a27bbadf4c914b2f43c5",
           "sourceUrls": [
             "https://home.treasury.gov/news/press-releases/sb0675/"
-          ]
-        }
-      ]
-    }
-  },
-  {
-    "date": "2026-11-02",
-    "slug": "2026-11-02",
-    "title": "交易研究雷达 · 2026-11-02",
-    "summary": "美国九月名义消费支出增长 0.5%，实际增幅不足 0.1%。本期区分消费金额、购买量与价格变化，并核对实际可支配收入及后续修订。",
-    "snapshotId": "market-2026-11-02-f597a0bfb6746463",
-    "asOf": "2026-11-01T21:32:18.000Z",
-    "origin": "research",
-    "publicationState": "published",
-    "reviewStatus": "automated",
-    "generatedAt": "2026-11-02T05:32:18+08:00",
-    "events": [
-      {
-        "id": "bea-september-pio-2026-10-29",
-        "priority": "P1",
-        "status": "released",
-        "category": "macro",
-        "title": "美国九月消费：名义增 0.5%，实际不足 0.1%",
-        "fact": "BEA 于 10 月 29 日公布九月 PIO：名义 PCE 环比增 0.5%，实际增幅不足 0.1%；PCE 价格环比增 0.5%、同比增 3.6%，剔除食品和能源后分别增 0.3%、3.1%。实际可支配收入环比降 0.3%，储蓄率为 3.8%。",
-        "whyWatch": "研究判断：消费金额增长不等于购买量同幅增长。价格、实际收入和储蓄约束应分别观察，单月资料不能证明需求趋势或资产方向。",
-        "assets": [
-          "美国国债",
-          "美国股票"
-        ],
-        "watchFor": "固定九月版本，核对消费分项和修订，接续就业及实际收入；11 月 25 日下期发布后再比较。",
-        "invalidation": "官方修订取代本版本；统计期、环比和同比不一致时不直接比较，也不以同步行情认定因果。",
-        "sourceName": "BEA Personal Income and Outlays, September 2026",
-        "sourceUrl": "https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026",
-        "sourcePublishedAt": "2026-10-29"
-      }
-    ],
-    "sourceUrls": [
-      "https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026"
-    ],
-    "quantStrategy": {
-      "horizonTradingDays": 3,
-      "status": "historical_samples_insufficient",
-      "methodology": "只登记同版本月度消费、价格和收入；未建立固定窗口的跨资产历史样本。",
-      "assets": [
-        {
-          "symbol": "SPY",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "QQQ",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "BTC",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "ETH",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "GLD",
-          "group": "gold_etf",
-          "signalQuality": "weak"
-        }
-      ],
-      "sampleSize": 0,
-      "rationale": "单月宏观资料不足以验证三日资产反应；本期未测行情、资金流或因果。",
-      "nextValidation": "固定版本和窗口，核对后续分项、修订及市场反应；样本不足只显示弱信号。",
-      "invalidation": "修订、口径或窗口不符时重估；缺失数据不补结论。",
-      "sourceUrls": [
-        "https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026"
-      ]
-    },
-    "schemaVersion": 2,
-    "researchQuestions": [
-      {
-        "id": "1",
-        "lens": "transmission",
-        "shortQuestion": "名义支出、实际购买量和实际收入如何经需求与利润联系相关资产，各环需要什么证据？",
-        "focusEventIds": [
-          "bea-september-pio-2026-10-29"
-        ]
-      },
-      {
-        "id": "2",
-        "lens": "falsification",
-        "shortQuestion": "哪些同版本分项、就业及收入数据最能推翻消费金额增长代表实际需求增强的解释？",
-        "focusEventIds": [
-          "bea-september-pio-2026-10-29"
-        ]
-      },
-      {
-        "id": "3",
-        "lens": "scenario",
-        "shortQuestion": "若价格、收入或历史估计发生修订，哪些替代解释成立，什么证据使需求传导假设失效？",
-        "focusEventIds": [
-          "bea-september-pio-2026-10-29"
-        ]
-      }
-    ],
-    "researchPack": {
-      "schemaVersion": 2,
-      "date": "2026-11-02",
-      "snapshotId": "market-2026-11-02-f597a0bfb6746463",
-      "asOf": "2026-11-01T21:32:18.000Z",
-      "origin": "research",
-      "publicationState": "published",
-      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-02",
-      "questions": [
-        {
-          "id": "1",
-          "lens": "transmission",
-          "shortQuestion": "名义支出、实际购买量和实际收入如何经需求与利润联系相关资产，各环需要什么证据？",
-          "focusEventIds": [
-            "bea-september-pio-2026-10-29"
-          ],
-          "prompt": "研究任务：名义支出、实际购买量和实际收入如何经需求与利润联系相关资产，各环需要什么证据？\n证据快照：2026-11-02；asOf=2026-11-01T21:32:18.000Z；snapshotId=market-2026-11-02-f597a0bfb6746463\n\n材料 1｜美国九月消费：名义增 0.5%，实际不足 0.1%\n已确认事实：BEA 于 10 月 29 日公布九月 PIO：名义 PCE 环比增 0.5%，实际增幅不足 0.1%；PCE 价格环比增 0.5%、同比增 3.6%，剔除食品和能源后分别增 0.3%、3.1%。实际可支配收入环比降 0.3%，储蓄率为 3.8%。\n关注机制：研究判断：消费金额增长不等于购买量同幅增长。价格、实际收入和储蓄约束应分别观察，单月资料不能证明需求趋势或资产方向。\n接下来验证：固定九月版本，核对消费分项和修订，接续就业及实际收入；11 月 25 日下期发布后再比较。\n失效条件：官方修订取代本版本；统计期、环比和同比不一致时不直接比较，也不以同步行情认定因果。\n一手来源：https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "8718f837e1e3a5afa4abea156af560606db782f2ea443c714eb47bdb880b3883",
-          "sourceUrls": [
-            "https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026"
-          ]
-        },
-        {
-          "id": "2",
-          "lens": "falsification",
-          "shortQuestion": "哪些同版本分项、就业及收入数据最能推翻消费金额增长代表实际需求增强的解释？",
-          "focusEventIds": [
-            "bea-september-pio-2026-10-29"
-          ],
-          "prompt": "研究任务：哪些同版本分项、就业及收入数据最能推翻消费金额增长代表实际需求增强的解释？\n证据快照：2026-11-02；asOf=2026-11-01T21:32:18.000Z；snapshotId=market-2026-11-02-f597a0bfb6746463\n\n材料 1｜美国九月消费：名义增 0.5%，实际不足 0.1%\n已确认事实：BEA 于 10 月 29 日公布九月 PIO：名义 PCE 环比增 0.5%，实际增幅不足 0.1%；PCE 价格环比增 0.5%、同比增 3.6%，剔除食品和能源后分别增 0.3%、3.1%。实际可支配收入环比降 0.3%，储蓄率为 3.8%。\n关注机制：研究判断：消费金额增长不等于购买量同幅增长。价格、实际收入和储蓄约束应分别观察，单月资料不能证明需求趋势或资产方向。\n接下来验证：固定九月版本，核对消费分项和修订，接续就业及实际收入；11 月 25 日下期发布后再比较。\n失效条件：官方修订取代本版本；统计期、环比和同比不一致时不直接比较，也不以同步行情认定因果。\n一手来源：https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "09e0c8a0aca98b0dc615d58ba5634b16acfd0c0f18bb30b670f01f7f889b66a3",
-          "sourceUrls": [
-            "https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026"
-          ]
-        },
-        {
-          "id": "3",
-          "lens": "scenario",
-          "shortQuestion": "若价格、收入或历史估计发生修订，哪些替代解释成立，什么证据使需求传导假设失效？",
-          "focusEventIds": [
-            "bea-september-pio-2026-10-29"
-          ],
-          "prompt": "研究任务：若价格、收入或历史估计发生修订，哪些替代解释成立，什么证据使需求传导假设失效？\n证据快照：2026-11-02；asOf=2026-11-01T21:32:18.000Z；snapshotId=market-2026-11-02-f597a0bfb6746463\n\n材料 1｜美国九月消费：名义增 0.5%，实际不足 0.1%\n已确认事实：BEA 于 10 月 29 日公布九月 PIO：名义 PCE 环比增 0.5%，实际增幅不足 0.1%；PCE 价格环比增 0.5%、同比增 3.6%，剔除食品和能源后分别增 0.3%、3.1%。实际可支配收入环比降 0.3%，储蓄率为 3.8%。\n关注机制：研究判断：消费金额增长不等于购买量同幅增长。价格、实际收入和储蓄约束应分别观察，单月资料不能证明需求趋势或资产方向。\n接下来验证：固定九月版本，核对消费分项和修订，接续就业及实际收入；11 月 25 日下期发布后再比较。\n失效条件：官方修订取代本版本；统计期、环比和同比不一致时不直接比较，也不以同步行情认定因果。\n一手来源：https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "a7f25581ec8586d114177c812e36ee7aa9c10e881da0fe31db38f04502d92364",
-          "sourceUrls": [
-            "https://www.bea.gov/news/2026/personal-income-and-outlays-september-2026"
           ]
         }
       ]

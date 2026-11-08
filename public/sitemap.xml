@@ -331,6 +331,9 @@
     <loc>https://xiuqiu-site.vercel.app/radar/2026-07-13</loc>
   </url>
   <url>
+    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-11-09</loc>
+  </url>
+  <url>
     <loc>https://xiuqiu-site.vercel.app/market-radar/2026-11-08</loc>
   </url>
   <url>
@@ -397,6 +400,9 @@
     <loc>https://xiuqiu-site.vercel.app/radar/review/2026-08-14--2026-10-13</loc>
   </url>
   <url>
+    <loc>https://xiuqiu-site.vercel.app/topics/market_regulation</loc>
+  </url>
+  <url>
     <loc>https://xiuqiu-site.vercel.app/topics/market_macro</loc>
   </url>
   <url>
@@ -428,9 +434,6 @@
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/topics/data</loc>
-  </url>
-  <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/market_regulation</loc>
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/topics/market_crypto</loc>
