@@ -1,8 +1,16 @@
 {
   "schemaVersion": 1,
-  "latestDate": "2026-11-09",
+  "latestDate": "2026-11-10",
   "homePageUrl": "https://xiuqiu-site.vercel.app/",
   "topics": [
+    {
+      "topic": "market_regulation",
+      "domain": "market",
+      "count": 5,
+      "lastSeen": "2026-11-10",
+      "firstSeen": "2026-10-25",
+      "url": "https://xiuqiu-site.vercel.app/topics/market_regulation"
+    },
     {
       "topic": "onchain_infrastructure",
       "domain": "web3",
@@ -34,14 +42,6 @@
       "lastSeen": "2026-11-09",
       "firstSeen": "2026-08-12",
       "url": "https://xiuqiu-site.vercel.app/topics/protocol"
-    },
-    {
-      "topic": "market_regulation",
-      "domain": "market",
-      "count": 4,
-      "lastSeen": "2026-11-09",
-      "firstSeen": "2026-10-25",
-      "url": "https://xiuqiu-site.vercel.app/topics/market_regulation"
     },
     {
       "topic": "market_macro",
