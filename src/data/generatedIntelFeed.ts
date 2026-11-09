@@ -6,9 +6,26 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-11-09"
-export const intelItemCount = 304
+export const intelLatestDate: string | null = "2026-11-10"
+export const intelItemCount = 305
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "market:2026-11-10:fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
+    "kind": "market",
+    "date": "2026-11-10",
+    "domain": "market",
+    "topic": "market_regulation",
+    "title": "FinCEN与美联储撤回跨境250美元门槛提案",
+    "summary": "研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。",
+    "href": "/market-radar/2026-11-10#fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
+    "source": {
+      "name": "Federal Register / GPO — 2026-22809",
+      "url": "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
   {
     "id": "learning:ai-sdk-telemetry-url-boundary",
     "kind": "learning",
@@ -505,89 +522,16 @@ export const intelLatestItems: IntelItem[] = [
     "flags": {
       "priority": "P1"
     }
-  },
-  {
-    "id": "learning:ai-langchain-block-token-callbacks",
-    "kind": "learning",
-    "date": "2026-11-03",
-    "domain": "ai",
-    "topic": "infrastructure",
-    "title": "langchain-anthropic 1.7.9：没有 token 回调，不等于模型没有输出",
-    "summary": "Agent 可观测性常依赖回调计算首 token 时间。传输有内容而观测链没有事件，会让面板、告警和性能比较得出不同结论；先核对测量路径，才能解释延迟。",
-    "href": "/radar/2026-11-03#ai-langchain-block-token-callbacks",
-    "source": {
-      "name": "langchain-anthropic 1.7.9 official release",
-      "tier": "tier1",
-      "url": "https://github.com/langchain-ai/langchain/releases/tag/langchain-anthropic%3D%3D1.7.9"
-    }
-  },
-  {
-    "id": "learning:ai-claude-exit-shell-lifecycle",
-    "kind": "learning",
-    "date": "2026-11-03",
-    "domain": "ai",
-    "topic": "agent",
-    "title": "Claude Code 2.1.316：会话自动退出后，子 shell 也要有收尾证据",
-    "summary": "多 Agent 面板显示会话结束，并不自动证明它启动的计算、构建或网络工作已停止。把宿主和子进程的状态分别留证，可以避免下一次接手时重复启动仍在运行的任务。",
-    "href": "/radar/2026-11-03#ai-claude-exit-shell-lifecycle",
-    "source": {
-      "name": "Claude Code 2.1.316 official release",
-      "tier": "tier1",
-      "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.316"
-    }
-  },
-  {
-    "id": "learning:web3-viem-preview-opt-in",
-    "kind": "learning",
-    "date": "2026-11-03",
-    "domain": "web3",
-    "topic": "wallet_cex",
-    "title": "viem 2.57.14：余额预览改为显式请求，缺失不能显示成零变化",
-    "summary": "钱包的费用估算与资产影响预览是两个不同能力。升级后若界面把缺失字段补成空列表，用户可能把未请求或不可用的预览误读为已经验证不会动用资产。",
-    "href": "/radar/2026-11-03#web3-viem-preview-opt-in",
-    "source": {
-      "name": "viem 2.57.14 official release",
-      "tier": "tier1",
-      "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.14"
-    }
-  },
-  {
-    "id": "learning:web3-foundry-resume-recorded-revert",
-    "kind": "learning",
-    "date": "2026-11-03",
-    "domain": "web3",
-    "topic": "onchain_infrastructure",
-    "title": "Foundry 1.9.0：记录过 revert 后，不再继续发送脚本本会阻止的操作",
-    "summary": "本地计划里列出下一步，不代表前一步失败后它仍然被授权执行。恢复工具必须结合链上回执和脚本控制流，不能把跳过失败项当成继续剩余计划的充分依据。",
-    "href": "/radar/2026-11-03#web3-foundry-resume-recorded-revert",
-    "source": {
-      "name": "Foundry 1.9.0 official release",
-      "tier": "tier1",
-      "url": "https://github.com/foundry-rs/foundry/releases/tag/v1.9.0"
-    },
-    "flags": {
-      "deepDive": true
-    }
-  },
-  {
-    "id": "market:2026-11-03:treasury-november-borrowing-cash-assumptions-2026-11-02",
-    "kind": "market",
-    "date": "2026-11-03",
-    "domain": "market",
-    "topic": "market_macro",
-    "title": "四季度借款估计降至6180亿美元，现金假设须分开看",
-    "summary": "研究判断：现金缓冲变化会改变借款总额，不能直接据此认定赤字改善或长期债券供给减少。融资需求、期限结构与市场吸收需分别核验。",
-    "href": "/market-radar/2026-11-03#treasury-november-borrowing-cash-assumptions-2026-11-02",
-    "source": {
-      "name": "U.S. Treasury Marketable Borrowing Estimates, November 2026",
-      "url": "https://home.treasury.gov/news/press-releases/sb0675/"
-    },
-    "flags": {
-      "priority": "P1"
-    }
   }
 ]
 export const intelTopics: IntelTopic[] = [
+  {
+    "topic": "market_regulation",
+    "domain": "market",
+    "count": 5,
+    "lastSeen": "2026-11-10",
+    "firstSeen": "2026-10-25"
+  },
   {
     "topic": "onchain_infrastructure",
     "domain": "web3",
@@ -615,13 +559,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 5,
     "lastSeen": "2026-11-09",
     "firstSeen": "2026-08-12"
-  },
-  {
-    "topic": "market_regulation",
-    "domain": "market",
-    "count": 4,
-    "lastSeen": "2026-11-09",
-    "firstSeen": "2026-10-25"
   },
   {
     "topic": "market_macro",

@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-11-10:fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
+    "kind": "market",
+    "date": "2026-11-10",
+    "domain": "market",
+    "topic": "market_regulation",
+    "title": "FinCEN与美联储撤回跨境250美元门槛提案",
+    "summary": "研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。",
+    "href": "/market-radar/2026-11-10#fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
+    "source": {
+      "name": "Federal Register / GPO — 2026-22809",
+      "url": "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
+  {
     "id": "learning:ai-sdk-telemetry-url-boundary",
     "kind": "learning",
     "date": "2026-11-09",
