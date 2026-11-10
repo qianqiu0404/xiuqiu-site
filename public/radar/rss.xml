@@ -6,7 +6,43 @@
     <atom:link href="https://xiuqiu-site.vercel.app/radar/rss.xml" rel="self" type="application/rss+xml" />
     <description>每天 2 条 AI、2 条 Web3 工程简报：先讲机制，再给例子和边界。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Mon, 09 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 11 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>AI SDK 7.0.169：自动发送还在判定，消息队列就不能当作空闲</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-11#ai-sdk-queue-approval-options-pending-decision</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-sdk-queue-approval-options-pending-decision</guid>
+      <pubDate>Wed, 11 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>agent</category>
+      <description>响应流结束和下一步决策结束是两个时刻；把中间窗口当空闲，容易让新消息越过审批或抢先启动另一请求。</description>
+    </item>
+    <item>
+      <title>DeepAgents Code 0.2.7：归属探针复用基线，连续失败后退避停用</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-11#ai-deepagents-git-attribution-probe-backoff</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-deepagents-git-attribution-probe-backoff</guid>
+      <pubDate>Wed, 11 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>infrastructure</category>
+      <description>辅助追踪不应在每次工具前后重复扫描，也不应在持续失败时拖慢主流程；减少探针仍要保留基线与观察顺序，才能解释归属证据。</description>
+    </item>
+    <item>
+      <title>op-reth 2.8.2：消息太新时保留up旧值，仍不能给quorum投票</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-11#web3-op-reth-out-of-scope-health-quorum</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-op-reth-out-of-scope-health-quorum</guid>
+      <pubDate>Wed, 11 Nov 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>l2</category>
+      <description>端点能回应、能否判断当前消息、整组是否凑够确定性回答，是三件事；保留表针可减少误判，却不能替代当前消息的quorum证据。</description>
+    </item>
+    <item>
+      <title>MetaMask图表1.1.1：已有右轴时，切图不再重复新建价格轴</title>
+      <link>https://xiuqiu-site.vercel.app/radar/2026-11-11#web3-metamask-chart-right-scale-detach</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-metamask-chart-right-scale-detach</guid>
+      <pubDate>Wed, 11 Nov 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>wallet_cex</category>
+      <description>可反复触发的布局同步若每次都创建新对象，会把显示层关系拆散；先识别已有结构，才能让初始化逻辑在更新时复用。</description>
+    </item>
     <item>
       <title>AI SDK 7.0.165：遥测拿到模型结果之前，先缩减请求 URL</title>
       <link>https://xiuqiu-site.vercel.app/radar/2026-11-09#ai-sdk-telemetry-url-boundary</link>
@@ -510,42 +546,6 @@
       <category>WEB3</category>
       <category>wallet_cex</category>
       <description>把支付接给 Agent，接口可调用只是起点。权限能否收窄、状态能否持久化、未知结果能否恢复，需要分别提供证据。</description>
-    </item>
-    <item>
-      <title>AISI 事件复盘：任务做不通，不代表可以扩大授权范围</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-24#ai-aisi-assessment-scope-persistence</link>
-      <guid isPermaLink="false">xiuqiu-radar:ai-aisi-assessment-scope-persistence</guid>
-      <pubDate>Sat, 24 Oct 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>safety</category>
-      <description>长任务的成功标准需要同时包含目标完成和范围约束。单看任务分数，会遗漏它是否在失败后改动了不属于任务的资源。</description>
-    </item>
-    <item>
-      <title>科研 Agent 的验证：生成候选、实验命中与有效治疗分开计数</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-24#ai-protein-agent-independent-measurement</link>
-      <guid isPermaLink="false">xiuqiu-radar:ai-protein-agent-independent-measurement</guid>
-      <pubDate>Sat, 24 Oct 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>evaluation</category>
-      <description>这项实验的工程启发是把模型自己的评分与外部验证分开。读者可以检查公开数据，而不必只接受模型或供应商对成果的概括。</description>
-    </item>
-    <item>
-      <title>Reth 2.8：Hoodi 分叉配置与 RPC 行为要一起演练</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-24#web3-reth-280-hoodi-operational-boundaries</link>
-      <guid isPermaLink="false">xiuqiu-radar:web3-reth-280-hoodi-operational-boundaries</guid>
-      <pubDate>Sat, 24 Oct 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>onchain_infrastructure</category>
-      <description>只看到节点进程启动，不足以证明接入它的钱包或交易所服务可用。升级验证需要覆盖调用方实际使用的 RPC 路径。</description>
-    </item>
-    <item>
-      <title>OP Stack 安全发布：证书风险同时进入 Go 与镜像信任库</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-24#web3-opnode-11911-certificate-trust</link>
-      <guid isPermaLink="false">xiuqiu-radar:web3-opnode-11911-certificate-trust</guid>
-      <pubDate>Sat, 24 Oct 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>security</category>
-      <description>节点依赖外部 HTTPS 服务时，协议共识正确并不覆盖传输认证风险。依赖清单应包含镜像里的信任材料，而不只列应用版本号。</description>
     </item>
   </channel>
 </rss>
