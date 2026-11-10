@@ -5,6 +5,55 @@ import type { RadarFeedItem } from '../generatedRadarFeed.ts'
 
 export const monthlyFeedItems: RadarFeedItem[] = [
   {
+    "id": "ai-sdk-queue-approval-options-pending-decision",
+    "date": "2026-11-11",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "AI SDK 7.0.169：自动发送还在判定，消息队列就不能当作空闲",
+    "summary": "响应流结束和下一步决策结束是两个时刻；把中间窗口当空闲，容易让新消息越过审批或抢先启动另一请求。",
+    "anchor": "ai-sdk-queue-approval-options-pending-decision",
+    "sourceName": "AI SDK ai7.0.169 release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/vercel/ai/releases/tag/ai%407.0.169",
+    "isDeepDive": true
+  },
+  {
+    "id": "ai-deepagents-git-attribution-probe-backoff",
+    "date": "2026-11-11",
+    "domain": "ai",
+    "topic": "infrastructure",
+    "title": "DeepAgents Code 0.2.7：归属探针复用基线，连续失败后退避停用",
+    "summary": "辅助追踪不应在每次工具前后重复扫描，也不应在持续失败时拖慢主流程；减少探针仍要保留基线与观察顺序，才能解释归属证据。",
+    "anchor": "ai-deepagents-git-attribution-probe-backoff",
+    "sourceName": "DeepAgents Code0.2.7 release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.7"
+  },
+  {
+    "id": "web3-op-reth-out-of-scope-health-quorum",
+    "date": "2026-11-11",
+    "domain": "web3",
+    "topic": "l2",
+    "title": "op-reth 2.8.2：消息太新时保留up旧值，仍不能给quorum投票",
+    "summary": "端点能回应、能否判断当前消息、整组是否凑够确定性回答，是三件事；保留表针可减少误判，却不能替代当前消息的quorum证据。",
+    "anchor": "web3-op-reth-out-of-scope-health-quorum",
+    "sourceName": "op-reth2.8.2 release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/ethereum-optimism/optimism/releases/tag/op-reth/v2.8.2"
+  },
+  {
+    "id": "web3-metamask-chart-right-scale-detach",
+    "date": "2026-11-11",
+    "domain": "web3",
+    "topic": "wallet_cex",
+    "title": "MetaMask图表1.1.1：已有右轴时，切图不再重复新建价格轴",
+    "summary": "可反复触发的布局同步若每次都创建新对象，会把显示层关系拆散；先识别已有结构，才能让初始化逻辑在更新时复用。",
+    "anchor": "web3-metamask-chart-right-scale-detach",
+    "sourceName": "MetaMask core1413 release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/MetaMask/core/releases/tag/v1413.0.0"
+  },
+  {
     "id": "ai-sdk-telemetry-url-boundary",
     "date": "2026-11-09",
     "domain": "ai",

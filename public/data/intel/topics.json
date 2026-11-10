@@ -12,6 +12,38 @@
       "url": "https://xiuqiu-site.vercel.app/topics/market_macro"
     },
     {
+      "topic": "agent",
+      "domain": "ai",
+      "count": 12,
+      "lastSeen": "2026-11-11",
+      "firstSeen": "2026-08-11",
+      "url": "https://xiuqiu-site.vercel.app/topics/agent"
+    },
+    {
+      "topic": "infrastructure",
+      "domain": "ai",
+      "count": 10,
+      "lastSeen": "2026-11-11",
+      "firstSeen": "2026-10-29",
+      "url": "https://xiuqiu-site.vercel.app/topics/infrastructure"
+    },
+    {
+      "topic": "wallet_cex",
+      "domain": "web3",
+      "count": 10,
+      "lastSeen": "2026-11-11",
+      "firstSeen": "2026-08-10",
+      "url": "https://xiuqiu-site.vercel.app/topics/wallet_cex"
+    },
+    {
+      "topic": "l2",
+      "domain": "web3",
+      "count": 7,
+      "lastSeen": "2026-11-11",
+      "firstSeen": "2026-08-11",
+      "url": "https://xiuqiu-site.vercel.app/topics/l2"
+    },
+    {
       "topic": "market_regulation",
       "domain": "market",
       "count": 5,
@@ -28,14 +60,6 @@
       "url": "https://xiuqiu-site.vercel.app/topics/onchain_infrastructure"
     },
     {
-      "topic": "infrastructure",
-      "domain": "ai",
-      "count": 9,
-      "lastSeen": "2026-11-09",
-      "firstSeen": "2026-10-29",
-      "url": "https://xiuqiu-site.vercel.app/topics/infrastructure"
-    },
-    {
       "topic": "safety",
       "domain": "ai",
       "count": 8,
@@ -50,30 +74,6 @@
       "lastSeen": "2026-11-09",
       "firstSeen": "2026-08-12",
       "url": "https://xiuqiu-site.vercel.app/topics/protocol"
-    },
-    {
-      "topic": "l2",
-      "domain": "web3",
-      "count": 6,
-      "lastSeen": "2026-11-08",
-      "firstSeen": "2026-08-11",
-      "url": "https://xiuqiu-site.vercel.app/topics/l2"
-    },
-    {
-      "topic": "wallet_cex",
-      "domain": "web3",
-      "count": 9,
-      "lastSeen": "2026-11-07",
-      "firstSeen": "2026-08-10",
-      "url": "https://xiuqiu-site.vercel.app/topics/wallet_cex"
-    },
-    {
-      "topic": "agent",
-      "domain": "ai",
-      "count": 11,
-      "lastSeen": "2026-11-06",
-      "firstSeen": "2026-08-11",
-      "url": "https://xiuqiu-site.vercel.app/topics/agent"
     },
     {
       "topic": "security",

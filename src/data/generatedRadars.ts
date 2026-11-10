@@ -12,6 +12,48 @@ export interface RadarIndexEntry { date: string; slug: string; snapshotId: strin
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-11-11",
+    "slug": "2026-11-11",
+    "snapshotId": "learning-2026-11-11-3323ecfb854f3355",
+    "asOf": "2026-11-10T21:38:26.706Z",
+    "title": "学习雷达 · 2026-11-11",
+    "summary": "AI看消息队列的待定决策与Git归属探针退避；Web3看interop健康表针和quorum的区别，以及钱包图表的右轴复用。专题拆解流结束后的发送边界。",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "briefs": [
+      {
+        "id": "ai-sdk-queue-approval-options-pending-decision",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "AI SDK 7.0.169：自动发送还在判定，消息队列就不能当作空闲"
+      },
+      {
+        "id": "ai-deepagents-git-attribution-probe-backoff",
+        "domain": "ai",
+        "topic": "infrastructure",
+        "title": "DeepAgents Code 0.2.7：归属探针复用基线，连续失败后退避停用"
+      },
+      {
+        "id": "web3-op-reth-out-of-scope-health-quorum",
+        "domain": "web3",
+        "topic": "l2",
+        "title": "op-reth 2.8.2：消息太新时保留up旧值，仍不能给quorum投票"
+      },
+      {
+        "id": "web3-metamask-chart-right-scale-detach",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "MetaMask图表1.1.1：已有右轴时，切图不再重复新建价格轴"
+      }
+    ],
+    "deepDive": {
+      "id": "deep-agent-queue-decision-and-request-options",
+      "title": "专题：流结束以后，Agent为什么还没有进入可发送状态",
+      "basedOnBriefId": "ai-sdk-queue-approval-options-pending-decision"
+    },
+    "marketSignals": []
+  },
+  {
     "date": "2026-11-09",
     "slug": "2026-11-09",
     "snapshotId": "learning-2026-11-09-bd83a5cc7fff3983",
@@ -1741,6 +1783,307 @@ export const radarIndex: RadarIndexEntry[] = [
 
 export const latestRadars: DailyRadar[] = [
   {
+    "date": "2026-11-11",
+    "slug": "2026-11-11",
+    "title": "学习雷达 · 2026-11-11",
+    "summary": "AI看消息队列的待定决策与Git归属探针退避；Web3看interop健康表针和quorum的区别，以及钱包图表的右轴复用。专题拆解流结束后的发送边界。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-11-10T21:38:26.706Z",
+    "generatedAt": "2026-11-10T21:38:26.706Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-sdk-queue-approval-options-pending-decision",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "AI SDK 7.0.169：自动发送还在判定，消息队列就不能当作空闲",
+        "whatHappened": "ai@7.0.169于11月10日（UTC）发布，修复useChat实验消息队列：用户发送触发已回答工具审批优先提交时保留请求选项，并等待异步sendAutomaticallyWhen判定。",
+        "mechanism": "队列把当前stopGeneration的待定判定也算作进行中；需要先发审批时暂存这次用户发送的options，判定结束后再处理。stop推进代次并清掉暂存审批，旧判定不再阻塞新一代发送。",
+        "workedExample": "上游mock先回答工具审批，再以x-tenant/body.tenant=t1发送第二条消息，断言审批请求保留选项；另把自动判定悬置，第二条仍在队列，true先续答、false先发用户消息。本期只读断言，未运行上游测试或模型。",
+        "whyItMatters": "响应流结束和下一步决策结束是两个时刻；把中间窗口当空闲，容易让新消息越过审批或抢先启动另一请求。",
+        "risksAndLimits": [
+          "这是稳定包内experimental队列的特定路径修复；传递租户字段不等于服务端身份认证、权限校验或完整租户隔离。",
+          "stop只约束客户端后续发送，不能撤回已发生的工具副作用；本期没有真实服务接入、并发实测或外部恰好一次保证。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "AI SDK ai7.0.169 release",
+            "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.169",
+            "publishedAt": "2026-11-10T20:17:26.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Queue approval options PR24857",
+            "url": "https://github.com/vercel/ai/pull/24857"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Queue and pending-decision implementation",
+            "url": "https://github.com/vercel/ai/blob/44ba949048fcfe4cd1b801c3bd9c49bffbad96fa/packages/ai/src/ui/chat.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Queue decision regression assertions",
+            "url": "https://github.com/vercel/ai/blob/44ba949048fcfe4cd1b801c3bd9c49bffbad96fa/packages/ai/src/ui/chat.test.ts"
+          }
+        ],
+        "nextQuestions": [
+          "服务端怎样将审批ID、身份与工具回执绑定，并在客户端恢复后核对实际执行结果？"
+        ]
+      },
+      {
+        "id": "ai-deepagents-git-attribution-probe-backoff",
+        "domain": "ai",
+        "topic": "infrastructure",
+        "title": "DeepAgents Code 0.2.7：归属探针复用基线，连续失败后退避停用",
+        "whatHappened": "deepagents-code==0.2.7于11月10日（UTC）发布，包含PR7661的Git归属探针调整：复用已观察的checkout快照、失败退避，并允许单独关闭这类归属探针。",
+        "mechanism": "同轮工具调用用最新旧快照比较调用后的变化，新见checkout先建基线；首次失败冷却30秒、第二次60秒，连续第三次失败停用会话探针，不支持的后端立即停用。归属开关不会关闭全部LangSmith追踪。",
+        "workedExample": "上游同步/异步测试用假模型和临时repo：8次工具调用得到10次探针，已有脏文件不算新修改；失败测试12次工具仍返回ok，探针计数停在3。另测旧并发快照不能追加错误target。本期只读，未运行测试或性能基准。",
+        "whyItMatters": "辅助追踪不应在每次工具前后重复扫描，也不应在持续失败时拖慢主流程；减少探针仍要保留基线与观察顺序，才能解释归属证据。",
+        "risksAndLimits": [
+          "减少扫描会把两次工具之间或审批等待期的变化归给下一次观察，Git标签不是精确到单个工具的因果证明。",
+          "关闭项只针对Git归属检查，不代表关闭遥测；本期不引用整体Agent提速或本地实测收益，也不证明所有后端与并发归属正确。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "DeepAgents Code0.2.7 release",
+            "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.7",
+            "publishedAt": "2026-11-10T21:00:39.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Attribution probe PR7661",
+            "url": "https://github.com/langchain-ai/deepagents/pull/7661"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Attribution baseline and backoff",
+            "url": "https://github.com/langchain-ai/deepagents/blob/6a8d452d70f9bcb978e6bd44831dda093ecbe928/libs/code/deepagents_code/git_trace.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Attribution regression assertions",
+            "url": "https://github.com/langchain-ai/deepagents/blob/6a8d452d70f9bcb978e6bd44831dda093ecbe928/libs/code/tests/unit_tests/test_git_trace.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Attribution option boundary",
+            "url": "https://github.com/langchain-ai/deepagents/blob/6a8d452d70f9bcb978e6bd44831dda093ecbe928/libs/code/deepagents_code/config.py"
+          }
+        ],
+        "nextQuestions": [
+          "追踪界面如何标出观察区间、缺失探针和外部修改，避免把仓库归属当作操作作者证明？"
+        ]
+      },
+      {
+        "id": "web3-op-reth-out-of-scope-health-quorum",
+        "domain": "web3",
+        "topic": "l2",
+        "title": "op-reth 2.8.2：消息太新时保留up旧值，仍不能给quorum投票",
+        "whatHappened": "op-reth/v2.8.2于11月10日（UTC）发布，修复interop交易池endpoint.up：过滤器以-321100回答消息超出已摄取或交叉验证范围时，不再直接把健康表针置0。",
+        "mechanism": "这项回答仍使endpoint.verdicts的unavailable加1，也仍排除在确定性quorum之外；up只保留原值，不自动置1。超时/传输等其他不可用路径仍置0，明确有效或无效的回答可恢复为1。",
+        "workedExample": "上游metrics测试覆盖三条序列：首次-321100保持初始化up=1；有效后再遇它仍为1；先断连置0再遇它仍为0，三者均增加unavailable。只读代码与测试，未启动节点、过滤器或RPC。",
+        "whyItMatters": "端点能回应、能否判断当前消息、整组是否凑够确定性回答，是三件事；保留表针可减少误判，却不能替代当前消息的quorum证据。",
+        "risksAndLimits": [
+          "up在启动时初始化为1，过滤器摄取停滞时也可能保持旧值；高up与rejected_no_quorum可同时发生，不代表无事件或整条链路健康。",
+          "需联合每端点verdict速率和摄取延迟观察；本期不验证跨链消息被接受、链最终性、生产告警配置或资产安全。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "op-reth2.8.2 release",
+            "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-reth/v2.8.2",
+            "publishedAt": "2026-11-10T00:03:43.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Out-of-scope metrics PR23951",
+            "url": "https://github.com/ethereum-optimism/optimism/pull/23951"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Endpoint metrics and assertions",
+            "url": "https://github.com/ethereum-optimism/optimism/blob/969931cdf14fc219598f0aa44d869e718236df7f/rust/op-reth/crates/txpool/src/interop_filter/metrics.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Out-of-scope error classification",
+            "url": "https://github.com/ethereum-optimism/optimism/blob/969931cdf14fc219598f0aa44d869e718236df7f/rust/op-reth/crates/txpool/src/interop_filter/errors.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Quorum aggregation implementation",
+            "url": "https://github.com/ethereum-optimism/optimism/blob/969931cdf14fc219598f0aa44d869e718236df7f/rust/op-reth/crates/txpool/src/interop_filter/client.rs"
+          }
+        ],
+        "nextQuestions": [
+          "告警怎样同时显示旧up、unavailable增量与摄取延迟，避免只凭绿色表针判断可用？"
+        ]
+      },
+      {
+        "id": "web3-metamask-chart-right-scale-detach",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "MetaMask图表1.1.1：已有右轴时，切图不再重复新建价格轴",
+        "whatHappened": "MetaMask/core v1413.0.0于11月10日（UTC）发布，其中advanced-chart-core 1.1.1修复开启均线后line切candle产生第二价格轴、均线显示偏移的问题。",
+        "mechanism": "布局同步原本总调用detachToRight，而它会新建右轴。修复读取首个pane的getRightPriceScales数量，已有右轴就跳过detach；没有右轴才重新挂载，避免把已有overlay留在另一轴上。",
+        "workedExample": "上游mock分别返回右轴数量0和1：前者断言detach调用一次，后者断言不调用。它检查调用条件，不是在真实图表里完成反复切换的视觉验收；本期只读，未运行测试或钱包。",
+        "whyItMatters": "可反复触发的布局同步若每次都创建新对象，会把显示层关系拆散；先识别已有结构，才能让初始化逻辑在更新时复用。",
+        "risksAndLimits": [
+          "实际guard是首pane的右轴数量，不是检查主series是否属于该轴；缺失API时按0处理，mock不能证明所有多pane或多轴布局。",
+          "仅讨论钱包图表坐标与overlay显示，不证明报价、余额、估值、资金安全或手机端已部署。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "MetaMask core1413 release",
+            "url": "https://github.com/MetaMask/core/releases/tag/v1413.0.0",
+            "publishedAt": "2026-11-10T18:01:16.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Right price scale PR11422",
+            "url": "https://github.com/MetaMask/core/pull/11422"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Chart layout implementation",
+            "url": "https://github.com/MetaMask/core/blob/2c0843bd0c4db7874bebab05a6be8d4a0d91aec4/packages/advanced-chart-core/src/widget/scaleLayout.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Chart layout mock assertions",
+            "url": "https://github.com/MetaMask/core/blob/2c0843bd0c4db7874bebab05a6be8d4a0d91aec4/packages/advanced-chart-core/src/widget/__tests__/scaleLayout.test.ts"
+          }
+        ],
+        "nextQuestions": [
+          "多pane、多个右轴和图表销毁重建时，还需要哪些真实组件回归来验证overlay始终绑定预期坐标？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-agent-queue-decision-and-request-options",
+      "domain": "ai",
+      "topic": "agent",
+      "title": "专题：流结束以后，Agent为什么还没有进入可发送状态",
+      "whatHappened": "AI SDK这次修复把异步自动发送判定纳入进行中状态。一个响应已结束，但若判定结果仍可能启动续答，普通新消息还不能直接越过它。",
+      "mechanism": "编辑拆解为三个边界：响应流占用、自动判定占用、已回答审批的优先提交。pendingAutomaticDecisions按stopGeneration追踪；判定false才让队列接手暂存审批，true可先续答；stop后旧代判定失效。",
+      "workedExample": "上游悬置Promise的测试在true分支先续答再发second，在false分支直接发second；审批场景false分支另断言带入tenant body。sendNow测试先stop旧代，再立即发送排队消息，旧Promise后来true也不新增请求。本期只读这些分支。",
+      "whyItMatters": "工程推论：聊天界面要显式表达决策仍在进行，日志也要区分“等决定”“待审批”“已请求”。否则用户看到ready，后端却仍可能收到旧自动续答。",
+      "risksAndLimits": [
+        "请求选项保留只说明客户端传了什么；服务端必须另验真实身份、审批对象和工具权限，不能信任调用方声明的tenant字段。",
+        "代次失效限制旧自动请求，不回滚已完成的工具；本期未实测服务端授权、外部幂等、断线恢复或任何模型。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "AI SDK ai7.0.169 release",
+          "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.169",
+          "publishedAt": "2026-11-10T20:17:26.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "Queue approval options PR24857",
+          "url": "https://github.com/vercel/ai/pull/24857"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Queue and pending-decision implementation",
+          "url": "https://github.com/vercel/ai/blob/44ba949048fcfe4cd1b801c3bd9c49bffbad96fa/packages/ai/src/ui/chat.ts"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Queue decision regression assertions",
+          "url": "https://github.com/vercel/ai/blob/44ba949048fcfe4cd1b801c3bd9c49bffbad96fa/packages/ai/src/ui/chat.test.ts"
+        }
+      ],
+      "nextQuestions": [
+        "如何分别记录判定代次、审批对象与实际工具回执，使恢复流程不会把客户端ready误当外部操作已结束？"
+      ],
+      "basedOnBriefId": "ai-sdk-queue-approval-options-pending-decision"
+    },
+    "sourceUrls": [
+      "https://github.com/vercel/ai/releases/tag/ai%407.0.169",
+      "https://github.com/vercel/ai/pull/24857",
+      "https://github.com/vercel/ai/blob/44ba949048fcfe4cd1b801c3bd9c49bffbad96fa/packages/ai/src/ui/chat.ts",
+      "https://github.com/vercel/ai/blob/44ba949048fcfe4cd1b801c3bd9c49bffbad96fa/packages/ai/src/ui/chat.test.ts",
+      "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.7",
+      "https://github.com/langchain-ai/deepagents/pull/7661",
+      "https://github.com/langchain-ai/deepagents/blob/6a8d452d70f9bcb978e6bd44831dda093ecbe928/libs/code/deepagents_code/git_trace.py",
+      "https://github.com/langchain-ai/deepagents/blob/6a8d452d70f9bcb978e6bd44831dda093ecbe928/libs/code/tests/unit_tests/test_git_trace.py",
+      "https://github.com/langchain-ai/deepagents/blob/6a8d452d70f9bcb978e6bd44831dda093ecbe928/libs/code/deepagents_code/config.py",
+      "https://github.com/ethereum-optimism/optimism/releases/tag/op-reth/v2.8.2",
+      "https://github.com/ethereum-optimism/optimism/pull/23951",
+      "https://github.com/ethereum-optimism/optimism/blob/969931cdf14fc219598f0aa44d869e718236df7f/rust/op-reth/crates/txpool/src/interop_filter/metrics.rs",
+      "https://github.com/ethereum-optimism/optimism/blob/969931cdf14fc219598f0aa44d869e718236df7f/rust/op-reth/crates/txpool/src/interop_filter/errors.rs",
+      "https://github.com/ethereum-optimism/optimism/blob/969931cdf14fc219598f0aa44d869e718236df7f/rust/op-reth/crates/txpool/src/interop_filter/client.rs",
+      "https://github.com/MetaMask/core/releases/tag/v1413.0.0",
+      "https://github.com/MetaMask/core/pull/11422",
+      "https://github.com/MetaMask/core/blob/2c0843bd0c4db7874bebab05a6be8d4a0d91aec4/packages/advanced-chart-core/src/widget/scaleLayout.ts",
+      "https://github.com/MetaMask/core/blob/2c0843bd0c4db7874bebab05a6be8d4a0d91aec4/packages/advanced-chart-core/src/widget/__tests__/scaleLayout.test.ts"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-11-11-3323ecfb854f3355",
+    "asOf": "2026-11-10T21:38:26.706Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
+  {
     "date": "2026-11-09",
     "slug": "2026-11-09",
     "title": "学习雷达 · 2026-11-09",
@@ -3344,210 +3687,6 @@ export const latestRadars: DailyRadar[] = [
     "marketSignals": [],
     "snapshotId": "learning-2026-11-04-ee1a315c21a15b0e",
     "asOf": "2026-11-03T21:36:40.000Z",
-    "origin": "research",
-    "publicationState": "published"
-  },
-  {
-    "date": "2026-11-03",
-    "slug": "2026-11-03",
-    "title": "学习雷达 · 2026-11-03",
-    "summary": "AI 看流式回调的测量缺口与会话退出后的进程收尾；Web3 看钱包预览的显式选择与 Foundry 广播恢复的停止条件。专题核对计划、链上回执和失败后的控制流。",
-    "publish": true,
-    "reviewStatus": "automated",
-    "schemaVersion": 2,
-    "editionMode": "daily",
-    "researchedAt": "2026-11-02T21:36:19.670Z",
-    "generatedAt": "2026-11-02T21:36:19.670Z",
-    "sourceSections": [
-      "ai",
-      "web3",
-      "deepDive"
-    ],
-    "missingSections": [],
-    "briefs": [
-      {
-        "id": "ai-langchain-block-token-callbacks",
-        "domain": "ai",
-        "topic": "infrastructure",
-        "title": "langchain-anthropic 1.7.9：没有 token 回调，不等于模型没有输出",
-        "whatHappened": "langchain-anthropic 于11月2日（UTC）发布1.7.9，修复工具、文档或扩展思考请求使用内容块列表时缺失流式 token 回调的问题。即使模型只回复文字、实际没有调用工具，内容仍可能是列表，旧的字符串判断就会跳过回调。",
-        "mechanism": "存在 run_manager 时，同步与异步流现在对每个 chunk 触发 on_llm_new_token，token 参数使用 chunk.text，完整块内容仍随 chunk 传递。上游测试包含空字符串、正文、空字符串三个回调，说明回调次数不能直接当作非空文本 token 数。",
-        "workedExample": "纸面回归可以为同一请求分别启用和关闭工具定义，记录正文流、回调事件和首个非空文本时间。正文相同而回调缺失时先定位适配层，不把它计为模型卡住。本期仅阅读补丁和上游测试，没有安装库或调用模型。",
-        "whyItMatters": "Agent 可观测性常依赖回调计算首 token 时间。传输有内容而观测链没有事件，会让面板、告警和性能比较得出不同结论；先核对测量路径，才能解释延迟。",
-        "risksAndLimits": [
-          "修复的是客户端事件报告，不证明模型推理更快，也不证明全部流式指标已端到端准确。",
-          "空 token 仍可触发回调；消费者应区分事件到达、文字出现和工具调用完成，不能只数回调。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "langchain-anthropic 1.7.9 official release",
-            "url": "https://github.com/langchain-ai/langchain/releases/tag/langchain-anthropic%3D%3D1.7.9",
-            "publishedAt": "2026-11-02T20:14:18.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "LangChain PR 41643: streamed block token callbacks",
-            "url": "https://github.com/langchain-ai/langchain/pull/41643"
-          }
-        ],
-        "nextQuestions": [
-          "启用工具后，正文、完整chunk和回调事件能否按同一次请求关联？",
-          "首事件时间与首个非空文本时间是否被混成一个性能指标？"
-        ]
-      },
-      {
-        "id": "ai-claude-exit-shell-lifecycle",
-        "domain": "ai",
-        "topic": "agent",
-        "title": "Claude Code 2.1.316：会话自动退出后，子 shell 也要有收尾证据",
-        "whatHappened": "Anthropic 于10月31日（UTC）发布 Claude Code 2.1.316。官方说明修复了 macOS 与 Linux 上 Claude Code 自行退出后 shell 命令仍遗留运行的问题，举例包括凭据被拒绝和云会话被归档。",
-        "mechanism": "发布说明把修复范围限定在宿主会话自行退出与它启动的 shell 生命周期之间。公开说明没有给出内部终止实现，因此这里只确认这一行为变更，不推断信号、进程组或跨机器清理策略。",
-        "workedExample": "拟议验收可在隔离环境启动一个可识别的长命令，触发受控宿主退出后，分别核对宿主状态、子进程是否仍在、输出文件和退出记录。该例是验证设计，本期未启动 Claude、制造鉴权故障或归档真实会话。",
-        "whyItMatters": "多 Agent 面板显示会话结束，并不自动证明它启动的计算、构建或网络工作已停止。把宿主和子进程的状态分别留证，可以避免下一次接手时重复启动仍在运行的任务。",
-        "risksAndLimits": [
-          "官方所述平台是 macOS 与 Linux；没有据此声称 Windows、所有异常退出或独立外部服务都已覆盖。",
-          "进程停止不撤销它已完成的文件写入或远端副作用；本期没有验证本机安装版本或真实清理结果。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "Claude Code 2.1.316 official release",
-            "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.316",
-            "publishedAt": "2026-10-31T01:01:35.000Z"
-          }
-        ],
-        "nextQuestions": [
-          "会话完成或失败时，是否保存了所属子进程的独立退出证据？",
-          "恢复工作前，怎样区分残留进程、已完成副作用和可安全重试的操作？"
-        ]
-      },
-      {
-        "id": "web3-viem-preview-opt-in",
-        "domain": "web3",
-        "topic": "wallet_cex",
-        "title": "viem 2.57.14：余额预览改为显式请求，缺失不能显示成零变化",
-        "whatHappened": "viem 于11月1日（UTC）发布2.57.14，Tempo Relay 的余额变化预览从默认开启改为请求显式选择；费用估算继续默认提供。普通填充请求的格式化也修复为保留 capabilities，避免调用方声明在传输时丢失。",
-        "mechanism": "Relay.simulate 只在 capabilities.balanceDiffs 严格等于 true 时执行余额差异模拟。预览同时将同一代币的流入和流出分开保留，收到后又转出的代币不再因净额为零而消失。",
-        "workedExample": "纸面检查可比较未传选项、false 和 true 三种请求：前两者不能把缺失的预览解释为余额没变化；第三种再核对同币流入与流出是否分别可见。这里只检查代码与上游用例，没有连接 RPC、账户或发送交易。",
-        "whyItMatters": "钱包的费用估算与资产影响预览是两个不同能力。升级后若界面把缺失字段补成空列表，用户可能把未请求或不可用的预览误读为已经验证不会动用资产。",
-        "risksAndLimits": [
-          "显式请求仍不保证预览始终可得；上游代码保留超预算或元数据不可用时省略预览的路径。",
-          "余额预览的选择不等于批准自动换币；autoSwap 使用独立请求能力，模拟结果也不证明链上执行成功。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "viem 2.57.14 official release",
-            "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.14",
-            "publishedAt": "2026-11-01T05:20:24.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "viem PR 5356: explicit relay preview capabilities",
-            "url": "https://github.com/wevm/viem/pull/5356"
-          }
-        ],
-        "nextQuestions": [
-          "界面能否分别显示未请求、不可用和已模拟的空结果？",
-          "序列化之后 capabilities 是否仍存在，预览与待签交易是否对应同一版本？"
-        ]
-      },
-      {
-        "id": "web3-foundry-resume-recorded-revert",
-        "domain": "web3",
-        "topic": "onchain_infrastructure",
-        "title": "Foundry 1.9.0：记录过 revert 后，不再继续发送脚本本会阻止的操作",
-        "whatHappened": "Foundry 于11月2日21:28（UTC）正式发布1.9.0。此前恢复广播会跳过已记录的 revert，再发送其后的操作；修复使存在已记录 revert 且仍有未完成操作的序列拒绝 resume，保留脚本失败后原本会停止的控制流。",
-        "mechanism": "恢复路径同时检查部署序列的 reverted 与 remaining_operation_indices：二者均非空时返回错误，不发送剩余操作。若序列记录过 revert、但已无剩余操作，仍沿用警告；这不是把所有带 revert 的历史一概判为可重发。",
-        "workedExample": "上游回归构造失败调用之后的两次转账，连续恢复两次均应失败，成功回执仍为空，发送方交易计数保持只有原失败交易。本期只阅读这一补丁和测试，没有运行 Foundry、连接链或广播操作。",
-        "whyItMatters": "本地计划里列出下一步，不代表前一步失败后它仍然被授权执行。恢复工具必须结合链上回执和脚本控制流，不能把跳过失败项当成继续剩余计划的充分依据。",
-        "risksAndLimits": [
-          "上游的拒绝保护不能回滚已经上链的结果，也不能替代对仍在pending交易的核对。",
-          "发布说明指向重新广播路径，但重新运行仍需核对既有副作用和授权；本期没有给出可直接执行的重播指令。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "Foundry 1.9.0 official release",
-            "url": "https://github.com/foundry-rs/foundry/releases/tag/v1.9.0",
-            "publishedAt": "2026-11-02T21:28:02.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "Foundry PR 18031: refuse operations after a recorded revert",
-            "url": "https://github.com/foundry-rs/foundry/pull/18031"
-          }
-        ],
-        "nextQuestions": [
-          "恢复前是否同时保存成功回执、失败记录、未决交易和脚本停止条件？",
-          "新开广播之前，怎样证明旧广播没有尚未确认的操作，并避免重复副作用？"
-        ]
-      }
-    ],
-    "deepDive": {
-      "id": "deep-foundry-recovery-control-flow",
-      "domain": "web3",
-      "topic": "onchain_infrastructure",
-      "title": "专题：恢复广播前，要同时核对计划、回执与失败后的控制流",
-      "whatHappened": "Foundry 的修复针对一种危险的恢复歧义：原脚本的失败条件会阻止后续操作，但磁盘序列仍保存了这些已规划操作。旧的 resume 跳过失败交易后继续发送，恢复行为反而越过了原执行逻辑。",
-      "mechanism": "新的门禁把已记录失败和仍有剩余操作作为联合拒绝条件。链上成功交易保留成功回执，revert 单独进入 reverted，pending 则仍需确认。磁盘计划是否存在、操作是否已发送、脚本是否允许继续是不同状态，不能用一个完成标记替代。",
-      "workedExample": "设脚本先检查依赖合约，再执行两个后续动作；检查交易失败后，本地仍有两个计划。纸面恢复台账分别列出原失败交易、其余计划和pending核对结果，再决定停止、恢复已有流程或重新审查新计划。本例没有接入钱包或产生交易。",
-      "whyItMatters": "Agent 生成的计划和可恢复执行器容易被误当成同一授权。把前置条件和每项外部结果一起保存，才能解释任务为什么停止，以及下一次启动是否仍在执行用户批准的原路径。",
-      "risksAndLimits": [
-        "没有剩余操作时的警告不把失败变成成功；已经上链的失败仍应保留在结果中。",
-        "缺失恢复快照时，工具不能判断哪些未完成操作已发送。上游要求重新广播前确认没有仍在pending的交易；这不自动证明所有业务副作用可重复。"
-      ],
-      "sources": [
-        {
-          "tier": "tier1",
-          "role": "event",
-          "kind": "official_release",
-          "name": "Foundry 1.9.0 official release",
-          "url": "https://github.com/foundry-rs/foundry/releases/tag/v1.9.0",
-          "publishedAt": "2026-11-02T21:28:02.000Z"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_implementation_change",
-          "name": "Foundry PR 18031: refuse operations after a recorded revert",
-          "url": "https://github.com/foundry-rs/foundry/pull/18031"
-        }
-      ],
-      "nextQuestions": [
-        "恢复台账是否能够区分未计划、已计划未发送、pending、成功与revert？",
-        "当原前置条件失效时，系统会停止并重新审查，还是继续执行磁盘里剩下的动作？"
-      ],
-      "basedOnBriefId": "web3-foundry-resume-recorded-revert"
-    },
-    "sourceUrls": [
-      "https://github.com/langchain-ai/langchain/releases/tag/langchain-anthropic%3D%3D1.7.9",
-      "https://github.com/langchain-ai/langchain/pull/41643",
-      "https://github.com/anthropics/claude-code/releases/tag/v2.1.316",
-      "https://github.com/wevm/viem/releases/tag/viem%402.57.14",
-      "https://github.com/wevm/viem/pull/5356",
-      "https://github.com/foundry-rs/foundry/releases/tag/v1.9.0",
-      "https://github.com/foundry-rs/foundry/pull/18031"
-    ],
-    "relatedProjectSlugs": [],
-    "marketSignals": [],
-    "snapshotId": "learning-2026-11-03-0635468cb58de125",
-    "asOf": "2026-11-02T21:36:19.670Z",
     "origin": "research",
     "publicationState": "published"
   }
