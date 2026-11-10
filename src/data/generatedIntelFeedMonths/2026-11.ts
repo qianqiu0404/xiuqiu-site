@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-11-11:nyfed-q3-household-debt-reporting-stock-flow-2026-11-10",
+    "kind": "market",
+    "date": "2026-11-11",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "纽约联储三季家庭债务增至19.1万亿美元，补报与逾期口径须拆开",
+    "summary": "研究判断：债务偿付压力可能经家庭现金流、贷款损失和信贷可得性影响消费，再联系相关资产；需独立核对收入、实际支出及信贷表现，余额上升与逾期存量变化不能单独证明需求下降或资产方向。",
+    "href": "/market-radar/2026-11-11#nyfed-q3-household-debt-reporting-stock-flow-2026-11-10",
+    "source": {
+      "name": "New York Fed — Q3 2026 Household Debt and Credit",
+      "url": "https://www.newyorkfed.org/newsevents/news/research/2026/20261110"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
+  {
     "id": "market:2026-11-10:fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
     "kind": "market",
     "date": "2026-11-10",
