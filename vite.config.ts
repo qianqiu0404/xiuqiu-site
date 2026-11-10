@@ -4,6 +4,7 @@ import type { Plugin } from 'vite'
 import { buildExternalSnapshotFiles } from './shared/externalSources.ts'
 import { parseGrokIndex, parseNewsIndex } from './shared/grokNews.ts'
 import { parseResearchIndex } from './src/data/sharedResearch.ts'
+import { radarEntryModules } from './build/radarEntryModules.ts'
 
 // Copies the two rewritten feeds into dist/ at build time so the page has a
 // read-only fallback when a rewrite target is down. A failed fetch only skips
@@ -24,7 +25,7 @@ function externalSnapshots(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [vue(), externalSnapshots()],
+  plugins: [vue(), radarEntryModules(), externalSnapshots()],
   // The same public, read-only origin used by vercel.json. An explicit local
   // override lets both repositories be verified together before either ships.
   server: {

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import './radar-entry-modules.test.mjs'
 import { parseDailyResearchSource, validateRadarCandidate } from './radar-pipeline.mjs'
 
 const sourceUrls = {
