@@ -1,8 +1,16 @@
 {
   "schemaVersion": 1,
-  "latestDate": "2026-11-10",
+  "latestDate": "2026-11-11",
   "homePageUrl": "https://xiuqiu-site.vercel.app/",
   "topics": [
+    {
+      "topic": "market_macro",
+      "domain": "market",
+      "count": 20,
+      "lastSeen": "2026-11-11",
+      "firstSeen": "2026-08-09",
+      "url": "https://xiuqiu-site.vercel.app/topics/market_macro"
+    },
     {
       "topic": "market_regulation",
       "domain": "market",
@@ -42,14 +50,6 @@
       "lastSeen": "2026-11-09",
       "firstSeen": "2026-08-12",
       "url": "https://xiuqiu-site.vercel.app/topics/protocol"
-    },
-    {
-      "topic": "market_macro",
-      "domain": "market",
-      "count": 19,
-      "lastSeen": "2026-11-08",
-      "firstSeen": "2026-08-09",
-      "url": "https://xiuqiu-site.vercel.app/topics/market_macro"
     },
     {
       "topic": "l2",
