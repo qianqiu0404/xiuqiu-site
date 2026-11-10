@@ -1,4 +1,4 @@
-import { readFileSync } from 'node:fs'
+import { readFileSync, realpathSync } from 'node:fs'
 import path from 'node:path'
 import ts from 'typescript'
 import type { Plugin, ViteDevServer } from 'vite'
@@ -142,13 +142,22 @@ export function createRadarEntryLoader(kind: Kind, slugs: string[]) {
 
 export function radarEntryModules(): Plugin {
   let root = ''
+  let configuredRoot = ''
   const parsed = new Map<string, { source: string; entries: Entry[] }>()
+  // Vite normally resolves module IDs through symlinks. Map its logical root
+  // to that same real root, including watcher paths whose files were deleted.
+  function canonicalPath(filename: string) {
+    const absolute = path.resolve(filename)
+    return absolute === configuredRoot || absolute.startsWith(configuredRoot + path.sep)
+      ? path.resolve(root, path.relative(configuredRoot, absolute))
+      : absolute
+  }
   const dataDirectory = () => path.join(root, 'src/data')
   const loaderPath = (kind: Kind) => path.join(dataDirectory(), descriptors[kind].loader)
   const kinds: Kind[] = ['learning', 'market']
-  const kindForLoader = (filename: string) => kinds.find(kind => filename === loaderPath(kind))
+  const kindForLoader = (filename: string) => kinds.find(kind => canonicalPath(filename) === loaderPath(kind))
   const relevant = (filename: string) => kindForLoader(filename) !== undefined || kinds.some(kind =>
-    path.dirname(filename) === path.join(dataDirectory(), descriptors[kind].directory))
+    path.dirname(canonicalPath(filename)) === path.join(dataDirectory(), descriptors[kind].directory))
 
   // Read current bytes on every request. Parsing is memoized by the full source,
   // never by mtime, so same-timestamp rewrites cannot return an old entry.
@@ -187,7 +196,10 @@ export function radarEntryModules(): Plugin {
   return {
     name: 'radar-entry-modules',
     enforce: 'pre',
-    configResolved(config) { root = path.resolve(config.root) },
+    configResolved(config) {
+      configuredRoot = path.resolve(config.root)
+      root = realpathSync.native(configuredRoot)
+    },
     buildStart() {
       for (const kind of kinds) catalog(kind, filename => this.addWatchFile(filename))
     },
@@ -228,7 +240,7 @@ export function radarEntryModules(): Plugin {
     },
     generateBundle(_options, bundle) {
       const wholeMonths = [...this.getModuleIds()].filter(id => kinds.some(kind =>
-        id.startsWith(path.join(dataDirectory(), descriptors[kind].directory) + path.sep)))
+        canonicalPath(id.split('?')[0]).startsWith(path.join(dataDirectory(), descriptors[kind].directory) + path.sep)))
       if (wholeMonths.length) throw new Error('Browser bundle still imports whole Radar months: ' + wholeMonths.join(', '))
       const chunks = Object.values(bundle).filter(output => output.type === 'chunk').flatMap(chunk => {
         if (chunk.type !== 'chunk') return []
@@ -236,7 +248,16 @@ export function radarEntryModules(): Plugin {
         if (entries.length > 1) throw new Error('Multiple Radar entries were merged into one chunk')
         return entries.map(id => ({ id: id.slice(1), file: chunk.fileName, bytes: Buffer.byteLength(chunk.code) }))
       })
-      console.info('[radar-entry-bundles] ' + JSON.stringify({ count: chunks.length, wholeMonthModules: wholeMonths.length, chunks }))
+      // This application includes both detail routes. Require every published
+      // catalog date in the emitted graph: a missed transform must not pass 0/0.
+      const expected = new Set(kinds.flatMap(kind => [...catalog(kind).keys()].map(slug => `radar-entry/${kind}/${slug}`)))
+      const actual = new Set(chunks.map(chunk => chunk.id))
+      const missing = [...expected].filter(id => !actual.has(id))
+      const unexpected = [...actual].filter(id => !expected.has(id))
+      if (missing.length || unexpected.length || actual.size !== chunks.length) {
+        throw new Error('Radar entry graph coverage mismatch: ' + JSON.stringify({ missing, unexpected, duplicate: chunks.length - actual.size }))
+      }
+      console.info('[radar-entry-bundles] ' + JSON.stringify({ count: chunks.length, expectedCount: expected.size, wholeMonthModules: wholeMonths.length, chunks }))
     },
   }
 }
