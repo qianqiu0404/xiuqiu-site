@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict'
 import { EventEmitter } from 'node:events'
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { mkdtempSync, mkdirSync, readFileSync, realpathSync, rmSync, symlinkSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -33,8 +33,10 @@ function month(kind, entries) {
   return `import type { ${current.type} } from '../generated.ts'\nexport const ${current.array}: ${current.type}[] = ${JSON.stringify(entries, null, 2)}\n`
 }
 
-function fixture() {
-  const directory = mkdtempSync(path.join(tmpdir(), 'radar-entry-'))
+function fixture({ aliasRoot = false } = {}) {
+  const physical = mkdtempSync(path.join(tmpdir(), 'radar-entry-'))
+  const directory = aliasRoot ? physical + '-alias' : physical
+  if (aliasRoot) symlinkSync(physical, directory, 'dir')
   writeFileSync(path.join(directory, 'package.json'), '{"type":"module"}')
   const data = path.join(directory, 'src/data')
   mkdirSync(data, { recursive: true })
@@ -46,7 +48,10 @@ function fixture() {
       { date: '2026-11-08', slug: '2026-11-08', marker: kind + '-legacy', body: 'unchanged legacy data' },
     ]))
   }
-  return { directory, data, dispose: () => rmSync(directory, { recursive: true, force: true }) }
+  return { directory, data, dispose: () => {
+    if (aliasRoot) rmSync(directory)
+    rmSync(physical, { recursive: true, force: true })
+  } }
 }
 
 test('entry parsing preserves every current learning and market archive value including legacy records', () => {
@@ -178,5 +183,76 @@ test('production graph has one independent chunk per date and no whole-month run
     const main = chunks.find(chunk => chunk.facadeModuleId?.endsWith('entry.js'))
     assert.equal(main.dynamicImports.length, 4)
     assert.equal(entries.every(x => x.chunk.dynamicImports.length === 0), true)
+  } finally { f.dispose() }
+})
+
+test('an explicit symlink root preserves real Vite daily loading, alias add/unlink invalidation and the complete production graph', async () => {
+  for (const preserveSymlinks of [false, true]) {
+    const f = fixture({ aliasRoot: true })
+    assert.notEqual(path.resolve(f.directory), realpathSync(f.directory))
+    const plugin = radarEntryModules()
+    const loaded = []
+    const transformed = []
+    const loadHook = hook(plugin.load)
+    const transformHook = hook(plugin.transform)
+    plugin.load = function (id, ...args) {
+      if (id.startsWith('\0radar-entry/')) loaded.push(id)
+      return loadHook.call(this, id, ...args)
+    }
+    plugin.transform = function (code, id, ...args) {
+      const result = transformHook.call(this, code, id, ...args)
+      if (Object.values(settings).some(value => id.endsWith('/' + value.loader))) {
+        transformed.push({ id, matched: result !== null })
+      }
+      return result
+    }
+    const server = await createServer({ root: f.directory, configFile: false, resolve: { preserveSymlinks }, plugins: [plugin], server: { middlewareMode: true }, appType: 'custom', logLevel: 'silent' })
+    let ssrPassed = false
+    try {
+      for (const kind of ['learning', 'market']) {
+        const module = await server.ssrLoadModule('/src/data/' + settings[kind].loader)
+        loaded.length = 0
+        assert.equal(await module[settings[kind].fn]('2026-12-01'), undefined)
+        assert.deepEqual(loaded, [])
+        assert.equal((await module[settings[kind].fn]('2026-11-09')).marker, kind + '-new')
+        assert.deepEqual(loaded, ['\0radar-entry/' + kind + '/2026-11-09'])
+        const nextMonth = path.join(f.data, settings[kind].folder, '2026-12.ts')
+        const loaderFile = path.join(f.data, settings[kind].loader)
+        writeFileSync(nextMonth, month(kind, [{ date: '2026-12-01', slug: '2026-12-01', marker: 'alias-added' }]))
+        writeFileSync(loaderFile, loader(kind, ['2026-11', '2026-12']))
+        server.watcher.emit('add', nextMonth)
+        const added = await server.ssrLoadModule('/src/data/' + settings[kind].loader)
+        assert.equal((await added[settings[kind].fn]('2026-12-01')).marker, 'alias-added')
+        rmSync(nextMonth)
+        writeFileSync(loaderFile, loader(kind, ['2026-11']))
+        server.watcher.emit('unlink', nextMonth)
+        const removed = await server.ssrLoadModule('/src/data/' + settings[kind].loader)
+        assert.equal(await removed[settings[kind].fn]('2026-12-01'), undefined)
+      }
+      assert.ok(transformed.length >= 2)
+      assert.equal(transformed.every(value => value.matched), true)
+      ssrPassed = true
+    } finally {
+      await server.close()
+      if (!ssrPassed) f.dispose()
+    }
+    try {
+      writeFileSync(path.join(f.directory, 'entry.js'), `export { loadRadarBySlug } from './src/data/generatedRadarLoader.ts'; export { loadMarketRadarBySlug } from './src/data/generatedMarketRadarLoader.ts'`)
+      const result = await build({ root: f.directory, configFile: false, resolve: { preserveSymlinks }, plugins: [radarEntryModules()], logLevel: 'silent', build: { write: false, minify: false, rollupOptions: { input: path.join(f.directory, 'entry.js'), preserveEntrySignatures: 'strict' } } })
+      const chunks = result.output.filter(output => output.type === 'chunk')
+      const entries = chunks.flatMap(chunk => Object.keys(chunk.modules).filter(id => id.startsWith('\0radar-entry/')).map(id => ({ id, file: chunk.fileName })))
+      const expected = ['learning', 'market'].flatMap(kind => ['2026-11-09', '2026-11-08'].map(slug => '\0radar-entry/' + kind + '/' + slug))
+      assert.deepEqual(entries.map(value => value.id).sort(), expected.sort())
+      assert.equal(new Set(entries.map(value => value.file)).size, 4)
+      assert.equal(chunks.some(chunk => Object.keys(chunk.modules).some(id => /generated(?:Market)?RadarMonths\//.test(id))), false)
+    } finally { f.dispose() }
+  }
+})
+
+test('an application graph without any Radar entries fails closed even when it contains no whole-month modules', async () => {
+  const f = fixture()
+  writeFileSync(path.join(f.directory, 'entry.js'), 'export const unrelated = true')
+  try {
+    await assert.rejects(() => build({ root: f.directory, configFile: false, plugins: [radarEntryModules()], logLevel: 'silent', build: { write: false, rollupOptions: { input: path.join(f.directory, 'entry.js'), preserveEntrySignatures: 'strict' } } }), /Radar entry graph coverage mismatch/)
   } finally { f.dispose() }
 })
