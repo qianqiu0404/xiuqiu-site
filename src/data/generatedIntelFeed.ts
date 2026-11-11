@@ -7,8 +7,71 @@ export interface IntelItem { id: string; kind: IntelKind; date: string; domain: 
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
 export const intelLatestDate: string | null = "2026-11-12"
-export const intelItemCount = 311
+export const intelItemCount = 315
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "learning:ai-sdk-incremental-array-stream-parser",
+    "kind": "learning",
+    "date": "2026-11-12",
+    "domain": "ai",
+    "topic": "infrastructure",
+    "title": "AI SDK 7.0.170：流数组按新增元素解析，最终结果仍单独校验",
+    "summary": "流式UI不断收到小片段时，已完成的元素不应随每次输入重复做相同工作；但界面拿到部分元素，也不能替代最终完整结果的校验。",
+    "href": "/radar/2026-11-12#ai-sdk-incremental-array-stream-parser",
+    "source": {
+      "name": "AI SDK ai7.0.170 release",
+      "tier": "tier1",
+      "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.170"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "learning:ai-archestra-denied-history-refused-output-waiver",
+    "kind": "learning",
+    "date": "2026-11-12",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "Archestra 1.4.27：历史拒绝回执，不应单独触发当前输出豁免",
+    "summary": "Agent历史中“某次调用没执行”和“本次实际输出被扣留”是不同事件；恢复时若把两者混用，旧裁定可能错误改变当前会话的执行边界。",
+    "href": "/radar/2026-11-12#ai-archestra-denied-history-refused-output-waiver",
+    "source": {
+      "name": "Archestra platform1.4.27 release",
+      "tier": "tier1",
+      "url": "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.4.27"
+    }
+  },
+  {
+    "id": "learning:web3-reth-p2p-response-before-item-decode",
+    "kind": "learning",
+    "date": "2026-11-12",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "Reth 2.11：先核对P2P请求，再解码响应条目",
+    "summary": "节点先为一个本不该接受的响应分配整批解码对象，再到会话层丢弃，会把无效输入的成本留在热路径；请求上下文应更早约束响应工作量。",
+    "href": "/radar/2026-11-12#web3-reth-p2p-response-before-item-decode",
+    "source": {
+      "name": "Reth2.11.0 release",
+      "tier": "tier1",
+      "url": "https://github.com/paradigmxyz/reth/releases/tag/v2.11.0"
+    }
+  },
+  {
+    "id": "learning:web3-metamask-vault-valuations-found-cache",
+    "kind": "learning",
+    "date": "2026-11-12",
+    "domain": "web3",
+    "topic": "wallet_cex",
+    "title": "MetaMask估值服务2.4：已找到与未找到的批次，缓存时间分开",
+    "summary": "接口未找到对应估值，不等于该交易没有份额移动；历史估值和当前市价也不同。缓存寿命、缺失状态和单位必须一起解释，才能避免把未就绪数据当作稳定金额。",
+    "href": "/radar/2026-11-12#web3-metamask-vault-valuations-found-cache",
+    "source": {
+      "name": "MetaMask core1415 release",
+      "tier": "tier1",
+      "url": "https://github.com/MetaMask/core/releases/tag/v1415.0.0"
+    }
+  },
   {
     "id": "market:2026-11-12:ecb-refining-margins-energy-inflation-model-2026-11-11",
     "kind": "market",
@@ -470,25 +533,39 @@ export const intelTopics: IntelTopic[] = [
     "firstSeen": "2026-08-09"
   },
   {
-    "topic": "agent",
-    "domain": "ai",
-    "count": 12,
-    "lastSeen": "2026-11-11",
+    "topic": "onchain_infrastructure",
+    "domain": "web3",
+    "count": 15,
+    "lastSeen": "2026-11-12",
     "firstSeen": "2026-08-11"
   },
   {
     "topic": "infrastructure",
     "domain": "ai",
-    "count": 10,
-    "lastSeen": "2026-11-11",
+    "count": 11,
+    "lastSeen": "2026-11-12",
     "firstSeen": "2026-10-29"
   },
   {
     "topic": "wallet_cex",
     "domain": "web3",
-    "count": 10,
-    "lastSeen": "2026-11-11",
+    "count": 11,
+    "lastSeen": "2026-11-12",
     "firstSeen": "2026-08-10"
+  },
+  {
+    "topic": "safety",
+    "domain": "ai",
+    "count": 9,
+    "lastSeen": "2026-11-12",
+    "firstSeen": "2026-10-13"
+  },
+  {
+    "topic": "agent",
+    "domain": "ai",
+    "count": 12,
+    "lastSeen": "2026-11-11",
+    "firstSeen": "2026-08-11"
   },
   {
     "topic": "l2",
@@ -503,20 +580,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 5,
     "lastSeen": "2026-11-10",
     "firstSeen": "2026-10-25"
-  },
-  {
-    "topic": "onchain_infrastructure",
-    "domain": "web3",
-    "count": 14,
-    "lastSeen": "2026-11-09",
-    "firstSeen": "2026-08-11"
-  },
-  {
-    "topic": "safety",
-    "domain": "ai",
-    "count": 8,
-    "lastSeen": "2026-11-09",
-    "firstSeen": "2026-10-13"
   },
   {
     "topic": "protocol",
