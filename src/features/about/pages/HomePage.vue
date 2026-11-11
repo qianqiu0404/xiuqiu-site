@@ -24,6 +24,7 @@ onMounted(() => setSeoMeta({ ...homeSeo, path: '/about' }))
         <p class="brief-dateline"><span>关于 xiuqiu</span><span>Web3 · AI · 工程记录</span></p>
         <h1>在实践里学习，把过程留下来。</h1>
         <p class="brief-lede">我在维护 Qiu Market，也在学习钱包基础设施与 AI 工程。这个站点用来整理读到的资料、做过的尝试，以及能回头核对的证据。</p>
+        <router-link class="collection-link" to="/profile">认识我与我的作品 →</router-link>
       </div>
     </header>
 

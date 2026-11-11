@@ -22,6 +22,7 @@ xiuqiu-site 是一个个人站点，正在从「作品集 + 工程证据」转�
 | `/projects`、`/projects/:slug` | 项目图谱与项目详情 |
 | `/engineering/*`、`/ai/*` | 工程证据、失败恢复手册、AI 协作交付记录 |
 | `/about`、`/now`、`/articles` | 关于（原首页）、当前动态、工程笔记 |
+| `/profile` | 个人主页：自我介绍、实践方向、公开作品与 GitHub 入口 |
 | `/radar/review/:period` | 趋势回顾：多周的趋势线、信号与里程碑 |
 
 订阅出口（构建时生成的静态文件）：`/radar/rss.xml`、`/radar/feed.json`、`/llms.txt`、`/data/intel/latest.json`、`/data/intel/topics.json`，格式见 [`docs/public-feeds.md`](docs/public-feeds.md)。

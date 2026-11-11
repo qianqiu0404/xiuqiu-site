@@ -4,6 +4,7 @@ import test from 'node:test'
 import './shared-research.test.mjs'
 import './grok-news.test.mjs'
 import './reading-collections.test.mjs'
+import './profile-presentation.test.mjs'
 import {
   aiEngineeringOutcomes,
   homeAiProofContexts,
@@ -294,6 +295,7 @@ test('primary navigation keeps its structural contract', () => {
 
   const secondaryLinks = linksInClass('nav-secondary-links')
   assert.deepEqual(secondaryLinks, [
+    { to: '/profile', label: '个人主页' },
     { to: '/engineering/evidence', label: '证据' },
     { to: '/projects', label: '项目' },
     { to: '/articles', label: '笔记' },
@@ -310,7 +312,7 @@ test('primary navigation keeps its structural contract', () => {
   assert.match(appSource, /class="nav-mobile-context"/)
   assert.match(appSource, /'trade-radar': '市场雷达'/)
   assert.match(appSource, /@click="toggleNav"/)
-  assert.equal((appSource.match(/@keydown\.space\.prevent="activateLinkOnSpace"/g) || []).length, 9)
+  assert.equal((appSource.match(/@keydown\.space\.prevent="activateLinkOnSpace"/g) || []).length, primaryLinks.length + secondaryLinks.length)
   assert.match(appSource, /navToggle\.value\?\.focus\(\)/)
   assert.match(appSource, /mainContent\.value\?\.focus\(\{ preventScroll: true \}\)/)
   assert.match(appSource, /<main id="main-content" ref="mainContent" tabindex="-1">/)

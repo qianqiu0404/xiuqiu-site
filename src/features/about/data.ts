@@ -13,3 +13,4 @@ export type { HomeAiProofContext, HomeAiProofStatus } from '../../data/homePrese
 export { productPresentations } from '../../data/productPresentation'
 export { aboutEvidenceRows, aboutReadingLinks } from '../../data/aboutPresentation'
 export { siteArticlesByNewest } from '../../data/siteKnowledge'
+export { buildProfileProjects, profileFocusAreas, profileSections, profileSeo, profileWorkingPrinciples } from '../../data/profilePresentation'

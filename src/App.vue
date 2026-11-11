@@ -68,6 +68,7 @@ const currentNavSection = computed(() => {
     projects: 'projects',
     notes: 'notes',
     about: 'about',
+    profile: 'profile',
   }
 
   return sectionByGroup[navGroup] || ''
@@ -77,6 +78,7 @@ const currentContextLabel = computed(() => {
     projects: '项目图谱',
     notes: '工程笔记',
     about: 'About',
+    profile: '个人主页',
   }
   return labels[currentNavSection.value] || ''
 })
@@ -91,6 +93,7 @@ const currentMobileContextLabel = computed(() => {
     projects: '项目图谱',
     notes: '工程笔记',
     about: 'About',
+    profile: '个人主页',
   }
   return labels[currentNavSection.value] || ''
 })
@@ -255,6 +258,14 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
         <div class="nav-secondary-links" role="group" aria-label="更多入口">
           <router-link
             class="nav-link"
+            :class="{ 'is-current': isCurrentNavSection('profile') }"
+            :aria-current="currentNavAria('profile', '/profile')"
+            to="/profile"
+            @click="handleNavLinkActivation"
+            @keydown.space.prevent="activateLinkOnSpace"
+          >个人主页</router-link>
+          <router-link
+            class="nav-link"
             :class="{ 'is-current': isCurrentNavSection('proof') }"
             :aria-current="currentNavAria('proof', '/engineering/evidence')"
             to="/engineering/evidence"
@@ -298,6 +309,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
     <div class="container footer-inner">
       <span>© {{ new Date().getFullYear() }} xiuqiu</span>
       <nav class="footer-links" aria-label="页尾导航">
+        <router-link to="/profile">个人主页</router-link>
         <router-link to="/projects">全部项目</router-link>
         <router-link to="/articles">工程笔记</router-link>
         <router-link to="/engineering/failures">失败手册</router-link>

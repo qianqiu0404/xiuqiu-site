@@ -161,6 +161,10 @@ function expectedMetadataByRoute() {
       title: 'xiuqiu｜Qiu Market、Wallet Infrastructure 与 AI Engineering',
       description: '维护 Qiu Market，并用 Wallet Infrastructure 学习、AI-native Engineering、自动化测试与公开证据说明 Web3 工程能力。',
     }],
+    ['/profile', {
+      title: 'xiuqiu｜个人主页与作品',
+      description: '认识 xiuqiu：维护 Qiu Market，学习钱包基础设施，用 AI 协作把想法做成作品，留下可核对的工程与学习记录。',
+    }],
     ['/engineering', {
       title: '工程证据索引｜xiuqiu',
       description: '从证据矩阵、失败恢复手册和项目档案复核 xiuqiu 的 Web3 钱包与工程实践边界。',
