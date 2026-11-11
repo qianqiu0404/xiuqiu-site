@@ -6,9 +6,26 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-11-11"
-export const intelItemCount = 310
+export const intelLatestDate: string | null = "2026-11-12"
+export const intelItemCount = 311
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "market:2026-11-12:ecb-refining-margins-energy-inflation-model-2026-11-11",
+    "kind": "market",
+    "date": "2026-11-12",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "ECB研究拆解炼油价差：原油假设下调不必带来能源通胀下调",
+    "summary": "研究推断：燃料价格可能经家庭支出与企业成本影响通胀分析，再联系相关资产；需逐环验证，不能只凭原油变化推断消费者价格、利率决定或资产方向。",
+    "href": "/market-radar/2026-11-12#ecb-refining-margins-energy-inflation-model-2026-11-11",
+    "source": {
+      "name": "ECB — Refining costs and margins in HICP energy inflation",
+      "url": "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_05~d82730508f.en.html"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
   {
     "id": "learning:ai-sdk-queue-approval-options-pending-decision",
     "kind": "learning",
@@ -442,94 +459,14 @@ export const intelLatestItems: IntelItem[] = [
     "flags": {
       "priority": "P1"
     }
-  },
-  {
-    "id": "learning:ai-pydantic-json-format-budget",
-    "kind": "learning",
-    "date": "2026-11-05",
-    "domain": "ai",
-    "topic": "safety",
-    "title": "Pydantic AI 1.107.10：返回长度有限，格式化过程仍需要预算",
-    "summary": "Agent 的输入处理发生在模型看到正文之前。下载字节数与返回字符数限制不同阶段，不能只因最终文本很短，就推定解析、缩进等中间步骤耗时和内存也很小。",
-    "href": "/radar/2026-11-05#ai-pydantic-json-format-budget",
-    "source": {
-      "name": "Pydantic AI v1.107.10 official security release",
-      "tier": "tier1",
-      "url": "https://github.com/pydantic/pydantic-ai/releases/tag/v1.107.10"
-    },
-    "flags": {
-      "deepDive": true
-    }
-  },
-  {
-    "id": "learning:ai-archestra-unknown-stream-usage",
-    "kind": "learning",
-    "date": "2026-11-05",
-    "domain": "ai",
-    "topic": "infrastructure",
-    "title": "Archestra 1.4.18：流已结束，缺失的 token 用量仍是未知",
-    "summary": "模型内容、连接结束与用量上报可能分别到达。把缺失值填成零，会让成本分析、失败调查或使用量比较把缺证据误当成没有消耗；记录应保留这种区别。",
-    "href": "/radar/2026-11-05#ai-archestra-unknown-stream-usage",
-    "source": {
-      "name": "Archestra platform v1.4.18 official release",
-      "tier": "tier1",
-      "url": "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.4.18"
-    }
-  },
-  {
-    "id": "learning:web3-akash-confirmed-alert-addresses",
-    "kind": "learning",
-    "date": "2026-11-05",
-    "domain": "web3",
-    "topic": "onchain_infrastructure",
-    "title": "Akash 通知服务2.81.10：新地址确认之后，才进入告警投递集合",
-    "summary": "基础设施告警包含运营信息。通道编辑者填入一个地址，不代表地址接收方已确认；把待确认与可投递集合分开，才能解释配置保存、接收方确认和实际送达各发生到了哪一步。",
-    "href": "/radar/2026-11-05#web3-akash-confirmed-alert-addresses",
-    "source": {
-      "name": "Akash Console notifications v2.81.10 official release",
-      "tier": "tier1",
-      "url": "https://github.com/akash-network/console/releases/tag/notifications%2Fv2.81.10"
-    }
-  },
-  {
-    "id": "learning:web3-opdeployer-real-super-root-anchor",
-    "kind": "learning",
-    "date": "2026-11-05",
-    "domain": "web3",
-    "topic": "l2",
-    "title": "op-deployer 0.9.0-rc.3：许可型 super-root 链也从真实起始锚开始",
-    "summary": "部署工具预测地址、生成创世状态与提交起始锚需要对应同一组配置。一个外形合法的占位值不能替代真实状态承诺；在继续阶段重验已保存锚，有助于定位准备数据与部署输入不一致。",
-    "href": "/radar/2026-11-05#web3-opdeployer-real-super-root-anchor",
-    "source": {
-      "name": "Optimism op-deployer v0.9.0-rc.3 official prerelease",
-      "tier": "tier1",
-      "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-deployer%2Fv0.9.0-rc.3"
-    }
-  },
-  {
-    "id": "market:2026-11-05:treasury-november-refunding-issuance-plan-2026-11-04",
-    "kind": "market",
-    "date": "2026-11-05",
-    "domain": "market",
-    "topic": "market_macro",
-    "title": "财政部公布1250亿美元再融资计划，7年券拟改季度新发",
-    "summary": "研究判断：总发行额、置换到期债务与新增现金属于不同口径；新发和续发节奏也不同于拍卖频率。供给安排是否改变实际市场吸收，须经拍卖与结算等证据核验。",
-    "href": "/market-radar/2026-11-05#treasury-november-refunding-issuance-plan-2026-11-04",
-    "source": {
-      "name": "U.S. Treasury Quarterly Refunding Statement, November 2026",
-      "url": "https://home.treasury.gov/news/press-releases/sb0678"
-    },
-    "flags": {
-      "priority": "P1"
-    }
   }
 ]
 export const intelTopics: IntelTopic[] = [
   {
     "topic": "market_macro",
     "domain": "market",
-    "count": 20,
-    "lastSeen": "2026-11-11",
+    "count": 21,
+    "lastSeen": "2026-11-12",
     "firstSeen": "2026-08-09"
   },
   {

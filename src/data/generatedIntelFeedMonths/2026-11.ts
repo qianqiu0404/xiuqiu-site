@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-11-12:ecb-refining-margins-energy-inflation-model-2026-11-11",
+    "kind": "market",
+    "date": "2026-11-12",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "ECB研究拆解炼油价差：原油假设下调不必带来能源通胀下调",
+    "summary": "研究推断：燃料价格可能经家庭支出与企业成本影响通胀分析，再联系相关资产；需逐环验证，不能只凭原油变化推断消费者价格、利率决定或资产方向。",
+    "href": "/market-radar/2026-11-12#ecb-refining-margins-energy-inflation-model-2026-11-11",
+    "source": {
+      "name": "ECB — Refining costs and margins in HICP energy inflation",
+      "url": "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_05~d82730508f.en.html"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
+  {
     "id": "learning:ai-sdk-queue-approval-options-pending-decision",
     "kind": "learning",
     "date": "2026-11-11",

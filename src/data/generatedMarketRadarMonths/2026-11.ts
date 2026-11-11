@@ -3,6 +3,157 @@
 import type { MarketRadarDaily } from '../generatedMarketRadars.ts'
 export const monthlyMarketRadars: MarketRadarDaily[] = [
   {
+    "date": "2026-11-12",
+    "slug": "2026-11-12",
+    "title": "交易研究雷达 · 2026-11-12",
+    "summary": "ECB新研究显示，成品油与原油之间的成本和价差会改变能源通胀路径。本期区分研究发布日期、历史观察和模型假设，不把模型比较视为实时预测或政策决定。",
+    "snapshotId": "market-2026-11-12-a60d37250ba95a14",
+    "asOf": "2026-11-11T21:59:37.869Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-11T21:59:37.869040+00:00",
+    "events": [
+      {
+        "id": "ecb-refining-margins-energy-inflation-model-2026-11-11",
+        "priority": "P1",
+        "status": "released",
+        "category": "macro",
+        "title": "ECB研究拆解炼油价差：原油假设下调不必带来能源通胀下调",
+        "fact": "ECB于11月11日发布能源通胀研究，比较以5月21日和8月19日为截止的两组STIP模型数据与假设。文中后组原油假设较低，能源通胀预测却较高，作者主要归因于炼油成本和价差。这里的价差是成品油价减区域原油基准，包含保险、运输、劳动成本和加成，不是炼油净利润。",
+        "whyWatch": "研究推断：燃料价格可能经家庭支出与企业成本影响通胀分析，再联系相关资产；需逐环验证，不能只凭原油变化推断消费者价格、利率决定或资产方向。",
+        "assets": [
+          "欧元区液体燃料",
+          "欧洲能源产业"
+        ],
+        "watchFor": "分开保留11月11日发布日期、5月21日与8月19日假设截止，以及图表截至10月28日等历史观察。核对柴油与汽油价差、汇率、分销税费及HICP分项；本期未采集行情反应或跨资产样本。",
+        "invalidation": "若价差、汇率、税费和终端价格的同口径后续证据不支持传导，或数据与模型假设修订，则暂停外推。两组运行含新数据和其他假设变化，不是单独改变炼油价差的因果实验。",
+        "sourceName": "ECB — Refining costs and margins in HICP energy inflation",
+        "sourceUrl": "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_05~d82730508f.en.html",
+        "sourcePublishedAt": "2026-11-11"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_05~d82730508f.en.html"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "本期核对官方研究的定义、观察期与模型比较，未建立研究发布到资产反应的同窗口历史样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "历史模型假设、研究发布日和三日市场窗口不同；不把模型的能源通胀比较换算为资产概率。",
+      "nextValidation": "固定研究版本与各输入日期，核对燃料价差、汇率、税费和HICP分项；独立补足市场样本前只记录信号质量。",
+      "invalidation": "官方修订、模型口径或观察窗口不一致时重估；没有市场反应样本时保留未知。",
+      "sourceUrls": [
+        "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_05~d82730508f.en.html"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "成品油与原油的价差如何经零售燃料、家庭支出与企业成本联系通胀及相关资产，各环分别需要什么证据？",
+        "focusEventIds": [
+          "ecb-refining-margins-energy-inflation-model-2026-11-11"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些汇率、分销税费、产品构成与同口径终端价格证据，能推翻仅用炼油价差解释能源通胀变化的说法？",
+        "focusEventIds": [
+          "ecb-refining-margins-energy-inflation-model-2026-11-11"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若原油和成品油价差出现不同路径，后续观察什么，哪些新数据或模型修订会使传导判断失效？",
+        "focusEventIds": [
+          "ecb-refining-margins-energy-inflation-model-2026-11-11"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-12",
+      "snapshotId": "market-2026-11-12-a60d37250ba95a14",
+      "asOf": "2026-11-11T21:59:37.869Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-12",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "成品油与原油的价差如何经零售燃料、家庭支出与企业成本联系通胀及相关资产，各环分别需要什么证据？",
+          "focusEventIds": [
+            "ecb-refining-margins-energy-inflation-model-2026-11-11"
+          ],
+          "prompt": "研究任务：成品油与原油的价差如何经零售燃料、家庭支出与企业成本联系通胀及相关资产，各环分别需要什么证据？\n证据快照：2026-11-12；asOf=2026-11-11T21:59:37.869Z；snapshotId=market-2026-11-12-a60d37250ba95a14\n\n材料 1｜ECB研究拆解炼油价差：原油假设下调不必带来能源通胀下调\n已确认事实：ECB于11月11日发布能源通胀研究，比较以5月21日和8月19日为截止的两组STIP模型数据与假设。文中后组原油假设较低，能源通胀预测却较高，作者主要归因于炼油成本和价差。这里的价差是成品油价减区域原油基准，包含保险、运输、劳动成本和加成，不是炼油净利润。\n关注机制：研究推断：燃料价格可能经家庭支出与企业成本影响通胀分析，再联系相关资产；需逐环验证，不能只凭原油变化推断消费者价格、利率决定或资产方向。\n接下来验证：分开保留11月11日发布日期、5月21日与8月19日假设截止，以及图表截至10月28日等历史观察。核对柴油与汽油价差、汇率、分销税费及HICP分项；本期未采集行情反应或跨资产样本。\n失效条件：若价差、汇率、税费和终端价格的同口径后续证据不支持传导，或数据与模型假设修订，则暂停外推。两组运行含新数据和其他假设变化，不是单独改变炼油价差的因果实验。\n一手来源：https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_05~d82730508f.en.html\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "2772466ba03365ec5d550d04aef33c0730f873cdee4704b49c83264e274159f7",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_05~d82730508f.en.html"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些汇率、分销税费、产品构成与同口径终端价格证据，能推翻仅用炼油价差解释能源通胀变化的说法？",
+          "focusEventIds": [
+            "ecb-refining-margins-energy-inflation-model-2026-11-11"
+          ],
+          "prompt": "研究任务：哪些汇率、分销税费、产品构成与同口径终端价格证据，能推翻仅用炼油价差解释能源通胀变化的说法？\n证据快照：2026-11-12；asOf=2026-11-11T21:59:37.869Z；snapshotId=market-2026-11-12-a60d37250ba95a14\n\n材料 1｜ECB研究拆解炼油价差：原油假设下调不必带来能源通胀下调\n已确认事实：ECB于11月11日发布能源通胀研究，比较以5月21日和8月19日为截止的两组STIP模型数据与假设。文中后组原油假设较低，能源通胀预测却较高，作者主要归因于炼油成本和价差。这里的价差是成品油价减区域原油基准，包含保险、运输、劳动成本和加成，不是炼油净利润。\n关注机制：研究推断：燃料价格可能经家庭支出与企业成本影响通胀分析，再联系相关资产；需逐环验证，不能只凭原油变化推断消费者价格、利率决定或资产方向。\n接下来验证：分开保留11月11日发布日期、5月21日与8月19日假设截止，以及图表截至10月28日等历史观察。核对柴油与汽油价差、汇率、分销税费及HICP分项；本期未采集行情反应或跨资产样本。\n失效条件：若价差、汇率、税费和终端价格的同口径后续证据不支持传导，或数据与模型假设修订，则暂停外推。两组运行含新数据和其他假设变化，不是单独改变炼油价差的因果实验。\n一手来源：https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_05~d82730508f.en.html\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "7cbe1c7017390df13d899b1b5b2dd9412ffb97d097aba0966136de0d30686a69",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_05~d82730508f.en.html"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若原油和成品油价差出现不同路径，后续观察什么，哪些新数据或模型修订会使传导判断失效？",
+          "focusEventIds": [
+            "ecb-refining-margins-energy-inflation-model-2026-11-11"
+          ],
+          "prompt": "研究任务：若原油和成品油价差出现不同路径，后续观察什么，哪些新数据或模型修订会使传导判断失效？\n证据快照：2026-11-12；asOf=2026-11-11T21:59:37.869Z；snapshotId=market-2026-11-12-a60d37250ba95a14\n\n材料 1｜ECB研究拆解炼油价差：原油假设下调不必带来能源通胀下调\n已确认事实：ECB于11月11日发布能源通胀研究，比较以5月21日和8月19日为截止的两组STIP模型数据与假设。文中后组原油假设较低，能源通胀预测却较高，作者主要归因于炼油成本和价差。这里的价差是成品油价减区域原油基准，包含保险、运输、劳动成本和加成，不是炼油净利润。\n关注机制：研究推断：燃料价格可能经家庭支出与企业成本影响通胀分析，再联系相关资产；需逐环验证，不能只凭原油变化推断消费者价格、利率决定或资产方向。\n接下来验证：分开保留11月11日发布日期、5月21日与8月19日假设截止，以及图表截至10月28日等历史观察。核对柴油与汽油价差、汇率、分销税费及HICP分项；本期未采集行情反应或跨资产样本。\n失效条件：若价差、汇率、税费和终端价格的同口径后续证据不支持传导，或数据与模型假设修订，则暂停外推。两组运行含新数据和其他假设变化，不是单独改变炼油价差的因果实验。\n一手来源：https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_05~d82730508f.en.html\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "1a74e1ac27b47cfcc424227b68eede4fe3cac112da4e61732b31bb50072b3773",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_05~d82730508f.en.html"
+          ]
+        }
+      ]
+    }
+  },
+  {
     "date": "2026-11-11",
     "slug": "2026-11-11",
     "title": "交易研究雷达 · 2026-11-11",
