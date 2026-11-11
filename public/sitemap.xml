@@ -190,6 +190,9 @@
     <loc>https://xiuqiu-site.vercel.app/articles/qiu-market-virtual-funds-recovery</loc>
   </url>
   <url>
+    <loc>https://xiuqiu-site.vercel.app/radar/2026-11-12</loc>
+  </url>
+  <url>
     <loc>https://xiuqiu-site.vercel.app/radar/2026-11-11</loc>
   </url>
   <url>
@@ -421,7 +424,7 @@
     <loc>https://xiuqiu-site.vercel.app/topics/market_macro</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/agent</loc>
+    <loc>https://xiuqiu-site.vercel.app/topics/onchain_infrastructure</loc>
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/topics/infrastructure</loc>
@@ -430,16 +433,16 @@
     <loc>https://xiuqiu-site.vercel.app/topics/wallet_cex</loc>
   </url>
   <url>
+    <loc>https://xiuqiu-site.vercel.app/topics/safety</loc>
+  </url>
+  <url>
+    <loc>https://xiuqiu-site.vercel.app/topics/agent</loc>
+  </url>
+  <url>
     <loc>https://xiuqiu-site.vercel.app/topics/l2</loc>
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/topics/market_regulation</loc>
-  </url>
-  <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/onchain_infrastructure</loc>
-  </url>
-  <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/safety</loc>
   </url>
   <url>
     <loc>https://xiuqiu-site.vercel.app/topics/protocol</loc>
