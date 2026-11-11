@@ -10,6 +10,7 @@ import { intelTopics } from '../src/data/generatedIntelFeed.ts'
 import { intelTopicLabel } from '../src/data/intelPresentation.ts'
 import { researchEntryRoutes } from '../src/data/sharedResearchPresentation.ts'
 import { homeSeo } from '../src/data/homePresentation.ts'
+import { profileSeo } from '../src/data/profilePresentation.ts'
 import { deliveryRecords } from '../src/data/generatedDeliveries.ts'
 import { nowSnapshot } from '../src/data/generatedNow.ts'
 import { allMarketRadars } from '../src/data/generatedMarketRadarAll.ts'
@@ -113,6 +114,26 @@ writePage(
     title: homeSeo.title,
     description: homeSeo.description,
     path: '/about',
+  }),
+)
+
+writePage(
+  '/profile',
+  replaceMeta(baseHtml, {
+    ...profileSeo,
+    path: '/profile',
+    structuredData: {
+      '@context': 'https://schema.org',
+      '@type': 'ProfilePage',
+      name: profileSeo.title,
+      url: `${SITE_URL}/profile`,
+      mainEntity: {
+        '@type': 'Person',
+        name: 'xiuqiu',
+        url: `${SITE_URL}/profile`,
+        sameAs: ['https://github.com/qianqiu0404'],
+      },
+    },
   }),
 )
 

@@ -25,6 +25,12 @@ const router = createRouter({
       meta: { visual: 'narrative', navGroup: 'about' },
     },
     {
+      path: '/profile',
+      name: 'profile',
+      component: () => import('../features/about/pages/ProfilePage.vue'),
+      meta: { visual: 'editorial', navGroup: 'profile' },
+    },
+    {
       path: '/topics/:topic',
       name: 'topic',
       component: () => import('../features/intel/pages/IntelTopicPage.vue'),
