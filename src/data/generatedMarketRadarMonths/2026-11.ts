@@ -3,6 +3,157 @@
 import type { MarketRadarDaily } from '../generatedMarketRadars.ts'
 export const monthlyMarketRadars: MarketRadarDaily[] = [
   {
+    "date": "2026-11-13",
+    "slug": "2026-11-13",
+    "title": "交易研究雷达 · 2026-11-13",
+    "summary": "ECB新研究发现，欧洲企业的具体AI披露与历史股票回报及债券利差存在关联。本期区分披露指标、实际采用与因果效应，不把历史回归视为当日行情或未来收益。",
+    "snapshotId": "market-2026-11-13-d89c9c1a16505ea2",
+    "asOf": "2026-11-12T21:41:47.264Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-12T21:41:47.264382+00:00",
+    "events": [
+      {
+        "id": "ecb-ai-disclosure-financing-association-2026-11-12",
+        "priority": "P1",
+        "status": "released",
+        "category": "equity",
+        "title": "ECB研究AI披露与融资定价：历史相关性须与实际采用分开",
+        "fact": "ECB于11月12日发布研究，以STOXX Europe 600企业财报电话会的具体AI披露构建季度暴露指标。作者报告，历史样本中AI暴露与较高股票回报、较低公司债期权调整利差及较高十年以上发债占比相关；这不是核验后的AI采用率，也不是11月12日的市场反应。",
+        "whyWatch": "研究推断：投资者对AI现金流与资本开支的预期，可能经估值和信用风险联系企业融资；但无形资产抵押能力有限，成本也可能上升，需逐环验证，不能仅凭AI标签判断融资或资产方向。",
+        "assets": [
+          "欧洲企业股票",
+          "欧元公司债"
+        ],
+        "watchFor": "保留11月12日发布日与截至2026年二季度的主要样本，Chart A指数另截至9月15日。核对具体披露、现金流兑现、行业季度因素、信用与期限构成；期权调整利差不能直接当成全部借款成本。本期没有发布后的行情样本。",
+        "invalidation": "若披露未转为现金流，或样本选择、期限和信用构成解释关联，则暂停外推。官方脚注另列美国大型云服务商在欧洲发债利差较高的相关研究；不能把欧洲样本结论普推至所有AI企业或当作因果效应。",
+        "sourceName": "ECB — Artificial intelligence and European firms: the cost of market-based financing",
+        "sourceUrl": "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_06~a36e367caf.en.html",
+        "sourcePublishedAt": "2026-11-12"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_06~a36e367caf.en.html"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "本期核对官方研究的披露指标、历史样本与回归边界，未建立发布后股债及跨资产反应的同窗口样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "财报披露、历史季度关系和三日市场窗口不同；不把原文回归系数转换为未来收益或概率。",
+      "nextValidation": "固定来源版本及样本期，独立核对具体披露、现金流、信用和期限构成；样本不足时仅记录信号质量。",
+      "invalidation": "官方修订、分类口径或样本构成改变时重估；未取得独立市场证据前保留未知。",
+      "sourceUrls": [
+        "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_06~a36e367caf.en.html"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "具体AI披露如何经现金流预期、资本开支与信用风险联系股债融资，各环需要什么独立证据？",
+        "focusEventIds": [
+          "ecb-ai-disclosure-financing-association-2026-11-12"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些样本选择、行业季度、信用及期限证据，能推翻把AI披露与融资定价关联解释为采用效果的说法？",
+        "focusEventIds": [
+          "ecb-ai-disclosure-financing-association-2026-11-12"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若AI现金流兑现与资本开支压力出现不同路径，后续观察什么，哪些反例会使历史关联的外推失效？",
+        "focusEventIds": [
+          "ecb-ai-disclosure-financing-association-2026-11-12"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-13",
+      "snapshotId": "market-2026-11-13-d89c9c1a16505ea2",
+      "asOf": "2026-11-12T21:41:47.264Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-13",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "具体AI披露如何经现金流预期、资本开支与信用风险联系股债融资，各环需要什么独立证据？",
+          "focusEventIds": [
+            "ecb-ai-disclosure-financing-association-2026-11-12"
+          ],
+          "prompt": "研究任务：具体AI披露如何经现金流预期、资本开支与信用风险联系股债融资，各环需要什么独立证据？\n证据快照：2026-11-13；asOf=2026-11-12T21:41:47.264Z；snapshotId=market-2026-11-13-d89c9c1a16505ea2\n\n材料 1｜ECB研究AI披露与融资定价：历史相关性须与实际采用分开\n已确认事实：ECB于11月12日发布研究，以STOXX Europe 600企业财报电话会的具体AI披露构建季度暴露指标。作者报告，历史样本中AI暴露与较高股票回报、较低公司债期权调整利差及较高十年以上发债占比相关；这不是核验后的AI采用率，也不是11月12日的市场反应。\n关注机制：研究推断：投资者对AI现金流与资本开支的预期，可能经估值和信用风险联系企业融资；但无形资产抵押能力有限，成本也可能上升，需逐环验证，不能仅凭AI标签判断融资或资产方向。\n接下来验证：保留11月12日发布日与截至2026年二季度的主要样本，Chart A指数另截至9月15日。核对具体披露、现金流兑现、行业季度因素、信用与期限构成；期权调整利差不能直接当成全部借款成本。本期没有发布后的行情样本。\n失效条件：若披露未转为现金流，或样本选择、期限和信用构成解释关联，则暂停外推。官方脚注另列美国大型云服务商在欧洲发债利差较高的相关研究；不能把欧洲样本结论普推至所有AI企业或当作因果效应。\n一手来源：https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_06~a36e367caf.en.html\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "c8b97457708b6a7ad1ed591bc70abc8f5ec934dd5697ba9aadd23d6e3e93d5a4",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_06~a36e367caf.en.html"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些样本选择、行业季度、信用及期限证据，能推翻把AI披露与融资定价关联解释为采用效果的说法？",
+          "focusEventIds": [
+            "ecb-ai-disclosure-financing-association-2026-11-12"
+          ],
+          "prompt": "研究任务：哪些样本选择、行业季度、信用及期限证据，能推翻把AI披露与融资定价关联解释为采用效果的说法？\n证据快照：2026-11-13；asOf=2026-11-12T21:41:47.264Z；snapshotId=market-2026-11-13-d89c9c1a16505ea2\n\n材料 1｜ECB研究AI披露与融资定价：历史相关性须与实际采用分开\n已确认事实：ECB于11月12日发布研究，以STOXX Europe 600企业财报电话会的具体AI披露构建季度暴露指标。作者报告，历史样本中AI暴露与较高股票回报、较低公司债期权调整利差及较高十年以上发债占比相关；这不是核验后的AI采用率，也不是11月12日的市场反应。\n关注机制：研究推断：投资者对AI现金流与资本开支的预期，可能经估值和信用风险联系企业融资；但无形资产抵押能力有限，成本也可能上升，需逐环验证，不能仅凭AI标签判断融资或资产方向。\n接下来验证：保留11月12日发布日与截至2026年二季度的主要样本，Chart A指数另截至9月15日。核对具体披露、现金流兑现、行业季度因素、信用与期限构成；期权调整利差不能直接当成全部借款成本。本期没有发布后的行情样本。\n失效条件：若披露未转为现金流，或样本选择、期限和信用构成解释关联，则暂停外推。官方脚注另列美国大型云服务商在欧洲发债利差较高的相关研究；不能把欧洲样本结论普推至所有AI企业或当作因果效应。\n一手来源：https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_06~a36e367caf.en.html\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "0ba9e21d5079356448b7b68121e0495877216a2e85fe161041ed48f374ec08d9",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_06~a36e367caf.en.html"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若AI现金流兑现与资本开支压力出现不同路径，后续观察什么，哪些反例会使历史关联的外推失效？",
+          "focusEventIds": [
+            "ecb-ai-disclosure-financing-association-2026-11-12"
+          ],
+          "prompt": "研究任务：若AI现金流兑现与资本开支压力出现不同路径，后续观察什么，哪些反例会使历史关联的外推失效？\n证据快照：2026-11-13；asOf=2026-11-12T21:41:47.264Z；snapshotId=market-2026-11-13-d89c9c1a16505ea2\n\n材料 1｜ECB研究AI披露与融资定价：历史相关性须与实际采用分开\n已确认事实：ECB于11月12日发布研究，以STOXX Europe 600企业财报电话会的具体AI披露构建季度暴露指标。作者报告，历史样本中AI暴露与较高股票回报、较低公司债期权调整利差及较高十年以上发债占比相关；这不是核验后的AI采用率，也不是11月12日的市场反应。\n关注机制：研究推断：投资者对AI现金流与资本开支的预期，可能经估值和信用风险联系企业融资；但无形资产抵押能力有限，成本也可能上升，需逐环验证，不能仅凭AI标签判断融资或资产方向。\n接下来验证：保留11月12日发布日与截至2026年二季度的主要样本，Chart A指数另截至9月15日。核对具体披露、现金流兑现、行业季度因素、信用与期限构成；期权调整利差不能直接当成全部借款成本。本期没有发布后的行情样本。\n失效条件：若披露未转为现金流，或样本选择、期限和信用构成解释关联，则暂停外推。官方脚注另列美国大型云服务商在欧洲发债利差较高的相关研究；不能把欧洲样本结论普推至所有AI企业或当作因果效应。\n一手来源：https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_06~a36e367caf.en.html\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "2552abfb691742caee834d9783509bc285622f700409310a416aa9ad67322813",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_06~a36e367caf.en.html"
+          ]
+        }
+      ]
+    }
+  },
+  {
     "date": "2026-11-12",
     "slug": "2026-11-12",
     "title": "交易研究雷达 · 2026-11-12",
