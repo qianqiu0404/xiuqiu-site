@@ -6,6 +6,58 @@
   "language": "zh-CN",
   "items": [
     {
+      "id": "xiuqiu-radar:ai-deepagents-fifo-download-nonblocking",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-13#ai-deepagents-fifo-download-nonblocking",
+      "title": "DeepAgents 0.7.36：下载FIFO时，不再等待一个尚未出现的写入者",
+      "summary": "Agent拿到的路径可能指向管道或设备，名字像文件并不保证读取会立即结束；同时，这里的file_not_found也可能表示类型被拒绝，调用方不能仅据错误名断定路径不存在。",
+      "content_text": "Agent拿到的路径可能指向管道或设备，名字像文件并不保证读取会立即结束；同时，这里的file_not_found也可能表示类型被拒绝，调用方不能仅据错误名断定路径不存在。",
+      "date_published": "2026-11-13T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "safety"
+      ],
+      "external_url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents%3D%3D0.7.36"
+    },
+    {
+      "id": "xiuqiu-radar:ai-langgraph-exact-subgraph-namespace",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-13#ai-langgraph-exact-subgraph-namespace",
+      "title": "LangGraph 1.2.21：research_review与research里的review，要按完整路径区分",
+      "summary": "多Agent图常用近似的任务名。名称前缀相同不等于同一路径，查看或编辑状态之前应先核对完整命名空间，避免把另一个节点的状态当作目标。",
+      "content_text": "多Agent图常用近似的任务名。名称前缀相同不等于同一路径，查看或编辑状态之前应先核对完整命名空间，避免把另一个节点的状态当作目标。",
+      "date_published": "2026-11-13T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "agent"
+      ],
+      "external_url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.21"
+    },
+    {
+      "id": "xiuqiu-radar:web3-viem-retired-root-verification",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-13#web3-viem-retired-root-verification",
+      "title": "viem 2.57.19：root key已退休，恢复出账户地址仍不能放行",
+      "summary": "密码学上能证明某把旧密钥签过消息，不等于它在所选链和区块仍代表该账户。钱包登录或授权服务要把验签时点与账户当前权限一起解释。",
+      "content_text": "密码学上能证明某把旧密钥签过消息，不等于它在所选链和区块仍代表该账户。钱包登录或授权服务要把验签时点与账户当前权限一起解释。",
+      "date_published": "2026-11-13T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "security"
+      ],
+      "external_url": "https://github.com/wevm/viem/releases/tag/viem%402.57.19"
+    },
+    {
+      "id": "xiuqiu-radar:web3-metamask-mfa-signer-nonatomic-quote",
+      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-13#web3-metamask-mfa-signer-nonatomic-quote",
+      "title": "MetaMask支付31.2：报价是否原子化，要看实际签委托的MFA账户",
+      "summary": "报价不断刷新时，付款人和签委托的人可能不同。若按付款人的能力决定签名流程，金额页面就可能重复弹出另一账户的MFA确认；能力判断须跟着实际签名主体。",
+      "content_text": "报价不断刷新时，付款人和签委托的人可能不同。若按付款人的能力决定签名流程，金额页面就可能重复弹出另一账户的MFA确认；能力判断须跟着实际签名主体。",
+      "date_published": "2026-11-13T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "wallet_cex"
+      ],
+      "external_url": "https://github.com/MetaMask/core/releases/tag/v1419.0.0"
+    },
+    {
       "id": "xiuqiu-radar:ai-sdk-incremental-array-stream-parser",
       "url": "https://xiuqiu-site.vercel.app/radar/2026-11-12#ai-sdk-incremental-array-stream-parser",
       "title": "AI SDK 7.0.170：流数组按新增元素解析，最终结果仍单独校验",
@@ -732,58 +784,6 @@
         "onchain_infrastructure"
       ],
       "external_url": "https://github.com/ava-labs/avalanchego/releases/tag/v1.15.2"
-    },
-    {
-      "id": "xiuqiu-radar:ai-akv-cache-operation-history",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-26#ai-akv-cache-operation-history",
-      "title": "AKV：相同文本前缀，未必对应相同缓存状态",
-      "summary": "长任务的缓存优化需要同时核对任务质量、延迟和状态正确性；只看提示文本或缓存命中率，可能漏掉操作顺序造成的差异。",
-      "content_text": "长任务的缓存优化需要同时核对任务质量、延迟和状态正确性；只看提示文本或缓存命中率，可能漏掉操作顺序造成的差异。",
-      "date_published": "2026-10-26T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "model_inference"
-      ],
-      "external_url": "https://arxiv.org/abs/2610.28577"
-    },
-    {
-      "id": "xiuqiu-radar:ai-aratest-claim-contract",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-26#ai-aratest-claim-contract",
-      "title": "ARATest：先固定声明的范围，再解释验证结果",
-      "summary": "Agent 生成结论后，需要让后续检查仍回答同一个问题。保留声明、证据和可重放的反例，有助于定位错误来自解释、数据绑定还是实验。",
-      "content_text": "Agent 生成结论后，需要让后续检查仍回答同一个问题。保留声明、证据和可重放的反例，有助于定位错误来自解释、数据绑定还是实验。",
-      "date_published": "2026-10-26T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "evaluation"
-      ],
-      "external_url": "https://arxiv.org/abs/2610.30495"
-    },
-    {
-      "id": "xiuqiu-radar:web3-bitcoin-easily-discoverable-policy",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-26#web3-bitcoin-easily-discoverable-policy",
-      "title": "Bitcoin Core：易发现漏洞走同步修复与披露分支",
-      "summary": "维护者认为易被重新发现的问题若长期等待披露，会延迟用户取得修复版。工程上应按实际公告和版本记录核对可用修复，不能只等待下一次大版本。",
-      "content_text": "维护者认为易被重新发现的问题若长期等待披露，会延迟用户取得修复版。工程上应按实际公告和版本记录核对可用修复，不能只等待下一次大版本。",
-      "date_published": "2026-10-26T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "security"
-      ],
-      "external_url": "https://mirror.b10c.me/lists/bitcoindev/1ehBdwhbU-1cUjU5SjRxn75XNUBvIfNbkfqPCJRFPlOfsBu5gHWotmNRNxcMirTl1baT2H-zBfJMeWM6rl-XJG8zV6gHf8vQ9b_TRB9vnIk=@antoinep.com/T/"
-    },
-    {
-      "id": "xiuqiu-radar:web3-sui-checkpoint-consistent-read",
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-10-26#web3-sui-checkpoint-consistent-read",
-      "title": "Sui v1.82.3：给读取指定 checkpoint 条件，并核对 API 迁移",
-      "summary": "应用可以把读副本尚未追上与业务无数据分开处理；接入升级还需核对自身 SDK、服务端与错误处理是否使用兼容接口。",
-      "content_text": "应用可以把读副本尚未追上与业务无数据分开处理；接入升级还需核对自身 SDK、服务端与错误处理是否使用兼容接口。",
-      "date_published": "2026-10-26T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "onchain_infrastructure"
-      ],
-      "external_url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.82.3"
     }
   ]
 }
