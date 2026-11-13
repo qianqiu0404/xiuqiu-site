@@ -69,6 +69,9 @@ export async function verifyPublishedMarketResearch(entry, publication, {
   if (!expected) return { status: 'legacy', date: entry.date }
 
   const pageUrl = new URL(`/market-radar/${entry.date}`, origin)
+  // Published packs keep their historical URLs and bytes. The live page's
+  // canonical URL follows the current production origin after a domain move.
+  const canonicalUrl = pageUrl.href
   const packUrl = new URL(`/data/market-radar-packs/${entry.date}.json`, origin)
   if (/^[0-9a-f]{40}$/.test(releaseSha)) {
     pageUrl.searchParams.set('release_sha', releaseSha)
@@ -94,7 +97,7 @@ export async function verifyPublishedMarketResearch(entry, publication, {
 
   const metadata = pageMetadata(pageHtml)
   assert.match(metadata.title, new RegExp(entry.date.replaceAll('-', '\\-')), 'production page title has the wrong date')
-  assert.equal(metadata.canonical, expected.pageUrl, 'production page canonical differs from the research pack')
+  assert.equal(metadata.canonical, canonicalUrl, 'production page canonical differs from the current production URL')
   assert.equal(metadata.snapshotId, expected.snapshotId, 'production page snapshot differs from the research pack')
   return {
     status: 'verified',
