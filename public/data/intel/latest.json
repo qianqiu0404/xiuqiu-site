@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "latestDate": "2026-11-12",
-  "homePageUrl": "https://xiuqiu-site.vercel.app/",
+  "homePageUrl": "https://xoqiu.cn/",
   "windowDays": 7,
   "items": [
     {
@@ -21,7 +21,7 @@
       "flags": {
         "deepDive": true
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-12#ai-sdk-incremental-array-stream-parser"
+      "url": "https://xoqiu.cn/radar/2026-11-12#ai-sdk-incremental-array-stream-parser"
     },
     {
       "id": "learning:ai-archestra-denied-history-refused-output-waiver",
@@ -37,7 +37,7 @@
         "tier": "tier1",
         "url": "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.4.27"
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-12#ai-archestra-denied-history-refused-output-waiver"
+      "url": "https://xoqiu.cn/radar/2026-11-12#ai-archestra-denied-history-refused-output-waiver"
     },
     {
       "id": "learning:web3-reth-p2p-response-before-item-decode",
@@ -53,7 +53,7 @@
         "tier": "tier1",
         "url": "https://github.com/paradigmxyz/reth/releases/tag/v2.11.0"
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-12#web3-reth-p2p-response-before-item-decode"
+      "url": "https://xoqiu.cn/radar/2026-11-12#web3-reth-p2p-response-before-item-decode"
     },
     {
       "id": "learning:web3-metamask-vault-valuations-found-cache",
@@ -69,7 +69,7 @@
         "tier": "tier1",
         "url": "https://github.com/MetaMask/core/releases/tag/v1415.0.0"
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-12#web3-metamask-vault-valuations-found-cache"
+      "url": "https://xoqiu.cn/radar/2026-11-12#web3-metamask-vault-valuations-found-cache"
     },
     {
       "id": "market:2026-11-12:ecb-refining-margins-energy-inflation-model-2026-11-11",
@@ -87,7 +87,7 @@
       "flags": {
         "priority": "P1"
       },
-      "url": "https://xiuqiu-site.vercel.app/market-radar/2026-11-12#ecb-refining-margins-energy-inflation-model-2026-11-11"
+      "url": "https://xoqiu.cn/market-radar/2026-11-12#ecb-refining-margins-energy-inflation-model-2026-11-11"
     },
     {
       "id": "learning:ai-sdk-queue-approval-options-pending-decision",
@@ -106,7 +106,7 @@
       "flags": {
         "deepDive": true
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-11#ai-sdk-queue-approval-options-pending-decision"
+      "url": "https://xoqiu.cn/radar/2026-11-11#ai-sdk-queue-approval-options-pending-decision"
     },
     {
       "id": "learning:ai-deepagents-git-attribution-probe-backoff",
@@ -122,7 +122,7 @@
         "tier": "tier1",
         "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.7"
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-11#ai-deepagents-git-attribution-probe-backoff"
+      "url": "https://xoqiu.cn/radar/2026-11-11#ai-deepagents-git-attribution-probe-backoff"
     },
     {
       "id": "learning:web3-op-reth-out-of-scope-health-quorum",
@@ -138,7 +138,7 @@
         "tier": "tier1",
         "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-reth/v2.8.2"
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-11#web3-op-reth-out-of-scope-health-quorum"
+      "url": "https://xoqiu.cn/radar/2026-11-11#web3-op-reth-out-of-scope-health-quorum"
     },
     {
       "id": "learning:web3-metamask-chart-right-scale-detach",
@@ -154,7 +154,7 @@
         "tier": "tier1",
         "url": "https://github.com/MetaMask/core/releases/tag/v1413.0.0"
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-11#web3-metamask-chart-right-scale-detach"
+      "url": "https://xoqiu.cn/radar/2026-11-11#web3-metamask-chart-right-scale-detach"
     },
     {
       "id": "market:2026-11-11:nyfed-q3-household-debt-reporting-stock-flow-2026-11-10",
@@ -172,7 +172,7 @@
       "flags": {
         "priority": "P1"
       },
-      "url": "https://xiuqiu-site.vercel.app/market-radar/2026-11-11#nyfed-q3-household-debt-reporting-stock-flow-2026-11-10"
+      "url": "https://xoqiu.cn/market-radar/2026-11-11#nyfed-q3-household-debt-reporting-stock-flow-2026-11-10"
     },
     {
       "id": "market:2026-11-10:fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
@@ -190,7 +190,7 @@
       "flags": {
         "priority": "P1"
       },
-      "url": "https://xiuqiu-site.vercel.app/market-radar/2026-11-10#fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
+      "url": "https://xoqiu.cn/market-radar/2026-11-10#fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
     },
     {
       "id": "learning:ai-sdk-telemetry-url-boundary",
@@ -209,7 +209,7 @@
       "flags": {
         "deepDive": true
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-09#ai-sdk-telemetry-url-boundary"
+      "url": "https://xoqiu.cn/radar/2026-11-09#ai-sdk-telemetry-url-boundary"
     },
     {
       "id": "learning:ai-deepagents-selected-model-budget",
@@ -225,7 +225,7 @@
         "tier": "tier1",
         "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5"
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-09#ai-deepagents-selected-model-budget"
+      "url": "https://xoqiu.cn/radar/2026-11-09#ai-deepagents-selected-model-budget"
     },
     {
       "id": "learning:web3-viem-http-batch-factory-identity",
@@ -241,7 +241,7 @@
         "tier": "tier1",
         "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.17"
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-09#web3-viem-http-batch-factory-identity"
+      "url": "https://xoqiu.cn/radar/2026-11-09#web3-viem-http-batch-factory-identity"
     },
     {
       "id": "learning:web3-sui-object-funds-execution-abort",
@@ -257,7 +257,7 @@
         "tier": "tier1",
         "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1"
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-09#web3-sui-object-funds-execution-abort"
+      "url": "https://xoqiu.cn/radar/2026-11-09#web3-sui-object-funds-execution-abort"
     },
     {
       "id": "market:2026-11-09:fincen-mexc-funds-transfer-order-2026-11-06",
@@ -275,7 +275,7 @@
       "flags": {
         "priority": "P1"
       },
-      "url": "https://xiuqiu-site.vercel.app/market-radar/2026-11-09#fincen-mexc-funds-transfer-order-2026-11-06"
+      "url": "https://xoqiu.cn/market-radar/2026-11-09#fincen-mexc-funds-transfer-order-2026-11-06"
     },
     {
       "id": "learning:ai-quickjs-finalizing-destructor",
@@ -291,7 +291,7 @@
         "tier": "tier1",
         "url": "https://github.com/langchain-ai/deepagents/releases/tag/langchain-quickjs%3D%3D0.3.12"
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-08#ai-quickjs-finalizing-destructor"
+      "url": "https://xoqiu.cn/radar/2026-11-08#ai-quickjs-finalizing-destructor"
     },
     {
       "id": "learning:ai-mastra-final-scope-set",
@@ -310,7 +310,7 @@
       "flags": {
         "deepDive": true
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-08#ai-mastra-final-scope-set"
+      "url": "https://xoqiu.cn/radar/2026-11-08#ai-mastra-final-scope-set"
     },
     {
       "id": "learning:web3-viem-method-refusal-retry",
@@ -326,7 +326,7 @@
         "tier": "tier1",
         "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.16"
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-08#web3-viem-method-refusal-retry"
+      "url": "https://xoqiu.cn/radar/2026-11-08#web3-viem-method-refusal-retry"
     },
     {
       "id": "learning:web3-op-supernode-retired-max-safe-lag",
@@ -342,7 +342,7 @@
         "tier": "tier1",
         "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-supernode/v1.1.1"
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-08#web3-op-supernode-retired-max-safe-lag"
+      "url": "https://xoqiu.cn/radar/2026-11-08#web3-op-supernode-retired-max-safe-lag"
     },
     {
       "id": "market:2026-11-08:boc-inflation-framework-renewal-2026-11-05",
@@ -360,7 +360,7 @@
       "flags": {
         "priority": "P1"
       },
-      "url": "https://xiuqiu-site.vercel.app/market-radar/2026-11-08#boc-inflation-framework-renewal-2026-11-05"
+      "url": "https://xoqiu.cn/market-radar/2026-11-08#boc-inflation-framework-renewal-2026-11-05"
     },
     {
       "id": "learning:ai-langchain-stream-chunk-accumulation",
@@ -376,7 +376,7 @@
         "tier": "tier1",
         "url": "https://github.com/langchain-ai/langchain/releases/tag/langchain-core%3D%3D1.7.6"
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-07#ai-langchain-stream-chunk-accumulation"
+      "url": "https://xoqiu.cn/radar/2026-11-07#ai-langchain-stream-chunk-accumulation"
     },
     {
       "id": "learning:ai-archestra-command-id-cache",
@@ -395,7 +395,7 @@
       "flags": {
         "deepDive": true
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-07#ai-archestra-command-id-cache"
+      "url": "https://xoqiu.cn/radar/2026-11-07#ai-archestra-command-id-cache"
     },
     {
       "id": "learning:web3-metamask-kyc-deletion-aal2",
@@ -411,7 +411,7 @@
         "tier": "tier1",
         "url": "https://github.com/MetaMask/core/releases/tag/v1402.0.0"
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-07#web3-metamask-kyc-deletion-aal2"
+      "url": "https://xoqiu.cn/radar/2026-11-07#web3-metamask-kyc-deletion-aal2"
     },
     {
       "id": "learning:web3-agave-programdata-size-floor",
@@ -427,7 +427,7 @@
         "tier": "tier1",
         "url": "https://github.com/anza-xyz/agave/releases/tag/v4.4.1"
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-07#web3-agave-programdata-size-floor"
+      "url": "https://xoqiu.cn/radar/2026-11-07#web3-agave-programdata-size-floor"
     },
     {
       "id": "market:2026-11-07:bls-october-employment-revisions-2026-11-06",
@@ -445,7 +445,7 @@
       "flags": {
         "priority": "P1"
       },
-      "url": "https://xiuqiu-site.vercel.app/market-radar/2026-11-07#bls-october-employment-revisions-2026-11-06"
+      "url": "https://xoqiu.cn/market-radar/2026-11-07#bls-october-employment-revisions-2026-11-06"
     },
     {
       "id": "market:2026-11-07:statcan-october-lfs-employment-unemployment-2026-11-06",
@@ -463,7 +463,7 @@
       "flags": {
         "priority": "P1"
       },
-      "url": "https://xiuqiu-site.vercel.app/market-radar/2026-11-07#statcan-october-lfs-employment-unemployment-2026-11-06"
+      "url": "https://xoqiu.cn/market-radar/2026-11-07#statcan-october-lfs-employment-unemployment-2026-11-06"
     },
     {
       "id": "learning:ai-langgraph-strict-interrupt-resume",
@@ -482,7 +482,7 @@
       "flags": {
         "deepDive": true
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-06#ai-langgraph-strict-interrupt-resume"
+      "url": "https://xoqiu.cn/radar/2026-11-06#ai-langgraph-strict-interrupt-resume"
     },
     {
       "id": "learning:ai-deepagents-message-id-summary-cutoff",
@@ -498,7 +498,7 @@
         "tier": "tier1",
         "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents%3D%3D0.7.34"
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-06#ai-deepagents-message-id-summary-cutoff"
+      "url": "https://xoqiu.cn/radar/2026-11-06#ai-deepagents-message-id-summary-cutoff"
     },
     {
       "id": "learning:web3-reth-callbundle-shared-work-budget",
@@ -514,7 +514,7 @@
         "tier": "tier1",
         "url": "https://github.com/paradigmxyz/reth/releases/tag/v2.10.0"
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-06#web3-reth-callbundle-shared-work-budget"
+      "url": "https://xoqiu.cn/radar/2026-11-06#web3-reth-callbundle-shared-work-budget"
     },
     {
       "id": "learning:web3-foundry-snapshot-invariant-fuzzing",
@@ -530,7 +530,7 @@
         "tier": "tier1",
         "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-fb90b1c0940ebe8d8e6db70edf01941f0ab860dd"
       },
-      "url": "https://xiuqiu-site.vercel.app/radar/2026-11-06#web3-foundry-snapshot-invariant-fuzzing"
+      "url": "https://xoqiu.cn/radar/2026-11-06#web3-foundry-snapshot-invariant-fuzzing"
     },
     {
       "id": "market:2026-11-06:boe-bank-rate-increase-2026-11-05",
@@ -548,7 +548,7 @@
       "flags": {
         "priority": "P1"
       },
-      "url": "https://xiuqiu-site.vercel.app/market-radar/2026-11-06#boe-bank-rate-increase-2026-11-05"
+      "url": "https://xoqiu.cn/market-radar/2026-11-06#boe-bank-rate-increase-2026-11-05"
     }
   ]
 }

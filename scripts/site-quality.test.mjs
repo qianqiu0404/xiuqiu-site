@@ -17,6 +17,8 @@ import { allMarketRadars } from '../src/data/generatedMarketRadarAll.ts'
 import { getRadarCollectionSeo } from '../src/data/snapshotFreshness.ts'
 import { parseMarkdownFrontmatter } from './frontmatter.mjs'
 import { SITE_URL as SITE_ORIGIN } from '../shared/site.ts'
+import { resumeSeo } from '../src/features/resume/presentation.ts'
+import { intelHomeSeo } from '../src/data/intelPresentation.ts'
 
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)))
 const DIST_ROOT = join(ROOT, 'dist')
@@ -153,10 +155,8 @@ function expectedMetadataByRoute() {
   const writingDescription =
     `${articleSummaries.length} 篇关于交易所钱包、多链模型、签名服务、Go 后端与 AI 工程工作流的学习笔记。`
   const metadata = new Map([
-    ['/', {
-      title: 'xiuqiu｜AI 与 Web3 工程情报流',
-      description: '每天 2 条 AI、2 条 Web3 工程简报和市场事件，按主题筛选、搜索与订阅；每条都回到一手来源。',
-    }],
+    ['/', resumeSeo],
+    ['/intel', intelHomeSeo],
     ['/about', {
       title: 'xiuqiu｜Qiu Market、Wallet Infrastructure 与 AI Engineering',
       description: '维护 Qiu Market，并用 Wallet Infrastructure 学习、AI-native Engineering、自动化测试与公开证据说明 Web3 工程能力。',

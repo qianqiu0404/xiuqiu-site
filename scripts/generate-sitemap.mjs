@@ -13,6 +13,7 @@ const articleSlugs = articleSummaries.map(article => article.slug)
 
 const routes = [
   '/',
+  '/intel',
   '/about',
   '/profile',
   '/engineering',

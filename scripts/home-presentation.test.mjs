@@ -15,7 +15,7 @@ import {
   homeSeo,
   homeServiceFlow,
 } from '../src/data/homePresentation.ts'
-import { intelHomeSeo } from '../src/data/intelPresentation.ts'
+import { resumeSeo } from '../src/features/resume/presentation.ts'
 import { evidenceRecords } from '../src/data/generatedEvidence.ts'
 import { evidenceLedgerRecords, evidenceLedgerStats } from '../src/data/evidenceLedger.ts'
 import { projects } from '../src/data/generatedProjects.ts'
@@ -286,7 +286,7 @@ test('primary navigation keeps its structural contract', () => {
   assertUnique(primaryLinks.map(link => link.to), 'primary navigation destinations')
   assertUnique(primaryLinks.map(link => link.label), 'primary navigation labels')
   assert.deepEqual(primaryLinks, [
-    { to: '/', label: '情报流' },
+    { to: '/intel', label: '情报流' },
     { to: '/radar', label: '学习雷达' },
     { to: '/market-radar', label: '市场雷达' },
     { to: '/projects/s78-market-services', label: 'Qiu Market' },
@@ -295,7 +295,7 @@ test('primary navigation keeps its structural contract', () => {
 
   const secondaryLinks = linksInClass('nav-secondary-links')
   assert.deepEqual(secondaryLinks, [
-    { to: '/profile', label: '个人主页' },
+    { to: '/', label: '个人主页' },
     { to: '/engineering/evidence', label: '证据' },
     { to: '/projects', label: '项目' },
     { to: '/articles', label: '笔记' },
@@ -305,7 +305,7 @@ test('primary navigation keeps its structural contract', () => {
     [...primaryLinks, ...secondaryLinks].map(link => link.to),
     'all navigation destinations',
   )
-  assert.deepEqual(primaryLinks.map(link => link.to), ['/', '/radar', '/market-radar', '/projects/s78-market-services', '/ai'])
+  assert.deepEqual(primaryLinks.map(link => link.to), ['/intel', '/radar', '/market-radar', '/projects/s78-market-services', '/ai'])
 
   assert.match(appSource, /currentRoute\.name === 'learning'\) return 'learn-radar'/)
   assert.match(appSource, /aria-current="location"/)
@@ -315,7 +315,6 @@ test('primary navigation keeps its structural contract', () => {
   assert.equal((appSource.match(/@keydown\.space\.prevent="activateLinkOnSpace"/g) || []).length, primaryLinks.length + secondaryLinks.length)
   assert.match(appSource, /navToggle\.value\?\.focus\(\)/)
   assert.match(appSource, /mainContent\.value\?\.focus\(\{ preventScroll: true \}\)/)
-  assert.match(appSource, /<main id="main-content" ref="mainContent" tabindex="-1">/)
 
   assert.match(globalStyleSource, /\.nav-context\s*\{/)
   assert.match(globalStyleSource, /\.nav-mobile-context\s*\{/)
@@ -454,7 +453,6 @@ test('static and runtime homepage SEO stay aligned', () => {
   const title = indexHtml.match(/<title>([^<]+)<\/title>/)?.[1]
   const description = indexHtml.match(/<meta name="description" content="([^"]+)"\s*\/>/)?.[1]
 
-  assert.equal(title, intelHomeSeo.title)
-  assert.equal(description, intelHomeSeo.description)
-  assert.match(intelHomeSource, /\.\.\.intelHomeSeo, path: '\/'/)
+  assert.equal(title, resumeSeo.title)
+  assert.equal(description, resumeSeo.description)
 })

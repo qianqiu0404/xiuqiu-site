@@ -9,6 +9,17 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
+      component: () => import('../features/resume/pages/ResumePage.vue'),
+      meta: { visual: 'resume', navGroup: 'profile' },
+      beforeEnter: to => {
+        if (['domain', 'topic', 'q', 'expanded'].some(key => key in to.query) || to.hash.startsWith('#intel-item-')) {
+          return { path: '/intel', query: to.query, hash: to.hash }
+        }
+      },
+    },
+    {
+      path: '/intel',
+      name: 'intel',
       component: () => import('../features/intel/pages/IntelHomePage.vue'),
       meta: { visual: 'narrative', navGroup: 'home' },
     },
@@ -169,12 +180,13 @@ const router = createRouter({
     scrolling = controller
     const signal = controller.signal
     if (to.hash) {
+      if (to.name === 'home' && to.hash.startsWith('#project/')) return false
       // Market Radar date snapshots load asynchronously and restore their own
       // hash after the event headings exist, including in-page hash changes.
       if (to.name === 'market-radar-detail') return false
       const id = readingHashId(to.hash)
       if (!id) return { top: 0 }
-      if (to.name === 'home' || to.name === 'topic') {
+      if (to.name === 'intel' || to.name === 'topic') {
         await waitForReadingElement(() => document.querySelector<HTMLElement>('[data-reading-ready="true"]'), signal)
       }
       const target = await waitForReadingElement(() => document.getElementById(id), signal)
@@ -184,7 +196,7 @@ const router = createRouter({
       return { el: target, top: parseFloat(getComputedStyle(target).scrollMarginTop) || 80, behavior: 'auto' }
     }
     if (savedPosition) {
-      if (to.name === 'home' || to.name === 'topic') {
+      if (to.name === 'intel' || to.name === 'topic') {
         await waitForReadingElement(() => document.querySelector<HTMLElement>('[data-reading-ready="true"]'), signal)
       }
       return signal.aborted ? false : savedPosition

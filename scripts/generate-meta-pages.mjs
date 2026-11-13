@@ -10,6 +10,8 @@ import { intelTopics } from '../src/data/generatedIntelFeed.ts'
 import { intelTopicLabel } from '../src/data/intelPresentation.ts'
 import { researchEntryRoutes } from '../src/data/sharedResearchPresentation.ts'
 import { homeSeo } from '../src/data/homePresentation.ts'
+import { intelHomeSeo } from '../src/data/intelPresentation.ts'
+import { resumeSeo } from '../src/features/resume/presentation.ts'
 import { profileSeo } from '../src/data/profilePresentation.ts'
 import { deliveryRecords } from '../src/data/generatedDeliveries.ts'
 import { nowSnapshot } from '../src/data/generatedNow.ts'
@@ -107,6 +109,16 @@ if (articleSummaries.length === 0) {
 }
 
 const writingDescription = `${articleSummaries.length} 篇关于交易所钱包、多链模型、签名服务、Go 后端与 AI 工程工作流的学习笔记。`
+
+writeFileSync(distIndexUrl, replaceMeta(baseHtml, {
+  ...resumeSeo, path: '/',
+  structuredData: {
+    '@context': 'https://schema.org', '@type': 'ProfilePage', name: resumeSeo.title,
+    url: `${SITE_URL}/`,
+    mainEntity: { '@type': 'Person', name: 'xiuqiu / Qiu', url: `${SITE_URL}/`, sameAs: ['https://github.com/xoqiu09', 'https://x.com/Xiuqiu2211'] },
+  },
+}))
+writePage('/intel', replaceMeta(baseHtml, { ...intelHomeSeo, path: '/intel' }))
 
 writePage(
   '/about',

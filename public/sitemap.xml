@@ -1,492 +1,495 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://xiuqiu-site.vercel.app/</loc>
+    <loc>https://xoqiu.cn/</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/about</loc>
+    <loc>https://xoqiu.cn/intel</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/profile</loc>
+    <loc>https://xoqiu.cn/about</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/engineering</loc>
+    <loc>https://xoqiu.cn/profile</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/engineering/failures</loc>
+    <loc>https://xoqiu.cn/engineering</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/engineering/evidence</loc>
+    <loc>https://xoqiu.cn/engineering/failures</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/projects</loc>
+    <loc>https://xoqiu.cn/engineering/evidence</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/ai</loc>
+    <loc>https://xoqiu.cn/projects</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/ai/social-research</loc>
+    <loc>https://xoqiu.cn/ai</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/ai/deliveries</loc>
+    <loc>https://xoqiu.cn/ai/social-research</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/now</loc>
+    <loc>https://xoqiu.cn/ai/deliveries</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar</loc>
+    <loc>https://xoqiu.cn/now</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar</loc>
+    <loc>https://xoqiu.cn/radar</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/learning</loc>
+    <loc>https://xoqiu.cn/market-radar</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles</loc>
+    <loc>https://xoqiu.cn/learning</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/projects/exchange-wallet-system</loc>
+    <loc>https://xoqiu.cn/articles</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/projects/risk-server</loc>
+    <loc>https://xoqiu.cn/projects/exchange-wallet-system</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/projects/s78-market-services</loc>
+    <loc>https://xoqiu.cn/projects/risk-server</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/projects/stableflow</loc>
+    <loc>https://xoqiu.cn/projects/s78-market-services</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/projects/tss-mpc</loc>
+    <loc>https://xoqiu.cn/projects/stableflow</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/projects/wallet-core</loc>
+    <loc>https://xoqiu.cn/projects/tss-mpc</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/projects/wallet-reliability-lab</loc>
+    <loc>https://xoqiu.cn/projects/wallet-core</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/projects/web3-wallet-engineer-lab</loc>
+    <loc>https://xoqiu.cn/projects/wallet-reliability-lab</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/api-system-calls</loc>
+    <loc>https://xoqiu.cn/projects/web3-wallet-engineer-lab</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/http-rpc-grpc</loc>
+    <loc>https://xoqiu.cn/articles/api-system-calls</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/wallet-api-boundary</loc>
+    <loc>https://xoqiu.cn/articles/http-rpc-grpc</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/wallet-sign-signer</loc>
+    <loc>https://xoqiu.cn/articles/wallet-api-boundary</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/market-services-data-flow</loc>
+    <loc>https://xoqiu.cn/articles/wallet-sign-signer</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/wallet-address-models</loc>
+    <loc>https://xoqiu.cn/articles/market-services-data-flow</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/evm-call-proxy-patterns</loc>
+    <loc>https://xoqiu.cn/articles/wallet-address-models</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/evm-create2-assembly-lifecycle</loc>
+    <loc>https://xoqiu.cn/articles/evm-call-proxy-patterns</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/eip-erc-protocol-evolution</loc>
+    <loc>https://xoqiu.cn/articles/evm-create2-assembly-lifecycle</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/withdrawal-error-handling</loc>
+    <loc>https://xoqiu.cn/articles/eip-erc-protocol-evolution</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/mpc-wallet-sign-integration</loc>
+    <loc>https://xoqiu.cn/articles/withdrawal-error-handling</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/aws-cloudhsm-wallet-sign-integration</loc>
+    <loc>https://xoqiu.cn/articles/mpc-wallet-sign-integration</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/wallet-evolution-2026</loc>
+    <loc>https://xoqiu.cn/articles/aws-cloudhsm-wallet-sign-integration</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/thorchain-tss-attack-analysis</loc>
+    <loc>https://xoqiu.cn/articles/wallet-evolution-2026</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/chainflip-cross-chain-dex-analysis</loc>
+    <loc>https://xoqiu.cn/articles/thorchain-tss-attack-analysis</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/new-chain-integration-checklist</loc>
+    <loc>https://xoqiu.cn/articles/chainflip-cross-chain-dex-analysis</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/lubian-weak-private-key-op-return</loc>
+    <loc>https://xoqiu.cn/articles/new-chain-integration-checklist</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/kelpdao-layerzero-dvn-verification-failure</loc>
+    <loc>https://xoqiu.cn/articles/lubian-weak-private-key-op-return</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/evm-internal-transfer-deposit-indexer</loc>
+    <loc>https://xoqiu.cn/articles/kelpdao-layerzero-dvn-verification-failure</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/cex-evm-wallet-deposit-withdrawal-loop</loc>
+    <loc>https://xoqiu.cn/articles/evm-internal-transfer-deposit-indexer</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/bridge-liquidity-after-market-crash</loc>
+    <loc>https://xoqiu.cn/articles/cex-evm-wallet-deposit-withdrawal-loop</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/bitcoin-utxo-ordinals-runes-indexer</loc>
+    <loc>https://xoqiu.cn/articles/bridge-liquidity-after-market-crash</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/web3-narrative-participation-framework</loc>
+    <loc>https://xoqiu.cn/articles/bitcoin-utxo-ordinals-runes-indexer</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/rwa-tokenized-stocks-structure</loc>
+    <loc>https://xoqiu.cn/articles/web3-narrative-participation-framework</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/perp-dex-user-capital-builder</loc>
+    <loc>https://xoqiu.cn/articles/rwa-tokenized-stocks-structure</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/stablecoin-x402-agent-payments</loc>
+    <loc>https://xoqiu.cn/articles/perp-dex-user-capital-builder</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/codex-ai-workflow-system-retrospective</loc>
+    <loc>https://xoqiu.cn/articles/stablecoin-x402-agent-payments</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/multi-chain-wallet-resource-state</loc>
+    <loc>https://xoqiu.cn/articles/codex-ai-workflow-system-retrospective</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/erc4337-useroperation-lifecycle</loc>
+    <loc>https://xoqiu.cn/articles/multi-chain-wallet-resource-state</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/minimal-multi-agent-coding-workflow</loc>
+    <loc>https://xoqiu.cn/articles/erc4337-useroperation-lifecycle</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/multi-chain-wallet-acceptance-loop</loc>
+    <loc>https://xoqiu.cn/articles/minimal-multi-agent-coding-workflow</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/wallet-ledger-transaction-mq-consistency</loc>
+    <loc>https://xoqiu.cn/articles/multi-chain-wallet-acceptance-loop</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/wallet-signing-intent-abuse</loc>
+    <loc>https://xoqiu.cn/articles/wallet-ledger-transaction-mq-consistency</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/cryptographic-nonce-key-leak</loc>
+    <loc>https://xoqiu.cn/articles/wallet-signing-intent-abuse</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/mpc-tss-security-boundaries</loc>
+    <loc>https://xoqiu.cn/articles/cryptographic-nonce-key-leak</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/hsm-key-extractability-boundaries</loc>
+    <loc>https://xoqiu.cn/articles/mpc-tss-security-boundaries</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/wallet-software-supply-chain</loc>
+    <loc>https://xoqiu.cn/articles/hsm-key-extractability-boundaries</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/wallet-rpc-trust-boundary</loc>
+    <loc>https://xoqiu.cn/articles/wallet-software-supply-chain</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/evm-broadcast-unknown-canonical-recovery</loc>
+    <loc>https://xoqiu.cn/articles/wallet-rpc-trust-boundary</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/articles/qiu-market-virtual-funds-recovery</loc>
+    <loc>https://xoqiu.cn/articles/evm-broadcast-unknown-canonical-recovery</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-11-12</loc>
+    <loc>https://xoqiu.cn/articles/qiu-market-virtual-funds-recovery</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-11-11</loc>
+    <loc>https://xoqiu.cn/radar/2026-11-12</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-11-09</loc>
+    <loc>https://xoqiu.cn/radar/2026-11-11</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-11-08</loc>
+    <loc>https://xoqiu.cn/radar/2026-11-09</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-11-07</loc>
+    <loc>https://xoqiu.cn/radar/2026-11-08</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-11-06</loc>
+    <loc>https://xoqiu.cn/radar/2026-11-07</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-11-05</loc>
+    <loc>https://xoqiu.cn/radar/2026-11-06</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-11-04</loc>
+    <loc>https://xoqiu.cn/radar/2026-11-05</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-11-03</loc>
+    <loc>https://xoqiu.cn/radar/2026-11-04</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-11-02</loc>
+    <loc>https://xoqiu.cn/radar/2026-11-03</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-10-30</loc>
+    <loc>https://xoqiu.cn/radar/2026-11-02</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-10-29</loc>
+    <loc>https://xoqiu.cn/radar/2026-10-30</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-10-28</loc>
+    <loc>https://xoqiu.cn/radar/2026-10-29</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-10-27</loc>
+    <loc>https://xoqiu.cn/radar/2026-10-28</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-10-26</loc>
+    <loc>https://xoqiu.cn/radar/2026-10-27</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-10-25</loc>
+    <loc>https://xoqiu.cn/radar/2026-10-26</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-10-24</loc>
+    <loc>https://xoqiu.cn/radar/2026-10-25</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-10-17</loc>
+    <loc>https://xoqiu.cn/radar/2026-10-24</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-10-13</loc>
+    <loc>https://xoqiu.cn/radar/2026-10-17</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-08-13</loc>
+    <loc>https://xoqiu.cn/radar/2026-10-13</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-08-12</loc>
+    <loc>https://xoqiu.cn/radar/2026-08-13</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-08-11</loc>
+    <loc>https://xoqiu.cn/radar/2026-08-12</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-08-10</loc>
+    <loc>https://xoqiu.cn/radar/2026-08-11</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-08-09</loc>
+    <loc>https://xoqiu.cn/radar/2026-08-10</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-08-08</loc>
+    <loc>https://xoqiu.cn/radar/2026-08-09</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-08-07</loc>
+    <loc>https://xoqiu.cn/radar/2026-08-08</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-08-06</loc>
+    <loc>https://xoqiu.cn/radar/2026-08-07</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-08-05</loc>
+    <loc>https://xoqiu.cn/radar/2026-08-06</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-08-04</loc>
+    <loc>https://xoqiu.cn/radar/2026-08-05</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-08-03</loc>
+    <loc>https://xoqiu.cn/radar/2026-08-04</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-08-02</loc>
+    <loc>https://xoqiu.cn/radar/2026-08-03</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-08-01</loc>
+    <loc>https://xoqiu.cn/radar/2026-08-02</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-31</loc>
+    <loc>https://xoqiu.cn/radar/2026-08-01</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-30</loc>
+    <loc>https://xoqiu.cn/radar/2026-07-31</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-29</loc>
+    <loc>https://xoqiu.cn/radar/2026-07-30</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-28</loc>
+    <loc>https://xoqiu.cn/radar/2026-07-29</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-27</loc>
+    <loc>https://xoqiu.cn/radar/2026-07-28</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-26</loc>
+    <loc>https://xoqiu.cn/radar/2026-07-27</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-25</loc>
+    <loc>https://xoqiu.cn/radar/2026-07-26</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-24</loc>
+    <loc>https://xoqiu.cn/radar/2026-07-25</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-23</loc>
+    <loc>https://xoqiu.cn/radar/2026-07-24</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-22</loc>
+    <loc>https://xoqiu.cn/radar/2026-07-23</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-21</loc>
+    <loc>https://xoqiu.cn/radar/2026-07-22</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-20</loc>
+    <loc>https://xoqiu.cn/radar/2026-07-21</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-19</loc>
+    <loc>https://xoqiu.cn/radar/2026-07-20</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-18</loc>
+    <loc>https://xoqiu.cn/radar/2026-07-19</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-17</loc>
+    <loc>https://xoqiu.cn/radar/2026-07-18</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-16</loc>
+    <loc>https://xoqiu.cn/radar/2026-07-17</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-15</loc>
+    <loc>https://xoqiu.cn/radar/2026-07-16</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-14</loc>
+    <loc>https://xoqiu.cn/radar/2026-07-15</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/2026-07-13</loc>
+    <loc>https://xoqiu.cn/radar/2026-07-14</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-11-12</loc>
+    <loc>https://xoqiu.cn/radar/2026-07-13</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-11-11</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-11-12</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-11-10</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-11-11</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-11-09</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-11-10</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-11-08</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-11-09</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-11-07</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-11-08</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-11-06</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-11-07</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-11-05</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-11-06</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-11-04</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-11-05</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-11-03</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-11-04</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-11-02</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-11-03</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-10-30</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-11-02</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-10-29</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-10-30</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-10-28</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-10-29</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-10-27</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-10-28</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-10-26</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-10-27</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-10-25</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-10-26</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-10-24</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-10-25</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-08-13</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-10-24</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-08-12</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-08-13</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-08-11</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-08-12</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-08-10</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-08-11</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/market-radar/2026-08-09</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-08-10</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/week/2026-W29</loc>
+    <loc>https://xoqiu.cn/market-radar/2026-08-09</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/review/2026-10-18--2026-10-23</loc>
+    <loc>https://xoqiu.cn/radar/week/2026-W29</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/radar/review/2026-08-14--2026-10-13</loc>
+    <loc>https://xoqiu.cn/radar/review/2026-10-18--2026-10-23</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/market_macro</loc>
+    <loc>https://xoqiu.cn/radar/review/2026-08-14--2026-10-13</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/onchain_infrastructure</loc>
+    <loc>https://xoqiu.cn/topics/market_macro</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/infrastructure</loc>
+    <loc>https://xoqiu.cn/topics/onchain_infrastructure</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/wallet_cex</loc>
+    <loc>https://xoqiu.cn/topics/infrastructure</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/safety</loc>
+    <loc>https://xoqiu.cn/topics/wallet_cex</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/agent</loc>
+    <loc>https://xoqiu.cn/topics/safety</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/l2</loc>
+    <loc>https://xoqiu.cn/topics/agent</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/market_regulation</loc>
+    <loc>https://xoqiu.cn/topics/l2</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/protocol</loc>
+    <loc>https://xoqiu.cn/topics/market_regulation</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/security</loc>
+    <loc>https://xoqiu.cn/topics/protocol</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/model_inference</loc>
+    <loc>https://xoqiu.cn/topics/security</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/evaluation</loc>
+    <loc>https://xoqiu.cn/topics/model_inference</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/data</loc>
+    <loc>https://xoqiu.cn/topics/evaluation</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/market_crypto</loc>
+    <loc>https://xoqiu.cn/topics/data</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/market_signal</loc>
+    <loc>https://xoqiu.cn/topics/market_crypto</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/ai_engineering</loc>
+    <loc>https://xoqiu.cn/topics/market_signal</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/tools</loc>
+    <loc>https://xoqiu.cn/topics/ai_engineering</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/web3_design</loc>
+    <loc>https://xoqiu.cn/topics/tools</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/topics/reading</loc>
+    <loc>https://xoqiu.cn/topics/web3_design</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/ai/deliveries/wallet-core-public-v1</loc>
+    <loc>https://xoqiu.cn/topics/reading</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/ai/deliveries/wallet-domain-engine-v1</loc>
+    <loc>https://xoqiu.cn/ai/deliveries/wallet-core-public-v1</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/ai/deliveries/wallet-failure-playbook-pr2</loc>
+    <loc>https://xoqiu.cn/ai/deliveries/wallet-domain-engine-v1</loc>
   </url>
   <url>
-    <loc>https://xiuqiu-site.vercel.app/ai/deliveries/wallet-reliability-lab-v1</loc>
+    <loc>https://xoqiu.cn/ai/deliveries/wallet-failure-playbook-pr2</loc>
+  </url>
+  <url>
+    <loc>https://xoqiu.cn/ai/deliveries/wallet-reliability-lab-v1</loc>
   </url>
 </urlset>
