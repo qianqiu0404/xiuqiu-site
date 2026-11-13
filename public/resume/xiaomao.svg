@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 560" role="img" aria-labelledby="title desc">
+  <title id="title">小猫 Agent 进展整理流程示意</title>
+  <desc id="desc">从代码状态，到白话晚报，再到下一步的阅读线索。图中没有真实项目数据。</desc>
+  <defs><pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#c4ccba" opacity=".6"/></pattern></defs>
+  <rect width="800" height="560" fill="#e8eddf"/>
+  <rect width="800" height="560" fill="url(#grid)"/>
+  <g font-family="-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif">
+    <text x="54" y="63" font-size="12" letter-spacing="2" fill="#59634f">XIAOMAO / A LITTLE CLARITY, EVERY DAY</text>
+    <g transform="translate(60 110)">
+      <path d="M14 66V10l43 24a102 102 0 0 1 60 0l43-24v56c18 18 26 42 26 65 0 47-42 78-98 78S-10 178-10 131c0-23 7-47 24-65Z" fill="#2e3a29"/>
+      <path d="m28 48 26 12-26 13m118-25-26 12 26 13" fill="#c9f166"/>
+      <path d="M42 117q12-13 24 0m48 0q12-13 24 0" fill="none" stroke="#f7f7f2" stroke-width="5" stroke-linecap="round"/>
+      <path d="m82 134 8 6 8-6m-8 6v9m0 0q-13 12-23 0m23 0q13 12 23 0" fill="none" stroke="#c9f166" stroke-width="4" stroke-linecap="round"/>
+      <path d="M-2 137h28m-25 17h27m128-17h28m-27 17h27" stroke="#f7f7f2" stroke-width="3" stroke-linecap="round"/>
+    </g>
+    <text x="60" y="376" font-size="29" font-weight="500" fill="#232820">进展，讲人话。</text>
+    <text x="60" y="414" font-size="15" fill="#59634f">少翻一次日志，多一点清楚。</text>
+    <g transform="translate(308 101)">
+      <rect width="435" height="350" rx="6" fill="#f7f7f2" stroke="#c7d1ba"/>
+      <path d="M0 50h435" stroke="#d9dfd0"/>
+      <circle cx="23" cy="25" r="4" fill="#7b9161"/>
+      <text x="38" y="30" font-size="12" fill="#59634f">从变化，到看得懂的进展</text>
+      <text x="27" y="89" font-size="11" fill="#6b765f" letter-spacing="1">01 / 代码状态</text>
+      <text x="27" y="121" font-size="15" fill="#232820">未提交 · 本机 · 已推送 · 已合并</text>
+      <path d="M28 139v20m-4-4 4 4 4-4" stroke="#7b9161" fill="none"/>
+      <text x="27" y="190" font-size="11" fill="#6b765f" letter-spacing="1">02 / 白话晚报</text>
+      <text x="27" y="222" font-size="18" fill="#232820">今天推进了什么？</text>
+      <path d="M28 240v20m-4-4 4 4 4-4" stroke="#7b9161" fill="none"/>
+      <rect x="17" y="276" width="401" height="55" rx="3" fill="#e2edcd"/>
+      <text x="28" y="309" font-size="16" fill="#2e3a29">下一步，从哪里继续看？</text>
+    </g>
+    <text x="744" y="511" font-size="11" text-anchor="end" fill="#59634f">流程示意 / 不含真实项目数据</text>
+  </g>
+</svg>

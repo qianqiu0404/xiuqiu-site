@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "latestDate": "2026-11-13",
-  "homePageUrl": "https://xiuqiu-site.vercel.app/",
+  "homePageUrl": "https://xoqiu.cn/",
   "topics": [
     {
       "topic": "market_equity",
@@ -9,7 +9,7 @@
       "count": 1,
       "lastSeen": "2026-11-13",
       "firstSeen": "2026-11-13",
-      "url": "https://xiuqiu-site.vercel.app/topics/market_equity"
+      "url": "https://xoqiu.cn/topics/market_equity"
     },
     {
       "topic": "market_macro",
@@ -17,7 +17,7 @@
       "count": 21,
       "lastSeen": "2026-11-12",
       "firstSeen": "2026-08-09",
-      "url": "https://xiuqiu-site.vercel.app/topics/market_macro"
+      "url": "https://xoqiu.cn/topics/market_macro"
     },
     {
       "topic": "onchain_infrastructure",
@@ -25,7 +25,7 @@
       "count": 15,
       "lastSeen": "2026-11-12",
       "firstSeen": "2026-08-11",
-      "url": "https://xiuqiu-site.vercel.app/topics/onchain_infrastructure"
+      "url": "https://xoqiu.cn/topics/onchain_infrastructure"
     },
     {
       "topic": "infrastructure",
@@ -33,7 +33,7 @@
       "count": 11,
       "lastSeen": "2026-11-12",
       "firstSeen": "2026-10-29",
-      "url": "https://xiuqiu-site.vercel.app/topics/infrastructure"
+      "url": "https://xoqiu.cn/topics/infrastructure"
     },
     {
       "topic": "wallet_cex",
@@ -41,7 +41,7 @@
       "count": 11,
       "lastSeen": "2026-11-12",
       "firstSeen": "2026-08-10",
-      "url": "https://xiuqiu-site.vercel.app/topics/wallet_cex"
+      "url": "https://xoqiu.cn/topics/wallet_cex"
     },
     {
       "topic": "safety",
@@ -49,7 +49,7 @@
       "count": 9,
       "lastSeen": "2026-11-12",
       "firstSeen": "2026-10-13",
-      "url": "https://xiuqiu-site.vercel.app/topics/safety"
+      "url": "https://xoqiu.cn/topics/safety"
     },
     {
       "topic": "agent",
@@ -57,7 +57,7 @@
       "count": 12,
       "lastSeen": "2026-11-11",
       "firstSeen": "2026-08-11",
-      "url": "https://xiuqiu-site.vercel.app/topics/agent"
+      "url": "https://xoqiu.cn/topics/agent"
     },
     {
       "topic": "l2",
@@ -65,7 +65,7 @@
       "count": 7,
       "lastSeen": "2026-11-11",
       "firstSeen": "2026-08-11",
-      "url": "https://xiuqiu-site.vercel.app/topics/l2"
+      "url": "https://xoqiu.cn/topics/l2"
     },
     {
       "topic": "market_regulation",
@@ -73,7 +73,7 @@
       "count": 5,
       "lastSeen": "2026-11-10",
       "firstSeen": "2026-10-25",
-      "url": "https://xiuqiu-site.vercel.app/topics/market_regulation"
+      "url": "https://xoqiu.cn/topics/market_regulation"
     },
     {
       "topic": "protocol",
@@ -81,7 +81,7 @@
       "count": 5,
       "lastSeen": "2026-11-09",
       "firstSeen": "2026-08-12",
-      "url": "https://xiuqiu-site.vercel.app/topics/protocol"
+      "url": "https://xoqiu.cn/topics/protocol"
     },
     {
       "topic": "security",
@@ -89,7 +89,7 @@
       "count": 8,
       "lastSeen": "2026-11-06",
       "firstSeen": "2026-08-10",
-      "url": "https://xiuqiu-site.vercel.app/topics/security"
+      "url": "https://xoqiu.cn/topics/security"
     },
     {
       "topic": "model_inference",
@@ -97,7 +97,7 @@
       "count": 6,
       "lastSeen": "2026-10-30",
       "firstSeen": "2026-08-10",
-      "url": "https://xiuqiu-site.vercel.app/topics/model_inference"
+      "url": "https://xoqiu.cn/topics/model_inference"
     },
     {
       "topic": "evaluation",
@@ -105,7 +105,7 @@
       "count": 5,
       "lastSeen": "2026-10-28",
       "firstSeen": "2026-08-10",
-      "url": "https://xiuqiu-site.vercel.app/topics/evaluation"
+      "url": "https://xoqiu.cn/topics/evaluation"
     },
     {
       "topic": "data",
@@ -113,7 +113,7 @@
       "count": 3,
       "lastSeen": "2026-10-27",
       "firstSeen": "2026-08-12",
-      "url": "https://xiuqiu-site.vercel.app/topics/data"
+      "url": "https://xoqiu.cn/topics/data"
     },
     {
       "topic": "market_crypto",
@@ -121,7 +121,7 @@
       "count": 7,
       "lastSeen": "2026-10-25",
       "firstSeen": "2026-08-09",
-      "url": "https://xiuqiu-site.vercel.app/topics/market_crypto"
+      "url": "https://xoqiu.cn/topics/market_crypto"
     },
     {
       "topic": "market_signal",
@@ -129,7 +129,7 @@
       "count": 78,
       "lastSeen": "2026-08-09",
       "firstSeen": "2026-07-13",
-      "url": "https://xiuqiu-site.vercel.app/topics/market_signal"
+      "url": "https://xoqiu.cn/topics/market_signal"
     },
     {
       "topic": "ai_engineering",
@@ -137,7 +137,7 @@
       "count": 28,
       "lastSeen": "2026-08-09",
       "firstSeen": "2026-07-13",
-      "url": "https://xiuqiu-site.vercel.app/topics/ai_engineering"
+      "url": "https://xoqiu.cn/topics/ai_engineering"
     },
     {
       "topic": "tools",
@@ -145,7 +145,7 @@
       "count": 28,
       "lastSeen": "2026-08-09",
       "firstSeen": "2026-07-13",
-      "url": "https://xiuqiu-site.vercel.app/topics/tools"
+      "url": "https://xoqiu.cn/topics/tools"
     },
     {
       "topic": "web3_design",
@@ -153,7 +153,7 @@
       "count": 28,
       "lastSeen": "2026-08-09",
       "firstSeen": "2026-07-13",
-      "url": "https://xiuqiu-site.vercel.app/topics/web3_design"
+      "url": "https://xoqiu.cn/topics/web3_design"
     },
     {
       "topic": "reading",
@@ -161,7 +161,7 @@
       "count": 26,
       "lastSeen": "2026-08-09",
       "firstSeen": "2026-07-13",
-      "url": "https://xiuqiu-site.vercel.app/topics/reading"
+      "url": "https://xoqiu.cn/topics/reading"
     }
   ]
 }

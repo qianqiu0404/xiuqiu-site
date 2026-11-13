@@ -67,7 +67,7 @@ watchEffect(() =>
   <div v-if="topic || state !== 'ready'" class="brief" lang="zh-CN" :data-reading-ready="state !== 'loading'">
     <header class="brief-masthead">
       <div class="brief-shell">
-        <router-link to="/" class="brief-back">← 情报流</router-link>
+        <router-link to="/intel" class="brief-back">← 情报流</router-link>
         <p class="brief-dateline">
           <span>主题</span>
           <span v-if="topic">{{ intelDomainLabel(topic.domain) }}</span>
@@ -117,7 +117,7 @@ watchEffect(() =>
       <div class="brief-shell">
         <p class="brief-dateline"><span>主题</span></p>
         <h1 id="topic-not-found-title">没有找到这个主题</h1>
-        <router-link to="/" class="brief-back">← 返回情报流</router-link>
+        <router-link to="/intel" class="brief-back">← 返回情报流</router-link>
       </div>
     </div>
   </section>

@@ -7,8 +7,9 @@ const navToggle = ref<HTMLButtonElement | null>(null)
 const primaryNavigation = ref<HTMLElement | null>(null)
 const mainContent = ref<HTMLElement | null>(null)
 const router = useRouter()
+const isResumeHome = computed(() => router.currentRoute.value.name === 'home')
 const isCinematicHome = computed(() => router.currentRoute.value.name === 'home')
-const showAiChat = computed(() => !String(router.currentRoute.value.name || '').startsWith('market-radar'))
+const showAiChat = computed(() => !isResumeHome.value && !String(router.currentRoute.value.name || '').startsWith('market-radar'))
 const visualMode = computed(() => {
   const currentRoute = router.currentRoute.value
   if (
@@ -23,7 +24,7 @@ const visualMode = computed(() => {
 // keep the cinematic shell until they are redesigned (P6).
 // Every route now uses the paper "brief" shell (P6e). `visualMode` stays so
 // route meta remains meaningful for pages that read it.
-const usesBriefChrome = computed(() => Boolean(visualMode.value))
+const usesBriefChrome = computed(() => !isResumeHome.value && Boolean(visualMode.value))
 const usesCinematicChrome = computed(() => false)
 
 type ThemePreference = 'system' | 'light' | 'dark'
@@ -59,7 +60,7 @@ const currentNavSection = computed(() => {
   if (currentRoute.name === 'learning') return 'learn-radar'
 
   const navGroup = String(currentRoute.meta.navGroup || '')
-  if (currentRoute.name === 'home' || currentRoute.name === 'topic') return 'intel'
+  if (currentRoute.name === 'intel' || currentRoute.name === 'topic') return 'intel'
   const sectionByGroup: Record<string, string> = {
     ai: 'ai',
     evidence: 'proof',
@@ -146,8 +147,15 @@ watch(() => router.currentRoute.value.fullPath, closeNav)
 watch(usesBriefChrome, value => {
   if (typeof document !== 'undefined') document.documentElement.toggleAttribute('data-shell-brief', value)
 }, { immediate: true })
+function syncStoredTheme() {
+  try {
+    const saved = localStorage.getItem(THEME_KEY)
+    theme.value = saved === 'light' || saved === 'dark' ? saved : 'system'
+  } catch { /* storage can be unavailable */ }
+}
 onMounted(() => {
   window.addEventListener('keydown', handleEscape)
+  window.addEventListener('xiuqiu-theme-change', syncStoredTheme)
   try {
     const saved = localStorage.getItem(THEME_KEY)
     if (saved === 'light' || saved === 'dark') theme.value = saved
@@ -155,14 +163,18 @@ onMounted(() => {
     // Ignore unavailable storage.
   }
   applyTheme(theme.value)
+  window.dispatchEvent(new Event('xiuqiu-theme-change'))
 })
-onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleEscape)
+  window.removeEventListener('xiuqiu-theme-change', syncStoredTheme)
+})
 </script>
 
 <template>
-  <a class="skip-link" href="#main-content">跳到主要内容</a>
+  <a v-if="!isResumeHome" class="skip-link" href="#main-content">跳到主要内容</a>
 
-  <header class="site-header" :class="{ 'site-header--cinematic': usesCinematicChrome, 'site-header--brief': usesBriefChrome }">
+  <header v-if="!isResumeHome" class="site-header" :class="{ 'site-header--cinematic': usesCinematicChrome, 'site-header--brief': usesBriefChrome }">
     <nav class="nav container" aria-label="主导航">
       <router-link
         class="brand"
@@ -216,8 +228,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
           <router-link
             class="nav-link"
             :class="{ 'is-current': isCurrentNavSection('intel') }"
-            :aria-current="currentNavAria('intel', '/')"
-            to="/"
+            :aria-current="currentNavAria('intel', '/intel')"
+            to="/intel"
             @click="handleNavLinkActivation"
             @keydown.space.prevent="activateLinkOnSpace"
           >情报流</router-link>
@@ -259,8 +271,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
           <router-link
             class="nav-link"
             :class="{ 'is-current': isCurrentNavSection('profile') }"
-            :aria-current="currentNavAria('profile', '/profile')"
-            to="/profile"
+            :aria-current="currentNavAria('profile', '/')"
+            to="/"
             @click="handleNavLinkActivation"
             @keydown.space.prevent="activateLinkOnSpace"
           >个人主页</router-link>
@@ -301,15 +313,16 @@ onBeforeUnmount(() => window.removeEventListener('keydown', handleEscape))
     </nav>
   </header>
 
-  <main id="main-content" ref="mainContent" tabindex="-1">
+  <router-view v-if="isResumeHome" />
+  <main v-else id="main-content" ref="mainContent" tabindex="-1">
     <router-view />
   </main>
 
-  <footer class="footer" :class="{ 'footer--cinematic': usesCinematicChrome, 'footer--brief': usesBriefChrome }">
+  <footer v-if="!isResumeHome" class="footer" :class="{ 'footer--cinematic': usesCinematicChrome, 'footer--brief': usesBriefChrome }">
     <div class="container footer-inner">
       <span>© {{ new Date().getFullYear() }} xiuqiu</span>
       <nav class="footer-links" aria-label="页尾导航">
-        <router-link to="/profile">个人主页</router-link>
+        <router-link to="/">个人主页</router-link>
         <router-link to="/projects">全部项目</router-link>
         <router-link to="/articles">工程笔记</router-link>
         <router-link to="/engineering/failures">失败手册</router-link>

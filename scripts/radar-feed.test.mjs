@@ -1,4 +1,5 @@
 import test from 'node:test'
+import { SITE_URL } from '../shared/site.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { parse } from 'yaml'
@@ -43,7 +44,7 @@ test('feed flattens v2 briefs and legacy sections with public-only fields', () =
 test('rss, json feed and llms.txt escape content and link to brief anchors', () => {
   const items = buildRadarFeedItems([v2])
   const rss = buildRss(items)
-  assert.match(rss, /<link>https:\/\/xiuqiu-site\.vercel\.app\/radar\/2026-08-13#a1<\/link>/)
+  assert.ok(rss.includes(`<link>${SITE_URL}/radar/2026-08-13#a1</link>`))
   assert.match(rss, /why it matters &amp; &lt;matters&gt;/)
   assert.doesNotMatch(rss, /secret mechanism body/)
   const json = JSON.parse(buildJsonFeed(items))

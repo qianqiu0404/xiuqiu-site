@@ -1,4 +1,5 @@
 import test from 'node:test'
+import { SITE_URL } from '../shared/site.ts'
 import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 import { buildIntelItems, buildIntelTopics, latestIntelItems } from './generate-intel-feed.mjs'
@@ -92,18 +93,14 @@ test('public intel API files carry a schema version and absolute URLs', () => {
   const topics = JSON.parse(readFileSync(new URL('../public/data/intel/topics.json', import.meta.url), 'utf8'))
   assert.equal(latest.schemaVersion, 1)
   assert.equal(latest.latestDate, intelLatestDate)
-  assert.ok(latest.items.every(entry => entry.url.startsWith('https://xiuqiu-site.vercel.app/')))
+  assert.ok(latest.items.every(entry => entry.url.startsWith(`${SITE_URL}/`)))
   assert.deepEqual(topics.topics.map(entry => entry.topic), intelTopics.map(entry => entry.topic))
 })
 
-test('home is the intel feed, the old home moved to /about, and topic pages are routed', () => {
-  const router = readFileSync(new URL('../src/router/index.ts', import.meta.url), 'utf8')
-  assert.match(router, /path: '\/',\s*name: 'home',\s*component: \(\) => import\('\.\.\/features\/intel\/pages\/IntelHomePage\.vue'\)/)
-  assert.match(router, /path: '\/about',[\s\S]*?features\/about\/pages\/HomePage\.vue/)
-  assert.match(router, /path: '\/topics\/:topic',[\s\S]*?features\/intel\/pages\/IntelTopicPage\.vue/)
+test('legacy topic and about URLs remain in the sitemap alongside the new intel entry', () => {
   const sitemap = readFileSync(new URL('../public/sitemap.xml', import.meta.url), 'utf8')
-  for (const topic of intelTopics) assert.match(sitemap, new RegExp(`/topics/${topic.topic}<`))
-  assert.match(sitemap, /\/about</)
+  const paths = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => new URL(match[1]).pathname)
+  for (const path of ['/about', '/intel', ...intelTopics.map(topic => `/topics/${topic.topic}`)]) assert.ok(paths.includes(path), path)
 })
 
 test('both daily PR gates may commit the regenerated intel feed', () => {
@@ -134,7 +131,7 @@ test('search context survives detail links, expanded archives and encoded keywor
   const target = new URL(href, 'https://xiuqiu-site.vercel.app')
   assert.equal(target.hash, '#tools')
   const back = readingReturnLink(target.searchParams.get('from'))
-  assert.equal(back.href, '/?domain=ai&q=MCP+%26+SDK&expanded=1#intel-item-learning%3A2026-08-09%3Atools')
+  assert.equal(back.href, '/intel?domain=ai&q=MCP+%26+SDK&expanded=1#intel-item-learning%3A2026-08-09%3Atools')
   assert.match(back.label, /AI.*MCP & SDK.*搜索结果/)
   assert.equal(readingReturnLink('/topics/tools#intel-item-a').href, '/topics/tools#intel-item-a')
 })
@@ -142,9 +139,9 @@ test('search context survives detail links, expanded archives and encoded keywor
 test('return destinations reject external and non-list paths without changing the reader', async () => {
   const { readingReturnLink, readIntelQuery } = await import('../src/data/readingNavigationPresentation.ts')
   for (const value of ['https://evil.example', '//evil.example', '/\\evil.example', '/ai', '/research?id=x', 'javascript:alert(1)', ['/?q=MCP']]) {
-    assert.equal(readingReturnLink(value).href, '/', String(value))
+    assert.equal(readingReturnLink(value).href, '/intel', String(value))
   }
-  assert.equal(readingReturnLink('/?domain=ai&unknown=x&from=//evil.example#bad').href, '/?domain=ai')
+  assert.equal(readingReturnLink('/?domain=ai&unknown=x&from=//evil.example#bad').href, '/intel?domain=ai')
   assert.deepEqual(readIntelQuery({ domain: ['ai'], topic: '<bad>', q: ['MCP'], expanded: 'yes' }), { filter: 'all', topic: undefined, search: '', expanded: false })
 })
 
@@ -186,10 +183,10 @@ test('market reading returns preserve filters, the selected queue anchor and det
 test('market return allowlist rejects nonexact paths and hostile destinations', async () => {
   const { readingReturnLink } = await import('../src/data/readingNavigationPresentation.ts')
   for (const value of ['https://evil.example/market-radar', '//evil.example/market-radar', '/%5cevil.example/market-radar', '/market-radar/extra', '/market-radar/', '/anything/../market-radar', '/market-radar/../market-radar', '/%6darket-radar', [' /market-radar']]) {
-    assert.equal(readingReturnLink(value).href, '/', String(value))
+    assert.equal(readingReturnLink(value).href, '/intel', String(value))
   }
   assert.equal(readingReturnLink('/market-radar?category=unknown&q=Hoodi&domain=ai#queue-event%2Fother').href, '/market-radar?q=Hoodi')
   assert.equal(readingReturnLink('/market-radar?category=crypto&q=%E5%88%86%E5%8F%89#queue-event-1').href, '/market-radar?category=crypto&q=%E5%88%86%E5%8F%89#queue-event-1')
-  assert.equal(readingReturnLink('/?domain=ai&q=MCP#intel-item-a').href, '/?domain=ai&q=MCP#intel-item-a')
+  assert.equal(readingReturnLink('/?domain=ai&q=MCP#intel-item-a').href, '/intel?domain=ai&q=MCP#intel-item-a')
   assert.equal(readingReturnLink('/topics/tools#intel-item-a').href, '/topics/tools#intel-item-a')
 })
