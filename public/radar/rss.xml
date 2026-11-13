@@ -6,7 +6,43 @@
     <atom:link href="https://xoqiu.cn/radar/rss.xml" rel="self" type="application/rss+xml" />
     <description>每天 2 条 AI、2 条 Web3 工程简报：先讲机制，再给例子和边界。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Fri, 13 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sat, 14 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>DeepAgents 0.7.38：搜索目录获准，不等于目录里的链接目标也获准</title>
+      <link>https://xoqiu.cn/radar/2026-11-14#ai-deepagents-bulk-search-resolved-scope</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-deepagents-bulk-search-resolved-scope</guid>
+      <pubDate>Sat, 14 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>safety</category>
+      <description>Agent批准一次目录搜索时，批准对象包含范围。结果的表面路径仍在目录里，并不能证明符号链接最终指向的材料也在同一范围；批量返回前需要重新核对目标与批准范围的关系。</description>
+    </item>
+    <item>
+      <title>Pydantic AI 2.68：ModelFallback默认切换被截断的非流式回答</title>
+      <link>https://xoqiu.cn/radar/2026-11-14#ai-pydantic-output-limit-fallback</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-pydantic-output-limit-fallback</guid>
+      <pubDate>Sat, 14 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>model_inference</category>
+      <description>一段看似完整的文本和可解析的参数，都不能替代模型正常结束的信号。编排层需要把可展示、可执行、被拒绝与实际消耗分开记录，避免把预算截断当成一次正常完成。</description>
+    </item>
+    <item>
+      <title>MetaMask eth-sig-util 10：EIP-7702数值进入哈希前，先拒绝不安全整数</title>
+      <link>https://xoqiu.cn/radar/2026-11-14#web3-metamask-eip7702-safe-integers</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-metamask-eip7702-safe-integers</guid>
+      <pubDate>Sat, 14 Nov 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>security</category>
+      <description>JSON中的number进入密码学编码前可能已经丢失整数精度。先确认调用方实际表示的数值，再解释哈希和签名，能够避免把近似值当成用户原本授权的链或计数器。</description>
+    </item>
+    <item>
+      <title>Foundry 11月13日nightly：Safe交易摘要要同时对上本地字段、合约和服务</title>
+      <link>https://xoqiu.cn/radar/2026-11-14#web3-foundry-safe-local-hash-crosscheck</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-foundry-safe-local-hash-crosscheck</guid>
+      <pubDate>Sat, 14 Nov 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>wallet_cex</category>
+      <description>服务给出一个摘要、RPC返回一个摘要，仍需要确认它们对应界面展示的同一组字段。把字段、本地计算、链身份和远端返回逐项关联，才能解释授权对象是否一致。</description>
+    </item>
     <item>
       <title>DeepAgents 0.7.36：下载FIFO时，不再等待一个尚未出现的写入者</title>
       <link>https://xoqiu.cn/radar/2026-11-13#ai-deepagents-fifo-download-nonblocking</link>
@@ -510,42 +546,6 @@
       <category>WEB3</category>
       <category>l2</category>
       <description>客户端恢复可能跨越多个版本分支，节点状态又会随运行改变。记录完整转换路径和前后区块状态，比只记录升级终点更有助于判断这条修复是否适用。</description>
-    </item>
-    <item>
-      <title>OpenAI Signals：工作消息占比，不能直接当成劳动产出</title>
-      <link>https://xoqiu.cn/radar/2026-10-27#ai-signals-work-activity-denominator</link>
-      <guid isPermaLink="false">xiuqiu-radar:ai-signals-work-activity-denominator</guid>
-      <pubDate>Tue, 27 Oct 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>data</category>
-      <description>公开分类和统计口径能帮助研究 AI 被用于哪些工作，但结论需要与采样范围匹配；消息分布、用户采用和实际工作效果是不同指标。</description>
-    </item>
-    <item>
-      <title>GPT-6.1 Terra 发布：先分别核对模型能力与工具契约</title>
-      <link>https://xoqiu.cn/radar/2026-10-27#ai-terra-model-and-tool-contract</link>
-      <guid isPermaLink="false">xiuqiu-radar:ai-terra-model-and-tool-contract</guid>
-      <pubDate>Tue, 27 Oct 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>model_inference</category>
-      <description>接入新模型时，把输入输出、推理设置、工具通道和任务验收分别列清，可以避免只更换模型名，却沿用不兼容的调用假设。</description>
-    </item>
-    <item>
-      <title>Nethermind 2.2.2：上游安全补丁要进入实际运行的制品</title>
-      <link>https://xoqiu.cn/radar/2026-10-27#web3-nethermind-bundled-runtime-patch</link>
-      <guid isPermaLink="false">xiuqiu-radar:web3-nethermind-bundled-runtime-patch</guid>
-      <pubDate>Tue, 27 Oct 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>security</category>
-      <description>节点客户端的安全边界包含随制品交付的基础运行时。补丁已发布、可安装制品已更新与运行进程已采用，需要各自留下证据。</description>
-    </item>
-    <item>
-      <title>AvalancheGo 1.15.2：可选客户端更新也有插件兼容要求</title>
-      <link>https://xoqiu.cn/radar/2026-10-27#web3-avalanchego-plugin-upgrade-boundary</link>
-      <guid isPermaLink="false">xiuqiu-radar:web3-avalanchego-plugin-upgrade-boundary</guid>
-      <pubDate>Tue, 27 Oct 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>onchain_infrastructure</category>
-      <description>“版本向后兼容”不能代替插件、API、配置和已有数据库状态的逐项检查；长期停机后恢复的节点，还可能有不同的过渡路径。</description>
     </item>
   </channel>
 </rss>

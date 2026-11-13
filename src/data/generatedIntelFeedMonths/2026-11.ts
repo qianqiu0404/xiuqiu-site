@@ -5,6 +5,69 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "learning:ai-deepagents-bulk-search-resolved-scope",
+    "kind": "learning",
+    "date": "2026-11-14",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "DeepAgents 0.7.38：搜索目录获准，不等于目录里的链接目标也获准",
+    "summary": "Agent批准一次目录搜索时，批准对象包含范围。结果的表面路径仍在目录里，并不能证明符号链接最终指向的材料也在同一范围；批量返回前需要重新核对目标与批准范围的关系。",
+    "href": "/radar/2026-11-14#ai-deepagents-bulk-search-resolved-scope",
+    "source": {
+      "name": "DeepAgents 0.7.38 release",
+      "tier": "tier1",
+      "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents%3D%3D0.7.38"
+    }
+  },
+  {
+    "id": "learning:ai-pydantic-output-limit-fallback",
+    "kind": "learning",
+    "date": "2026-11-14",
+    "domain": "ai",
+    "topic": "model_inference",
+    "title": "Pydantic AI 2.68：ModelFallback默认切换被截断的非流式回答",
+    "summary": "一段看似完整的文本和可解析的参数，都不能替代模型正常结束的信号。编排层需要把可展示、可执行、被拒绝与实际消耗分开记录，避免把预算截断当成一次正常完成。",
+    "href": "/radar/2026-11-14#ai-pydantic-output-limit-fallback",
+    "source": {
+      "name": "Pydantic AI 2.68.0 release",
+      "tier": "tier1",
+      "url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.68.0"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "learning:web3-metamask-eip7702-safe-integers",
+    "kind": "learning",
+    "date": "2026-11-14",
+    "domain": "web3",
+    "topic": "security",
+    "title": "MetaMask eth-sig-util 10：EIP-7702数值进入哈希前，先拒绝不安全整数",
+    "summary": "JSON中的number进入密码学编码前可能已经丢失整数精度。先确认调用方实际表示的数值，再解释哈希和签名，能够避免把近似值当成用户原本授权的链或计数器。",
+    "href": "/radar/2026-11-14#web3-metamask-eip7702-safe-integers",
+    "source": {
+      "name": "MetaMask core1423 release",
+      "tier": "tier1",
+      "url": "https://github.com/MetaMask/core/releases/tag/v1423.0.0"
+    }
+  },
+  {
+    "id": "learning:web3-foundry-safe-local-hash-crosscheck",
+    "kind": "learning",
+    "date": "2026-11-14",
+    "domain": "web3",
+    "topic": "wallet_cex",
+    "title": "Foundry 11月13日nightly：Safe交易摘要要同时对上本地字段、合约和服务",
+    "summary": "服务给出一个摘要、RPC返回一个摘要，仍需要确认它们对应界面展示的同一组字段。把字段、本地计算、链身份和远端返回逐项关联，才能解释授权对象是否一致。",
+    "href": "/radar/2026-11-14#web3-foundry-safe-local-hash-crosscheck",
+    "source": {
+      "name": "Foundry November13 nightly release",
+      "tier": "tier1",
+      "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-36a8cbbfda1d78f7098cfe071c7bd90eb6eb3df6"
+    }
+  },
+  {
     "id": "market:2026-11-14:ecb-ces-stablecoin-household-exposure-2026-11-11",
     "kind": "market",
     "date": "2026-11-14",

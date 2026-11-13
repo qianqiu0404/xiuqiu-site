@@ -4,6 +4,30 @@
   "homePageUrl": "https://xoqiu.cn/",
   "topics": [
     {
+      "topic": "wallet_cex",
+      "domain": "web3",
+      "count": 13,
+      "lastSeen": "2026-11-14",
+      "firstSeen": "2026-08-10",
+      "url": "https://xoqiu.cn/topics/wallet_cex"
+    },
+    {
+      "topic": "safety",
+      "domain": "ai",
+      "count": 11,
+      "lastSeen": "2026-11-14",
+      "firstSeen": "2026-10-13",
+      "url": "https://xoqiu.cn/topics/safety"
+    },
+    {
+      "topic": "security",
+      "domain": "web3",
+      "count": 10,
+      "lastSeen": "2026-11-14",
+      "firstSeen": "2026-08-10",
+      "url": "https://xoqiu.cn/topics/security"
+    },
+    {
       "topic": "market_crypto",
       "domain": "market",
       "count": 8,
@@ -12,36 +36,20 @@
       "url": "https://xoqiu.cn/topics/market_crypto"
     },
     {
+      "topic": "model_inference",
+      "domain": "ai",
+      "count": 7,
+      "lastSeen": "2026-11-14",
+      "firstSeen": "2026-08-10",
+      "url": "https://xoqiu.cn/topics/model_inference"
+    },
+    {
       "topic": "agent",
       "domain": "ai",
       "count": 13,
       "lastSeen": "2026-11-13",
       "firstSeen": "2026-08-11",
       "url": "https://xoqiu.cn/topics/agent"
-    },
-    {
-      "topic": "wallet_cex",
-      "domain": "web3",
-      "count": 12,
-      "lastSeen": "2026-11-13",
-      "firstSeen": "2026-08-10",
-      "url": "https://xoqiu.cn/topics/wallet_cex"
-    },
-    {
-      "topic": "safety",
-      "domain": "ai",
-      "count": 10,
-      "lastSeen": "2026-11-13",
-      "firstSeen": "2026-10-13",
-      "url": "https://xoqiu.cn/topics/safety"
-    },
-    {
-      "topic": "security",
-      "domain": "web3",
-      "count": 9,
-      "lastSeen": "2026-11-13",
-      "firstSeen": "2026-08-10",
-      "url": "https://xoqiu.cn/topics/security"
     },
     {
       "topic": "market_equity",
@@ -98,14 +106,6 @@
       "lastSeen": "2026-11-09",
       "firstSeen": "2026-08-12",
       "url": "https://xoqiu.cn/topics/protocol"
-    },
-    {
-      "topic": "model_inference",
-      "domain": "ai",
-      "count": 6,
-      "lastSeen": "2026-10-30",
-      "firstSeen": "2026-08-10",
-      "url": "https://xoqiu.cn/topics/model_inference"
     },
     {
       "topic": "evaluation",

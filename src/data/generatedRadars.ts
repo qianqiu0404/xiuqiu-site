@@ -12,6 +12,48 @@ export interface RadarIndexEntry { date: string; slug: string; snapshotId: strin
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-11-14",
+    "slug": "2026-11-14",
+    "snapshotId": "learning-2026-11-14-bf7daf4ce2309628",
+    "asOf": "2026-11-13T21:46:48.906Z",
+    "title": "学习雷达 · 2026-11-14",
+    "summary": "AI看搜索批准的真实范围与截断后的模型切换；Web3看授权整数表示和Safe交易字段核对。专题区分部分展示、工具执行与完成状态。",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "briefs": [
+      {
+        "id": "ai-deepagents-bulk-search-resolved-scope",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "DeepAgents 0.7.38：搜索目录获准，不等于目录里的链接目标也获准"
+      },
+      {
+        "id": "ai-pydantic-output-limit-fallback",
+        "domain": "ai",
+        "topic": "model_inference",
+        "title": "Pydantic AI 2.68：ModelFallback默认切换被截断的非流式回答"
+      },
+      {
+        "id": "web3-metamask-eip7702-safe-integers",
+        "domain": "web3",
+        "topic": "security",
+        "title": "MetaMask eth-sig-util 10：EIP-7702数值进入哈希前，先拒绝不安全整数"
+      },
+      {
+        "id": "web3-foundry-safe-local-hash-crosscheck",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "Foundry 11月13日nightly：Safe交易摘要要同时对上本地字段、合约和服务"
+      }
+    ],
+    "deepDive": {
+      "id": "deep-pydantic-stream-output-acceptance",
+      "title": "专题：模型达到输出上限，展示、执行与完成为什么要分别判定",
+      "basedOnBriefId": "ai-pydantic-output-limit-fallback"
+    },
+    "marketSignals": []
+  },
+  {
     "date": "2026-11-13",
     "slug": "2026-11-13",
     "snapshotId": "learning-2026-11-13-3af6e31e4caa981f",
@@ -1867,6 +1909,353 @@ export const radarIndex: RadarIndexEntry[] = [
 
 export const latestRadars: DailyRadar[] = [
   {
+    "date": "2026-11-14",
+    "slug": "2026-11-14",
+    "title": "学习雷达 · 2026-11-14",
+    "summary": "AI看搜索批准的真实范围与截断后的模型切换；Web3看授权整数表示和Safe交易字段核对。专题区分部分展示、工具执行与完成状态。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-11-13T21:46:48.906Z",
+    "generatedAt": "2026-11-13T21:46:48.906Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-deepagents-bulk-search-resolved-scope",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "DeepAgents 0.7.38：搜索目录获准，不等于目录里的链接目标也获准",
+        "whatHappened": "DeepAgents 0.7.38于11月13日（UTC）发布，将ls、glob、grep批量结果中经符号链接指向搜索范围外、且需要interrupt批准的条目过滤掉；相关PR同日合入。",
+        "mechanism": "批量调用记录路径及其解析目标覆盖的scope，逐条检查原路径和真实目标。deny仍剔除；需要interrupt而不在任一scope根内的结果也剔除。glob的绝对模式会加入锚点，含上级跳转的相对模式将范围扩到根目录。",
+        "workedExample": "上游在搜索根内放普通笔记、指向受保护区域的文件别名和目录链接，分别用同步、异步ls/glob/grep断言只留下笔记，没有别名、链接或受保护内容；明确搜索链接目标并已进入暂停范围的用例则保留对应结果。本期只读断言，未创建链接或运行测试。",
+        "whyItMatters": "Agent批准一次目录搜索时，批准对象包含范围。结果的表面路径仍在目录里，并不能证明符号链接最终指向的材料也在同一范围；批量返回前需要重新核对目标与批准范围的关系。",
+        "risksAndLimits": [
+          "本项是中间件的批量结果过滤，不是禁止所有符号链接，也不证明后端从未打开过被过滤的文件；不能把返回中无内容解释为操作系统隔离或无读取副作用。",
+          "过滤依赖实际权限规则、后端路径解析和原调用范围；宽泛根搜索或明确覆盖目标的已暂停调用有不同范围。本期未复现跨平台、竞态或全部自定义后端行为。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "DeepAgents 0.7.38 release",
+            "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents%3D%3D0.7.38",
+            "publishedAt": "2026-11-13T14:32:22.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Bulk search scope PR7706",
+            "url": "https://github.com/langchain-ai/deepagents/pull/7706"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Resolved path and bulk scope filters",
+            "url": "https://github.com/langchain-ai/deepagents/blob/c858b3641b13fb3f40fe3a12515517b81fb8a744/libs/deepagents/deepagents/middleware/filesystem.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Out-of-scope interrupt result assertions",
+            "url": "https://github.com/langchain-ai/deepagents/blob/c858b3641b13fb3f40fe3a12515517b81fb8a744/libs/deepagents/tests/unit_tests/test_permissions.py"
+          }
+        ],
+        "nextQuestions": [
+          "批准记录能否保存搜索根、glob模式与解析目标，并区分直接读取批准和批量搜索覆盖的范围？"
+        ]
+      },
+      {
+        "id": "ai-pydantic-output-limit-fallback",
+        "domain": "ai",
+        "topic": "model_inference",
+        "title": "Pydantic AI 2.68：ModelFallback默认切换被截断的非流式回答",
+        "whatHappened": "Pydantic AI 2.68.0于11月12日（UTC）发布，为输出token上限引入OutputTokenLimitExceeded，并将其加入ModelFallback默认条件；PR于11月11日合入，改变的是该capability的默认行为。",
+        "mechanism": "非流式响应的finish_reason为length时，在Agent接受并执行其中工具调用之前标记拒绝，再尝试下一模型；不仅是不完整JSON，已能解析的工具参数也拒绝。失败尝试保留记录和用量，所有模型都截断时抛出FallbackExceptionGroup。",
+        "workedExample": "上游FunctionModel回归覆盖文本、空响应、不完整工具参数、完整工具参数四种length响应，均改用backup；工具体若被执行会令测试失败，用量仍累计首模型的20个输出token。流式对照则保留截断文本及length，不自动切换。本期未请求模型或运行上游测试。",
+        "whyItMatters": "一段看似完整的文本和可解析的参数，都不能替代模型正常结束的信号。编排层需要把可展示、可执行、被拒绝与实际消耗分开记录，避免把预算截断当成一次正常完成。",
+        "risksAndLimits": [
+          "流已交给消费者后，结束原因才确定；这种流式length响应不会自动fallback，普通截断文本仍可作为输出。空输出或不完整结构化JSON可能抛错，不能承诺所有截断都会换模型。",
+          "FallbackModel包装器的默认仍为ModelAPIError；ModelFallback可显式排除OutputTokenLimitExceeded来恢复接受截断的行为。切换是单次模型请求级别，未证明总延迟、费用或后备模型质量达标。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Pydantic AI 2.68.0 release",
+            "url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.68.0",
+            "publishedAt": "2026-11-12T01:56:19.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Output limit fallback PR12407",
+            "url": "https://github.com/pydantic/pydantic-ai/pull/12407"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "ModelFallback default and stream boundary",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/d8bcca9ce06da5cdb998c8e15275cb1ae0865280/pydantic_ai_slim/pydantic_ai/capabilities/model_fallback.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Finish reason predicates",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/d8bcca9ce06da5cdb998c8e15275cb1ae0865280/pydantic_ai_slim/pydantic_ai/_fallback.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Rejected output and usage assertions",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/d8bcca9ce06da5cdb998c8e15275cb1ae0865280/tests/test_capability_model_fallback.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Streamed and non-streamed output assertions",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/d8bcca9ce06da5cdb998c8e15275cb1ae0865280/tests/models/test_openai.py"
+          }
+        ],
+        "nextQuestions": [
+          "产品是否同时保存finish_reason、failed_attempts、累计用量和最终输出，并明确流式截断后的人工或应用处理策略？"
+        ]
+      },
+      {
+        "id": "web3-metamask-eip7702-safe-integers",
+        "domain": "web3",
+        "topic": "security",
+        "title": "MetaMask eth-sig-util 10：EIP-7702数值进入哈希前，先拒绝不安全整数",
+        "whatHappened": "MetaMask/core v1423.0.0于11月13日（UTC）发布eth-sig-util 10.0.0，收紧EIP-7702授权中chainId和nonce的JavaScript number校验；相关PR于11月9日合入。",
+        "mechanism": "共享validateEIP7702Authorization在原有类型、非负与位宽范围检查之外，对chainId和nonce都要求Number.isSafeInteger；签名、恢复与哈希三个入口均调用它，在RLP编码和哈希前拒绝NaN、分数、无穷与超出安全整数范围的数值。",
+        "workedExample": "新增签名入口回归分别把两字段设置为NaN、1.5、Infinity及Number.MAX_SAFE_INTEGER加一，断言抛出对应字段错误。源码显示另外两个入口共用同一校验；新增这组参数化断言本身没有分别覆盖所有入口。本期未生成签名或操作账户。",
+        "whyItMatters": "JSON中的number进入密码学编码前可能已经丢失整数精度。先确认调用方实际表示的数值，再解释哈希和签名，能够避免把近似值当成用户原本授权的链或计数器。",
+        "risksAndLimits": [
+          "当前类型仍为number，实际接受范围受安全整数约束，比错误文案中的2^256或2^64更窄；该改动没有提供完整宽整数接口，也不保证更早发生的精度损失能被还原。",
+          "本项校验不核对链上当前nonce、账户授权状态或业务意图。10.0.0同时含ESM、异步加解密及Uint8Array等兼容变化，不能只套用这一补丁便声称升级已经验证。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "MetaMask core1423 release",
+            "url": "https://github.com/MetaMask/core/releases/tag/v1423.0.0",
+            "publishedAt": "2026-11-13T11:18:07.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "EIP7702 number validation PR11392",
+            "url": "https://github.com/MetaMask/core/pull/11392"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Shared authorization validation",
+            "url": "https://github.com/MetaMask/core/blob/1b6ad94752f27417985d1c1821f13cdc8fe3c957/packages/eth-sig-util/src/sign-eip7702-authorization.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Invalid number assertions",
+            "url": "https://github.com/MetaMask/core/blob/1b6ad94752f27417985d1c1821f13cdc8fe3c957/packages/eth-sig-util/src/sign-eip7702-authorization.test.ts"
+          }
+        ],
+        "nextQuestions": [
+          "API边界怎样明确整数的表示与范围，并在数字被JSON或类型转换舍入前保留或拒绝原值？"
+        ]
+      },
+      {
+        "id": "web3-foundry-safe-local-hash-crosscheck",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "Foundry 11月13日nightly：Safe交易摘要要同时对上本地字段、合约和服务",
+        "whatHappened": "Foundry于11月13日（UTC）发布的nightly包含Cast Safe本地哈希核对修复；PR同日合入，为propose、sign、simulate和execute共用交易字段校验，并增加预期链与RPC链ID一致性检查。",
+        "mechanism": "从交易字段和Safe地址分别计算含RPC链ID的标准EIP-712域哈希及不含链ID的旧域哈希，要求合约getTransactionHash返回其一；来自服务或文件的交易还须匹配指定Safe及自身safeTxHash。核对完成后展示链与字段，再进入签名或提交步骤。",
+        "workedExample": "上游以本地Anvil和服务stub让合约返回无关哈希，四类命令均报错，服务提交数与账户交易数为零；另一用例保留服务哈希却替换目标字段，签名入口拒绝并断言没有提交签名。本期只读固定nightly代码及断言，未启动节点、签名或广播。",
+        "whyItMatters": "服务给出一个摘要、RPC返回一个摘要，仍需要确认它们对应界面展示的同一组字段。把字段、本地计算、链身份和远端返回逐项关联，才能解释授权对象是否一致。",
+        "risksAndLimits": [
+          "这是指定nightly中的实现证据，不能称稳定版或当前用户环境已部署。匹配哈希不证明RPC可信、Safe代码可信、所有者阈值满足或交易一定执行成功；simulate本身也不验证全部执行门槛。",
+          "旧Safe标准域不含链ID，代码保留支持并发出跨链重放警告，不会自动升级为链绑定签名；未知自定义哈希被拒绝。本期没有复现上游测试或资金安全验收。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Foundry November13 nightly release",
+            "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-36a8cbbfda1d78f7098cfe071c7bd90eb6eb3df6",
+            "publishedAt": "2026-11-13T07:10:23.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Local Safe hash verification PR18418",
+            "url": "https://github.com/foundry-rs/foundry/pull/18418"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Two standard domains and service comparison",
+            "url": "https://github.com/foundry-rs/foundry/blob/36a8cbbfda1d78f7098cfe071c7bd90eb6eb3df6/crates/cast/src/cmd/safe/service.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Expected chain and RPC comparison",
+            "url": "https://github.com/foundry-rs/foundry/blob/36a8cbbfda1d78f7098cfe071c7bd90eb6eb3df6/crates/cast/src/cmd/safe/mod.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Verify before signing or submitting",
+            "url": "https://github.com/foundry-rs/foundry/blob/36a8cbbfda1d78f7098cfe071c7bd90eb6eb3df6/crates/cast/src/cmd/safe/proposal.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Mismatch and no submission assertions",
+            "url": "https://github.com/foundry-rs/foundry/blob/36a8cbbfda1d78f7098cfe071c7bd90eb6eb3df6/crates/cast/tests/cli/safe.rs"
+          }
+        ],
+        "nextQuestions": [
+          "审批记录能否把所选链、Safe地址、完整字段、本地哈希和服务返回绑定在同一份不可变待签内容上？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-pydantic-stream-output-acceptance",
+      "domain": "ai",
+      "topic": "model_inference",
+      "title": "专题：模型达到输出上限，展示、执行与完成为什么要分别判定",
+      "whatHappened": "Pydantic AI 2.68的ModelFallback在非流式路径拒绝length响应，而流式路径已交出的内容继续保留。相同的输出上限，因响应是否已暴露给消费者而进入不同控制流。",
+      "mechanism": "非流式路径先检查整份响应，再决定接受、记录拒绝或请求下一模型；已开始向消费者交付的流无法撤回，结束原因只在尾部确定。框架因此不把这种流式截断包装成无缝切换，应用要自行解释可见内容和最终状态。",
+      "workedExample": "可以把上游两组回归并排审阅：FunctionModel的完整工具参数即使可解析，只要响应为length，工具体仍不应执行；流式模型的截断句子仍被返回，finish_reason保留length。由此推得，界面可显示部分文本，但具有副作用的动作应另设完成与授权门槛；后半句是工程推论，本期未实现该产品策略。",
+      "whyItMatters": "Agent日志常把最后一段文字当成任务完成。若同时记录交付模式、结束原因、工具是否执行、替代尝试及用量，产品才能向用户解释当前是部分输出、已拒绝尝试，还是得到最终可用结果。",
+      "risksAndLimits": [
+        "fallback不等于重新执行整项任务，也不保证后备回答语义正确。先前请求已经产生的副作用不会因此自动撤销；同样不能把累计token当成仅最终回答的成本。",
+        "这里的length是模型提供的结束信号；缺失或错误的provider映射不能由本项自动修复。应用若将max_tokens刻意设为文案长度限制，应明确选择接受截断还是切换，避免误判产品策略。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "Pydantic AI 2.68.0 release",
+          "url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.68.0",
+          "publishedAt": "2026-11-12T01:56:19.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "Output limit fallback PR12407",
+          "url": "https://github.com/pydantic/pydantic-ai/pull/12407"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "ModelFallback default and stream boundary",
+          "url": "https://github.com/pydantic/pydantic-ai/blob/d8bcca9ce06da5cdb998c8e15275cb1ae0865280/pydantic_ai_slim/pydantic_ai/capabilities/model_fallback.py"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Finish reason predicates",
+          "url": "https://github.com/pydantic/pydantic-ai/blob/d8bcca9ce06da5cdb998c8e15275cb1ae0865280/pydantic_ai_slim/pydantic_ai/_fallback.py"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Rejected output and usage assertions",
+          "url": "https://github.com/pydantic/pydantic-ai/blob/d8bcca9ce06da5cdb998c8e15275cb1ae0865280/tests/test_capability_model_fallback.py"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Streamed and non-streamed output assertions",
+          "url": "https://github.com/pydantic/pydantic-ai/blob/d8bcca9ce06da5cdb998c8e15275cb1ae0865280/tests/models/test_openai.py"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Versioned fallback and streaming contract",
+          "url": "https://github.com/pydantic/pydantic-ai/blob/d8bcca9ce06da5cdb998c8e15275cb1ae0865280/docs/capabilities/model-fallback.md"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Incomplete structured stream output error",
+          "url": "https://github.com/pydantic/pydantic-ai/blob/d8bcca9ce06da5cdb998c8e15275cb1ae0865280/pydantic_ai_slim/pydantic_ai/result.py"
+        }
+      ],
+      "nextQuestions": [
+        "验收是否包含同一请求的非流式、已开始流式、完整工具参数但length、全后备均截断四类情况，并核对每类执行回执？"
+      ],
+      "basedOnBriefId": "ai-pydantic-output-limit-fallback"
+    },
+    "sourceUrls": [
+      "https://github.com/langchain-ai/deepagents/releases/tag/deepagents%3D%3D0.7.38",
+      "https://github.com/langchain-ai/deepagents/pull/7706",
+      "https://github.com/langchain-ai/deepagents/blob/c858b3641b13fb3f40fe3a12515517b81fb8a744/libs/deepagents/deepagents/middleware/filesystem.py",
+      "https://github.com/langchain-ai/deepagents/blob/c858b3641b13fb3f40fe3a12515517b81fb8a744/libs/deepagents/tests/unit_tests/test_permissions.py",
+      "https://github.com/pydantic/pydantic-ai/releases/tag/v2.68.0",
+      "https://github.com/pydantic/pydantic-ai/pull/12407",
+      "https://github.com/pydantic/pydantic-ai/blob/d8bcca9ce06da5cdb998c8e15275cb1ae0865280/pydantic_ai_slim/pydantic_ai/capabilities/model_fallback.py",
+      "https://github.com/pydantic/pydantic-ai/blob/d8bcca9ce06da5cdb998c8e15275cb1ae0865280/pydantic_ai_slim/pydantic_ai/_fallback.py",
+      "https://github.com/pydantic/pydantic-ai/blob/d8bcca9ce06da5cdb998c8e15275cb1ae0865280/tests/test_capability_model_fallback.py",
+      "https://github.com/pydantic/pydantic-ai/blob/d8bcca9ce06da5cdb998c8e15275cb1ae0865280/tests/models/test_openai.py",
+      "https://github.com/MetaMask/core/releases/tag/v1423.0.0",
+      "https://github.com/MetaMask/core/pull/11392",
+      "https://github.com/MetaMask/core/blob/1b6ad94752f27417985d1c1821f13cdc8fe3c957/packages/eth-sig-util/src/sign-eip7702-authorization.ts",
+      "https://github.com/MetaMask/core/blob/1b6ad94752f27417985d1c1821f13cdc8fe3c957/packages/eth-sig-util/src/sign-eip7702-authorization.test.ts",
+      "https://github.com/foundry-rs/foundry/releases/tag/nightly-36a8cbbfda1d78f7098cfe071c7bd90eb6eb3df6",
+      "https://github.com/foundry-rs/foundry/pull/18418",
+      "https://github.com/foundry-rs/foundry/blob/36a8cbbfda1d78f7098cfe071c7bd90eb6eb3df6/crates/cast/src/cmd/safe/service.rs",
+      "https://github.com/foundry-rs/foundry/blob/36a8cbbfda1d78f7098cfe071c7bd90eb6eb3df6/crates/cast/src/cmd/safe/mod.rs",
+      "https://github.com/foundry-rs/foundry/blob/36a8cbbfda1d78f7098cfe071c7bd90eb6eb3df6/crates/cast/src/cmd/safe/proposal.rs",
+      "https://github.com/foundry-rs/foundry/blob/36a8cbbfda1d78f7098cfe071c7bd90eb6eb3df6/crates/cast/tests/cli/safe.rs",
+      "https://github.com/pydantic/pydantic-ai/blob/d8bcca9ce06da5cdb998c8e15275cb1ae0865280/docs/capabilities/model-fallback.md",
+      "https://github.com/pydantic/pydantic-ai/blob/d8bcca9ce06da5cdb998c8e15275cb1ae0865280/pydantic_ai_slim/pydantic_ai/result.py"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-11-14-bf7daf4ce2309628",
+    "asOf": "2026-11-13T21:46:48.906Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
+  {
     "date": "2026-11-13",
     "slug": "2026-11-13",
     "title": "学习雷达 · 2026-11-13",
@@ -3700,286 +4089,6 @@ export const latestRadars: DailyRadar[] = [
     "marketSignals": [],
     "snapshotId": "learning-2026-11-07-4ff423a39f0cc42c",
     "asOf": "2026-11-06T21:31:30.000Z",
-    "origin": "research",
-    "publicationState": "published"
-  },
-  {
-    "date": "2026-11-06",
-    "slug": "2026-11-06",
-    "title": "学习雷达 · 2026-11-06",
-    "summary": "AI 看恢复回答与当前中断的对应关系、摘要边界如何跟随消息身份；Web3 看整组模拟的资源约束与跨轮状态探索。专题拆解重复回答为什么不能自动变成下一题的批准。",
-    "publish": true,
-    "reviewStatus": "automated",
-    "schemaVersion": 2,
-    "editionMode": "daily",
-    "researchedAt": "2026-11-05T21:34:40.000Z",
-    "generatedAt": "2026-11-05T21:34:40.000Z",
-    "sourceSections": [
-      "ai",
-      "web3",
-      "deepDive"
-    ],
-    "missingSections": [],
-    "briefs": [
-      {
-        "id": "ai-langgraph-strict-interrupt-resume",
-        "domain": "ai",
-        "topic": "safety",
-        "title": "LangGraph 1.2.20：严格恢复模式先核对回答是否仍在等待集合",
-        "whatHappened": "LangGraph 于11月5日（UTC）发布1.2.20，新增可选的严格恢复模式：按中断ID提交的回答若已不在等待集合，根图在写入前报错。同版也让同一任务先后提出的问题使用不同ID，避免第一题的重复回答被第二题接收。",
-        "mechanism": "严格检查通过私有配置键启用，比较本次恢复映射与当前待答中断；空映射、多项待答却只给一个值也有明确错误。中断ID结合任务命名空间和已收到的回答数；节点自动重试时重置调用计数，以复用已有回答。",
-        "workedExample": "纸面流程可让一个节点先问“草稿是否通过”，收到ID A的回答后，再问“是否发送”并给出ID B。在当前检查点启用严格模式后，重复提交A应得到not_pending，再用B回答第二题。本期只读发布、固定版本代码和上游断言，未执行图或发送消息。",
-        "whyItMatters": "长任务的回答可能因客户端重试而迟到。恢复协议需要保留它回答的是哪一次问题；仅把一个yes交回仍在暂停的任务，不能解释批准范围是否仍然对应当前问题。这项检查也不替代业务权限与执行确认。",
-        "risksAndLimits": [
-          "严格模式默认未启用，入口是私有配置键；RemoteGraph会移除该键，远端由自身决定，不能据客户端配置宣称服务端已启用。",
-          "检查跳过嵌套图及已被后续状态取代的旧检查点；旧版本保存的共用ID有兼容路径，因此不能概括为所有重复回答、所有历史回放都一律拒绝。",
-          "没有待答中断的单值恢复仍可用于静态断点；本期未重跑上游测试，也未核验任何应用已经采用该模式。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "LangGraph 1.2.20 official release",
-            "url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.20",
-            "publishedAt": "2026-11-05T02:20:53.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "LangGraph PR 9574: opt-in strict resume validation",
-            "url": "https://github.com/langchain-ai/langgraph/pull/9574"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "LangGraph PR 9589: distinct interrupt IDs within one task",
-            "url": "https://github.com/langchain-ai/langgraph/pull/9589"
-          }
-        ],
-        "nextQuestions": [
-          "客户端提交的是本轮状态返回的中断ID，还是先前缓存的回答入口？",
-          "检查点回放、远端执行与自动重试时，批准和实际副作用分别留下了哪些证据？"
-        ]
-      },
-      {
-        "id": "ai-deepagents-message-id-summary-cutoff",
-        "domain": "ai",
-        "topic": "agent",
-        "title": "Deep Agents 0.7.34：历史列表变动后，摘要截点仍跟随同一条消息",
-        "whatHappened": "Deep Agents 于11月5日21:15（UTC）发布0.7.34，修复摘要边界仅靠列表下标定位的问题。摘要事件新增cutoff_message_id，记录摘要之后第一条完整保留消息的ID，供后续模型输入与再次摘要定位边界。",
-        "mechanism": "自动摘要的同步、异步路径和compact_conversation工具都会保存该ID。重建模型可见消息时先在当前历史中查找ID，找不到或旧事件没有此字段时才回退到cutoff_index；串联摘要也先解析旧边界，再换算新位置。",
-        "workedExample": "设A至D已被摘要，E、F保留原文。若之后删除B，E从下标4移到3；继续从旧下标4切片会漏掉E，按E的ID定位则保留E、F。上游新增了相应断言和检查点样例，本期只阅读，未调用模型或重跑这些测试。",
-        "whyItMatters": "长期Agent的原始会话、摘要事件和模型可见消息是不同层。边界引用稳定的消息身份，可以解释历史编辑后模型到底看到了哪一段，减少仅因列表位置改变而静默遗漏仍应保留的上下文。",
-        "risksAndLimits": [
-          "消息没有ID、边界消息已不存在或旧事件缺字段时，仍回退到位置下标；不能声称任意编辑历史后边界都绝对正确。",
-          "该补丁不删除或重排存储的会话，也不会从既有摘要中清除已删除内容；计划中的分页Turns API和界面摘要标记并未由此实现。",
-          "这是deepagents SDK的0.7.34，不是此前deepagents-code 0.2.4的中断消息来源修复；版本发布也不证明下游已经升级。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "Deep Agents SDK 0.7.34 official release",
-            "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents%3D%3D0.7.34",
-            "publishedAt": "2026-11-05T21:15:33.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "Deep Agents PR 7567: anchor summarization cutoff by message ID",
-            "url": "https://github.com/langchain-ai/deepagents/pull/7567"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Deep Agents 0.7.34 summarization implementation",
-            "url": "https://github.com/langchain-ai/deepagents/blob/9ea3f1912abd8b7eecb504d78ef99fcf279bf561/libs/deepagents/deepagents/middleware/summarization.py"
-          }
-        ],
-        "nextQuestions": [
-          "边界消息被删除、没有ID或来自旧检查点时，回退行为是否能被审计？",
-          "原文删除、模型输入裁剪和摘要内容更新，是否分别完成了所需的数据处置？"
-        ]
-      },
-      {
-        "id": "web3-reth-callbundle-shared-work-budget",
-        "domain": "web3",
-        "topic": "onchain_infrastructure",
-        "title": "Reth 2.10.0：整组模拟共用gas预算，并进入阻塞任务并发限制",
-        "whatHappened": "Reth 于11月5日（UTC）发布2.10.0，收紧eth_callBundle模拟的工作范围。此前每笔交易分别检查gas，整组请求未取得阻塞IO许可，也不检查取消；新版本让整组模拟取得许可、共享gas池，并在每笔交易前检查取消状态。",
-        "mechanism": "请求先取得受rpc.max-blocking-io-requests约束的许可，在线程中的模拟结束前持有。每笔交易的gas准入与已用预算共同决定能否继续；EIP-8037生效的环境分别核对常规gas和状态gas池。显式gasLimit仍不能超过节点配置的调用上限。",
-        "workedExample": "上游新增样例用两笔各需21,000 gas的转账：整组预算41,999时要求报错，42,000时允许完成；另占住唯一阻塞许可，要求模拟等待。这里报告的是源码中的测试意图，本期未运行节点、模拟或广播交易。",
-        "whyItMatters": "钱包和基础设施服务常把多笔操作组合成一次只读模拟。单笔允许的工作量、整组累计工作量与同时运行多少组是三个约束；有gas限制并不自动说明请求进入了服务的并发控制。",
-        "risksAndLimits": [
-          "timeout请求字段仍被忽略，取消只在交易之间检查；这不是每笔执行途中立即停止，也不是以秒计的硬超时保证。",
-          "该行为针对eth_callBundle，不能扩展为所有RPC都已获得同样约束；分叉后的双gas池语义应按实际模拟环境核对。",
-          "本期核对的是正式发布与固定版本实现，没有独立验证生产节点升级、断连取消延迟或服务容量。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "Reth v2.10.0 official release",
-            "url": "https://github.com/paradigmxyz/reth/releases/tag/v2.10.0",
-            "publishedAt": "2026-11-05T16:18:11.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "Reth PR 28253: bound eth_callBundle work",
-            "url": "https://github.com/paradigmxyz/reth/pull/28253"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Reth 2.10.0 bundle simulation implementation",
-            "url": "https://github.com/paradigmxyz/reth/blob/f5192ac72d92bc1e656a6939796421af76544af4/crates/rpc/rpc/src/eth/bundle.rs"
-          }
-        ],
-        "nextQuestions": [
-          "部署节点实际的调用gas上限和阻塞请求并发数各是多少，组合请求是否共同遵守？",
-          "取消发生在排队、交易之间还是单笔执行途中，分别何时释放许可？"
-        ]
-      },
-      {
-        "id": "web3-foundry-snapshot-invariant-fuzzing",
-        "domain": "web3",
-        "topic": "security",
-        "title": "Foundry 11月5日nightly：从有价值的旧状态继续探索不变量",
-        "whatHappened": "Foundry 于11月5日（UTC）发布固定提交fb90b1c的nightly预发布，包含快照式不变量模糊测试。测试轮次可以从先前探索中保存的状态继续发起新调用，使整个测试活动有机会到达超过单轮depth的状态，而非每轮都回到setUp之后。",
-        "mechanism": "成功调用的存储变化被压成状态特征，出现新特征时保存执行器和到达该状态的调用前缀，再按特征稀有度与探索收益选择起点。每个槽先保留小规模精确值集合，超过64个不同值后改用分布桶；反例仍携带可从setUp重放的前缀。",
-        "workedExample": "固定版本的上游回归把depth设为10，要求找到计数达到20时的不变量失败，再要求保存的反例从setUp重放仍失败。这是对跨轮探索和失败可复现性的两条源码断言，本期没有编译Foundry、执行测试或复现其性能报告。",
-        "whyItMatters": "合约失效条件可能需要多轮调用积累状态。测试深度参数与整个活动能到达的状态范围不能简单画等号；保留失败路径的完整前缀，才能让更深探索产出的反例继续被审查和重放。",
-        "risksAndLimits": [
-          "这是nightly预发布，不能写成稳定版已包含或主网已验证；实现默认启用，依赖每轮全新状态的handler或afterInvariant假设可能需要调整。",
-          "快照筛选是启发式搜索，不能证明未发现问题就没有漏洞；前缀长度、动态创建目标与快照保留规则都会限制探索。",
-          "快照池按存储槽预算淘汰但至少保留两个，并非进程内存的硬上限；本期未采用上游性能数字作为自行实测结论。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_prerelease",
-            "name": "Foundry fixed-commit November 5 nightly prerelease",
-            "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-fb90b1c0940ebe8d8e6db70edf01941f0ab860dd",
-            "publishedAt": "2026-11-05T07:17:38.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "Foundry PR 18018: snapshot invariant fuzzing",
-            "url": "https://github.com/foundry-rs/foundry/pull/18018"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Foundry November 5 nightly state snapshot implementation",
-            "url": "https://github.com/foundry-rs/foundry/blob/fb90b1c0940ebe8d8e6db70edf01941f0ab860dd/crates/evm/evm/src/executors/invariant/snapshot.rs"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "Foundry fixed-commit snapshot replay regression assertions",
-            "url": "https://github.com/foundry-rs/foundry/blob/fb90b1c0940ebe8d8e6db70edf01941f0ab860dd/crates/forge/tests/cli/test_cmd/invariant/snapshot.rs"
-          }
-        ],
-        "nextQuestions": [
-          "现有handler或收尾钩子是否暗中假设每轮都从setUp状态开始？",
-          "深状态反例保存的前缀能否在同一版本、种子与配置下独立重放？"
-        ]
-      }
-    ],
-    "deepDive": {
-      "id": "deep-interrupt-answer-identity",
-      "domain": "ai",
-      "topic": "safety",
-      "title": "专题：第一题的重复回答，为什么不能自动成为第二题的批准",
-      "whatHappened": "LangGraph 1.2.20把两个配套变化放在同一发布中：严格恢复检查回答的ID是否仍待处理，同一任务的后续中断则获得新的ID。仅做前一项仍会留缺口：如果第一题和第二题共用ID，第一题的重复回答看起来仍然匹配待答集合。",
-      "mechanism": "新版按任务命名空间与已有回答数量生成中断ID，而不按并行调用的先后次序；第一题沿用旧命名空间哈希。根图在当前检查点、严格模式下先核对恢复映射，再写入状态；自动重试从节点首行重跑时重置中断调用计数，使已保存的回答按原槽位复用。",
-      "workedExample": "纸面审查可记录五步：读取问题A及ID A、提交A的回答、重新读取问题B及ID B、重发A、再提交B。对新版当前检查点的严格路径，第四步应得到not_pending并保留B待答，第五步才对应B。另列旧ID兼容回放、静态断点和节点重试，分别核对行为；本期未执行这些场景。",
-      "whyItMatters": "同一个会话或任务仍在运行，不能证明一份旧回答仍对当前问题有效。编辑推论是：审批界面应显示本轮具体对象，并把回答、待答状态、业务参数与副作用回执关联起来；中断ID检查只解决其中的恢复匹配问题，不替应用定义完整授权协议。",
-      "risksAndLimits": [
-        "私有严格开关、远端配置过滤、嵌套执行与旧检查点回放各有边界；不能把这个局部机制包装成所有部署默认具备的审批安全保证。",
-        "为旧版保存的共用ID保留了兼容路径，静态断点也允许无待答中断的单值恢复。应用仍需区分正常恢复、历史重放与新的业务授权。",
-        "上游测试文件包含重复回答拒绝、第二题ID、自动重试复用等断言；本期未重跑，也未独立核验其运行结果，不据此宣称消息发送或其他外部操作已做到恰好一次。"
-      ],
-      "sources": [
-        {
-          "tier": "tier1",
-          "role": "event",
-          "kind": "official_release",
-          "name": "LangGraph 1.2.20 official release",
-          "url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.20",
-          "publishedAt": "2026-11-05T02:20:53.000Z"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_implementation_change",
-          "name": "LangGraph PR 9574: opt-in strict resume validation",
-          "url": "https://github.com/langchain-ai/langgraph/pull/9574"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_implementation_change",
-          "name": "LangGraph PR 9589: distinct interrupt IDs within one task",
-          "url": "https://github.com/langchain-ai/langgraph/pull/9589"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_code",
-          "name": "LangGraph 1.2.20 interrupt identity implementation",
-          "url": "https://github.com/langchain-ai/langgraph/blob/a4d4187e82cdb0a73d68c76d70d655dd73a6db0b/libs/langgraph/langgraph/types.py"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_code",
-          "name": "LangGraph 1.2.20 root resume validation implementation",
-          "url": "https://github.com/langchain-ai/langgraph/blob/a4d4187e82cdb0a73d68c76d70d655dd73a6db0b/libs/langgraph/langgraph/pregel/_loop.py"
-        }
-      ],
-      "nextQuestions": [
-        "批准回答所绑定的业务参数变化后，应用会重新提问，还是沿用旧恢复入口？",
-        "重试与历史重放能否复用计算状态，同时让外部副作用保持可审计？"
-      ],
-      "basedOnBriefId": "ai-langgraph-strict-interrupt-resume"
-    },
-    "sourceUrls": [
-      "https://github.com/langchain-ai/langgraph/releases/tag/1.2.20",
-      "https://github.com/langchain-ai/langgraph/pull/9574",
-      "https://github.com/langchain-ai/langgraph/pull/9589",
-      "https://github.com/langchain-ai/deepagents/releases/tag/deepagents%3D%3D0.7.34",
-      "https://github.com/langchain-ai/deepagents/pull/7567",
-      "https://github.com/langchain-ai/deepagents/blob/9ea3f1912abd8b7eecb504d78ef99fcf279bf561/libs/deepagents/deepagents/middleware/summarization.py",
-      "https://github.com/paradigmxyz/reth/releases/tag/v2.10.0",
-      "https://github.com/paradigmxyz/reth/pull/28253",
-      "https://github.com/paradigmxyz/reth/blob/f5192ac72d92bc1e656a6939796421af76544af4/crates/rpc/rpc/src/eth/bundle.rs",
-      "https://github.com/foundry-rs/foundry/releases/tag/nightly-fb90b1c0940ebe8d8e6db70edf01941f0ab860dd",
-      "https://github.com/foundry-rs/foundry/pull/18018",
-      "https://github.com/foundry-rs/foundry/blob/fb90b1c0940ebe8d8e6db70edf01941f0ab860dd/crates/evm/evm/src/executors/invariant/snapshot.rs",
-      "https://github.com/foundry-rs/foundry/blob/fb90b1c0940ebe8d8e6db70edf01941f0ab860dd/crates/forge/tests/cli/test_cmd/invariant/snapshot.rs",
-      "https://github.com/langchain-ai/langgraph/blob/a4d4187e82cdb0a73d68c76d70d655dd73a6db0b/libs/langgraph/langgraph/types.py",
-      "https://github.com/langchain-ai/langgraph/blob/a4d4187e82cdb0a73d68c76d70d655dd73a6db0b/libs/langgraph/langgraph/pregel/_loop.py"
-    ],
-    "relatedProjectSlugs": [],
-    "marketSignals": [],
-    "snapshotId": "learning-2026-11-06-76bb74905e43f384",
-    "asOf": "2026-11-05T21:34:40.000Z",
     "origin": "research",
     "publicationState": "published"
   }
