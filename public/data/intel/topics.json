@@ -4,6 +4,38 @@
   "homePageUrl": "https://xoqiu.cn/",
   "topics": [
     {
+      "topic": "agent",
+      "domain": "ai",
+      "count": 13,
+      "lastSeen": "2026-11-13",
+      "firstSeen": "2026-08-11",
+      "url": "https://xoqiu.cn/topics/agent"
+    },
+    {
+      "topic": "wallet_cex",
+      "domain": "web3",
+      "count": 12,
+      "lastSeen": "2026-11-13",
+      "firstSeen": "2026-08-10",
+      "url": "https://xoqiu.cn/topics/wallet_cex"
+    },
+    {
+      "topic": "safety",
+      "domain": "ai",
+      "count": 10,
+      "lastSeen": "2026-11-13",
+      "firstSeen": "2026-10-13",
+      "url": "https://xoqiu.cn/topics/safety"
+    },
+    {
+      "topic": "security",
+      "domain": "web3",
+      "count": 9,
+      "lastSeen": "2026-11-13",
+      "firstSeen": "2026-08-10",
+      "url": "https://xoqiu.cn/topics/security"
+    },
+    {
       "topic": "market_equity",
       "domain": "market",
       "count": 1,
@@ -36,30 +68,6 @@
       "url": "https://xoqiu.cn/topics/infrastructure"
     },
     {
-      "topic": "wallet_cex",
-      "domain": "web3",
-      "count": 11,
-      "lastSeen": "2026-11-12",
-      "firstSeen": "2026-08-10",
-      "url": "https://xoqiu.cn/topics/wallet_cex"
-    },
-    {
-      "topic": "safety",
-      "domain": "ai",
-      "count": 9,
-      "lastSeen": "2026-11-12",
-      "firstSeen": "2026-10-13",
-      "url": "https://xoqiu.cn/topics/safety"
-    },
-    {
-      "topic": "agent",
-      "domain": "ai",
-      "count": 12,
-      "lastSeen": "2026-11-11",
-      "firstSeen": "2026-08-11",
-      "url": "https://xoqiu.cn/topics/agent"
-    },
-    {
       "topic": "l2",
       "domain": "web3",
       "count": 7,
@@ -82,14 +90,6 @@
       "lastSeen": "2026-11-09",
       "firstSeen": "2026-08-12",
       "url": "https://xoqiu.cn/topics/protocol"
-    },
-    {
-      "topic": "security",
-      "domain": "web3",
-      "count": 8,
-      "lastSeen": "2026-11-06",
-      "firstSeen": "2026-08-10",
-      "url": "https://xoqiu.cn/topics/security"
     },
     {
       "topic": "model_inference",

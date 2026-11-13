@@ -12,6 +12,48 @@ export interface RadarIndexEntry { date: string; slug: string; snapshotId: strin
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-11-13",
+    "slug": "2026-11-13",
+    "snapshotId": "learning-2026-11-13-3af6e31e4caa981f",
+    "asOf": "2026-11-12T21:45:13.583Z",
+    "title": "学习雷达 · 2026-11-13",
+    "summary": "AI看FIFO下载的等待边界与子图完整路径；Web3看退休root key验签和MFA签名主体。专题拆解签名成立、账户权限与验签时点。",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "briefs": [
+      {
+        "id": "ai-deepagents-fifo-download-nonblocking",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "DeepAgents 0.7.36：下载FIFO时，不再等待一个尚未出现的写入者"
+      },
+      {
+        "id": "ai-langgraph-exact-subgraph-namespace",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "LangGraph 1.2.21：research_review与research里的review，要按完整路径区分"
+      },
+      {
+        "id": "web3-viem-retired-root-verification",
+        "domain": "web3",
+        "topic": "security",
+        "title": "viem 2.57.19：root key已退休，恢复出账户地址仍不能放行"
+      },
+      {
+        "id": "web3-metamask-mfa-signer-nonatomic-quote",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "MetaMask支付31.2：报价是否原子化，要看实际签委托的MFA账户"
+      }
+    ],
+    "deepDive": {
+      "id": "deep-viem-signature-authority-at-block",
+      "title": "专题：先固定验签时点，再解释一把旧密钥还有没有权限",
+      "basedOnBriefId": "web3-viem-retired-root-verification"
+    },
+    "marketSignals": []
+  },
+  {
     "date": "2026-11-12",
     "slug": "2026-11-12",
     "snapshotId": "learning-2026-11-12-5116c14a8b3e1cfd",
@@ -1825,6 +1867,346 @@ export const radarIndex: RadarIndexEntry[] = [
 
 export const latestRadars: DailyRadar[] = [
   {
+    "date": "2026-11-13",
+    "slug": "2026-11-13",
+    "title": "学习雷达 · 2026-11-13",
+    "summary": "AI看FIFO下载的等待边界与子图完整路径；Web3看退休root key验签和MFA签名主体。专题拆解签名成立、账户权限与验签时点。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-11-12T21:45:13.583Z",
+    "generatedAt": "2026-11-12T21:45:13.583Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-deepagents-fifo-download-nonblocking",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "DeepAgents 0.7.36：下载FIFO时，不再等待一个尚未出现的写入者",
+        "whatHappened": "DeepAgents 0.7.36于11月12日（UTC）发布，修复FilesystemBackend.download_files打开FIFO后等待写入者、调用不能返回的问题；相关PR于11月10日合入。",
+        "mechanism": "打开文件时在操作系统支持的情况下加入O_NONBLOCK与O_NOFOLLOW，再对已打开的描述符执行fstat；只有普通文件才读取内容，FIFO或设备等非普通文件返回file_not_found。目录仍走is_directory分支。",
+        "workedExample": "上游回归创建一个没有写入者的FIFO，调用download_files后断言content为None、error为file_not_found；测试设置10秒保护阈值，并在没有os.mkfifo的平台跳过。本期只读断言，未创建管道或运行上游测试。",
+        "whyItMatters": "Agent拿到的路径可能指向管道或设备，名字像文件并不保证读取会立即结束；同时，这里的file_not_found也可能表示类型被拒绝，调用方不能仅据错误名断定路径不存在。",
+        "risksAndLimits": [
+          "O_NONBLOCK不受支持时getattr回退为0，不能据此承诺所有平台均不阻塞；普通文件仍完整读入，未新增文件大小上限或总读取期限。",
+          "10秒是上游测试的超时保护，不是下载接口新增的产品超时；本期未验证吞吐、跨平台表现或消除所有资源耗尽路径。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "DeepAgents 0.7.36 release",
+            "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents%3D%3D0.7.36",
+            "publishedAt": "2026-11-12T16:14:22.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "FIFO download PR7663",
+            "url": "https://github.com/langchain-ai/deepagents/pull/7663"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Descriptor file-type check",
+            "url": "https://github.com/langchain-ai/deepagents/blob/f1ae345a3f503f376ffe2beba0e2b235c43f06db/libs/deepagents/deepagents/backends/filesystem.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "FIFO rejection assertion",
+            "url": "https://github.com/langchain-ai/deepagents/blob/f1ae345a3f503f376ffe2beba0e2b235c43f06db/libs/deepagents/tests/unit_tests/backends/test_filesystem_backend.py"
+          }
+        ],
+        "nextQuestions": [
+          "调用方怎样分别记录不存在、类型拒绝、权限错误与读取超时，并为普通大文件另设字节预算？"
+        ]
+      },
+      {
+        "id": "ai-langgraph-exact-subgraph-namespace",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "LangGraph 1.2.21：research_review与research里的review，要按完整路径区分",
+        "whatHappened": "LangGraph 1.2.21于11月12日（UTC）发布，包含Python get_subgraphs的命名空间修复；PR于11月6日合入，解决字符串前缀误匹配及循环内改写namespace的问题。",
+        "mechanism": "每层只接受namespace等于节点名或以节点名加分隔符开头；递归后缀使用局部变量，兄弟节点继续看到原namespace。指定路径时只产出该子图，状态更新查找复用这一筛选，找不到声明子图则报错。",
+        "workedExample": "上游同步和异步测试同时放入research、research_review、review及research|review，断言每次精确查询只得到对应图；另测research内部没有声明review时，更新research|review须报错，不能写到顶层同名图。本期未运行图或持久化后端。",
+        "whyItMatters": "多Agent图常用近似的任务名。名称前缀相同不等于同一路径，查看或编辑状态之前应先核对完整命名空间，避免把另一个节点的状态当作目标。",
+        "risksAndLimits": [
+          "这是Python图遍历与状态定位的修复，不建立租户授权，也不证明历史持久化数据已修复、恢复批准有效或外部工具副作用被撤销。",
+          "关联PR明确JS实现仍需后续修复，不能将Python发布外推为JS同版已修复；本期只读固定tag代码及同步、异步断言。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "LangGraph 1.2.21 release",
+            "url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.21",
+            "publishedAt": "2026-11-12T18:06:43.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Namespace segment PR9615",
+            "url": "https://github.com/langchain-ai/langgraph/pull/9615"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Exact namespace traversal",
+            "url": "https://github.com/langchain-ai/langgraph/blob/a054ed08dcee7ecc4105706d38c0b4aa0b3c3c32/libs/langgraph/langgraph/pregel/main.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Sync namespace assertions",
+            "url": "https://github.com/langchain-ai/langgraph/blob/a054ed08dcee7ecc4105706d38c0b4aa0b3c3c32/libs/langgraph/tests/test_subgraph_persistence.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Async namespace assertions",
+            "url": "https://github.com/langchain-ai/langgraph/blob/a054ed08dcee7ecc4105706d38c0b4aa0b3c3c32/libs/langgraph/tests/test_subgraph_persistence_async.py"
+          }
+        ],
+        "nextQuestions": [
+          "状态查看和编辑入口是否同时展示完整路径、线程身份与授权依据，而非只展示末级节点名？"
+        ]
+      },
+      {
+        "id": "web3-viem-retired-root-verification",
+        "domain": "web3",
+        "topic": "security",
+        "title": "viem 2.57.19：root key已退休，恢复出账户地址仍不能放行",
+        "whatHappened": "viem 2.57.19于11月12日（UTC）发布，修复Tempo验签hook曾接受已被config commitment退休的secp256k1 root key；同日合入的PR覆盖verifyHash及经此路径的消息与SIWE验签。",
+        "mechanism": "签名能恢复出账户地址时，将核心验签与getConfigCommitment并行执行，两者都传入调用者选择的blockHash、blockNumber、blockTag及requireCanonical；只有核心验签通过且commitment为零才返回true，未恢复成该地址的签名沿原路径处理。",
+        "workedExample": "上游节点测试用同一份签名，断言账户升级前七种模式或入口为true、升级后均为false，包括eoa、字节与对象签名、verifyMessage和verifySiweMessage；另以未知区块断言读取失败会reject。本期只读测试，未启动节点或连接钱包。",
+        "whyItMatters": "密码学上能证明某把旧密钥签过消息，不等于它在所选链和区块仍代表该账户。钱包登录或授权服务要把验签时点与账户当前权限一起解释。",
+        "risksAndLimits": [
+          "本项针对Tempo hook与相应账户配置状态；区块参数决定读取时点，不能把升级后的拒绝解释为旧签名在所有历史时点都无效，也不证明目标链已部署相关能力。",
+          "eoa模式也新增链读取；传输或未知区块错误不能当成未退休。只有getConfigCommitment匹配无数据合约调用错误时返回零，其他错误继续抛出；本期未复现上游节点结果。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "viem 2.57.19 release",
+            "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.19",
+            "publishedAt": "2026-11-12T05:20:04.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Retired root key PR5498",
+            "url": "https://github.com/wevm/viem/pull/5498"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Tempo verification hook",
+            "url": "https://github.com/wevm/viem/blob/944232041d22c39747b78ceac27d6777e9f99bc9/src/tempo/chainConfig.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Retired root assertions",
+            "url": "https://github.com/wevm/viem/blob/944232041d22c39747b78ceac27d6777e9f99bc9/src/tempo/chainConfig.accounts.test.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Failed commitment read assertion",
+            "url": "https://github.com/wevm/viem/blob/944232041d22c39747b78ceac27d6777e9f99bc9/src/tempo/chainConfig.test.ts"
+          }
+        ],
+        "nextQuestions": [
+          "服务端由谁固定验签链与区块，怎样分别保存签名不成立、密钥已退休和链读取失败的结果？"
+        ]
+      },
+      {
+        "id": "web3-metamask-mfa-signer-nonatomic-quote",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "MetaMask支付31.2：报价是否原子化，要看实际签委托的MFA账户",
+        "whatHappened": "MetaMask/core v1419.0.0于11月12日（UTC）发布，其中transaction-pay-controller 31.2.0在构建报价请求时，为需要MFA的签名账户请求non-atomic报价；PR于11月11日合入。",
+        "mechanism": "判断transaction.txParams.from所在keyring，不能改查accountOverride解析出的付款账户；仅MPC Money Keyring命中MFA清单。构建请求时清除atomic hint，共享max-quote辅助路径在补贴路线尝试升级为atomic前再次核对，避免重新嵌入目标调用并反复签委托。",
+        "workedExample": "上游mock让签名账户属于MPC Money Keyring、付款override属于HD Key Tree，仍断言atomic为false；Relay max测试还断言只取一次报价、没有getAmountData调用且请求不含txs。换成非MFA的Money Keyring时仍可升级。本期只读，未发报价、签名或操作资金。",
+        "whyItMatters": "报价不断刷新时，付款人和签委托的人可能不同。若按付款人的能力决定签名流程，金额页面就可能重复弹出另一账户的MFA确认；能力判断须跟着实际签名主体。",
+        "risksAndLimits": [
+          "当前仅识别MPC Money Keyring；未知、未找到或其他keyring保留原hint，不代表它们已被证明无需MFA。非原子报价不等于提交免MFA，也不保证任意链、路线或交易都能执行。",
+          "报价、委托签名、提交和链上结果仍是不同阶段，相关校验没有因本项而整体豁免；PR作者的设备验证不属于本期复现，也不能当作当前客户端部署证明。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "MetaMask core1419 release",
+            "url": "https://github.com/MetaMask/core/releases/tag/v1419.0.0",
+            "publishedAt": "2026-11-12T13:32:51.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "MFA non-atomic quote PR11389",
+            "url": "https://github.com/MetaMask/core/pull/11389"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Signing account quote hint",
+            "url": "https://github.com/MetaMask/core/blob/743636ddba5c71771a477b462ccff23e49720a96/packages/transaction-pay-controller/src/utils/quotes.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "MFA max-promotion guard",
+            "url": "https://github.com/MetaMask/core/blob/743636ddba5c71771a477b462ccff23e49720a96/packages/transaction-pay-controller/src/utils/max-quote.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Signing and payer account assertions",
+            "url": "https://github.com/MetaMask/core/blob/743636ddba5c71771a477b462ccff23e49720a96/packages/transaction-pay-controller/src/utils/quotes.test.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "MFA promotion assertions",
+            "url": "https://github.com/MetaMask/core/blob/743636ddba5c71771a477b462ccff23e49720a96/packages/transaction-pay-controller/src/strategy/relay/relay-quotes.test.ts"
+          }
+        ],
+        "nextQuestions": [
+          "界面能否清楚区分付款账户、执行账户、签委托账户，以及报价刷新与最终提交各自需要的确认？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-viem-signature-authority-at-block",
+      "domain": "web3",
+      "topic": "security",
+      "title": "专题：先固定验签时点，再解释一把旧密钥还有没有权限",
+      "whatHappened": "viem这次修复保留核心验签，同时为可恢复到账户的root签名增加链上commitment条件。变化发生在接受账户权限的判断处，不会使旧签名的密码学关系自动消失。",
+      "mechanism": "Tempo hook将相同block参数传给核心验证和commitment读取，再合并结果。getConfigCommitment仅将ContractFunctionExecutionError且cause为ContractFunctionZeroDataError的情况转换为零，用于没有相应预编译的链；传输和未知区块等错误仍抛出。",
+      "workedExample": "上游先验同一签名，再用upgradeSync提交账户配置，之后七个验签结果变为false。编辑推演：若应用允许调用者改验更早区块，结论回答的是那个区块的权限，不能直接当成当前登录资格；后半是依据区块参数传递作出的推论，本期未执行历史块查询。",
+      "whyItMatters": "钱包认证需要分别说明谁签了、账户在哪个状态允许这把钥匙、服务端采用哪个时点。把这些证据分别保留，才能在密钥退休、RPC故障或历史审计时给出可解释的结果。",
+      "risksAndLimits": [
+        "并行发起两项检查只保留相同的区块选择参数；若使用可移动的blockTag，不能据此推断两次RPC读到同一不可变快照。需要一致快照的应用还要制定固定块及确认策略。",
+        "这项hook条件不替代消息的域名、nonce、有效期或业务授权策略，也不证明所有签名封装、其他链或部署环境均通过验证；本期只读源码与上游断言。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "viem 2.57.19 release",
+          "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.19",
+          "publishedAt": "2026-11-12T05:20:04.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "Retired root key PR5498",
+          "url": "https://github.com/wevm/viem/pull/5498"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Tempo verification hook",
+          "url": "https://github.com/wevm/viem/blob/944232041d22c39747b78ceac27d6777e9f99bc9/src/tempo/chainConfig.ts"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Retired root assertions",
+          "url": "https://github.com/wevm/viem/blob/944232041d22c39747b78ceac27d6777e9f99bc9/src/tempo/chainConfig.accounts.test.ts"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Failed commitment read assertion",
+          "url": "https://github.com/wevm/viem/blob/944232041d22c39747b78ceac27d6777e9f99bc9/src/tempo/chainConfig.test.ts"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Commitment zero-data exception",
+          "url": "https://github.com/wevm/viem/blob/944232041d22c39747b78ceac27d6777e9f99bc9/src/tempo/actions/accounts.ts"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Core verification and recovery fallback",
+          "url": "https://github.com/wevm/viem/blob/944232041d22c39747b78ceac27d6777e9f99bc9/src/actions/public/verifyHash.ts"
+        }
+      ],
+      "nextQuestions": [
+        "登录服务是否固定可信的验签时点，并把不可验证的RPC错误留作错误，而不是缓存成通过或永久拒绝？"
+      ],
+      "basedOnBriefId": "web3-viem-retired-root-verification"
+    },
+    "sourceUrls": [
+      "https://github.com/langchain-ai/deepagents/releases/tag/deepagents%3D%3D0.7.36",
+      "https://github.com/langchain-ai/deepagents/pull/7663",
+      "https://github.com/langchain-ai/deepagents/blob/f1ae345a3f503f376ffe2beba0e2b235c43f06db/libs/deepagents/deepagents/backends/filesystem.py",
+      "https://github.com/langchain-ai/deepagents/blob/f1ae345a3f503f376ffe2beba0e2b235c43f06db/libs/deepagents/tests/unit_tests/backends/test_filesystem_backend.py",
+      "https://github.com/langchain-ai/langgraph/releases/tag/1.2.21",
+      "https://github.com/langchain-ai/langgraph/pull/9615",
+      "https://github.com/langchain-ai/langgraph/blob/a054ed08dcee7ecc4105706d38c0b4aa0b3c3c32/libs/langgraph/langgraph/pregel/main.py",
+      "https://github.com/langchain-ai/langgraph/blob/a054ed08dcee7ecc4105706d38c0b4aa0b3c3c32/libs/langgraph/tests/test_subgraph_persistence.py",
+      "https://github.com/langchain-ai/langgraph/blob/a054ed08dcee7ecc4105706d38c0b4aa0b3c3c32/libs/langgraph/tests/test_subgraph_persistence_async.py",
+      "https://github.com/wevm/viem/releases/tag/viem%402.57.19",
+      "https://github.com/wevm/viem/pull/5498",
+      "https://github.com/wevm/viem/blob/944232041d22c39747b78ceac27d6777e9f99bc9/src/tempo/chainConfig.ts",
+      "https://github.com/wevm/viem/blob/944232041d22c39747b78ceac27d6777e9f99bc9/src/tempo/chainConfig.accounts.test.ts",
+      "https://github.com/wevm/viem/blob/944232041d22c39747b78ceac27d6777e9f99bc9/src/tempo/chainConfig.test.ts",
+      "https://github.com/MetaMask/core/releases/tag/v1419.0.0",
+      "https://github.com/MetaMask/core/pull/11389",
+      "https://github.com/MetaMask/core/blob/743636ddba5c71771a477b462ccff23e49720a96/packages/transaction-pay-controller/src/utils/quotes.ts",
+      "https://github.com/MetaMask/core/blob/743636ddba5c71771a477b462ccff23e49720a96/packages/transaction-pay-controller/src/utils/max-quote.ts",
+      "https://github.com/MetaMask/core/blob/743636ddba5c71771a477b462ccff23e49720a96/packages/transaction-pay-controller/src/utils/quotes.test.ts",
+      "https://github.com/MetaMask/core/blob/743636ddba5c71771a477b462ccff23e49720a96/packages/transaction-pay-controller/src/strategy/relay/relay-quotes.test.ts",
+      "https://github.com/wevm/viem/blob/944232041d22c39747b78ceac27d6777e9f99bc9/src/tempo/actions/accounts.ts",
+      "https://github.com/wevm/viem/blob/944232041d22c39747b78ceac27d6777e9f99bc9/src/actions/public/verifyHash.ts"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-11-13-3af6e31e4caa981f",
+    "asOf": "2026-11-12T21:45:13.583Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
+  {
     "date": "2026-11-12",
     "slug": "2026-11-12",
     "title": "学习雷达 · 2026-11-12",
@@ -3598,241 +3980,6 @@ export const latestRadars: DailyRadar[] = [
     "marketSignals": [],
     "snapshotId": "learning-2026-11-06-76bb74905e43f384",
     "asOf": "2026-11-05T21:34:40.000Z",
-    "origin": "research",
-    "publicationState": "published"
-  },
-  {
-    "date": "2026-11-05",
-    "slug": "2026-11-05",
-    "title": "学习雷达 · 2026-11-05",
-    "summary": "AI 看输入转换的资源预算与流式用量的未知状态；Web3 看通知地址的确认边界与许可型链的真实起始锚。专题拆解最终输出限制为何不能替代中间步骤预算。",
-    "publish": true,
-    "reviewStatus": "automated",
-    "schemaVersion": 2,
-    "editionMode": "daily",
-    "researchedAt": "2026-11-04T21:39:54.949Z",
-    "generatedAt": "2026-11-04T21:39:54.949Z",
-    "sourceSections": [
-      "ai",
-      "web3",
-      "deepDive"
-    ],
-    "missingSections": [],
-    "briefs": [
-      {
-        "id": "ai-pydantic-json-format-budget",
-        "domain": "ai",
-        "topic": "safety",
-        "title": "Pydantic AI 1.107.10：返回长度有限，格式化过程仍需要预算",
-        "whatHappened": "Pydantic AI 于11月4日（UTC）发布1.107.10安全更新。官方公告说明，本地 web-fetch 路径曾先在事件循环中完整缩进 JSON，再截短给模型；深层嵌套的响应即使未超过下载限制，也可能在中间步骤大幅膨胀，影响同进程其他工作。",
-        "mechanism": "修复把 JSON 解析与格式化交给工作线程，使用迭代编码逐段写入，在超过返回长度预算并到达非缩进片段后停止，随后沿用截断逻辑。若 max_content_length=None，格式化超过2,000万字符后改回原始正文；json.loads 仍先解析整份响应。",
-        "workedExample": "纸面回归可给本地抓取工具一份下载大小合规、嵌套较深的 JSON，将返回预算设为1,000字符，检查编码是否提前停止，再核对最终截断标记。另单列不设返回预算的回退情况。本期只读公告、固定版本代码与上游断言，没有发送攻击请求或运行漏洞复现。",
-        "whyItMatters": "Agent 的输入处理发生在模型看到正文之前。下载字节数与返回字符数限制不同阶段，不能只因最终文本很短，就推定解析、缩进等中间步骤耗时和内存也很小。",
-        "risksAndLimits": [
-          "该公告覆盖 web_fetch_tool 和 WebFetch 的本地回退；供应商原生抓取不受此项公告影响，不能把结论扩展到所有抓取实现。",
-          "工作线程不是进程隔离，完整解析与编码片段仍消耗资源；停止格式化的阈值不是总内存或单请求耗时的硬上限，也不证明下游已经升级。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "security_release",
-            "name": "Pydantic AI v1.107.10 official security release",
-            "url": "https://github.com/pydantic/pydantic-ai/releases/tag/v1.107.10",
-            "publishedAt": "2026-11-04T11:51:48.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_security_advisory",
-            "name": "Pydantic AI local web-fetch JSON formatting advisory",
-            "url": "https://github.com/pydantic/pydantic-ai/security/advisories/GHSA-m5vj-8mcw-82qx"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "Pydantic AI PR 12374: bounded JSON formatting backport",
-            "url": "https://github.com/pydantic/pydantic-ai/pull/12374"
-          }
-        ],
-        "nextQuestions": [
-          "下载、解析、转换与返回这几个阶段，是否各有可解释的资源边界？",
-          "未设返回长度、解析失败与超深嵌套时，实际返回的是哪一种正文？"
-        ]
-      },
-      {
-        "id": "ai-archestra-unknown-stream-usage",
-        "domain": "ai",
-        "topic": "infrastructure",
-        "title": "Archestra 1.4.18：流已结束，缺失的 token 用量仍是未知",
-        "whatHappened": "Archestra 于11月4日（UTC）发布平台1.4.18，包含对流式用量记录的修复。响应提前结束、适配层没有收到供应商用量时，系统保存已收到的部分响应，并将输入和输出 token 数保留为 null，日志界面显示 Unknown。",
-        "mechanism": "无用量的持久化路径不再写入两个零值；详情与时间线分别处理未知和已报告的计数。详情中任一输入或输出计数缺失时，总量也保持未知，已知部分仍可显示；供应商明确报告的零值继续保留。",
-        "workedExample": "纸面样例可并排放置三条记录：输入输出均为 null、输入12而输出为 null、供应商明确报告两个零。预期前两条分别显示未知或部分已知，最后一条显示真实零值；部分正文可同时存在。本期未调用模型或重跑上游界面测试。",
-        "whyItMatters": "模型内容、连接结束与用量上报可能分别到达。把缺失值填成零，会让成本分析、失败调查或使用量比较把缺证据误当成没有消耗；记录应保留这种区别。",
-        "risksAndLimits": [
-          "本次修复针对请求记录和会话日志的 token 展示，不能据此声称账单、成本字段或所有汇总已完整修复，也不能据 Unknown 认定免费。",
-          "1.4回移保留旧分支的预填充断连预期，未包含 main 独有的部分断连与模型池用例；本期只阅读这些证据，不作端到端覆盖承诺。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "Archestra platform v1.4.18 official release",
-            "url": "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.4.18",
-            "publishedAt": "2026-11-04T02:59:41.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "Archestra PR 10189: preserve missing stream usage",
-            "url": "https://github.com/archestra-ai/archestra/pull/10189"
-          }
-        ],
-        "nextQuestions": [
-          "数据导出、汇总和告警是否也能区分未知、部分已知与供应商报告的零？",
-          "部分响应与缺失用量能否关联到同一次请求，而不据此推定实际计费？"
-        ]
-      },
-      {
-        "id": "web3-akash-confirmed-alert-addresses",
-        "domain": "web3",
-        "topic": "onchain_infrastructure",
-        "title": "Akash 通知服务2.81.10：新地址确认之后，才进入告警投递集合",
-        "whatHappened": "Akash Console 于11月4日（UTC）发布 notifications 2.81.10。去中心化云控制台的新通知地址，不再仅因被写入通道就接收告警：其他人的新地址先进入待确认集合，已有通道地址及请求者自己已验证的账户邮箱继续视为已确认。",
-        "mechanism": "正常通道告警只读取 config.addresses，待确认地址另存，数据库保存确认令牌的 SHA-256 摘要。确认事务锁住有效通道、删除匹配待确认记录并加入投递集合，使同一链接只确认一次；关联补丁中的网页要求点击按钮才提交确认。",
-        "workedExample": "纸面时间线可把新地址加入通道，先查看它仅在 pendingAddresses，再打开确认页但不点击，最后点击并重复提交同一令牌。核对投递集合只在有效确认后变化、重复确认失败。通道没有已确认地址时，普通告警跳过邮件仍可写活动流。本期没有发邮件或连接账户。",
-        "whyItMatters": "基础设施告警包含运营信息。通道编辑者填入一个地址，不代表地址接收方已确认；把待确认与可投递集合分开，才能解释配置保存、接收方确认和实际送达各发生到了哪一步。",
-        "risksAndLimits": [
-          "既有地址不追溯重新确认，请求者已验证邮箱有直接确认路径；账户验证等显式 recipient 消息也有独立路径，不能概括为所有邮件都经过此集合。",
-          "这是通知服务发布及关联代码变化，API、notifications、deploy-web 仍需按顺序部署；不证明整套已上线或邮件已送达，也不授予链上、钱包或交易权限。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "Akash Console notifications v2.81.10 official release",
-            "url": "https://github.com/akash-network/console/releases/tag/notifications%2Fv2.81.10",
-            "publishedAt": "2026-11-04T06:43:02.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "Akash Console PR 4698: confirm channel addresses before alerts",
-            "url": "https://github.com/akash-network/console/pull/4698"
-          }
-        ],
-        "nextQuestions": [
-          "告警、账户验证和确认邮件各自读取哪些收件人字段，能否独立审计？",
-          "待确认记录、一次性确认和真实邮件送达是否分别留有证据？"
-        ]
-      },
-      {
-        "id": "web3-opdeployer-real-super-root-anchor",
-        "domain": "web3",
-        "topic": "l2",
-        "title": "op-deployer 0.9.0-rc.3：许可型 super-root 链也从真实起始锚开始",
-        "whatHappened": "Optimism 于11月4日（UTC）发布 op-deployer 0.9.0-rc.3。说明将 prepare/continue 路径中默认 SUPER_PERMISSIONED 链的起点列为真实计算的 super-root 锚，替代占位锚。关联PR在9月23日已合并；这里报告11月的新候选版发布，不把旧合并日期改写成新代码事件。",
-        "mechanism": "prepare 从已固定的创世配置构建各链输出根；SUPER_PERMISSIONED 被纳入 super-root 类型，由依赖集合全部成员在同一创世时间的输出共同生成锚。continue 对已保存的锚检查零值、占位值和序号边界，再构造部署输入；各链保留独立注册表并使用共同根。",
-        "workedExample": "纸面检查可设两条依赖链共享时间T，先分别计算创世输出，再合成共同锚；若成员缺少本轮输出或时间不一致，应在计算阶段报错。另将已保存锚改为零值，核对继续部署输入被拒绝。本期只阅读固定版本源码和上游断言，没有部署链或广播交易。",
-        "whyItMatters": "部署工具预测地址、生成创世状态与提交起始锚需要对应同一组配置。一个外形合法的占位值不能替代真实状态承诺；在继续阶段重验已保存锚，有助于定位准备数据与部署输入不一致。",
-        "risksAndLimits": [
-          "这是预发布版本，内嵌 op-contracts/v9.0.0-rc.1 制品和标准 OPCM 地址仍可能变化；候选版发布不代表主网采用、合约升级或跨链验证已生效。",
-          "所述行为限定 prepare/continue；源码中没有已保存锚的部分许可型路径仍可使用默认起点，不能写成所有部署方式一律拒绝占位锚。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_prerelease",
-            "name": "Optimism op-deployer v0.9.0-rc.3 official prerelease",
-            "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-deployer%2Fv0.9.0-rc.3",
-            "publishedAt": "2026-11-04T16:53:15.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "Optimism PR 22937: real deployment anchors for local fixtures",
-            "url": "https://github.com/ethereum-optimism/optimism/pull/22937"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "op-deployer release commit: genesis output and super-root anchors",
-            "url": "https://github.com/ethereum-optimism/optimism/blob/28dcc630a001e9418a441249104c7b799efbc4d2/op-deployer/pkg/deployer/pipeline/output_root.go"
-          }
-        ],
-        "nextQuestions": [
-          "继续部署时读到的配置、成员集合和起始锚，是否都属于同一份准备状态？",
-          "实际采用的是 prepare/continue 还是其他路径，起点与发布阶段是否分别核对？"
-        ]
-      }
-    ],
-    "deepDive": {
-      "id": "deep-json-transformation-resource-boundaries",
-      "domain": "ai",
-      "topic": "safety",
-      "title": "专题：最终只返回一千字符，为什么中间步骤仍可能拖慢整个服务",
-      "whatHappened": "Pydantic AI 的 JSON 抓取公告说明了输入与输出之间的第三个阶段：响应先通过下载限制，随后解析与缩进，最后才按模型可见长度截断。旧路径的最后一道限制无法回收此前已经发生的格式化成本。",
-      "mechanism": "新实现仍完整解析正文，但格式化改用迭代编码，只构建超过返回预算的必要前缀，并将解析与格式化移出事件循环。未设返回预算时另有2,000万字符的格式化回退阈值。停止点按编码片段判断，不是精确到每个字符的内存封顶，也不是单独隔离进程。",
-      "workedExample": "设下载正文大小为B，嵌套深度为D，最终返回限制为1,000字符。纸面审查应分开记录B、解析后对象、格式化生成长度与最终输出，不用最后1,000字符反推前三者；再核对上游提前停止和线程执行断言。本例用于解释审查方法，本期未构造线上载荷或运行压力测试。",
-      "whyItMatters": "同一思路可用于 Agent 的文档转换、解压和工具结果处理：结果给模型之前，服务已经做过工作。工程上应逐阶段核对预算在哪里生效、发生超限后返回什么，再通过隔离与并发策略验证对其他请求的影响；这属于本期编辑推论。",
-      "risksAndLimits": [
-        "只把工作放进线程不保证 CPU、内存或并发完全隔离；下载限制、完整解析与编码片段大小仍影响资源占用，不能把局部修复说成服务级拒绝服务风险归零。",
-        "上游测试文件列出了相关断言，本期没有重跑，也未独立核对其执行结果，不能据此给出本地延迟、吞吐或漏洞修复验收结论；供应商原生抓取也不属于此公告范围。"
-      ],
-      "sources": [
-        {
-          "tier": "tier1",
-          "role": "event",
-          "kind": "security_release",
-          "name": "Pydantic AI v1.107.10 official security release",
-          "url": "https://github.com/pydantic/pydantic-ai/releases/tag/v1.107.10",
-          "publishedAt": "2026-11-04T11:51:48.000Z"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_security_advisory",
-          "name": "Pydantic AI local web-fetch JSON formatting advisory",
-          "url": "https://github.com/pydantic/pydantic-ai/security/advisories/GHSA-m5vj-8mcw-82qx"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_implementation_change",
-          "name": "Pydantic AI PR 12374: bounded JSON formatting backport",
-          "url": "https://github.com/pydantic/pydantic-ai/pull/12374"
-        }
-      ],
-      "nextQuestions": [
-        "资源预算是约束输入、解析对象、转换工作量，还是只约束最终字符串？",
-        "上线验收能否同时观察本请求的转换成本和同进程其他请求的响应？"
-      ],
-      "basedOnBriefId": "ai-pydantic-json-format-budget"
-    },
-    "sourceUrls": [
-      "https://github.com/pydantic/pydantic-ai/releases/tag/v1.107.10",
-      "https://github.com/pydantic/pydantic-ai/security/advisories/GHSA-m5vj-8mcw-82qx",
-      "https://github.com/pydantic/pydantic-ai/pull/12374",
-      "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.4.18",
-      "https://github.com/archestra-ai/archestra/pull/10189",
-      "https://github.com/akash-network/console/releases/tag/notifications%2Fv2.81.10",
-      "https://github.com/akash-network/console/pull/4698",
-      "https://github.com/ethereum-optimism/optimism/releases/tag/op-deployer%2Fv0.9.0-rc.3",
-      "https://github.com/ethereum-optimism/optimism/pull/22937",
-      "https://github.com/ethereum-optimism/optimism/blob/28dcc630a001e9418a441249104c7b799efbc4d2/op-deployer/pkg/deployer/pipeline/output_root.go"
-    ],
-    "relatedProjectSlugs": [],
-    "marketSignals": [],
-    "snapshotId": "learning-2026-11-05-67d464635ae88e1c",
-    "asOf": "2026-11-04T21:39:54.949Z",
     "origin": "research",
     "publicationState": "published"
   }

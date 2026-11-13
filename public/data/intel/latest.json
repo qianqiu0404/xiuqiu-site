@@ -5,6 +5,73 @@
   "windowDays": 7,
   "items": [
     {
+      "id": "learning:ai-deepagents-fifo-download-nonblocking",
+      "kind": "learning",
+      "date": "2026-11-13",
+      "domain": "ai",
+      "topic": "safety",
+      "title": "DeepAgents 0.7.36：下载FIFO时，不再等待一个尚未出现的写入者",
+      "summary": "Agent拿到的路径可能指向管道或设备，名字像文件并不保证读取会立即结束；同时，这里的file_not_found也可能表示类型被拒绝，调用方不能仅据错误名断定路径不存在。",
+      "href": "/radar/2026-11-13#ai-deepagents-fifo-download-nonblocking",
+      "source": {
+        "name": "DeepAgents 0.7.36 release",
+        "tier": "tier1",
+        "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents%3D%3D0.7.36"
+      },
+      "url": "https://xoqiu.cn/radar/2026-11-13#ai-deepagents-fifo-download-nonblocking"
+    },
+    {
+      "id": "learning:ai-langgraph-exact-subgraph-namespace",
+      "kind": "learning",
+      "date": "2026-11-13",
+      "domain": "ai",
+      "topic": "agent",
+      "title": "LangGraph 1.2.21：research_review与research里的review，要按完整路径区分",
+      "summary": "多Agent图常用近似的任务名。名称前缀相同不等于同一路径，查看或编辑状态之前应先核对完整命名空间，避免把另一个节点的状态当作目标。",
+      "href": "/radar/2026-11-13#ai-langgraph-exact-subgraph-namespace",
+      "source": {
+        "name": "LangGraph 1.2.21 release",
+        "tier": "tier1",
+        "url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.21"
+      },
+      "url": "https://xoqiu.cn/radar/2026-11-13#ai-langgraph-exact-subgraph-namespace"
+    },
+    {
+      "id": "learning:web3-viem-retired-root-verification",
+      "kind": "learning",
+      "date": "2026-11-13",
+      "domain": "web3",
+      "topic": "security",
+      "title": "viem 2.57.19：root key已退休，恢复出账户地址仍不能放行",
+      "summary": "密码学上能证明某把旧密钥签过消息，不等于它在所选链和区块仍代表该账户。钱包登录或授权服务要把验签时点与账户当前权限一起解释。",
+      "href": "/radar/2026-11-13#web3-viem-retired-root-verification",
+      "source": {
+        "name": "viem 2.57.19 release",
+        "tier": "tier1",
+        "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.19"
+      },
+      "flags": {
+        "deepDive": true
+      },
+      "url": "https://xoqiu.cn/radar/2026-11-13#web3-viem-retired-root-verification"
+    },
+    {
+      "id": "learning:web3-metamask-mfa-signer-nonatomic-quote",
+      "kind": "learning",
+      "date": "2026-11-13",
+      "domain": "web3",
+      "topic": "wallet_cex",
+      "title": "MetaMask支付31.2：报价是否原子化，要看实际签委托的MFA账户",
+      "summary": "报价不断刷新时，付款人和签委托的人可能不同。若按付款人的能力决定签名流程，金额页面就可能重复弹出另一账户的MFA确认；能力判断须跟着实际签名主体。",
+      "href": "/radar/2026-11-13#web3-metamask-mfa-signer-nonatomic-quote",
+      "source": {
+        "name": "MetaMask core1419 release",
+        "tier": "tier1",
+        "url": "https://github.com/MetaMask/core/releases/tag/v1419.0.0"
+      },
+      "url": "https://xoqiu.cn/radar/2026-11-13#web3-metamask-mfa-signer-nonatomic-quote"
+    },
+    {
       "id": "market:2026-11-13:ecb-ai-disclosure-financing-association-2026-11-12",
       "kind": "market",
       "date": "2026-11-13",
