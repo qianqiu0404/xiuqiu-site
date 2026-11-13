@@ -10,6 +10,10 @@
 
 ## Recent briefs
 
+- [DeepAgents 0.7.38：搜索目录获准，不等于目录里的链接目标也获准](https://xoqiu.cn/radar/2026-11-14#ai-deepagents-bulk-search-resolved-scope) (2026-11-14, ai/safety): Agent批准一次目录搜索时，批准对象包含范围。结果的表面路径仍在目录里，并不能证明符号链接最终指向的材料也在同一范围；批量返回前需要重新核对目标与批准范围的关系。
+- [Pydantic AI 2.68：ModelFallback默认切换被截断的非流式回答](https://xoqiu.cn/radar/2026-11-14#ai-pydantic-output-limit-fallback) (2026-11-14, ai/model_inference): 一段看似完整的文本和可解析的参数，都不能替代模型正常结束的信号。编排层需要把可展示、可执行、被拒绝与实际消耗分开记录，避免把预算截断当成一次正常完成。
+- [MetaMask eth-sig-util 10：EIP-7702数值进入哈希前，先拒绝不安全整数](https://xoqiu.cn/radar/2026-11-14#web3-metamask-eip7702-safe-integers) (2026-11-14, web3/security): JSON中的number进入密码学编码前可能已经丢失整数精度。先确认调用方实际表示的数值，再解释哈希和签名，能够避免把近似值当成用户原本授权的链或计数器。
+- [Foundry 11月13日nightly：Safe交易摘要要同时对上本地字段、合约和服务](https://xoqiu.cn/radar/2026-11-14#web3-foundry-safe-local-hash-crosscheck) (2026-11-14, web3/wallet_cex): 服务给出一个摘要、RPC返回一个摘要，仍需要确认它们对应界面展示的同一组字段。把字段、本地计算、链身份和远端返回逐项关联，才能解释授权对象是否一致。
 - [DeepAgents 0.7.36：下载FIFO时，不再等待一个尚未出现的写入者](https://xoqiu.cn/radar/2026-11-13#ai-deepagents-fifo-download-nonblocking) (2026-11-13, ai/safety): Agent拿到的路径可能指向管道或设备，名字像文件并不保证读取会立即结束；同时，这里的file_not_found也可能表示类型被拒绝，调用方不能仅据错误名断定路径不存在。
 - [LangGraph 1.2.21：research_review与research里的review，要按完整路径区分](https://xoqiu.cn/radar/2026-11-13#ai-langgraph-exact-subgraph-namespace) (2026-11-13, ai/agent): 多Agent图常用近似的任务名。名称前缀相同不等于同一路径，查看或编辑状态之前应先核对完整命名空间，避免把另一个节点的状态当作目标。
 - [viem 2.57.19：root key已退休，恢复出账户地址仍不能放行](https://xoqiu.cn/radar/2026-11-13#web3-viem-retired-root-verification) (2026-11-13, web3/security): 密码学上能证明某把旧密钥签过消息，不等于它在所选链和区块仍代表该账户。钱包登录或授权服务要把验签时点与账户当前权限一起解释。
@@ -18,10 +22,6 @@
 - [Archestra 1.4.27：历史拒绝回执，不应单独触发当前输出豁免](https://xoqiu.cn/radar/2026-11-12#ai-archestra-denied-history-refused-output-waiver) (2026-11-12, ai/safety): Agent历史中“某次调用没执行”和“本次实际输出被扣留”是不同事件；恢复时若把两者混用，旧裁定可能错误改变当前会话的执行边界。
 - [Reth 2.11：先核对P2P请求，再解码响应条目](https://xoqiu.cn/radar/2026-11-12#web3-reth-p2p-response-before-item-decode) (2026-11-12, web3/onchain_infrastructure): 节点先为一个本不该接受的响应分配整批解码对象，再到会话层丢弃，会把无效输入的成本留在热路径；请求上下文应更早约束响应工作量。
 - [MetaMask估值服务2.4：已找到与未找到的批次，缓存时间分开](https://xoqiu.cn/radar/2026-11-12#web3-metamask-vault-valuations-found-cache) (2026-11-12, web3/wallet_cex): 接口未找到对应估值，不等于该交易没有份额移动；历史估值和当前市价也不同。缓存寿命、缺失状态和单位必须一起解释，才能避免把未就绪数据当作稳定金额。
-- [AI SDK 7.0.169：自动发送还在判定，消息队列就不能当作空闲](https://xoqiu.cn/radar/2026-11-11#ai-sdk-queue-approval-options-pending-decision) (2026-11-11, ai/agent): 响应流结束和下一步决策结束是两个时刻；把中间窗口当空闲，容易让新消息越过审批或抢先启动另一请求。
-- [DeepAgents Code 0.2.7：归属探针复用基线，连续失败后退避停用](https://xoqiu.cn/radar/2026-11-11#ai-deepagents-git-attribution-probe-backoff) (2026-11-11, ai/infrastructure): 辅助追踪不应在每次工具前后重复扫描，也不应在持续失败时拖慢主流程；减少探针仍要保留基线与观察顺序，才能解释归属证据。
-- [op-reth 2.8.2：消息太新时保留up旧值，仍不能给quorum投票](https://xoqiu.cn/radar/2026-11-11#web3-op-reth-out-of-scope-health-quorum) (2026-11-11, web3/l2): 端点能回应、能否判断当前消息、整组是否凑够确定性回答，是三件事；保留表针可减少误判，却不能替代当前消息的quorum证据。
-- [MetaMask图表1.1.1：已有右轴时，切图不再重复新建价格轴](https://xoqiu.cn/radar/2026-11-11#web3-metamask-chart-right-scale-detach) (2026-11-11, web3/wallet_cex): 可反复触发的布局同步若每次都创建新对象，会把显示层关系拆散；先识别已有结构，才能让初始化逻辑在更新时复用。
 
 ## Boundaries
 

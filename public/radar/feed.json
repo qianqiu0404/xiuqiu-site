@@ -6,6 +6,58 @@
   "language": "zh-CN",
   "items": [
     {
+      "id": "xiuqiu-radar:ai-deepagents-bulk-search-resolved-scope",
+      "url": "https://xoqiu.cn/radar/2026-11-14#ai-deepagents-bulk-search-resolved-scope",
+      "title": "DeepAgents 0.7.38：搜索目录获准，不等于目录里的链接目标也获准",
+      "summary": "Agent批准一次目录搜索时，批准对象包含范围。结果的表面路径仍在目录里，并不能证明符号链接最终指向的材料也在同一范围；批量返回前需要重新核对目标与批准范围的关系。",
+      "content_text": "Agent批准一次目录搜索时，批准对象包含范围。结果的表面路径仍在目录里，并不能证明符号链接最终指向的材料也在同一范围；批量返回前需要重新核对目标与批准范围的关系。",
+      "date_published": "2026-11-14T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "safety"
+      ],
+      "external_url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents%3D%3D0.7.38"
+    },
+    {
+      "id": "xiuqiu-radar:ai-pydantic-output-limit-fallback",
+      "url": "https://xoqiu.cn/radar/2026-11-14#ai-pydantic-output-limit-fallback",
+      "title": "Pydantic AI 2.68：ModelFallback默认切换被截断的非流式回答",
+      "summary": "一段看似完整的文本和可解析的参数，都不能替代模型正常结束的信号。编排层需要把可展示、可执行、被拒绝与实际消耗分开记录，避免把预算截断当成一次正常完成。",
+      "content_text": "一段看似完整的文本和可解析的参数，都不能替代模型正常结束的信号。编排层需要把可展示、可执行、被拒绝与实际消耗分开记录，避免把预算截断当成一次正常完成。",
+      "date_published": "2026-11-14T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "model_inference"
+      ],
+      "external_url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.68.0"
+    },
+    {
+      "id": "xiuqiu-radar:web3-metamask-eip7702-safe-integers",
+      "url": "https://xoqiu.cn/radar/2026-11-14#web3-metamask-eip7702-safe-integers",
+      "title": "MetaMask eth-sig-util 10：EIP-7702数值进入哈希前，先拒绝不安全整数",
+      "summary": "JSON中的number进入密码学编码前可能已经丢失整数精度。先确认调用方实际表示的数值，再解释哈希和签名，能够避免把近似值当成用户原本授权的链或计数器。",
+      "content_text": "JSON中的number进入密码学编码前可能已经丢失整数精度。先确认调用方实际表示的数值，再解释哈希和签名，能够避免把近似值当成用户原本授权的链或计数器。",
+      "date_published": "2026-11-14T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "security"
+      ],
+      "external_url": "https://github.com/MetaMask/core/releases/tag/v1423.0.0"
+    },
+    {
+      "id": "xiuqiu-radar:web3-foundry-safe-local-hash-crosscheck",
+      "url": "https://xoqiu.cn/radar/2026-11-14#web3-foundry-safe-local-hash-crosscheck",
+      "title": "Foundry 11月13日nightly：Safe交易摘要要同时对上本地字段、合约和服务",
+      "summary": "服务给出一个摘要、RPC返回一个摘要，仍需要确认它们对应界面展示的同一组字段。把字段、本地计算、链身份和远端返回逐项关联，才能解释授权对象是否一致。",
+      "content_text": "服务给出一个摘要、RPC返回一个摘要，仍需要确认它们对应界面展示的同一组字段。把字段、本地计算、链身份和远端返回逐项关联，才能解释授权对象是否一致。",
+      "date_published": "2026-11-14T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "wallet_cex"
+      ],
+      "external_url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-36a8cbbfda1d78f7098cfe071c7bd90eb6eb3df6"
+    },
+    {
       "id": "xiuqiu-radar:ai-deepagents-fifo-download-nonblocking",
       "url": "https://xoqiu.cn/radar/2026-11-13#ai-deepagents-fifo-download-nonblocking",
       "title": "DeepAgents 0.7.36：下载FIFO时，不再等待一个尚未出现的写入者",
@@ -732,58 +784,6 @@
         "l2"
       ],
       "external_url": "https://github.com/OffchainLabs/nitro/releases/tag/v3.12.2"
-    },
-    {
-      "id": "xiuqiu-radar:ai-signals-work-activity-denominator",
-      "url": "https://xoqiu.cn/radar/2026-10-27#ai-signals-work-activity-denominator",
-      "title": "OpenAI Signals：工作消息占比，不能直接当成劳动产出",
-      "summary": "公开分类和统计口径能帮助研究 AI 被用于哪些工作，但结论需要与采样范围匹配；消息分布、用户采用和实际工作效果是不同指标。",
-      "content_text": "公开分类和统计口径能帮助研究 AI 被用于哪些工作，但结论需要与采样范围匹配；消息分布、用户采用和实际工作效果是不同指标。",
-      "date_published": "2026-10-27T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "data"
-      ],
-      "external_url": "https://openai.com/index/chatgpt-expanding-world-of-work/"
-    },
-    {
-      "id": "xiuqiu-radar:ai-terra-model-and-tool-contract",
-      "url": "https://xoqiu.cn/radar/2026-10-27#ai-terra-model-and-tool-contract",
-      "title": "GPT-6.1 Terra 发布：先分别核对模型能力与工具契约",
-      "summary": "接入新模型时，把输入输出、推理设置、工具通道和任务验收分别列清，可以避免只更换模型名，却沿用不兼容的调用假设。",
-      "content_text": "接入新模型时，把输入输出、推理设置、工具通道和任务验收分别列清，可以避免只更换模型名，却沿用不兼容的调用假设。",
-      "date_published": "2026-10-27T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "model_inference"
-      ],
-      "external_url": "https://developers.openai.com/api/docs/changelog"
-    },
-    {
-      "id": "xiuqiu-radar:web3-nethermind-bundled-runtime-patch",
-      "url": "https://xoqiu.cn/radar/2026-10-27#web3-nethermind-bundled-runtime-patch",
-      "title": "Nethermind 2.2.2：上游安全补丁要进入实际运行的制品",
-      "summary": "节点客户端的安全边界包含随制品交付的基础运行时。补丁已发布、可安装制品已更新与运行进程已采用，需要各自留下证据。",
-      "content_text": "节点客户端的安全边界包含随制品交付的基础运行时。补丁已发布、可安装制品已更新与运行进程已采用，需要各自留下证据。",
-      "date_published": "2026-10-27T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "security"
-      ],
-      "external_url": "https://github.com/NethermindEth/nethermind/releases/tag/2.2.2"
-    },
-    {
-      "id": "xiuqiu-radar:web3-avalanchego-plugin-upgrade-boundary",
-      "url": "https://xoqiu.cn/radar/2026-10-27#web3-avalanchego-plugin-upgrade-boundary",
-      "title": "AvalancheGo 1.15.2：可选客户端更新也有插件兼容要求",
-      "summary": "“版本向后兼容”不能代替插件、API、配置和已有数据库状态的逐项检查；长期停机后恢复的节点，还可能有不同的过渡路径。",
-      "content_text": "“版本向后兼容”不能代替插件、API、配置和已有数据库状态的逐项检查；长期停机后恢复的节点，还可能有不同的过渡路径。",
-      "date_published": "2026-10-27T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "onchain_infrastructure"
-      ],
-      "external_url": "https://github.com/ava-labs/avalanchego/releases/tag/v1.15.2"
     }
   ]
 }
