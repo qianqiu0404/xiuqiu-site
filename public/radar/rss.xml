@@ -2,14 +2,14 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>xiuqiu 学习雷达 · AI 与 Web3</title>
-    <link>https://xiuqiu-site.vercel.app/radar</link>
-    <atom:link href="https://xiuqiu-site.vercel.app/radar/rss.xml" rel="self" type="application/rss+xml" />
+    <link>https://xoqiu.cn/radar</link>
+    <atom:link href="https://xoqiu.cn/radar/rss.xml" rel="self" type="application/rss+xml" />
     <description>每天 2 条 AI、2 条 Web3 工程简报：先讲机制，再给例子和边界。</description>
     <language>zh-CN</language>
     <lastBuildDate>Fri, 13 Nov 2026 00:00:00 GMT</lastBuildDate>
     <item>
       <title>DeepAgents 0.7.36：下载FIFO时，不再等待一个尚未出现的写入者</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-13#ai-deepagents-fifo-download-nonblocking</link>
+      <link>https://xoqiu.cn/radar/2026-11-13#ai-deepagents-fifo-download-nonblocking</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-deepagents-fifo-download-nonblocking</guid>
       <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -18,7 +18,7 @@
     </item>
     <item>
       <title>LangGraph 1.2.21：research_review与research里的review，要按完整路径区分</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-13#ai-langgraph-exact-subgraph-namespace</link>
+      <link>https://xoqiu.cn/radar/2026-11-13#ai-langgraph-exact-subgraph-namespace</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-langgraph-exact-subgraph-namespace</guid>
       <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -27,7 +27,7 @@
     </item>
     <item>
       <title>viem 2.57.19：root key已退休，恢复出账户地址仍不能放行</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-13#web3-viem-retired-root-verification</link>
+      <link>https://xoqiu.cn/radar/2026-11-13#web3-viem-retired-root-verification</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-viem-retired-root-verification</guid>
       <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -36,7 +36,7 @@
     </item>
     <item>
       <title>MetaMask支付31.2：报价是否原子化，要看实际签委托的MFA账户</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-13#web3-metamask-mfa-signer-nonatomic-quote</link>
+      <link>https://xoqiu.cn/radar/2026-11-13#web3-metamask-mfa-signer-nonatomic-quote</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-metamask-mfa-signer-nonatomic-quote</guid>
       <pubDate>Fri, 13 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -45,7 +45,7 @@
     </item>
     <item>
       <title>AI SDK 7.0.170：流数组按新增元素解析，最终结果仍单独校验</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-12#ai-sdk-incremental-array-stream-parser</link>
+      <link>https://xoqiu.cn/radar/2026-11-12#ai-sdk-incremental-array-stream-parser</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-sdk-incremental-array-stream-parser</guid>
       <pubDate>Thu, 12 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -54,7 +54,7 @@
     </item>
     <item>
       <title>Archestra 1.4.27：历史拒绝回执，不应单独触发当前输出豁免</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-12#ai-archestra-denied-history-refused-output-waiver</link>
+      <link>https://xoqiu.cn/radar/2026-11-12#ai-archestra-denied-history-refused-output-waiver</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-archestra-denied-history-refused-output-waiver</guid>
       <pubDate>Thu, 12 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -63,7 +63,7 @@
     </item>
     <item>
       <title>Reth 2.11：先核对P2P请求，再解码响应条目</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-12#web3-reth-p2p-response-before-item-decode</link>
+      <link>https://xoqiu.cn/radar/2026-11-12#web3-reth-p2p-response-before-item-decode</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-reth-p2p-response-before-item-decode</guid>
       <pubDate>Thu, 12 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -72,7 +72,7 @@
     </item>
     <item>
       <title>MetaMask估值服务2.4：已找到与未找到的批次，缓存时间分开</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-12#web3-metamask-vault-valuations-found-cache</link>
+      <link>https://xoqiu.cn/radar/2026-11-12#web3-metamask-vault-valuations-found-cache</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-metamask-vault-valuations-found-cache</guid>
       <pubDate>Thu, 12 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -81,7 +81,7 @@
     </item>
     <item>
       <title>AI SDK 7.0.169：自动发送还在判定，消息队列就不能当作空闲</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-11#ai-sdk-queue-approval-options-pending-decision</link>
+      <link>https://xoqiu.cn/radar/2026-11-11#ai-sdk-queue-approval-options-pending-decision</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-sdk-queue-approval-options-pending-decision</guid>
       <pubDate>Wed, 11 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -90,7 +90,7 @@
     </item>
     <item>
       <title>DeepAgents Code 0.2.7：归属探针复用基线，连续失败后退避停用</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-11#ai-deepagents-git-attribution-probe-backoff</link>
+      <link>https://xoqiu.cn/radar/2026-11-11#ai-deepagents-git-attribution-probe-backoff</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-deepagents-git-attribution-probe-backoff</guid>
       <pubDate>Wed, 11 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -99,7 +99,7 @@
     </item>
     <item>
       <title>op-reth 2.8.2：消息太新时保留up旧值，仍不能给quorum投票</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-11#web3-op-reth-out-of-scope-health-quorum</link>
+      <link>https://xoqiu.cn/radar/2026-11-11#web3-op-reth-out-of-scope-health-quorum</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-op-reth-out-of-scope-health-quorum</guid>
       <pubDate>Wed, 11 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -108,7 +108,7 @@
     </item>
     <item>
       <title>MetaMask图表1.1.1：已有右轴时，切图不再重复新建价格轴</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-11#web3-metamask-chart-right-scale-detach</link>
+      <link>https://xoqiu.cn/radar/2026-11-11#web3-metamask-chart-right-scale-detach</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-metamask-chart-right-scale-detach</guid>
       <pubDate>Wed, 11 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -117,7 +117,7 @@
     </item>
     <item>
       <title>AI SDK 7.0.165：遥测拿到模型结果之前，先缩减请求 URL</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-09#ai-sdk-telemetry-url-boundary</link>
+      <link>https://xoqiu.cn/radar/2026-11-09#ai-sdk-telemetry-url-boundary</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-sdk-telemetry-url-boundary</guid>
       <pubDate>Mon, 09 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -126,7 +126,7 @@
     </item>
     <item>
       <title>deepagents-code 0.2.5：压缩输入预算跟随当前选定模型</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-09#ai-deepagents-selected-model-budget</link>
+      <link>https://xoqiu.cn/radar/2026-11-09#ai-deepagents-selected-model-budget</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-deepagents-selected-model-budget</guid>
       <pubDate>Mon, 09 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -135,7 +135,7 @@
     </item>
     <item>
       <title>viem 2.57.17：同一 RPC URL，不再把不同 transport 的批次混用</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-09#web3-viem-http-batch-factory-identity</link>
+      <link>https://xoqiu.cn/radar/2026-11-09#web3-viem-http-batch-factory-identity</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-viem-http-batch-factory-identity</guid>
       <pubDate>Mon, 09 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -144,7 +144,7 @@
     </item>
     <item>
       <title>Sui mainnet 1.83.1：对象资金不足，在执行期间形成 Move abort</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-09#web3-sui-object-funds-execution-abort</link>
+      <link>https://xoqiu.cn/radar/2026-11-09#web3-sui-object-funds-execution-abort</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-sui-object-funds-execution-abort</guid>
       <pubDate>Mon, 09 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -153,7 +153,7 @@
     </item>
     <item>
       <title>langchain-quickjs 0.3.12：Python 收尾时，析构不再等待工作线程</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-08#ai-quickjs-finalizing-destructor</link>
+      <link>https://xoqiu.cn/radar/2026-11-08#ai-quickjs-finalizing-destructor</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-quickjs-finalizing-destructor</guid>
       <pubDate>Sun, 08 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -162,7 +162,7 @@
     </item>
     <item>
       <title>Mastra Core 1.82.0：动态 scopes 返回最终集合，身份范围不能丢</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-08#ai-mastra-final-scope-set</link>
+      <link>https://xoqiu.cn/radar/2026-11-08#ai-mastra-final-scope-set</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-mastra-final-scope-set</guid>
       <pubDate>Sun, 08 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -171,7 +171,7 @@
     </item>
     <item>
       <title>viem 2.57.16：方法已被明确拒绝时，HTTP 状态不再让请求重试</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-08#web3-viem-method-refusal-retry</link>
+      <link>https://xoqiu.cn/radar/2026-11-08#web3-viem-method-refusal-retry</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-viem-method-refusal-retry</guid>
       <pubDate>Sun, 08 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -180,7 +180,7 @@
     </item>
     <item>
       <title>op-supernode 1.1.1：旧的 max-safe-lag 参数退出启动与排序路径</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-08#web3-op-supernode-retired-max-safe-lag</link>
+      <link>https://xoqiu.cn/radar/2026-11-08#web3-op-supernode-retired-max-safe-lag</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-op-supernode-retired-max-safe-lag</guid>
       <pubDate>Sun, 08 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -189,7 +189,7 @@
     </item>
     <item>
       <title>LangChain Core 1.7.6：读取累计结果时，再一次合并流式消息</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-07#ai-langchain-stream-chunk-accumulation</link>
+      <link>https://xoqiu.cn/radar/2026-11-07#ai-langchain-stream-chunk-accumulation</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-langchain-stream-chunk-accumulation</guid>
       <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -198,7 +198,7 @@
     </item>
     <item>
       <title>Archestra 1.4.22：用持久命令 ID 区分新执行与历史缓存</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-07#ai-archestra-command-id-cache</link>
+      <link>https://xoqiu.cn/radar/2026-11-07#ai-archestra-command-id-cache</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-archestra-command-id-cache</guid>
       <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -207,7 +207,7 @@
     </item>
     <item>
       <title>MetaMask KYC 0.16.0：删除准备与提交都传入 AAL2 凭据</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-07#web3-metamask-kyc-deletion-aal2</link>
+      <link>https://xoqiu.cn/radar/2026-11-07#web3-metamask-kyc-deletion-aal2</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-metamask-kyc-deletion-aal2</guid>
       <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -216,7 +216,7 @@
     </item>
     <item>
       <title>Agave 4.4.1：隐式 ProgramData 载入也有计量下界</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-07#web3-agave-programdata-size-floor</link>
+      <link>https://xoqiu.cn/radar/2026-11-07#web3-agave-programdata-size-floor</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-agave-programdata-size-floor</guid>
       <pubDate>Sat, 07 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -225,7 +225,7 @@
     </item>
     <item>
       <title>LangGraph 1.2.20：严格恢复模式先核对回答是否仍在等待集合</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-06#ai-langgraph-strict-interrupt-resume</link>
+      <link>https://xoqiu.cn/radar/2026-11-06#ai-langgraph-strict-interrupt-resume</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-langgraph-strict-interrupt-resume</guid>
       <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -234,7 +234,7 @@
     </item>
     <item>
       <title>Deep Agents 0.7.34：历史列表变动后，摘要截点仍跟随同一条消息</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-06#ai-deepagents-message-id-summary-cutoff</link>
+      <link>https://xoqiu.cn/radar/2026-11-06#ai-deepagents-message-id-summary-cutoff</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-deepagents-message-id-summary-cutoff</guid>
       <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -243,7 +243,7 @@
     </item>
     <item>
       <title>Reth 2.10.0：整组模拟共用gas预算，并进入阻塞任务并发限制</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-06#web3-reth-callbundle-shared-work-budget</link>
+      <link>https://xoqiu.cn/radar/2026-11-06#web3-reth-callbundle-shared-work-budget</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-reth-callbundle-shared-work-budget</guid>
       <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -252,7 +252,7 @@
     </item>
     <item>
       <title>Foundry 11月5日nightly：从有价值的旧状态继续探索不变量</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-06#web3-foundry-snapshot-invariant-fuzzing</link>
+      <link>https://xoqiu.cn/radar/2026-11-06#web3-foundry-snapshot-invariant-fuzzing</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-foundry-snapshot-invariant-fuzzing</guid>
       <pubDate>Fri, 06 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -261,7 +261,7 @@
     </item>
     <item>
       <title>Pydantic AI 1.107.10：返回长度有限，格式化过程仍需要预算</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-05#ai-pydantic-json-format-budget</link>
+      <link>https://xoqiu.cn/radar/2026-11-05#ai-pydantic-json-format-budget</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-pydantic-json-format-budget</guid>
       <pubDate>Thu, 05 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -270,7 +270,7 @@
     </item>
     <item>
       <title>Archestra 1.4.18：流已结束，缺失的 token 用量仍是未知</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-05#ai-archestra-unknown-stream-usage</link>
+      <link>https://xoqiu.cn/radar/2026-11-05#ai-archestra-unknown-stream-usage</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-archestra-unknown-stream-usage</guid>
       <pubDate>Thu, 05 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -279,7 +279,7 @@
     </item>
     <item>
       <title>Akash 通知服务2.81.10：新地址确认之后，才进入告警投递集合</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-05#web3-akash-confirmed-alert-addresses</link>
+      <link>https://xoqiu.cn/radar/2026-11-05#web3-akash-confirmed-alert-addresses</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-akash-confirmed-alert-addresses</guid>
       <pubDate>Thu, 05 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -288,7 +288,7 @@
     </item>
     <item>
       <title>op-deployer 0.9.0-rc.3：许可型 super-root 链也从真实起始锚开始</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-05#web3-opdeployer-real-super-root-anchor</link>
+      <link>https://xoqiu.cn/radar/2026-11-05#web3-opdeployer-real-super-root-anchor</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-opdeployer-real-super-root-anchor</guid>
       <pubDate>Thu, 05 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -297,7 +297,7 @@
     </item>
     <item>
       <title>deepagents-code 0.2.4：给系统合成的中断消息保留来源</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-04#ai-deepagents-interrupt-provenance</link>
+      <link>https://xoqiu.cn/radar/2026-11-04#ai-deepagents-interrupt-provenance</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-deepagents-interrupt-provenance</guid>
       <pubDate>Wed, 04 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -306,7 +306,7 @@
     </item>
     <item>
       <title>SGLang 0.5.23：推理指标跟随本次结果，延后发布仍保留原始状态</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-04#ai-sglang-result-owned-fpm</link>
+      <link>https://xoqiu.cn/radar/2026-11-04#ai-sglang-result-owned-fpm</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-sglang-result-owned-fpm</guid>
       <pubDate>Wed, 04 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -315,7 +315,7 @@
     </item>
     <item>
       <title>MetaMask perps-controller 22.1.1：重连后，旧订阅不能接管新数据</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-04#web3-metamask-reconnect-generation</link>
+      <link>https://xoqiu.cn/radar/2026-11-04#web3-metamask-reconnect-generation</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-metamask-reconnect-generation</guid>
       <pubDate>Wed, 04 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -324,7 +324,7 @@
     </item>
     <item>
       <title>Sui testnet v1.83.1：整包同步失败后，分段校验检查点内容</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-04#web3-sui-checkpoint-paged-fallback</link>
+      <link>https://xoqiu.cn/radar/2026-11-04#web3-sui-checkpoint-paged-fallback</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-sui-checkpoint-paged-fallback</guid>
       <pubDate>Wed, 04 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -333,7 +333,7 @@
     </item>
     <item>
       <title>langchain-anthropic 1.7.9：没有 token 回调，不等于模型没有输出</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-03#ai-langchain-block-token-callbacks</link>
+      <link>https://xoqiu.cn/radar/2026-11-03#ai-langchain-block-token-callbacks</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-langchain-block-token-callbacks</guid>
       <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -342,7 +342,7 @@
     </item>
     <item>
       <title>Claude Code 2.1.316：会话自动退出后，子 shell 也要有收尾证据</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-03#ai-claude-exit-shell-lifecycle</link>
+      <link>https://xoqiu.cn/radar/2026-11-03#ai-claude-exit-shell-lifecycle</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-claude-exit-shell-lifecycle</guid>
       <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -351,7 +351,7 @@
     </item>
     <item>
       <title>viem 2.57.14：余额预览改为显式请求，缺失不能显示成零变化</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-03#web3-viem-preview-opt-in</link>
+      <link>https://xoqiu.cn/radar/2026-11-03#web3-viem-preview-opt-in</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-viem-preview-opt-in</guid>
       <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -360,7 +360,7 @@
     </item>
     <item>
       <title>Foundry 1.9.0：记录过 revert 后，不再继续发送脚本本会阻止的操作</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-03#web3-foundry-resume-recorded-revert</link>
+      <link>https://xoqiu.cn/radar/2026-11-03#web3-foundry-resume-recorded-revert</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-foundry-resume-recorded-revert</guid>
       <pubDate>Tue, 03 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -369,7 +369,7 @@
     </item>
     <item>
       <title>LangGraph 1.2.19：等待批准的工具，不再被流事件误报成失败</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-02#ai-langgraph-paused-tool-stream</link>
+      <link>https://xoqiu.cn/radar/2026-11-02#ai-langgraph-paused-tool-stream</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-langgraph-paused-tool-stream</guid>
       <pubDate>Mon, 02 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -378,7 +378,7 @@
     </item>
     <item>
       <title>openai-python 3.42.1：连接策略要随代码生成保留下来</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-02#ai-openai-sdk-websocket-policy</link>
+      <link>https://xoqiu.cn/radar/2026-11-02#ai-openai-sdk-websocket-policy</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-openai-sdk-websocket-policy</guid>
       <pubDate>Mon, 02 Nov 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -387,7 +387,7 @@
     </item>
     <item>
       <title>MetaMask 社交组件：作者评论由后端选择，客户端保留缺失与 null</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-02#web3-metamask-author-comment-authority</link>
+      <link>https://xoqiu.cn/radar/2026-11-02#web3-metamask-author-comment-authority</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-metamask-author-comment-authority</guid>
       <pubDate>Mon, 02 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -396,7 +396,7 @@
     </item>
     <item>
       <title>Reth 2.9.0：节点配置可沿用，自定义执行组件仍要迁移</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-11-02#web3-reth-evm2-sdk-boundary</link>
+      <link>https://xoqiu.cn/radar/2026-11-02#web3-reth-evm2-sdk-boundary</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-reth-evm2-sdk-boundary</guid>
       <pubDate>Mon, 02 Nov 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -405,7 +405,7 @@
     </item>
     <item>
       <title>ACR：同一模型的四条轨迹，要分别核对解法与正确性</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-30#ai-acr-method-diversity</link>
+      <link>https://xoqiu.cn/radar/2026-10-30#ai-acr-method-diversity</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-acr-method-diversity</guid>
       <pubDate>Fri, 30 Oct 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -414,7 +414,7 @@
     </item>
     <item>
       <title>TAO：工具即将返回，才可能需要下一轮 GPU 准入</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-30#ai-tao-tool-aware-admission</link>
+      <link>https://xoqiu.cn/radar/2026-10-30#ai-tao-tool-aware-admission</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-tao-tool-aware-admission</guid>
       <pubDate>Fri, 30 Oct 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -423,7 +423,7 @@
     </item>
     <item>
       <title>viem 2.57.13：账户配置缓存要把链 ID 纳入键</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-30#web3-viem-chain-scoped-config</link>
+      <link>https://xoqiu.cn/radar/2026-10-30#web3-viem-chain-scoped-config</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-viem-chain-scoped-config</guid>
       <pubDate>Fri, 30 Oct 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -432,7 +432,7 @@
     </item>
     <item>
       <title>Agave 4.4.0：先编码投票状态，再只补零尾部</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-30#web3-agave-padded-vote-state</link>
+      <link>https://xoqiu.cn/radar/2026-10-30#web3-agave-padded-vote-state</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-agave-padded-vote-state</guid>
       <pubDate>Fri, 30 Oct 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -441,7 +441,7 @@
     </item>
     <item>
       <title>AMIE：保留记忆原文，让检索的访问状态随使用演化</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-29#ai-amie-persistent-access-state</link>
+      <link>https://xoqiu.cn/radar/2026-10-29#ai-amie-persistent-access-state</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-amie-persistent-access-state</guid>
       <pubDate>Thu, 29 Oct 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -450,7 +450,7 @@
     </item>
     <item>
       <title>langchain-quickjs 0.3.11：首次执行 JavaScript 时才启动解释器</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-29#ai-quickjs-lazy-evaluation-runtime</link>
+      <link>https://xoqiu.cn/radar/2026-10-29#ai-quickjs-lazy-evaluation-runtime</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-quickjs-lazy-evaluation-runtime</guid>
       <pubDate>Thu, 29 Oct 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -459,7 +459,7 @@
     </item>
     <item>
       <title>op-proposer 1.17.0：指标被移除后，空图表不能当成零流量</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-29#web3-op-proposer-rpc-metric-removal</link>
+      <link>https://xoqiu.cn/radar/2026-10-29#web3-op-proposer-rpc-metric-removal</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-op-proposer-rpc-metric-removal</guid>
       <pubDate>Thu, 29 Oct 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -468,7 +468,7 @@
     </item>
     <item>
       <title>Sui 合并历史验签修复：RPC 接受两种受支持的 zkLogin 电路</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-29#web3-sui-zklogin-historical-verification</link>
+      <link>https://xoqiu.cn/radar/2026-10-29#web3-sui-zklogin-historical-verification</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-sui-zklogin-historical-verification</guid>
       <pubDate>Thu, 29 Oct 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -477,7 +477,7 @@
     </item>
     <item>
       <title>LangGraph 1.2.18：用更多完整快照，缩短长会话的重放链</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-28#ai-langgraph-delta-replay-window</link>
+      <link>https://xoqiu.cn/radar/2026-10-28#ai-langgraph-delta-replay-window</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-langgraph-delta-replay-window</guid>
       <pubDate>Wed, 28 Oct 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -486,7 +486,7 @@
     </item>
     <item>
       <title>Verified autoresearch：先验证评测器，再让 Agent 搜索更优程序</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-28#ai-verified-autoresearch-evaluator</link>
+      <link>https://xoqiu.cn/radar/2026-10-28#ai-verified-autoresearch-evaluator</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-verified-autoresearch-evaluator</guid>
       <pubDate>Wed, 28 Oct 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -495,7 +495,7 @@
     </item>
     <item>
       <title>LND 0.21.5-beta：发票订阅死锁，出在事务内又借了一条连接</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-28#web3-lnd-sql-invoice-transaction-scope</link>
+      <link>https://xoqiu.cn/radar/2026-10-28#web3-lnd-sql-invoice-transaction-scope</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-lnd-sql-invoice-transaction-scope</guid>
       <pubDate>Wed, 28 Oct 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -504,7 +504,7 @@
     </item>
     <item>
       <title>Nitro 3.12.2：回到旧分支再升级，也要核对区块保留</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-28#web3-nitro-version-transition-head-retention</link>
+      <link>https://xoqiu.cn/radar/2026-10-28#web3-nitro-version-transition-head-retention</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-nitro-version-transition-head-retention</guid>
       <pubDate>Wed, 28 Oct 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -513,7 +513,7 @@
     </item>
     <item>
       <title>OpenAI Signals：工作消息占比，不能直接当成劳动产出</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-27#ai-signals-work-activity-denominator</link>
+      <link>https://xoqiu.cn/radar/2026-10-27#ai-signals-work-activity-denominator</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-signals-work-activity-denominator</guid>
       <pubDate>Tue, 27 Oct 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -522,7 +522,7 @@
     </item>
     <item>
       <title>GPT-6.1 Terra 发布：先分别核对模型能力与工具契约</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-27#ai-terra-model-and-tool-contract</link>
+      <link>https://xoqiu.cn/radar/2026-10-27#ai-terra-model-and-tool-contract</link>
       <guid isPermaLink="false">xiuqiu-radar:ai-terra-model-and-tool-contract</guid>
       <pubDate>Tue, 27 Oct 2026 00:00:00 GMT</pubDate>
       <category>AI</category>
@@ -531,7 +531,7 @@
     </item>
     <item>
       <title>Nethermind 2.2.2：上游安全补丁要进入实际运行的制品</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-27#web3-nethermind-bundled-runtime-patch</link>
+      <link>https://xoqiu.cn/radar/2026-10-27#web3-nethermind-bundled-runtime-patch</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-nethermind-bundled-runtime-patch</guid>
       <pubDate>Tue, 27 Oct 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>
@@ -540,7 +540,7 @@
     </item>
     <item>
       <title>AvalancheGo 1.15.2：可选客户端更新也有插件兼容要求</title>
-      <link>https://xiuqiu-site.vercel.app/radar/2026-10-27#web3-avalanchego-plugin-upgrade-boundary</link>
+      <link>https://xoqiu.cn/radar/2026-10-27#web3-avalanchego-plugin-upgrade-boundary</link>
       <guid isPermaLink="false">xiuqiu-radar:web3-avalanchego-plugin-upgrade-boundary</guid>
       <pubDate>Tue, 27 Oct 2026 00:00:00 GMT</pubDate>
       <category>WEB3</category>

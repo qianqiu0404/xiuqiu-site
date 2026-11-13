@@ -2,7 +2,7 @@
 // Vue app (src/), build scripts (scripts/) and serverless code (api/, lib/).
 // Node 22 loads this file directly via type stripping, so keep it plain TS.
 
-export const SITE_URL = 'https://xiuqiu-site.vercel.app'
+export const SITE_URL = 'https://xoqiu.cn'
 
 export function escapeHtml(value: string): string {
   return value

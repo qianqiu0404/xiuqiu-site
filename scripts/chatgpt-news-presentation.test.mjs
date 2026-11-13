@@ -56,7 +56,7 @@ test('producer route and reading return retain the source, keyword, topic and fo
   const href = new URL(intelReadingHref(entry, listPath), 'https://example.org')
   assert.equal(href.searchParams.get('producer'), 'chatgpt')
   const back = readingReturnLink(href.searchParams.get('from'))
-  assert.equal(back.href, `/?domain=chatgpt&topic=chatgpt-ai&q=MCP+fixture&expanded=1#intel-item-${entry.id}`)
+  assert.equal(back.href, `/intel?domain=chatgpt&topic=chatgpt-ai&q=MCP+fixture&expanded=1#intel-item-${entry.id}`)
   assert.match(back.label, /ChatGPT推荐.*MCP fixture.*搜索结果/)
   assert.equal(readIntelQuery({ domain: 'chatgpt' }).filter, 'chatgpt')
   assert.equal(intelTopicHref('chatgpt-web3'), '/?domain=chatgpt&topic=chatgpt-web3')

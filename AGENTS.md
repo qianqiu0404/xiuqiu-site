@@ -4,7 +4,7 @@
 
 ## 项目是什么
 
-xiuqiu-site 是一个以 **AI + Web3 Radar 情报流** 为主的个人站点：首页 `/` 是情报流，原作品集与工程证据保留在 `/about`、`/projects`、`/engineering/*`。技术栈是 Vue 3 + Vite + vue-router，部署在 Vercel。
+xiuqiu-site 是个人简历、作品集与 **AI + Web3 Radar 情报流** 站点：首页 `/` 是 V3.1 简历与完整作品目录，情报流保留在 `/intel`，原作品集与工程证据保留在 `/about`、`/projects`、`/engineering/*`。主域名为 xoqiu.cn，技术栈是 Vue 3 + Vite + vue-router，部署在 Vercel。原根路径的情报筛选链接会转到 `/intel`，雷达、文章与订阅路径保持兼容。
 
 - 内容写在 `content/**` 的 Markdown 里，构建时生成 `src/data/generated*.ts` 和 `public/**` 下的静态产物。
 - `api/` 下有少量 serverless 接口：`/api/chat`、Market Radar 的读接口，以及 Hermes 用的 outbox 接口。
@@ -36,7 +36,8 @@ xiuqiu-site 是一个以 **AI + Web3 Radar 情报流** 为主的个人站点：�
   - `src/design/tokens.css`：颜色、字号、间距、圆角。浅色是默认，深色跟随系统，`<html data-theme>` 可强制切换。新代码只用语义名（`--bg`、`--ink-*`、`--accent`、`--domain-*`、`--status-*`）。
   - `src/design/shell.css`：情报流相关路由的页头、页脚和主题切换。
   - `src/design/brief.css` + `reader.css`：情报流、主题页、日报、周报、趋势回顾共用的布局和组件；`market-skin.css` 把市场雷达旧页面映射到同一套色板。
-- 全站所有路由都使用 brief 外壳和同一套 token（P6 完成）；旧的深色 cinematic 外壳已删除。`src/style.css` 和 `src/styles/*.css` 里剩下的页面样式只引用 token，不再写死颜色。
+- 简历首页使用独立的 resume 外壳，其样式限定于 `.resume-page`；其他路由继续使用 brief 外壳。两者的配色均定义于同一份 tokens.css，浅深外观偏好共享。旧的深色 cinematic 外壳已删除。
+- `src/features/resume/` 的 29 条公开简介和 8 个精选来自已确认的 V3.1 展示版本；`notes.json` 仅包含允许公开的项目介绍。知识地图保持私有，展示仅限虚构示意、功能方法和私有声明，不能加入源码、实际资料或下载入口。
 - 新增或修改样式时不要写十六进制或 rgba 颜色，用 `src/design/tokens.css` 里的变量。
 - 改颜色后要在浅色和深色下都确认文字对比度 ≥ 4.5:1（大字 ≥ 3:1）；`design-components` 测试会检查 token 是否齐全、深浅两套是否一致。
 - 新增页面逻辑（筛选、分组、格式化）写成 `*Presentation.ts` 里的纯函数，配 `node:test` 测试，不要直接写在 `.vue` 里。

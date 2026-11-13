@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { SITE_URL } from '../shared/site.ts'
 import { buildMarketResearchPack } from './market-radar-contracts.mjs'
 import { verifyDailyMarketResearch, verifyPublishedMarketResearch } from './verify-market-research-production.mjs'
 
@@ -22,7 +23,7 @@ const entry = {
   ],
 }
 
-function productionFetch(pack, { snapshotId = publication.snapshotId, canonical = pack.pageUrl } = {}) {
+function productionFetch(pack, { snapshotId = publication.snapshotId, canonical = `${SITE_URL}/market-radar/${pack.date}` } = {}) {
   return async url => {
     if (url.pathname.startsWith('/data/market-radar-packs/')) {
       return new Response(JSON.stringify(pack), { status: 200, headers: { 'content-type': 'application/json' } })
@@ -39,6 +40,26 @@ test('production verifier binds page, JSON, snapshot and all prompt checksums', 
   assert.equal(result.status, 'verified')
   assert.equal(result.snapshotId, publication.snapshotId)
   assert.deepEqual(result.promptChecksums, pack.questions.map(({ id, promptChecksum }) => ({ id, promptChecksum })))
+})
+
+test('domain migration verifies the current canonical while preserving the immutable historical pack', async () => {
+  const pack = buildMarketResearchPack(entry, publication)
+  const before = JSON.stringify(pack)
+  const canonical = `${SITE_URL}/market-radar/${entry.date}`
+  assert.notEqual(pack.pageUrl, canonical)
+  const requested = []
+  const fetchPage = productionFetch(pack, { canonical })
+  const result = await verifyPublishedMarketResearch(entry, publication, {
+    releaseSha: 'a'.repeat(40),
+    fetchImpl: url => { requested.push(new URL(url)); return fetchPage(url) },
+  })
+  assert.equal(result.status, 'verified')
+  assert.equal(JSON.stringify(pack), before)
+  assert.ok(requested.every(url => url.origin === SITE_URL && url.searchParams.get('release_sha') === 'a'.repeat(40)))
+  await assert.rejects(
+    verifyPublishedMarketResearch(entry, publication, { fetchImpl: productionFetch(pack, { canonical: pack.pageUrl }) }),
+    /canonical differs/,
+  )
 })
 
 test('production verifier fails closed on pack, canonical and snapshot drift', async () => {
