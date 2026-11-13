@@ -1,8 +1,16 @@
 {
   "schemaVersion": 1,
-  "latestDate": "2026-11-12",
+  "latestDate": "2026-11-13",
   "homePageUrl": "https://xoqiu.cn/",
   "topics": [
+    {
+      "topic": "market_equity",
+      "domain": "market",
+      "count": 1,
+      "lastSeen": "2026-11-13",
+      "firstSeen": "2026-11-13",
+      "url": "https://xoqiu.cn/topics/market_equity"
+    },
     {
       "topic": "market_macro",
       "domain": "market",
