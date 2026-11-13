@@ -6,9 +6,26 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-11-13"
-export const intelItemCount = 320
+export const intelLatestDate: string | null = "2026-11-14"
+export const intelItemCount = 321
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "market:2026-11-14:ecb-ces-stablecoin-household-exposure-2026-11-11",
+    "kind": "market",
+    "date": "2026-11-14",
+    "domain": "market",
+    "topic": "market_crypto",
+    "title": "ECB稳定币持有调查：历史家庭问卷与当前风险须分开",
+    "summary": "研究推断：若采用显著扩大，赎回可能经储备资产处置、银行资金与消费者信心联系传统金融；美元稳定币用于加密交易之外时，还需观察货币替代渠道。各环是待验证机制，不能据此推断资产方向。",
+    "href": "/market-radar/2026-11-14#ecb-ces-stablecoin-household-exposure-2026-11-11",
+    "source": {
+      "name": "ECB — Who holds stablecoins? New evidence on euro area consumer holdings",
+      "url": "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_08~f4ddf0117c.en.html"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
   {
     "id": "learning:ai-deepagents-fifo-download-nonblocking",
     "kind": "learning",
@@ -425,106 +442,16 @@ export const intelLatestItems: IntelItem[] = [
     "flags": {
       "priority": "P1"
     }
-  },
-  {
-    "id": "learning:ai-langchain-stream-chunk-accumulation",
-    "kind": "learning",
-    "date": "2026-11-07",
-    "domain": "ai",
-    "topic": "infrastructure",
-    "title": "LangChain Core 1.7.6：读取累计结果时，再一次合并流式消息",
-    "summary": "模型分块输出正常，不代表消费端累计结果的代价也稳定。工具参数越长，重复解析整个前缀可能越慢；区分逐块交付与最终累计，可以解释流畅度问题究竟出在模型服务还是本地消息处理。",
-    "href": "/radar/2026-11-07#ai-langchain-stream-chunk-accumulation",
-    "source": {
-      "name": "LangChain Core 1.7.6 official release",
-      "tier": "tier1",
-      "url": "https://github.com/langchain-ai/langchain/releases/tag/langchain-core%3D%3D1.7.6"
-    }
-  },
-  {
-    "id": "learning:ai-archestra-command-id-cache",
-    "kind": "learning",
-    "date": "2026-11-07",
-    "domain": "ai",
-    "topic": "safety",
-    "title": "Archestra 1.4.22：用持久命令 ID 区分新执行与历史缓存",
-    "summary": "命令文本相同不等于执行属于同一任务。缓存既要阻止新任务借用别人的结果，又要在恢复历史时保留原执行身份；随意给每次回放重新加随机数，也可能让旧命令再次产生副作用。",
-    "href": "/radar/2026-11-07#ai-archestra-command-id-cache",
-    "source": {
-      "name": "Archestra platform 1.4.22 official stable release",
-      "tier": "tier1",
-      "url": "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.4.22"
-    },
-    "flags": {
-      "deepDive": true
-    }
-  },
-  {
-    "id": "learning:web3-metamask-kyc-deletion-aal2",
-    "kind": "learning",
-    "date": "2026-11-07",
-    "domain": "web3",
-    "topic": "wallet_cex",
-    "title": "MetaMask KYC 0.16.0：删除准备与提交都传入 AAL2 凭据",
-    "summary": "钱包里可调用一个方法，不代表这次破坏性操作已完成所需认证。把调用方提供的凭据贯穿准备与提交，有助于审查两阶段操作的认证来源，并避免把普通钱包会话凭据自动沿用到更高认证要求的接口。",
-    "href": "/radar/2026-11-07#web3-metamask-kyc-deletion-aal2",
-    "source": {
-      "name": "MetaMask core v1402.0.0: kyc-controller 0.16.0",
-      "tier": "tier1",
-      "url": "https://github.com/MetaMask/core/releases/tag/v1402.0.0"
-    }
-  },
-  {
-    "id": "learning:web3-agave-programdata-size-floor",
-    "kind": "learning",
-    "date": "2026-11-07",
-    "domain": "web3",
-    "topic": "onchain_infrastructure",
-    "title": "Agave 4.4.1：隐式 ProgramData 载入也有计量下界",
-    "summary": "节点资源核算不能只看交易显式列出的账户。程序还会引入额外依赖；把这些依赖的计数条件、去重和下界说明白，才能解释为什么同一份调用在不同 feature 状态下得到不同的载入数据预算结果。",
-    "href": "/radar/2026-11-07#web3-agave-programdata-size-floor",
-    "source": {
-      "name": "Agave v4.4.1 official stable release",
-      "tier": "tier1",
-      "url": "https://github.com/anza-xyz/agave/releases/tag/v4.4.1"
-    }
-  },
-  {
-    "id": "market:2026-11-07:bls-october-employment-revisions-2026-11-06",
-    "kind": "market",
-    "date": "2026-11-07",
-    "domain": "market",
-    "topic": "market_macro",
-    "title": "美国10月非农增16.5万，前两月合计上修8.4万",
-    "summary": "研究判断：就业数量、工资与政策预期是不同证据层。非农与失业率来自不同调查，先核对修订、行业构成和工时，再检验国债收益率与美元的同窗口反应。",
-    "href": "/market-radar/2026-11-07#bls-october-employment-revisions-2026-11-06",
-    "source": {
-      "name": "U.S. Bureau of Labor Statistics Employment Situation — October 2026",
-      "url": "https://www.bls.gov/news.release/archives/empsit_11062026.htm"
-    },
-    "flags": {
-      "priority": "P1"
-    }
-  },
-  {
-    "id": "market:2026-11-07:statcan-october-lfs-employment-unemployment-2026-11-06",
-    "kind": "market",
-    "date": "2026-11-07",
-    "domain": "market",
-    "topic": "market_macro",
-    "title": "加拿大10月就业基本持平，失业率升至6.7%",
-    "summary": "研究判断：就业总量基本持平可与行业、私营及公共部门变化并存；需分别检验劳动力供给与需求，再核对本国利率和加元反应，不能直接据此比较两国强弱。",
-    "href": "/market-radar/2026-11-07#statcan-october-lfs-employment-unemployment-2026-11-06",
-    "source": {
-      "name": "Statistics Canada The Daily — Labour Force Survey, October 2026",
-      "url": "https://www150.statcan.gc.ca/n1/daily-quotidien/261106/dq261106a-eng.htm"
-    },
-    "flags": {
-      "priority": "P1"
-    }
   }
 ]
 export const intelTopics: IntelTopic[] = [
+  {
+    "topic": "market_crypto",
+    "domain": "market",
+    "count": 8,
+    "lastSeen": "2026-11-14",
+    "firstSeen": "2026-08-09"
+  },
   {
     "topic": "agent",
     "domain": "ai",
@@ -622,13 +549,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 3,
     "lastSeen": "2026-10-27",
     "firstSeen": "2026-08-12"
-  },
-  {
-    "topic": "market_crypto",
-    "domain": "market",
-    "count": 7,
-    "lastSeen": "2026-10-25",
-    "firstSeen": "2026-08-09"
   },
   {
     "topic": "market_signal",
