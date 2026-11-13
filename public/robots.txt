@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://xiuqiu-site.vercel.app/sitemap.xml
+Sitemap: https://xoqiu.cn/sitemap.xml

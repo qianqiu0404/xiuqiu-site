@@ -4,24 +4,24 @@
 
 ## Learning Radar
 
-- [信息流](https://xiuqiu-site.vercel.app/radar): 按日期、领域与主题浏览全部公开简报
-- [RSS](https://xiuqiu-site.vercel.app/radar/rss.xml)
-- [JSON Feed](https://xiuqiu-site.vercel.app/radar/feed.json)
+- [信息流](https://xoqiu.cn/radar): 按日期、领域与主题浏览全部公开简报
+- [RSS](https://xoqiu.cn/radar/rss.xml)
+- [JSON Feed](https://xoqiu.cn/radar/feed.json)
 
 ## Recent briefs
 
-- [AI SDK 7.0.170：流数组按新增元素解析，最终结果仍单独校验](https://xiuqiu-site.vercel.app/radar/2026-11-12#ai-sdk-incremental-array-stream-parser) (2026-11-12, ai/infrastructure): 流式UI不断收到小片段时，已完成的元素不应随每次输入重复做相同工作；但界面拿到部分元素，也不能替代最终完整结果的校验。
-- [Archestra 1.4.27：历史拒绝回执，不应单独触发当前输出豁免](https://xiuqiu-site.vercel.app/radar/2026-11-12#ai-archestra-denied-history-refused-output-waiver) (2026-11-12, ai/safety): Agent历史中“某次调用没执行”和“本次实际输出被扣留”是不同事件；恢复时若把两者混用，旧裁定可能错误改变当前会话的执行边界。
-- [Reth 2.11：先核对P2P请求，再解码响应条目](https://xiuqiu-site.vercel.app/radar/2026-11-12#web3-reth-p2p-response-before-item-decode) (2026-11-12, web3/onchain_infrastructure): 节点先为一个本不该接受的响应分配整批解码对象，再到会话层丢弃，会把无效输入的成本留在热路径；请求上下文应更早约束响应工作量。
-- [MetaMask估值服务2.4：已找到与未找到的批次，缓存时间分开](https://xiuqiu-site.vercel.app/radar/2026-11-12#web3-metamask-vault-valuations-found-cache) (2026-11-12, web3/wallet_cex): 接口未找到对应估值，不等于该交易没有份额移动；历史估值和当前市价也不同。缓存寿命、缺失状态和单位必须一起解释，才能避免把未就绪数据当作稳定金额。
-- [AI SDK 7.0.169：自动发送还在判定，消息队列就不能当作空闲](https://xiuqiu-site.vercel.app/radar/2026-11-11#ai-sdk-queue-approval-options-pending-decision) (2026-11-11, ai/agent): 响应流结束和下一步决策结束是两个时刻；把中间窗口当空闲，容易让新消息越过审批或抢先启动另一请求。
-- [DeepAgents Code 0.2.7：归属探针复用基线，连续失败后退避停用](https://xiuqiu-site.vercel.app/radar/2026-11-11#ai-deepagents-git-attribution-probe-backoff) (2026-11-11, ai/infrastructure): 辅助追踪不应在每次工具前后重复扫描，也不应在持续失败时拖慢主流程；减少探针仍要保留基线与观察顺序，才能解释归属证据。
-- [op-reth 2.8.2：消息太新时保留up旧值，仍不能给quorum投票](https://xiuqiu-site.vercel.app/radar/2026-11-11#web3-op-reth-out-of-scope-health-quorum) (2026-11-11, web3/l2): 端点能回应、能否判断当前消息、整组是否凑够确定性回答，是三件事；保留表针可减少误判，却不能替代当前消息的quorum证据。
-- [MetaMask图表1.1.1：已有右轴时，切图不再重复新建价格轴](https://xiuqiu-site.vercel.app/radar/2026-11-11#web3-metamask-chart-right-scale-detach) (2026-11-11, web3/wallet_cex): 可反复触发的布局同步若每次都创建新对象，会把显示层关系拆散；先识别已有结构，才能让初始化逻辑在更新时复用。
-- [AI SDK 7.0.165：遥测拿到模型结果之前，先缩减请求 URL](https://xiuqiu-site.vercel.app/radar/2026-11-09#ai-sdk-telemetry-url-boundary) (2026-11-09, ai/safety): 最终输出不能覆盖更早的观察者；应逐接收者核对字段与脱敏时点。
-- [deepagents-code 0.2.5：压缩输入预算跟随当前选定模型](https://xiuqiu-site.vercel.app/radar/2026-11-09#ai-deepagents-selected-model-budget) (2026-11-09, ai/infrastructure): 切换模型也改变预算；预算准备和最终执行要分开核验，保留下游配置。
-- [viem 2.57.17：同一 RPC URL，不再把不同 transport 的批次混用](https://xiuqiu-site.vercel.app/radar/2026-11-09#web3-viem-http-batch-factory-identity) (2026-11-09, web3/onchain_infrastructure): 相同地址不等于同一调用者；批处理仍需保持鉴权配置和响应归属。
-- [Sui mainnet 1.83.1：对象资金不足，在执行期间形成 Move abort](https://xiuqiu-site.vercel.app/radar/2026-11-09#web3-sui-object-funds-execution-abort) (2026-11-09, web3/protocol): 模拟成功不能代替执行回执；应区分状态视图、失败阶段与错误类型。
+- [AI SDK 7.0.170：流数组按新增元素解析，最终结果仍单独校验](https://xoqiu.cn/radar/2026-11-12#ai-sdk-incremental-array-stream-parser) (2026-11-12, ai/infrastructure): 流式UI不断收到小片段时，已完成的元素不应随每次输入重复做相同工作；但界面拿到部分元素，也不能替代最终完整结果的校验。
+- [Archestra 1.4.27：历史拒绝回执，不应单独触发当前输出豁免](https://xoqiu.cn/radar/2026-11-12#ai-archestra-denied-history-refused-output-waiver) (2026-11-12, ai/safety): Agent历史中“某次调用没执行”和“本次实际输出被扣留”是不同事件；恢复时若把两者混用，旧裁定可能错误改变当前会话的执行边界。
+- [Reth 2.11：先核对P2P请求，再解码响应条目](https://xoqiu.cn/radar/2026-11-12#web3-reth-p2p-response-before-item-decode) (2026-11-12, web3/onchain_infrastructure): 节点先为一个本不该接受的响应分配整批解码对象，再到会话层丢弃，会把无效输入的成本留在热路径；请求上下文应更早约束响应工作量。
+- [MetaMask估值服务2.4：已找到与未找到的批次，缓存时间分开](https://xoqiu.cn/radar/2026-11-12#web3-metamask-vault-valuations-found-cache) (2026-11-12, web3/wallet_cex): 接口未找到对应估值，不等于该交易没有份额移动；历史估值和当前市价也不同。缓存寿命、缺失状态和单位必须一起解释，才能避免把未就绪数据当作稳定金额。
+- [AI SDK 7.0.169：自动发送还在判定，消息队列就不能当作空闲](https://xoqiu.cn/radar/2026-11-11#ai-sdk-queue-approval-options-pending-decision) (2026-11-11, ai/agent): 响应流结束和下一步决策结束是两个时刻；把中间窗口当空闲，容易让新消息越过审批或抢先启动另一请求。
+- [DeepAgents Code 0.2.7：归属探针复用基线，连续失败后退避停用](https://xoqiu.cn/radar/2026-11-11#ai-deepagents-git-attribution-probe-backoff) (2026-11-11, ai/infrastructure): 辅助追踪不应在每次工具前后重复扫描，也不应在持续失败时拖慢主流程；减少探针仍要保留基线与观察顺序，才能解释归属证据。
+- [op-reth 2.8.2：消息太新时保留up旧值，仍不能给quorum投票](https://xoqiu.cn/radar/2026-11-11#web3-op-reth-out-of-scope-health-quorum) (2026-11-11, web3/l2): 端点能回应、能否判断当前消息、整组是否凑够确定性回答，是三件事；保留表针可减少误判，却不能替代当前消息的quorum证据。
+- [MetaMask图表1.1.1：已有右轴时，切图不再重复新建价格轴](https://xoqiu.cn/radar/2026-11-11#web3-metamask-chart-right-scale-detach) (2026-11-11, web3/wallet_cex): 可反复触发的布局同步若每次都创建新对象，会把显示层关系拆散；先识别已有结构，才能让初始化逻辑在更新时复用。
+- [AI SDK 7.0.165：遥测拿到模型结果之前，先缩减请求 URL](https://xoqiu.cn/radar/2026-11-09#ai-sdk-telemetry-url-boundary) (2026-11-09, ai/safety): 最终输出不能覆盖更早的观察者；应逐接收者核对字段与脱敏时点。
+- [deepagents-code 0.2.5：压缩输入预算跟随当前选定模型](https://xoqiu.cn/radar/2026-11-09#ai-deepagents-selected-model-budget) (2026-11-09, ai/infrastructure): 切换模型也改变预算；预算准备和最终执行要分开核验，保留下游配置。
+- [viem 2.57.17：同一 RPC URL，不再把不同 transport 的批次混用](https://xoqiu.cn/radar/2026-11-09#web3-viem-http-batch-factory-identity) (2026-11-09, web3/onchain_infrastructure): 相同地址不等于同一调用者；批处理仍需保持鉴权配置和响应归属。
+- [Sui mainnet 1.83.1：对象资金不足，在执行期间形成 Move abort](https://xoqiu.cn/radar/2026-11-09#web3-sui-object-funds-execution-abort) (2026-11-09, web3/protocol): 模拟成功不能代替执行回执；应区分状态视图、失败阶段与错误类型。
 
 ## Boundaries
 

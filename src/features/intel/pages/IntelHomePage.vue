@@ -70,7 +70,7 @@ const topicsExpanded = ref(false)
 function updateQuery(patch: Partial<IntelQuery>) {
   const next = { ...query.value, expanded: false, ...patch }
   if (patch.filter && next.topic && !topicsForFilter(combinedTopics.value, next.filter).some(option => option.topic === next.topic)) next.topic = undefined
-  router.replace({ path: '/', query: intelQueryParams(next) })
+  router.replace({ path: '/intel', query: intelQueryParams(next) })
 }
 
 // The first screen renders from the bundled latest window; the full archive
@@ -172,7 +172,7 @@ const resultLabel = computed(() => intelResultLabel(filtered.value.length, visib
 const canShowEmpty = computed(() => intelCanShowEmpty(feedStates.value))
 
 onMounted(() => {
-  setSeoMeta({ ...intelHomeSeo, path: '/' })
+  setSeoMeta({ ...intelHomeSeo, path: '/intel' })
   loadArchive()
   loadResearch()
   refreshGrok()

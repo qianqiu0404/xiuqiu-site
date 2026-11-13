@@ -68,7 +68,7 @@ export function intelItemId(id: string): string { return `intel-item-${id}` }
 // Only the allowlisted list readers are valid return destinations. Query and fragment
 // are reconstructed so a shared detail URL cannot become an open redirect.
 export function readingReturnLink(from: unknown): { href: string; label: string } {
-  const fallback = { href: '/', label: '← 情报流' }
+  const fallback = { href: '/intel', label: '← 情报流' }
   if (typeof from !== 'string' || from.length > 5000 || !from.startsWith('/') || from.startsWith('//') || from.includes('\\')) return fallback
   try {
     const url = new URL(from, SITE_URL)
@@ -80,13 +80,13 @@ export function readingReturnLink(from: unknown): { href: string; label: string 
       return { href: marketListHref(query, url.hash), label: `← 返回 ${context} 市场雷达` }
     }
     const topicPath = /^\/topics\/[a-z0-9_-]+$/i.test(url.pathname)
-    if (url.pathname !== '/' && !topicPath) return fallback
+    if (url.pathname !== '/' && url.pathname !== '/intel' && !topicPath) return fallback
     const query = readIntelQuery({ domain: url.searchParams.get('domain'), topic: url.searchParams.get('topic'), q: url.searchParams.get('q'), expanded: url.searchParams.get('expanded') })
     const params = new URLSearchParams(topicPath ? {} : intelQueryParams(query)).toString()
     const hash = /^#intel-item-[a-z0-9%:_.-]+$/i.test(url.hash) ? url.hash : ''
     const label = topicPath ? `← 返回 ${intelTopicLabel(url.pathname.split('/').pop()!)} 主题` : query.search.trim()
       ? `← 返回 ${intelQueryLabel(query)} 搜索结果` : `← 返回 ${intelQueryLabel(query)} 情报流`
-    return { href: `${url.pathname}${params ? `?${params}` : ''}${hash}`, label }
+    return { href: `${topicPath ? url.pathname : '/intel'}${params ? `?${params}` : ''}${hash}`, label }
   } catch { return fallback }
 }
 
