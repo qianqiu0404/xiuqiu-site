@@ -7,7 +7,7 @@ export interface IntelItem { id: string; kind: IntelKind; date: string; domain: 
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
 export const intelLatestDate: string | null = "2026-11-14"
-export const intelItemCount = 324
+export const intelItemCount = 325
 export const intelLatestItems: IntelItem[] = [
   {
     "id": "learning:ai-deepagents-bulk-search-resolved-scope",
@@ -70,6 +70,23 @@ export const intelLatestItems: IntelItem[] = [
       "name": "Foundry November13 nightly release",
       "tier": "tier1",
       "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-36a8cbbfda1d78f7098cfe071c7bd90eb6eb3df6"
+    }
+  },
+  {
+    "id": "market:2026-11-14:ecb-ces-stablecoin-household-exposure-2026-11-11",
+    "kind": "market",
+    "date": "2026-11-14",
+    "domain": "market",
+    "topic": "market_crypto",
+    "title": "ECB稳定币持有调查：历史家庭问卷与当前风险须分开",
+    "summary": "研究推断：若采用显著扩大，赎回可能经储备资产处置、银行资金与消费者信心联系传统金融；美元稳定币用于加密交易之外时，还需观察货币替代渠道。各环是待验证机制，不能据此推断资产方向。",
+    "href": "/market-radar/2026-11-14#ecb-ces-stablecoin-household-exposure-2026-11-11",
+    "source": {
+      "name": "ECB — Who holds stablecoins? New evidence on euro area consumer holdings",
+      "url": "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_08~f4ddf0117c.en.html"
+    },
+    "flags": {
+      "priority": "P1"
     }
   },
   {
@@ -513,6 +530,13 @@ export const intelTopics: IntelTopic[] = [
     "firstSeen": "2026-08-10"
   },
   {
+    "topic": "market_crypto",
+    "domain": "market",
+    "count": 8,
+    "lastSeen": "2026-11-14",
+    "firstSeen": "2026-08-09"
+  },
+  {
     "topic": "model_inference",
     "domain": "ai",
     "count": 7,
@@ -588,13 +612,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 3,
     "lastSeen": "2026-10-27",
     "firstSeen": "2026-08-12"
-  },
-  {
-    "topic": "market_crypto",
-    "domain": "market",
-    "count": 7,
-    "lastSeen": "2026-10-25",
-    "firstSeen": "2026-08-09"
   },
   {
     "topic": "market_signal",

@@ -352,6 +352,9 @@
     <loc>https://xoqiu.cn/radar/2026-07-13</loc>
   </url>
   <url>
+    <loc>https://xoqiu.cn/market-radar/2026-11-14</loc>
+  </url>
+  <url>
     <loc>https://xoqiu.cn/market-radar/2026-11-13</loc>
   </url>
   <url>
@@ -442,6 +445,9 @@
     <loc>https://xoqiu.cn/topics/security</loc>
   </url>
   <url>
+    <loc>https://xoqiu.cn/topics/market_crypto</loc>
+  </url>
+  <url>
     <loc>https://xoqiu.cn/topics/model_inference</loc>
   </url>
   <url>
@@ -473,9 +479,6 @@
   </url>
   <url>
     <loc>https://xoqiu.cn/topics/data</loc>
-  </url>
-  <url>
-    <loc>https://xoqiu.cn/topics/market_crypto</loc>
   </url>
   <url>
     <loc>https://xoqiu.cn/topics/market_signal</loc>

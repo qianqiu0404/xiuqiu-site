@@ -72,6 +72,24 @@
       "url": "https://xoqiu.cn/radar/2026-11-14#web3-foundry-safe-local-hash-crosscheck"
     },
     {
+      "id": "market:2026-11-14:ecb-ces-stablecoin-household-exposure-2026-11-11",
+      "kind": "market",
+      "date": "2026-11-14",
+      "domain": "market",
+      "topic": "market_crypto",
+      "title": "ECB稳定币持有调查：历史家庭问卷与当前风险须分开",
+      "summary": "研究推断：若采用显著扩大，赎回可能经储备资产处置、银行资金与消费者信心联系传统金融；美元稳定币用于加密交易之外时，还需观察货币替代渠道。各环是待验证机制，不能据此推断资产方向。",
+      "href": "/market-radar/2026-11-14#ecb-ces-stablecoin-household-exposure-2026-11-11",
+      "source": {
+        "name": "ECB — Who holds stablecoins? New evidence on euro area consumer holdings",
+        "url": "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_08~f4ddf0117c.en.html"
+      },
+      "flags": {
+        "priority": "P1"
+      },
+      "url": "https://xoqiu.cn/market-radar/2026-11-14#ecb-ces-stablecoin-household-exposure-2026-11-11"
+    },
+    {
       "id": "learning:ai-deepagents-fifo-download-nonblocking",
       "kind": "learning",
       "date": "2026-11-13",

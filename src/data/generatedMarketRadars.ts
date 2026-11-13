@@ -16,6 +16,17 @@ export interface MarketRadarDaily { schemaVersion?: 2; date: string; slug: strin
 export interface MarketRadarIndexEntry { date: string; slug: string; snapshotId: string; asOf: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
 export const marketRadarIndex: MarketRadarIndexEntry[] = [
   {
+    "date": "2026-11-14",
+    "slug": "2026-11-14",
+    "title": "交易研究雷达 · 2026-11-14",
+    "summary": "ECB新研究利用2025年家庭问卷讨论稳定币持有与风险传导。本期区分研究发布日期、历史实验数据和有条件的金融稳定风险，不把调查推算当作当前余额或实际赎回冲击。",
+    "snapshotId": "market-2026-11-14-757754e884a93bb0",
+    "asOf": "2026-11-13T21:44:35.793Z",
+    "eventCount": 1,
+    "assetCount": 2,
+    "leadTitle": "ECB稳定币持有调查：历史家庭问卷与当前风险须分开"
+  },
+  {
     "date": "2026-11-13",
     "slug": "2026-11-13",
     "title": "交易研究雷达 · 2026-11-13",
@@ -281,6 +292,157 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
   }
 ]
 export const latestMarketRadars: MarketRadarDaily[] = [
+  {
+    "date": "2026-11-14",
+    "slug": "2026-11-14",
+    "title": "交易研究雷达 · 2026-11-14",
+    "summary": "ECB新研究利用2025年家庭问卷讨论稳定币持有与风险传导。本期区分研究发布日期、历史实验数据和有条件的金融稳定风险，不把调查推算当作当前余额或实际赎回冲击。",
+    "snapshotId": "market-2026-11-14-757754e884a93bb0",
+    "asOf": "2026-11-13T21:44:35.793Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-13T21:44:35.793084+00:00",
+    "events": [
+      {
+        "id": "ecb-ces-stablecoin-household-exposure-2026-11-11",
+        "priority": "P1",
+        "status": "released",
+        "category": "crypto",
+        "title": "ECB稳定币持有调查：历史家庭问卷与当前风险须分开",
+        "fact": "ECB于11月11日发布稳定币持有研究。2025年8月实验问卷估计约5%消费者报告本人或家庭成员持有稳定币，使用11个欧元区国家的人口权重；11月持仓金额则由自报加密资产总投资和五档稳定币占比推算，并非直接核验余额。",
+        "whyWatch": "研究推断：若采用显著扩大，赎回可能经储备资产处置、银行资金与消费者信心联系传统金融；美元稳定币用于加密交易之外时，还需观察货币替代渠道。各环是待验证机制，不能据此推断资产方向。",
+        "assets": [
+          "稳定币储备资产",
+          "欧元区银行资金"
+        ],
+        "watchFor": "分开记录11月11日发布、2025年8月与11月调查，以及市场图截至2026年9月的观察。核对问卷分母、代币种类、实际赎回与储备披露；本文未采集新行情或赎回样本。",
+        "invalidation": "问卷设计、小样本、自报错分及金额推算均影响估计；调查未直接记录用途，不能把出生地相关性当作汇款事实。若后续同口径数据不支持持有扩大或储备传导，暂停外推；也不能从11国历史样本推断今日全球持有率。",
+        "sourceName": "ECB — Who holds stablecoins? New evidence on euro area consumer holdings",
+        "sourceUrl": "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_08~f4ddf0117c.en.html",
+        "sourcePublishedAt": "2026-11-11"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_08~f4ddf0117c.en.html"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "本期核对官方研究正文、图注与脚注，未建立调查发布、赎回和资产反应之间的同窗口历史样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "问卷与图表观察期早于研究发布日期；家庭持有推算不能换算为资产走势概率。",
+      "nextValidation": "固定调查版本和分母，补充独立赎回、储备和市场样本；验证前只记录信号质量。",
+      "invalidation": "调查设计、资产分类或估值口径修订时重估；缺少实际传导样本时保留未知。",
+      "sourceUrls": [
+        "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_08~f4ddf0117c.en.html"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "在稳定币采用扩大这一条件下，赎回、储备处置与银行资金如何联系传统金融，每一环需要什么独立证据？",
+        "focusEventIds": [
+          "ecb-ces-stablecoin-household-exposure-2026-11-11"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些问卷口径、持有分布、实际用途与储备证据，能推翻从历史持有调查直接推出当前金融冲击的解释？",
+        "focusEventIds": [
+          "ecb-ces-stablecoin-household-exposure-2026-11-11"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若持有继续集中于加密交易，或扩展到跨境支付，分别观察什么，哪些后续数据会使传导判断失效？",
+        "focusEventIds": [
+          "ecb-ces-stablecoin-household-exposure-2026-11-11"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-14",
+      "snapshotId": "market-2026-11-14-757754e884a93bb0",
+      "asOf": "2026-11-13T21:44:35.793Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-14",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "在稳定币采用扩大这一条件下，赎回、储备处置与银行资金如何联系传统金融，每一环需要什么独立证据？",
+          "focusEventIds": [
+            "ecb-ces-stablecoin-household-exposure-2026-11-11"
+          ],
+          "prompt": "研究任务：在稳定币采用扩大这一条件下，赎回、储备处置与银行资金如何联系传统金融，每一环需要什么独立证据？\n证据快照：2026-11-14；asOf=2026-11-13T21:44:35.793Z；snapshotId=market-2026-11-14-757754e884a93bb0\n\n材料 1｜ECB稳定币持有调查：历史家庭问卷与当前风险须分开\n已确认事实：ECB于11月11日发布稳定币持有研究。2025年8月实验问卷估计约5%消费者报告本人或家庭成员持有稳定币，使用11个欧元区国家的人口权重；11月持仓金额则由自报加密资产总投资和五档稳定币占比推算，并非直接核验余额。\n关注机制：研究推断：若采用显著扩大，赎回可能经储备资产处置、银行资金与消费者信心联系传统金融；美元稳定币用于加密交易之外时，还需观察货币替代渠道。各环是待验证机制，不能据此推断资产方向。\n接下来验证：分开记录11月11日发布、2025年8月与11月调查，以及市场图截至2026年9月的观察。核对问卷分母、代币种类、实际赎回与储备披露；本文未采集新行情或赎回样本。\n失效条件：问卷设计、小样本、自报错分及金额推算均影响估计；调查未直接记录用途，不能把出生地相关性当作汇款事实。若后续同口径数据不支持持有扩大或储备传导，暂停外推；也不能从11国历史样本推断今日全球持有率。\n一手来源：https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_08~f4ddf0117c.en.html\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "4ab45bb23b88d578fe3edbbbd976ae509e41e3c0c0c612a9c83a7004d065850f",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_08~f4ddf0117c.en.html"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些问卷口径、持有分布、实际用途与储备证据，能推翻从历史持有调查直接推出当前金融冲击的解释？",
+          "focusEventIds": [
+            "ecb-ces-stablecoin-household-exposure-2026-11-11"
+          ],
+          "prompt": "研究任务：哪些问卷口径、持有分布、实际用途与储备证据，能推翻从历史持有调查直接推出当前金融冲击的解释？\n证据快照：2026-11-14；asOf=2026-11-13T21:44:35.793Z；snapshotId=market-2026-11-14-757754e884a93bb0\n\n材料 1｜ECB稳定币持有调查：历史家庭问卷与当前风险须分开\n已确认事实：ECB于11月11日发布稳定币持有研究。2025年8月实验问卷估计约5%消费者报告本人或家庭成员持有稳定币，使用11个欧元区国家的人口权重；11月持仓金额则由自报加密资产总投资和五档稳定币占比推算，并非直接核验余额。\n关注机制：研究推断：若采用显著扩大，赎回可能经储备资产处置、银行资金与消费者信心联系传统金融；美元稳定币用于加密交易之外时，还需观察货币替代渠道。各环是待验证机制，不能据此推断资产方向。\n接下来验证：分开记录11月11日发布、2025年8月与11月调查，以及市场图截至2026年9月的观察。核对问卷分母、代币种类、实际赎回与储备披露；本文未采集新行情或赎回样本。\n失效条件：问卷设计、小样本、自报错分及金额推算均影响估计；调查未直接记录用途，不能把出生地相关性当作汇款事实。若后续同口径数据不支持持有扩大或储备传导，暂停外推；也不能从11国历史样本推断今日全球持有率。\n一手来源：https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_08~f4ddf0117c.en.html\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "8e0720f22acc9a712c404f0b73cbcda68d2529a7c108ce6f1d9d3a8a2f6d861d",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_08~f4ddf0117c.en.html"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若持有继续集中于加密交易，或扩展到跨境支付，分别观察什么，哪些后续数据会使传导判断失效？",
+          "focusEventIds": [
+            "ecb-ces-stablecoin-household-exposure-2026-11-11"
+          ],
+          "prompt": "研究任务：若持有继续集中于加密交易，或扩展到跨境支付，分别观察什么，哪些后续数据会使传导判断失效？\n证据快照：2026-11-14；asOf=2026-11-13T21:44:35.793Z；snapshotId=market-2026-11-14-757754e884a93bb0\n\n材料 1｜ECB稳定币持有调查：历史家庭问卷与当前风险须分开\n已确认事实：ECB于11月11日发布稳定币持有研究。2025年8月实验问卷估计约5%消费者报告本人或家庭成员持有稳定币，使用11个欧元区国家的人口权重；11月持仓金额则由自报加密资产总投资和五档稳定币占比推算，并非直接核验余额。\n关注机制：研究推断：若采用显著扩大，赎回可能经储备资产处置、银行资金与消费者信心联系传统金融；美元稳定币用于加密交易之外时，还需观察货币替代渠道。各环是待验证机制，不能据此推断资产方向。\n接下来验证：分开记录11月11日发布、2025年8月与11月调查，以及市场图截至2026年9月的观察。核对问卷分母、代币种类、实际赎回与储备披露；本文未采集新行情或赎回样本。\n失效条件：问卷设计、小样本、自报错分及金额推算均影响估计；调查未直接记录用途，不能把出生地相关性当作汇款事实。若后续同口径数据不支持持有扩大或储备传导，暂停外推；也不能从11国历史样本推断今日全球持有率。\n一手来源：https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_08~f4ddf0117c.en.html\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "511aedc8b9477782c4107d2a4f42cfc78ae7f962d2ade35cd75bcd6ecabcc62a",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_08~f4ddf0117c.en.html"
+          ]
+        }
+      ]
+    }
+  },
   {
     "date": "2026-11-13",
     "slug": "2026-11-13",
@@ -1182,186 +1344,6 @@ export const latestMarketRadars: MarketRadarDaily[] = [
           "promptChecksum": "4d83f1c2899eb8cb98196f064e03289323a1977e551c3818083f55334c10a150",
           "sourceUrls": [
             "https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/"
-          ]
-        }
-      ]
-    }
-  },
-  {
-    "date": "2026-11-07",
-    "slug": "2026-11-07",
-    "title": "交易研究雷达 · 2026-11-07",
-    "summary": "美国10月非农增16.5万、前两月上修8.4万；加拿大就业基本持平、失业率升至6.7%。两国各自的调查、工资与修订口径须分开，市场传导仍待验证。",
-    "snapshotId": "market-2026-11-07-ea30205abbc6c07e",
-    "asOf": "2026-11-06T21:36:00.000Z",
-    "origin": "research",
-    "publicationState": "published",
-    "reviewStatus": "automated",
-    "generatedAt": "2026-11-07T05:36:00+08:00",
-    "events": [
-      {
-        "id": "bls-october-employment-revisions-2026-11-06",
-        "priority": "P1",
-        "status": "released",
-        "category": "macro",
-        "title": "美国10月非农增16.5万，前两月合计上修8.4万",
-        "fact": "BLS于11月6日8:30 ET发布10月就业报告：季调非农就业增16.5万，失业率4.1%；私营非农雇员名义平均时薪环比增0.4%、同比增3.1%。八月与九月非农增量分别上修5.3万、3.1万，合计上修8.4万。",
-        "whyWatch": "研究判断：就业数量、工资与政策预期是不同证据层。非农与失业率来自不同调查，先核对修订、行业构成和工时，再检验国债收益率与美元的同窗口反应。",
-        "assets": [
-          "美元",
-          "美国国债"
-        ],
-        "watchFor": "跟踪后续非农修订、行业增减、工时与劳动参与；下一期计划于12月4日发布。市场观察须预先固定公布前后窗口，并核对同期其他信息。",
-        "invalidation": "后续修订、样本或季调口径改变时重估；平均时薪受人员构成影响，不能视为同一劳动者的实际工资。缺少同窗口市场数据时，不认定价格因果或政策结果。",
-        "sourceName": "U.S. Bureau of Labor Statistics Employment Situation — October 2026",
-        "sourceUrl": "https://www.bls.gov/news.release/archives/empsit_11062026.htm",
-        "sourcePublishedAt": "2026-11-06"
-      },
-      {
-        "id": "statcan-october-lfs-employment-unemployment-2026-11-06",
-        "priority": "P1",
-        "status": "released",
-        "category": "macro",
-        "title": "加拿大10月就业基本持平，失业率升至6.7%",
-        "fact": "加拿大统计局11月6日发布10月LFS：季调就业减少4700人（0.0%，官方称基本持平），失业率上升0.2个百分点至6.7%；雇员平均时薪同比增2.2%，该工资指标未季调。调查参考周为10月11日至17日。",
-        "whyWatch": "研究判断：就业总量基本持平可与行业、私营及公共部门变化并存；需分别检验劳动力供给与需求，再核对本国利率和加元反应，不能直接据此比较两国强弱。",
-        "assets": [
-          "加元",
-          "加拿大国债"
-        ],
-        "watchFor": "分开跟踪求职人数、私营及公共部门就业、行业、工时和工资口径；下一期12月4日仅为发布计划，资产传导仍需独立同窗口证据。",
-        "invalidation": "后续修订、参与率或行业构成改变时重估；单月抽样波动限制趋势判断。未季调工资同比不能与美国季调月比直接比较，也不能单独证明实际收入或政策行动。",
-        "sourceName": "Statistics Canada The Daily — Labour Force Survey, October 2026",
-        "sourceUrl": "https://www150.statcan.gc.ca/n1/daily-quotidien/261106/dq261106a-eng.htm",
-        "sourcePublishedAt": "2026-11-06"
-      }
-    ],
-    "sourceUrls": [
-      "https://www.bls.gov/news.release/archives/empsit_11062026.htm",
-      "https://www150.statcan.gc.ca/n1/daily-quotidien/261106/dq261106a-eng.htm"
-    ],
-    "quantStrategy": {
-      "horizonTradingDays": 3,
-      "status": "historical_samples_insufficient",
-      "methodology": "只登记两国11月6日的就业发布；未建立统一事件窗口并保留国别与工资口径差异的跨资产样本。",
-      "assets": [
-        {
-          "symbol": "SPY",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "QQQ",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "BTC",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "ETH",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "GLD",
-          "group": "gold_etf",
-          "signalQuality": "weak"
-        }
-      ],
-      "sampleSize": 0,
-      "rationale": "两国调查与工资口径各异；当月总量和修订不能替代后续趋势或资产传导证据。",
-      "nextValidation": "分别固定各国事件窗口，核对修订、工时、就业结构与市场数据；样本不足时不显示概率。",
-      "invalidation": "官方修订、国别口径或观察窗口不一致时重估；缺失数据不补推断。",
-      "sourceUrls": [
-        "https://www.bls.gov/news.release/archives/empsit_11062026.htm",
-        "https://www150.statcan.gc.ca/n1/daily-quotidien/261106/dq261106a-eng.htm"
-      ]
-    },
-    "schemaVersion": 2,
-    "researchQuestions": [
-      {
-        "id": "1",
-        "lens": "transmission",
-        "shortQuestion": "两国各自的就业和工资信息，如何经政策预期、国债期限结构与汇率传导，各环需要哪些独立证据？",
-        "focusEventIds": [
-          "bls-october-employment-revisions-2026-11-06",
-          "statcan-october-lfs-employment-unemployment-2026-11-06"
-        ]
-      },
-      {
-        "id": "2",
-        "lens": "falsification",
-        "shortQuestion": "哪些本国后续修订、工时与就业结构证据，会推翻仅凭本月总量判断各自劳动力需求的解释？",
-        "focusEventIds": [
-          "bls-october-employment-revisions-2026-11-06",
-          "statcan-october-lfs-employment-unemployment-2026-11-06"
-        ]
-      },
-      {
-        "id": "3",
-        "lens": "scenario",
-        "shortQuestion": "若就业、工资与需求后续分化，两国各自有哪些替代情景，哪些新证据会使传导判断失效？",
-        "focusEventIds": [
-          "bls-october-employment-revisions-2026-11-06",
-          "statcan-october-lfs-employment-unemployment-2026-11-06"
-        ]
-      }
-    ],
-    "researchPack": {
-      "schemaVersion": 2,
-      "date": "2026-11-07",
-      "snapshotId": "market-2026-11-07-ea30205abbc6c07e",
-      "asOf": "2026-11-06T21:36:00.000Z",
-      "origin": "research",
-      "publicationState": "published",
-      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-07",
-      "questions": [
-        {
-          "id": "1",
-          "lens": "transmission",
-          "shortQuestion": "两国各自的就业和工资信息，如何经政策预期、国债期限结构与汇率传导，各环需要哪些独立证据？",
-          "focusEventIds": [
-            "bls-october-employment-revisions-2026-11-06",
-            "statcan-october-lfs-employment-unemployment-2026-11-06"
-          ],
-          "prompt": "研究任务：两国各自的就业和工资信息，如何经政策预期、国债期限结构与汇率传导，各环需要哪些独立证据？\n证据快照：2026-11-07；asOf=2026-11-06T21:36:00.000Z；snapshotId=market-2026-11-07-ea30205abbc6c07e\n\n材料 1｜美国10月非农增16.5万，前两月合计上修8.4万\n已确认事实：BLS于11月6日8:30 ET发布10月就业报告：季调非农就业增16.5万，失业率4.1%；私营非农雇员名义平均时薪环比增0.4%、同比增3.1%。八月与九月非农增量分别上修5.3万、3.1万，合计上修8.4万。\n关注机制：研究判断：就业数量、工资与政策预期是不同证据层。非农与失业率来自不同调查，先核对修订、行业构成和工时，再检验国债收益率与美元的同窗口反应。\n接下来验证：跟踪后续非农修订、行业增减、工时与劳动参与；下一期计划于12月4日发布。市场观察须预先固定公布前后窗口，并核对同期其他信息。\n失效条件：后续修订、样本或季调口径改变时重估；平均时薪受人员构成影响，不能视为同一劳动者的实际工资。缺少同窗口市场数据时，不认定价格因果或政策结果。\n一手来源：https://www.bls.gov/news.release/archives/empsit_11062026.htm\n\n材料 2｜加拿大10月就业基本持平，失业率升至6.7%\n已确认事实：加拿大统计局11月6日发布10月LFS：季调就业减少4700人（0.0%，官方称基本持平），失业率上升0.2个百分点至6.7%；雇员平均时薪同比增2.2%，该工资指标未季调。调查参考周为10月11日至17日。\n关注机制：研究判断：就业总量基本持平可与行业、私营及公共部门变化并存；需分别检验劳动力供给与需求，再核对本国利率和加元反应，不能直接据此比较两国强弱。\n接下来验证：分开跟踪求职人数、私营及公共部门就业、行业、工时和工资口径；下一期12月4日仅为发布计划，资产传导仍需独立同窗口证据。\n失效条件：后续修订、参与率或行业构成改变时重估；单月抽样波动限制趋势判断。未季调工资同比不能与美国季调月比直接比较，也不能单独证明实际收入或政策行动。\n一手来源：https://www150.statcan.gc.ca/n1/daily-quotidien/261106/dq261106a-eng.htm\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "499f8d06b1b66789260669a4aaa4528cef56a8e0ba9cf27be8c4d851a0bca4d4",
-          "sourceUrls": [
-            "https://www.bls.gov/news.release/archives/empsit_11062026.htm",
-            "https://www150.statcan.gc.ca/n1/daily-quotidien/261106/dq261106a-eng.htm"
-          ]
-        },
-        {
-          "id": "2",
-          "lens": "falsification",
-          "shortQuestion": "哪些本国后续修订、工时与就业结构证据，会推翻仅凭本月总量判断各自劳动力需求的解释？",
-          "focusEventIds": [
-            "bls-october-employment-revisions-2026-11-06",
-            "statcan-october-lfs-employment-unemployment-2026-11-06"
-          ],
-          "prompt": "研究任务：哪些本国后续修订、工时与就业结构证据，会推翻仅凭本月总量判断各自劳动力需求的解释？\n证据快照：2026-11-07；asOf=2026-11-06T21:36:00.000Z；snapshotId=market-2026-11-07-ea30205abbc6c07e\n\n材料 1｜美国10月非农增16.5万，前两月合计上修8.4万\n已确认事实：BLS于11月6日8:30 ET发布10月就业报告：季调非农就业增16.5万，失业率4.1%；私营非农雇员名义平均时薪环比增0.4%、同比增3.1%。八月与九月非农增量分别上修5.3万、3.1万，合计上修8.4万。\n关注机制：研究判断：就业数量、工资与政策预期是不同证据层。非农与失业率来自不同调查，先核对修订、行业构成和工时，再检验国债收益率与美元的同窗口反应。\n接下来验证：跟踪后续非农修订、行业增减、工时与劳动参与；下一期计划于12月4日发布。市场观察须预先固定公布前后窗口，并核对同期其他信息。\n失效条件：后续修订、样本或季调口径改变时重估；平均时薪受人员构成影响，不能视为同一劳动者的实际工资。缺少同窗口市场数据时，不认定价格因果或政策结果。\n一手来源：https://www.bls.gov/news.release/archives/empsit_11062026.htm\n\n材料 2｜加拿大10月就业基本持平，失业率升至6.7%\n已确认事实：加拿大统计局11月6日发布10月LFS：季调就业减少4700人（0.0%，官方称基本持平），失业率上升0.2个百分点至6.7%；雇员平均时薪同比增2.2%，该工资指标未季调。调查参考周为10月11日至17日。\n关注机制：研究判断：就业总量基本持平可与行业、私营及公共部门变化并存；需分别检验劳动力供给与需求，再核对本国利率和加元反应，不能直接据此比较两国强弱。\n接下来验证：分开跟踪求职人数、私营及公共部门就业、行业、工时和工资口径；下一期12月4日仅为发布计划，资产传导仍需独立同窗口证据。\n失效条件：后续修订、参与率或行业构成改变时重估；单月抽样波动限制趋势判断。未季调工资同比不能与美国季调月比直接比较，也不能单独证明实际收入或政策行动。\n一手来源：https://www150.statcan.gc.ca/n1/daily-quotidien/261106/dq261106a-eng.htm\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "611f8fb16a58d8691f459958a49c7e46c580e358601de951ea38f9fa41e536d1",
-          "sourceUrls": [
-            "https://www.bls.gov/news.release/archives/empsit_11062026.htm",
-            "https://www150.statcan.gc.ca/n1/daily-quotidien/261106/dq261106a-eng.htm"
-          ]
-        },
-        {
-          "id": "3",
-          "lens": "scenario",
-          "shortQuestion": "若就业、工资与需求后续分化，两国各自有哪些替代情景，哪些新证据会使传导判断失效？",
-          "focusEventIds": [
-            "bls-october-employment-revisions-2026-11-06",
-            "statcan-october-lfs-employment-unemployment-2026-11-06"
-          ],
-          "prompt": "研究任务：若就业、工资与需求后续分化，两国各自有哪些替代情景，哪些新证据会使传导判断失效？\n证据快照：2026-11-07；asOf=2026-11-06T21:36:00.000Z；snapshotId=market-2026-11-07-ea30205abbc6c07e\n\n材料 1｜美国10月非农增16.5万，前两月合计上修8.4万\n已确认事实：BLS于11月6日8:30 ET发布10月就业报告：季调非农就业增16.5万，失业率4.1%；私营非农雇员名义平均时薪环比增0.4%、同比增3.1%。八月与九月非农增量分别上修5.3万、3.1万，合计上修8.4万。\n关注机制：研究判断：就业数量、工资与政策预期是不同证据层。非农与失业率来自不同调查，先核对修订、行业构成和工时，再检验国债收益率与美元的同窗口反应。\n接下来验证：跟踪后续非农修订、行业增减、工时与劳动参与；下一期计划于12月4日发布。市场观察须预先固定公布前后窗口，并核对同期其他信息。\n失效条件：后续修订、样本或季调口径改变时重估；平均时薪受人员构成影响，不能视为同一劳动者的实际工资。缺少同窗口市场数据时，不认定价格因果或政策结果。\n一手来源：https://www.bls.gov/news.release/archives/empsit_11062026.htm\n\n材料 2｜加拿大10月就业基本持平，失业率升至6.7%\n已确认事实：加拿大统计局11月6日发布10月LFS：季调就业减少4700人（0.0%，官方称基本持平），失业率上升0.2个百分点至6.7%；雇员平均时薪同比增2.2%，该工资指标未季调。调查参考周为10月11日至17日。\n关注机制：研究判断：就业总量基本持平可与行业、私营及公共部门变化并存；需分别检验劳动力供给与需求，再核对本国利率和加元反应，不能直接据此比较两国强弱。\n接下来验证：分开跟踪求职人数、私营及公共部门就业、行业、工时和工资口径；下一期12月4日仅为发布计划，资产传导仍需独立同窗口证据。\n失效条件：后续修订、参与率或行业构成改变时重估；单月抽样波动限制趋势判断。未季调工资同比不能与美国季调月比直接比较，也不能单独证明实际收入或政策行动。\n一手来源：https://www150.statcan.gc.ca/n1/daily-quotidien/261106/dq261106a-eng.htm\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "9b783814f98f0cbc06d92942cff205d61c6103ed17da9a6804860037f815c289",
-          "sourceUrls": [
-            "https://www.bls.gov/news.release/archives/empsit_11062026.htm",
-            "https://www150.statcan.gc.ca/n1/daily-quotidien/261106/dq261106a-eng.htm"
           ]
         }
       ]
