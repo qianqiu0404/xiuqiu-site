@@ -68,6 +68,23 @@ export const monthlyIntelItems: IntelItem[] = [
     }
   },
   {
+    "id": "market:2026-11-13:ecb-ai-disclosure-financing-association-2026-11-12",
+    "kind": "market",
+    "date": "2026-11-13",
+    "domain": "market",
+    "topic": "market_equity",
+    "title": "ECB研究AI披露与融资定价：历史相关性须与实际采用分开",
+    "summary": "研究推断：投资者对AI现金流与资本开支的预期，可能经估值和信用风险联系企业融资；但无形资产抵押能力有限，成本也可能上升，需逐环验证，不能仅凭AI标签判断融资或资产方向。",
+    "href": "/market-radar/2026-11-13#ecb-ai-disclosure-financing-association-2026-11-12",
+    "source": {
+      "name": "ECB — Artificial intelligence and European firms: the cost of market-based financing",
+      "url": "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_06~a36e367caf.en.html"
+    },
+    "flags": {
+      "priority": "P1"
+    }
+  },
+  {
     "id": "learning:ai-sdk-incremental-array-stream-parser",
     "kind": "learning",
     "date": "2026-11-12",
