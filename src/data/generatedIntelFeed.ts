@@ -7,8 +7,71 @@ export interface IntelItem { id: string; kind: IntelKind; date: string; domain: 
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
 export const intelLatestDate: string | null = "2026-11-15"
-export const intelItemCount = 326
+export const intelItemCount = 330
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "learning:ai-sdk-approval-input-copy",
+    "kind": "learning",
+    "date": "2026-11-15",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "AI SDK7.0.173：回放批准前，先保护原参数不被校验器改写",
+    "summary": "批准记录需要绑定当时的操作内容。若校验过程同时改掉历史input和比较基准，后续看到两者相等也不能说明用户批准过实际执行值；回放链必须保留可核对的原值。",
+    "href": "/radar/2026-11-15#ai-sdk-approval-input-copy",
+    "source": {
+      "name": "AI SDK7.0.173 release",
+      "tier": "tier1",
+      "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.173"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "learning:ai-langgraph-own-thread-subgraph-stream",
+    "kind": "learning",
+    "date": "2026-11-15",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "LangGraph1.2.22：独立thread的子图，也要服从调用者的流订阅范围",
+    "summary": "看不到子任务输出，可能是订阅handler被过滤，而非子任务没有执行。排查流式进度时，需要同时保留配置、订阅范围、事件namespace和业务完成证据，不能用一个空列表直接判失败。",
+    "href": "/radar/2026-11-15#ai-langgraph-own-thread-subgraph-stream",
+    "source": {
+      "name": "LangGraph1.2.22 release",
+      "tier": "tier1",
+      "url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.22"
+    }
+  },
+  {
+    "id": "learning:web3-foundry-symbolic-balance-unknown",
+    "kind": "learning",
+    "date": "2026-11-15",
+    "domain": "web3",
+    "topic": "security",
+    "title": "Foundry11月14日nightly：账户读取失败，符号执行不能把余额当成零",
+    "summary": "测试输入的未知与真实零值含义不同。把读取错误改成零，会把未获得的前提当作反例搜索的确定事实；符号执行结论需要同时携带模型边界、输入读取状态与完整性状态。",
+    "href": "/radar/2026-11-15#web3-foundry-symbolic-balance-unknown",
+    "source": {
+      "name": "Foundry November14 nightly release",
+      "tier": "tier1",
+      "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-c644b436cd2994035df5a823398e2a39feca143c"
+    }
+  },
+  {
+    "id": "learning:web3-aptos-ledger-message-binding",
+    "kind": "learning",
+    "date": "2026-11-15",
+    "domain": "web3",
+    "topic": "protocol",
+    "title": "Aptos1.50.1：验签通过，仍须核对它签的是哪一份LedgerInfo",
+    "summary": "一个“验证过”的状态如果不记录验证对象，就可能在换上下文后被误用。共识票、授权和缓存结果都需要把签名、原消息与目标聚合上下文关联，而非只沿用一个布尔标记。",
+    "href": "/radar/2026-11-15#web3-aptos-ledger-message-binding",
+    "source": {
+      "name": "Aptos node1.50.1 release",
+      "tier": "tier1",
+      "url": "https://github.com/aptos-labs/aptos-core/releases/tag/aptos-node-v1.50.1"
+    }
+  },
   {
     "id": "market:2026-11-15:fed-fsr-data-center-debt-commitments-2026-11-13",
     "kind": "market",
@@ -453,23 +516,37 @@ export const intelTopics: IntelTopic[] = [
     "firstSeen": "2026-08-09"
   },
   {
-    "topic": "wallet_cex",
-    "domain": "web3",
-    "count": 13,
-    "lastSeen": "2026-11-14",
-    "firstSeen": "2026-08-10"
+    "topic": "agent",
+    "domain": "ai",
+    "count": 14,
+    "lastSeen": "2026-11-15",
+    "firstSeen": "2026-08-11"
   },
   {
     "topic": "safety",
     "domain": "ai",
-    "count": 11,
-    "lastSeen": "2026-11-14",
+    "count": 12,
+    "lastSeen": "2026-11-15",
     "firstSeen": "2026-10-13"
   },
   {
     "topic": "security",
     "domain": "web3",
-    "count": 10,
+    "count": 11,
+    "lastSeen": "2026-11-15",
+    "firstSeen": "2026-08-10"
+  },
+  {
+    "topic": "protocol",
+    "domain": "web3",
+    "count": 6,
+    "lastSeen": "2026-11-15",
+    "firstSeen": "2026-08-12"
+  },
+  {
+    "topic": "wallet_cex",
+    "domain": "web3",
+    "count": 13,
     "lastSeen": "2026-11-14",
     "firstSeen": "2026-08-10"
   },
@@ -486,13 +563,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 7,
     "lastSeen": "2026-11-14",
     "firstSeen": "2026-08-10"
-  },
-  {
-    "topic": "agent",
-    "domain": "ai",
-    "count": 13,
-    "lastSeen": "2026-11-13",
-    "firstSeen": "2026-08-11"
   },
   {
     "topic": "market_equity",
@@ -528,13 +598,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 5,
     "lastSeen": "2026-11-10",
     "firstSeen": "2026-10-25"
-  },
-  {
-    "topic": "protocol",
-    "domain": "web3",
-    "count": 5,
-    "lastSeen": "2026-11-09",
-    "firstSeen": "2026-08-12"
   },
   {
     "topic": "evaluation",

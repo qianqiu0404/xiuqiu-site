@@ -12,6 +12,48 @@ export interface RadarIndexEntry { date: string; slug: string; snapshotId: strin
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-11-15",
+    "slug": "2026-11-15",
+    "snapshotId": "learning-2026-11-15-bc51c62b85368c3f",
+    "asOf": "2026-11-14T21:43:03.630Z",
+    "title": "学习雷达 · 2026-11-15",
+    "summary": "AI看批准续接的参数保护与跨子图流订阅；Web3看未知余额怎样阻止误报、验签状态怎样绑定完整消息。专题区分原批准值、schema输入和重建结果。",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "briefs": [
+      {
+        "id": "ai-sdk-approval-input-copy",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "AI SDK7.0.173：回放批准前，先保护原参数不被校验器改写"
+      },
+      {
+        "id": "ai-langgraph-own-thread-subgraph-stream",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "LangGraph1.2.22：独立thread的子图，也要服从调用者的流订阅范围"
+      },
+      {
+        "id": "web3-foundry-symbolic-balance-unknown",
+        "domain": "web3",
+        "topic": "security",
+        "title": "Foundry11月14日nightly：账户读取失败，符号执行不能把余额当成零"
+      },
+      {
+        "id": "web3-aptos-ledger-message-binding",
+        "domain": "web3",
+        "topic": "protocol",
+        "title": "Aptos1.50.1：验签通过，仍须核对它签的是哪一份LedgerInfo"
+      }
+    ],
+    "deepDive": {
+      "id": "deep-approval-copy-before-revalidation",
+      "title": "专题：参数校验成功之后，为什么还要与批准时的原值再比一次",
+      "basedOnBriefId": "ai-sdk-approval-input-copy"
+    },
+    "marketSignals": []
+  },
+  {
     "date": "2026-11-14",
     "slug": "2026-11-14",
     "snapshotId": "learning-2026-11-14-bf7daf4ce2309628",
@@ -1909,6 +1951,370 @@ export const radarIndex: RadarIndexEntry[] = [
 
 export const latestRadars: DailyRadar[] = [
   {
+    "date": "2026-11-15",
+    "slug": "2026-11-15",
+    "title": "学习雷达 · 2026-11-15",
+    "summary": "AI看批准续接的参数保护与跨子图流订阅；Web3看未知余额怎样阻止误报、验签状态怎样绑定完整消息。专题区分原批准值、schema输入和重建结果。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-11-14T21:43:03.630Z",
+    "generatedAt": "2026-11-14T21:43:03.630Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-sdk-approval-input-copy",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "AI SDK7.0.173：回放批准前，先保护原参数不被校验器改写",
+        "whatHappened": "AI SDK7.0.173于11月13日（UTC）发布，包含同日合入的批准参数保护修复。客户端消息历史重建出的已批准工具调用，在重新校验和refinement时不再与原参数共用可变对象。",
+        "mechanism": "在可执行工具且有inputSchema的路径中，先复制已批准input作为比较基准，再给schema校验器独立副本；有inputSchemaInput时从它重建，否则从已批准input重建。refinement后深比较结果与原基准，不同就记为无效调用并跳过执行。",
+        "workedExample": "上游generateText和streamText回归把批准值设为2，让refiner原地加一：缺少schema原输入时得到3，应拒绝且execute为0次；保留原输入1时可重建为2，execute恰好1次。两种情况消息历史均保持不变；另有自定义校验器原地修改的拒绝断言。本期只读代码与断言，未请求模型。",
+        "whyItMatters": "批准记录需要绑定当时的操作内容。若校验过程同时改掉历史input和比较基准，后续看到两者相等也不能说明用户批准过实际执行值；回放链必须保留可核对的原值。",
+        "risksAndLimits": [
+          "这项检查不是禁止所有refinement：允许从保存的schema输入重建出相同的批准值。改动限定于批准续接的重新校验路径，不能替代新工具调用的解析、业务权限或副作用幂等性。",
+          "HMAC签名检查仅在配置了toolApprovalSecret时进行；对象复制和深比较也不等于身份认证、沙箱或所有自定义对象的安全保证。本期未执行上游测试或验证线上集成。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "AI SDK7.0.173 release",
+            "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.173",
+            "publishedAt": "2026-11-13T22:34:02.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Approval input preservation PR25040",
+            "url": "https://github.com/vercel/ai/pull/25040"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Approved input snapshot and revalidation",
+            "url": "https://github.com/vercel/ai/blob/0e8e0543aeda7d4dd4ce6eade0d5b7d5a43644c1/packages/ai/src/generate-text/validate-tool-approvals.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Generate and stream approval continuation assertions",
+            "url": "https://github.com/vercel/ai/blob/0e8e0543aeda7d4dd4ce6eade0d5b7d5a43644c1/packages/ai/src/generate-text/tool-approval-follow-up.test.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "In-place custom validator rejection assertion",
+            "url": "https://github.com/vercel/ai/blob/0e8e0543aeda7d4dd4ce6eade0d5b7d5a43644c1/packages/ai/src/generate-text/validate-tool-approvals.test.ts"
+          }
+        ],
+        "nextQuestions": [
+          "批准界面展示的参数、签名绑定的input和续接时实际执行参数，能否通过同一个调用ID逐项核对？"
+        ]
+      },
+      {
+        "id": "ai-langgraph-own-thread-subgraph-stream",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "LangGraph1.2.22：独立thread的子图，也要服从调用者的流订阅范围",
+        "whatHappened": "LangGraph1.2.22于11月14日（UTC）发布，同日合入的PR9698修复Python子图流事件丢失：节点中以自带thread配置调用的子图，重新向显式subgraphs=True的外层流提供messages和tools事件。",
+        "mechanism": "子图不在调用者task内运行时，分别过滤当前与可继承callback handlers。现在只移除没有订阅subgraphs的消息/工具handler，保留显式跨子图订阅者；事件仍使用子图自身namespace，不改写成外层调用节点的路径。",
+        "workedExample": "固定版本的同步与异步断言分别给子图thread_id=child和parent，外层用messages/tools、subgraphs=True及v2流，期望收到tool-started、tool-finished和one、空格、two三个文本片段。对照路径不订阅subgraphs时外层仍为空，节点自己读取的流仍有事件。本期未调用模型或运行上游测试。",
+        "whyItMatters": "看不到子任务输出，可能是订阅handler被过滤，而非子任务没有执行。排查流式进度时，需要同时保留配置、订阅范围、事件namespace和业务完成证据，不能用一个空列表直接判失败。",
+        "risksAndLimits": [
+          "本次修复针对Python消息与工具handler。独立子图的顶层namespace仍可为()，不能仅靠路径就声称所有事件已唯一归属于外层节点；应用仍需保存运行身份与配置。",
+          "异步回归要求Python3.11及以上的contextvars支持；这些断言没有证明所有checkpoint持久化、授权边界、事件传输或自定义callback实现均正确。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "LangGraph1.2.22 release",
+            "url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.22",
+            "publishedAt": "2026-11-14T01:43:55.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Own-thread child stream PR9698",
+            "url": "https://github.com/langchain-ai/langgraph/pull/9698"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Sync async inherited handler selection",
+            "url": "https://github.com/langchain-ai/langgraph/blob/08a2016953789a4f579b4d36bd1967941ec62012/libs/langgraph/langgraph/pregel/main.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Own-thread stream and non-subscribing controls",
+            "url": "https://github.com/langchain-ai/langgraph/blob/08a2016953789a4f579b4d36bd1967941ec62012/libs/langgraph/tests/test_stream_namespaces.py"
+          }
+        ],
+        "nextQuestions": [
+          "进度面板是否能区分未订阅、尚未收到、任务失败与任务完成，而不是把无token输出统一当成失败？"
+        ]
+      },
+      {
+        "id": "web3-foundry-symbolic-balance-unknown",
+        "domain": "web3",
+        "topic": "security",
+        "title": "Foundry11月14日nightly：账户读取失败，符号执行不能把余额当成零",
+        "whatHappened": "Foundry11月14日nightly包含11月13日合入的PR18431：符号执行的backend余额读取失败，改为传播Backend错误并报告执行不完整，不再以默认零值继续判断性质。",
+        "mechanism": "backend.basic返回错误时转成SymbolicError::Backend，成功返回不存在账户时仍可取零；余额读、转账等调用链改为可失败并传播错误。已销毁、已缓存或被显式符号化的账户有各自模型路径，不全都查询backend。",
+        "workedExample": "上游Anvil回归给一个测试账户设置1 ether，再通过代理让该账户的读取返回account unavailable；性质却断言余额为0。预期输出是FAIL: incomplete symbolic execution及backend error，不能产生PASS。本期只读测试与代理实现，没有启动节点、操作账户或运行符号求解。",
+        "whyItMatters": "测试输入的未知与真实零值含义不同。把读取错误改成零，会把未获得的前提当作反例搜索的确定事实；符号执行结论需要同时携带模型边界、输入读取状态与完整性状态。",
+        "risksAndLimits": [
+          "这是nightly中的符号执行行为，不是稳定版升级验收，也不是链上余额修复。上游回归有Z3前置条件；本期没有独立运行它，不能把源码断言写成本站实测。",
+          "Incomplete表示尚未建立性质；PASS也只覆盖已建模语义与配置边界。正确处理此余额错误不证明所有RPC失败、外部合约、密码学性质或更深路径均被覆盖。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Foundry November14 nightly release",
+            "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-c644b436cd2994035df5a823398e2a39feca143c",
+            "publishedAt": "2026-11-14T07:10:47.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Fallible symbolic balance PR18431",
+            "url": "https://github.com/foundry-rs/foundry/pull/18431"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Backend balance and modeled account branches",
+            "url": "https://github.com/foundry-rs/foundry/blob/c644b436cd2994035df5a823398e2a39feca143c/crates/evm/symbolic/src/runtime/state.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Fork balance error incomplete assertion",
+            "url": "https://github.com/foundry-rs/foundry/blob/c644b436cd2994035df5a823398e2a39feca143c/crates/forge/tests/cli/test_cmd/symbolic_cheatcodes.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Account-read failing proxy fixture",
+            "url": "https://github.com/foundry-rs/foundry/blob/c644b436cd2994035df5a823398e2a39feca143c/crates/test-utils/src/rpc.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_documentation",
+            "name": "Symbolic PASS and incomplete scope",
+            "url": "https://github.com/foundry-rs/foundry/blob/c644b436cd2994035df5a823398e2a39feca143c/crates/evm/symbolic/README.md"
+          }
+        ],
+        "nextQuestions": [
+          "测试报告是否把数据读取错误、求解超时、性质反例与边界内通过分别保存，防止上层只读取退出文字就误报安全？"
+        ]
+      },
+      {
+        "id": "web3-aptos-ledger-message-binding",
+        "domain": "web3",
+        "topic": "protocol",
+        "title": "Aptos1.50.1：验签通过，仍须核对它签的是哪一份LedgerInfo",
+        "whatHappened": "Aptos主网节点1.50.1于11月13日（UTC）发布，清单包含8月20日合入的完整LedgerInfo匹配修正。对比前一主网发布1.49.8，Executed/Signed分支仍只比较commit_info；1.50.1固定源码已改为完整消息相等，不把历史合入日改成今天。",
+        "mechanism": "LedgerInfo包含commit_info与consensus_data_hash。票据先针对自身消息验签，进入目标聚合器还要匹配完整LedgerInfo；聚合失败的恢复路径忽略旧verified标记，按目标消息逐份重验、移除无效票，再验证重聚合证书。",
+        "workedExample": "固定源码回归构造相同commit_info、不同consensus_data_hash的票：它可通过自身verify并带verified状态，仍应被目标聚合器拒绝。另一个回归在5份有效票外加入跨消息签名，期望移除该票且剩余5/7法定票仍形成可验证证书。本期未运行节点、签名或上游测试。",
+        "whyItMatters": "一个“验证过”的状态如果不记录验证对象，就可能在换上下文后被误用。共识票、授权和缓存结果都需要把签名、原消息与目标聚合上下文关联，而非只沿用一个布尔标记。",
+        "risksAndLimits": [
+          "这是本次发行所含历史修正的机制学习，不是新披露攻击通告。前版对比仅核对相关函数，不据此推断历史链遭攻击、节点部署覆盖率或资产安全，也不作紧急升级结论。",
+          "恢复时重验签有成本，剔除后不足法定投票权应等待更多票；源码与回归不是完整网络活性、全部共识路径或生产升级的验证。Ordered与Aggregated状态各有原有处理，不能概括为所有分支都新增同一相等检查。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Aptos node1.50.1 release",
+            "url": "https://github.com/aptos-labs/aptos-core/releases/tag/aptos-node-v1.50.1",
+            "publishedAt": "2026-11-13T01:32:18.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Full LedgerInfo matching PR20335",
+            "url": "https://github.com/aptos-labs/aptos-core/pull/20335"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Full message match and mismatched vote assertion",
+            "url": "https://github.com/aptos-labs/aptos-core/blob/d7852a260780ff32200e7557895a43fe9f9e5918/consensus/src/pipeline/buffer_item.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Recovery signature verification ignores cached status",
+            "url": "https://github.com/aptos-labs/aptos-core/blob/d7852a260780ff32200e7557895a43fe9f9e5918/types/src/validator_verifier.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Aggregation recovery and cross-message regression",
+            "url": "https://github.com/aptos-labs/aptos-core/blob/d7852a260780ff32200e7557895a43fe9f9e5918/types/src/ledger_info.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Vote verification binds its own message",
+            "url": "https://github.com/aptos-labs/aptos-core/blob/d7852a260780ff32200e7557895a43fe9f9e5918/consensus/consensus-types/src/pipeline/commit_vote.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Previous1.49.8 partial-match comparison",
+            "url": "https://github.com/aptos-labs/aptos-core/blob/89c42cebf8d1b7fbb017e4900943687c63ae165b/consensus/src/pipeline/buffer_item.rs"
+          }
+        ],
+        "nextQuestions": [
+          "验签缓存能否绑定完整消息摘要与验证规则版本，并在进入另一个聚合上下文时重新检查绑定关系？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-approval-copy-before-revalidation",
+      "domain": "ai",
+      "topic": "safety",
+      "title": "专题：参数校验成功之后，为什么还要与批准时的原值再比一次",
+      "whatHappened": "AI SDK这次修复处理的不是JSON能否解析，而是批准续接的重建过程能否改动已经批准的操作。先保留原值，再运行可能原地变换输入的校验器与refiner，才能识别批准内容是否发生漂移。",
+      "mechanism": "把批准input、schema原输入和重新校验结果当作三份不同证据：批准input先复制成基准；schema输入在独立副本上校验与refine；最终结果归一到同一realm后做深比较。当前服务端工具定义补回元数据、类型和标题，之后还要经过当前批准策略。",
+      "workedExample": "批准对象是嵌套counter.value=2。若只有该值，refiner再加一得到3，应拒绝；若记录schema输入1，独立重建1加一得到2，可继续执行原批准值。两种分支都不应把历史改成3。上游generate/stream和自定义validator断言提供对照；本期未调用付费模型或复现。",
+      "whyItMatters": "恢复任务时，能重建出合法参数只是一个条件，还要证明它对应原批准的操作。界面展示、批准签名、schema版本、变换逻辑与执行回执各有证据，不能用新的合法对象覆盖旧记录来制造一致。",
+      "risksAndLimits": [
+        "有合法变换不代表批准失效，关键是重建结果是否仍等于批准值；反过来，数据相等也不证明操作已获业务授权、只执行一次、外部环境不变或副作用已经成功。",
+        "签名是可选配置的HMAC绑定；复制不是认证。深比较面向解析数据，本期没有证明任意带副作用的getter、自定义validator或非数据对象都受隔离，也没有把上游测试描述当本站实测。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "AI SDK7.0.173 release",
+          "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.173",
+          "publishedAt": "2026-11-13T22:34:02.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "Approval input preservation PR25040",
+          "url": "https://github.com/vercel/ai/pull/25040"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Approved input snapshot and revalidation",
+          "url": "https://github.com/vercel/ai/blob/0e8e0543aeda7d4dd4ce6eade0d5b7d5a43644c1/packages/ai/src/generate-text/validate-tool-approvals.ts"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Generate and stream approval continuation assertions",
+          "url": "https://github.com/vercel/ai/blob/0e8e0543aeda7d4dd4ce6eade0d5b7d5a43644c1/packages/ai/src/generate-text/tool-approval-follow-up.test.ts"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "In-place custom validator rejection assertion",
+          "url": "https://github.com/vercel/ai/blob/0e8e0543aeda7d4dd4ce6eade0d5b7d5a43644c1/packages/ai/src/generate-text/validate-tool-approvals.test.ts"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Refinement and original schema input propagation",
+          "url": "https://github.com/vercel/ai/blob/0e8e0543aeda7d4dd4ce6eade0d5b7d5a43644c1/packages/ai/src/generate-text/parse-tool-call.ts"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Optional HMAC approval identity and input binding",
+          "url": "https://github.com/vercel/ai/blob/0e8e0543aeda7d4dd4ce6eade0d5b7d5a43644c1/packages/ai/src/generate-text/tool-approval-signature.ts"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Deep comparison scope for parsed data",
+          "url": "https://github.com/vercel/ai/blob/0e8e0543aeda7d4dd4ce6eade0d5b7d5a43644c1/packages/ai/src/util/is-deep-equal-data.ts"
+        }
+      ],
+      "nextQuestions": [
+        "若schema或refiner在等待批准期间升级，产品应拒绝、迁移还是重新申请批准，怎样保存决定与原始操作证据？"
+      ],
+      "basedOnBriefId": "ai-sdk-approval-input-copy"
+    },
+    "sourceUrls": [
+      "https://github.com/vercel/ai/releases/tag/ai%407.0.173",
+      "https://github.com/vercel/ai/pull/25040",
+      "https://github.com/vercel/ai/blob/0e8e0543aeda7d4dd4ce6eade0d5b7d5a43644c1/packages/ai/src/generate-text/validate-tool-approvals.ts",
+      "https://github.com/vercel/ai/blob/0e8e0543aeda7d4dd4ce6eade0d5b7d5a43644c1/packages/ai/src/generate-text/tool-approval-follow-up.test.ts",
+      "https://github.com/vercel/ai/blob/0e8e0543aeda7d4dd4ce6eade0d5b7d5a43644c1/packages/ai/src/generate-text/validate-tool-approvals.test.ts",
+      "https://github.com/langchain-ai/langgraph/releases/tag/1.2.22",
+      "https://github.com/langchain-ai/langgraph/pull/9698",
+      "https://github.com/langchain-ai/langgraph/blob/08a2016953789a4f579b4d36bd1967941ec62012/libs/langgraph/langgraph/pregel/main.py",
+      "https://github.com/langchain-ai/langgraph/blob/08a2016953789a4f579b4d36bd1967941ec62012/libs/langgraph/tests/test_stream_namespaces.py",
+      "https://github.com/foundry-rs/foundry/releases/tag/nightly-c644b436cd2994035df5a823398e2a39feca143c",
+      "https://github.com/foundry-rs/foundry/pull/18431",
+      "https://github.com/foundry-rs/foundry/blob/c644b436cd2994035df5a823398e2a39feca143c/crates/evm/symbolic/src/runtime/state.rs",
+      "https://github.com/foundry-rs/foundry/blob/c644b436cd2994035df5a823398e2a39feca143c/crates/forge/tests/cli/test_cmd/symbolic_cheatcodes.rs",
+      "https://github.com/foundry-rs/foundry/blob/c644b436cd2994035df5a823398e2a39feca143c/crates/test-utils/src/rpc.rs",
+      "https://github.com/foundry-rs/foundry/blob/c644b436cd2994035df5a823398e2a39feca143c/crates/evm/symbolic/README.md",
+      "https://github.com/aptos-labs/aptos-core/releases/tag/aptos-node-v1.50.1",
+      "https://github.com/aptos-labs/aptos-core/pull/20335",
+      "https://github.com/aptos-labs/aptos-core/blob/d7852a260780ff32200e7557895a43fe9f9e5918/consensus/src/pipeline/buffer_item.rs",
+      "https://github.com/aptos-labs/aptos-core/blob/d7852a260780ff32200e7557895a43fe9f9e5918/types/src/validator_verifier.rs",
+      "https://github.com/aptos-labs/aptos-core/blob/d7852a260780ff32200e7557895a43fe9f9e5918/types/src/ledger_info.rs",
+      "https://github.com/aptos-labs/aptos-core/blob/d7852a260780ff32200e7557895a43fe9f9e5918/consensus/consensus-types/src/pipeline/commit_vote.rs",
+      "https://github.com/aptos-labs/aptos-core/blob/89c42cebf8d1b7fbb017e4900943687c63ae165b/consensus/src/pipeline/buffer_item.rs",
+      "https://github.com/vercel/ai/blob/0e8e0543aeda7d4dd4ce6eade0d5b7d5a43644c1/packages/ai/src/generate-text/parse-tool-call.ts",
+      "https://github.com/vercel/ai/blob/0e8e0543aeda7d4dd4ce6eade0d5b7d5a43644c1/packages/ai/src/generate-text/tool-approval-signature.ts",
+      "https://github.com/vercel/ai/blob/0e8e0543aeda7d4dd4ce6eade0d5b7d5a43644c1/packages/ai/src/util/is-deep-equal-data.ts"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-11-15-bc51c62b85368c3f",
+    "asOf": "2026-11-14T21:43:03.630Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
+  {
     "date": "2026-11-14",
     "slug": "2026-11-14",
     "title": "学习雷达 · 2026-11-14",
@@ -3795,300 +4201,6 @@ export const latestRadars: DailyRadar[] = [
     "marketSignals": [],
     "snapshotId": "learning-2026-11-08-dc4db720a1612bc9",
     "asOf": "2026-11-07T23:24:53.524Z",
-    "origin": "research",
-    "publicationState": "published"
-  },
-  {
-    "date": "2026-11-07",
-    "slug": "2026-11-07",
-    "title": "学习雷达 · 2026-11-07",
-    "summary": "AI 看流式工具参数的累计成本与沙箱命令缓存的身份；Web3 看删除请求的认证凭据与隐式账户的数据计量下界。专题拆解新执行与历史回放为什么需要不同的缓存判断。",
-    "publish": true,
-    "reviewStatus": "automated",
-    "schemaVersion": 2,
-    "editionMode": "daily",
-    "researchedAt": "2026-11-06T21:31:30.000Z",
-    "generatedAt": "2026-11-06T21:31:30.000Z",
-    "sourceSections": [
-      "ai",
-      "web3",
-      "deepDive"
-    ],
-    "missingSections": [],
-    "briefs": [
-      {
-        "id": "ai-langchain-stream-chunk-accumulation",
-        "domain": "ai",
-        "topic": "infrastructure",
-        "title": "LangChain Core 1.7.6：读取累计结果时，再一次合并流式消息",
-        "whatHappened": "LangChain Core 于11月5日（UTC）发布1.7.6，包含 Runnable 流累计的性能修复。此前每收到一个 AIMessageChunk 就加到总值，反复解析已经收到的工具参数；新版先保存开头连续的消息块，读取累计值时再合并。",
-        "mechanism": "新增 _ChunkAccumulator 在尚无累计值且块仍是 AIMessageChunk 时收集列表，读取 value 或遇到其他类型时调用 first + rest，一次构建合并消息。同步与异步的流追踪、默认 transform 和 RunnableLambda 接入此路径；批量相加抛出 TypeError 时退回逐块相加。",
-        "workedExample": "固定版本的上游回归把包含5,000个字符的工具参数分成每块10字符，检查最终工具调用参数和回调总值，并累计送入解析函数的字符数，要求小于完整参数长度的10倍。本期只阅读这些断言，未运行模型、上游测试或性能测量。",
-        "whyItMatters": "模型分块输出正常，不代表消费端累计结果的代价也稳定。工具参数越长，重复解析整个前缀可能越慢；区分逐块交付与最终累计，可以解释流畅度问题究竟出在模型服务还是本地消息处理。",
-        "risksAndLimits": [
-          "AIMessageChunk 本身未改变；调用者自行 acc += chunk、嵌在字典内的消息块、astream_log 及若干 fallback、branch、passthrough 累计器不在该补丁覆盖内。",
-          "缓冲消息块不构成内存硬上限，也不是通用 kwargs 合并优化；上游 PR 的耗时数字未在本期复现，包发布不证明应用已升级。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "LangChain Core 1.7.6 official release",
-            "url": "https://github.com/langchain-ai/langchain/releases/tag/langchain-core%3D%3D1.7.6",
-            "publishedAt": "2026-11-05T00:22:12.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "LangChain PR 41697: merge accumulated AIMessageChunks once",
-            "url": "https://github.com/langchain-ai/langchain/pull/41697"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "LangChain Core 1.7.6 runnable chunk accumulator",
-            "url": "https://github.com/langchain-ai/langchain/blob/b4aa7e7d00c452251720ce30b8bc2c41ca44e1f5/libs/core/langchain_core/runnables/base.py"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "LangChain Core 1.7.6 stream accumulation regression assertions",
-            "url": "https://github.com/langchain-ai/langchain/blob/b4aa7e7d00c452251720ce30b8bc2c41ca44e1f5/libs/core/tests/unit_tests/runnables/test_runnable.py"
-          }
-        ],
-        "nextQuestions": [
-          "实际链路在哪一层累计消息，是否仍有手写的逐块相加？",
-          "流式交付、最终参数和追踪回调能否分别检查正确性与处理成本？"
-        ]
-      },
-      {
-        "id": "ai-archestra-command-id-cache",
-        "domain": "ai",
-        "topic": "safety",
-        "title": "Archestra 1.4.22：用持久命令 ID 区分新执行与历史缓存",
-        "whatHappened": "Archestra 于11月6日（UTC）发布平台1.4.22，回补沙箱命令的缓存隔离修复。此前相同镜像、历史和命令文本可能被 Dagger 当成同一计算；平台现在为每次新命令预先生成 ID，并把它加入执行定义。",
-        "mechanism": "服务在执行前生成 randomUUID，把同一值传给运行时并保存为命令记录 ID。Dagger 的实时执行与回放都按工作目录、命令 ID、exec 的顺序构建；回放读取原记录 ID，使缓存仍在且链输入一致时可复用自身历史，新命令则使用新 ID。",
-        "workedExample": "上游可选实机测试让两个新沙箱执行相同的时间戳命令，断言输出不同；随后回放第一个命令并读取其文件，断言仍得到原输出。后端断言另核对运行时收到的 ID 等于持久记录 ID。本期只阅读，未启动 Dagger、容器或执行命令样例。",
-        "whyItMatters": "命令文本相同不等于执行属于同一任务。缓存既要阻止新任务借用别人的结果，又要在恢复历史时保留原执行身份；随意给每次回放重新加随机数，也可能让旧命令再次产生副作用。",
-        "risksAndLimits": [
-          "复用依赖缓存存在及完整链输入一致；引擎重建或缓存被清理后，历史仍可能重新执行。这项修复不保证外部副作用恰好一次。",
-          "这里核对的是平台服务生成并持久化 ID 的路径；ID 不是授权凭据，不替代租户访问控制。原生入口仅校验 ID 格式，无 ID 时生成新值，不能把格式检查当成身份认证。",
-          "稳定1.4.22包含回补 PR10275，原始变化在PR10272；发布与源码存在不证明任何具体部署已经采用。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "Archestra platform 1.4.22 official stable release",
-            "url": "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.4.22",
-            "publishedAt": "2026-11-06T07:29:35.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "Archestra PR 10275: command identity cache isolation backport",
-            "url": "https://github.com/archestra-ai/archestra/pull/10275"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "Archestra PR 10272: original command cache isolation change and limits",
-            "url": "https://github.com/archestra-ai/archestra/pull/10272"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Archestra 1.4.22 live and replay Dagger execution definitions",
-            "url": "https://github.com/archestra-ai/archestra/blob/5b52e3248a10dcacd4c028eaafb1adffd861c778/platform/archestra-rs/sandbox-core/src/backends/dagger.rs"
-          }
-        ],
-        "nextQuestions": [
-          "恢复时使用的是原命令记录 ID，还是重新生成的 ID？",
-          "缓存丢失或执行成功但记录保存失败时，哪些外部副作用仍需独立核对？"
-        ]
-      },
-      {
-        "id": "web3-metamask-kyc-deletion-aal2",
-        "domain": "web3",
-        "topic": "wallet_cex",
-        "title": "MetaMask KYC 0.16.0：删除准备与提交都传入 AAL2 凭据",
-        "whatHappened": "MetaMask core 于11月6日（UTC）发布v1402.0.0，其中 kyc-controller 0.16.0 将加密 KYC 存储删除接口改为显式接收 aal2Token。准备删除与最终提交两个请求都把它作为 Authorization bearer 值，空字符串在请求前报错。",
-        "mechanism": "Controller 先检查非空，再生成本次 X25519 密钥并调用 createDeletion，校验服务返回的能力令牌封装信息，随后把同一 aal2Token 传给 completeDeletion。两个 Service 方法也独立检查非空，通过 bearerToken 选项覆盖原请求认证值。",
-        "workedExample": "纸面审查可列三种情况：空字符串应在准备请求前失败；非空字符串会进入服务端认证；准备阶段失败时不应发最终删除请求。上游测试检查两个请求的 bearer header 和空值拒绝。本期未访问账户、请求令牌或执行删除。",
-        "whyItMatters": "钱包里可调用一个方法，不代表这次破坏性操作已完成所需认证。把调用方提供的凭据贯穿准备与提交，有助于审查两阶段操作的认证来源，并避免把普通钱包会话凭据自动沿用到更高认证要求的接口。",
-        "risksAndLimits": [
-          "客户端这里只检查非空，不验证 JWT 的签名、有效期或 ext.aal；AAL2 是否满足仍由服务端判断。本期未独立核验依赖 API 的门禁已经部署。",
-          "这是破坏调用签名兼容性的包更新；关联 PR 写明依赖服务端部署顺序，不能仅据客户端 release 宣称整个删除流程已上线。",
-          "该方法不清空 Controller 状态，也不证明备份或其他持有方数据已经删除；包发布、实际请求成功和数据处置结果需要分别核对。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "MetaMask core v1402.0.0: kyc-controller 0.16.0",
-            "url": "https://github.com/MetaMask/core/releases/tag/v1402.0.0",
-            "publishedAt": "2026-11-06T17:48:49.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "MetaMask core PR 11338: require AAL2 token for encrypted storage deletion",
-            "url": "https://github.com/MetaMask/core/pull/11338"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "MetaMask kyc-controller 0.16.0 deletion credential forwarding",
-            "url": "https://github.com/MetaMask/core/blob/8d460cecac3426fec6cbef6339b09609ada40504/packages/kyc-controller/src/KycService.ts"
-          }
-        ],
-        "nextQuestions": [
-          "调用方是否取得适用于当前删除操作的认证凭据，而非普通会话值？",
-          "准备、最终提交和实际数据处置分别留下了什么服务端回执？"
-        ]
-      },
-      {
-        "id": "web3-agave-programdata-size-floor",
-        "domain": "web3",
-        "topic": "onchain_infrastructure",
-        "title": "Agave 4.4.1：隐式 ProgramData 载入也有计量下界",
-        "whatHappened": "Agave 于11月5日（UTC）发布稳定版4.4.1，加入 loaderv3_programdata_size_floor 支持。当对应 feature 开启时，Loader V3 程序隐式引用的 ProgramData 即使不存在或数据过短，也会按最小长度计入交易载入数据预算。",
-        "mechanism": "实现先排除已显式列入交易账户或已计数的 ProgramData。对其余引用，开启 feature 后计入账户基础开销加 max(实际数据长度或0，ProgramData 元数据最小长度)；未开启时保留存在才计入实际长度的旧路径。结果继续经过交易载入数据大小检查。",
-        "workedExample": "纸面比较同一隐式引用：账户缺失时取数据长度0，账户存在但短于元数据长度时取实际长度，两者开启 feature 后都至少计入基础开销与元数据下界；显式列入交易的账户不在这条额外计数路径重复加入。本期只读代码与开关两种取值的上游断言，未运行节点或交易。",
-        "whyItMatters": "节点资源核算不能只看交易显式列出的账户。程序还会引入额外依赖；把这些依赖的计数条件、去重和下界说明白，才能解释为什么同一份调用在不同 feature 状态下得到不同的载入数据预算结果。",
-        "risksAndLimits": [
-          "这是计量下界，不会补出有效账户、修复程序内容或把数据实际扩容；缺失或无效程序仍可能在后续执行失败。",
-          "新公式依赖 feature 已激活，且限定这条隐式额外载入路径。代码支持、辅助函数把 feature 设为 true、客户端发布，都不证明某个网络已经激活。",
-          "本期未核验主网激活状态、节点升级率或真实交易结果；4.4.1还含其他调度与兼容变化，不能把此公式当成完整升级验收。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "Agave v4.4.1 official stable release",
-            "url": "https://github.com/anza-xyz/agave/releases/tag/v4.4.1",
-            "publishedAt": "2026-11-05T18:33:50.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "Agave PR 16775: ProgramData loaded size floor backport",
-            "url": "https://github.com/anza-xyz/agave/pull/16775"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Agave 4.4.1 conditional ProgramData accounting and tests",
-            "url": "https://github.com/anza-xyz/agave/blob/5bb304027fe1a166b02cb26dc8c161593f416fca/svm/src/account_loader.rs"
-          }
-        ],
-        "nextQuestions": [
-          "目标网络实际的 feature 状态与运行版本是否分别有证据？",
-          "账户是显式加载、首次隐式依赖还是重复引用，预算记录能否区分？"
-        ]
-      }
-    ],
-    "deepDive": {
-      "id": "deep-command-cache-execution-identity",
-      "domain": "ai",
-      "topic": "safety",
-      "title": "专题：缓存命中，怎样区分新命令与旧执行的回放",
-      "whatHappened": "Archestra 的修复同时面对两件事：两个新沙箱不能仅因命令文本相同就共用执行结果；一个沙箱恢复历史时，也不应仅因又走了一次恢复流程就把旧命令重新当作新执行。原始 PR 明确说明，只给实时命令添加随机数会破坏后续回放命中。",
-      "mechanism": "平台在运行前选定命令记录 ID，经适配层送到原生执行定义，完成后用同一 ID 落库；下一轮构建回放时从记录取回它。实时路径与回放路径都把该 ID 写入保留环境变量 ARCHESTRA_SANDBOX_COMMAND_ID，再调用 exec。原生层限制 ID 为1至128字节的字母、数字、连字符或下划线，并防止秘密环境变量覆盖它。",
-      "workedExample": "设沙箱 A 的首条命令 ID 为A1，沙箱 B 的同文命令为B1；二者定义因 ID 不同而分开。A 继续工作时回放A1，在其他链输入一致且缓存仍在的条件下复用A1；新命令使用A2。若引擎缓存已被清理，仍需把A1可能再执行单列检查。本例是代码推演，未操作沙箱或外部服务。",
-      "whyItMatters": "编辑推论是：执行身份应在发起工作前确定，并随日志跨过恢复边界；缓存是否命中、命令是否真的执行和外部操作是否已有回执，是三份不同证据。稳定 ID 让缓存判断可追溯，但不能代替支付、发信等外部系统自己的幂等与结果核对。",
-      "risksAndLimits": [
-        "这条链路依赖记录正确持久化；当前服务对执行后保存失败有独立错误路径，不能用一条缓存规则推导出崩溃、存储失败或冷缓存下不会重复副作用。",
-        "同一 ID 只有在其他执行定义也相同时才可能命中；工作目录、历史、环境与引擎生命周期仍要核对，不能把 ID 当作脱离输入的通用恢复令牌。",
-        "上游实机测试需要显式开启并连接 Dagger，后端测试还使用模拟运行时。本期只读这些断言，没有重跑，也没有独立验证其性能或生产租户隔离。"
-      ],
-      "sources": [
-        {
-          "tier": "tier1",
-          "role": "event",
-          "kind": "official_release",
-          "name": "Archestra platform 1.4.22 official stable release",
-          "url": "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.4.22",
-          "publishedAt": "2026-11-06T07:29:35.000Z"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_implementation_change",
-          "name": "Archestra PR 10275: command identity cache isolation backport",
-          "url": "https://github.com/archestra-ai/archestra/pull/10275"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_implementation_change",
-          "name": "Archestra PR 10272: original command cache isolation change and limits",
-          "url": "https://github.com/archestra-ai/archestra/pull/10272"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_code",
-          "name": "Archestra 1.4.22 live and replay Dagger execution definitions",
-          "url": "https://github.com/archestra-ai/archestra/blob/5b52e3248a10dcacd4c028eaafb1adffd861c778/platform/archestra-rs/sandbox-core/src/backends/dagger.rs"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_code",
-          "name": "Archestra 1.4.22 persisted command identity service",
-          "url": "https://github.com/archestra-ai/archestra/blob/5b52e3248a10dcacd4c028eaafb1adffd861c778/platform/backend/src/skills-sandbox/skill-sandbox-runtime-service.ts"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_test",
-          "name": "Archestra 1.4.22 opt-in live cache isolation assertions",
-          "url": "https://github.com/archestra-ai/archestra/blob/5b52e3248a10dcacd4c028eaafb1adffd861c778/platform/archestra-rs/sandbox-core/tests/live_cache_isolation.rs"
-        }
-      ],
-      "nextQuestions": [
-        "执行成功但日志未保存时，恢复流程如何获得原执行身份和外部回执？",
-        "缓存命中失败后，系统会重放哪些命令，哪些副作用需要额外的幂等约束？"
-      ],
-      "basedOnBriefId": "ai-archestra-command-id-cache"
-    },
-    "sourceUrls": [
-      "https://github.com/langchain-ai/langchain/releases/tag/langchain-core%3D%3D1.7.6",
-      "https://github.com/langchain-ai/langchain/pull/41697",
-      "https://github.com/langchain-ai/langchain/blob/b4aa7e7d00c452251720ce30b8bc2c41ca44e1f5/libs/core/langchain_core/runnables/base.py",
-      "https://github.com/langchain-ai/langchain/blob/b4aa7e7d00c452251720ce30b8bc2c41ca44e1f5/libs/core/tests/unit_tests/runnables/test_runnable.py",
-      "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.4.22",
-      "https://github.com/archestra-ai/archestra/pull/10275",
-      "https://github.com/archestra-ai/archestra/pull/10272",
-      "https://github.com/archestra-ai/archestra/blob/5b52e3248a10dcacd4c028eaafb1adffd861c778/platform/archestra-rs/sandbox-core/src/backends/dagger.rs",
-      "https://github.com/MetaMask/core/releases/tag/v1402.0.0",
-      "https://github.com/MetaMask/core/pull/11338",
-      "https://github.com/MetaMask/core/blob/8d460cecac3426fec6cbef6339b09609ada40504/packages/kyc-controller/src/KycService.ts",
-      "https://github.com/anza-xyz/agave/releases/tag/v4.4.1",
-      "https://github.com/anza-xyz/agave/pull/16775",
-      "https://github.com/anza-xyz/agave/blob/5bb304027fe1a166b02cb26dc8c161593f416fca/svm/src/account_loader.rs",
-      "https://github.com/archestra-ai/archestra/blob/5b52e3248a10dcacd4c028eaafb1adffd861c778/platform/backend/src/skills-sandbox/skill-sandbox-runtime-service.ts",
-      "https://github.com/archestra-ai/archestra/blob/5b52e3248a10dcacd4c028eaafb1adffd861c778/platform/archestra-rs/sandbox-core/tests/live_cache_isolation.rs"
-    ],
-    "relatedProjectSlugs": [],
-    "marketSignals": [],
-    "snapshotId": "learning-2026-11-07-4ff423a39f0cc42c",
-    "asOf": "2026-11-06T21:31:30.000Z",
     "origin": "research",
     "publicationState": "published"
   }
