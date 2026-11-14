@@ -6,7 +6,43 @@
     <atom:link href="https://xoqiu.cn/radar/rss.xml" rel="self" type="application/rss+xml" />
     <description>每天 2 条 AI、2 条 Web3 工程简报：先讲机制，再给例子和边界。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Sat, 14 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Sun, 15 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>AI SDK7.0.173：回放批准前，先保护原参数不被校验器改写</title>
+      <link>https://xoqiu.cn/radar/2026-11-15#ai-sdk-approval-input-copy</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-sdk-approval-input-copy</guid>
+      <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>safety</category>
+      <description>批准记录需要绑定当时的操作内容。若校验过程同时改掉历史input和比较基准，后续看到两者相等也不能说明用户批准过实际执行值；回放链必须保留可核对的原值。</description>
+    </item>
+    <item>
+      <title>LangGraph1.2.22：独立thread的子图，也要服从调用者的流订阅范围</title>
+      <link>https://xoqiu.cn/radar/2026-11-15#ai-langgraph-own-thread-subgraph-stream</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-langgraph-own-thread-subgraph-stream</guid>
+      <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>agent</category>
+      <description>看不到子任务输出，可能是订阅handler被过滤，而非子任务没有执行。排查流式进度时，需要同时保留配置、订阅范围、事件namespace和业务完成证据，不能用一个空列表直接判失败。</description>
+    </item>
+    <item>
+      <title>Foundry11月14日nightly：账户读取失败，符号执行不能把余额当成零</title>
+      <link>https://xoqiu.cn/radar/2026-11-15#web3-foundry-symbolic-balance-unknown</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-foundry-symbolic-balance-unknown</guid>
+      <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>security</category>
+      <description>测试输入的未知与真实零值含义不同。把读取错误改成零，会把未获得的前提当作反例搜索的确定事实；符号执行结论需要同时携带模型边界、输入读取状态与完整性状态。</description>
+    </item>
+    <item>
+      <title>Aptos1.50.1：验签通过，仍须核对它签的是哪一份LedgerInfo</title>
+      <link>https://xoqiu.cn/radar/2026-11-15#web3-aptos-ledger-message-binding</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-aptos-ledger-message-binding</guid>
+      <pubDate>Sun, 15 Nov 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>protocol</category>
+      <description>一个“验证过”的状态如果不记录验证对象，就可能在换上下文后被误用。共识票、授权和缓存结果都需要把签名、原消息与目标聚合上下文关联，而非只沿用一个布尔标记。</description>
+    </item>
     <item>
       <title>DeepAgents 0.7.38：搜索目录获准，不等于目录里的链接目标也获准</title>
       <link>https://xoqiu.cn/radar/2026-11-14#ai-deepagents-bulk-search-resolved-scope</link>
@@ -510,42 +546,6 @@
       <category>WEB3</category>
       <category>security</category>
       <description>钱包、审计工具和历史凭证读取可能需要验证过去有效的签名。接口应说明验证的是哪种历史证明，以及结果能证明什么，避免把离线验签成功误当成当前可以提交同类交易。</description>
-    </item>
-    <item>
-      <title>LangGraph 1.2.18：用更多完整快照，缩短长会话的重放链</title>
-      <link>https://xoqiu.cn/radar/2026-10-28#ai-langgraph-delta-replay-window</link>
-      <guid isPermaLink="false">xiuqiu-radar:ai-langgraph-delta-replay-window</guid>
-      <pubDate>Wed, 28 Oct 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>agent</category>
-      <description>Agent 能继续工作，既取决于保存了什么，也取决于重建这些状态要花多久。升级清单应同时记录默认值、显式配置和存储开销，避免把可恢复直接等同于低延迟恢复。</description>
-    </item>
-    <item>
-      <title>Verified autoresearch：先验证评测器，再让 Agent 搜索更优程序</title>
-      <link>https://xoqiu.cn/radar/2026-10-28#ai-verified-autoresearch-evaluator</link>
-      <guid isPermaLink="false">xiuqiu-radar:ai-verified-autoresearch-evaluator</guid>
-      <pubDate>Wed, 28 Oct 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>evaluation</category>
-      <description>Agent 优化的是评测器给出的反馈。若有效性判定本身缺项，更高分也可能只说明候选找到了缺口；让评测规则和候选版本都可追溯，有助于解释分数究竟证明了什么。</description>
-    </item>
-    <item>
-      <title>LND 0.21.5-beta：发票订阅死锁，出在事务内又借了一条连接</title>
-      <link>https://xoqiu.cn/radar/2026-10-28#web3-lnd-sql-invoice-transaction-scope</link>
-      <guid isPermaLink="false">xiuqiu-radar:web3-lnd-sql-invoice-transaction-scope</guid>
-      <pubDate>Wed, 28 Oct 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>wallet_cex</category>
-      <description>钱包和支付服务的订阅恢复常与其他请求并发。事务已经开始，不意味着随后每个查询都在使用同一事务；把连接借用范围纳入检查，有助于定位看似全局卡死的问题。</description>
-    </item>
-    <item>
-      <title>Nitro 3.12.2：回到旧分支再升级，也要核对区块保留</title>
-      <link>https://xoqiu.cn/radar/2026-10-28#web3-nitro-version-transition-head-retention</link>
-      <guid isPermaLink="false">xiuqiu-radar:web3-nitro-version-transition-head-retention</guid>
-      <pubDate>Wed, 28 Oct 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>l2</category>
-      <description>客户端恢复可能跨越多个版本分支，节点状态又会随运行改变。记录完整转换路径和前后区块状态，比只记录升级终点更有助于判断这条修复是否适用。</description>
     </item>
   </channel>
 </rss>

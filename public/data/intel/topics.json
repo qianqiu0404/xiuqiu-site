@@ -1,8 +1,40 @@
 {
   "schemaVersion": 1,
-  "latestDate": "2026-11-14",
+  "latestDate": "2026-11-15",
   "homePageUrl": "https://xoqiu.cn/",
   "topics": [
+    {
+      "topic": "agent",
+      "domain": "ai",
+      "count": 14,
+      "lastSeen": "2026-11-15",
+      "firstSeen": "2026-08-11",
+      "url": "https://xoqiu.cn/topics/agent"
+    },
+    {
+      "topic": "safety",
+      "domain": "ai",
+      "count": 12,
+      "lastSeen": "2026-11-15",
+      "firstSeen": "2026-10-13",
+      "url": "https://xoqiu.cn/topics/safety"
+    },
+    {
+      "topic": "security",
+      "domain": "web3",
+      "count": 11,
+      "lastSeen": "2026-11-15",
+      "firstSeen": "2026-08-10",
+      "url": "https://xoqiu.cn/topics/security"
+    },
+    {
+      "topic": "protocol",
+      "domain": "web3",
+      "count": 6,
+      "lastSeen": "2026-11-15",
+      "firstSeen": "2026-08-12",
+      "url": "https://xoqiu.cn/topics/protocol"
+    },
     {
       "topic": "wallet_cex",
       "domain": "web3",
@@ -10,22 +42,6 @@
       "lastSeen": "2026-11-14",
       "firstSeen": "2026-08-10",
       "url": "https://xoqiu.cn/topics/wallet_cex"
-    },
-    {
-      "topic": "safety",
-      "domain": "ai",
-      "count": 11,
-      "lastSeen": "2026-11-14",
-      "firstSeen": "2026-10-13",
-      "url": "https://xoqiu.cn/topics/safety"
-    },
-    {
-      "topic": "security",
-      "domain": "web3",
-      "count": 10,
-      "lastSeen": "2026-11-14",
-      "firstSeen": "2026-08-10",
-      "url": "https://xoqiu.cn/topics/security"
     },
     {
       "topic": "market_crypto",
@@ -42,14 +58,6 @@
       "lastSeen": "2026-11-14",
       "firstSeen": "2026-08-10",
       "url": "https://xoqiu.cn/topics/model_inference"
-    },
-    {
-      "topic": "agent",
-      "domain": "ai",
-      "count": 13,
-      "lastSeen": "2026-11-13",
-      "firstSeen": "2026-08-11",
-      "url": "https://xoqiu.cn/topics/agent"
     },
     {
       "topic": "market_equity",
@@ -98,14 +106,6 @@
       "lastSeen": "2026-11-10",
       "firstSeen": "2026-10-25",
       "url": "https://xoqiu.cn/topics/market_regulation"
-    },
-    {
-      "topic": "protocol",
-      "domain": "web3",
-      "count": 5,
-      "lastSeen": "2026-11-09",
-      "firstSeen": "2026-08-12",
-      "url": "https://xoqiu.cn/topics/protocol"
     },
     {
       "topic": "evaluation",

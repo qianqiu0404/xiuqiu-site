@@ -6,9 +6,72 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-11-14"
-export const intelItemCount = 325
+export const intelLatestDate: string | null = "2026-11-15"
+export const intelItemCount = 329
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "learning:ai-sdk-approval-input-copy",
+    "kind": "learning",
+    "date": "2026-11-15",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "AI SDK7.0.173：回放批准前，先保护原参数不被校验器改写",
+    "summary": "批准记录需要绑定当时的操作内容。若校验过程同时改掉历史input和比较基准，后续看到两者相等也不能说明用户批准过实际执行值；回放链必须保留可核对的原值。",
+    "href": "/radar/2026-11-15#ai-sdk-approval-input-copy",
+    "source": {
+      "name": "AI SDK7.0.173 release",
+      "tier": "tier1",
+      "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.173"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "learning:ai-langgraph-own-thread-subgraph-stream",
+    "kind": "learning",
+    "date": "2026-11-15",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "LangGraph1.2.22：独立thread的子图，也要服从调用者的流订阅范围",
+    "summary": "看不到子任务输出，可能是订阅handler被过滤，而非子任务没有执行。排查流式进度时，需要同时保留配置、订阅范围、事件namespace和业务完成证据，不能用一个空列表直接判失败。",
+    "href": "/radar/2026-11-15#ai-langgraph-own-thread-subgraph-stream",
+    "source": {
+      "name": "LangGraph1.2.22 release",
+      "tier": "tier1",
+      "url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.22"
+    }
+  },
+  {
+    "id": "learning:web3-foundry-symbolic-balance-unknown",
+    "kind": "learning",
+    "date": "2026-11-15",
+    "domain": "web3",
+    "topic": "security",
+    "title": "Foundry11月14日nightly：账户读取失败，符号执行不能把余额当成零",
+    "summary": "测试输入的未知与真实零值含义不同。把读取错误改成零，会把未获得的前提当作反例搜索的确定事实；符号执行结论需要同时携带模型边界、输入读取状态与完整性状态。",
+    "href": "/radar/2026-11-15#web3-foundry-symbolic-balance-unknown",
+    "source": {
+      "name": "Foundry November14 nightly release",
+      "tier": "tier1",
+      "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-c644b436cd2994035df5a823398e2a39feca143c"
+    }
+  },
+  {
+    "id": "learning:web3-aptos-ledger-message-binding",
+    "kind": "learning",
+    "date": "2026-11-15",
+    "domain": "web3",
+    "topic": "protocol",
+    "title": "Aptos1.50.1：验签通过，仍须核对它签的是哪一份LedgerInfo",
+    "summary": "一个“验证过”的状态如果不记录验证对象，就可能在换上下文后被误用。共识票、授权和缓存结果都需要把签名、原消息与目标聚合上下文关联，而非只沿用一个布尔标记。",
+    "href": "/radar/2026-11-15#web3-aptos-ledger-message-binding",
+    "source": {
+      "name": "Aptos node1.50.1 release",
+      "tier": "tier1",
+      "url": "https://github.com/aptos-labs/aptos-core/releases/tag/aptos-node-v1.50.1"
+    }
+  },
   {
     "id": "learning:ai-deepagents-bulk-search-resolved-scope",
     "kind": "learning",
@@ -425,107 +488,41 @@ export const intelLatestItems: IntelItem[] = [
     "flags": {
       "priority": "P1"
     }
-  },
-  {
-    "id": "learning:ai-quickjs-finalizing-destructor",
-    "kind": "learning",
-    "date": "2026-11-08",
-    "domain": "ai",
-    "topic": "infrastructure",
-    "title": "langchain-quickjs 0.3.12：Python 收尾时，析构不再等待工作线程",
-    "summary": "Agent 显示暂停、工具报错和宿主进程退出是不同的生命周期。把进程最终收尾与仍在运行时的资源回收分开，可以解释为什么业务调用已经返回，服务却一直不能结束。",
-    "href": "/radar/2026-11-08#ai-quickjs-finalizing-destructor",
-    "source": {
-      "name": "langchain-quickjs 0.3.12 official release",
-      "tier": "tier1",
-      "url": "https://github.com/langchain-ai/deepagents/releases/tag/langchain-quickjs%3D%3D0.3.12"
-    }
-  },
-  {
-    "id": "learning:ai-mastra-final-scope-set",
-    "kind": "learning",
-    "date": "2026-11-08",
-    "domain": "ai",
-    "topic": "safety",
-    "title": "Mastra Core 1.82.0：动态 scopes 返回最终集合，身份范围不能丢",
-    "summary": "宿主传入了一个范围集合，不代表每个 Agent 都应照单使用。明确函数做替换、数组做追加，并保留运行身份，能让租户或工具范围的收敛有可检查的输入和输出。",
-    "href": "/radar/2026-11-08#ai-mastra-final-scope-set",
-    "source": {
-      "name": "Mastra Core 1.82.0 official release",
-      "tier": "tier1",
-      "url": "https://github.com/mastra-ai/mastra/releases/tag/%40mastra/core%401.82.0"
-    },
-    "flags": {
-      "deepDive": true
-    }
-  },
-  {
-    "id": "learning:web3-viem-method-refusal-retry",
-    "kind": "learning",
-    "date": "2026-11-08",
-    "domain": "web3",
-    "topic": "onchain_infrastructure",
-    "title": "viem 2.57.16：方法已被明确拒绝时，HTTP 状态不再让请求重试",
-    "summary": "钱包或链上服务需要同时解释传输状态和协议错误。明确的能力拒绝若被当成瞬时故障，会推迟备用节点或错误处理；只看HTTP403又会把不同原因混在一起。",
-    "href": "/radar/2026-11-08#web3-viem-method-refusal-retry",
-    "source": {
-      "name": "viem 2.57.16 official release",
-      "tier": "tier1",
-      "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.16"
-    }
-  },
-  {
-    "id": "learning:web3-op-supernode-retired-max-safe-lag",
-    "kind": "learning",
-    "date": "2026-11-08",
-    "domain": "web3",
-    "topic": "l2",
-    "title": "op-supernode 1.1.1：旧的 max-safe-lag 参数退出启动与排序路径",
-    "summary": "升级前的配置能被解析，与升级后继续施加同一运行约束需要分别验证。参数被删除后，旧环境变量可能安静失效，不能因进程能启动就假定原来的运行策略还在。",
-    "href": "/radar/2026-11-08#web3-op-supernode-retired-max-safe-lag",
-    "source": {
-      "name": "op-supernode 1.1.1 official release",
-      "tier": "tier1",
-      "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-supernode/v1.1.1"
-    }
-  },
-  {
-    "id": "market:2026-11-08:boc-inflation-framework-renewal-2026-11-05",
-    "kind": "market",
-    "date": "2026-11-08",
-    "domain": "market",
-    "topic": "market_macro",
-    "title": "加拿大续期通胀目标框架：2%目标与1%–3%区间保持",
-    "summary": "研究判断：目标框架、当次政策决定和市场定价是三层证据。续约可用于研究预期锚定，需独立核对通胀预期与加拿大国债、加元的同窗口数据，不能仅据目标未变推断利率路径或实际物价已达标。",
-    "href": "/market-radar/2026-11-08#boc-inflation-framework-renewal-2026-11-05",
-    "source": {
-      "name": "Bank of Canada — Government and Bank joint statement on framework renewal",
-      "url": "https://www.bankofcanada.ca/2026/11/joint-statement-of-the-government-of-canada-and-the-bank-of-canada-on-the-renewal-of-the-monetary-policy-framework-2026/"
-    },
-    "flags": {
-      "priority": "P1"
-    }
   }
 ]
 export const intelTopics: IntelTopic[] = [
   {
-    "topic": "wallet_cex",
-    "domain": "web3",
-    "count": 13,
-    "lastSeen": "2026-11-14",
-    "firstSeen": "2026-08-10"
+    "topic": "agent",
+    "domain": "ai",
+    "count": 14,
+    "lastSeen": "2026-11-15",
+    "firstSeen": "2026-08-11"
   },
   {
     "topic": "safety",
     "domain": "ai",
-    "count": 11,
-    "lastSeen": "2026-11-14",
+    "count": 12,
+    "lastSeen": "2026-11-15",
     "firstSeen": "2026-10-13"
   },
   {
     "topic": "security",
     "domain": "web3",
-    "count": 10,
+    "count": 11,
+    "lastSeen": "2026-11-15",
+    "firstSeen": "2026-08-10"
+  },
+  {
+    "topic": "protocol",
+    "domain": "web3",
+    "count": 6,
+    "lastSeen": "2026-11-15",
+    "firstSeen": "2026-08-12"
+  },
+  {
+    "topic": "wallet_cex",
+    "domain": "web3",
+    "count": 13,
     "lastSeen": "2026-11-14",
     "firstSeen": "2026-08-10"
   },
@@ -542,13 +539,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 7,
     "lastSeen": "2026-11-14",
     "firstSeen": "2026-08-10"
-  },
-  {
-    "topic": "agent",
-    "domain": "ai",
-    "count": 13,
-    "lastSeen": "2026-11-13",
-    "firstSeen": "2026-08-11"
   },
   {
     "topic": "market_equity",
@@ -591,13 +581,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 5,
     "lastSeen": "2026-11-10",
     "firstSeen": "2026-10-25"
-  },
-  {
-    "topic": "protocol",
-    "domain": "web3",
-    "count": 5,
-    "lastSeen": "2026-11-09",
-    "firstSeen": "2026-08-12"
   },
   {
     "topic": "evaluation",
