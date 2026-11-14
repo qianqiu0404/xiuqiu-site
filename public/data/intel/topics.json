@@ -4,6 +4,14 @@
   "homePageUrl": "https://xoqiu.cn/",
   "topics": [
     {
+      "topic": "market_macro",
+      "domain": "market",
+      "count": 22,
+      "lastSeen": "2026-11-15",
+      "firstSeen": "2026-08-09",
+      "url": "https://xoqiu.cn/topics/market_macro"
+    },
+    {
       "topic": "agent",
       "domain": "ai",
       "count": 14,
@@ -66,14 +74,6 @@
       "lastSeen": "2026-11-13",
       "firstSeen": "2026-11-13",
       "url": "https://xoqiu.cn/topics/market_equity"
-    },
-    {
-      "topic": "market_macro",
-      "domain": "market",
-      "count": 21,
-      "lastSeen": "2026-11-12",
-      "firstSeen": "2026-08-09",
-      "url": "https://xoqiu.cn/topics/market_macro"
     },
     {
       "topic": "onchain_infrastructure",

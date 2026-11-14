@@ -7,7 +7,7 @@ export interface IntelItem { id: string; kind: IntelKind; date: string; domain: 
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
 export const intelLatestDate: string | null = "2026-11-15"
-export const intelItemCount = 329
+export const intelItemCount = 330
 export const intelLatestItems: IntelItem[] = [
   {
     "id": "learning:ai-sdk-approval-input-copy",
@@ -70,6 +70,23 @@ export const intelLatestItems: IntelItem[] = [
       "name": "Aptos node1.50.1 release",
       "tier": "tier1",
       "url": "https://github.com/aptos-labs/aptos-core/releases/tag/aptos-node-v1.50.1"
+    }
+  },
+  {
+    "id": "market:2026-11-15:fed-fsr-data-center-debt-commitments-2026-11-13",
+    "kind": "market",
+    "date": "2026-11-15",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "美联储数据中心融资研究：表内债务与未折现承诺须分开",
+    "summary": "研究推断：若项目现金流不足或担保触发，损失可能由开发商、特殊目的实体与资本提供方分担。大型科技企业既可能先吸收损失、缓和传导，也可能有超出表内负债的经济暴露；联系增加不等于已发生系统冲击。",
+    "href": "/market-radar/2026-11-15#fed-fsr-data-center-debt-commitments-2026-11-13",
+    "source": {
+      "name": "Federal Reserve — Financial Stability Report, November 2026, Box 2.2",
+      "url": "https://www.federalreserve.gov/publications/files/financial-stability-report-20261113.pdf"
+    },
+    "flags": {
+      "priority": "P1"
     }
   },
   {
@@ -492,6 +509,13 @@ export const intelLatestItems: IntelItem[] = [
 ]
 export const intelTopics: IntelTopic[] = [
   {
+    "topic": "market_macro",
+    "domain": "market",
+    "count": 22,
+    "lastSeen": "2026-11-15",
+    "firstSeen": "2026-08-09"
+  },
+  {
     "topic": "agent",
     "domain": "ai",
     "count": 14,
@@ -546,13 +570,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 1,
     "lastSeen": "2026-11-13",
     "firstSeen": "2026-11-13"
-  },
-  {
-    "topic": "market_macro",
-    "domain": "market",
-    "count": 21,
-    "lastSeen": "2026-11-12",
-    "firstSeen": "2026-08-09"
   },
   {
     "topic": "onchain_infrastructure",

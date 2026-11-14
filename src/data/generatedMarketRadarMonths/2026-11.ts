@@ -3,6 +3,158 @@
 import type { MarketRadarDaily } from '../generatedMarketRadars.ts'
 export const monthlyMarketRadars: MarketRadarDaily[] = [
   {
+    "date": "2026-11-15",
+    "slug": "2026-11-15",
+    "title": "交易研究雷达 · 2026-11-15",
+    "summary": "美联储新报告讨论数据中心融资的债务、租约与担保。本期先区分计量口径，再研究合同触发和损失分担；不把未来承诺当成当前债务或已实现损失。",
+    "snapshotId": "market-2026-11-15-8b8b13db12acf978",
+    "asOf": "2026-11-14T21:38:59.232Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-14T21:38:59.232489+00:00",
+    "events": [
+      {
+        "id": "fed-fsr-data-center-debt-commitments-2026-11-13",
+        "priority": "P1",
+        "status": "released",
+        "category": "macro",
+        "title": "美联储数据中心融资研究：表内债务与未折现承诺须分开",
+        "fact": "美联储11月13日《金融稳定报告》专栏讨论数据中心融资中的债务、未开始租约和担保。注5说明，后两类承诺通常未折现，不能与已折现的表内债务直接比较；报告总体信息截至10月28日，图C止于2026年二季度。",
+        "whyWatch": "研究推断：若项目现金流不足或担保触发，损失可能由开发商、特殊目的实体与资本提供方分担。大型科技企业既可能先吸收损失、缓和传导，也可能有超出表内负债的经济暴露；联系增加不等于已发生系统冲击。",
+        "assets": [
+          "数据中心融资",
+          "科技企业信用",
+          "私募信贷"
+        ],
+        "watchFor": "按合同核对起租日、折现口径、担保触发、受偿顺序和项目现金流；分开记录图表时点与发布日期。本期未核验单笔合同、担保执行或新增行情样本。",
+        "invalidation": "若后续披露显示承诺可取消、担保未触发或项目现金流覆盖，则收窄传导解释。数据未覆盖全部私募融资，不能把名义承诺换算成实际损失，也不能把与电信周期的类比当作重演。",
+        "sourceName": "Federal Reserve — Financial Stability Report, November 2026, Box 2.2",
+        "sourceUrl": "https://www.federalreserve.gov/publications/files/financial-stability-report-20261113.pdf",
+        "sourcePublishedAt": "2026-11-13"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.federalreserve.gov/publications/files/financial-stability-report-20261113.pdf"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "本期核对官方报告专栏、图表和脚注，未建立合同触发、损失分担与资产反应的同窗口历史样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "未折现承诺、已折现债务和不同图表时点不能直接相加或换算为走势概率。",
+      "nextValidation": "固定报告版本与合同计量口径，补充可审计现金流和担保触发样本；验证前仅记录信号质量。",
+      "invalidation": "样本覆盖、折现或合同定义变化时重估；无法确认损失分担时保留未知。",
+      "sourceUrls": [
+        "https://www.federalreserve.gov/publications/files/financial-stability-report-20261113.pdf"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "若数据中心项目现金流承压，租约、担保与融资分层通过哪些可验证环节分担损失，谁可能先吸收冲击？",
+        "focusEventIds": [
+          "fed-fsr-data-center-debt-commitments-2026-11-13"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些折现口径、可取消条款、担保触发与项目现金流证据，能推翻把名义承诺当作当前债务或必然损失的解释？",
+        "focusEventIds": [
+          "fed-fsr-data-center-debt-commitments-2026-11-13"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若项目收入足以履约，或收入不足而大企业吸收损失，分别观察什么，哪些新披露会使传导判断失效？",
+        "focusEventIds": [
+          "fed-fsr-data-center-debt-commitments-2026-11-13"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-15",
+      "snapshotId": "market-2026-11-15-8b8b13db12acf978",
+      "asOf": "2026-11-14T21:38:59.232Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-15",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "若数据中心项目现金流承压，租约、担保与融资分层通过哪些可验证环节分担损失，谁可能先吸收冲击？",
+          "focusEventIds": [
+            "fed-fsr-data-center-debt-commitments-2026-11-13"
+          ],
+          "prompt": "研究任务：若数据中心项目现金流承压，租约、担保与融资分层通过哪些可验证环节分担损失，谁可能先吸收冲击？\n证据快照：2026-11-15；asOf=2026-11-14T21:38:59.232Z；snapshotId=market-2026-11-15-8b8b13db12acf978\n\n材料 1｜美联储数据中心融资研究：表内债务与未折现承诺须分开\n已确认事实：美联储11月13日《金融稳定报告》专栏讨论数据中心融资中的债务、未开始租约和担保。注5说明，后两类承诺通常未折现，不能与已折现的表内债务直接比较；报告总体信息截至10月28日，图C止于2026年二季度。\n关注机制：研究推断：若项目现金流不足或担保触发，损失可能由开发商、特殊目的实体与资本提供方分担。大型科技企业既可能先吸收损失、缓和传导，也可能有超出表内负债的经济暴露；联系增加不等于已发生系统冲击。\n接下来验证：按合同核对起租日、折现口径、担保触发、受偿顺序和项目现金流；分开记录图表时点与发布日期。本期未核验单笔合同、担保执行或新增行情样本。\n失效条件：若后续披露显示承诺可取消、担保未触发或项目现金流覆盖，则收窄传导解释。数据未覆盖全部私募融资，不能把名义承诺换算成实际损失，也不能把与电信周期的类比当作重演。\n一手来源：https://www.federalreserve.gov/publications/files/financial-stability-report-20261113.pdf\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "b9fe845c1de1b64567d6768ac4b58e5fcda5e935e131e234a8b01597af1aed34",
+          "sourceUrls": [
+            "https://www.federalreserve.gov/publications/files/financial-stability-report-20261113.pdf"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些折现口径、可取消条款、担保触发与项目现金流证据，能推翻把名义承诺当作当前债务或必然损失的解释？",
+          "focusEventIds": [
+            "fed-fsr-data-center-debt-commitments-2026-11-13"
+          ],
+          "prompt": "研究任务：哪些折现口径、可取消条款、担保触发与项目现金流证据，能推翻把名义承诺当作当前债务或必然损失的解释？\n证据快照：2026-11-15；asOf=2026-11-14T21:38:59.232Z；snapshotId=market-2026-11-15-8b8b13db12acf978\n\n材料 1｜美联储数据中心融资研究：表内债务与未折现承诺须分开\n已确认事实：美联储11月13日《金融稳定报告》专栏讨论数据中心融资中的债务、未开始租约和担保。注5说明，后两类承诺通常未折现，不能与已折现的表内债务直接比较；报告总体信息截至10月28日，图C止于2026年二季度。\n关注机制：研究推断：若项目现金流不足或担保触发，损失可能由开发商、特殊目的实体与资本提供方分担。大型科技企业既可能先吸收损失、缓和传导，也可能有超出表内负债的经济暴露；联系增加不等于已发生系统冲击。\n接下来验证：按合同核对起租日、折现口径、担保触发、受偿顺序和项目现金流；分开记录图表时点与发布日期。本期未核验单笔合同、担保执行或新增行情样本。\n失效条件：若后续披露显示承诺可取消、担保未触发或项目现金流覆盖，则收窄传导解释。数据未覆盖全部私募融资，不能把名义承诺换算成实际损失，也不能把与电信周期的类比当作重演。\n一手来源：https://www.federalreserve.gov/publications/files/financial-stability-report-20261113.pdf\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "f9df53533c80375f60d54c5c7b6b19deacda8283c883d296ccb2ecc1ad47de32",
+          "sourceUrls": [
+            "https://www.federalreserve.gov/publications/files/financial-stability-report-20261113.pdf"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若项目收入足以履约，或收入不足而大企业吸收损失，分别观察什么，哪些新披露会使传导判断失效？",
+          "focusEventIds": [
+            "fed-fsr-data-center-debt-commitments-2026-11-13"
+          ],
+          "prompt": "研究任务：若项目收入足以履约，或收入不足而大企业吸收损失，分别观察什么，哪些新披露会使传导判断失效？\n证据快照：2026-11-15；asOf=2026-11-14T21:38:59.232Z；snapshotId=market-2026-11-15-8b8b13db12acf978\n\n材料 1｜美联储数据中心融资研究：表内债务与未折现承诺须分开\n已确认事实：美联储11月13日《金融稳定报告》专栏讨论数据中心融资中的债务、未开始租约和担保。注5说明，后两类承诺通常未折现，不能与已折现的表内债务直接比较；报告总体信息截至10月28日，图C止于2026年二季度。\n关注机制：研究推断：若项目现金流不足或担保触发，损失可能由开发商、特殊目的实体与资本提供方分担。大型科技企业既可能先吸收损失、缓和传导，也可能有超出表内负债的经济暴露；联系增加不等于已发生系统冲击。\n接下来验证：按合同核对起租日、折现口径、担保触发、受偿顺序和项目现金流；分开记录图表时点与发布日期。本期未核验单笔合同、担保执行或新增行情样本。\n失效条件：若后续披露显示承诺可取消、担保未触发或项目现金流覆盖，则收窄传导解释。数据未覆盖全部私募融资，不能把名义承诺换算成实际损失，也不能把与电信周期的类比当作重演。\n一手来源：https://www.federalreserve.gov/publications/files/financial-stability-report-20261113.pdf\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "2ce1ea76ba5d5a27f8975d1b88b1b45a48339c5fdde031e6ada0d3d4079966df",
+          "sourceUrls": [
+            "https://www.federalreserve.gov/publications/files/financial-stability-report-20261113.pdf"
+          ]
+        }
+      ]
+    }
+  },
+  {
     "date": "2026-11-14",
     "slug": "2026-11-14",
     "title": "交易研究雷达 · 2026-11-14",

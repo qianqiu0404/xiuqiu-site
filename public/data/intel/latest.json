@@ -72,6 +72,24 @@
       "url": "https://xoqiu.cn/radar/2026-11-15#web3-aptos-ledger-message-binding"
     },
     {
+      "id": "market:2026-11-15:fed-fsr-data-center-debt-commitments-2026-11-13",
+      "kind": "market",
+      "date": "2026-11-15",
+      "domain": "market",
+      "topic": "market_macro",
+      "title": "美联储数据中心融资研究：表内债务与未折现承诺须分开",
+      "summary": "研究推断：若项目现金流不足或担保触发，损失可能由开发商、特殊目的实体与资本提供方分担。大型科技企业既可能先吸收损失、缓和传导，也可能有超出表内负债的经济暴露；联系增加不等于已发生系统冲击。",
+      "href": "/market-radar/2026-11-15#fed-fsr-data-center-debt-commitments-2026-11-13",
+      "source": {
+        "name": "Federal Reserve — Financial Stability Report, November 2026, Box 2.2",
+        "url": "https://www.federalreserve.gov/publications/files/financial-stability-report-20261113.pdf"
+      },
+      "flags": {
+        "priority": "P1"
+      },
+      "url": "https://xoqiu.cn/market-radar/2026-11-15#fed-fsr-data-center-debt-commitments-2026-11-13"
+    },
+    {
       "id": "learning:ai-deepagents-bulk-search-resolved-scope",
       "kind": "learning",
       "date": "2026-11-14",
