@@ -12,6 +12,48 @@ export interface RadarIndexEntry { date: string; slug: string; snapshotId: strin
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-11-16",
+    "slug": "2026-11-16",
+    "snapshotId": "learning-2026-11-16-20147f94783c1b8e",
+    "asOf": "2026-11-15T21:43:35.540Z",
+    "title": "学习雷达 · 2026-11-16",
+    "summary": "AI看远端Skill的字节核对与可选连接恢复；Web3看签名域字段保留与多块挖矿的锁生命周期。专题区分内容一致、来源可信与执行获准。",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "briefs": [
+      {
+        "id": "ai-fastmcp-skill-manifest-byte-verification",
+        "domain": "ai",
+        "topic": "infrastructure",
+        "title": "FastMCP4.2：读到Skill文件之后，先核对清单承诺的字节"
+      },
+      {
+        "id": "ai-archestra-optional-github-reconnect",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "Archestra1.4.32：可选GitHub连接失效，提示重连与阻断启动分开"
+      },
+      {
+        "id": "web3-viem-eip712-domain-field-presence",
+        "domain": "web3",
+        "topic": "security",
+        "title": "viem2.57.20：chainId是字符串时，也不能从EIP-712签名域中消失"
+      },
+      {
+        "id": "web3-foundry-multiblock-mining-guard",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Foundry11月15日nightly：挖完整批块，再释放读回结果所需的锁"
+      }
+    ],
+    "deepDive": {
+      "id": "deep-skill-manifest-consistency-and-authority",
+      "title": "专题：Skill摘要全部匹配，为什么仍不能直接信任或执行",
+      "basedOnBriefId": "ai-fastmcp-skill-manifest-byte-verification"
+    },
+    "marketSignals": []
+  },
+  {
     "date": "2026-11-15",
     "slug": "2026-11-15",
     "snapshotId": "learning-2026-11-15-bc51c62b85368c3f",
@@ -1950,6 +1992,330 @@ export const radarIndex: RadarIndexEntry[] = [
 ]
 
 export const latestRadars: DailyRadar[] = [
+  {
+    "date": "2026-11-16",
+    "slug": "2026-11-16",
+    "title": "学习雷达 · 2026-11-16",
+    "summary": "AI看远端Skill的字节核对与可选连接恢复；Web3看签名域字段保留与多块挖矿的锁生命周期。专题区分内容一致、来源可信与执行获准。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-11-15T21:43:35.540Z",
+    "generatedAt": "2026-11-15T21:43:35.540Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-fastmcp-skill-manifest-byte-verification",
+        "domain": "ai",
+        "topic": "infrastructure",
+        "title": "FastMCP4.2：读到Skill文件之后，先核对清单承诺的字节",
+        "whatHappened": "FastMCP4.2.0于11月13日（UTC）发布稳定版，收录10月27日合入的read_skill校验与资源清单回退。客户端可以先取得完整Skill值，再单独决定是否导出到本地；历史PR合入日不改写为本次发布日期。",
+        "mechanism": "read_skill先取得静态manifest并检查文件数量、总字节数及相对路径，再逐文件读取，核对实际长度和SHA-256。文件齐全后从精确字节构造Skill，并检查frontmatter及Skill名称。未协商Skills扩展或服务器不识别该条目时可读_manifest资源；一般服务器错误不会被当作兼容回退。",
+        "workedExample": "固定tag的断言把notes.md承诺的摘要替换为全零值，read_skill应抛出digest不符；把承诺长度加一也应拒绝。另有CRLF与二进制原样读取、带query的资源URI保持不变的断言。本期只读源码与断言，未安装Skill、执行其中脚本或运行上游测试。",
+        "whyItMatters": "远端返回了文件，不代表返回的是清单承诺的那份文件。把清单、内容校验和落盘分开，可以在更换服务器、代理资源或版本漂移时定位证据断点，避免只凭成功读取就直接执行。",
+        "risksAndLimits": [
+          "SHA-256在这里核对内容与所给清单一致，不是发布者签名，也不证明Skill指令可信或已经获得执行授权；服务器若同时提供恶意清单与匹配内容，仍需另外的信任与审查边界。",
+          "动态资源清单不能走这条静态整包读取路径。to_directory是另一步操作，默认拒绝覆盖已有目录；显式overwrite会移除不属于新Skill的旧文件。本期没有进行导出或验证任何宿主的实际集成。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "FastMCP4.2.0 stable release",
+            "url": "https://github.com/PrefectHQ/fastmcp/releases/tag/v4.2.0",
+            "publishedAt": "2026-11-13T17:07:01.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Historical verified skill read and resource fallback PR6086",
+            "url": "https://github.com/PrefectHQ/fastmcp/pull/6086"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Manifest selection and per-file byte verification",
+            "url": "https://github.com/PrefectHQ/fastmcp/blob/5e71792d8daf499325e3b747cc44cb04d4544119/fastmcp_slim/fastmcp/client/mixins/skills.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Digest size frontmatter and resource URI assertions",
+            "url": "https://github.com/PrefectHQ/fastmcp/blob/5e71792d8daf499325e3b747cc44cb04d4544119/tests/skills/test_read_skill.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Relative path limits and explicit export boundary",
+            "url": "https://github.com/PrefectHQ/fastmcp/blob/5e71792d8daf499325e3b747cc44cb04d4544119/fastmcp_slim/fastmcp/skills/skill.py"
+          }
+        ],
+        "nextQuestions": [
+          "技能更新记录能否同时保存清单来源、每个文件摘要、内容审查和安装授权，而不是只有一次下载成功状态？"
+        ]
+      },
+      {
+        "id": "ai-archestra-optional-github-reconnect",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "Archestra1.4.32：可选GitHub连接失效，提示重连与阻断启动分开",
+        "whatHappened": "Archestra于11月15日（UTC）发布1.4.32，包含前一日合入的PR10744回移。它为失效的个人GitHub连接提供Reconnect提示，并同时带入后续修正：可选连接失效不应单独阻断与它无关的run启动。",
+        "mechanism": "个人凭据解析只把识别出的GitHubReconnectRequiredError转成RECONNECT。启动路径对required声明报告缺失，对optional声明跳过旧token；只读设置检查可用reportOptionalReconnect把可选失效状态显示出来。旧App身份不匹配或特定失效refresh grant会要求重连，其他配置与上游错误继续传播。",
+        "workedExample": "固定版本的同一组回归更换GitHub App后，optional启动结果不含GITHUB_TOKEN、missing为空；设置检查仍返回reconnect:true。HTTP预检对optional给ready:true，对required给ready:false。另有incorrect_client_credentials返回400、上游502或非JSON响应仍返回502的对照。本期未登录GitHub、刷新真实凭据或运行上游测试。",
+        "whyItMatters": "设置界面、启动前检查和运行中用到外部服务是不同状态。把可选连接的恢复提示当成全局硬门，会阻塞不需要它的工作；反过来，允许启动也不能被记作该GitHub操作已经可用。",
+        "risksAndLimits": [
+          "可选路径并没有继续注入已识别失效的旧token；需要GitHub的实际步骤仍可能无法完成。required声明继续阻断，不能把这项改动当作扩大权限、绕过审批或保证任务最终成功。",
+          "这里只核对1.4.32固定实现与回归：识别的refresh错误集合有限，管理员配置错误和网络故障不能统一归为用户重连。未验证真实OAuth重连、通知送达或生产部署。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Archestra1.4.32 stable release",
+            "url": "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.4.32",
+            "publishedAt": "2026-11-15T18:22:50.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Reconnect handling and optional launch backport PR10744",
+            "url": "https://github.com/archestra-ai/archestra/pull/10744"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Required optional and read-only setup branches",
+            "url": "https://github.com/archestra-ai/archestra/blob/1327ef37b5b5dae111fbf3f5072b2276df65e22e/platform/backend/src/services/agent-runtime/credentials.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Recognized stale grants versus other OAuth and transport errors",
+            "url": "https://github.com/archestra-ai/archestra/blob/1327ef37b5b5dae111fbf3f5072b2276df65e22e/platform/backend/src/services/github-user-connection.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Replaced App ready true false and error classification assertions",
+            "url": "https://github.com/archestra-ai/archestra/blob/1327ef37b5b5dae111fbf3f5072b2276df65e22e/platform/backend/src/routes/runtime-credential/github-user-connection.route.test.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Optional Reconnect copy assertion",
+            "url": "https://github.com/archestra-ai/archestra/blob/1327ef37b5b5dae111fbf3f5072b2276df65e22e/platform/frontend/src/components/agent-run-credential-prompt.test.tsx"
+          }
+        ],
+        "nextQuestions": [
+          "任务界面能否分别标识可独立进行的步骤、必须等待的外部操作，以及连接恢复后的真实结果，而不只显示一个ready布尔值？"
+        ]
+      },
+      {
+        "id": "web3-viem-eip712-domain-field-presence",
+        "domain": "web3",
+        "topic": "security",
+        "title": "viem2.57.20：chainId是字符串时，也不能从EIP-712签名域中消失",
+        "whatHappened": "viem于11月15日（UTC）发布2.57.20，同日合入的PR5508修正EIP712Domain类型推导：JSON载荷中存在的字符串chainId，之前会因JavaScript类型检查而被漏出默认域schema，改变参与哈希的字段集合。",
+        "mechanism": "getTypesForEIP712Domain对name、version、chainId、verifyingContract和salt改用非null、非undefined的存在性判断。chainId字段存在时声明为uint256；字段是否属于schema与该值能否通过后续校验、编码是两个问题，不再通过静默省略来处理。",
+        "workedExample": "上游固定断言要求name加chainId:\"1\"推导出string和uint256两个字段；domainSeparator及hashTypedData对chainId字符串\"1\"和数字1得到相同哈希。null或undefined字段仍被省略，空verifyingContract与salt会进入类型列表。本期只读这些断言，没有签名、连接钱包或提交交易。",
+        "whyItMatters": "签名绑定什么，取决于schema实际包含什么。请求对象中看得到链ID，不代表哈希时一定带入；解析、类型推导、编码与最终验证需要沿同一份域数据核对。",
+        "risksAndLimits": [
+          "字段被纳入schema不表示任意字符串、空地址或空salt都是合法值，后续校验与编码仍有约束。相关测试用类型断言构造运行时输入，不能据此宣称所有钱包RPC或TypeScript调用都已兼容。",
+          "这项修复不替代链选择、用户批准、合约nonce或重放保护，也不证明既有签名已重做、链上部署已更新或历史资金受到攻击。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "viem2.57.20 release",
+            "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.20",
+            "publishedAt": "2026-11-15T08:09:54.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Presence-based derived EIP712 domain type PR5508",
+            "url": "https://github.com/wevm/viem/pull/5508"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Field presence and domainSeparator schema",
+            "url": "https://github.com/wevm/viem/blob/20c5494c50bb205f004d0d647b647b42c41d7625/src/utils/typedData.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "String chainId empty values and absent field assertions",
+            "url": "https://github.com/wevm/viem/blob/20c5494c50bb205f004d0d647b647b42c41d7625/src/utils/typedData.test.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Equivalent string and numeric chainId hash assertion",
+            "url": "https://github.com/wevm/viem/blob/20c5494c50bb205f004d0d647b647b42c41d7625/src/utils/signature/hashTypedData.test.ts"
+          }
+        ],
+        "nextQuestions": [
+          "钱包接收的JSON、推导后的域字段、最终域分隔符与合约实际使用的域，是否能在同一请求里逐项对照？"
+        ]
+      },
+      {
+        "id": "web3-foundry-multiblock-mining-guard",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Foundry11月15日nightly：挖完整批块，再释放读回结果所需的锁",
+        "whatHappened": "Foundry11月15日nightly收录11月14日合入的PR16711。Anvil多块挖矿此前逐块重新取mining lock，链高回退可能插入同一批次中间；详细结果再按结束时链高向前读取，可能遇到减法下溢或缺失结果。",
+        "mechanism": "do_evm_mine一次取得owned mining guard，覆盖整批挖矿，把请求的下一块时间戳也放入锁内，并把guard交还调用者。evm_mine_detailed在读取刚挖出的块时继续持有它；anvil_mine的整批循环及时间增量配对也共用同一把锁。",
+        "workedExample": "实际发布tag中的确定性回归挖3块：首块完成及详细块读回前两个暂停点，回滚请求都必须保持pending；释放后返回块号[1,2,3]，回滚一块后的链高为2。PR正文还保留旧版50块/45高度叙述，本期采用固定tag实际3块/2高度断言；未启动Anvil或运行该回归。",
+        "whyItMatters": "多步操作的结果读取也依赖被保护的状态，只锁每次写入可能不够。异步与阻塞任务跨边界时，guard的所有权和生命周期需要覆盖完整不变量，而非在最后写入后立刻释放。",
+        "risksAndLimits": [
+          "这是nightly中的本地开发节点行为，不是Ethereum主网共识或稳定版升级验收。回归展示特定多块挖矿与回滚交错，不证明全部并发路径或生产环境均已覆盖。",
+          "持锁更久会延后其他使用同一mining lock的操作；add_pending_transaction也取这把锁，因此新交易不会在该批次中途进入池。这是行为取舍，不能只把修复描述成没有代价的性能提升。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Foundry November15 nightly release",
+            "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-cd3767105be7fa27eae63743c26359cefa0214fb",
+            "publishedAt": "2026-11-15T07:07:02.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Whole multi-block mining guard PR16711",
+            "url": "https://github.com/foundry-rs/foundry/pull/16711"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Owned mining guard detailed block reads and deterministic rollback assertion",
+            "url": "https://github.com/foundry-rs/foundry/blob/cd3767105be7fa27eae63743c26359cefa0214fb/crates/anvil/src/eth/api.rs"
+          }
+        ],
+        "nextQuestions": [
+          "批量状态变更的锁是否一直保留到结果快照完成，失败或取消时又由哪一层释放，并有可控交错的断言证明？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-skill-manifest-consistency-and-authority",
+      "domain": "ai",
+      "topic": "infrastructure",
+      "title": "专题：Skill摘要全部匹配，为什么仍不能直接信任或执行",
+      "whatHappened": "FastMCP4.2的read_skill把资源清单与完整文件包联系起来。本专题区分三个判断：内容是否等于清单承诺、清单是否来自获准来源、这些内容是否获准安装或执行；库里的字节校验主要回答第一个。",
+      "mechanism": "读取前先校验清单的总量和相对路径，再逐文件核对长度及带sha256前缀的摘要；全部完成后构造Skill并比对名称与frontmatter。没有协商扩展时可走资源_manifest，但仅对支持的缺少方法或条目情况回退；服务器内部错误仍上抛。导出到目录由另一方法显式触发。",
+      "workedExample": "真实上游断言用同一份notes.md配一个全零摘要，应拒绝；只把承诺长度加一也应拒绝。工程反例：若未获准的服务器同时换掉文件和对应清单，二者仍可能全部匹配；这不是破解SHA-256，而是信任锚没有被建立。本期只读断言与机制，未下载并执行任何Skill包。",
+      "whyItMatters": "把一致性、来源身份和执行权限分别留证，才能知道一次通过到底证明了什么。对会安装脚本或覆盖本地目录的Agent工具，成功读取与校验不能自动变成后续写入或运行的授权。",
+      "risksAndLimits": [
+        "反例是编辑推论，不是该项目遭攻击的证据。这里的manifest摘要并非独立发布者签名，也不覆盖脚本逻辑、提示注入、宿主权限与供应链整体安全。",
+        "to_directory默认拒绝已有目录；显式overwrite会替换目录并移除额外旧文件。落盘恢复逻辑、宿主是否显示审阅与批准，以及实际执行的权限边界仍需另外验证，不能由read_skill成功推定。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "FastMCP4.2.0 stable release",
+          "url": "https://github.com/PrefectHQ/fastmcp/releases/tag/v4.2.0",
+          "publishedAt": "2026-11-13T17:07:01.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "Historical verified skill read and resource fallback PR6086",
+          "url": "https://github.com/PrefectHQ/fastmcp/pull/6086"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Manifest selection and per-file byte verification",
+          "url": "https://github.com/PrefectHQ/fastmcp/blob/5e71792d8daf499325e3b747cc44cb04d4544119/fastmcp_slim/fastmcp/client/mixins/skills.py"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Digest size frontmatter and resource URI assertions",
+          "url": "https://github.com/PrefectHQ/fastmcp/blob/5e71792d8daf499325e3b747cc44cb04d4544119/tests/skills/test_read_skill.py"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Relative path limits and explicit export boundary",
+          "url": "https://github.com/PrefectHQ/fastmcp/blob/5e71792d8daf499325e3b747cc44cb04d4544119/fastmcp_slim/fastmcp/skills/skill.py"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Export defaults replacement and restoration assertions",
+          "url": "https://github.com/PrefectHQ/fastmcp/blob/5e71792d8daf499325e3b747cc44cb04d4544119/tests/skills/test_skill.py"
+        }
+      ],
+      "nextQuestions": [
+        "在把远端Skill写入Agent的执行目录前，产品应向用户展示哪些文件差异、来源身份和覆盖范围，并把它们绑定到哪一次批准？"
+      ],
+      "basedOnBriefId": "ai-fastmcp-skill-manifest-byte-verification"
+    },
+    "sourceUrls": [
+      "https://github.com/PrefectHQ/fastmcp/releases/tag/v4.2.0",
+      "https://github.com/PrefectHQ/fastmcp/pull/6086",
+      "https://github.com/PrefectHQ/fastmcp/blob/5e71792d8daf499325e3b747cc44cb04d4544119/fastmcp_slim/fastmcp/client/mixins/skills.py",
+      "https://github.com/PrefectHQ/fastmcp/blob/5e71792d8daf499325e3b747cc44cb04d4544119/tests/skills/test_read_skill.py",
+      "https://github.com/PrefectHQ/fastmcp/blob/5e71792d8daf499325e3b747cc44cb04d4544119/fastmcp_slim/fastmcp/skills/skill.py",
+      "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.4.32",
+      "https://github.com/archestra-ai/archestra/pull/10744",
+      "https://github.com/archestra-ai/archestra/blob/1327ef37b5b5dae111fbf3f5072b2276df65e22e/platform/backend/src/services/agent-runtime/credentials.ts",
+      "https://github.com/archestra-ai/archestra/blob/1327ef37b5b5dae111fbf3f5072b2276df65e22e/platform/backend/src/services/github-user-connection.ts",
+      "https://github.com/archestra-ai/archestra/blob/1327ef37b5b5dae111fbf3f5072b2276df65e22e/platform/backend/src/routes/runtime-credential/github-user-connection.route.test.ts",
+      "https://github.com/archestra-ai/archestra/blob/1327ef37b5b5dae111fbf3f5072b2276df65e22e/platform/frontend/src/components/agent-run-credential-prompt.test.tsx",
+      "https://github.com/wevm/viem/releases/tag/viem%402.57.20",
+      "https://github.com/wevm/viem/pull/5508",
+      "https://github.com/wevm/viem/blob/20c5494c50bb205f004d0d647b647b42c41d7625/src/utils/typedData.ts",
+      "https://github.com/wevm/viem/blob/20c5494c50bb205f004d0d647b647b42c41d7625/src/utils/typedData.test.ts",
+      "https://github.com/wevm/viem/blob/20c5494c50bb205f004d0d647b647b42c41d7625/src/utils/signature/hashTypedData.test.ts",
+      "https://github.com/foundry-rs/foundry/releases/tag/nightly-cd3767105be7fa27eae63743c26359cefa0214fb",
+      "https://github.com/foundry-rs/foundry/pull/16711",
+      "https://github.com/foundry-rs/foundry/blob/cd3767105be7fa27eae63743c26359cefa0214fb/crates/anvil/src/eth/api.rs",
+      "https://github.com/PrefectHQ/fastmcp/blob/5e71792d8daf499325e3b747cc44cb04d4544119/tests/skills/test_skill.py"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-11-16-20147f94783c1b8e",
+    "asOf": "2026-11-15T21:43:35.540Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
   {
     "date": "2026-11-15",
     "slug": "2026-11-15",
@@ -3902,305 +4268,6 @@ export const latestRadars: DailyRadar[] = [
     "marketSignals": [],
     "snapshotId": "learning-2026-11-09-bd83a5cc7fff3983",
     "asOf": "2026-11-08T21:37:39.755Z",
-    "origin": "research",
-    "publicationState": "published"
-  },
-  {
-    "date": "2026-11-08",
-    "slug": "2026-11-08",
-    "title": "学习雷达恢复版 · 2026-11-08",
-    "summary": "恢复版：补读11月3至7日尚未覆盖的一手变更。AI看解释器退出与运行范围；Web3看方法拒绝的重试分类及已退休配置。专题区分新运行配置与暂停快照，保留原发布日和实际研究时间。",
-    "publish": true,
-    "reviewStatus": "automated",
-    "schemaVersion": 2,
-    "editionMode": "backfill",
-    "researchedAt": "2026-11-07T23:24:53.524Z",
-    "generatedAt": "2026-11-07T23:24:53.524Z",
-    "sourceSections": [
-      "ai",
-      "web3",
-      "deepDive"
-    ],
-    "missingSections": [],
-    "briefs": [
-      {
-        "id": "ai-quickjs-finalizing-destructor",
-        "domain": "ai",
-        "topic": "infrastructure",
-        "title": "langchain-quickjs 0.3.12：Python 收尾时，析构不再等待工作线程",
-        "whatHappened": "langchain-quickjs 于11月7日（UTC）发布0.3.12，包含进程退出阻塞修复。运行被 interrupt 或工具异常打断时可能跳过 after_agent，留下解释器槽；旧析构路径在 Python 最终收尾阶段仍等待 daemon worker，可能阻止进程退出。",
-        "mechanism": "CodeInterpreterMiddleware.__del__ 先检查 sys.is_finalizing()，为真就直接返回，让操作系统在进程退出时回收内存；普通垃圾回收时仍调用 registry.close()。正常 after_agent 与异步 aafter_agent 的快照和槽回收路径继续保留。",
-        "workedExample": "上游回归用 FakeChatModel 分别构造正常结束、interrupt 和工具异常三个子进程，要求60秒内退出且返回码为0；另在进程运行中做 gc.collect()，断言新增的 QuickJS worker 线程已释放。本期只读这些断言，未运行子进程、模型或性能测试。",
-        "whyItMatters": "Agent 显示暂停、工具报错和宿主进程退出是不同的生命周期。把进程最终收尾与仍在运行时的资源回收分开，可以解释为什么业务调用已经返回，服务却一直不能结束。",
-        "risksAndLimits": [
-          "补丁不保证 interrupt 或异常发生后立刻释放槽；上游明确说明这些槽仍可能保留到恢复或垃圾回收，运行中的资源上界是另一个问题。",
-          "最终收尾时跳过析构不等于保存了会话快照，也不构成沙箱隔离、内存配额或所有关闭操作都非阻塞的保证。0.3.12还含其他变更，本期只核对这一收尾路径。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "langchain-quickjs 0.3.12 official release",
-            "url": "https://github.com/langchain-ai/deepagents/releases/tag/langchain-quickjs%3D%3D0.3.12",
-            "publishedAt": "2026-11-07T05:00:13.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "QuickJS PR 7460: avoid destructor wait during interpreter finalization",
-            "url": "https://github.com/langchain-ai/deepagents/pull/7460"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "QuickJS 0.3.12 finalization guard",
-            "url": "https://github.com/langchain-ai/deepagents/blob/6f9e49481687011210a71e4a9731ecba7feb82e7/libs/partners/quickjs/langchain_quickjs/middleware.py"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "QuickJS 0.3.12 process-exit and mid-run GC assertions",
-            "url": "https://github.com/langchain-ai/deepagents/blob/6f9e49481687011210a71e4a9731ecba7feb82e7/libs/partners/quickjs/tests/unit_tests/test_shutdown.py"
-          }
-        ],
-        "nextQuestions": [
-          "正常回合、暂停、异常与进程退出分别走哪条回收路径？",
-          "运行中仍有多少解释器槽，快照成功与资源释放是否分别有证据？"
-        ]
-      },
-      {
-        "id": "ai-mastra-final-scope-set",
-        "domain": "ai",
-        "topic": "safety",
-        "title": "Mastra Core 1.82.0：动态 scopes 返回最终集合，身份范围不能丢",
-        "whatHappened": "Mastra Core 于11月4日（UTC）发布1.82.0。本期核对其固定发布快照中的 Agent scopes 函数契约：它接收本次运行的传入集合，可以缩小或替换非身份项；静态数组仍以追加方式合并。相关PR于10月31日合入，不能由本期快照核对推定该机制首次随1.82.0引入。",
-        "mechanism": "新运行先合并调用参数、defaultOptions 与请求上下文中的 scopes，再应用 Agent 配置。函数的返回值成为最终集合，输入中的 resource: 与 thread: 身份项必须仍在结果中，否则抛出 AGENT_SCOPES_INVALID；被过滤掉的其他输入不会再次自动加回。",
-        "workedExample": "纸面输入包含 resource:u1、thread:t1 和 team:legacy 时，函数可保留前两项、移除 team:legacy 并加入 org:acme；若漏掉 thread:t1，应触发身份项检查。固定版本的上游断言分别核对静态追加、函数替换与丢失身份项报错，本期未运行模型或这些测试。",
-        "whyItMatters": "宿主传入了一个范围集合，不代表每个 Agent 都应照单使用。明确函数做替换、数组做追加，并保留运行身份，能让租户或工具范围的收敛有可检查的输入和输出。",
-        "risksAndLimits": [
-          "scopes 是宿主设置的运行身份与范围字符串；实际读写能力由 Knowledge 等消费方的访问规则决定，解析成功不等于请求已认证或获准执行业务操作。",
-          "恢复暂停运行使用原快照集合，不重新应用当前 scopes 函数。改变新运行的配置不能据此宣称旧运行已撤权；服务版本、可信上下文、访问规则和部署状态均需另验。",
-          "同一发布还移除了若干实验性 Memory/Knowledge 入口；本期只核对 scopes 路径，升级兼容与数据迁移需按对应变更另行审查。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "Mastra Core 1.82.0 official release",
-            "url": "https://github.com/mastra-ai/mastra/releases/tag/%40mastra/core%401.82.0",
-            "publishedAt": "2026-11-04T10:59:56.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "Mastra PR 28353: declared scopes and Agent scope function contract",
-            "url": "https://github.com/mastra-ai/mastra/pull/28353"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Mastra Core 1.82.0 scope application and snapshot resolution",
-            "url": "https://github.com/mastra-ai/mastra/blob/6e8dfcb83facb0861ebefa4fee384429a113acf4/packages/core/src/agent/scopes.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "Mastra Core 1.82.0 scope identity and resume assertions",
-            "url": "https://github.com/mastra-ai/mastra/blob/6e8dfcb83facb0861ebefa4fee384429a113acf4/packages/core/src/agent/__tests__/agent-scopes.test.ts"
-          }
-        ],
-        "nextQuestions": [
-          "函数返回的是最终集合，还是在另一层又被旧输入合并回来？",
-          "资源身份、范围字符串和业务访问判定分别由谁提供与核验？"
-        ]
-      },
-      {
-        "id": "web3-viem-method-refusal-retry",
-        "domain": "web3",
-        "topic": "onchain_infrastructure",
-        "title": "viem 2.57.16：方法已被明确拒绝时，HTTP 状态不再让请求重试",
-        "whatHappened": "viem 于11月3日（UTC）发布2.57.16，调整非2xx响应中的 JSON-RPC 方法拒绝处理。错误码 -32601（方法不存在）与 -32004（方法不受支持）现在即使伴随可重试的 HTTP 状态，也会先被判为不重试。",
-        "mechanism": "shouldRetry 先检查已解析的数值 RPC 错误码，遇到两个方法拒绝码直接返回 false，再处理 HTTP 状态。限流类 -32005、-32007、429 等原有路径继续保留；普通403和明确方法拒绝的403因此可以得到不同结果。",
-        "workedExample": "上游只读示例给第一次响应403与 -32601，并预备第二次成功响应；断言仍返回 MethodNotFoundRpcError，未因第二次可能成功而重发。另一例403与 -32000 在允许一次重试后成功。本期只阅读断言，没有连接RPC或运行链上操作。",
-        "whyItMatters": "钱包或链上服务需要同时解释传输状态和协议错误。明确的能力拒绝若被当成瞬时故障，会推迟备用节点或错误处理；只看HTTP403又会把不同原因混在一起。",
-        "risksAndLimits": [
-          "此结论限定已解析为相应错误码的请求路径；不代表所有403、超时、未知传输结果或其他SDK都会停止重试，也不证明备用节点支持该方法。",
-          "本期没有复现上游延迟或性能数字；SDK允许重试与业务操作可安全重放是两项判断，不能据此推定写交易或外部副作用具有幂等性。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "viem 2.57.16 official release",
-            "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.16",
-            "publishedAt": "2026-11-03T09:24:42.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "viem PR 5392: method refusals before HTTP retry rules",
-            "url": "https://github.com/wevm/viem/pull/5392"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "viem 2.57.16 shouldRetry classification",
-            "url": "https://github.com/wevm/viem/blob/98aa491fda51f5a8f0b06dacffac8eb4c38ec171/src/utils/buildRequest.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "viem 2.57.16 non-2xx RPC refusal assertions",
-            "url": "https://github.com/wevm/viem/blob/98aa491fda51f5a8f0b06dacffac8eb4c38ec171/src/utils/buildRequest.test.ts"
-          }
-        ],
-        "nextQuestions": [
-          "日志能否同时保留HTTP状态、RPC错误码和实际发送次数？",
-          "方法拒绝、限流与未知响应是否分别进入了合适的回退或核对流程？"
-        ]
-      },
-      {
-        "id": "web3-op-supernode-retired-max-safe-lag",
-        "domain": "web3",
-        "topic": "l2",
-        "title": "op-supernode 1.1.1：旧的 max-safe-lag 参数退出启动与排序路径",
-        "whatHappened": "op-supernode 于11月5日（UTC）发布可选更新1.1.1，移除虚拟节点的 sequencer.max-safe-lag 选项。排序不再仅因 unsafe 与 safe 头的距离超过该参数而暂停；发布说明要求升级前清除相关旧启动参数。",
-        "mechanism": "底层 op-node 删除该 CLI 声明、配置字段和排序器中的滞后检查；supernode 从底层标志列表生成 vn.all 与按链标志，因此不再生成对应参数。旧的相关环境变量不再被读取，其他重置、引擎错误和暂停调度路径仍各自存在。",
-        "workedExample": "纸面检查旧部署模板若含 --vn.all.sequencer.max-safe-lag，发布说明提示新版本会按未知标志拒绝启动；只设置已退休环境变量也不会恢复旧的排序暂停行为。未配置过该默认关闭选项的部署不受此项移除影响。本期只读发布说明与固定源码，未启动节点。",
-        "whyItMatters": "升级前的配置能被解析，与升级后继续施加同一运行约束需要分别验证。参数被删除后，旧环境变量可能安静失效，不能因进程能启动就假定原来的运行策略还在。",
-        "risksAndLimits": [
-          "删除距离暂停条件不证明 safe 头已追上 unsafe，也不改变本期对最终性、链安全或真实吞吐的核验范围；仍需分别观察派生、引擎状态与发布后的运行配置。",
-          "本期未验证任何网络已部署1.1.1或实际启动结果；发布说明中的依赖告警更新也不能直接视为该服务此前可被利用，原说明指出相关HTML包不被op-supernode使用。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "op-supernode 1.1.1 official release",
-            "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-supernode/v1.1.1",
-            "publishedAt": "2026-11-05T15:13:00.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "Optimism PR 23738: remove max-safe-lag sequencing limit",
-            "url": "https://github.com/ethereum-optimism/optimism/pull/23738"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "op-supernode 1.1.1 underlying op-node flag declarations",
-            "url": "https://github.com/ethereum-optimism/optimism/blob/f73158e5e2437f879801cdc21c63a2baccdc28e7/op-node/flags/flags.go"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "op-supernode 1.1.1 sequencing schedule after lag-limit removal",
-            "url": "https://github.com/ethereum-optimism/optimism/blob/f73158e5e2437f879801cdc21c63a2baccdc28e7/op-node/rollup/sequencing/sequencer.go"
-          }
-        ],
-        "nextQuestions": [
-          "实际启动模板与环境变量是否还残留已退休的配置？",
-          "参数移除后，哪些独立指标仍能说明派生进度、排序暂停原因与最终性状态？"
-        ]
-      }
-    ],
-    "deepDive": {
-      "id": "deep-run-scopes-versus-resume-snapshot",
-      "domain": "ai",
-      "topic": "safety",
-      "title": "专题：新运行的 scopes 配置，为什么不改写暂停快照",
-      "whatHappened": "同一版本的 Mastra 把新运行和恢复运行分成两条范围解析路径：新运行可以由 scopes 函数收敛集合；恢复则沿用暂停时已保存的 scopes。当前配置变化与既有快照并不在同一时间边界上。",
-      "mechanism": "Agent 看到 resumeSnapshot.scopes 后跳过当前 scopes 函数的求值。解析器读取快照集合，允许调用方重新提交其中的子集但保留完整快照；提交快照外的额外非身份范围或冲突的线程身份会报错。源码允许补入与 snapshot resourceId/threadId 一致的自身身份 scope，不视为新增访问范围。这个分支也适用于已保存的空集合。",
-      "workedExample": "设暂停快照保存 org:alpha、resource:u1、thread:t1，新配置只打算让之后的新运行使用 org:beta。恢复旧快照不会把它改成 org:beta；若恢复调用显式传入 org:beta，按该解析契约应拒绝快照外范围。上游断言还核对空快照不会因新配置而增加范围。本例是源码推演，未恢复真实会话。",
-      "whyItMatters": "编辑推论是：改变之后的新任务如何形成范围，并不能自动回答旧任务在恢复时还持有什么。审查应把新运行配置、暂停快照和实际访问规则按时间分别留证，避免用一份配置覆盖三种状态。",
-      "risksAndLimits": [
-        "本期核对的是范围解析与身份一致性，不是整套鉴权或撤权方案；业务需要撤销旧运行的能力时，应独立核验消费方访问规则和实际结果。",
-        "保持快照并不证明它可任意重放或外部副作用恰好一次；持久存储、请求认证、服务升级与恢复执行结果仍须分别验证。上游测试仅被阅读，没有重跑。"
-      ],
-      "sources": [
-        {
-          "tier": "tier1",
-          "role": "event",
-          "kind": "official_release",
-          "name": "Mastra Core 1.82.0 official release",
-          "url": "https://github.com/mastra-ai/mastra/releases/tag/%40mastra/core%401.82.0",
-          "publishedAt": "2026-11-04T10:59:56.000Z"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_implementation_change",
-          "name": "Mastra PR 28353: declared scopes and Agent scope function contract",
-          "url": "https://github.com/mastra-ai/mastra/pull/28353"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_code",
-          "name": "Mastra Core 1.82.0 scope application and snapshot resolution",
-          "url": "https://github.com/mastra-ai/mastra/blob/6e8dfcb83facb0861ebefa4fee384429a113acf4/packages/core/src/agent/scopes.ts"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_test",
-          "name": "Mastra Core 1.82.0 scope identity and resume assertions",
-          "url": "https://github.com/mastra-ai/mastra/blob/6e8dfcb83facb0861ebefa4fee384429a113acf4/packages/core/src/agent/__tests__/agent-scopes.test.ts"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_code",
-          "name": "Mastra Core 1.82.0 new-run and resumed-run scope preparation",
-          "url": "https://github.com/mastra-ai/mastra/blob/6e8dfcb83facb0861ebefa4fee384429a113acf4/packages/core/src/agent/agent.ts"
-        }
-      ],
-      "nextQuestions": [
-        "配置收紧后，哪些待恢复运行仍带着旧快照，谁负责核对它们的访问能力？",
-        "拒绝新增范围、保持原快照与业务侧撤权是否有相互独立的回执？"
-      ],
-      "basedOnBriefId": "ai-mastra-final-scope-set"
-    },
-    "sourceUrls": [
-      "https://github.com/langchain-ai/deepagents/releases/tag/langchain-quickjs%3D%3D0.3.12",
-      "https://github.com/langchain-ai/deepagents/pull/7460",
-      "https://github.com/langchain-ai/deepagents/blob/6f9e49481687011210a71e4a9731ecba7feb82e7/libs/partners/quickjs/langchain_quickjs/middleware.py",
-      "https://github.com/langchain-ai/deepagents/blob/6f9e49481687011210a71e4a9731ecba7feb82e7/libs/partners/quickjs/tests/unit_tests/test_shutdown.py",
-      "https://github.com/mastra-ai/mastra/releases/tag/%40mastra/core%401.82.0",
-      "https://github.com/mastra-ai/mastra/pull/28353",
-      "https://github.com/mastra-ai/mastra/blob/6e8dfcb83facb0861ebefa4fee384429a113acf4/packages/core/src/agent/scopes.ts",
-      "https://github.com/mastra-ai/mastra/blob/6e8dfcb83facb0861ebefa4fee384429a113acf4/packages/core/src/agent/__tests__/agent-scopes.test.ts",
-      "https://github.com/wevm/viem/releases/tag/viem%402.57.16",
-      "https://github.com/wevm/viem/pull/5392",
-      "https://github.com/wevm/viem/blob/98aa491fda51f5a8f0b06dacffac8eb4c38ec171/src/utils/buildRequest.ts",
-      "https://github.com/wevm/viem/blob/98aa491fda51f5a8f0b06dacffac8eb4c38ec171/src/utils/buildRequest.test.ts",
-      "https://github.com/ethereum-optimism/optimism/releases/tag/op-supernode/v1.1.1",
-      "https://github.com/ethereum-optimism/optimism/pull/23738",
-      "https://github.com/ethereum-optimism/optimism/blob/f73158e5e2437f879801cdc21c63a2baccdc28e7/op-node/flags/flags.go",
-      "https://github.com/ethereum-optimism/optimism/blob/f73158e5e2437f879801cdc21c63a2baccdc28e7/op-node/rollup/sequencing/sequencer.go",
-      "https://github.com/mastra-ai/mastra/blob/6e8dfcb83facb0861ebefa4fee384429a113acf4/packages/core/src/agent/agent.ts"
-    ],
-    "relatedProjectSlugs": [],
-    "marketSignals": [],
-    "snapshotId": "learning-2026-11-08-dc4db720a1612bc9",
-    "asOf": "2026-11-07T23:24:53.524Z",
     "origin": "research",
     "publicationState": "published"
   }

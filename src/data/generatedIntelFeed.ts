@@ -6,9 +6,72 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-11-15"
-export const intelItemCount = 330
+export const intelLatestDate: string | null = "2026-11-16"
+export const intelItemCount = 334
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
+    "kind": "learning",
+    "date": "2026-11-16",
+    "domain": "ai",
+    "topic": "infrastructure",
+    "title": "FastMCP4.2：读到Skill文件之后，先核对清单承诺的字节",
+    "summary": "远端返回了文件，不代表返回的是清单承诺的那份文件。把清单、内容校验和落盘分开，可以在更换服务器、代理资源或版本漂移时定位证据断点，避免只凭成功读取就直接执行。",
+    "href": "/radar/2026-11-16#ai-fastmcp-skill-manifest-byte-verification",
+    "source": {
+      "name": "FastMCP4.2.0 stable release",
+      "tier": "tier1",
+      "url": "https://github.com/PrefectHQ/fastmcp/releases/tag/v4.2.0"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "learning:ai-archestra-optional-github-reconnect",
+    "kind": "learning",
+    "date": "2026-11-16",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "Archestra1.4.32：可选GitHub连接失效，提示重连与阻断启动分开",
+    "summary": "设置界面、启动前检查和运行中用到外部服务是不同状态。把可选连接的恢复提示当成全局硬门，会阻塞不需要它的工作；反过来，允许启动也不能被记作该GitHub操作已经可用。",
+    "href": "/radar/2026-11-16#ai-archestra-optional-github-reconnect",
+    "source": {
+      "name": "Archestra1.4.32 stable release",
+      "tier": "tier1",
+      "url": "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.4.32"
+    }
+  },
+  {
+    "id": "learning:web3-viem-eip712-domain-field-presence",
+    "kind": "learning",
+    "date": "2026-11-16",
+    "domain": "web3",
+    "topic": "security",
+    "title": "viem2.57.20：chainId是字符串时，也不能从EIP-712签名域中消失",
+    "summary": "签名绑定什么，取决于schema实际包含什么。请求对象中看得到链ID，不代表哈希时一定带入；解析、类型推导、编码与最终验证需要沿同一份域数据核对。",
+    "href": "/radar/2026-11-16#web3-viem-eip712-domain-field-presence",
+    "source": {
+      "name": "viem2.57.20 release",
+      "tier": "tier1",
+      "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.20"
+    }
+  },
+  {
+    "id": "learning:web3-foundry-multiblock-mining-guard",
+    "kind": "learning",
+    "date": "2026-11-16",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "Foundry11月15日nightly：挖完整批块，再释放读回结果所需的锁",
+    "summary": "多步操作的结果读取也依赖被保护的状态，只锁每次写入可能不够。异步与阻塞任务跨边界时，guard的所有权和生命周期需要覆盖完整不变量，而非在最后写入后立刻释放。",
+    "href": "/radar/2026-11-16#web3-foundry-multiblock-mining-guard",
+    "source": {
+      "name": "Foundry November15 nightly release",
+      "tier": "tier1",
+      "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-cd3767105be7fa27eae63743c26359cefa0214fb"
+    }
+  },
   {
     "id": "learning:ai-sdk-approval-input-copy",
     "kind": "learning",
@@ -425,89 +488,37 @@ export const intelLatestItems: IntelItem[] = [
     "flags": {
       "priority": "P1"
     }
-  },
-  {
-    "id": "learning:ai-sdk-telemetry-url-boundary",
-    "kind": "learning",
-    "date": "2026-11-09",
-    "domain": "ai",
-    "topic": "safety",
-    "title": "AI SDK 7.0.165：遥测拿到模型结果之前，先缩减请求 URL",
-    "summary": "最终输出不能覆盖更早的观察者；应逐接收者核对字段与脱敏时点。",
-    "href": "/radar/2026-11-09#ai-sdk-telemetry-url-boundary",
-    "source": {
-      "name": "AI SDK release",
-      "tier": "tier1",
-      "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165"
-    },
-    "flags": {
-      "deepDive": true
-    }
-  },
-  {
-    "id": "learning:ai-deepagents-selected-model-budget",
-    "kind": "learning",
-    "date": "2026-11-09",
-    "domain": "ai",
-    "topic": "infrastructure",
-    "title": "deepagents-code 0.2.5：压缩输入预算跟随当前选定模型",
-    "summary": "切换模型也改变预算；预算准备和最终执行要分开核验，保留下游配置。",
-    "href": "/radar/2026-11-09#ai-deepagents-selected-model-budget",
-    "source": {
-      "name": "deepagents-code release",
-      "tier": "tier1",
-      "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5"
-    }
-  },
-  {
-    "id": "learning:web3-viem-http-batch-factory-identity",
-    "kind": "learning",
-    "date": "2026-11-09",
-    "domain": "web3",
-    "topic": "onchain_infrastructure",
-    "title": "viem 2.57.17：同一 RPC URL，不再把不同 transport 的批次混用",
-    "summary": "相同地址不等于同一调用者；批处理仍需保持鉴权配置和响应归属。",
-    "href": "/radar/2026-11-09#web3-viem-http-batch-factory-identity",
-    "source": {
-      "name": "viem release",
-      "tier": "tier1",
-      "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.17"
-    }
-  },
-  {
-    "id": "learning:web3-sui-object-funds-execution-abort",
-    "kind": "learning",
-    "date": "2026-11-09",
-    "domain": "web3",
-    "topic": "protocol",
-    "title": "Sui mainnet 1.83.1：对象资金不足，在执行期间形成 Move abort",
-    "summary": "模拟成功不能代替执行回执；应区分状态视图、失败阶段与错误类型。",
-    "href": "/radar/2026-11-09#web3-sui-object-funds-execution-abort",
-    "source": {
-      "name": "Sui mainnet release",
-      "tier": "tier1",
-      "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1"
-    }
-  },
-  {
-    "id": "market:2026-11-09:fincen-mexc-funds-transfer-order-2026-11-06",
-    "kind": "market",
-    "date": "2026-11-09",
-    "domain": "market",
-    "topic": "market_regulation",
-    "title": "FinCEN公布MEXC资金传送限制命令，生效日期待核",
-    "summary": "研究判断：监管接入限制可能经金融机构的资金通道、结算安排与对手方风险管理传导到加密市场。需分别验证正式法律时点、机构执行与实际资金数据；链上仍能转移资产或平台仍可访问，不能单独证明美国金融接入状态。",
-    "href": "/market-radar/2026-11-09#fincen-mexc-funds-transfer-order-2026-11-06",
-    "source": {
-      "name": "U.S. Treasury — FinCEN MEXC Global order announcement",
-      "url": "https://home.treasury.gov/news/press-releases/sb0685/"
-    },
-    "flags": {
-      "priority": "P1"
-    }
   }
 ]
 export const intelTopics: IntelTopic[] = [
+  {
+    "topic": "onchain_infrastructure",
+    "domain": "web3",
+    "count": 16,
+    "lastSeen": "2026-11-16",
+    "firstSeen": "2026-08-11"
+  },
+  {
+    "topic": "agent",
+    "domain": "ai",
+    "count": 15,
+    "lastSeen": "2026-11-16",
+    "firstSeen": "2026-08-11"
+  },
+  {
+    "topic": "infrastructure",
+    "domain": "ai",
+    "count": 12,
+    "lastSeen": "2026-11-16",
+    "firstSeen": "2026-10-29"
+  },
+  {
+    "topic": "security",
+    "domain": "web3",
+    "count": 12,
+    "lastSeen": "2026-11-16",
+    "firstSeen": "2026-08-10"
+  },
   {
     "topic": "market_macro",
     "domain": "market",
@@ -516,25 +527,11 @@ export const intelTopics: IntelTopic[] = [
     "firstSeen": "2026-08-09"
   },
   {
-    "topic": "agent",
-    "domain": "ai",
-    "count": 14,
-    "lastSeen": "2026-11-15",
-    "firstSeen": "2026-08-11"
-  },
-  {
     "topic": "safety",
     "domain": "ai",
     "count": 12,
     "lastSeen": "2026-11-15",
     "firstSeen": "2026-10-13"
-  },
-  {
-    "topic": "security",
-    "domain": "web3",
-    "count": 11,
-    "lastSeen": "2026-11-15",
-    "firstSeen": "2026-08-10"
   },
   {
     "topic": "protocol",
@@ -570,20 +567,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 1,
     "lastSeen": "2026-11-13",
     "firstSeen": "2026-11-13"
-  },
-  {
-    "topic": "onchain_infrastructure",
-    "domain": "web3",
-    "count": 15,
-    "lastSeen": "2026-11-12",
-    "firstSeen": "2026-08-11"
-  },
-  {
-    "topic": "infrastructure",
-    "domain": "ai",
-    "count": 11,
-    "lastSeen": "2026-11-12",
-    "firstSeen": "2026-10-29"
   },
   {
     "topic": "l2",
