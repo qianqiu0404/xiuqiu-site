@@ -6,7 +6,43 @@
     <atom:link href="https://xoqiu.cn/radar/rss.xml" rel="self" type="application/rss+xml" />
     <description>每天 2 条 AI、2 条 Web3 工程简报：先讲机制，再给例子和边界。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Sun, 15 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 16 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>FastMCP4.2：读到Skill文件之后，先核对清单承诺的字节</title>
+      <link>https://xoqiu.cn/radar/2026-11-16#ai-fastmcp-skill-manifest-byte-verification</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-fastmcp-skill-manifest-byte-verification</guid>
+      <pubDate>Mon, 16 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>infrastructure</category>
+      <description>远端返回了文件，不代表返回的是清单承诺的那份文件。把清单、内容校验和落盘分开，可以在更换服务器、代理资源或版本漂移时定位证据断点，避免只凭成功读取就直接执行。</description>
+    </item>
+    <item>
+      <title>Archestra1.4.32：可选GitHub连接失效，提示重连与阻断启动分开</title>
+      <link>https://xoqiu.cn/radar/2026-11-16#ai-archestra-optional-github-reconnect</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-archestra-optional-github-reconnect</guid>
+      <pubDate>Mon, 16 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>agent</category>
+      <description>设置界面、启动前检查和运行中用到外部服务是不同状态。把可选连接的恢复提示当成全局硬门，会阻塞不需要它的工作；反过来，允许启动也不能被记作该GitHub操作已经可用。</description>
+    </item>
+    <item>
+      <title>viem2.57.20：chainId是字符串时，也不能从EIP-712签名域中消失</title>
+      <link>https://xoqiu.cn/radar/2026-11-16#web3-viem-eip712-domain-field-presence</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-viem-eip712-domain-field-presence</guid>
+      <pubDate>Mon, 16 Nov 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>security</category>
+      <description>签名绑定什么，取决于schema实际包含什么。请求对象中看得到链ID，不代表哈希时一定带入；解析、类型推导、编码与最终验证需要沿同一份域数据核对。</description>
+    </item>
+    <item>
+      <title>Foundry11月15日nightly：挖完整批块，再释放读回结果所需的锁</title>
+      <link>https://xoqiu.cn/radar/2026-11-16#web3-foundry-multiblock-mining-guard</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-foundry-multiblock-mining-guard</guid>
+      <pubDate>Mon, 16 Nov 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>onchain_infrastructure</category>
+      <description>多步操作的结果读取也依赖被保护的状态，只锁每次写入可能不够。异步与阻塞任务跨边界时，guard的所有权和生命周期需要覆盖完整不变量，而非在最后写入后立刻释放。</description>
+    </item>
     <item>
       <title>AI SDK7.0.173：回放批准前，先保护原参数不被校验器改写</title>
       <link>https://xoqiu.cn/radar/2026-11-15#ai-sdk-approval-input-copy</link>
@@ -510,42 +546,6 @@
       <category>WEB3</category>
       <category>onchain_infrastructure</category>
       <description>降低重复内存写入时，仍需核对序列化输出的字节内容、长度及错误边界。把这些契约与部署建议分别检查，能避免将一个局部实现优化夸成整网性能或兼容性结论。</description>
-    </item>
-    <item>
-      <title>AMIE：保留记忆原文，让检索的访问状态随使用演化</title>
-      <link>https://xoqiu.cn/radar/2026-10-29#ai-amie-persistent-access-state</link>
-      <guid isPermaLink="false">xiuqiu-radar:ai-amie-persistent-access-state</guid>
-      <pubDate>Thu, 29 Oct 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>agent</category>
-      <description>排查 Agent 总是读到旧记录时，既要查内容是否保存正确，也要查候选如何进入上下文。把内容版本、候选池和持久访问状态分开记录，才能判断变化来自信息更新、检索覆盖，还是排序调整。</description>
-    </item>
-    <item>
-      <title>langchain-quickjs 0.3.11：首次执行 JavaScript 时才启动解释器</title>
-      <link>https://xoqiu.cn/radar/2026-10-29#ai-quickjs-lazy-evaluation-runtime</link>
-      <guid isPermaLink="false">xiuqiu-radar:ai-quickjs-lazy-evaluation-runtime</guid>
-      <pubDate>Thu, 29 Oct 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>infrastructure</category>
-      <description>Agent 工具的固定准备成本会落在根本没用到工具的轮次上。把无需执行、首次执行、恢复成功和恢复失败分开观测，比用单一启动耗时描述所有轮次更有助于定位延迟。</description>
-    </item>
-    <item>
-      <title>op-proposer 1.17.0：指标被移除后，空图表不能当成零流量</title>
-      <link>https://xoqiu.cn/radar/2026-10-29#web3-op-proposer-rpc-metric-removal</link>
-      <guid isPermaLink="false">xiuqiu-radar:web3-op-proposer-rpc-metric-removal</guid>
-      <pubDate>Thu, 29 Oct 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>l2</category>
-      <description>链上基础设施是否工作与监控能否继续测到它，是两个需要独立证据的问题。把指标名称和告警查询视为升级契约，能减少因接口消失而失去告警覆盖的情况。</description>
-    </item>
-    <item>
-      <title>Sui 合并历史验签修复：RPC 接受两种受支持的 zkLogin 电路</title>
-      <link>https://xoqiu.cn/radar/2026-10-29#web3-sui-zklogin-historical-verification</link>
-      <guid isPermaLink="false">xiuqiu-radar:web3-sui-zklogin-historical-verification</guid>
-      <pubDate>Thu, 29 Oct 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>security</category>
-      <description>钱包、审计工具和历史凭证读取可能需要验证过去有效的签名。接口应说明验证的是哪种历史证明，以及结果能证明什么，避免把离线验签成功误当成当前可以提交同类交易。</description>
     </item>
   </channel>
 </rss>

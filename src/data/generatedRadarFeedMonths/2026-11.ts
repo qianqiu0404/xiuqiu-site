@@ -5,6 +5,55 @@ import type { RadarFeedItem } from '../generatedRadarFeed.ts'
 
 export const monthlyFeedItems: RadarFeedItem[] = [
   {
+    "id": "ai-fastmcp-skill-manifest-byte-verification",
+    "date": "2026-11-16",
+    "domain": "ai",
+    "topic": "infrastructure",
+    "title": "FastMCP4.2：读到Skill文件之后，先核对清单承诺的字节",
+    "summary": "远端返回了文件，不代表返回的是清单承诺的那份文件。把清单、内容校验和落盘分开，可以在更换服务器、代理资源或版本漂移时定位证据断点，避免只凭成功读取就直接执行。",
+    "anchor": "ai-fastmcp-skill-manifest-byte-verification",
+    "sourceName": "FastMCP4.2.0 stable release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/PrefectHQ/fastmcp/releases/tag/v4.2.0",
+    "isDeepDive": true
+  },
+  {
+    "id": "ai-archestra-optional-github-reconnect",
+    "date": "2026-11-16",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "Archestra1.4.32：可选GitHub连接失效，提示重连与阻断启动分开",
+    "summary": "设置界面、启动前检查和运行中用到外部服务是不同状态。把可选连接的恢复提示当成全局硬门，会阻塞不需要它的工作；反过来，允许启动也不能被记作该GitHub操作已经可用。",
+    "anchor": "ai-archestra-optional-github-reconnect",
+    "sourceName": "Archestra1.4.32 stable release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.4.32"
+  },
+  {
+    "id": "web3-viem-eip712-domain-field-presence",
+    "date": "2026-11-16",
+    "domain": "web3",
+    "topic": "security",
+    "title": "viem2.57.20：chainId是字符串时，也不能从EIP-712签名域中消失",
+    "summary": "签名绑定什么，取决于schema实际包含什么。请求对象中看得到链ID，不代表哈希时一定带入；解析、类型推导、编码与最终验证需要沿同一份域数据核对。",
+    "anchor": "web3-viem-eip712-domain-field-presence",
+    "sourceName": "viem2.57.20 release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/wevm/viem/releases/tag/viem%402.57.20"
+  },
+  {
+    "id": "web3-foundry-multiblock-mining-guard",
+    "date": "2026-11-16",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "Foundry11月15日nightly：挖完整批块，再释放读回结果所需的锁",
+    "summary": "多步操作的结果读取也依赖被保护的状态，只锁每次写入可能不够。异步与阻塞任务跨边界时，guard的所有权和生命周期需要覆盖完整不变量，而非在最后写入后立刻释放。",
+    "anchor": "web3-foundry-multiblock-mining-guard",
+    "sourceName": "Foundry November15 nightly release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/foundry-rs/foundry/releases/tag/nightly-cd3767105be7fa27eae63743c26359cefa0214fb"
+  },
+  {
     "id": "ai-sdk-approval-input-copy",
     "date": "2026-11-15",
     "domain": "ai",
