@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-11-16:sec-executive-compensation-disclosure-proposal-2026-11-13",
+    "kind": "market",
+    "date": "2026-11-16",
+    "domain": "market",
+    "topic": "market_regulation",
+    "title": "SEC拟改薪酬披露：人员范围与衡量口径须分开",
+    "summary": "研究推断：披露范围和衡量口径改变，可能先影响可比数据、投资者监督与激励判断，再联系企业股权定价；各环仍待验证，提案宣称的透明度与合规效率目标不等于已实现效果。",
+    "href": "/market-radar/2026-11-16#sec-executive-compensation-disclosure-proposal-2026-11-13",
+    "source": {
+      "name": "SEC — Executive and Director Compensation Disclosure Reforms, release 2026-114",
+      "url": "https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms"
+    },
+    "flags": {
+      "priority": "P2"
+    }
+  },
+  {
     "id": "learning:ai-sdk-approval-input-copy",
     "kind": "learning",
     "date": "2026-11-15",
