@@ -16,6 +16,17 @@ export interface MarketRadarDaily { schemaVersion?: 2; date: string; slug: strin
 export interface MarketRadarIndexEntry { date: string; slug: string; snapshotId: string; asOf: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
 export const marketRadarIndex: MarketRadarIndexEntry[] = [
   {
+    "date": "2026-11-16",
+    "slug": "2026-11-16",
+    "title": "交易研究雷达 · 2026-11-16",
+    "summary": "SEC薪酬披露修订提案拟调整人员范围与表格指标。本期保留提案状态和11月13日发布日期，先核对可比性，再观察信息与治理传导；不把监管目标当成市场效果。",
+    "snapshotId": "market-2026-11-16-7760750402f71185",
+    "asOf": "2026-11-15T21:39:20.674Z",
+    "eventCount": 1,
+    "assetCount": 1,
+    "leadTitle": "SEC拟改薪酬披露：人员范围与衡量口径须分开"
+  },
+  {
     "date": "2026-11-15",
     "slug": "2026-11-15",
     "title": "交易研究雷达 · 2026-11-15",
@@ -303,6 +314,156 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
   }
 ]
 export const latestMarketRadars: MarketRadarDaily[] = [
+  {
+    "date": "2026-11-16",
+    "slug": "2026-11-16",
+    "title": "交易研究雷达 · 2026-11-16",
+    "summary": "SEC薪酬披露修订提案拟调整人员范围与表格指标。本期保留提案状态和11月13日发布日期，先核对可比性，再观察信息与治理传导；不把监管目标当成市场效果。",
+    "snapshotId": "market-2026-11-16-7760750402f71185",
+    "asOf": "2026-11-15T21:39:20.674Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-15T21:39:20.674Z",
+    "events": [
+      {
+        "id": "sec-executive-compensation-disclosure-proposal-2026-11-13",
+        "priority": "P2",
+        "status": "released",
+        "category": "regulation",
+        "title": "SEC拟改薪酬披露：人员范围与衡量口径须分开",
+        "fact": "SEC于11月13日发布Item 402薪酬披露修订提案，拟将具名高管范围从通常五人以上缩至大多情况下的主要执行官、主要财务官，并以已赚取、已授予及股权奖励状态三张新表替换四张主表。这是提案发布，不是规则已生效或公司已经改报。",
+        "whyWatch": "研究推断：披露范围和衡量口径改变，可能先影响可比数据、投资者监督与激励判断，再联系企业股权定价；各环仍待验证，提案宣称的透明度与合规效率目标不等于已实现效果。",
+        "assets": [
+          "美国企业股票"
+        ],
+        "watchFor": "分开核对最终文本、实施安排和公司实际披露；意见期从拟议规则在Federal Register公布后起算60天，本期未核验其公布时点，不计算截止日。原文另拟更换薪酬与绩效指标，并将用于确定薪酬比率中位员工的样本范围限于美国全职员工，需先统一口径。",
+        "invalidation": "若提案修订、未获采纳，或实际披露保留可比细节，则收窄信息变化解释；即使采纳，也不能把覆盖人数或表格数量变化直接解释成薪酬下降、治理改善或资产方向。本期没有公司改报、资金流或市场反应样本。",
+        "sourceName": "SEC — Executive and Director Compensation Disclosure Reforms, release 2026-114",
+        "sourceUrl": "https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms",
+        "sourcePublishedAt": "2026-11-13"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "本期核对官方新闻稿与发布索引，未建立提案、公司实际披露和资产反应的同窗口历史样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "提案发布日期、最终规则实施和企业披露时点不同；表格或人员范围变化不能换算为市场效果或概率。",
+      "nextValidation": "记录最终文本与公司披露样本，统一人员、表格和指标口径；样本不足时仅记录信号质量。",
+      "invalidation": "提案修订、披露口径或样本构成改变时重估；缺少实际传导证据时保留未知。",
+      "sourceUrls": [
+        "https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "若薪酬披露的人员范围、表格及衡量口径改变，如何经可比数据、投资者监督与激励判断联系相关资产，各环需要什么独立证据？",
+        "focusEventIds": [
+          "sec-executive-compensation-disclosure-proposal-2026-11-13"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些最终文本、公司实际披露与可比样本，能推翻从表格简化直接推断信息质量、薪酬或治理效果的解释？",
+        "focusEventIds": [
+          "sec-executive-compensation-disclosure-proposal-2026-11-13"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若最终规则保留更多细节，或公司自愿继续披露，分别观察什么，哪些后续证据会使信息变化的传导判断失效？",
+        "focusEventIds": [
+          "sec-executive-compensation-disclosure-proposal-2026-11-13"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-16",
+      "snapshotId": "market-2026-11-16-7760750402f71185",
+      "asOf": "2026-11-15T21:39:20.674Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-16",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "若薪酬披露的人员范围、表格及衡量口径改变，如何经可比数据、投资者监督与激励判断联系相关资产，各环需要什么独立证据？",
+          "focusEventIds": [
+            "sec-executive-compensation-disclosure-proposal-2026-11-13"
+          ],
+          "prompt": "研究任务：若薪酬披露的人员范围、表格及衡量口径改变，如何经可比数据、投资者监督与激励判断联系相关资产，各环需要什么独立证据？\n证据快照：2026-11-16；asOf=2026-11-15T21:39:20.674Z；snapshotId=market-2026-11-16-7760750402f71185\n\n材料 1｜SEC拟改薪酬披露：人员范围与衡量口径须分开\n已确认事实：SEC于11月13日发布Item 402薪酬披露修订提案，拟将具名高管范围从通常五人以上缩至大多情况下的主要执行官、主要财务官，并以已赚取、已授予及股权奖励状态三张新表替换四张主表。这是提案发布，不是规则已生效或公司已经改报。\n关注机制：研究推断：披露范围和衡量口径改变，可能先影响可比数据、投资者监督与激励判断，再联系企业股权定价；各环仍待验证，提案宣称的透明度与合规效率目标不等于已实现效果。\n接下来验证：分开核对最终文本、实施安排和公司实际披露；意见期从拟议规则在Federal Register公布后起算60天，本期未核验其公布时点，不计算截止日。原文另拟更换薪酬与绩效指标，并将用于确定薪酬比率中位员工的样本范围限于美国全职员工，需先统一口径。\n失效条件：若提案修订、未获采纳，或实际披露保留可比细节，则收窄信息变化解释；即使采纳，也不能把覆盖人数或表格数量变化直接解释成薪酬下降、治理改善或资产方向。本期没有公司改报、资金流或市场反应样本。\n一手来源：https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "8830318b5ac1f106ccdfee0f1865bf8868401aecfe91ce2b964e4d75f7aaad9e",
+          "sourceUrls": [
+            "https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些最终文本、公司实际披露与可比样本，能推翻从表格简化直接推断信息质量、薪酬或治理效果的解释？",
+          "focusEventIds": [
+            "sec-executive-compensation-disclosure-proposal-2026-11-13"
+          ],
+          "prompt": "研究任务：哪些最终文本、公司实际披露与可比样本，能推翻从表格简化直接推断信息质量、薪酬或治理效果的解释？\n证据快照：2026-11-16；asOf=2026-11-15T21:39:20.674Z；snapshotId=market-2026-11-16-7760750402f71185\n\n材料 1｜SEC拟改薪酬披露：人员范围与衡量口径须分开\n已确认事实：SEC于11月13日发布Item 402薪酬披露修订提案，拟将具名高管范围从通常五人以上缩至大多情况下的主要执行官、主要财务官，并以已赚取、已授予及股权奖励状态三张新表替换四张主表。这是提案发布，不是规则已生效或公司已经改报。\n关注机制：研究推断：披露范围和衡量口径改变，可能先影响可比数据、投资者监督与激励判断，再联系企业股权定价；各环仍待验证，提案宣称的透明度与合规效率目标不等于已实现效果。\n接下来验证：分开核对最终文本、实施安排和公司实际披露；意见期从拟议规则在Federal Register公布后起算60天，本期未核验其公布时点，不计算截止日。原文另拟更换薪酬与绩效指标，并将用于确定薪酬比率中位员工的样本范围限于美国全职员工，需先统一口径。\n失效条件：若提案修订、未获采纳，或实际披露保留可比细节，则收窄信息变化解释；即使采纳，也不能把覆盖人数或表格数量变化直接解释成薪酬下降、治理改善或资产方向。本期没有公司改报、资金流或市场反应样本。\n一手来源：https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "1e5c2e788980a09a13182b2414a8dd12ab39dd2af32c0b7f129781ab3bc27ad8",
+          "sourceUrls": [
+            "https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若最终规则保留更多细节，或公司自愿继续披露，分别观察什么，哪些后续证据会使信息变化的传导判断失效？",
+          "focusEventIds": [
+            "sec-executive-compensation-disclosure-proposal-2026-11-13"
+          ],
+          "prompt": "研究任务：若最终规则保留更多细节，或公司自愿继续披露，分别观察什么，哪些后续证据会使信息变化的传导判断失效？\n证据快照：2026-11-16；asOf=2026-11-15T21:39:20.674Z；snapshotId=market-2026-11-16-7760750402f71185\n\n材料 1｜SEC拟改薪酬披露：人员范围与衡量口径须分开\n已确认事实：SEC于11月13日发布Item 402薪酬披露修订提案，拟将具名高管范围从通常五人以上缩至大多情况下的主要执行官、主要财务官，并以已赚取、已授予及股权奖励状态三张新表替换四张主表。这是提案发布，不是规则已生效或公司已经改报。\n关注机制：研究推断：披露范围和衡量口径改变，可能先影响可比数据、投资者监督与激励判断，再联系企业股权定价；各环仍待验证，提案宣称的透明度与合规效率目标不等于已实现效果。\n接下来验证：分开核对最终文本、实施安排和公司实际披露；意见期从拟议规则在Federal Register公布后起算60天，本期未核验其公布时点，不计算截止日。原文另拟更换薪酬与绩效指标，并将用于确定薪酬比率中位员工的样本范围限于美国全职员工，需先统一口径。\n失效条件：若提案修订、未获采纳，或实际披露保留可比细节，则收窄信息变化解释；即使采纳，也不能把覆盖人数或表格数量变化直接解释成薪酬下降、治理改善或资产方向。本期没有公司改报、资金流或市场反应样本。\n一手来源：https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "f566494ca2063894e5ec9f8ef9b5fd112ec4635e477b46a6f2f7817423fab1b1",
+          "sourceUrls": [
+            "https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms"
+          ]
+        }
+      ]
+    }
+  },
   {
     "date": "2026-11-15",
     "slug": "2026-11-15",
@@ -1205,157 +1366,6 @@ export const latestMarketRadars: MarketRadarDaily[] = [
           "promptChecksum": "a18a64a71ef388b379425fa6a84d7891d887815875a28e56fc58e3e22087590f",
           "sourceUrls": [
             "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-          ]
-        }
-      ]
-    }
-  },
-  {
-    "date": "2026-11-09",
-    "slug": "2026-11-09",
-    "title": "交易研究雷达 · 2026-11-09",
-    "summary": "核对11月6日公布的MEXC资金传送限制命令，区分命令发行、联邦公报生效条件与机构实际执行；暂不判断资金流、平台安全或资产方向。",
-    "snapshotId": "market-2026-11-09-fc400a0f8bc17a31",
-    "asOf": "2026-11-08T21:36:14.579Z",
-    "origin": "research",
-    "publicationState": "published",
-    "reviewStatus": "automated",
-    "generatedAt": "2026-11-08T21:36:14.579Z",
-    "events": [
-      {
-        "id": "fincen-mexc-funds-transfer-order-2026-11-06",
-        "priority": "P1",
-        "status": "released",
-        "category": "regulation",
-        "title": "FinCEN公布MEXC资金传送限制命令，生效日期待核",
-        "fact": "美国财政部11月6日宣布，FinCEN依据《打击俄罗斯洗钱法》第9714(a)条发布涉及MEXC Global的资金传送限制命令，范围包括适用美国金融机构与命令所定义境外MEXC实体之间的资金及可兑换虚拟货币传送。公告规定在《联邦公报》刊登30天后生效；本期未核定正式刊登与具体生效日。",
-        "whyWatch": "研究判断：监管接入限制可能经金融机构的资金通道、结算安排与对手方风险管理传导到加密市场。需分别验证正式法律时点、机构执行与实际资金数据；链上仍能转移资产或平台仍可访问，不能单独证明美国金融接入状态。",
-        "assets": [
-          "加密资产",
-          "美元资金通道"
-        ],
-        "watchFor": "继续核对《联邦公报》正式版本、生效日、FinCEN后续条件或豁免，以及相关机构公开执行说明。资金通道、成交与流动性观察需固定时间窗口并隔离其他消息；本期未采集资产反应或资金流样本。",
-        "invalidation": "正式版本、适用实体或后续豁免改变时重估；机构实际接入和市场资金数据不支持同一传导链时，不把变化归因于该命令。既有BSA与OFAC义务继续分别适用，本条不外推全球用户服务状态、平台偿付能力或资产安全。",
-        "sourceName": "U.S. Treasury — FinCEN MEXC Global order announcement",
-        "sourceUrl": "https://home.treasury.gov/news/press-releases/sb0685/",
-        "sourcePublishedAt": "2026-11-06"
-      }
-    ],
-    "sourceUrls": [
-      "https://home.treasury.gov/news/press-releases/sb0685/"
-    ],
-    "quantStrategy": {
-      "horizonTradingDays": 3,
-      "status": "historical_samples_insufficient",
-      "methodology": "本期只登记一项监管命令公布；未建立机构执行与市场资金反应的同窗口样本，也未采集价格或实际资金流。",
-      "assets": [
-        {
-          "symbol": "SPY",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "QQQ",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "BTC",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "ETH",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "GLD",
-          "group": "gold_etf",
-          "signalQuality": "weak"
-        }
-      ],
-      "sampleSize": 0,
-      "rationale": "法律文本时点、机构实际执行和市场反应分别核验；单项公告不足以量化跨资产影响。",
-      "nextValidation": "先固定正式刊登与生效条件，再核对公开执行说明及同窗口资金通道和流动性证据，样本不足时仅记录信号质量。",
-      "invalidation": "正式范围、后续条件或豁免改变时重估；时间窗口、统计口径不一致或缺少反应样本时保留未知。",
-      "sourceUrls": [
-        "https://home.treasury.gov/news/press-releases/sb0685/"
-      ]
-    },
-    "schemaVersion": 2,
-    "researchQuestions": [
-      {
-        "id": "1",
-        "lens": "transmission",
-        "shortQuestion": "命令如何经资金通道、金融机构执行与对手方风险管理传导到加密市场，各环需要哪些独立证据？",
-        "focusEventIds": [
-          "fincen-mexc-funds-transfer-order-2026-11-06"
-        ]
-      },
-      {
-        "id": "2",
-        "lens": "falsification",
-        "shortQuestion": "哪些正式文本、机构说明和同窗口资金数据，能推翻把市场变化直接归因于该命令的解释？",
-        "focusEventIds": [
-          "fincen-mexc-funds-transfer-order-2026-11-06"
-        ]
-      },
-      {
-        "id": "3",
-        "lens": "scenario",
-        "shortQuestion": "正式生效、执行差异或后续条件与豁免分别对应哪些情景，什么证据会使当前接入限制判断失效？",
-        "focusEventIds": [
-          "fincen-mexc-funds-transfer-order-2026-11-06"
-        ]
-      }
-    ],
-    "researchPack": {
-      "schemaVersion": 2,
-      "date": "2026-11-09",
-      "snapshotId": "market-2026-11-09-fc400a0f8bc17a31",
-      "asOf": "2026-11-08T21:36:14.579Z",
-      "origin": "research",
-      "publicationState": "published",
-      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-09",
-      "questions": [
-        {
-          "id": "1",
-          "lens": "transmission",
-          "shortQuestion": "命令如何经资金通道、金融机构执行与对手方风险管理传导到加密市场，各环需要哪些独立证据？",
-          "focusEventIds": [
-            "fincen-mexc-funds-transfer-order-2026-11-06"
-          ],
-          "prompt": "研究任务：命令如何经资金通道、金融机构执行与对手方风险管理传导到加密市场，各环需要哪些独立证据？\n证据快照：2026-11-09；asOf=2026-11-08T21:36:14.579Z；snapshotId=market-2026-11-09-fc400a0f8bc17a31\n\n材料 1｜FinCEN公布MEXC资金传送限制命令，生效日期待核\n已确认事实：美国财政部11月6日宣布，FinCEN依据《打击俄罗斯洗钱法》第9714(a)条发布涉及MEXC Global的资金传送限制命令，范围包括适用美国金融机构与命令所定义境外MEXC实体之间的资金及可兑换虚拟货币传送。公告规定在《联邦公报》刊登30天后生效；本期未核定正式刊登与具体生效日。\n关注机制：研究判断：监管接入限制可能经金融机构的资金通道、结算安排与对手方风险管理传导到加密市场。需分别验证正式法律时点、机构执行与实际资金数据；链上仍能转移资产或平台仍可访问，不能单独证明美国金融接入状态。\n接下来验证：继续核对《联邦公报》正式版本、生效日、FinCEN后续条件或豁免，以及相关机构公开执行说明。资金通道、成交与流动性观察需固定时间窗口并隔离其他消息；本期未采集资产反应或资金流样本。\n失效条件：正式版本、适用实体或后续豁免改变时重估；机构实际接入和市场资金数据不支持同一传导链时，不把变化归因于该命令。既有BSA与OFAC义务继续分别适用，本条不外推全球用户服务状态、平台偿付能力或资产安全。\n一手来源：https://home.treasury.gov/news/press-releases/sb0685/\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "177bc6a7bb1db818120fbf7ae7c38bb5664432b01094d1f2749372104c5d4bc5",
-          "sourceUrls": [
-            "https://home.treasury.gov/news/press-releases/sb0685/"
-          ]
-        },
-        {
-          "id": "2",
-          "lens": "falsification",
-          "shortQuestion": "哪些正式文本、机构说明和同窗口资金数据，能推翻把市场变化直接归因于该命令的解释？",
-          "focusEventIds": [
-            "fincen-mexc-funds-transfer-order-2026-11-06"
-          ],
-          "prompt": "研究任务：哪些正式文本、机构说明和同窗口资金数据，能推翻把市场变化直接归因于该命令的解释？\n证据快照：2026-11-09；asOf=2026-11-08T21:36:14.579Z；snapshotId=market-2026-11-09-fc400a0f8bc17a31\n\n材料 1｜FinCEN公布MEXC资金传送限制命令，生效日期待核\n已确认事实：美国财政部11月6日宣布，FinCEN依据《打击俄罗斯洗钱法》第9714(a)条发布涉及MEXC Global的资金传送限制命令，范围包括适用美国金融机构与命令所定义境外MEXC实体之间的资金及可兑换虚拟货币传送。公告规定在《联邦公报》刊登30天后生效；本期未核定正式刊登与具体生效日。\n关注机制：研究判断：监管接入限制可能经金融机构的资金通道、结算安排与对手方风险管理传导到加密市场。需分别验证正式法律时点、机构执行与实际资金数据；链上仍能转移资产或平台仍可访问，不能单独证明美国金融接入状态。\n接下来验证：继续核对《联邦公报》正式版本、生效日、FinCEN后续条件或豁免，以及相关机构公开执行说明。资金通道、成交与流动性观察需固定时间窗口并隔离其他消息；本期未采集资产反应或资金流样本。\n失效条件：正式版本、适用实体或后续豁免改变时重估；机构实际接入和市场资金数据不支持同一传导链时，不把变化归因于该命令。既有BSA与OFAC义务继续分别适用，本条不外推全球用户服务状态、平台偿付能力或资产安全。\n一手来源：https://home.treasury.gov/news/press-releases/sb0685/\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "d6449d06e0e47b0055423685d7b2a6a232264f88148ca5a7f8d12089c3f5953c",
-          "sourceUrls": [
-            "https://home.treasury.gov/news/press-releases/sb0685/"
-          ]
-        },
-        {
-          "id": "3",
-          "lens": "scenario",
-          "shortQuestion": "正式生效、执行差异或后续条件与豁免分别对应哪些情景，什么证据会使当前接入限制判断失效？",
-          "focusEventIds": [
-            "fincen-mexc-funds-transfer-order-2026-11-06"
-          ],
-          "prompt": "研究任务：正式生效、执行差异或后续条件与豁免分别对应哪些情景，什么证据会使当前接入限制判断失效？\n证据快照：2026-11-09；asOf=2026-11-08T21:36:14.579Z；snapshotId=market-2026-11-09-fc400a0f8bc17a31\n\n材料 1｜FinCEN公布MEXC资金传送限制命令，生效日期待核\n已确认事实：美国财政部11月6日宣布，FinCEN依据《打击俄罗斯洗钱法》第9714(a)条发布涉及MEXC Global的资金传送限制命令，范围包括适用美国金融机构与命令所定义境外MEXC实体之间的资金及可兑换虚拟货币传送。公告规定在《联邦公报》刊登30天后生效；本期未核定正式刊登与具体生效日。\n关注机制：研究判断：监管接入限制可能经金融机构的资金通道、结算安排与对手方风险管理传导到加密市场。需分别验证正式法律时点、机构执行与实际资金数据；链上仍能转移资产或平台仍可访问，不能单独证明美国金融接入状态。\n接下来验证：继续核对《联邦公报》正式版本、生效日、FinCEN后续条件或豁免，以及相关机构公开执行说明。资金通道、成交与流动性观察需固定时间窗口并隔离其他消息；本期未采集资产反应或资金流样本。\n失效条件：正式版本、适用实体或后续豁免改变时重估；机构实际接入和市场资金数据不支持同一传导链时，不把变化归因于该命令。既有BSA与OFAC义务继续分别适用，本条不外推全球用户服务状态、平台偿付能力或资产安全。\n一手来源：https://home.treasury.gov/news/press-releases/sb0685/\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "6f5a3414b2c99d063758d8a6bc17fc8d325cf8eba03e9696a6df122eb0a05784",
-          "sourceUrls": [
-            "https://home.treasury.gov/news/press-releases/sb0685/"
           ]
         }
       ]

@@ -7,7 +7,7 @@ export interface IntelItem { id: string; kind: IntelKind; date: string; domain: 
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
 export const intelLatestDate: string | null = "2026-11-16"
-export const intelItemCount = 334
+export const intelItemCount = 335
 export const intelLatestItems: IntelItem[] = [
   {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
@@ -70,6 +70,23 @@ export const intelLatestItems: IntelItem[] = [
       "name": "Foundry November15 nightly release",
       "tier": "tier1",
       "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-cd3767105be7fa27eae63743c26359cefa0214fb"
+    }
+  },
+  {
+    "id": "market:2026-11-16:sec-executive-compensation-disclosure-proposal-2026-11-13",
+    "kind": "market",
+    "date": "2026-11-16",
+    "domain": "market",
+    "topic": "market_regulation",
+    "title": "SEC拟改薪酬披露：人员范围与衡量口径须分开",
+    "summary": "研究推断：披露范围和衡量口径改变，可能先影响可比数据、投资者监督与激励判断，再联系企业股权定价；各环仍待验证，提案宣称的透明度与合规效率目标不等于已实现效果。",
+    "href": "/market-radar/2026-11-16#sec-executive-compensation-disclosure-proposal-2026-11-13",
+    "source": {
+      "name": "SEC — Executive and Director Compensation Disclosure Reforms, release 2026-114",
+      "url": "https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms"
+    },
+    "flags": {
+      "priority": "P2"
     }
   },
   {
@@ -520,6 +537,13 @@ export const intelTopics: IntelTopic[] = [
     "firstSeen": "2026-08-10"
   },
   {
+    "topic": "market_regulation",
+    "domain": "market",
+    "count": 6,
+    "lastSeen": "2026-11-16",
+    "firstSeen": "2026-10-25"
+  },
+  {
     "topic": "market_macro",
     "domain": "market",
     "count": 22,
@@ -574,13 +598,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 7,
     "lastSeen": "2026-11-11",
     "firstSeen": "2026-08-11"
-  },
-  {
-    "topic": "market_regulation",
-    "domain": "market",
-    "count": 5,
-    "lastSeen": "2026-11-10",
-    "firstSeen": "2026-10-25"
   },
   {
     "topic": "evaluation",

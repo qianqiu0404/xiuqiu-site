@@ -3,6 +3,156 @@
 import type { MarketRadarDaily } from '../generatedMarketRadars.ts'
 export const monthlyMarketRadars: MarketRadarDaily[] = [
   {
+    "date": "2026-11-16",
+    "slug": "2026-11-16",
+    "title": "交易研究雷达 · 2026-11-16",
+    "summary": "SEC薪酬披露修订提案拟调整人员范围与表格指标。本期保留提案状态和11月13日发布日期，先核对可比性，再观察信息与治理传导；不把监管目标当成市场效果。",
+    "snapshotId": "market-2026-11-16-7760750402f71185",
+    "asOf": "2026-11-15T21:39:20.674Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-15T21:39:20.674Z",
+    "events": [
+      {
+        "id": "sec-executive-compensation-disclosure-proposal-2026-11-13",
+        "priority": "P2",
+        "status": "released",
+        "category": "regulation",
+        "title": "SEC拟改薪酬披露：人员范围与衡量口径须分开",
+        "fact": "SEC于11月13日发布Item 402薪酬披露修订提案，拟将具名高管范围从通常五人以上缩至大多情况下的主要执行官、主要财务官，并以已赚取、已授予及股权奖励状态三张新表替换四张主表。这是提案发布，不是规则已生效或公司已经改报。",
+        "whyWatch": "研究推断：披露范围和衡量口径改变，可能先影响可比数据、投资者监督与激励判断，再联系企业股权定价；各环仍待验证，提案宣称的透明度与合规效率目标不等于已实现效果。",
+        "assets": [
+          "美国企业股票"
+        ],
+        "watchFor": "分开核对最终文本、实施安排和公司实际披露；意见期从拟议规则在Federal Register公布后起算60天，本期未核验其公布时点，不计算截止日。原文另拟更换薪酬与绩效指标，并将用于确定薪酬比率中位员工的样本范围限于美国全职员工，需先统一口径。",
+        "invalidation": "若提案修订、未获采纳，或实际披露保留可比细节，则收窄信息变化解释；即使采纳，也不能把覆盖人数或表格数量变化直接解释成薪酬下降、治理改善或资产方向。本期没有公司改报、资金流或市场反应样本。",
+        "sourceName": "SEC — Executive and Director Compensation Disclosure Reforms, release 2026-114",
+        "sourceUrl": "https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms",
+        "sourcePublishedAt": "2026-11-13"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "本期核对官方新闻稿与发布索引，未建立提案、公司实际披露和资产反应的同窗口历史样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "提案发布日期、最终规则实施和企业披露时点不同；表格或人员范围变化不能换算为市场效果或概率。",
+      "nextValidation": "记录最终文本与公司披露样本，统一人员、表格和指标口径；样本不足时仅记录信号质量。",
+      "invalidation": "提案修订、披露口径或样本构成改变时重估；缺少实际传导证据时保留未知。",
+      "sourceUrls": [
+        "https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "若薪酬披露的人员范围、表格及衡量口径改变，如何经可比数据、投资者监督与激励判断联系相关资产，各环需要什么独立证据？",
+        "focusEventIds": [
+          "sec-executive-compensation-disclosure-proposal-2026-11-13"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些最终文本、公司实际披露与可比样本，能推翻从表格简化直接推断信息质量、薪酬或治理效果的解释？",
+        "focusEventIds": [
+          "sec-executive-compensation-disclosure-proposal-2026-11-13"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若最终规则保留更多细节，或公司自愿继续披露，分别观察什么，哪些后续证据会使信息变化的传导判断失效？",
+        "focusEventIds": [
+          "sec-executive-compensation-disclosure-proposal-2026-11-13"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-16",
+      "snapshotId": "market-2026-11-16-7760750402f71185",
+      "asOf": "2026-11-15T21:39:20.674Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-16",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "若薪酬披露的人员范围、表格及衡量口径改变，如何经可比数据、投资者监督与激励判断联系相关资产，各环需要什么独立证据？",
+          "focusEventIds": [
+            "sec-executive-compensation-disclosure-proposal-2026-11-13"
+          ],
+          "prompt": "研究任务：若薪酬披露的人员范围、表格及衡量口径改变，如何经可比数据、投资者监督与激励判断联系相关资产，各环需要什么独立证据？\n证据快照：2026-11-16；asOf=2026-11-15T21:39:20.674Z；snapshotId=market-2026-11-16-7760750402f71185\n\n材料 1｜SEC拟改薪酬披露：人员范围与衡量口径须分开\n已确认事实：SEC于11月13日发布Item 402薪酬披露修订提案，拟将具名高管范围从通常五人以上缩至大多情况下的主要执行官、主要财务官，并以已赚取、已授予及股权奖励状态三张新表替换四张主表。这是提案发布，不是规则已生效或公司已经改报。\n关注机制：研究推断：披露范围和衡量口径改变，可能先影响可比数据、投资者监督与激励判断，再联系企业股权定价；各环仍待验证，提案宣称的透明度与合规效率目标不等于已实现效果。\n接下来验证：分开核对最终文本、实施安排和公司实际披露；意见期从拟议规则在Federal Register公布后起算60天，本期未核验其公布时点，不计算截止日。原文另拟更换薪酬与绩效指标，并将用于确定薪酬比率中位员工的样本范围限于美国全职员工，需先统一口径。\n失效条件：若提案修订、未获采纳，或实际披露保留可比细节，则收窄信息变化解释；即使采纳，也不能把覆盖人数或表格数量变化直接解释成薪酬下降、治理改善或资产方向。本期没有公司改报、资金流或市场反应样本。\n一手来源：https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "8830318b5ac1f106ccdfee0f1865bf8868401aecfe91ce2b964e4d75f7aaad9e",
+          "sourceUrls": [
+            "https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些最终文本、公司实际披露与可比样本，能推翻从表格简化直接推断信息质量、薪酬或治理效果的解释？",
+          "focusEventIds": [
+            "sec-executive-compensation-disclosure-proposal-2026-11-13"
+          ],
+          "prompt": "研究任务：哪些最终文本、公司实际披露与可比样本，能推翻从表格简化直接推断信息质量、薪酬或治理效果的解释？\n证据快照：2026-11-16；asOf=2026-11-15T21:39:20.674Z；snapshotId=market-2026-11-16-7760750402f71185\n\n材料 1｜SEC拟改薪酬披露：人员范围与衡量口径须分开\n已确认事实：SEC于11月13日发布Item 402薪酬披露修订提案，拟将具名高管范围从通常五人以上缩至大多情况下的主要执行官、主要财务官，并以已赚取、已授予及股权奖励状态三张新表替换四张主表。这是提案发布，不是规则已生效或公司已经改报。\n关注机制：研究推断：披露范围和衡量口径改变，可能先影响可比数据、投资者监督与激励判断，再联系企业股权定价；各环仍待验证，提案宣称的透明度与合规效率目标不等于已实现效果。\n接下来验证：分开核对最终文本、实施安排和公司实际披露；意见期从拟议规则在Federal Register公布后起算60天，本期未核验其公布时点，不计算截止日。原文另拟更换薪酬与绩效指标，并将用于确定薪酬比率中位员工的样本范围限于美国全职员工，需先统一口径。\n失效条件：若提案修订、未获采纳，或实际披露保留可比细节，则收窄信息变化解释；即使采纳，也不能把覆盖人数或表格数量变化直接解释成薪酬下降、治理改善或资产方向。本期没有公司改报、资金流或市场反应样本。\n一手来源：https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "1e5c2e788980a09a13182b2414a8dd12ab39dd2af32c0b7f129781ab3bc27ad8",
+          "sourceUrls": [
+            "https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若最终规则保留更多细节，或公司自愿继续披露，分别观察什么，哪些后续证据会使信息变化的传导判断失效？",
+          "focusEventIds": [
+            "sec-executive-compensation-disclosure-proposal-2026-11-13"
+          ],
+          "prompt": "研究任务：若最终规则保留更多细节，或公司自愿继续披露，分别观察什么，哪些后续证据会使信息变化的传导判断失效？\n证据快照：2026-11-16；asOf=2026-11-15T21:39:20.674Z；snapshotId=market-2026-11-16-7760750402f71185\n\n材料 1｜SEC拟改薪酬披露：人员范围与衡量口径须分开\n已确认事实：SEC于11月13日发布Item 402薪酬披露修订提案，拟将具名高管范围从通常五人以上缩至大多情况下的主要执行官、主要财务官，并以已赚取、已授予及股权奖励状态三张新表替换四张主表。这是提案发布，不是规则已生效或公司已经改报。\n关注机制：研究推断：披露范围和衡量口径改变，可能先影响可比数据、投资者监督与激励判断，再联系企业股权定价；各环仍待验证，提案宣称的透明度与合规效率目标不等于已实现效果。\n接下来验证：分开核对最终文本、实施安排和公司实际披露；意见期从拟议规则在Federal Register公布后起算60天，本期未核验其公布时点，不计算截止日。原文另拟更换薪酬与绩效指标，并将用于确定薪酬比率中位员工的样本范围限于美国全职员工，需先统一口径。\n失效条件：若提案修订、未获采纳，或实际披露保留可比细节，则收窄信息变化解释；即使采纳，也不能把覆盖人数或表格数量变化直接解释成薪酬下降、治理改善或资产方向。本期没有公司改报、资金流或市场反应样本。\n一手来源：https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "f566494ca2063894e5ec9f8ef9b5fd112ec4635e477b46a6f2f7817423fab1b1",
+          "sourceUrls": [
+            "https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms"
+          ]
+        }
+      ]
+    }
+  },
+  {
     "date": "2026-11-15",
     "slug": "2026-11-15",
     "title": "交易研究雷达 · 2026-11-15",
