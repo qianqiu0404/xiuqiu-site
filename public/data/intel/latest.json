@@ -1,9 +1,27 @@
 {
   "schemaVersion": 1,
-  "latestDate": "2026-11-15",
+  "latestDate": "2026-11-16",
   "homePageUrl": "https://xoqiu.cn/",
   "windowDays": 7,
   "items": [
+    {
+      "id": "market:2026-11-16:sec-executive-compensation-disclosure-proposal-2026-11-13",
+      "kind": "market",
+      "date": "2026-11-16",
+      "domain": "market",
+      "topic": "market_regulation",
+      "title": "SEC拟改薪酬披露：人员范围与衡量口径须分开",
+      "summary": "研究推断：披露范围和衡量口径改变，可能先影响可比数据、投资者监督与激励判断，再联系企业股权定价；各环仍待验证，提案宣称的透明度与合规效率目标不等于已实现效果。",
+      "href": "/market-radar/2026-11-16#sec-executive-compensation-disclosure-proposal-2026-11-13",
+      "source": {
+        "name": "SEC — Executive and Director Compensation Disclosure Reforms, release 2026-114",
+        "url": "https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms"
+      },
+      "flags": {
+        "priority": "P2"
+      },
+      "url": "https://xoqiu.cn/market-radar/2026-11-16#sec-executive-compensation-disclosure-proposal-2026-11-13"
+    },
     {
       "id": "learning:ai-sdk-approval-input-copy",
       "kind": "learning",
@@ -446,91 +464,6 @@
         "priority": "P1"
       },
       "url": "https://xoqiu.cn/market-radar/2026-11-10#fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-    },
-    {
-      "id": "learning:ai-sdk-telemetry-url-boundary",
-      "kind": "learning",
-      "date": "2026-11-09",
-      "domain": "ai",
-      "topic": "safety",
-      "title": "AI SDK 7.0.165：遥测拿到模型结果之前，先缩减请求 URL",
-      "summary": "最终输出不能覆盖更早的观察者；应逐接收者核对字段与脱敏时点。",
-      "href": "/radar/2026-11-09#ai-sdk-telemetry-url-boundary",
-      "source": {
-        "name": "AI SDK release",
-        "tier": "tier1",
-        "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165"
-      },
-      "flags": {
-        "deepDive": true
-      },
-      "url": "https://xoqiu.cn/radar/2026-11-09#ai-sdk-telemetry-url-boundary"
-    },
-    {
-      "id": "learning:ai-deepagents-selected-model-budget",
-      "kind": "learning",
-      "date": "2026-11-09",
-      "domain": "ai",
-      "topic": "infrastructure",
-      "title": "deepagents-code 0.2.5：压缩输入预算跟随当前选定模型",
-      "summary": "切换模型也改变预算；预算准备和最终执行要分开核验，保留下游配置。",
-      "href": "/radar/2026-11-09#ai-deepagents-selected-model-budget",
-      "source": {
-        "name": "deepagents-code release",
-        "tier": "tier1",
-        "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5"
-      },
-      "url": "https://xoqiu.cn/radar/2026-11-09#ai-deepagents-selected-model-budget"
-    },
-    {
-      "id": "learning:web3-viem-http-batch-factory-identity",
-      "kind": "learning",
-      "date": "2026-11-09",
-      "domain": "web3",
-      "topic": "onchain_infrastructure",
-      "title": "viem 2.57.17：同一 RPC URL，不再把不同 transport 的批次混用",
-      "summary": "相同地址不等于同一调用者；批处理仍需保持鉴权配置和响应归属。",
-      "href": "/radar/2026-11-09#web3-viem-http-batch-factory-identity",
-      "source": {
-        "name": "viem release",
-        "tier": "tier1",
-        "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.17"
-      },
-      "url": "https://xoqiu.cn/radar/2026-11-09#web3-viem-http-batch-factory-identity"
-    },
-    {
-      "id": "learning:web3-sui-object-funds-execution-abort",
-      "kind": "learning",
-      "date": "2026-11-09",
-      "domain": "web3",
-      "topic": "protocol",
-      "title": "Sui mainnet 1.83.1：对象资金不足，在执行期间形成 Move abort",
-      "summary": "模拟成功不能代替执行回执；应区分状态视图、失败阶段与错误类型。",
-      "href": "/radar/2026-11-09#web3-sui-object-funds-execution-abort",
-      "source": {
-        "name": "Sui mainnet release",
-        "tier": "tier1",
-        "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1"
-      },
-      "url": "https://xoqiu.cn/radar/2026-11-09#web3-sui-object-funds-execution-abort"
-    },
-    {
-      "id": "market:2026-11-09:fincen-mexc-funds-transfer-order-2026-11-06",
-      "kind": "market",
-      "date": "2026-11-09",
-      "domain": "market",
-      "topic": "market_regulation",
-      "title": "FinCEN公布MEXC资金传送限制命令，生效日期待核",
-      "summary": "研究判断：监管接入限制可能经金融机构的资金通道、结算安排与对手方风险管理传导到加密市场。需分别验证正式法律时点、机构执行与实际资金数据；链上仍能转移资产或平台仍可访问，不能单独证明美国金融接入状态。",
-      "href": "/market-radar/2026-11-09#fincen-mexc-funds-transfer-order-2026-11-06",
-      "source": {
-        "name": "U.S. Treasury — FinCEN MEXC Global order announcement",
-        "url": "https://home.treasury.gov/news/press-releases/sb0685/"
-      },
-      "flags": {
-        "priority": "P1"
-      },
-      "url": "https://xoqiu.cn/market-radar/2026-11-09#fincen-mexc-funds-transfer-order-2026-11-06"
     }
   ]
 }
