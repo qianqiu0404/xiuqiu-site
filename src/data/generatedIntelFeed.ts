@@ -6,9 +6,26 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-11-16"
-export const intelItemCount = 335
+export const intelLatestDate: string | null = "2026-11-17"
+export const intelItemCount = 336
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "market:2026-11-17:fed-barr-agent-account-consent-deposit-outflows-2026-11-16",
+    "kind": "market",
+    "date": "2026-11-17",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "Barr谈AI Agent金融接入：账户认证与逐项同意须分开",
+    "summary": "研究推断：身份识别、单次行动授权与实际执行的分离，可能经转账能力和速度联系银行流动性及相关资产；部署覆盖、控制效果和资金流仍需独立核验，演讲不证明已经发生挤兑。",
+    "href": "/market-radar/2026-11-17#fed-barr-agent-account-consent-deposit-outflows-2026-11-16",
+    "source": {
+      "name": "Federal Reserve — Michael S. Barr, Some Potential Financial Stability Implications of Artificial Intelligence",
+      "url": "https://www.federalreserve.gov/newsevents/speech/barr20261116a.htm"
+    },
+    "flags": {
+      "priority": "P2"
+    }
+  },
   {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
@@ -488,26 +505,16 @@ export const intelLatestItems: IntelItem[] = [
     "flags": {
       "priority": "P1"
     }
-  },
-  {
-    "id": "market:2026-11-10:fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
-    "kind": "market",
-    "date": "2026-11-10",
-    "domain": "market",
-    "topic": "market_regulation",
-    "title": "FinCEN与美联储撤回跨境250美元门槛提案",
-    "summary": "研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。",
-    "href": "/market-radar/2026-11-10#fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
-    "source": {
-      "name": "Federal Register / GPO — 2026-22809",
-      "url": "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-    },
-    "flags": {
-      "priority": "P1"
-    }
   }
 ]
 export const intelTopics: IntelTopic[] = [
+  {
+    "topic": "market_macro",
+    "domain": "market",
+    "count": 23,
+    "lastSeen": "2026-11-17",
+    "firstSeen": "2026-08-09"
+  },
   {
     "topic": "onchain_infrastructure",
     "domain": "web3",
@@ -542,13 +549,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 6,
     "lastSeen": "2026-11-16",
     "firstSeen": "2026-10-25"
-  },
-  {
-    "topic": "market_macro",
-    "domain": "market",
-    "count": 22,
-    "lastSeen": "2026-11-15",
-    "firstSeen": "2026-08-09"
   },
   {
     "topic": "safety",

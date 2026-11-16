@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-11-17:fed-barr-agent-account-consent-deposit-outflows-2026-11-16",
+    "kind": "market",
+    "date": "2026-11-17",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "Barr谈AI Agent金融接入：账户认证与逐项同意须分开",
+    "summary": "研究推断：身份识别、单次行动授权与实际执行的分离，可能经转账能力和速度联系银行流动性及相关资产；部署覆盖、控制效果和资金流仍需独立核验，演讲不证明已经发生挤兑。",
+    "href": "/market-radar/2026-11-17#fed-barr-agent-account-consent-deposit-outflows-2026-11-16",
+    "source": {
+      "name": "Federal Reserve — Michael S. Barr, Some Potential Financial Stability Implications of Artificial Intelligence",
+      "url": "https://www.federalreserve.gov/newsevents/speech/barr20261116a.htm"
+    },
+    "flags": {
+      "priority": "P2"
+    }
+  },
+  {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
     "date": "2026-11-16",
