@@ -6,9 +6,72 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-11-16"
-export const intelItemCount = 335
+export const intelLatestDate: string | null = "2026-11-17"
+export const intelItemCount = 339
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "learning:ai-langgraphjs-mongodb-literal-query-values",
+    "kind": "learning",
+    "date": "2026-11-17",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "LangGraph.js公告：存储查询里的值，不该变成数据库表达式",
+    "summary": "声明为字符串的参数，在运行时仍可能来自未受信任的JSON。把值和数据库表达式分开，并在真正发查询的位置统一处理，可以避免某个便利入口或batch绕开上层预期。",
+    "href": "/radar/2026-11-17#ai-langgraphjs-mongodb-literal-query-values",
+    "source": {
+      "name": "MongoDBStore query-expression advisory",
+      "tier": "tier1",
+      "url": "https://github.com/langchain-ai/langgraphjs/security/advisories/GHSA-p874-xggm-73rv"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "learning:ai-archestra-namespaced-runtimeclass-dryrun",
+    "kind": "learning",
+    "date": "2026-11-17",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "Archestra1.5 RC：用Pod干跑核对RuntimeClass，保留未知状态",
+    "summary": "部署前检查应贴近真正要执行的操作与权限范围。无法读取一份集群元数据，不等于环境不存在；同样，检查无法完成时也不能把未知显示成已经验证成功。",
+    "href": "/radar/2026-11-17#ai-archestra-namespaced-runtimeclass-dryrun",
+    "source": {
+      "name": "Archestra1.5.0-rc.36 prerelease",
+      "tier": "tier1",
+      "url": "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.5.0-rc.36"
+    }
+  },
+  {
+    "id": "learning:web3-cosmos-feegrant-expiry-queue-migration",
+    "kind": "learning",
+    "date": "2026-11-17",
+    "domain": "web3",
+    "topic": "protocol",
+    "title": "Cosmos0.55.1：旧队列能写进去，升级后还要能读出来",
+    "summary": "升级兼容不只看新写入路径，也要看旧状态何时会再次被读取。延迟到到期时才暴露的解码错误，需要把历史状态样本、迁移注册和触发时钟放在同一条验证链里。",
+    "href": "/radar/2026-11-17#web3-cosmos-feegrant-expiry-queue-migration",
+    "source": {
+      "name": "Cosmos SDK0.55.1 state-breaking release",
+      "tier": "tier1",
+      "url": "https://github.com/cosmos/cosmos-sdk/releases/tag/v0.55.1"
+    }
+  },
+  {
+    "id": "learning:web3-foundry-log-filter-excess-topics",
+    "kind": "learning",
+    "date": "2026-11-17",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "Foundry11月16日nightly：多余日志条件应报错，不该被悄悄丢弃",
+    "summary": "查询成功但条件被静默删掉，会把错误样本带进Agent或索引分析。对无法表达的约束直接报错，比让结果看起来正常却扩大范围更容易审计，也便于区分输入问题和真正的零匹配。",
+    "href": "/radar/2026-11-17#web3-foundry-log-filter-excess-topics",
+    "source": {
+      "name": "Foundry November16 nightly",
+      "tier": "tier1",
+      "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-7d3f4c70fecd998d5126d15fcc0e4466b79ded72"
+    }
+  },
   {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
@@ -488,39 +551,36 @@ export const intelLatestItems: IntelItem[] = [
     "flags": {
       "priority": "P1"
     }
-  },
-  {
-    "id": "market:2026-11-10:fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
-    "kind": "market",
-    "date": "2026-11-10",
-    "domain": "market",
-    "topic": "market_regulation",
-    "title": "FinCEN与美联储撤回跨境250美元门槛提案",
-    "summary": "研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。",
-    "href": "/market-radar/2026-11-10#fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
-    "source": {
-      "name": "Federal Register / GPO — 2026-22809",
-      "url": "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-    },
-    "flags": {
-      "priority": "P1"
-    }
   }
 ]
 export const intelTopics: IntelTopic[] = [
   {
     "topic": "onchain_infrastructure",
     "domain": "web3",
-    "count": 16,
-    "lastSeen": "2026-11-16",
+    "count": 17,
+    "lastSeen": "2026-11-17",
     "firstSeen": "2026-08-11"
   },
   {
     "topic": "agent",
     "domain": "ai",
-    "count": 15,
-    "lastSeen": "2026-11-16",
+    "count": 16,
+    "lastSeen": "2026-11-17",
     "firstSeen": "2026-08-11"
+  },
+  {
+    "topic": "safety",
+    "domain": "ai",
+    "count": 13,
+    "lastSeen": "2026-11-17",
+    "firstSeen": "2026-10-13"
+  },
+  {
+    "topic": "protocol",
+    "domain": "web3",
+    "count": 7,
+    "lastSeen": "2026-11-17",
+    "firstSeen": "2026-08-12"
   },
   {
     "topic": "infrastructure",
@@ -549,20 +609,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 22,
     "lastSeen": "2026-11-15",
     "firstSeen": "2026-08-09"
-  },
-  {
-    "topic": "safety",
-    "domain": "ai",
-    "count": 12,
-    "lastSeen": "2026-11-15",
-    "firstSeen": "2026-10-13"
-  },
-  {
-    "topic": "protocol",
-    "domain": "web3",
-    "count": 6,
-    "lastSeen": "2026-11-15",
-    "firstSeen": "2026-08-12"
   },
   {
     "topic": "wallet_cex",

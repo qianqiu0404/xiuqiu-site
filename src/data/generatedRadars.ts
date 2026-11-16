@@ -12,6 +12,48 @@ export interface RadarIndexEntry { date: string; slug: string; snapshotId: strin
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-11-17",
+    "slug": "2026-11-17",
+    "snapshotId": "learning-2026-11-17-3d6d417a03bb72b6",
+    "asOf": "2026-11-16T21:41:56.245Z",
+    "title": "学习雷达 · 2026-11-17",
+    "summary": "AI看共享记忆查询的字面量边界与Pod准入干跑；Web3看历史队列迁移及日志过滤条件。专题区分数据语义、namespace结构和租户授权。",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "briefs": [
+      {
+        "id": "ai-langgraphjs-mongodb-literal-query-values",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "LangGraph.js公告：存储查询里的值，不该变成数据库表达式"
+      },
+      {
+        "id": "ai-archestra-namespaced-runtimeclass-dryrun",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "Archestra1.5 RC：用Pod干跑核对RuntimeClass，保留未知状态"
+      },
+      {
+        "id": "web3-cosmos-feegrant-expiry-queue-migration",
+        "domain": "web3",
+        "topic": "protocol",
+        "title": "Cosmos0.55.1：旧队列能写进去，升级后还要能读出来"
+      },
+      {
+        "id": "web3-foundry-log-filter-excess-topics",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Foundry11月16日nightly：多余日志条件应报错，不该被悄悄丢弃"
+      }
+    ],
+    "deepDive": {
+      "id": "deep-mongodb-literal-values-and-tenant-authority",
+      "title": "专题：查询值按字面量比较后，租户授权仍然在哪里？",
+      "basedOnBriefId": "ai-langgraphjs-mongodb-literal-query-values"
+    },
+    "marketSignals": []
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "snapshotId": "learning-2026-11-16-20147f94783c1b8e",
@@ -1992,6 +2034,345 @@ export const radarIndex: RadarIndexEntry[] = [
 ]
 
 export const latestRadars: DailyRadar[] = [
+  {
+    "date": "2026-11-17",
+    "slug": "2026-11-17",
+    "title": "学习雷达 · 2026-11-17",
+    "summary": "AI看共享记忆查询的字面量边界与Pod准入干跑；Web3看历史队列迁移及日志过滤条件。专题区分数据语义、namespace结构和租户授权。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-11-16T21:41:56.245Z",
+    "generatedAt": "2026-11-16T21:41:56.245Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-langgraphjs-mongodb-literal-query-values",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "LangGraph.js公告：存储查询里的值，不该变成数据库表达式",
+        "whatHappened": "LangGraph.js于11月16日（UTC）公布MongoDBStore查询表达式注入问题，涉及@langchain/langgraph-checkpoint-mongodb的1.3.0至低于1.5.1版本。修复版1.5.1早在10月26日发布；本期报道披露，不把补丁发布日期改成公告日。",
+        "mechanism": "固定修复把get、put、delete及读取时TTL刷新共用的key条件写成显式$eq，非数组namespace直接拒绝。search的namespacePrefix标签、filter中的$eq操作数及向量检索后的namespace复核也按字面量比较，直接传给batch的操作走同样的查询构造路径。",
+        "workedExample": "单测给get传入一个对象key，核对findOne接到的是外包$eq的完整对象；batch收到字符串namespace时应抛错且不调用findOne。集成文件另保留数字key与嵌套对象相等查询的兼容断言。本期只读这些代码与断言，未运行MongoDB、Atlas或上游测试。",
+        "whyItMatters": "声明为字符串的参数，在运行时仍可能来自未受信任的JSON。把值和数据库表达式分开，并在真正发查询的位置统一处理，可以避免某个便利入口或batch绕开上层预期。",
+        "risksAndLimits": [
+          "公告针对把用户可控值传入共享或多租户store的应用，不表示所有LangGraph功能都受影响；数据库端JavaScript风险还取决于服务器是否启用相关能力，不能据此推断已有实际利用。",
+          "补丁没有把所有对象一律禁掉：合法对象相等比较和数字key仍需兼容。PR明确CI没有运行MongoDB，Atlas向量复核只有单测覆盖；字面量匹配也不替代应用对namespace归属的授权。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_security_advisory",
+            "name": "MongoDBStore query-expression advisory",
+            "url": "https://github.com/langchain-ai/langgraphjs/security/advisories/GHSA-p874-xggm-73rv",
+            "publishedAt": "2026-11-16T13:34:22.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_historical_release",
+            "name": "Historical patched MongoDB checkpoint1.5.1 release",
+            "url": "https://github.com/langchain-ai/langgraphjs/releases/tag/%40langchain/langgraph-checkpoint-mongodb%401.5.1"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Literal query comparison PR3103",
+            "url": "https://github.com/langchain-ai/langgraphjs/pull/3103"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Shared item filter and search literal operands",
+            "url": "https://github.com/langchain-ai/langgraphjs/blob/b09eb0662358457955131fe0bfec1d7c11e7d7c5/libs/checkpoint-mongodb/src/store.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Mocked query shapes and rejected namespace assertions",
+            "url": "https://github.com/langchain-ai/langgraphjs/blob/b09eb0662358457955131fe0bfec1d7c11e7d7c5/libs/checkpoint-mongodb/src/tests/store.test.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Literal values number keys and TTL integration assertions",
+            "url": "https://github.com/langchain-ai/langgraphjs/blob/b09eb0662358457955131fe0bfec1d7c11e7d7c5/libs/checkpoint-mongodb/src/tests/store.int.test.ts"
+          }
+        ],
+        "nextQuestions": [
+          "get、search和batch是否能共享同一份字面量查询约定，而namespace属于谁又由哪一层独立核验？"
+        ]
+      },
+      {
+        "id": "ai-archestra-namespaced-runtimeclass-dryrun",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "Archestra1.5 RC：用Pod干跑核对RuntimeClass，保留未知状态",
+        "whatHappened": "Archestra于11月16日（UTC）发布1.5.0-rc.36，收录同日合入的PR10779。它用Agent Runtime命名空间里的Pod准入干跑，替代读取集群级RuntimeClass；这是预发布RC，不是稳定版或真实集群部署验收。",
+        "mechanism": "探针携带配置的runtimeClassName，调用createNamespacedPod并设置dryRun=All，使用命名空间内的create pods操作。仅含对应RuntimeClass不存在文案的拒绝会标为missing并阻止非特权run；其他RBAC、策略或网络错误记为unknown并记录警告，仍允许后续启动尝试。",
+        "workedExample": "固定单测模拟缺失RuntimeClass的403，要求预检返回409和launch.misconfigured；准入返回201时，核对请求命名空间和dryRun=All。另一种403只说明没有create权限，预检不会把它当作类不存在。本期未连接Kubernetes、创建Pod或运行上游测试。",
+        "whyItMatters": "部署前检查应贴近真正要执行的操作与权限范围。无法读取一份集群元数据，不等于环境不存在；同样，检查无法完成时也不能把未知显示成已经验证成功。",
+        "risksAndLimits": [
+          "干跑只核对准入，不会实际启动探针，不能证明节点可调度、镜像能拉取或沙盒隔离已经运行。特权run不使用这项RuntimeClass检查，不能据此扩大特权执行范围。",
+          "固定实现对present缓存5分钟，其余已判定状态30秒；判定有时效。unknown放行是上游的行为选择，不是一次健康验收，真实启动结果仍须另外观察。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_prerelease",
+            "name": "Archestra1.5.0-rc.36 prerelease",
+            "url": "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.5.0-rc.36",
+            "publishedAt": "2026-11-16T17:11:28.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Namespaced RuntimeClass admission probe PR10779",
+            "url": "https://github.com/archestra-ai/archestra/pull/10779"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Dry-run probe and present missing unknown states",
+            "url": "https://github.com/archestra-ai/archestra/blob/efdcbe456275d8e5fa90bd30cfc65b786d88aa76/platform/backend/src/k8s/agent-runtime/runtime-class.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Admission missing class and unrelated403 assertions",
+            "url": "https://github.com/archestra-ai/archestra/blob/efdcbe456275d8e5fa90bd30cfc65b786d88aa76/platform/backend/src/k8s/agent-runtime/runtime-class.test.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_documentation",
+            "name": "Sandbox setup and probe boundary",
+            "url": "https://github.com/archestra-ai/archestra/blob/efdcbe456275d8e5fa90bd30cfc65b786d88aa76/docs/pages/agents/runtime/setup.md"
+          }
+        ],
+        "nextQuestions": [
+          "准备检查能否分别记录准入通过、明确缺失、检查未知和实际工作负载启动结果，并保留每个状态的核验时间？"
+        ]
+      },
+      {
+        "id": "web3-cosmos-feegrant-expiry-queue-migration",
+        "domain": "web3",
+        "topic": "protocol",
+        "title": "Cosmos0.55.1：旧队列能写进去，升级后还要能读出来",
+        "whatHappened": "Cosmos SDK于11月14日（UTC）发布0.55.1，包含前一日合入的PR26944。旧feegrant到期队列可能留有空值，升级后的BoolValue解码器不能读取它，到期清理会从EndBlocker返回错误；本期保留真实14日发布日期。",
+        "mechanism": "v2到v3迁移只检查feegrant队列前缀，先收集空值条目的key，再写入BoolValue对true的编码，已存非空值和其他前缀不变。模块注册从版本2迁移到3并把ConsensusVersion改为3，升级处理器通过RunMigrations调用，不能只换二进制就推定旧状态已修复。",
+        "workedExample": "固定keeper断言先种入带到期时间的grant和空队列值，推进时间后清理应报ErrEncoding；迁移写入0x01后，清理会移除grant与队列项。独立迁移断言保留已有false编码及其他前缀，并验证第二次运行不再改变状态。本期未执行Go测试、迁移或任何链上操作。",
+        "whyItMatters": "升级兼容不只看新写入路径，也要看旧状态何时会再次被读取。延迟到到期时才暴露的解码错误，需要把历史状态样本、迁移注册和触发时钟放在同一条验证链里。",
+        "risksAndLimits": [
+          "受影响条件包括从0.53或更早升入尚未包含该迁移的0.54/0.55，以及升级前创建、带到期时间且尚未到期的grant；从0.54或以后新启的链不属于这条历史迁移问题，无到期时间的grant也不创建该队列项。",
+          "官方将0.55.1标为状态机破坏性升级，0.55.0升级须协调链升级；受影响链应在最早空值条目到期前执行迁移。本期没有核验任何生产链是否受影响、是否完成升级或是否发生损失。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Cosmos SDK0.55.1 state-breaking release",
+            "url": "https://github.com/cosmos/cosmos-sdk/releases/tag/v0.55.1",
+            "publishedAt": "2026-11-14T02:13:33.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Fee allowance expiry queue migration PR26944",
+            "url": "https://github.com/cosmos/cosmos-sdk/pull/26944"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Queue-prefix empty-value migration",
+            "url": "https://github.com/cosmos/cosmos-sdk/blob/bb3fb62963674e6c423e33fcec7029b79f182982/x/feegrant/migrations/v3/store.go"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Empty nonempty other-prefix and idempotency assertions",
+            "url": "https://github.com/cosmos/cosmos-sdk/blob/bb3fb62963674e6c423e33fcec7029b79f182982/x/feegrant/migrations/v3/store_test.go"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Expiry failure before migration and cleanup after it",
+            "url": "https://github.com/cosmos/cosmos-sdk/blob/bb3fb62963674e6c423e33fcec7029b79f182982/x/feegrant/keeper/migrations_test.go"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Registered2to3 migration and consensus version3",
+            "url": "https://github.com/cosmos/cosmos-sdk/blob/bb3fb62963674e6c423e33fcec7029b79f182982/x/feegrant/module/module.go"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_documentation",
+            "name": "Affected-chain conditions and before-expiry upgrade guide",
+            "url": "https://github.com/cosmos/cosmos-sdk/blob/bb3fb62963674e6c423e33fcec7029b79f182982/UPGRADING.md"
+          }
+        ],
+        "nextQuestions": [
+          "发布前能否用真实格式的历史队列样本，连同模块版本映射和到期清理路径验证升级，而不只验证迁移函数能返回成功？"
+        ]
+      },
+      {
+        "id": "web3-foundry-log-filter-excess-topics",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Foundry11月16日nightly：多余日志条件应报错，不该被悄悄丢弃",
+        "whatHappened": "Foundry11月16日nightly收录11月15日合入的PR17682。cast logs此前可能因zip或resize截掉多余条件，返回比用户要求更宽的日志集合；修复在过滤器构造时拒绝无法表达的额外参数。",
+        "mechanism": "事件签名路径先数实际indexed参数，要求传入过滤参数数不超过它；原始topic路径要求总数不超过4，其中也包括第一个sig_or_topic。检查发生在zip或resize之前，少于indexed数量的部分过滤及空值通配仍保留。",
+        "workedExample": "固定tag中的两条拒绝断言分别覆盖Transfer只有两个indexed参数却给三个过滤值，以及总计五个原始topic；都要求返回具体错误。既有builds_filters保留部分过滤示例。本期按实际固定代码读取，未调用RPC、查询链上日志或运行上游测试。",
+        "whyItMatters": "查询成功但条件被静默删掉，会把错误样本带进Agent或索引分析。对无法表达的约束直接报错，比让结果看起来正常却扩大范围更容易审计，也便于区分输入问题和真正的零匹配。",
+        "risksAndLimits": [
+          "这是nightly中的CLI行为，不是稳定版升级、节点兼容或主网运行验收；以前可成功的多余参数调用现在会失败，需要调用方处理明确错误。",
+          "参数个数门禁不证明RPC服务的范围限制、日志完整性、重组处理或结果解释正确。保留部分过滤仍可能得到较宽集合，空结果也不能单独证明链上没有事件。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_nightly_release",
+            "name": "Foundry November16 nightly",
+            "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-7d3f4c70fecd998d5126d15fcc0e4466b79ded72",
+            "publishedAt": "2026-11-16T07:07:58.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Reject excess log filter topics PR17682",
+            "url": "https://github.com/foundry-rs/foundry/pull/17682"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code_and_test",
+            "name": "Filter construction and actual two rejection assertions",
+            "url": "https://github.com/foundry-rs/foundry/blob/7d3f4c70fecd998d5126d15fcc0e4466b79ded72/crates/cast/src/cmd/logs.rs"
+          }
+        ],
+        "nextQuestions": [
+          "进入后续分析前，工具能否展示最终序列化的topics，并把条件无法表达、请求失败与查询零匹配分开记录？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-mongodb-literal-values-and-tenant-authority",
+      "domain": "ai",
+      "topic": "safety",
+      "title": "专题：查询值按字面量比较后，租户授权仍然在哪里？",
+      "whatHappened": "MongoDBStore的11月16日公告把用户可控值和共享存储联系起来。1.5.1的修复主要约束输入怎样进入数据库查询；本专题把值的语义、namespace的结构和访问身份分别看，不把一种校验当成三种保证。",
+      "mechanism": "itemFilter检查namespace是否为数组，并把key包进显式$eq；search前缀与filter的$eq操作数也采用字面量比较。即使调用方绕到batch，查询构造仍应保留同一语义。这回答值如何匹配，不会自动回答某个登录身份是否可以选择该namespace。",
+      "workedExample": "上游单测核对对象key被保留为完整$eq操作数，集成文件又验证数字key和嵌套对象的合法匹配。工程反例是：应用若漏掉namespace归属检查，另一个租户的合法字符串仍是合法数据；字面量编码不能替应用补上授权。这是设计推论，不是本期复现的攻击或新漏洞。",
+      "whyItMatters": "Agent记忆或共享知识库往往把请求解析、存储适配器和租户权限放在不同层。为三者分别留证，才能知道一次通过证明了什么，也能定位哪个便利接口在运行时偏离了原来的类型预期。",
+      "risksAndLimits": [
+        "不能据此推断LangGraph缺少应用层鉴权，或任何已部署服务正在泄露数据。公告中的风险有共享存储与用户可控输入等前提，具体系统的身份边界仍需独立审查。",
+        "单测的mock查询形状、集成测试文件和实际数据库运行是不同证据。PR称CI没有运行MongoDB，Atlas复核只有单测；本期也未运行数据库、调用模型、发送外部数据或执行利用代码。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_security_advisory",
+          "name": "MongoDBStore query-expression advisory",
+          "url": "https://github.com/langchain-ai/langgraphjs/security/advisories/GHSA-p874-xggm-73rv",
+          "publishedAt": "2026-11-16T13:34:22.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_historical_release",
+          "name": "Historical patched MongoDB checkpoint1.5.1 release",
+          "url": "https://github.com/langchain-ai/langgraphjs/releases/tag/%40langchain/langgraph-checkpoint-mongodb%401.5.1"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "Literal query comparison PR3103",
+          "url": "https://github.com/langchain-ai/langgraphjs/pull/3103"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Shared item filter and search literal operands",
+          "url": "https://github.com/langchain-ai/langgraphjs/blob/b09eb0662358457955131fe0bfec1d7c11e7d7c5/libs/checkpoint-mongodb/src/store.ts"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Mocked query shapes and rejected namespace assertions",
+          "url": "https://github.com/langchain-ai/langgraphjs/blob/b09eb0662358457955131fe0bfec1d7c11e7d7c5/libs/checkpoint-mongodb/src/tests/store.test.ts"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Literal values number keys and TTL integration assertions",
+          "url": "https://github.com/langchain-ai/langgraphjs/blob/b09eb0662358457955131fe0bfec1d7c11e7d7c5/libs/checkpoint-mongodb/src/tests/store.int.test.ts"
+        }
+      ],
+      "nextQuestions": [
+        "一份租户隔离验收能否同时说明输入按什么语义匹配、namespace结构是否合法、请求身份由谁授权，并为实际数据库结果单独留证？"
+      ],
+      "basedOnBriefId": "ai-langgraphjs-mongodb-literal-query-values"
+    },
+    "sourceUrls": [
+      "https://github.com/langchain-ai/langgraphjs/security/advisories/GHSA-p874-xggm-73rv",
+      "https://github.com/langchain-ai/langgraphjs/releases/tag/%40langchain/langgraph-checkpoint-mongodb%401.5.1",
+      "https://github.com/langchain-ai/langgraphjs/pull/3103",
+      "https://github.com/langchain-ai/langgraphjs/blob/b09eb0662358457955131fe0bfec1d7c11e7d7c5/libs/checkpoint-mongodb/src/store.ts",
+      "https://github.com/langchain-ai/langgraphjs/blob/b09eb0662358457955131fe0bfec1d7c11e7d7c5/libs/checkpoint-mongodb/src/tests/store.test.ts",
+      "https://github.com/langchain-ai/langgraphjs/blob/b09eb0662358457955131fe0bfec1d7c11e7d7c5/libs/checkpoint-mongodb/src/tests/store.int.test.ts",
+      "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.5.0-rc.36",
+      "https://github.com/archestra-ai/archestra/pull/10779",
+      "https://github.com/archestra-ai/archestra/blob/efdcbe456275d8e5fa90bd30cfc65b786d88aa76/platform/backend/src/k8s/agent-runtime/runtime-class.ts",
+      "https://github.com/archestra-ai/archestra/blob/efdcbe456275d8e5fa90bd30cfc65b786d88aa76/platform/backend/src/k8s/agent-runtime/runtime-class.test.ts",
+      "https://github.com/archestra-ai/archestra/blob/efdcbe456275d8e5fa90bd30cfc65b786d88aa76/docs/pages/agents/runtime/setup.md",
+      "https://github.com/cosmos/cosmos-sdk/releases/tag/v0.55.1",
+      "https://github.com/cosmos/cosmos-sdk/pull/26944",
+      "https://github.com/cosmos/cosmos-sdk/blob/bb3fb62963674e6c423e33fcec7029b79f182982/x/feegrant/migrations/v3/store.go",
+      "https://github.com/cosmos/cosmos-sdk/blob/bb3fb62963674e6c423e33fcec7029b79f182982/x/feegrant/migrations/v3/store_test.go",
+      "https://github.com/cosmos/cosmos-sdk/blob/bb3fb62963674e6c423e33fcec7029b79f182982/x/feegrant/keeper/migrations_test.go",
+      "https://github.com/cosmos/cosmos-sdk/blob/bb3fb62963674e6c423e33fcec7029b79f182982/x/feegrant/module/module.go",
+      "https://github.com/cosmos/cosmos-sdk/blob/bb3fb62963674e6c423e33fcec7029b79f182982/UPGRADING.md",
+      "https://github.com/foundry-rs/foundry/releases/tag/nightly-7d3f4c70fecd998d5126d15fcc0e4466b79ded72",
+      "https://github.com/foundry-rs/foundry/pull/17682",
+      "https://github.com/foundry-rs/foundry/blob/7d3f4c70fecd998d5126d15fcc0e4466b79ded72/crates/cast/src/cmd/logs.rs"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-11-17-3d6d417a03bb72b6",
+    "asOf": "2026-11-16T21:41:56.245Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
   {
     "date": "2026-11-16",
     "slug": "2026-11-16",
@@ -3981,293 +4362,6 @@ export const latestRadars: DailyRadar[] = [
     "marketSignals": [],
     "snapshotId": "learning-2026-11-11-3323ecfb854f3355",
     "asOf": "2026-11-10T21:38:26.706Z",
-    "origin": "research",
-    "publicationState": "published"
-  },
-  {
-    "date": "2026-11-09",
-    "slug": "2026-11-09",
-    "title": "学习雷达 · 2026-11-09",
-    "summary": "AI看遥测跨层前的URL净化与当前模型预算；Web3看HTTP批次配置归属与对象资金执行期失败。补读尚未覆盖的固定发布快照，保留原日期；专题核对观察者接收数据的时点。",
-    "publish": true,
-    "reviewStatus": "automated",
-    "schemaVersion": 2,
-    "editionMode": "daily",
-    "researchedAt": "2026-11-08T21:37:39.755Z",
-    "generatedAt": "2026-11-08T21:37:39.755Z",
-    "sourceSections": [
-      "ai",
-      "web3",
-      "deepDive"
-    ],
-    "missingSections": [],
-    "briefs": [
-      {
-        "id": "ai-sdk-telemetry-url-boundary",
-        "domain": "ai",
-        "topic": "safety",
-        "title": "AI SDK 7.0.165：遥测拿到模型结果之前，先缩减请求 URL",
-        "whatHappened": "AI SDK于11月7日（UTC）发布7.0.165：generateText与streamText此前虽已缩减公开结果URL，遥测integration和tracing subscriber仍可能更早看到原始端点。",
-        "mechanism": "provider回调返回前复制结果并净化request.url：HTTP(S)仅留origin，无效或非HTTP(S)地址省略url。用户信息、路径、query、fragment被去掉；body等元数据保留，原provider对象不变。",
-        "workedExample": "上游mock在两个观察者接收时即时复制request，检查URL净化及原对象未变。本期只读断言，未运行模型或本地复现。",
-        "whyItMatters": "最终输出不能覆盖更早的观察者；应逐接收者核对字段与脱敏时点。",
-        "risksAndLimits": [
-          "仅修两条文本生成路径的URL元数据，不保证headers、body、业务日志或WorkflowAgent安全。",
-          "origin仍暴露主机与端口；本期未验证生产部署或过去数据的撤回。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "AI SDK release",
-            "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-            "publishedAt": "2026-11-07T19:27:48.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR24708",
-            "url": "https://github.com/vercel/ai/pull/24708"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "generateText boundary",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/generate-text.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "URL sanitizer",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/get-request-origin.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "Immediate tracing tests",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts"
-          }
-        ],
-        "nextQuestions": [
-          "接收者的字段范围与脱敏时点如何分别核验？"
-        ]
-      },
-      {
-        "id": "ai-deepagents-selected-model-budget",
-        "domain": "ai",
-        "topic": "infrastructure",
-        "title": "deepagents-code 0.2.5：压缩输入预算跟随当前选定模型",
-        "whatHappened": "0.2.5于11月5日（UTC）发布，修复切换模型仍按启动模型判断压缩的问题，与已刊摘要截点修复不同。",
-        "mechanism": "同步/异步用临时请求核算选定模型与运行期settings的预算；交给handler前恢复原model/settings，让下游中间件继续真正选择模型。",
-        "workedExample": "上游mock矩阵：启动128K转32K，26K输入加8K输出预留需压缩，改2K则不压缩；还检查下游与原请求。本期只读，未运行模型/测试。",
-        "whyItMatters": "切换模型也改变预算；预算准备和最终执行要分开核验，保留下游配置。",
-        "risksAndLimits": [
-          "数字是上游合成断言，不是本期实测窗口、精确token数或延迟收益；provider限制仍需另验。",
-          "预算依据主模型，摘要生成可另选模型；不证明摘要完整或会话恢复正确。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "deepagents-code release",
-            "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5",
-            "publishedAt": "2026-11-05T21:41:43.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR7545",
-            "url": "https://github.com/langchain-ai/deepagents/pull/7545"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Budget request code",
-            "url": "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/deepagents_code/offload_middleware.py"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "Budget matrix tests",
-            "url": "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/tests/unit_tests/test_compact_tool.py"
-          }
-        ],
-        "nextQuestions": [
-          "预算来自当前配置，最终模型选择是否仍走原流程？"
-        ]
-      },
-      {
-        "id": "web3-viem-http-batch-factory-identity",
-        "domain": "web3",
-        "topic": "onchain_infrastructure",
-        "title": "viem 2.57.17：同一 RPC URL，不再把不同 transport 的批次混用",
-        "whatHappened": "viem于11月8日（UTC）发布2.57.17，修复同URL下独立HTTP工厂合批时混用鉴权头与fetch配置的问题。",
-        "mechanism": "调度键组合稳定工厂batchId、实际URL和AbortSignal身份。ID位于initializer外，fallback重初始化同工厂仍合批；独立工厂保留各自RPC配置。",
-        "workedExample": "上游本地鉴权A/B返回1和10，覆盖直接/fallback分离、同工厂共享与URL/signal分离。本期只读，未连RPC或发交易。",
-        "whyItMatters": "相同地址不等于同一调用者；批处理仍需保持鉴权配置和响应归属。",
-        "risksAndLimits": [
-          "这是工厂批次隔离，不是租户认证、链ID校验或WebSocket订阅路由；1和10为本地测试值。",
-          "相同配置的独立工厂也不自动合批；共享需复用工厂并审查配置，不表示写请求可安全重试。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "viem release",
-            "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.17",
-            "publishedAt": "2026-11-08T18:04:10.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR5389",
-            "url": "https://github.com/wevm/viem/pull/5389"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "HTTP factory code",
-            "url": "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "HTTP batch tests",
-            "url": "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.test.ts"
-          }
-        ],
-        "nextQuestions": [
-          "哪些客户端应共享工厂，如何核验配置归属？"
-        ]
-      },
-      {
-        "id": "web3-sui-object-funds-execution-abort",
-        "domain": "web3",
-        "topic": "protocol",
-        "title": "Sui mainnet 1.83.1：对象资金不足，在执行期间形成 Move abort",
-        "whatHappened": "Sui于11月4日（UTC）发布mainnet1.83.1，其protocol140配置让对象资金不足在执行期abort，替代旧检查/重执行。PR于10月20日合入，非当天首创。",
-        "mechanism": "版本化设计先看交易内owner/type余额；不足时按所需accumulator版本读取已结算余额、扣除同commit未结算提款。仍不足则abort；地址调度独立。",
-        "workedExample": "文档中dry-run/孤立replay缺少同commit未结算视图，可能成功而提交执行不足失败。本期只读配置/设计，未运行节点、模拟、回放或资金操作。",
-        "whyItMatters": "模拟成功不能代替执行回执；应区分状态视图、失败阶段与错误类型。",
-        "risksAndLimits": [
-          "对象虚拟余额不足形成Move abort；地址资金执行前调度仍可返回InsufficientFundsForWithdraw。",
-          "文档说明已执行失败可正常收gas；未验证真实主网部署、账户余额或资金安全，孤立replay差异另项追踪。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "Sui mainnet release",
-            "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1",
-            "publishedAt": "2026-11-04T20:01:16.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR28290",
-            "url": "https://github.com/MystenLabs/sui/pull/28290"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Protocol140 config",
-            "url": "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-protocol-config/src/lib.rs"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_design",
-            "name": "Object funds design",
-            "url": "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-core/src/accumulators/design_docs/object_funds_in_execution.md"
-          }
-        ],
-        "nextQuestions": [
-          "三种视图的版本、扣减及对象/地址错误如何分别识别？"
-        ]
-      }
-    ],
-    "deepDive": {
-      "id": "deep-telemetry-observer-sanitization-order",
-      "domain": "ai",
-      "topic": "safety",
-      "title": "专题：最终结果已脱敏，为什么中途观察者仍可能看到原值",
-      "whatHappened": "7.0.165把URL净化前移至provider回调返回前；遥测integration/tracing不再早于公开API看到这一路径的原始request.url。",
-      "mechanism": "只在外层净化时，包装器await execute()后会先见原request。现在生成/流式启动先返回净化元数据，再入遥测；实际请求端点不变。",
-      "workedExample": "上游在integration/asyncEnd即时复制request，避免结束后只查可变引用；还冻结并检查原对象。本期只读，未运行模型或复现。",
-      "whyItMatters": "编辑推论：跨观察边界前处理并逐接收者留证，最终输出只证明自身。",
-      "risksAndLimits": [
-        "未审查全部sink、WorkflowAgent或业务日志；保留的body/其他元数据仍可能有敏感内容，URL净化不是全量隐私保证。",
-        "代码断言不证明已部署、已清理历史遥测或撤回已发送数据。"
-      ],
-      "sources": [
-        {
-          "tier": "tier1",
-          "role": "event",
-          "kind": "official_release",
-          "name": "AI SDK release",
-          "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-          "publishedAt": "2026-11-07T19:27:48.000Z"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_code",
-          "name": "streamText boundary",
-          "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/stream-language-model-call.ts"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_test",
-          "name": "Immediate tracing tests",
-          "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts"
-        }
-      ],
-      "nextQuestions": [
-        "即时接收的字段、处理时点与保留规则是否有证据？"
-      ],
-      "basedOnBriefId": "ai-sdk-telemetry-url-boundary"
-    },
-    "sourceUrls": [
-      "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-      "https://github.com/vercel/ai/pull/24708",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/generate-text.ts",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/get-request-origin.ts",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts",
-      "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5",
-      "https://github.com/langchain-ai/deepagents/pull/7545",
-      "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/deepagents_code/offload_middleware.py",
-      "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/tests/unit_tests/test_compact_tool.py",
-      "https://github.com/wevm/viem/releases/tag/viem%402.57.17",
-      "https://github.com/wevm/viem/pull/5389",
-      "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.ts",
-      "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.test.ts",
-      "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1",
-      "https://github.com/MystenLabs/sui/pull/28290",
-      "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-protocol-config/src/lib.rs",
-      "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-core/src/accumulators/design_docs/object_funds_in_execution.md",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/stream-language-model-call.ts"
-    ],
-    "relatedProjectSlugs": [],
-    "marketSignals": [],
-    "snapshotId": "learning-2026-11-09-bd83a5cc7fff3983",
-    "asOf": "2026-11-08T21:37:39.755Z",
     "origin": "research",
     "publicationState": "published"
   }
