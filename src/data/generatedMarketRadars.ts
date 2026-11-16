@@ -16,6 +16,17 @@ export interface MarketRadarDaily { schemaVersion?: 2; date: string; slug: strin
 export interface MarketRadarIndexEntry { date: string; slug: string; snapshotId: string; asOf: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
 export const marketRadarIndex: MarketRadarIndexEntry[] = [
   {
+    "date": "2026-11-17",
+    "slug": "2026-11-17",
+    "title": "交易研究雷达 · 2026-11-17",
+    "summary": "Barr以个人观点讨论零售AI Agent的认证、具体行动同意与资金移动风险。本期只记录官方演讲及其银行报告转述，区分防护建议、技术可能性与真实执行，不把风险提示写成新规则或已发生挤兑。",
+    "snapshotId": "market-2026-11-17-98f82be90832b9a6",
+    "asOf": "2026-11-16T21:37:32.331Z",
+    "eventCount": 1,
+    "assetCount": 1,
+    "leadTitle": "Barr谈AI Agent金融接入：账户认证与逐项同意须分开"
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "title": "交易研究雷达 · 2026-11-16",
@@ -314,6 +325,156 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
   }
 ]
 export const latestMarketRadars: MarketRadarDaily[] = [
+  {
+    "date": "2026-11-17",
+    "slug": "2026-11-17",
+    "title": "交易研究雷达 · 2026-11-17",
+    "summary": "Barr以个人观点讨论零售AI Agent的认证、具体行动同意与资金移动风险。本期只记录官方演讲及其银行报告转述，区分防护建议、技术可能性与真实执行，不把风险提示写成新规则或已发生挤兑。",
+    "snapshotId": "market-2026-11-17-98f82be90832b9a6",
+    "asOf": "2026-11-16T21:37:32.331Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-16T21:37:32.331Z",
+    "events": [
+      {
+        "id": "fed-barr-agent-account-consent-deposit-outflows-2026-11-16",
+        "priority": "P2",
+        "status": "released",
+        "category": "macro",
+        "title": "Barr谈AI Agent金融接入：账户认证与逐项同意须分开",
+        "fact": "美联储理事Barr于11月16日演讲中转述银行报告：发现AI Agent尝试操作零售账户，却无法核验真实性、同意及与客户指令的一致性。他提出严格认证、按具体行动核验同意及限制Agent能力等防护，并讨论Agent可能加速压力期存款外流。这是个人观点和报告转述，非正式新规。",
+        "whyWatch": "研究推断：身份识别、单次行动授权与实际执行的分离，可能经转账能力和速度联系银行流动性及相关资产；部署覆盖、控制效果和资金流仍需独立核验，演讲不证明已经发生挤兑。",
+        "assets": [
+          "银行与金融服务企业"
+        ],
+        "watchFor": "核对公开披露的Agent权限范围、具体操作同意记录、转账节流及实际资金流；区分尝试、获准与已执行，并对照市场压力、客户构成和其他转账渠道。",
+        "invalidation": "若Agent只读、必须逐项人工批准或节流有效，则收窄快速外流解释；若无法核实部署与操作，更不能从风险提示推出已完成转账、挤兑或资产方向。本期无具名银行事件或市场反应样本。",
+        "sourceName": "Federal Reserve — Michael S. Barr, Some Potential Financial Stability Implications of Artificial Intelligence",
+        "sourceUrl": "https://www.federalreserve.gov/newsevents/speech/barr20261116a.htm",
+        "sourcePublishedAt": "2026-11-16"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.federalreserve.gov/newsevents/speech/barr20261116a.htm"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "本期仅核对官方演讲与发布日期索引，没有银行操作、存款流或资产反应的同窗口历史样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "账户操作的尝试、同意与执行是不同证据；对潜在外流速度的讨论不能换算为发生概率或市场结果。",
+      "nextValidation": "记录公开部署范围、权限控制和实际资金流，区分压力条件与其他渠道；没有可比样本时保留未知。",
+      "invalidation": "部署权限、客户构成或流动性条件改变时重估；缺少执行与资金流证据时不建立资产传导结论。",
+      "sourceUrls": [
+        "https://www.federalreserve.gov/newsevents/speech/barr20261116a.htm"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "若金融机构采用可执行账户操作的AI Agent，身份认证、具体行动同意与能力限制如何经转账执行及流动性管理联系相关资产，各环需要哪些独立证据？",
+        "focusEventIds": [
+          "fed-barr-agent-account-consent-deposit-outflows-2026-11-16"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些银行权限记录、实际操作与资金流及可比压力窗口，能支持或推翻Agent可能加速存款外流的解释，应如何区分技术可能性与已发生行为？",
+        "focusEventIds": [
+          "fed-barr-agent-account-consent-deposit-outflows-2026-11-16"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若Agent只读、需逐项人工批准或转账节流有效，最强反方情景如何成立，后续观察什么会使快速外流的传导判断失效？",
+        "focusEventIds": [
+          "fed-barr-agent-account-consent-deposit-outflows-2026-11-16"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-17",
+      "snapshotId": "market-2026-11-17-98f82be90832b9a6",
+      "asOf": "2026-11-16T21:37:32.331Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-17",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "若金融机构采用可执行账户操作的AI Agent，身份认证、具体行动同意与能力限制如何经转账执行及流动性管理联系相关资产，各环需要哪些独立证据？",
+          "focusEventIds": [
+            "fed-barr-agent-account-consent-deposit-outflows-2026-11-16"
+          ],
+          "prompt": "研究任务：若金融机构采用可执行账户操作的AI Agent，身份认证、具体行动同意与能力限制如何经转账执行及流动性管理联系相关资产，各环需要哪些独立证据？\n证据快照：2026-11-17；asOf=2026-11-16T21:37:32.331Z；snapshotId=market-2026-11-17-98f82be90832b9a6\n\n材料 1｜Barr谈AI Agent金融接入：账户认证与逐项同意须分开\n已确认事实：美联储理事Barr于11月16日演讲中转述银行报告：发现AI Agent尝试操作零售账户，却无法核验真实性、同意及与客户指令的一致性。他提出严格认证、按具体行动核验同意及限制Agent能力等防护，并讨论Agent可能加速压力期存款外流。这是个人观点和报告转述，非正式新规。\n关注机制：研究推断：身份识别、单次行动授权与实际执行的分离，可能经转账能力和速度联系银行流动性及相关资产；部署覆盖、控制效果和资金流仍需独立核验，演讲不证明已经发生挤兑。\n接下来验证：核对公开披露的Agent权限范围、具体操作同意记录、转账节流及实际资金流；区分尝试、获准与已执行，并对照市场压力、客户构成和其他转账渠道。\n失效条件：若Agent只读、必须逐项人工批准或节流有效，则收窄快速外流解释；若无法核实部署与操作，更不能从风险提示推出已完成转账、挤兑或资产方向。本期无具名银行事件或市场反应样本。\n一手来源：https://www.federalreserve.gov/newsevents/speech/barr20261116a.htm\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "4ef8d826e02a3685ab50d6e46d86f64c037cffb7faeb5eee2b78d6c2a1849528",
+          "sourceUrls": [
+            "https://www.federalreserve.gov/newsevents/speech/barr20261116a.htm"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些银行权限记录、实际操作与资金流及可比压力窗口，能支持或推翻Agent可能加速存款外流的解释，应如何区分技术可能性与已发生行为？",
+          "focusEventIds": [
+            "fed-barr-agent-account-consent-deposit-outflows-2026-11-16"
+          ],
+          "prompt": "研究任务：哪些银行权限记录、实际操作与资金流及可比压力窗口，能支持或推翻Agent可能加速存款外流的解释，应如何区分技术可能性与已发生行为？\n证据快照：2026-11-17；asOf=2026-11-16T21:37:32.331Z；snapshotId=market-2026-11-17-98f82be90832b9a6\n\n材料 1｜Barr谈AI Agent金融接入：账户认证与逐项同意须分开\n已确认事实：美联储理事Barr于11月16日演讲中转述银行报告：发现AI Agent尝试操作零售账户，却无法核验真实性、同意及与客户指令的一致性。他提出严格认证、按具体行动核验同意及限制Agent能力等防护，并讨论Agent可能加速压力期存款外流。这是个人观点和报告转述，非正式新规。\n关注机制：研究推断：身份识别、单次行动授权与实际执行的分离，可能经转账能力和速度联系银行流动性及相关资产；部署覆盖、控制效果和资金流仍需独立核验，演讲不证明已经发生挤兑。\n接下来验证：核对公开披露的Agent权限范围、具体操作同意记录、转账节流及实际资金流；区分尝试、获准与已执行，并对照市场压力、客户构成和其他转账渠道。\n失效条件：若Agent只读、必须逐项人工批准或节流有效，则收窄快速外流解释；若无法核实部署与操作，更不能从风险提示推出已完成转账、挤兑或资产方向。本期无具名银行事件或市场反应样本。\n一手来源：https://www.federalreserve.gov/newsevents/speech/barr20261116a.htm\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "a0b3f803a7ae848b014a8bc9c8a6f26d0ffc1ac99b64843d66450368348e1545",
+          "sourceUrls": [
+            "https://www.federalreserve.gov/newsevents/speech/barr20261116a.htm"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若Agent只读、需逐项人工批准或转账节流有效，最强反方情景如何成立，后续观察什么会使快速外流的传导判断失效？",
+          "focusEventIds": [
+            "fed-barr-agent-account-consent-deposit-outflows-2026-11-16"
+          ],
+          "prompt": "研究任务：若Agent只读、需逐项人工批准或转账节流有效，最强反方情景如何成立，后续观察什么会使快速外流的传导判断失效？\n证据快照：2026-11-17；asOf=2026-11-16T21:37:32.331Z；snapshotId=market-2026-11-17-98f82be90832b9a6\n\n材料 1｜Barr谈AI Agent金融接入：账户认证与逐项同意须分开\n已确认事实：美联储理事Barr于11月16日演讲中转述银行报告：发现AI Agent尝试操作零售账户，却无法核验真实性、同意及与客户指令的一致性。他提出严格认证、按具体行动核验同意及限制Agent能力等防护，并讨论Agent可能加速压力期存款外流。这是个人观点和报告转述，非正式新规。\n关注机制：研究推断：身份识别、单次行动授权与实际执行的分离，可能经转账能力和速度联系银行流动性及相关资产；部署覆盖、控制效果和资金流仍需独立核验，演讲不证明已经发生挤兑。\n接下来验证：核对公开披露的Agent权限范围、具体操作同意记录、转账节流及实际资金流；区分尝试、获准与已执行，并对照市场压力、客户构成和其他转账渠道。\n失效条件：若Agent只读、必须逐项人工批准或节流有效，则收窄快速外流解释；若无法核实部署与操作，更不能从风险提示推出已完成转账、挤兑或资产方向。本期无具名银行事件或市场反应样本。\n一手来源：https://www.federalreserve.gov/newsevents/speech/barr20261116a.htm\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "c075283c8390c8f474e8f31233c351a8e98ecf767635132e6031f7c9532b2737",
+          "sourceUrls": [
+            "https://www.federalreserve.gov/newsevents/speech/barr20261116a.htm"
+          ]
+        }
+      ]
+    }
+  },
   {
     "date": "2026-11-16",
     "slug": "2026-11-16",
@@ -1215,157 +1376,6 @@ export const latestMarketRadars: MarketRadarDaily[] = [
           "promptChecksum": "b51c3ac516a1c07dde99ae9da2bb3791c04f34f554274828a451ef9584b543b8",
           "sourceUrls": [
             "https://www.newyorkfed.org/newsevents/news/research/2026/20261110"
-          ]
-        }
-      ]
-    }
-  },
-  {
-    "date": "2026-11-10",
-    "slug": "2026-11-10",
-    "title": "交易研究雷达 · 2026-11-10",
-    "summary": "FinCEN与美联储撤回2020年跨境资金传送门槛提案；本期区分11月6日公告、11月9日正式刊登与现行规则，不把撤回旧提案解读为取消既有义务。",
-    "snapshotId": "market-2026-11-10-01bdf765eaf1db2d",
-    "asOf": "2026-11-09T21:36:03.266Z",
-    "origin": "research",
-    "publicationState": "published",
-    "reviewStatus": "automated",
-    "generatedAt": "2026-11-09T21:36:03.266182Z",
-    "events": [
-      {
-        "id": "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
-        "priority": "P1",
-        "status": "released",
-        "category": "regulation",
-        "title": "FinCEN与美联储撤回跨境250美元门槛提案",
-        "fact": "11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。",
-        "whyWatch": "研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。",
-        "assets": [
-          "跨境资金通道",
-          "加密资产"
-        ],
-        "watchFor": "核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。",
-        "invalidation": "后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。",
-        "sourceName": "Federal Register / GPO — 2026-22809",
-        "sourceUrl": "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm",
-        "sourcePublishedAt": "2026-11-09"
-      }
-    ],
-    "sourceUrls": [
-      "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-    ],
-    "quantStrategy": {
-      "horizonTradingDays": 3,
-      "status": "historical_samples_insufficient",
-      "methodology": "本期仅核对一份提案撤回文件及先前公告，未建立机构开发排期、资金服务与资产反应的同窗口样本。",
-      "assets": [
-        {
-          "symbol": "SPY",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "QQQ",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "BTC",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "ETH",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "GLD",
-          "group": "gold_etf",
-          "signalQuality": "weak"
-        }
-      ],
-      "sampleSize": 0,
-      "rationale": "规则文件变化、机构实际执行与市场反应是不同层次；没有样本便不量化跨资产影响。",
-      "nextValidation": "固定公告及正式撤回时点，再核对公开实施说明、既有规则和可比服务数据，样本不足时仅记录信号质量。",
-      "invalidation": "新提案或正式范围改变时重估；数据口径、时间窗口不一致或缺少实际服务变化证据时保留未知。",
-      "sourceUrls": [
-        "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-      ]
-    },
-    "schemaVersion": 2,
-    "researchQuestions": [
-      {
-        "id": "1",
-        "lens": "transmission",
-        "shortQuestion": "旧提案退出如何经合规开发排期、机构执行和跨境资金服务传导到市场，各环需要哪些独立证据？",
-        "focusEventIds": [
-          "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-        ]
-      },
-      {
-        "id": "2",
-        "lens": "falsification",
-        "shortQuestion": "哪些既有规则、机构说明和同窗口服务数据，能推翻把当前市场变化归因于本次撤回的解释？",
-        "focusEventIds": [
-          "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-        ]
-      },
-      {
-        "id": "3",
-        "lens": "scenario",
-        "shortQuestion": "现行配置不变、新提案重启与服务实际调整分别对应什么情景，什么证据会使当前判断失效？",
-        "focusEventIds": [
-          "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-        ]
-      }
-    ],
-    "researchPack": {
-      "schemaVersion": 2,
-      "date": "2026-11-10",
-      "snapshotId": "market-2026-11-10-01bdf765eaf1db2d",
-      "asOf": "2026-11-09T21:36:03.266Z",
-      "origin": "research",
-      "publicationState": "published",
-      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-10",
-      "questions": [
-        {
-          "id": "1",
-          "lens": "transmission",
-          "shortQuestion": "旧提案退出如何经合规开发排期、机构执行和跨境资金服务传导到市场，各环需要哪些独立证据？",
-          "focusEventIds": [
-            "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-          ],
-          "prompt": "研究任务：旧提案退出如何经合规开发排期、机构执行和跨境资金服务传导到市场，各环需要哪些独立证据？\n证据快照：2026-11-10；asOf=2026-11-09T21:36:03.266Z；snapshotId=market-2026-11-10-01bdf765eaf1db2d\n\n材料 1｜FinCEN与美联储撤回跨境250美元门槛提案\n已确认事实：11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。\n关注机制：研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。\n接下来验证：核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。\n失效条件：后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。\n一手来源：https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "6bdf797b1a69478a921459f978c1506d2c7006e190819973ee4e76316dab80ff",
-          "sourceUrls": [
-            "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-          ]
-        },
-        {
-          "id": "2",
-          "lens": "falsification",
-          "shortQuestion": "哪些既有规则、机构说明和同窗口服务数据，能推翻把当前市场变化归因于本次撤回的解释？",
-          "focusEventIds": [
-            "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-          ],
-          "prompt": "研究任务：哪些既有规则、机构说明和同窗口服务数据，能推翻把当前市场变化归因于本次撤回的解释？\n证据快照：2026-11-10；asOf=2026-11-09T21:36:03.266Z；snapshotId=market-2026-11-10-01bdf765eaf1db2d\n\n材料 1｜FinCEN与美联储撤回跨境250美元门槛提案\n已确认事实：11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。\n关注机制：研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。\n接下来验证：核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。\n失效条件：后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。\n一手来源：https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "b07627ead551add6ce0062f0cac3748f964c2ce255524fa093a1f4539ed3e896",
-          "sourceUrls": [
-            "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-          ]
-        },
-        {
-          "id": "3",
-          "lens": "scenario",
-          "shortQuestion": "现行配置不变、新提案重启与服务实际调整分别对应什么情景，什么证据会使当前判断失效？",
-          "focusEventIds": [
-            "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-          ],
-          "prompt": "研究任务：现行配置不变、新提案重启与服务实际调整分别对应什么情景，什么证据会使当前判断失效？\n证据快照：2026-11-10；asOf=2026-11-09T21:36:03.266Z；snapshotId=market-2026-11-10-01bdf765eaf1db2d\n\n材料 1｜FinCEN与美联储撤回跨境250美元门槛提案\n已确认事实：11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。\n关注机制：研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。\n接下来验证：核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。\n失效条件：后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。\n一手来源：https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "a18a64a71ef388b379425fa6a84d7891d887815875a28e56fc58e3e22087590f",
-          "sourceUrls": [
-            "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
           ]
         }
       ]
