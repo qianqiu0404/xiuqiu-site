@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-11-18:fed-october-industrial-production-composition-revisions-2026-11-17",
+    "kind": "market",
+    "date": "2026-11-18",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "美国10月工业产出降0.4%，总量与制造业构成须分开",
+    "summary": "研究推断：行业构成、设备需求与产能利用信息，可能先影响企业收入和投资需求判断，再经盈利预期及贴现假设联系相关资产；各环仍需配套样本，工业统计不代表全经济或政策决定。",
+    "href": "/market-radar/2026-11-18#fed-october-industrial-production-composition-revisions-2026-11-17",
+    "source": {
+      "name": "Federal Reserve — Industrial Production and Capacity Utilization (G.17), November 17, 2026",
+      "url": "https://www.federalreserve.gov/releases/g17/20261117/default.htm"
+    },
+    "flags": {
+      "priority": "P2"
+    }
+  },
+  {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
     "date": "2026-11-16",

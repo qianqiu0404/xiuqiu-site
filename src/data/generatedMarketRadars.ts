@@ -16,6 +16,17 @@ export interface MarketRadarDaily { schemaVersion?: 2; date: string; slug: strin
 export interface MarketRadarIndexEntry { date: string; slug: string; snapshotId: string; asOf: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
 export const marketRadarIndex: MarketRadarIndexEntry[] = [
   {
+    "date": "2026-11-18",
+    "slug": "2026-11-18",
+    "title": "交易研究雷达 · 2026-11-18",
+    "summary": "美联储新公布的10月工业产出总量下降，制造业却上升。本期拆开行业构成、初值与修订版本；11月24日年度修订仍是计划，不把统计数据直接写成全经济或资产方向。",
+    "snapshotId": "market-2026-11-18-782ba64822b25831",
+    "asOf": "2026-11-17T21:39:10.734Z",
+    "eventCount": 1,
+    "assetCount": 1,
+    "leadTitle": "美国10月工业产出降0.4%，总量与制造业构成须分开"
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "title": "交易研究雷达 · 2026-11-16",
@@ -314,6 +325,156 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
   }
 ]
 export const latestMarketRadars: MarketRadarDaily[] = [
+  {
+    "date": "2026-11-18",
+    "slug": "2026-11-18",
+    "title": "交易研究雷达 · 2026-11-18",
+    "summary": "美联储新公布的10月工业产出总量下降，制造业却上升。本期拆开行业构成、初值与修订版本；11月24日年度修订仍是计划，不把统计数据直接写成全经济或资产方向。",
+    "snapshotId": "market-2026-11-18-782ba64822b25831",
+    "asOf": "2026-11-17T21:39:10.734Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-17T21:39:10.734Z",
+    "events": [
+      {
+        "id": "fed-october-industrial-production-composition-revisions-2026-11-17",
+        "priority": "P2",
+        "status": "released",
+        "category": "macro",
+        "title": "美国10月工业产出降0.4%，总量与制造业构成须分开",
+        "fact": "美联储11月17日G.17公布：10月经季调工业产出环比降0.4%，制造业增0.3%，采矿降0.8%、公用事业降4.3%；剔除汽车及零部件的制造业降0.1%。10月为初值，产能利用率为76.4%，比1972—2025年均值低3.0个百分点。",
+        "whyWatch": "研究推断：行业构成、设备需求与产能利用信息，可能先影响企业收入和投资需求判断，再经盈利预期及贴现假设联系相关资产；各环仍需配套样本，工业统计不代表全经济或政策决定。",
+        "assets": [
+          "美国工业与设备企业"
+        ],
+        "watchFor": "按同一发布版本核对初值、修订和季调口径，跟踪剔除汽车的制造业、设备与能源分项是否延续；关注11月24日计划年度修订的基期和历史序列，发布后再对齐。本期未采集订单、盈利、行情、利率或资金流样本。",
+        "invalidation": "若行业波动短暂、后续修订改变路径或企业数据不一致，应收窄持续需求变化解释。年度修订尚未发布，不能预填新基期结果；未排除同期信息时不把资产变化归因于本统计，也不据此推断衰退或政策动作。",
+        "sourceName": "Federal Reserve — Industrial Production and Capacity Utilization (G.17), November 17, 2026",
+        "sourceUrl": "https://www.federalreserve.gov/releases/g17/20261117/default.htm",
+        "sourcePublishedAt": "2026-11-17"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.federalreserve.gov/releases/g17/20261117/default.htm"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "本期核对11月17日固定归档统计发布、摘要表和官方发布索引，未建立统计变化、企业经营与资产反应的同窗口历史样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "月度初值、修订值与不同分项不能当作全经济增长或市场反应；产能利用率水平与百分点变化也不能换算为方向概率。",
+      "nextValidation": "固定发布版本与参考期，补充可比订单、盈利和同窗口资产数据，控制其他同期信息；样本不足时只保留信号质量。",
+      "invalidation": "年度修订、季调或样本口径变化时重新对齐；若缺少经营和资产传导证据，保留未知。",
+      "sourceUrls": [
+        "https://www.federalreserve.gov/releases/g17/20261117/default.htm"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "10月工业产出的行业构成、设备需求与产能利用信息，可能经企业收入、投资和贴现假设哪些环节联系相关资产，各环需要什么同窗口证据？",
+        "focusEventIds": [
+          "fed-october-industrial-production-composition-revisions-2026-11-17"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些初值与修订版本、剔除汽车的制造业分项、订单及盈利证据，能支持或推翻从总量下降推出广泛持续需求走弱的解释？",
+        "focusEventIds": [
+          "fed-october-industrial-production-composition-revisions-2026-11-17"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若公用事业波动回补、制造业其他分项不再下降或年度修订改变历史路径，分别观察什么，何时应收窄需求和资产传导判断？",
+        "focusEventIds": [
+          "fed-october-industrial-production-composition-revisions-2026-11-17"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-18",
+      "snapshotId": "market-2026-11-18-782ba64822b25831",
+      "asOf": "2026-11-17T21:39:10.734Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-18",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "10月工业产出的行业构成、设备需求与产能利用信息，可能经企业收入、投资和贴现假设哪些环节联系相关资产，各环需要什么同窗口证据？",
+          "focusEventIds": [
+            "fed-october-industrial-production-composition-revisions-2026-11-17"
+          ],
+          "prompt": "研究任务：10月工业产出的行业构成、设备需求与产能利用信息，可能经企业收入、投资和贴现假设哪些环节联系相关资产，各环需要什么同窗口证据？\n证据快照：2026-11-18；asOf=2026-11-17T21:39:10.734Z；snapshotId=market-2026-11-18-782ba64822b25831\n\n材料 1｜美国10月工业产出降0.4%，总量与制造业构成须分开\n已确认事实：美联储11月17日G.17公布：10月经季调工业产出环比降0.4%，制造业增0.3%，采矿降0.8%、公用事业降4.3%；剔除汽车及零部件的制造业降0.1%。10月为初值，产能利用率为76.4%，比1972—2025年均值低3.0个百分点。\n关注机制：研究推断：行业构成、设备需求与产能利用信息，可能先影响企业收入和投资需求判断，再经盈利预期及贴现假设联系相关资产；各环仍需配套样本，工业统计不代表全经济或政策决定。\n接下来验证：按同一发布版本核对初值、修订和季调口径，跟踪剔除汽车的制造业、设备与能源分项是否延续；关注11月24日计划年度修订的基期和历史序列，发布后再对齐。本期未采集订单、盈利、行情、利率或资金流样本。\n失效条件：若行业波动短暂、后续修订改变路径或企业数据不一致，应收窄持续需求变化解释。年度修订尚未发布，不能预填新基期结果；未排除同期信息时不把资产变化归因于本统计，也不据此推断衰退或政策动作。\n一手来源：https://www.federalreserve.gov/releases/g17/20261117/default.htm\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "a8236eb958de2cdc9033b1fe5cd00b12fc76435eb2211c3772e23bcdb906659e",
+          "sourceUrls": [
+            "https://www.federalreserve.gov/releases/g17/20261117/default.htm"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些初值与修订版本、剔除汽车的制造业分项、订单及盈利证据，能支持或推翻从总量下降推出广泛持续需求走弱的解释？",
+          "focusEventIds": [
+            "fed-october-industrial-production-composition-revisions-2026-11-17"
+          ],
+          "prompt": "研究任务：哪些初值与修订版本、剔除汽车的制造业分项、订单及盈利证据，能支持或推翻从总量下降推出广泛持续需求走弱的解释？\n证据快照：2026-11-18；asOf=2026-11-17T21:39:10.734Z；snapshotId=market-2026-11-18-782ba64822b25831\n\n材料 1｜美国10月工业产出降0.4%，总量与制造业构成须分开\n已确认事实：美联储11月17日G.17公布：10月经季调工业产出环比降0.4%，制造业增0.3%，采矿降0.8%、公用事业降4.3%；剔除汽车及零部件的制造业降0.1%。10月为初值，产能利用率为76.4%，比1972—2025年均值低3.0个百分点。\n关注机制：研究推断：行业构成、设备需求与产能利用信息，可能先影响企业收入和投资需求判断，再经盈利预期及贴现假设联系相关资产；各环仍需配套样本，工业统计不代表全经济或政策决定。\n接下来验证：按同一发布版本核对初值、修订和季调口径，跟踪剔除汽车的制造业、设备与能源分项是否延续；关注11月24日计划年度修订的基期和历史序列，发布后再对齐。本期未采集订单、盈利、行情、利率或资金流样本。\n失效条件：若行业波动短暂、后续修订改变路径或企业数据不一致，应收窄持续需求变化解释。年度修订尚未发布，不能预填新基期结果；未排除同期信息时不把资产变化归因于本统计，也不据此推断衰退或政策动作。\n一手来源：https://www.federalreserve.gov/releases/g17/20261117/default.htm\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "4562df1175b079c27886be06e16f8601785900c4349cc5ae4c9422482477b6bd",
+          "sourceUrls": [
+            "https://www.federalreserve.gov/releases/g17/20261117/default.htm"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若公用事业波动回补、制造业其他分项不再下降或年度修订改变历史路径，分别观察什么，何时应收窄需求和资产传导判断？",
+          "focusEventIds": [
+            "fed-october-industrial-production-composition-revisions-2026-11-17"
+          ],
+          "prompt": "研究任务：若公用事业波动回补、制造业其他分项不再下降或年度修订改变历史路径，分别观察什么，何时应收窄需求和资产传导判断？\n证据快照：2026-11-18；asOf=2026-11-17T21:39:10.734Z；snapshotId=market-2026-11-18-782ba64822b25831\n\n材料 1｜美国10月工业产出降0.4%，总量与制造业构成须分开\n已确认事实：美联储11月17日G.17公布：10月经季调工业产出环比降0.4%，制造业增0.3%，采矿降0.8%、公用事业降4.3%；剔除汽车及零部件的制造业降0.1%。10月为初值，产能利用率为76.4%，比1972—2025年均值低3.0个百分点。\n关注机制：研究推断：行业构成、设备需求与产能利用信息，可能先影响企业收入和投资需求判断，再经盈利预期及贴现假设联系相关资产；各环仍需配套样本，工业统计不代表全经济或政策决定。\n接下来验证：按同一发布版本核对初值、修订和季调口径，跟踪剔除汽车的制造业、设备与能源分项是否延续；关注11月24日计划年度修订的基期和历史序列，发布后再对齐。本期未采集订单、盈利、行情、利率或资金流样本。\n失效条件：若行业波动短暂、后续修订改变路径或企业数据不一致，应收窄持续需求变化解释。年度修订尚未发布，不能预填新基期结果；未排除同期信息时不把资产变化归因于本统计，也不据此推断衰退或政策动作。\n一手来源：https://www.federalreserve.gov/releases/g17/20261117/default.htm\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "6068db6cd4a416e822223fafabed93db4170025674194039a6d721dc7d74e2a7",
+          "sourceUrls": [
+            "https://www.federalreserve.gov/releases/g17/20261117/default.htm"
+          ]
+        }
+      ]
+    }
+  },
   {
     "date": "2026-11-16",
     "slug": "2026-11-16",
@@ -1215,157 +1376,6 @@ export const latestMarketRadars: MarketRadarDaily[] = [
           "promptChecksum": "b51c3ac516a1c07dde99ae9da2bb3791c04f34f554274828a451ef9584b543b8",
           "sourceUrls": [
             "https://www.newyorkfed.org/newsevents/news/research/2026/20261110"
-          ]
-        }
-      ]
-    }
-  },
-  {
-    "date": "2026-11-10",
-    "slug": "2026-11-10",
-    "title": "交易研究雷达 · 2026-11-10",
-    "summary": "FinCEN与美联储撤回2020年跨境资金传送门槛提案；本期区分11月6日公告、11月9日正式刊登与现行规则，不把撤回旧提案解读为取消既有义务。",
-    "snapshotId": "market-2026-11-10-01bdf765eaf1db2d",
-    "asOf": "2026-11-09T21:36:03.266Z",
-    "origin": "research",
-    "publicationState": "published",
-    "reviewStatus": "automated",
-    "generatedAt": "2026-11-09T21:36:03.266182Z",
-    "events": [
-      {
-        "id": "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
-        "priority": "P1",
-        "status": "released",
-        "category": "regulation",
-        "title": "FinCEN与美联储撤回跨境250美元门槛提案",
-        "fact": "11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。",
-        "whyWatch": "研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。",
-        "assets": [
-          "跨境资金通道",
-          "加密资产"
-        ],
-        "watchFor": "核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。",
-        "invalidation": "后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。",
-        "sourceName": "Federal Register / GPO — 2026-22809",
-        "sourceUrl": "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm",
-        "sourcePublishedAt": "2026-11-09"
-      }
-    ],
-    "sourceUrls": [
-      "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-    ],
-    "quantStrategy": {
-      "horizonTradingDays": 3,
-      "status": "historical_samples_insufficient",
-      "methodology": "本期仅核对一份提案撤回文件及先前公告，未建立机构开发排期、资金服务与资产反应的同窗口样本。",
-      "assets": [
-        {
-          "symbol": "SPY",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "QQQ",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "BTC",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "ETH",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "GLD",
-          "group": "gold_etf",
-          "signalQuality": "weak"
-        }
-      ],
-      "sampleSize": 0,
-      "rationale": "规则文件变化、机构实际执行与市场反应是不同层次；没有样本便不量化跨资产影响。",
-      "nextValidation": "固定公告及正式撤回时点，再核对公开实施说明、既有规则和可比服务数据，样本不足时仅记录信号质量。",
-      "invalidation": "新提案或正式范围改变时重估；数据口径、时间窗口不一致或缺少实际服务变化证据时保留未知。",
-      "sourceUrls": [
-        "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-      ]
-    },
-    "schemaVersion": 2,
-    "researchQuestions": [
-      {
-        "id": "1",
-        "lens": "transmission",
-        "shortQuestion": "旧提案退出如何经合规开发排期、机构执行和跨境资金服务传导到市场，各环需要哪些独立证据？",
-        "focusEventIds": [
-          "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-        ]
-      },
-      {
-        "id": "2",
-        "lens": "falsification",
-        "shortQuestion": "哪些既有规则、机构说明和同窗口服务数据，能推翻把当前市场变化归因于本次撤回的解释？",
-        "focusEventIds": [
-          "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-        ]
-      },
-      {
-        "id": "3",
-        "lens": "scenario",
-        "shortQuestion": "现行配置不变、新提案重启与服务实际调整分别对应什么情景，什么证据会使当前判断失效？",
-        "focusEventIds": [
-          "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-        ]
-      }
-    ],
-    "researchPack": {
-      "schemaVersion": 2,
-      "date": "2026-11-10",
-      "snapshotId": "market-2026-11-10-01bdf765eaf1db2d",
-      "asOf": "2026-11-09T21:36:03.266Z",
-      "origin": "research",
-      "publicationState": "published",
-      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-10",
-      "questions": [
-        {
-          "id": "1",
-          "lens": "transmission",
-          "shortQuestion": "旧提案退出如何经合规开发排期、机构执行和跨境资金服务传导到市场，各环需要哪些独立证据？",
-          "focusEventIds": [
-            "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-          ],
-          "prompt": "研究任务：旧提案退出如何经合规开发排期、机构执行和跨境资金服务传导到市场，各环需要哪些独立证据？\n证据快照：2026-11-10；asOf=2026-11-09T21:36:03.266Z；snapshotId=market-2026-11-10-01bdf765eaf1db2d\n\n材料 1｜FinCEN与美联储撤回跨境250美元门槛提案\n已确认事实：11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。\n关注机制：研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。\n接下来验证：核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。\n失效条件：后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。\n一手来源：https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "6bdf797b1a69478a921459f978c1506d2c7006e190819973ee4e76316dab80ff",
-          "sourceUrls": [
-            "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-          ]
-        },
-        {
-          "id": "2",
-          "lens": "falsification",
-          "shortQuestion": "哪些既有规则、机构说明和同窗口服务数据，能推翻把当前市场变化归因于本次撤回的解释？",
-          "focusEventIds": [
-            "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-          ],
-          "prompt": "研究任务：哪些既有规则、机构说明和同窗口服务数据，能推翻把当前市场变化归因于本次撤回的解释？\n证据快照：2026-11-10；asOf=2026-11-09T21:36:03.266Z；snapshotId=market-2026-11-10-01bdf765eaf1db2d\n\n材料 1｜FinCEN与美联储撤回跨境250美元门槛提案\n已确认事实：11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。\n关注机制：研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。\n接下来验证：核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。\n失效条件：后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。\n一手来源：https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "b07627ead551add6ce0062f0cac3748f964c2ce255524fa093a1f4539ed3e896",
-          "sourceUrls": [
-            "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-          ]
-        },
-        {
-          "id": "3",
-          "lens": "scenario",
-          "shortQuestion": "现行配置不变、新提案重启与服务实际调整分别对应什么情景，什么证据会使当前判断失效？",
-          "focusEventIds": [
-            "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-          ],
-          "prompt": "研究任务：现行配置不变、新提案重启与服务实际调整分别对应什么情景，什么证据会使当前判断失效？\n证据快照：2026-11-10；asOf=2026-11-09T21:36:03.266Z；snapshotId=market-2026-11-10-01bdf765eaf1db2d\n\n材料 1｜FinCEN与美联储撤回跨境250美元门槛提案\n已确认事实：11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。\n关注机制：研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。\n接下来验证：核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。\n失效条件：后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。\n一手来源：https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "a18a64a71ef388b379425fa6a84d7891d887815875a28e56fc58e3e22087590f",
-          "sourceUrls": [
-            "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
           ]
         }
       ]
