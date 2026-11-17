@@ -5,6 +5,69 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "learning:ai-pydantic-in-response-loop-detection",
+    "kind": "learning",
+    "date": "2026-11-18",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "Pydantic AI2.69：装配DetectLoops后，在响应内部检查重复",
+    "summary": "等到一份响应结束才检查，可能已经消耗了大量输出，或一次提出多项相同操作。把检测放到可执行调用之前，能更早暴露重复模式；是否继续、重试或终止仍需要清楚的策略。",
+    "href": "/radar/2026-11-18#ai-pydantic-in-response-loop-detection",
+    "source": {
+      "name": "Pydantic AI v2.69.0 repository release",
+      "tier": "tier1",
+      "url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.69.0"
+    }
+  },
+  {
+    "id": "learning:ai-sdk-single-pass-json-metadata",
+    "kind": "learning",
+    "date": "2026-11-18",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "AI SDK7.0.174：验证嵌套metadata时，复用有效值并只报首个错误",
+    "summary": "请求已经能解析为JSON，不代表后续校验开销仍接近输入大小。减少重复工作与错误扩张，可以把问题挡在模型调用之前，同时让调用者看到精确的失败位置。",
+    "href": "/radar/2026-11-18#ai-sdk-single-pass-json-metadata",
+    "source": {
+      "name": "AI SDK7.0.174 release",
+      "tier": "tier1",
+      "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.174"
+    }
+  },
+  {
+    "id": "learning:web3-viem-bounded-withcache-lru",
+    "kind": "learning",
+    "date": "2026-11-18",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "viem2.58：withCache的两张表各有8192条上限",
+    "summary": "短生命周期客户端也能把进程级缓存键持续带大。明确容量淘汰、结果时效和在途合并这三个控制点，才能解释缓存为何保留、何时重取，以及一次命中究竟证明了什么。",
+    "href": "/radar/2026-11-18#web3-viem-bounded-withcache-lru",
+    "source": {
+      "name": "viem2.58.0 release",
+      "tier": "tier1",
+      "url": "https://github.com/wevm/viem/releases/tag/viem%402.58.0"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "learning:web3-metamask-iframe-scheme-origin-match",
+    "kind": "learning",
+    "date": "2026-11-18",
+    "domain": "web3",
+    "topic": "security",
+    "title": "MetaMask图表1.1.2：显式允许按scheme匹配iframe消息来源",
+    "summary": "iframe能加载与消息能到达，是两个不同的接入检查点。配置若从一个确切来源扩大到整个scheme，兼容性会改变，信任范围也应按实际匹配规则解释。",
+    "href": "/radar/2026-11-18#web3-metamask-iframe-scheme-origin-match",
+    "source": {
+      "name": "MetaMask core1434 advanced-chart-core1.1.2 release",
+      "tier": "tier1",
+      "url": "https://github.com/MetaMask/core/releases/tag/v1434.0.0"
+    }
+  },
+  {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
     "date": "2026-11-16",

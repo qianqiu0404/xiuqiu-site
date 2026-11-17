@@ -6,6 +6,58 @@
   "language": "zh-CN",
   "items": [
     {
+      "id": "xiuqiu-radar:ai-pydantic-in-response-loop-detection",
+      "url": "https://xoqiu.cn/radar/2026-11-18#ai-pydantic-in-response-loop-detection",
+      "title": "Pydantic AI2.69：装配DetectLoops后，在响应内部检查重复",
+      "summary": "等到一份响应结束才检查，可能已经消耗了大量输出，或一次提出多项相同操作。把检测放到可执行调用之前，能更早暴露重复模式；是否继续、重试或终止仍需要清楚的策略。",
+      "content_text": "等到一份响应结束才检查，可能已经消耗了大量输出，或一次提出多项相同操作。把检测放到可执行调用之前，能更早暴露重复模式；是否继续、重试或终止仍需要清楚的策略。",
+      "date_published": "2026-11-18T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "agent"
+      ],
+      "external_url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.69.0"
+    },
+    {
+      "id": "xiuqiu-radar:ai-sdk-single-pass-json-metadata",
+      "url": "https://xoqiu.cn/radar/2026-11-18#ai-sdk-single-pass-json-metadata",
+      "title": "AI SDK7.0.174：验证嵌套metadata时，复用有效值并只报首个错误",
+      "summary": "请求已经能解析为JSON，不代表后续校验开销仍接近输入大小。减少重复工作与错误扩张，可以把问题挡在模型调用之前，同时让调用者看到精确的失败位置。",
+      "content_text": "请求已经能解析为JSON，不代表后续校验开销仍接近输入大小。减少重复工作与错误扩张，可以把问题挡在模型调用之前，同时让调用者看到精确的失败位置。",
+      "date_published": "2026-11-18T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "safety"
+      ],
+      "external_url": "https://github.com/vercel/ai/releases/tag/ai%407.0.174"
+    },
+    {
+      "id": "xiuqiu-radar:web3-viem-bounded-withcache-lru",
+      "url": "https://xoqiu.cn/radar/2026-11-18#web3-viem-bounded-withcache-lru",
+      "title": "viem2.58：withCache的两张表各有8192条上限",
+      "summary": "短生命周期客户端也能把进程级缓存键持续带大。明确容量淘汰、结果时效和在途合并这三个控制点，才能解释缓存为何保留、何时重取，以及一次命中究竟证明了什么。",
+      "content_text": "短生命周期客户端也能把进程级缓存键持续带大。明确容量淘汰、结果时效和在途合并这三个控制点，才能解释缓存为何保留、何时重取，以及一次命中究竟证明了什么。",
+      "date_published": "2026-11-18T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "onchain_infrastructure"
+      ],
+      "external_url": "https://github.com/wevm/viem/releases/tag/viem%402.58.0"
+    },
+    {
+      "id": "xiuqiu-radar:web3-metamask-iframe-scheme-origin-match",
+      "url": "https://xoqiu.cn/radar/2026-11-18#web3-metamask-iframe-scheme-origin-match",
+      "title": "MetaMask图表1.1.2：显式允许按scheme匹配iframe消息来源",
+      "summary": "iframe能加载与消息能到达，是两个不同的接入检查点。配置若从一个确切来源扩大到整个scheme，兼容性会改变，信任范围也应按实际匹配规则解释。",
+      "content_text": "iframe能加载与消息能到达，是两个不同的接入检查点。配置若从一个确切来源扩大到整个scheme，兼容性会改变，信任范围也应按实际匹配规则解释。",
+      "date_published": "2026-11-18T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "security"
+      ],
+      "external_url": "https://github.com/MetaMask/core/releases/tag/v1434.0.0"
+    },
+    {
       "id": "xiuqiu-radar:ai-fastmcp-skill-manifest-byte-verification",
       "url": "https://xoqiu.cn/radar/2026-11-16#ai-fastmcp-skill-manifest-byte-verification",
       "title": "FastMCP4.2：读到Skill文件之后，先核对清单承诺的字节",
@@ -732,58 +784,6 @@
         "onchain_infrastructure"
       ],
       "external_url": "https://github.com/paradigmxyz/reth/releases/tag/v2.9.0"
-    },
-    {
-      "id": "xiuqiu-radar:ai-acr-method-diversity",
-      "url": "https://xoqiu.cn/radar/2026-10-30#ai-acr-method-diversity",
-      "title": "ACR：同一模型的四条轨迹，要分别核对解法与正确性",
-      "summary": "并行 Agent 数量增加，不自动带来独立证据。若要用多条轨迹降低同一种推理盲点，应同时记录不同方法的数量、每条轨迹的正确性与生成预算，避免只奖励措辞变化。",
-      "content_text": "并行 Agent 数量增加，不自动带来独立证据。若要用多条轨迹降低同一种推理盲点，应同时记录不同方法的数量、每条轨迹的正确性与生成预算，避免只奖励措辞变化。",
-      "date_published": "2026-10-30T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "model_inference"
-      ],
-      "external_url": "https://arxiv.org/abs/2610.37375"
-    },
-    {
-      "id": "xiuqiu-radar:ai-tao-tool-aware-admission",
-      "url": "https://xoqiu.cn/radar/2026-10-30#ai-tao-tool-aware-admission",
-      "title": "TAO：工具即将返回，才可能需要下一轮 GPU 准入",
-      "summary": "工具期间保留了多少上下文、何时再需要推理、目标节点还有多少容量，是不同观测。把这些量分开，才能解释调度是在利用真实缓存、预测短期需求，还是只在统计更大的会话。",
-      "content_text": "工具期间保留了多少上下文、何时再需要推理、目标节点还有多少容量，是不同观测。把这些量分开，才能解释调度是在利用真实缓存、预测短期需求，还是只在统计更大的会话。",
-      "date_published": "2026-10-30T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "infrastructure"
-      ],
-      "external_url": "https://arxiv.org/abs/2610.37230"
-    },
-    {
-      "id": "xiuqiu-radar:web3-viem-chain-scoped-config",
-      "url": "https://xoqiu.cn/radar/2026-10-30#web3-viem-chain-scoped-config",
-      "title": "viem 2.57.13：账户配置缓存要把链 ID 纳入键",
-      "summary": "账户地址相同不意味着配置可跨链共享。钱包与中继的缓存契约要同时说明命名空间、选中配置的链上依据和未命中时的行为，避免把缓存内容当成当前授权状态。",
-      "content_text": "账户地址相同不意味着配置可跨链共享。钱包与中继的缓存契约要同时说明命名空间、选中配置的链上依据和未命中时的行为，避免把缓存内容当成当前授权状态。",
-      "date_published": "2026-10-30T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "wallet_cex"
-      ],
-      "external_url": "https://github.com/wevm/viem/releases/tag/viem%402.57.13"
-    },
-    {
-      "id": "xiuqiu-radar:web3-agave-padded-vote-state",
-      "url": "https://xoqiu.cn/radar/2026-10-30#web3-agave-padded-vote-state",
-      "title": "Agave 4.4.0：先编码投票状态，再只补零尾部",
-      "summary": "降低重复内存写入时，仍需核对序列化输出的字节内容、长度及错误边界。把这些契约与部署建议分别检查，能避免将一个局部实现优化夸成整网性能或兼容性结论。",
-      "content_text": "降低重复内存写入时，仍需核对序列化输出的字节内容、长度及错误边界。把这些契约与部署建议分别检查，能避免将一个局部实现优化夸成整网性能或兼容性结论。",
-      "date_published": "2026-10-30T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "onchain_infrastructure"
-      ],
-      "external_url": "https://github.com/anza-xyz/agave/releases/tag/v4.4.0"
     }
   ]
 }

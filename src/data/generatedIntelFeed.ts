@@ -6,9 +6,72 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-11-16"
-export const intelItemCount = 335
+export const intelLatestDate: string | null = "2026-11-18"
+export const intelItemCount = 339
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "learning:ai-pydantic-in-response-loop-detection",
+    "kind": "learning",
+    "date": "2026-11-18",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "Pydantic AI2.69：装配DetectLoops后，在响应内部检查重复",
+    "summary": "等到一份响应结束才检查，可能已经消耗了大量输出，或一次提出多项相同操作。把检测放到可执行调用之前，能更早暴露重复模式；是否继续、重试或终止仍需要清楚的策略。",
+    "href": "/radar/2026-11-18#ai-pydantic-in-response-loop-detection",
+    "source": {
+      "name": "Pydantic AI v2.69.0 repository release",
+      "tier": "tier1",
+      "url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.69.0"
+    }
+  },
+  {
+    "id": "learning:ai-sdk-single-pass-json-metadata",
+    "kind": "learning",
+    "date": "2026-11-18",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "AI SDK7.0.174：验证嵌套metadata时，复用有效值并只报首个错误",
+    "summary": "请求已经能解析为JSON，不代表后续校验开销仍接近输入大小。减少重复工作与错误扩张，可以把问题挡在模型调用之前，同时让调用者看到精确的失败位置。",
+    "href": "/radar/2026-11-18#ai-sdk-single-pass-json-metadata",
+    "source": {
+      "name": "AI SDK7.0.174 release",
+      "tier": "tier1",
+      "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.174"
+    }
+  },
+  {
+    "id": "learning:web3-viem-bounded-withcache-lru",
+    "kind": "learning",
+    "date": "2026-11-18",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "viem2.58：withCache的两张表各有8192条上限",
+    "summary": "短生命周期客户端也能把进程级缓存键持续带大。明确容量淘汰、结果时效和在途合并这三个控制点，才能解释缓存为何保留、何时重取，以及一次命中究竟证明了什么。",
+    "href": "/radar/2026-11-18#web3-viem-bounded-withcache-lru",
+    "source": {
+      "name": "viem2.58.0 release",
+      "tier": "tier1",
+      "url": "https://github.com/wevm/viem/releases/tag/viem%402.58.0"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "learning:web3-metamask-iframe-scheme-origin-match",
+    "kind": "learning",
+    "date": "2026-11-18",
+    "domain": "web3",
+    "topic": "security",
+    "title": "MetaMask图表1.1.2：显式允许按scheme匹配iframe消息来源",
+    "summary": "iframe能加载与消息能到达，是两个不同的接入检查点。配置若从一个确切来源扩大到整个scheme，兼容性会改变，信任范围也应按实际匹配规则解释。",
+    "href": "/radar/2026-11-18#web3-metamask-iframe-scheme-origin-match",
+    "source": {
+      "name": "MetaMask core1434 advanced-chart-core1.1.2 release",
+      "tier": "tier1",
+      "url": "https://github.com/MetaMask/core/releases/tag/v1434.0.0"
+    }
+  },
   {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
@@ -408,119 +471,36 @@ export const intelLatestItems: IntelItem[] = [
     "flags": {
       "priority": "P1"
     }
-  },
-  {
-    "id": "learning:ai-sdk-queue-approval-options-pending-decision",
-    "kind": "learning",
-    "date": "2026-11-11",
-    "domain": "ai",
-    "topic": "agent",
-    "title": "AI SDK 7.0.169：自动发送还在判定，消息队列就不能当作空闲",
-    "summary": "响应流结束和下一步决策结束是两个时刻；把中间窗口当空闲，容易让新消息越过审批或抢先启动另一请求。",
-    "href": "/radar/2026-11-11#ai-sdk-queue-approval-options-pending-decision",
-    "source": {
-      "name": "AI SDK ai7.0.169 release",
-      "tier": "tier1",
-      "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.169"
-    },
-    "flags": {
-      "deepDive": true
-    }
-  },
-  {
-    "id": "learning:ai-deepagents-git-attribution-probe-backoff",
-    "kind": "learning",
-    "date": "2026-11-11",
-    "domain": "ai",
-    "topic": "infrastructure",
-    "title": "DeepAgents Code 0.2.7：归属探针复用基线，连续失败后退避停用",
-    "summary": "辅助追踪不应在每次工具前后重复扫描，也不应在持续失败时拖慢主流程；减少探针仍要保留基线与观察顺序，才能解释归属证据。",
-    "href": "/radar/2026-11-11#ai-deepagents-git-attribution-probe-backoff",
-    "source": {
-      "name": "DeepAgents Code0.2.7 release",
-      "tier": "tier1",
-      "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.7"
-    }
-  },
-  {
-    "id": "learning:web3-op-reth-out-of-scope-health-quorum",
-    "kind": "learning",
-    "date": "2026-11-11",
-    "domain": "web3",
-    "topic": "l2",
-    "title": "op-reth 2.8.2：消息太新时保留up旧值，仍不能给quorum投票",
-    "summary": "端点能回应、能否判断当前消息、整组是否凑够确定性回答，是三件事；保留表针可减少误判，却不能替代当前消息的quorum证据。",
-    "href": "/radar/2026-11-11#web3-op-reth-out-of-scope-health-quorum",
-    "source": {
-      "name": "op-reth2.8.2 release",
-      "tier": "tier1",
-      "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-reth/v2.8.2"
-    }
-  },
-  {
-    "id": "learning:web3-metamask-chart-right-scale-detach",
-    "kind": "learning",
-    "date": "2026-11-11",
-    "domain": "web3",
-    "topic": "wallet_cex",
-    "title": "MetaMask图表1.1.1：已有右轴时，切图不再重复新建价格轴",
-    "summary": "可反复触发的布局同步若每次都创建新对象，会把显示层关系拆散；先识别已有结构，才能让初始化逻辑在更新时复用。",
-    "href": "/radar/2026-11-11#web3-metamask-chart-right-scale-detach",
-    "source": {
-      "name": "MetaMask core1413 release",
-      "tier": "tier1",
-      "url": "https://github.com/MetaMask/core/releases/tag/v1413.0.0"
-    }
-  },
-  {
-    "id": "market:2026-11-11:nyfed-q3-household-debt-reporting-stock-flow-2026-11-10",
-    "kind": "market",
-    "date": "2026-11-11",
-    "domain": "market",
-    "topic": "market_macro",
-    "title": "纽约联储三季家庭债务增至19.1万亿美元，补报与逾期口径须拆开",
-    "summary": "研究判断：债务偿付压力可能经家庭现金流、贷款损失和信贷可得性影响消费，再联系相关资产；需独立核对收入、实际支出及信贷表现，余额上升与逾期存量变化不能单独证明需求下降或资产方向。",
-    "href": "/market-radar/2026-11-11#nyfed-q3-household-debt-reporting-stock-flow-2026-11-10",
-    "source": {
-      "name": "New York Fed — Q3 2026 Household Debt and Credit",
-      "url": "https://www.newyorkfed.org/newsevents/news/research/2026/20261110"
-    },
-    "flags": {
-      "priority": "P1"
-    }
-  },
-  {
-    "id": "market:2026-11-10:fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
-    "kind": "market",
-    "date": "2026-11-10",
-    "domain": "market",
-    "topic": "market_regulation",
-    "title": "FinCEN与美联储撤回跨境250美元门槛提案",
-    "summary": "研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。",
-    "href": "/market-radar/2026-11-10#fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
-    "source": {
-      "name": "Federal Register / GPO — 2026-22809",
-      "url": "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-    },
-    "flags": {
-      "priority": "P1"
-    }
   }
 ]
 export const intelTopics: IntelTopic[] = [
   {
     "topic": "onchain_infrastructure",
     "domain": "web3",
-    "count": 16,
-    "lastSeen": "2026-11-16",
+    "count": 17,
+    "lastSeen": "2026-11-18",
     "firstSeen": "2026-08-11"
   },
   {
     "topic": "agent",
     "domain": "ai",
-    "count": 15,
-    "lastSeen": "2026-11-16",
+    "count": 16,
+    "lastSeen": "2026-11-18",
     "firstSeen": "2026-08-11"
+  },
+  {
+    "topic": "safety",
+    "domain": "ai",
+    "count": 13,
+    "lastSeen": "2026-11-18",
+    "firstSeen": "2026-10-13"
+  },
+  {
+    "topic": "security",
+    "domain": "web3",
+    "count": 13,
+    "lastSeen": "2026-11-18",
+    "firstSeen": "2026-08-10"
   },
   {
     "topic": "infrastructure",
@@ -528,13 +508,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 12,
     "lastSeen": "2026-11-16",
     "firstSeen": "2026-10-29"
-  },
-  {
-    "topic": "security",
-    "domain": "web3",
-    "count": 12,
-    "lastSeen": "2026-11-16",
-    "firstSeen": "2026-08-10"
   },
   {
     "topic": "market_regulation",
@@ -549,13 +522,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 22,
     "lastSeen": "2026-11-15",
     "firstSeen": "2026-08-09"
-  },
-  {
-    "topic": "safety",
-    "domain": "ai",
-    "count": 12,
-    "lastSeen": "2026-11-15",
-    "firstSeen": "2026-10-13"
   },
   {
     "topic": "protocol",
