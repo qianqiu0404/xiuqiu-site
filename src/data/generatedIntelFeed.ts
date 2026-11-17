@@ -6,9 +6,26 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-11-16"
-export const intelItemCount = 335
+export const intelLatestDate: string | null = "2026-11-18"
+export const intelItemCount = 336
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "market:2026-11-18:fed-october-industrial-production-composition-revisions-2026-11-17",
+    "kind": "market",
+    "date": "2026-11-18",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "美国10月工业产出降0.4%，总量与制造业构成须分开",
+    "summary": "研究推断：行业构成、设备需求与产能利用信息，可能先影响企业收入和投资需求判断，再经盈利预期及贴现假设联系相关资产；各环仍需配套样本，工业统计不代表全经济或政策决定。",
+    "href": "/market-radar/2026-11-18#fed-october-industrial-production-composition-revisions-2026-11-17",
+    "source": {
+      "name": "Federal Reserve — Industrial Production and Capacity Utilization (G.17), November 17, 2026",
+      "url": "https://www.federalreserve.gov/releases/g17/20261117/default.htm"
+    },
+    "flags": {
+      "priority": "P2"
+    }
+  },
   {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
@@ -408,106 +425,16 @@ export const intelLatestItems: IntelItem[] = [
     "flags": {
       "priority": "P1"
     }
-  },
-  {
-    "id": "learning:ai-sdk-queue-approval-options-pending-decision",
-    "kind": "learning",
-    "date": "2026-11-11",
-    "domain": "ai",
-    "topic": "agent",
-    "title": "AI SDK 7.0.169：自动发送还在判定，消息队列就不能当作空闲",
-    "summary": "响应流结束和下一步决策结束是两个时刻；把中间窗口当空闲，容易让新消息越过审批或抢先启动另一请求。",
-    "href": "/radar/2026-11-11#ai-sdk-queue-approval-options-pending-decision",
-    "source": {
-      "name": "AI SDK ai7.0.169 release",
-      "tier": "tier1",
-      "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.169"
-    },
-    "flags": {
-      "deepDive": true
-    }
-  },
-  {
-    "id": "learning:ai-deepagents-git-attribution-probe-backoff",
-    "kind": "learning",
-    "date": "2026-11-11",
-    "domain": "ai",
-    "topic": "infrastructure",
-    "title": "DeepAgents Code 0.2.7：归属探针复用基线，连续失败后退避停用",
-    "summary": "辅助追踪不应在每次工具前后重复扫描，也不应在持续失败时拖慢主流程；减少探针仍要保留基线与观察顺序，才能解释归属证据。",
-    "href": "/radar/2026-11-11#ai-deepagents-git-attribution-probe-backoff",
-    "source": {
-      "name": "DeepAgents Code0.2.7 release",
-      "tier": "tier1",
-      "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.7"
-    }
-  },
-  {
-    "id": "learning:web3-op-reth-out-of-scope-health-quorum",
-    "kind": "learning",
-    "date": "2026-11-11",
-    "domain": "web3",
-    "topic": "l2",
-    "title": "op-reth 2.8.2：消息太新时保留up旧值，仍不能给quorum投票",
-    "summary": "端点能回应、能否判断当前消息、整组是否凑够确定性回答，是三件事；保留表针可减少误判，却不能替代当前消息的quorum证据。",
-    "href": "/radar/2026-11-11#web3-op-reth-out-of-scope-health-quorum",
-    "source": {
-      "name": "op-reth2.8.2 release",
-      "tier": "tier1",
-      "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-reth/v2.8.2"
-    }
-  },
-  {
-    "id": "learning:web3-metamask-chart-right-scale-detach",
-    "kind": "learning",
-    "date": "2026-11-11",
-    "domain": "web3",
-    "topic": "wallet_cex",
-    "title": "MetaMask图表1.1.1：已有右轴时，切图不再重复新建价格轴",
-    "summary": "可反复触发的布局同步若每次都创建新对象，会把显示层关系拆散；先识别已有结构，才能让初始化逻辑在更新时复用。",
-    "href": "/radar/2026-11-11#web3-metamask-chart-right-scale-detach",
-    "source": {
-      "name": "MetaMask core1413 release",
-      "tier": "tier1",
-      "url": "https://github.com/MetaMask/core/releases/tag/v1413.0.0"
-    }
-  },
-  {
-    "id": "market:2026-11-11:nyfed-q3-household-debt-reporting-stock-flow-2026-11-10",
-    "kind": "market",
-    "date": "2026-11-11",
-    "domain": "market",
-    "topic": "market_macro",
-    "title": "纽约联储三季家庭债务增至19.1万亿美元，补报与逾期口径须拆开",
-    "summary": "研究判断：债务偿付压力可能经家庭现金流、贷款损失和信贷可得性影响消费，再联系相关资产；需独立核对收入、实际支出及信贷表现，余额上升与逾期存量变化不能单独证明需求下降或资产方向。",
-    "href": "/market-radar/2026-11-11#nyfed-q3-household-debt-reporting-stock-flow-2026-11-10",
-    "source": {
-      "name": "New York Fed — Q3 2026 Household Debt and Credit",
-      "url": "https://www.newyorkfed.org/newsevents/news/research/2026/20261110"
-    },
-    "flags": {
-      "priority": "P1"
-    }
-  },
-  {
-    "id": "market:2026-11-10:fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
-    "kind": "market",
-    "date": "2026-11-10",
-    "domain": "market",
-    "topic": "market_regulation",
-    "title": "FinCEN与美联储撤回跨境250美元门槛提案",
-    "summary": "研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。",
-    "href": "/market-radar/2026-11-10#fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
-    "source": {
-      "name": "Federal Register / GPO — 2026-22809",
-      "url": "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-    },
-    "flags": {
-      "priority": "P1"
-    }
   }
 ]
 export const intelTopics: IntelTopic[] = [
+  {
+    "topic": "market_macro",
+    "domain": "market",
+    "count": 23,
+    "lastSeen": "2026-11-18",
+    "firstSeen": "2026-08-09"
+  },
   {
     "topic": "onchain_infrastructure",
     "domain": "web3",
@@ -542,13 +469,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 6,
     "lastSeen": "2026-11-16",
     "firstSeen": "2026-10-25"
-  },
-  {
-    "topic": "market_macro",
-    "domain": "market",
-    "count": 22,
-    "lastSeen": "2026-11-15",
-    "firstSeen": "2026-08-09"
   },
   {
     "topic": "safety",

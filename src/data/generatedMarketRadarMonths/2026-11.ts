@@ -3,6 +3,156 @@
 import type { MarketRadarDaily } from '../generatedMarketRadars.ts'
 export const monthlyMarketRadars: MarketRadarDaily[] = [
   {
+    "date": "2026-11-18",
+    "slug": "2026-11-18",
+    "title": "交易研究雷达 · 2026-11-18",
+    "summary": "美联储新公布的10月工业产出总量下降，制造业却上升。本期拆开行业构成、初值与修订版本；11月24日年度修订仍是计划，不把统计数据直接写成全经济或资产方向。",
+    "snapshotId": "market-2026-11-18-782ba64822b25831",
+    "asOf": "2026-11-17T21:39:10.734Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-17T21:39:10.734Z",
+    "events": [
+      {
+        "id": "fed-october-industrial-production-composition-revisions-2026-11-17",
+        "priority": "P2",
+        "status": "released",
+        "category": "macro",
+        "title": "美国10月工业产出降0.4%，总量与制造业构成须分开",
+        "fact": "美联储11月17日G.17公布：10月经季调工业产出环比降0.4%，制造业增0.3%，采矿降0.8%、公用事业降4.3%；剔除汽车及零部件的制造业降0.1%。10月为初值，产能利用率为76.4%，比1972—2025年均值低3.0个百分点。",
+        "whyWatch": "研究推断：行业构成、设备需求与产能利用信息，可能先影响企业收入和投资需求判断，再经盈利预期及贴现假设联系相关资产；各环仍需配套样本，工业统计不代表全经济或政策决定。",
+        "assets": [
+          "美国工业与设备企业"
+        ],
+        "watchFor": "按同一发布版本核对初值、修订和季调口径，跟踪剔除汽车的制造业、设备与能源分项是否延续；关注11月24日计划年度修订的基期和历史序列，发布后再对齐。本期未采集订单、盈利、行情、利率或资金流样本。",
+        "invalidation": "若行业波动短暂、后续修订改变路径或企业数据不一致，应收窄持续需求变化解释。年度修订尚未发布，不能预填新基期结果；未排除同期信息时不把资产变化归因于本统计，也不据此推断衰退或政策动作。",
+        "sourceName": "Federal Reserve — Industrial Production and Capacity Utilization (G.17), November 17, 2026",
+        "sourceUrl": "https://www.federalreserve.gov/releases/g17/20261117/default.htm",
+        "sourcePublishedAt": "2026-11-17"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.federalreserve.gov/releases/g17/20261117/default.htm"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "本期核对11月17日固定归档统计发布、摘要表和官方发布索引，未建立统计变化、企业经营与资产反应的同窗口历史样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "月度初值、修订值与不同分项不能当作全经济增长或市场反应；产能利用率水平与百分点变化也不能换算为方向概率。",
+      "nextValidation": "固定发布版本与参考期，补充可比订单、盈利和同窗口资产数据，控制其他同期信息；样本不足时只保留信号质量。",
+      "invalidation": "年度修订、季调或样本口径变化时重新对齐；若缺少经营和资产传导证据，保留未知。",
+      "sourceUrls": [
+        "https://www.federalreserve.gov/releases/g17/20261117/default.htm"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "10月工业产出的行业构成、设备需求与产能利用信息，可能经企业收入、投资和贴现假设哪些环节联系相关资产，各环需要什么同窗口证据？",
+        "focusEventIds": [
+          "fed-october-industrial-production-composition-revisions-2026-11-17"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些初值与修订版本、剔除汽车的制造业分项、订单及盈利证据，能支持或推翻从总量下降推出广泛持续需求走弱的解释？",
+        "focusEventIds": [
+          "fed-october-industrial-production-composition-revisions-2026-11-17"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若公用事业波动回补、制造业其他分项不再下降或年度修订改变历史路径，分别观察什么，何时应收窄需求和资产传导判断？",
+        "focusEventIds": [
+          "fed-october-industrial-production-composition-revisions-2026-11-17"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-18",
+      "snapshotId": "market-2026-11-18-782ba64822b25831",
+      "asOf": "2026-11-17T21:39:10.734Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-18",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "10月工业产出的行业构成、设备需求与产能利用信息，可能经企业收入、投资和贴现假设哪些环节联系相关资产，各环需要什么同窗口证据？",
+          "focusEventIds": [
+            "fed-october-industrial-production-composition-revisions-2026-11-17"
+          ],
+          "prompt": "研究任务：10月工业产出的行业构成、设备需求与产能利用信息，可能经企业收入、投资和贴现假设哪些环节联系相关资产，各环需要什么同窗口证据？\n证据快照：2026-11-18；asOf=2026-11-17T21:39:10.734Z；snapshotId=market-2026-11-18-782ba64822b25831\n\n材料 1｜美国10月工业产出降0.4%，总量与制造业构成须分开\n已确认事实：美联储11月17日G.17公布：10月经季调工业产出环比降0.4%，制造业增0.3%，采矿降0.8%、公用事业降4.3%；剔除汽车及零部件的制造业降0.1%。10月为初值，产能利用率为76.4%，比1972—2025年均值低3.0个百分点。\n关注机制：研究推断：行业构成、设备需求与产能利用信息，可能先影响企业收入和投资需求判断，再经盈利预期及贴现假设联系相关资产；各环仍需配套样本，工业统计不代表全经济或政策决定。\n接下来验证：按同一发布版本核对初值、修订和季调口径，跟踪剔除汽车的制造业、设备与能源分项是否延续；关注11月24日计划年度修订的基期和历史序列，发布后再对齐。本期未采集订单、盈利、行情、利率或资金流样本。\n失效条件：若行业波动短暂、后续修订改变路径或企业数据不一致，应收窄持续需求变化解释。年度修订尚未发布，不能预填新基期结果；未排除同期信息时不把资产变化归因于本统计，也不据此推断衰退或政策动作。\n一手来源：https://www.federalreserve.gov/releases/g17/20261117/default.htm\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "a8236eb958de2cdc9033b1fe5cd00b12fc76435eb2211c3772e23bcdb906659e",
+          "sourceUrls": [
+            "https://www.federalreserve.gov/releases/g17/20261117/default.htm"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些初值与修订版本、剔除汽车的制造业分项、订单及盈利证据，能支持或推翻从总量下降推出广泛持续需求走弱的解释？",
+          "focusEventIds": [
+            "fed-october-industrial-production-composition-revisions-2026-11-17"
+          ],
+          "prompt": "研究任务：哪些初值与修订版本、剔除汽车的制造业分项、订单及盈利证据，能支持或推翻从总量下降推出广泛持续需求走弱的解释？\n证据快照：2026-11-18；asOf=2026-11-17T21:39:10.734Z；snapshotId=market-2026-11-18-782ba64822b25831\n\n材料 1｜美国10月工业产出降0.4%，总量与制造业构成须分开\n已确认事实：美联储11月17日G.17公布：10月经季调工业产出环比降0.4%，制造业增0.3%，采矿降0.8%、公用事业降4.3%；剔除汽车及零部件的制造业降0.1%。10月为初值，产能利用率为76.4%，比1972—2025年均值低3.0个百分点。\n关注机制：研究推断：行业构成、设备需求与产能利用信息，可能先影响企业收入和投资需求判断，再经盈利预期及贴现假设联系相关资产；各环仍需配套样本，工业统计不代表全经济或政策决定。\n接下来验证：按同一发布版本核对初值、修订和季调口径，跟踪剔除汽车的制造业、设备与能源分项是否延续；关注11月24日计划年度修订的基期和历史序列，发布后再对齐。本期未采集订单、盈利、行情、利率或资金流样本。\n失效条件：若行业波动短暂、后续修订改变路径或企业数据不一致，应收窄持续需求变化解释。年度修订尚未发布，不能预填新基期结果；未排除同期信息时不把资产变化归因于本统计，也不据此推断衰退或政策动作。\n一手来源：https://www.federalreserve.gov/releases/g17/20261117/default.htm\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "4562df1175b079c27886be06e16f8601785900c4349cc5ae4c9422482477b6bd",
+          "sourceUrls": [
+            "https://www.federalreserve.gov/releases/g17/20261117/default.htm"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若公用事业波动回补、制造业其他分项不再下降或年度修订改变历史路径，分别观察什么，何时应收窄需求和资产传导判断？",
+          "focusEventIds": [
+            "fed-october-industrial-production-composition-revisions-2026-11-17"
+          ],
+          "prompt": "研究任务：若公用事业波动回补、制造业其他分项不再下降或年度修订改变历史路径，分别观察什么，何时应收窄需求和资产传导判断？\n证据快照：2026-11-18；asOf=2026-11-17T21:39:10.734Z；snapshotId=market-2026-11-18-782ba64822b25831\n\n材料 1｜美国10月工业产出降0.4%，总量与制造业构成须分开\n已确认事实：美联储11月17日G.17公布：10月经季调工业产出环比降0.4%，制造业增0.3%，采矿降0.8%、公用事业降4.3%；剔除汽车及零部件的制造业降0.1%。10月为初值，产能利用率为76.4%，比1972—2025年均值低3.0个百分点。\n关注机制：研究推断：行业构成、设备需求与产能利用信息，可能先影响企业收入和投资需求判断，再经盈利预期及贴现假设联系相关资产；各环仍需配套样本，工业统计不代表全经济或政策决定。\n接下来验证：按同一发布版本核对初值、修订和季调口径，跟踪剔除汽车的制造业、设备与能源分项是否延续；关注11月24日计划年度修订的基期和历史序列，发布后再对齐。本期未采集订单、盈利、行情、利率或资金流样本。\n失效条件：若行业波动短暂、后续修订改变路径或企业数据不一致，应收窄持续需求变化解释。年度修订尚未发布，不能预填新基期结果；未排除同期信息时不把资产变化归因于本统计，也不据此推断衰退或政策动作。\n一手来源：https://www.federalreserve.gov/releases/g17/20261117/default.htm\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "6068db6cd4a416e822223fafabed93db4170025674194039a6d721dc7d74e2a7",
+          "sourceUrls": [
+            "https://www.federalreserve.gov/releases/g17/20261117/default.htm"
+          ]
+        }
+      ]
+    }
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "title": "交易研究雷达 · 2026-11-16",
