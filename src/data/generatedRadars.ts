@@ -12,6 +12,48 @@ export interface RadarIndexEntry { date: string; slug: string; snapshotId: strin
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-11-19",
+    "slug": "2026-11-19",
+    "snapshotId": "learning-2026-11-19-d547e0ae8cc96ed2",
+    "asOf": "2026-11-18T21:46:28.894Z",
+    "title": "学习雷达 · 2026-11-19",
+    "summary": "AI看shell超时输出与ANSI清理的预处理成本；Web3看认证请求的目标origin和历史索引就绪条件。专题区分实时索引与历史查询。本期为自动汇总，未经人工复核。",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "briefs": [
+      {
+        "id": "ai-deepagents-timeout-partial-output",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "DeepAgents0.7.40：shell超时之后，仍保留终止前后的已捕获输出"
+      },
+      {
+        "id": "ai-pydantic-ansi-strip-quadratic-scan",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "Pydantic Harness0.70：先修复ANSI扫描，再谈工具输出限额"
+      },
+      {
+        "id": "web3-metamask-buy-widget-origin-before-token",
+        "domain": "web3",
+        "topic": "security",
+        "title": "MetaMask ramps30.1：取bearer token之前，先核对buy URL的origin"
+      },
+      {
+        "id": "web3-sui-opt-in-history-health-frontier",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Sui1.84.1：需要历史查询的节点健康检查，显式带上max_history_lag"
+      }
+    ],
+    "deepDive": {
+      "id": "deep-live-index-and-history-query-readiness",
+      "title": "专题：实时索引已追平，历史查询为什么仍可能跟不上？",
+      "basedOnBriefId": "web3-sui-opt-in-history-health-frontier"
+    },
+    "marketSignals": []
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "snapshotId": "learning-2026-11-16-20147f94783c1b8e",
@@ -1992,6 +2034,309 @@ export const radarIndex: RadarIndexEntry[] = [
 ]
 
 export const latestRadars: DailyRadar[] = [
+  {
+    "date": "2026-11-19",
+    "slug": "2026-11-19",
+    "title": "学习雷达 · 2026-11-19",
+    "summary": "AI看shell超时输出与ANSI清理的预处理成本；Web3看认证请求的目标origin和历史索引就绪条件。专题区分实时索引与历史查询。本期为自动汇总，未经人工复核。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-11-18T21:46:28.894Z",
+    "generatedAt": "2026-11-18T21:46:28.894Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-deepagents-timeout-partial-output",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "DeepAgents0.7.40：shell超时之后，仍保留终止前后的已捕获输出",
+        "whatHappened": "DeepAgents于11月18日（UTC）发布0.7.40，包含11月16日合入的PR6349。LocalShellBackend的同步与异步超时响应现在携带已捕获的stdout/stderr，包括POSIX终止阶段继续读到的管道字节；返回仍是超时，不是成功。",
+        "mechanism": "POSIX执行和取消轮询复用同一个reader；超时后终止进程组、排空输出与回收直接进程共用1秒截止时间，清理结束才合并缓存一次。响应保留stderr前缀与输出截断标记，以124表示超时；不完整字符按替代字符解码，避免掩盖原超时。",
+        "workedExample": "上游断言在终止前写入半个欧元符号，终止时补完并写入晚到stdout和非法stderr字节，要求同步/异步结果含完整欧元符号及替代字符，snapshot只调用一次、两条管道关闭。另测20字节输出限额仍标truncated。本期只读代码和断言，未执行命令或上游测试。",
+        "whyItMatters": "只看到超时文案时，Agent很难分清任务卡在哪一步。保留部分输出能辅助定位，但重试前仍须核对操作回执和清理结果，避免已经产生副作用的命令被重复执行。",
+        "risksAndLimits": [
+          "清理失败会明确提示命令可能仍在运行；Windows只停止shell，不保证其子进程全部停止。自定义execute覆盖仍保留旧线程委托路径，不能把内建取消清理外推给它。",
+          "max_output_bytes限制回传文本，reader仍先累计管道字节；这不等于内存峰值有同样上限，也不证明命令没有产生外部副作用。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "DeepAgents0.7.40 repository release",
+            "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents%3D%3D0.7.40",
+            "publishedAt": "2026-11-18T18:27:53.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Preserve timeout output PR6349",
+            "url": "https://github.com/langchain-ai/deepagents/pull/6349"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Timeout cleanup and response construction",
+            "url": "https://github.com/langchain-ai/deepagents/blob/9b754bc914cc75c3f6d8c6e99353e81041b73bce/libs/deepagents/deepagents/backends/local_shell.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Persistent POSIX pipe reader",
+            "url": "https://github.com/langchain-ai/deepagents/blob/9b754bc914cc75c3f6d8c6e99353e81041b73bce/libs/deepagents/deepagents/backends/_posix_process.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Partial output and termination-drain assertions",
+            "url": "https://github.com/langchain-ai/deepagents/blob/9b754bc914cc75c3f6d8c6e99353e81041b73bce/libs/deepagents/tests/unit_tests/backends/test_local_shell_backend.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Shared cleanup deadline assertions",
+            "url": "https://github.com/langchain-ai/deepagents/blob/9b754bc914cc75c3f6d8c6e99353e81041b73bce/libs/deepagents/tests/unit_tests/backends/test_posix_process.py"
+          }
+        ],
+        "nextQuestions": [
+          "一次超时的部分输出、进程清理结果与外部操作回执，能否分别保留并决定是否重试？"
+        ]
+      },
+      {
+        "id": "ai-pydantic-ansi-strip-quadratic-scan",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "Pydantic Harness0.70：先修复ANSI扫描，再谈工具输出限额",
+        "whatHappened": "Pydantic AI于11月18日（UTC）公开GHSA-m4cr-m4qc-9hh3：Harness0.4.0至0.69.0在显式启用strip_ansi=True且工具文本可受攻击者影响时，ANSI清理可能出现随行长二次增长的扫描工作。0.70.0修复；其配套Pydantic AI2.70.0发布记录为11月17日。",
+        "mechanism": "清理发生在输出测量和裁减之前，事后的字符或token限额不能约束这一步。固定实现把OSC片段一次扫描到终止符或行末，不再对片段里每个未闭合起点重复扫描剩余行；未闭合OSC文本仍保留，其他可去除的转义单独处理。strip_ansi默认仍为False。",
+        "workedExample": "固定回归断言构造50,000个未闭合OSC起点，再接一段样式码，要求清理后保留这些起点，并写有小于1秒的计时断言。本期只读实现和断言，没有运行该测试或测量性能；不能把上游阈值当成本机实测。",
+        "whyItMatters": "工具结果通常来自文件、网页或MCP服务，不能因为输出最终会被截短就忽略预处理成本。输入限制、扫描复杂度与最后展示多少文字，需要分别检查。",
+        "risksAndLimits": [
+          "公告限定于工具文本可被影响且开启ANSI清理的路径，不表示所有Harness使用者默认受影响，也不证明每段异常输出都能造成相同延迟。",
+          "公告建议升级pydantic-ai-harness至0.70.0或更高；Pydantic AI v1的Harness不能超过0.4.0，须迁移v2或保持该选项关闭。本期未修改任何项目依赖或配置。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_security_advisory",
+            "name": "Harness ANSI stripping advisory GHSA-m4cr-m4qc-9hh3",
+            "url": "https://github.com/pydantic/pydantic-ai/security/advisories/GHSA-m4cr-m4qc-9hh3",
+            "publishedAt": "2026-11-18T00:04:44.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Pydantic AI2.70 repository release",
+            "url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.70.0",
+            "publishedAt": "2026-11-17T22:44:30.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Single-pass OSC span stripping",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/8d30268041fcaba76c8b3ba88e686f5907ad8945/src/pydantic_ai_harness/pydantic_ai_harness/tool_output_limits/_payload.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Optional strip before measurement and reduction",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/8d30268041fcaba76c8b3ba88e686f5907ad8945/src/pydantic_ai_harness/pydantic_ai_harness/tool_output_limits/_capability.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Unterminated OSC regression assertions",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/8d30268041fcaba76c8b3ba88e686f5907ad8945/tests/harness/tool_output_limits/test_tool_output_limits.py"
+          }
+        ],
+        "nextQuestions": [
+          "工具结果进入清理器之前是否有独立输入预算，且每个预处理阶段都能单独记录耗时与失败？"
+        ]
+      },
+      {
+        "id": "web3-metamask-buy-widget-origin-before-token",
+        "domain": "web3",
+        "topic": "security",
+        "title": "MetaMask ramps30.1：取bearer token之前，先核对buy URL的origin",
+        "whatHappened": "MetaMask于11月18日（UTC）发布core v1438.0.0，其中ramps-controller30.1.0收录PR11551。RampsService.getBuyWidgetUrl拒绝与所选环境ramps API不同origin的buy URL，阻断报价响应把带认证的初始请求指向任意主机的路径。",
+        "mechanism": "代码先解析URL，按环境的orders API计算预期origin并精确比较，再添加公共参数、请求bearer token和发出请求。baseUrlOverride不能放宽白名单；getQuotes也固定使用环境orders地址，使返回的buy URL与这个检查匹配。",
+        "workedExample": "已读断言覆盖四种环境的同origin接受，以及外部主机、近似域名、userinfo伪装、HTTP降级和非默认端口拒绝；拒绝分支要求fetch与获取token均未调用，错误文案不含URL里的敏感查询值。本期只读模拟断言，未请求真实token或支付服务。",
+        "whyItMatters": "来自另一个API响应的URL仍是待验证输入。认证凭据属于确定的服务边界，不能因为URL看起来像报价链接，就先获取凭据再决定把请求发到哪里。",
+        "risksAndLimits": [
+          "此检查针对getBuyWidgetUrl的初始请求origin，不是整个支付流程、跳转链或服务端响应内容的完整审计；这里没有验证真实浏览器或网络端到端行为。",
+          "origin包含scheme、host与port，不等于具体路径的授权，也不证明所选环境服务未被攻破。包发布不能代替钱包客户端已采用该版本的证据。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "MetaMask core v1438.0.0 repository release",
+            "url": "https://github.com/MetaMask/core/releases/tag/v1438.0.0",
+            "publishedAt": "2026-11-18T14:32:19.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Restrict buy widget URL PR11551",
+            "url": "https://github.com/MetaMask/core/pull/11551"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Buy URL origin check before bearer acquisition",
+            "url": "https://github.com/MetaMask/core/blob/1f153d4652ee73a210a1863f2594d17789526397/packages/ramps-controller/src/RampsService.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Accepted origins and rejected spoofing assertions",
+            "url": "https://github.com/MetaMask/core/blob/1f153d4652ee73a210a1863f2594d17789526397/packages/ramps-controller/src/RampsService.test.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_documentation",
+            "name": "Ramps30.1 package changelog",
+            "url": "https://github.com/MetaMask/core/blob/1f153d4652ee73a210a1863f2594d17789526397/packages/ramps-controller/CHANGELOG.md"
+          }
+        ],
+        "nextQuestions": [
+          "把上游响应里的URL变成带认证请求之前，目标origin、凭据获取和真实请求是否按这个顺序核验？"
+        ]
+      },
+      {
+        "id": "web3-sui-opt-in-history-health-frontier",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Sui1.84.1：需要历史查询的节点健康检查，显式带上max_history_lag",
+        "whatHappened": "Sui于11月18日（UTC）发布mainnet-v1.84.1，列入11月4日合入的PR28563。/health新增可选max_history_lag，以checkpoint数量限制历史索引落后实时对象索引的差距；未提供时仍沿用原行为，不默认等待历史回填完成。",
+        "mechanism": "启用参数后，比较实时索引高度与所有索引pipeline的最低已提交高度，差距在阈值内才接受。缺watermark、无RPC索引或读存储失败不能算就绪；高度读取间推进造成负差时按零处理。实时索引相对执行高度的既有60-checkpoint检查继续独立运行。",
+        "workedExample": "固定单元断言令实时高度为1000、阈值10：最低索引990接受，989拒绝；缺watermark和无索引拒绝。另有断言要求参数未设置时根本不读历史高度，存储错误则向上返回。本期只读这些函数与断言，未运行Sui节点、RPC或上游测试。",
+        "whyItMatters": "快照恢复后，实时余额等索引可能先追平，历史记录仍在回填。给需要历史能力的负载均衡健康检查带上对应条件，才能避免把只满足实时读取的副本当作所有查询都已就绪。",
+        "risksAndLimits": [
+          "这是节点接口能力的可选检查，不是链最终性、所有历史查询成功或整个集群健康的证明；发布记录也不证明节点或负载均衡已升级并配置该参数。",
+          "阈值以checkpoint数量计，不是秒数；threshold_seconds是另一项检查。默认不检查历史回填，不能把未带参数的200自动解释为历史索引已追平。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Sui mainnet1.84.1 repository release",
+            "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.84.1",
+            "publishedAt": "2026-11-18T20:48:21.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Opt-in history lag health PR28563",
+            "url": "https://github.com/MystenLabs/sui/pull/28563"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Optional history frontier check and boundary assertions",
+            "url": "https://github.com/MystenLabs/sui/blob/e83d69069e4023cce4a2dcde2b9c74384418fee1/crates/sui-rpc-api/src/service/health.rs"
+          }
+        ],
+        "nextQuestions": [
+          "客户端要查询的是实时对象还是历史记录，负载均衡实际请求的健康URL是否包含相应条件？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-live-index-and-history-query-readiness",
+      "domain": "web3",
+      "topic": "onchain_infrastructure",
+      "title": "专题：实时索引已追平，历史查询为什么仍可能跟不上？",
+      "whatHappened": "同一Sui节点的实时对象索引与历史索引可以按不同进度恢复。1.84.1的max_history_lag把需要历史能力的健康判断变成显式条件，而不是把所有节点统一等到回填完成才对外服务。",
+      "mechanism": "分开记录执行高度E、实时索引高度L、全部pipeline最低提交高度H。既有检查约束E与L；可选历史检查另约束L与H，并拒绝未知H。历史差距以客户端看到的实时索引前沿为参照，不把实时索引自身的滞后重复加进历史差距。",
+      "workedExample": "编辑推演：E=1040、L=1000、H=989且历史阈值10时，实时差距40在既有60以内，但历史差距11超限；H到990才满足历史条件。数字由已读比较规则组合，属于纸面推演，不是节点或集群观测；上游断言单独覆盖990/989边界。",
+      "whyItMatters": "健康标签表达的是特定请求所需的能力。恢复过程中可以先提供已追平的实时读取，同时把需要历史查询的流量留给满足历史条件的副本；两类流量是否这样分开仍取决于实际部署配置。",
+      "risksAndLimits": [
+        "一次健康通过只反映所读水位与阈值，不能保证之后每个请求都成功，也不代替最终性或索引内容正确性的验证。",
+        "未传max_history_lag、缺少真实健康请求和部署配置证据时，不能宣布历史服务恢复；本期没有运行恢复演练或修改负载均衡。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "Sui mainnet1.84.1 repository release",
+          "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.84.1",
+          "publishedAt": "2026-11-18T20:48:21.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "Opt-in history lag health PR28563",
+          "url": "https://github.com/MystenLabs/sui/pull/28563"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Optional history frontier check and boundary assertions",
+          "url": "https://github.com/MystenLabs/sui/blob/e83d69069e4023cce4a2dcde2b9c74384418fee1/crates/sui-rpc-api/src/service/health.rs"
+        }
+      ],
+      "nextQuestions": [
+        "能否同时保留实际健康请求参数、E/L/H水位和一条历史查询的真实回执，再判断副本可以接哪类流量？"
+      ],
+      "basedOnBriefId": "web3-sui-opt-in-history-health-frontier"
+    },
+    "sourceUrls": [
+      "https://github.com/langchain-ai/deepagents/releases/tag/deepagents%3D%3D0.7.40",
+      "https://github.com/langchain-ai/deepagents/pull/6349",
+      "https://github.com/langchain-ai/deepagents/blob/9b754bc914cc75c3f6d8c6e99353e81041b73bce/libs/deepagents/deepagents/backends/local_shell.py",
+      "https://github.com/langchain-ai/deepagents/blob/9b754bc914cc75c3f6d8c6e99353e81041b73bce/libs/deepagents/deepagents/backends/_posix_process.py",
+      "https://github.com/langchain-ai/deepagents/blob/9b754bc914cc75c3f6d8c6e99353e81041b73bce/libs/deepagents/tests/unit_tests/backends/test_local_shell_backend.py",
+      "https://github.com/langchain-ai/deepagents/blob/9b754bc914cc75c3f6d8c6e99353e81041b73bce/libs/deepagents/tests/unit_tests/backends/test_posix_process.py",
+      "https://github.com/pydantic/pydantic-ai/security/advisories/GHSA-m4cr-m4qc-9hh3",
+      "https://github.com/pydantic/pydantic-ai/releases/tag/v2.70.0",
+      "https://github.com/pydantic/pydantic-ai/blob/8d30268041fcaba76c8b3ba88e686f5907ad8945/src/pydantic_ai_harness/pydantic_ai_harness/tool_output_limits/_payload.py",
+      "https://github.com/pydantic/pydantic-ai/blob/8d30268041fcaba76c8b3ba88e686f5907ad8945/src/pydantic_ai_harness/pydantic_ai_harness/tool_output_limits/_capability.py",
+      "https://github.com/pydantic/pydantic-ai/blob/8d30268041fcaba76c8b3ba88e686f5907ad8945/tests/harness/tool_output_limits/test_tool_output_limits.py",
+      "https://github.com/MetaMask/core/releases/tag/v1438.0.0",
+      "https://github.com/MetaMask/core/pull/11551",
+      "https://github.com/MetaMask/core/blob/1f153d4652ee73a210a1863f2594d17789526397/packages/ramps-controller/src/RampsService.ts",
+      "https://github.com/MetaMask/core/blob/1f153d4652ee73a210a1863f2594d17789526397/packages/ramps-controller/src/RampsService.test.ts",
+      "https://github.com/MetaMask/core/blob/1f153d4652ee73a210a1863f2594d17789526397/packages/ramps-controller/CHANGELOG.md",
+      "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.84.1",
+      "https://github.com/MystenLabs/sui/pull/28563",
+      "https://github.com/MystenLabs/sui/blob/e83d69069e4023cce4a2dcde2b9c74384418fee1/crates/sui-rpc-api/src/service/health.rs"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-11-19-d547e0ae8cc96ed2",
+    "asOf": "2026-11-18T21:46:28.894Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
   {
     "date": "2026-11-16",
     "slug": "2026-11-16",
@@ -3981,293 +4326,6 @@ export const latestRadars: DailyRadar[] = [
     "marketSignals": [],
     "snapshotId": "learning-2026-11-11-3323ecfb854f3355",
     "asOf": "2026-11-10T21:38:26.706Z",
-    "origin": "research",
-    "publicationState": "published"
-  },
-  {
-    "date": "2026-11-09",
-    "slug": "2026-11-09",
-    "title": "学习雷达 · 2026-11-09",
-    "summary": "AI看遥测跨层前的URL净化与当前模型预算；Web3看HTTP批次配置归属与对象资金执行期失败。补读尚未覆盖的固定发布快照，保留原日期；专题核对观察者接收数据的时点。",
-    "publish": true,
-    "reviewStatus": "automated",
-    "schemaVersion": 2,
-    "editionMode": "daily",
-    "researchedAt": "2026-11-08T21:37:39.755Z",
-    "generatedAt": "2026-11-08T21:37:39.755Z",
-    "sourceSections": [
-      "ai",
-      "web3",
-      "deepDive"
-    ],
-    "missingSections": [],
-    "briefs": [
-      {
-        "id": "ai-sdk-telemetry-url-boundary",
-        "domain": "ai",
-        "topic": "safety",
-        "title": "AI SDK 7.0.165：遥测拿到模型结果之前，先缩减请求 URL",
-        "whatHappened": "AI SDK于11月7日（UTC）发布7.0.165：generateText与streamText此前虽已缩减公开结果URL，遥测integration和tracing subscriber仍可能更早看到原始端点。",
-        "mechanism": "provider回调返回前复制结果并净化request.url：HTTP(S)仅留origin，无效或非HTTP(S)地址省略url。用户信息、路径、query、fragment被去掉；body等元数据保留，原provider对象不变。",
-        "workedExample": "上游mock在两个观察者接收时即时复制request，检查URL净化及原对象未变。本期只读断言，未运行模型或本地复现。",
-        "whyItMatters": "最终输出不能覆盖更早的观察者；应逐接收者核对字段与脱敏时点。",
-        "risksAndLimits": [
-          "仅修两条文本生成路径的URL元数据，不保证headers、body、业务日志或WorkflowAgent安全。",
-          "origin仍暴露主机与端口；本期未验证生产部署或过去数据的撤回。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "AI SDK release",
-            "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-            "publishedAt": "2026-11-07T19:27:48.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR24708",
-            "url": "https://github.com/vercel/ai/pull/24708"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "generateText boundary",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/generate-text.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "URL sanitizer",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/get-request-origin.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "Immediate tracing tests",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts"
-          }
-        ],
-        "nextQuestions": [
-          "接收者的字段范围与脱敏时点如何分别核验？"
-        ]
-      },
-      {
-        "id": "ai-deepagents-selected-model-budget",
-        "domain": "ai",
-        "topic": "infrastructure",
-        "title": "deepagents-code 0.2.5：压缩输入预算跟随当前选定模型",
-        "whatHappened": "0.2.5于11月5日（UTC）发布，修复切换模型仍按启动模型判断压缩的问题，与已刊摘要截点修复不同。",
-        "mechanism": "同步/异步用临时请求核算选定模型与运行期settings的预算；交给handler前恢复原model/settings，让下游中间件继续真正选择模型。",
-        "workedExample": "上游mock矩阵：启动128K转32K，26K输入加8K输出预留需压缩，改2K则不压缩；还检查下游与原请求。本期只读，未运行模型/测试。",
-        "whyItMatters": "切换模型也改变预算；预算准备和最终执行要分开核验，保留下游配置。",
-        "risksAndLimits": [
-          "数字是上游合成断言，不是本期实测窗口、精确token数或延迟收益；provider限制仍需另验。",
-          "预算依据主模型，摘要生成可另选模型；不证明摘要完整或会话恢复正确。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "deepagents-code release",
-            "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5",
-            "publishedAt": "2026-11-05T21:41:43.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR7545",
-            "url": "https://github.com/langchain-ai/deepagents/pull/7545"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Budget request code",
-            "url": "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/deepagents_code/offload_middleware.py"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "Budget matrix tests",
-            "url": "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/tests/unit_tests/test_compact_tool.py"
-          }
-        ],
-        "nextQuestions": [
-          "预算来自当前配置，最终模型选择是否仍走原流程？"
-        ]
-      },
-      {
-        "id": "web3-viem-http-batch-factory-identity",
-        "domain": "web3",
-        "topic": "onchain_infrastructure",
-        "title": "viem 2.57.17：同一 RPC URL，不再把不同 transport 的批次混用",
-        "whatHappened": "viem于11月8日（UTC）发布2.57.17，修复同URL下独立HTTP工厂合批时混用鉴权头与fetch配置的问题。",
-        "mechanism": "调度键组合稳定工厂batchId、实际URL和AbortSignal身份。ID位于initializer外，fallback重初始化同工厂仍合批；独立工厂保留各自RPC配置。",
-        "workedExample": "上游本地鉴权A/B返回1和10，覆盖直接/fallback分离、同工厂共享与URL/signal分离。本期只读，未连RPC或发交易。",
-        "whyItMatters": "相同地址不等于同一调用者；批处理仍需保持鉴权配置和响应归属。",
-        "risksAndLimits": [
-          "这是工厂批次隔离，不是租户认证、链ID校验或WebSocket订阅路由；1和10为本地测试值。",
-          "相同配置的独立工厂也不自动合批；共享需复用工厂并审查配置，不表示写请求可安全重试。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "viem release",
-            "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.17",
-            "publishedAt": "2026-11-08T18:04:10.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR5389",
-            "url": "https://github.com/wevm/viem/pull/5389"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "HTTP factory code",
-            "url": "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "HTTP batch tests",
-            "url": "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.test.ts"
-          }
-        ],
-        "nextQuestions": [
-          "哪些客户端应共享工厂，如何核验配置归属？"
-        ]
-      },
-      {
-        "id": "web3-sui-object-funds-execution-abort",
-        "domain": "web3",
-        "topic": "protocol",
-        "title": "Sui mainnet 1.83.1：对象资金不足，在执行期间形成 Move abort",
-        "whatHappened": "Sui于11月4日（UTC）发布mainnet1.83.1，其protocol140配置让对象资金不足在执行期abort，替代旧检查/重执行。PR于10月20日合入，非当天首创。",
-        "mechanism": "版本化设计先看交易内owner/type余额；不足时按所需accumulator版本读取已结算余额、扣除同commit未结算提款。仍不足则abort；地址调度独立。",
-        "workedExample": "文档中dry-run/孤立replay缺少同commit未结算视图，可能成功而提交执行不足失败。本期只读配置/设计，未运行节点、模拟、回放或资金操作。",
-        "whyItMatters": "模拟成功不能代替执行回执；应区分状态视图、失败阶段与错误类型。",
-        "risksAndLimits": [
-          "对象虚拟余额不足形成Move abort；地址资金执行前调度仍可返回InsufficientFundsForWithdraw。",
-          "文档说明已执行失败可正常收gas；未验证真实主网部署、账户余额或资金安全，孤立replay差异另项追踪。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "Sui mainnet release",
-            "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1",
-            "publishedAt": "2026-11-04T20:01:16.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR28290",
-            "url": "https://github.com/MystenLabs/sui/pull/28290"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Protocol140 config",
-            "url": "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-protocol-config/src/lib.rs"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_design",
-            "name": "Object funds design",
-            "url": "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-core/src/accumulators/design_docs/object_funds_in_execution.md"
-          }
-        ],
-        "nextQuestions": [
-          "三种视图的版本、扣减及对象/地址错误如何分别识别？"
-        ]
-      }
-    ],
-    "deepDive": {
-      "id": "deep-telemetry-observer-sanitization-order",
-      "domain": "ai",
-      "topic": "safety",
-      "title": "专题：最终结果已脱敏，为什么中途观察者仍可能看到原值",
-      "whatHappened": "7.0.165把URL净化前移至provider回调返回前；遥测integration/tracing不再早于公开API看到这一路径的原始request.url。",
-      "mechanism": "只在外层净化时，包装器await execute()后会先见原request。现在生成/流式启动先返回净化元数据，再入遥测；实际请求端点不变。",
-      "workedExample": "上游在integration/asyncEnd即时复制request，避免结束后只查可变引用；还冻结并检查原对象。本期只读，未运行模型或复现。",
-      "whyItMatters": "编辑推论：跨观察边界前处理并逐接收者留证，最终输出只证明自身。",
-      "risksAndLimits": [
-        "未审查全部sink、WorkflowAgent或业务日志；保留的body/其他元数据仍可能有敏感内容，URL净化不是全量隐私保证。",
-        "代码断言不证明已部署、已清理历史遥测或撤回已发送数据。"
-      ],
-      "sources": [
-        {
-          "tier": "tier1",
-          "role": "event",
-          "kind": "official_release",
-          "name": "AI SDK release",
-          "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-          "publishedAt": "2026-11-07T19:27:48.000Z"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_code",
-          "name": "streamText boundary",
-          "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/stream-language-model-call.ts"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_test",
-          "name": "Immediate tracing tests",
-          "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts"
-        }
-      ],
-      "nextQuestions": [
-        "即时接收的字段、处理时点与保留规则是否有证据？"
-      ],
-      "basedOnBriefId": "ai-sdk-telemetry-url-boundary"
-    },
-    "sourceUrls": [
-      "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-      "https://github.com/vercel/ai/pull/24708",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/generate-text.ts",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/get-request-origin.ts",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts",
-      "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5",
-      "https://github.com/langchain-ai/deepagents/pull/7545",
-      "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/deepagents_code/offload_middleware.py",
-      "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/tests/unit_tests/test_compact_tool.py",
-      "https://github.com/wevm/viem/releases/tag/viem%402.57.17",
-      "https://github.com/wevm/viem/pull/5389",
-      "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.ts",
-      "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.test.ts",
-      "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1",
-      "https://github.com/MystenLabs/sui/pull/28290",
-      "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-protocol-config/src/lib.rs",
-      "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-core/src/accumulators/design_docs/object_funds_in_execution.md",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/stream-language-model-call.ts"
-    ],
-    "relatedProjectSlugs": [],
-    "marketSignals": [],
-    "snapshotId": "learning-2026-11-09-bd83a5cc7fff3983",
-    "asOf": "2026-11-08T21:37:39.755Z",
     "origin": "research",
     "publicationState": "published"
   }
