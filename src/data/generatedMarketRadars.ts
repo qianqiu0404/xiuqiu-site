@@ -16,6 +16,17 @@ export interface MarketRadarDaily { schemaVersion?: 2; date: string; slug: strin
 export interface MarketRadarIndexEntry { date: string; slug: string; snapshotId: string; asOf: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
 export const marketRadarIndex: MarketRadarIndexEntry[] = [
   {
+    "date": "2026-11-19",
+    "slug": "2026-11-19",
+    "title": "交易研究雷达 · 2026-11-19",
+    "summary": "11月18日公布的10月FOMC纪要记载，当时购买周期的准备金管理购买维持为零，但节奏按月判断。本期拆开历史观察、操作目的与政策立场，保留后续数据核验问题。本期为自动汇总，未经人工复核。",
+    "snapshotId": "market-2026-11-19-fb25180a346f1c21",
+    "asOf": "2026-11-18T21:43:44.516Z",
+    "eventCount": 1,
+    "assetCount": 2,
+    "leadTitle": "FOMC纪要：当期准备金管理购买为零，不是固定路径"
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "title": "交易研究雷达 · 2026-11-16",
@@ -314,6 +325,158 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
   }
 ]
 export const latestMarketRadars: MarketRadarDaily[] = [
+  {
+    "date": "2026-11-19",
+    "slug": "2026-11-19",
+    "title": "交易研究雷达 · 2026-11-19",
+    "summary": "11月18日公布的10月FOMC纪要记载，当时购买周期的准备金管理购买维持为零，但节奏按月判断。本期拆开历史观察、操作目的与政策立场，保留后续数据核验问题。本期为自动汇总，未经人工复核。",
+    "snapshotId": "market-2026-11-19-fb25180a346f1c21",
+    "asOf": "2026-11-18T21:43:44.516Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-18T21:43:44.516Z",
+    "events": [
+      {
+        "id": "fomc-minutes-reserve-management-purchases-zero-not-preset-2026-11-18",
+        "priority": "P2",
+        "status": "released",
+        "category": "macro",
+        "eventAt": "2026-11-18T14:00:00-05:00",
+        "title": "FOMC纪要：当期准备金管理购买为零，不是固定路径",
+        "fact": "美联储11月18日公布10月27—28日会议纪要，记载会上报告：当时准备金仍属充裕区间，交易台在该购买周期将准备金管理购买（RMPs）维持为零；购买节奏并非预设，每月按维持充裕准备金的目标决定。这是历史会议记录，不是11月18日新作出的购买或利率决定。",
+        "whyWatch": "研究推断：准备金供需、隔夜融资价格相对准备金余额利率（IORB）的差值，可能先影响短端融资条件，再联系国债短券与更广金融条件；购买数量为零本身不确定政策立场或资产方向，每个传导环节仍需同窗口证据。",
+        "assets": [
+          "美元隔夜融资",
+          "美国国债短券"
+        ],
+        "watchFor": "分别对齐会议日、纪要发布日期与后续交易台购买周期；核对官方月度购买安排、实际成交、准备金余额及有效联邦基金利率和回购利率相对IORB的变化。本期只读会议记录，未采集这些后续操作、余额或行情样本。",
+        "invalidation": "后续购买安排或准备金需求变化可能使历史零购买不再适用；若相对融资利率、余额与操作数据不支持所述联系，应收窄解释。不能把RMP为零等同全部证券购买停止、永久不再购买，或把旧会议描述当作当前市场状态。",
+        "sourceName": "Federal Reserve — Minutes of the Federal Open Market Committee, October 27–28, 2026 (released November 18)",
+        "sourceUrl": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20261028.htm",
+        "sourcePublishedAt": "2026-11-18"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.federalreserve.gov/monetarypolicy/fomcminutes20261028.htm"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "本期核对11月18日官方公布的10月会议纪要及发布时间，未建立购买安排、准备金余额、融资价格与资产反应的同窗口历史样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "历史会议中的购买周期、观察期与纪要发布日期不同；购买节奏没有预设，单个周期的零购买不能换算为政策或资产方向概率。",
+      "nextValidation": "固定操作周期和日期，补充官方购买安排、实际成交、余额与融资价格，并控制同期政策及其他消息；样本不足时只保留信号质量。",
+      "invalidation": "后续操作计划、准备金需求或统计口径变化时重新对齐；若缺少操作与资产传导证据，保留未知。",
+      "sourceUrls": [
+        "https://www.federalreserve.gov/monetarypolicy/fomcminutes20261028.htm"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "准备金供需与按月决定的管理购买，可能经隔夜融资相对IORB的差值、短券供需哪些环节联系相关资产，各环需要什么同窗口证据？",
+        "focusEventIds": [
+          "fomc-minutes-reserve-management-purchases-zero-not-preset-2026-11-18"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些后续购买安排、实际成交、准备金余额与相对融资利率证据，能支持或推翻从旧周期零购买推断当前融资收紧的解释？",
+        "focusEventIds": [
+          "fomc-minutes-reserve-management-purchases-zero-not-preset-2026-11-18"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若准备金需求变化、后续周期恢复购买或融资利率仍稳定，分别观察什么，何时应放弃把历史零购买外推为持续政策路径？",
+        "focusEventIds": [
+          "fomc-minutes-reserve-management-purchases-zero-not-preset-2026-11-18"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-19",
+      "snapshotId": "market-2026-11-19-fb25180a346f1c21",
+      "asOf": "2026-11-18T21:43:44.516Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-19",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "准备金供需与按月决定的管理购买，可能经隔夜融资相对IORB的差值、短券供需哪些环节联系相关资产，各环需要什么同窗口证据？",
+          "focusEventIds": [
+            "fomc-minutes-reserve-management-purchases-zero-not-preset-2026-11-18"
+          ],
+          "prompt": "研究任务：准备金供需与按月决定的管理购买，可能经隔夜融资相对IORB的差值、短券供需哪些环节联系相关资产，各环需要什么同窗口证据？\n证据快照：2026-11-19；asOf=2026-11-18T21:43:44.516Z；snapshotId=market-2026-11-19-fb25180a346f1c21\n\n材料 1｜FOMC纪要：当期准备金管理购买为零，不是固定路径\n已确认事实：美联储11月18日公布10月27—28日会议纪要，记载会上报告：当时准备金仍属充裕区间，交易台在该购买周期将准备金管理购买（RMPs）维持为零；购买节奏并非预设，每月按维持充裕准备金的目标决定。这是历史会议记录，不是11月18日新作出的购买或利率决定。\n关注机制：研究推断：准备金供需、隔夜融资价格相对准备金余额利率（IORB）的差值，可能先影响短端融资条件，再联系国债短券与更广金融条件；购买数量为零本身不确定政策立场或资产方向，每个传导环节仍需同窗口证据。\n接下来验证：分别对齐会议日、纪要发布日期与后续交易台购买周期；核对官方月度购买安排、实际成交、准备金余额及有效联邦基金利率和回购利率相对IORB的变化。本期只读会议记录，未采集这些后续操作、余额或行情样本。\n失效条件：后续购买安排或准备金需求变化可能使历史零购买不再适用；若相对融资利率、余额与操作数据不支持所述联系，应收窄解释。不能把RMP为零等同全部证券购买停止、永久不再购买，或把旧会议描述当作当前市场状态。\n一手来源：https://www.federalreserve.gov/monetarypolicy/fomcminutes20261028.htm\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "b14e625ead77479b872648e3969b7212a3fceb5755ef4b176145502a730553cf",
+          "sourceUrls": [
+            "https://www.federalreserve.gov/monetarypolicy/fomcminutes20261028.htm"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些后续购买安排、实际成交、准备金余额与相对融资利率证据，能支持或推翻从旧周期零购买推断当前融资收紧的解释？",
+          "focusEventIds": [
+            "fomc-minutes-reserve-management-purchases-zero-not-preset-2026-11-18"
+          ],
+          "prompt": "研究任务：哪些后续购买安排、实际成交、准备金余额与相对融资利率证据，能支持或推翻从旧周期零购买推断当前融资收紧的解释？\n证据快照：2026-11-19；asOf=2026-11-18T21:43:44.516Z；snapshotId=market-2026-11-19-fb25180a346f1c21\n\n材料 1｜FOMC纪要：当期准备金管理购买为零，不是固定路径\n已确认事实：美联储11月18日公布10月27—28日会议纪要，记载会上报告：当时准备金仍属充裕区间，交易台在该购买周期将准备金管理购买（RMPs）维持为零；购买节奏并非预设，每月按维持充裕准备金的目标决定。这是历史会议记录，不是11月18日新作出的购买或利率决定。\n关注机制：研究推断：准备金供需、隔夜融资价格相对准备金余额利率（IORB）的差值，可能先影响短端融资条件，再联系国债短券与更广金融条件；购买数量为零本身不确定政策立场或资产方向，每个传导环节仍需同窗口证据。\n接下来验证：分别对齐会议日、纪要发布日期与后续交易台购买周期；核对官方月度购买安排、实际成交、准备金余额及有效联邦基金利率和回购利率相对IORB的变化。本期只读会议记录，未采集这些后续操作、余额或行情样本。\n失效条件：后续购买安排或准备金需求变化可能使历史零购买不再适用；若相对融资利率、余额与操作数据不支持所述联系，应收窄解释。不能把RMP为零等同全部证券购买停止、永久不再购买，或把旧会议描述当作当前市场状态。\n一手来源：https://www.federalreserve.gov/monetarypolicy/fomcminutes20261028.htm\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "bed8530860cca57c7c26c022b6b3dece9f1cef99f49cda4e3614bc64837775f3",
+          "sourceUrls": [
+            "https://www.federalreserve.gov/monetarypolicy/fomcminutes20261028.htm"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若准备金需求变化、后续周期恢复购买或融资利率仍稳定，分别观察什么，何时应放弃把历史零购买外推为持续政策路径？",
+          "focusEventIds": [
+            "fomc-minutes-reserve-management-purchases-zero-not-preset-2026-11-18"
+          ],
+          "prompt": "研究任务：若准备金需求变化、后续周期恢复购买或融资利率仍稳定，分别观察什么，何时应放弃把历史零购买外推为持续政策路径？\n证据快照：2026-11-19；asOf=2026-11-18T21:43:44.516Z；snapshotId=market-2026-11-19-fb25180a346f1c21\n\n材料 1｜FOMC纪要：当期准备金管理购买为零，不是固定路径\n已确认事实：美联储11月18日公布10月27—28日会议纪要，记载会上报告：当时准备金仍属充裕区间，交易台在该购买周期将准备金管理购买（RMPs）维持为零；购买节奏并非预设，每月按维持充裕准备金的目标决定。这是历史会议记录，不是11月18日新作出的购买或利率决定。\n关注机制：研究推断：准备金供需、隔夜融资价格相对准备金余额利率（IORB）的差值，可能先影响短端融资条件，再联系国债短券与更广金融条件；购买数量为零本身不确定政策立场或资产方向，每个传导环节仍需同窗口证据。\n接下来验证：分别对齐会议日、纪要发布日期与后续交易台购买周期；核对官方月度购买安排、实际成交、准备金余额及有效联邦基金利率和回购利率相对IORB的变化。本期只读会议记录，未采集这些后续操作、余额或行情样本。\n失效条件：后续购买安排或准备金需求变化可能使历史零购买不再适用；若相对融资利率、余额与操作数据不支持所述联系，应收窄解释。不能把RMP为零等同全部证券购买停止、永久不再购买，或把旧会议描述当作当前市场状态。\n一手来源：https://www.federalreserve.gov/monetarypolicy/fomcminutes20261028.htm\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "7d40ffe5b4fb217c7a045d290d9af9957f8ac85517b1d17803508a62ccf24724",
+          "sourceUrls": [
+            "https://www.federalreserve.gov/monetarypolicy/fomcminutes20261028.htm"
+          ]
+        }
+      ]
+    }
+  },
   {
     "date": "2026-11-16",
     "slug": "2026-11-16",
@@ -1215,157 +1378,6 @@ export const latestMarketRadars: MarketRadarDaily[] = [
           "promptChecksum": "b51c3ac516a1c07dde99ae9da2bb3791c04f34f554274828a451ef9584b543b8",
           "sourceUrls": [
             "https://www.newyorkfed.org/newsevents/news/research/2026/20261110"
-          ]
-        }
-      ]
-    }
-  },
-  {
-    "date": "2026-11-10",
-    "slug": "2026-11-10",
-    "title": "交易研究雷达 · 2026-11-10",
-    "summary": "FinCEN与美联储撤回2020年跨境资金传送门槛提案；本期区分11月6日公告、11月9日正式刊登与现行规则，不把撤回旧提案解读为取消既有义务。",
-    "snapshotId": "market-2026-11-10-01bdf765eaf1db2d",
-    "asOf": "2026-11-09T21:36:03.266Z",
-    "origin": "research",
-    "publicationState": "published",
-    "reviewStatus": "automated",
-    "generatedAt": "2026-11-09T21:36:03.266182Z",
-    "events": [
-      {
-        "id": "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
-        "priority": "P1",
-        "status": "released",
-        "category": "regulation",
-        "title": "FinCEN与美联储撤回跨境250美元门槛提案",
-        "fact": "11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。",
-        "whyWatch": "研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。",
-        "assets": [
-          "跨境资金通道",
-          "加密资产"
-        ],
-        "watchFor": "核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。",
-        "invalidation": "后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。",
-        "sourceName": "Federal Register / GPO — 2026-22809",
-        "sourceUrl": "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm",
-        "sourcePublishedAt": "2026-11-09"
-      }
-    ],
-    "sourceUrls": [
-      "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-    ],
-    "quantStrategy": {
-      "horizonTradingDays": 3,
-      "status": "historical_samples_insufficient",
-      "methodology": "本期仅核对一份提案撤回文件及先前公告，未建立机构开发排期、资金服务与资产反应的同窗口样本。",
-      "assets": [
-        {
-          "symbol": "SPY",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "QQQ",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "BTC",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "ETH",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "GLD",
-          "group": "gold_etf",
-          "signalQuality": "weak"
-        }
-      ],
-      "sampleSize": 0,
-      "rationale": "规则文件变化、机构实际执行与市场反应是不同层次；没有样本便不量化跨资产影响。",
-      "nextValidation": "固定公告及正式撤回时点，再核对公开实施说明、既有规则和可比服务数据，样本不足时仅记录信号质量。",
-      "invalidation": "新提案或正式范围改变时重估；数据口径、时间窗口不一致或缺少实际服务变化证据时保留未知。",
-      "sourceUrls": [
-        "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-      ]
-    },
-    "schemaVersion": 2,
-    "researchQuestions": [
-      {
-        "id": "1",
-        "lens": "transmission",
-        "shortQuestion": "旧提案退出如何经合规开发排期、机构执行和跨境资金服务传导到市场，各环需要哪些独立证据？",
-        "focusEventIds": [
-          "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-        ]
-      },
-      {
-        "id": "2",
-        "lens": "falsification",
-        "shortQuestion": "哪些既有规则、机构说明和同窗口服务数据，能推翻把当前市场变化归因于本次撤回的解释？",
-        "focusEventIds": [
-          "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-        ]
-      },
-      {
-        "id": "3",
-        "lens": "scenario",
-        "shortQuestion": "现行配置不变、新提案重启与服务实际调整分别对应什么情景，什么证据会使当前判断失效？",
-        "focusEventIds": [
-          "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-        ]
-      }
-    ],
-    "researchPack": {
-      "schemaVersion": 2,
-      "date": "2026-11-10",
-      "snapshotId": "market-2026-11-10-01bdf765eaf1db2d",
-      "asOf": "2026-11-09T21:36:03.266Z",
-      "origin": "research",
-      "publicationState": "published",
-      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-10",
-      "questions": [
-        {
-          "id": "1",
-          "lens": "transmission",
-          "shortQuestion": "旧提案退出如何经合规开发排期、机构执行和跨境资金服务传导到市场，各环需要哪些独立证据？",
-          "focusEventIds": [
-            "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-          ],
-          "prompt": "研究任务：旧提案退出如何经合规开发排期、机构执行和跨境资金服务传导到市场，各环需要哪些独立证据？\n证据快照：2026-11-10；asOf=2026-11-09T21:36:03.266Z；snapshotId=market-2026-11-10-01bdf765eaf1db2d\n\n材料 1｜FinCEN与美联储撤回跨境250美元门槛提案\n已确认事实：11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。\n关注机制：研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。\n接下来验证：核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。\n失效条件：后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。\n一手来源：https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "6bdf797b1a69478a921459f978c1506d2c7006e190819973ee4e76316dab80ff",
-          "sourceUrls": [
-            "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-          ]
-        },
-        {
-          "id": "2",
-          "lens": "falsification",
-          "shortQuestion": "哪些既有规则、机构说明和同窗口服务数据，能推翻把当前市场变化归因于本次撤回的解释？",
-          "focusEventIds": [
-            "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-          ],
-          "prompt": "研究任务：哪些既有规则、机构说明和同窗口服务数据，能推翻把当前市场变化归因于本次撤回的解释？\n证据快照：2026-11-10；asOf=2026-11-09T21:36:03.266Z；snapshotId=market-2026-11-10-01bdf765eaf1db2d\n\n材料 1｜FinCEN与美联储撤回跨境250美元门槛提案\n已确认事实：11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。\n关注机制：研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。\n接下来验证：核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。\n失效条件：后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。\n一手来源：https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "b07627ead551add6ce0062f0cac3748f964c2ce255524fa093a1f4539ed3e896",
-          "sourceUrls": [
-            "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-          ]
-        },
-        {
-          "id": "3",
-          "lens": "scenario",
-          "shortQuestion": "现行配置不变、新提案重启与服务实际调整分别对应什么情景，什么证据会使当前判断失效？",
-          "focusEventIds": [
-            "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-          ],
-          "prompt": "研究任务：现行配置不变、新提案重启与服务实际调整分别对应什么情景，什么证据会使当前判断失效？\n证据快照：2026-11-10；asOf=2026-11-09T21:36:03.266Z；snapshotId=market-2026-11-10-01bdf765eaf1db2d\n\n材料 1｜FinCEN与美联储撤回跨境250美元门槛提案\n已确认事实：11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。\n关注机制：研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。\n接下来验证：核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。\n失效条件：后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。\n一手来源：https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "a18a64a71ef388b379425fa6a84d7891d887815875a28e56fc58e3e22087590f",
-          "sourceUrls": [
-            "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
           ]
         }
       ]

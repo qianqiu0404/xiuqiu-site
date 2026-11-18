@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-11-19:fomc-minutes-reserve-management-purchases-zero-not-preset-2026-11-18",
+    "kind": "market",
+    "date": "2026-11-19",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "FOMC纪要：当期准备金管理购买为零，不是固定路径",
+    "summary": "研究推断：准备金供需、隔夜融资价格相对准备金余额利率（IORB）的差值，可能先影响短端融资条件，再联系国债短券与更广金融条件；购买数量为零本身不确定政策立场或资产方向，每个传导环节仍需同窗口证据。",
+    "href": "/market-radar/2026-11-19#fomc-minutes-reserve-management-purchases-zero-not-preset-2026-11-18",
+    "source": {
+      "name": "Federal Reserve — Minutes of the Federal Open Market Committee, October 27–28, 2026 (released November 18)",
+      "url": "https://www.federalreserve.gov/monetarypolicy/fomcminutes20261028.htm"
+    },
+    "flags": {
+      "priority": "P2"
+    }
+  },
+  {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
     "date": "2026-11-16",
