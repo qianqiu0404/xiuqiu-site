@@ -5,6 +5,69 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "learning:ai-deepagents-timeout-partial-output",
+    "kind": "learning",
+    "date": "2026-11-19",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "DeepAgents0.7.40：shell超时之后，仍保留终止前后的已捕获输出",
+    "summary": "只看到超时文案时，Agent很难分清任务卡在哪一步。保留部分输出能辅助定位，但重试前仍须核对操作回执和清理结果，避免已经产生副作用的命令被重复执行。",
+    "href": "/radar/2026-11-19#ai-deepagents-timeout-partial-output",
+    "source": {
+      "name": "DeepAgents0.7.40 repository release",
+      "tier": "tier1",
+      "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents%3D%3D0.7.40"
+    }
+  },
+  {
+    "id": "learning:ai-pydantic-ansi-strip-quadratic-scan",
+    "kind": "learning",
+    "date": "2026-11-19",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "Pydantic Harness0.70：先修复ANSI扫描，再谈工具输出限额",
+    "summary": "工具结果通常来自文件、网页或MCP服务，不能因为输出最终会被截短就忽略预处理成本。输入限制、扫描复杂度与最后展示多少文字，需要分别检查。",
+    "href": "/radar/2026-11-19#ai-pydantic-ansi-strip-quadratic-scan",
+    "source": {
+      "name": "Harness ANSI stripping advisory GHSA-m4cr-m4qc-9hh3",
+      "tier": "tier1",
+      "url": "https://github.com/pydantic/pydantic-ai/security/advisories/GHSA-m4cr-m4qc-9hh3"
+    }
+  },
+  {
+    "id": "learning:web3-metamask-buy-widget-origin-before-token",
+    "kind": "learning",
+    "date": "2026-11-19",
+    "domain": "web3",
+    "topic": "security",
+    "title": "MetaMask ramps30.1：取bearer token之前，先核对buy URL的origin",
+    "summary": "来自另一个API响应的URL仍是待验证输入。认证凭据属于确定的服务边界，不能因为URL看起来像报价链接，就先获取凭据再决定把请求发到哪里。",
+    "href": "/radar/2026-11-19#web3-metamask-buy-widget-origin-before-token",
+    "source": {
+      "name": "MetaMask core v1438.0.0 repository release",
+      "tier": "tier1",
+      "url": "https://github.com/MetaMask/core/releases/tag/v1438.0.0"
+    }
+  },
+  {
+    "id": "learning:web3-sui-opt-in-history-health-frontier",
+    "kind": "learning",
+    "date": "2026-11-19",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "Sui1.84.1：需要历史查询的节点健康检查，显式带上max_history_lag",
+    "summary": "快照恢复后，实时余额等索引可能先追平，历史记录仍在回填。给需要历史能力的负载均衡健康检查带上对应条件，才能避免把只满足实时读取的副本当作所有查询都已就绪。",
+    "href": "/radar/2026-11-19#web3-sui-opt-in-history-health-frontier",
+    "source": {
+      "name": "Sui mainnet1.84.1 repository release",
+      "tier": "tier1",
+      "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.84.1"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
     "date": "2026-11-16",

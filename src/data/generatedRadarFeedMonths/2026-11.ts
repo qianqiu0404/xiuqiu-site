@@ -5,6 +5,55 @@ import type { RadarFeedItem } from '../generatedRadarFeed.ts'
 
 export const monthlyFeedItems: RadarFeedItem[] = [
   {
+    "id": "ai-deepagents-timeout-partial-output",
+    "date": "2026-11-19",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "DeepAgents0.7.40：shell超时之后，仍保留终止前后的已捕获输出",
+    "summary": "只看到超时文案时，Agent很难分清任务卡在哪一步。保留部分输出能辅助定位，但重试前仍须核对操作回执和清理结果，避免已经产生副作用的命令被重复执行。",
+    "anchor": "ai-deepagents-timeout-partial-output",
+    "sourceName": "DeepAgents0.7.40 repository release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents%3D%3D0.7.40"
+  },
+  {
+    "id": "ai-pydantic-ansi-strip-quadratic-scan",
+    "date": "2026-11-19",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "Pydantic Harness0.70：先修复ANSI扫描，再谈工具输出限额",
+    "summary": "工具结果通常来自文件、网页或MCP服务，不能因为输出最终会被截短就忽略预处理成本。输入限制、扫描复杂度与最后展示多少文字，需要分别检查。",
+    "anchor": "ai-pydantic-ansi-strip-quadratic-scan",
+    "sourceName": "Harness ANSI stripping advisory GHSA-m4cr-m4qc-9hh3",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/pydantic/pydantic-ai/security/advisories/GHSA-m4cr-m4qc-9hh3"
+  },
+  {
+    "id": "web3-metamask-buy-widget-origin-before-token",
+    "date": "2026-11-19",
+    "domain": "web3",
+    "topic": "security",
+    "title": "MetaMask ramps30.1：取bearer token之前，先核对buy URL的origin",
+    "summary": "来自另一个API响应的URL仍是待验证输入。认证凭据属于确定的服务边界，不能因为URL看起来像报价链接，就先获取凭据再决定把请求发到哪里。",
+    "anchor": "web3-metamask-buy-widget-origin-before-token",
+    "sourceName": "MetaMask core v1438.0.0 repository release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/MetaMask/core/releases/tag/v1438.0.0"
+  },
+  {
+    "id": "web3-sui-opt-in-history-health-frontier",
+    "date": "2026-11-19",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "Sui1.84.1：需要历史查询的节点健康检查，显式带上max_history_lag",
+    "summary": "快照恢复后，实时余额等索引可能先追平，历史记录仍在回填。给需要历史能力的负载均衡健康检查带上对应条件，才能避免把只满足实时读取的副本当作所有查询都已就绪。",
+    "anchor": "web3-sui-opt-in-history-health-frontier",
+    "sourceName": "Sui mainnet1.84.1 repository release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.84.1",
+    "isDeepDive": true
+  },
+  {
     "id": "ai-fastmcp-skill-manifest-byte-verification",
     "date": "2026-11-16",
     "domain": "ai",
