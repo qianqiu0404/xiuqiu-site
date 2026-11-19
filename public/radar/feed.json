@@ -6,6 +6,58 @@
   "language": "zh-CN",
   "items": [
     {
+      "id": "xiuqiu-radar:ai-langgraph-send-state-schema-parity",
+      "url": "https://xoqiu.cn/radar/2026-11-20#ai-langgraph-send-state-schema-parity",
+      "title": "LangGraph1.2.23：Send派发的工具，也读取节点schema约束的状态",
+      "summary": "同一工具换一种派发方式后，不应悄悄换掉它读取状态的结构或归属。排查Agent工具缺字段、类型不符时，需要连同节点输入schema和嵌套图上下文一起核对。",
+      "content_text": "同一工具换一种派发方式后，不应悄悄换掉它读取状态的结构或归属。排查Agent工具缺字段、类型不符时，需要连同节点输入schema和嵌套图上下文一起核对。",
+      "date_published": "2026-11-20T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "agent"
+      ],
+      "external_url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.23"
+    },
+    {
+      "id": "xiuqiu-radar:ai-pydantic-codemode-native-deferred-placement",
+      "url": "https://xoqiu.cn/radar/2026-11-20#ai-pydantic-codemode-native-deferred-placement",
+      "title": "Pydantic AI2.71：CodeMode默认保留两类延迟工具的原生调用",
+      "summary": "工具是否出现在代码沙箱的函数目录，与这次调用是否已批准，是不同判断。把声明的延迟种类和实际批准路径同时展示，才能解释一次默认配置升级改变了哪条执行路线。",
+      "content_text": "工具是否出现在代码沙箱的函数目录，与这次调用是否已批准，是不同判断。把声明的延迟种类和实际批准路径同时展示，才能解释一次默认配置升级改变了哪条执行路线。",
+      "date_published": "2026-11-20T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "safety"
+      ],
+      "external_url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.71.0"
+    },
+    {
+      "id": "xiuqiu-radar:web3-viem-abi-head-cursor-bounds",
+      "url": "https://xoqiu.cn/radar/2026-11-20#web3-viem-abi-head-cursor-bounds",
+      "title": "viem2.58.1：动态ABI读完之后，下一参数从自己的head重新读取",
+      "summary": "链上返回值的offset控制读取位置，成功解码不应依赖前一字段刚好把游标留在哪里。钱包或索引服务收到不完整数据时，应保留解码错误，避免把重复读到的旧字当作真实字段。",
+      "content_text": "链上返回值的offset控制读取位置，成功解码不应依赖前一字段刚好把游标留在哪里。钱包或索引服务收到不完整数据时，应保留解码错误，避免把重复读到的旧字当作真实字段。",
+      "date_published": "2026-11-20T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "onchain_infrastructure"
+      ],
+      "external_url": "https://github.com/wevm/viem/releases/tag/viem%402.58.1"
+    },
+    {
+      "id": "xiuqiu-radar:web3-foundry-skipped-project-test-suite-warning",
+      "url": "https://xoqiu.cn/radar/2026-11-20#web3-foundry-skipped-project-test-suite-warning",
+      "title": "Foundry1.10：项目测试合约被编译却没被选中时，给出具体告警",
+      "summary": "测试全绿首先描述实际被选中的集合。升级若改变发现范围，编译成功和通过数都可能看起来正常；具体suite告警让维护者有机会发现测试集合已经少了一部分。",
+      "content_text": "测试全绿首先描述实际被选中的集合。升级若改变发现范围，编译成功和通过数都可能看起来正常；具体suite告警让维护者有机会发现测试集合已经少了一部分。",
+      "date_published": "2026-11-20T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "security"
+      ],
+      "external_url": "https://github.com/foundry-rs/foundry/releases/tag/v1.10.0"
+    },
+    {
       "id": "xiuqiu-radar:ai-fastmcp-skill-manifest-byte-verification",
       "url": "https://xoqiu.cn/radar/2026-11-16#ai-fastmcp-skill-manifest-byte-verification",
       "title": "FastMCP4.2：读到Skill文件之后，先核对清单承诺的字节",
@@ -732,58 +784,6 @@
         "onchain_infrastructure"
       ],
       "external_url": "https://github.com/paradigmxyz/reth/releases/tag/v2.9.0"
-    },
-    {
-      "id": "xiuqiu-radar:ai-acr-method-diversity",
-      "url": "https://xoqiu.cn/radar/2026-10-30#ai-acr-method-diversity",
-      "title": "ACR：同一模型的四条轨迹，要分别核对解法与正确性",
-      "summary": "并行 Agent 数量增加，不自动带来独立证据。若要用多条轨迹降低同一种推理盲点，应同时记录不同方法的数量、每条轨迹的正确性与生成预算，避免只奖励措辞变化。",
-      "content_text": "并行 Agent 数量增加，不自动带来独立证据。若要用多条轨迹降低同一种推理盲点，应同时记录不同方法的数量、每条轨迹的正确性与生成预算，避免只奖励措辞变化。",
-      "date_published": "2026-10-30T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "model_inference"
-      ],
-      "external_url": "https://arxiv.org/abs/2610.37375"
-    },
-    {
-      "id": "xiuqiu-radar:ai-tao-tool-aware-admission",
-      "url": "https://xoqiu.cn/radar/2026-10-30#ai-tao-tool-aware-admission",
-      "title": "TAO：工具即将返回，才可能需要下一轮 GPU 准入",
-      "summary": "工具期间保留了多少上下文、何时再需要推理、目标节点还有多少容量，是不同观测。把这些量分开，才能解释调度是在利用真实缓存、预测短期需求，还是只在统计更大的会话。",
-      "content_text": "工具期间保留了多少上下文、何时再需要推理、目标节点还有多少容量，是不同观测。把这些量分开，才能解释调度是在利用真实缓存、预测短期需求，还是只在统计更大的会话。",
-      "date_published": "2026-10-30T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "infrastructure"
-      ],
-      "external_url": "https://arxiv.org/abs/2610.37230"
-    },
-    {
-      "id": "xiuqiu-radar:web3-viem-chain-scoped-config",
-      "url": "https://xoqiu.cn/radar/2026-10-30#web3-viem-chain-scoped-config",
-      "title": "viem 2.57.13：账户配置缓存要把链 ID 纳入键",
-      "summary": "账户地址相同不意味着配置可跨链共享。钱包与中继的缓存契约要同时说明命名空间、选中配置的链上依据和未命中时的行为，避免把缓存内容当成当前授权状态。",
-      "content_text": "账户地址相同不意味着配置可跨链共享。钱包与中继的缓存契约要同时说明命名空间、选中配置的链上依据和未命中时的行为，避免把缓存内容当成当前授权状态。",
-      "date_published": "2026-10-30T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "wallet_cex"
-      ],
-      "external_url": "https://github.com/wevm/viem/releases/tag/viem%402.57.13"
-    },
-    {
-      "id": "xiuqiu-radar:web3-agave-padded-vote-state",
-      "url": "https://xoqiu.cn/radar/2026-10-30#web3-agave-padded-vote-state",
-      "title": "Agave 4.4.0：先编码投票状态，再只补零尾部",
-      "summary": "降低重复内存写入时，仍需核对序列化输出的字节内容、长度及错误边界。把这些契约与部署建议分别检查，能避免将一个局部实现优化夸成整网性能或兼容性结论。",
-      "content_text": "降低重复内存写入时，仍需核对序列化输出的字节内容、长度及错误边界。把这些契约与部署建议分别检查，能避免将一个局部实现优化夸成整网性能或兼容性结论。",
-      "date_published": "2026-10-30T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "onchain_infrastructure"
-      ],
-      "external_url": "https://github.com/anza-xyz/agave/releases/tag/v4.4.0"
     }
   ]
 }
