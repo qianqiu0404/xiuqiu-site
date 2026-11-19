@@ -3,6 +3,157 @@
 import type { MarketRadarDaily } from '../generatedMarketRadars.ts'
 export const monthlyMarketRadars: MarketRadarDaily[] = [
   {
+    "date": "2026-11-20",
+    "slug": "2026-11-20",
+    "title": "交易研究雷达 · 2026-11-20",
+    "summary": "11月19日ECB公布年度SREP结果，2027年总体CET1资本要求及指引大致稳定。本期核对银行个体差异、资本类别与方法调整，再保留信贷传导的验证问题。本期为自动汇总，未经人工复核。",
+    "snapshotId": "market-2026-11-20-3e4541817acce38d",
+    "asOf": "2026-11-19T21:38:05.613Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-19T21:38:05.613Z",
+    "events": [
+      {
+        "id": "ecb-srep-pillar2-bank-specific-capital-2026-11-19",
+        "priority": "P2",
+        "status": "released",
+        "category": "regulation",
+        "title": "ECB SREP：总体资本要求稳定，个别银行仍有变化",
+        "fact": "ECB于11月19日公布2026年SREP结果：2027年以CET1资本满足的整体资本要求及指引为风险加权资产的11.3%，2026年为11.2%；新Pillar 2方法首次用于本轮评估，逐银行连接风险与资本要求、核对Pillar 1与Pillar 2的重复计量。评估通常基于2025年末数据，相关决定适用2027年。",
+        "whyWatch": "研究推断：监管要求、实际可用资本、银行风险偏好与贷款投放属于不同环节。个别银行的资本余量和风险权重变化，可能经贷款定价、规模与融资成本联系相关资产；总体要求稳定不足以证明每家风险未变或信贷供给已改变。",
+        "assets": [
+          "欧元区银行股",
+          "欧元区银行债"
+        ],
+        "watchFor": "按同一银行、资本类别、风险加权资产口径与时期，核对2027年P2R、P2G、缓冲及实际资本，再观察贷款量价、融资成本和资产质量。分清方法调整与风险变化；本期没有采集银行个体决议、贷款、资金流或行情反应样本。",
+        "invalidation": "若要求变化来自口径或避免重复计量，且资本余量、风险偏好与贷款数据未变，则收窄即时融资传导解释。后续决议或数据修订时重估；不得将P2G当作有约束力的P2R，也不将年度评估或历史数据写成当日健康、损失或资产方向。",
+        "sourceName": "ECB Banking Supervision — 2026 SREP results and capital requirements for 2027",
+        "sourceUrl": "https://www.bankingsupervision.europa.eu/press/pr/date/2026/html/ssm.pr261119~4cb883c88e.en.html",
+        "sourcePublishedAt": "2026-11-19"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.bankingsupervision.europa.eu/press/pr/date/2026/html/ssm.pr261119~4cb883c88e.en.html"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "本期核对11月19日SREP公告、聚合结果、发布说明及官方日历；未建立银行个体资本、贷款、融资价格与资产反应的同窗口样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "年度监管评估、2027年适用要求与2026年二季度实际资本数据时期不同；方法调整和个体风险均可能改变P2R，不能换算为资产方向概率。",
+      "nextValidation": "固定银行、资本类别、分母与观察期，补充公开个体决议、实际资本、贷款量价及融资数据，并隔离同期消息；样本不足时只保留信号质量。",
+      "invalidation": "后续要求、缓冲、风险权重或数据版本变化时重新对齐；缺少个体传导证据时保留未知。",
+      "sourceUrls": [
+        "https://www.bankingsupervision.europa.eu/press/pr/date/2026/html/ssm.pr261119~4cb883c88e.en.html"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "银行个体资本余量、风险权重与Pillar 2调整，可能经贷款定价、规模和融资成本哪些环节联系相关资产，各环需要什么同口径证据？",
+        "focusEventIds": [
+          "ecb-srep-pillar2-bank-specific-capital-2026-11-19"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些银行个体要求、可用资本与贷款数据，能支持或推翻把总体要求稳定解释成每家风险和信贷条件均未变化？",
+        "focusEventIds": [
+          "ecb-srep-pillar2-bank-specific-capital-2026-11-19"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若变化主要来自排除重复计量，或风险偏好与贷款数据未随要求变化，分别观察什么，何时应放弃即时融资传导解释？",
+        "focusEventIds": [
+          "ecb-srep-pillar2-bank-specific-capital-2026-11-19"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-20",
+      "snapshotId": "market-2026-11-20-3e4541817acce38d",
+      "asOf": "2026-11-19T21:38:05.613Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-20",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "银行个体资本余量、风险权重与Pillar 2调整，可能经贷款定价、规模和融资成本哪些环节联系相关资产，各环需要什么同口径证据？",
+          "focusEventIds": [
+            "ecb-srep-pillar2-bank-specific-capital-2026-11-19"
+          ],
+          "prompt": "研究任务：银行个体资本余量、风险权重与Pillar 2调整，可能经贷款定价、规模和融资成本哪些环节联系相关资产，各环需要什么同口径证据？\n证据快照：2026-11-20；asOf=2026-11-19T21:38:05.613Z；snapshotId=market-2026-11-20-3e4541817acce38d\n\n材料 1｜ECB SREP：总体资本要求稳定，个别银行仍有变化\n已确认事实：ECB于11月19日公布2026年SREP结果：2027年以CET1资本满足的整体资本要求及指引为风险加权资产的11.3%，2026年为11.2%；新Pillar 2方法首次用于本轮评估，逐银行连接风险与资本要求、核对Pillar 1与Pillar 2的重复计量。评估通常基于2025年末数据，相关决定适用2027年。\n关注机制：研究推断：监管要求、实际可用资本、银行风险偏好与贷款投放属于不同环节。个别银行的资本余量和风险权重变化，可能经贷款定价、规模与融资成本联系相关资产；总体要求稳定不足以证明每家风险未变或信贷供给已改变。\n接下来验证：按同一银行、资本类别、风险加权资产口径与时期，核对2027年P2R、P2G、缓冲及实际资本，再观察贷款量价、融资成本和资产质量。分清方法调整与风险变化；本期没有采集银行个体决议、贷款、资金流或行情反应样本。\n失效条件：若要求变化来自口径或避免重复计量，且资本余量、风险偏好与贷款数据未变，则收窄即时融资传导解释。后续决议或数据修订时重估；不得将P2G当作有约束力的P2R，也不将年度评估或历史数据写成当日健康、损失或资产方向。\n一手来源：https://www.bankingsupervision.europa.eu/press/pr/date/2026/html/ssm.pr261119~4cb883c88e.en.html\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "f3814de2fa8573c5211a65c6c09238fd2caf8b416d3896ba191252396c3971bf",
+          "sourceUrls": [
+            "https://www.bankingsupervision.europa.eu/press/pr/date/2026/html/ssm.pr261119~4cb883c88e.en.html"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些银行个体要求、可用资本与贷款数据，能支持或推翻把总体要求稳定解释成每家风险和信贷条件均未变化？",
+          "focusEventIds": [
+            "ecb-srep-pillar2-bank-specific-capital-2026-11-19"
+          ],
+          "prompt": "研究任务：哪些银行个体要求、可用资本与贷款数据，能支持或推翻把总体要求稳定解释成每家风险和信贷条件均未变化？\n证据快照：2026-11-20；asOf=2026-11-19T21:38:05.613Z；snapshotId=market-2026-11-20-3e4541817acce38d\n\n材料 1｜ECB SREP：总体资本要求稳定，个别银行仍有变化\n已确认事实：ECB于11月19日公布2026年SREP结果：2027年以CET1资本满足的整体资本要求及指引为风险加权资产的11.3%，2026年为11.2%；新Pillar 2方法首次用于本轮评估，逐银行连接风险与资本要求、核对Pillar 1与Pillar 2的重复计量。评估通常基于2025年末数据，相关决定适用2027年。\n关注机制：研究推断：监管要求、实际可用资本、银行风险偏好与贷款投放属于不同环节。个别银行的资本余量和风险权重变化，可能经贷款定价、规模与融资成本联系相关资产；总体要求稳定不足以证明每家风险未变或信贷供给已改变。\n接下来验证：按同一银行、资本类别、风险加权资产口径与时期，核对2027年P2R、P2G、缓冲及实际资本，再观察贷款量价、融资成本和资产质量。分清方法调整与风险变化；本期没有采集银行个体决议、贷款、资金流或行情反应样本。\n失效条件：若要求变化来自口径或避免重复计量，且资本余量、风险偏好与贷款数据未变，则收窄即时融资传导解释。后续决议或数据修订时重估；不得将P2G当作有约束力的P2R，也不将年度评估或历史数据写成当日健康、损失或资产方向。\n一手来源：https://www.bankingsupervision.europa.eu/press/pr/date/2026/html/ssm.pr261119~4cb883c88e.en.html\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "3d293f6db5977f7e3337a9c57dc89ed1ccb85a433c8233d004cb3a2fd3588f72",
+          "sourceUrls": [
+            "https://www.bankingsupervision.europa.eu/press/pr/date/2026/html/ssm.pr261119~4cb883c88e.en.html"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若变化主要来自排除重复计量，或风险偏好与贷款数据未随要求变化，分别观察什么，何时应放弃即时融资传导解释？",
+          "focusEventIds": [
+            "ecb-srep-pillar2-bank-specific-capital-2026-11-19"
+          ],
+          "prompt": "研究任务：若变化主要来自排除重复计量，或风险偏好与贷款数据未随要求变化，分别观察什么，何时应放弃即时融资传导解释？\n证据快照：2026-11-20；asOf=2026-11-19T21:38:05.613Z；snapshotId=market-2026-11-20-3e4541817acce38d\n\n材料 1｜ECB SREP：总体资本要求稳定，个别银行仍有变化\n已确认事实：ECB于11月19日公布2026年SREP结果：2027年以CET1资本满足的整体资本要求及指引为风险加权资产的11.3%，2026年为11.2%；新Pillar 2方法首次用于本轮评估，逐银行连接风险与资本要求、核对Pillar 1与Pillar 2的重复计量。评估通常基于2025年末数据，相关决定适用2027年。\n关注机制：研究推断：监管要求、实际可用资本、银行风险偏好与贷款投放属于不同环节。个别银行的资本余量和风险权重变化，可能经贷款定价、规模与融资成本联系相关资产；总体要求稳定不足以证明每家风险未变或信贷供给已改变。\n接下来验证：按同一银行、资本类别、风险加权资产口径与时期，核对2027年P2R、P2G、缓冲及实际资本，再观察贷款量价、融资成本和资产质量。分清方法调整与风险变化；本期没有采集银行个体决议、贷款、资金流或行情反应样本。\n失效条件：若要求变化来自口径或避免重复计量，且资本余量、风险偏好与贷款数据未变，则收窄即时融资传导解释。后续决议或数据修订时重估；不得将P2G当作有约束力的P2R，也不将年度评估或历史数据写成当日健康、损失或资产方向。\n一手来源：https://www.bankingsupervision.europa.eu/press/pr/date/2026/html/ssm.pr261119~4cb883c88e.en.html\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "91cffb1736060e028a22c806bc142819e18010de949a59dd2cfc000c85a02801",
+          "sourceUrls": [
+            "https://www.bankingsupervision.europa.eu/press/pr/date/2026/html/ssm.pr261119~4cb883c88e.en.html"
+          ]
+        }
+      ]
+    }
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "title": "交易研究雷达 · 2026-11-16",

@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-11-20:ecb-srep-pillar2-bank-specific-capital-2026-11-19",
+    "kind": "market",
+    "date": "2026-11-20",
+    "domain": "market",
+    "topic": "market_regulation",
+    "title": "ECB SREP：总体资本要求稳定，个别银行仍有变化",
+    "summary": "研究推断：监管要求、实际可用资本、银行风险偏好与贷款投放属于不同环节。个别银行的资本余量和风险权重变化，可能经贷款定价、规模与融资成本联系相关资产；总体要求稳定不足以证明每家风险未变或信贷供给已改变。",
+    "href": "/market-radar/2026-11-20#ecb-srep-pillar2-bank-specific-capital-2026-11-19",
+    "source": {
+      "name": "ECB Banking Supervision — 2026 SREP results and capital requirements for 2027",
+      "url": "https://www.bankingsupervision.europa.eu/press/pr/date/2026/html/ssm.pr261119~4cb883c88e.en.html"
+    },
+    "flags": {
+      "priority": "P2"
+    }
+  },
+  {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
     "date": "2026-11-16",
