@@ -5,6 +5,69 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "learning:ai-langgraph-send-state-schema-parity",
+    "kind": "learning",
+    "date": "2026-11-20",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "LangGraph1.2.23：Send派发的工具，也读取节点schema约束的状态",
+    "summary": "同一工具换一种派发方式后，不应悄悄换掉它读取状态的结构或归属。排查Agent工具缺字段、类型不符时，需要连同节点输入schema和嵌套图上下文一起核对。",
+    "href": "/radar/2026-11-20#ai-langgraph-send-state-schema-parity",
+    "source": {
+      "name": "langgraph==1.2.23",
+      "tier": "tier1",
+      "url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.23"
+    }
+  },
+  {
+    "id": "learning:ai-pydantic-codemode-native-deferred-placement",
+    "kind": "learning",
+    "date": "2026-11-20",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "Pydantic AI2.71：CodeMode默认保留两类延迟工具的原生调用",
+    "summary": "工具是否出现在代码沙箱的函数目录，与这次调用是否已批准，是不同判断。把声明的延迟种类和实际批准路径同时展示，才能解释一次默认配置升级改变了哪条执行路线。",
+    "href": "/radar/2026-11-20#ai-pydantic-codemode-native-deferred-placement",
+    "source": {
+      "name": "v2.71.0 (2026-11-18)",
+      "tier": "tier1",
+      "url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.71.0"
+    }
+  },
+  {
+    "id": "learning:web3-viem-abi-head-cursor-bounds",
+    "kind": "learning",
+    "date": "2026-11-20",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "viem2.58.1：动态ABI读完之后，下一参数从自己的head重新读取",
+    "summary": "链上返回值的offset控制读取位置，成功解码不应依赖前一字段刚好把游标留在哪里。钱包或索引服务收到不完整数据时，应保留解码错误，避免把重复读到的旧字当作真实字段。",
+    "href": "/radar/2026-11-20#web3-viem-abi-head-cursor-bounds",
+    "source": {
+      "name": "viem@2.58.1",
+      "tier": "tier1",
+      "url": "https://github.com/wevm/viem/releases/tag/viem%402.58.1"
+    }
+  },
+  {
+    "id": "learning:web3-foundry-skipped-project-test-suite-warning",
+    "kind": "learning",
+    "date": "2026-11-20",
+    "domain": "web3",
+    "topic": "security",
+    "title": "Foundry1.10：项目测试合约被编译却没被选中时，给出具体告警",
+    "summary": "测试全绿首先描述实际被选中的集合。升级若改变发现范围，编译成功和通过数都可能看起来正常；具体suite告警让维护者有机会发现测试集合已经少了一部分。",
+    "href": "/radar/2026-11-20#web3-foundry-skipped-project-test-suite-warning",
+    "source": {
+      "name": "v1.10.0",
+      "tier": "tier1",
+      "url": "https://github.com/foundry-rs/foundry/releases/tag/v1.10.0"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
     "date": "2026-11-16",

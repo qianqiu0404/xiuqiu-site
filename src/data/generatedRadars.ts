@@ -12,6 +12,48 @@ export interface RadarIndexEntry { date: string; slug: string; snapshotId: strin
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-11-20",
+    "slug": "2026-11-20",
+    "snapshotId": "learning-2026-11-20-f18ad7463e5ec011",
+    "asOf": "2026-11-19T21:39:14.366Z",
+    "title": "学习雷达 · 2026-11-20",
+    "summary": "本期为自动汇总，未经人工复核。AI看Send工具的状态结构与CodeMode的延迟调用位置；Web3看ABI游标边界和未被选中的测试合约。专题说明测试全绿所覆盖的集合。",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "briefs": [
+      {
+        "id": "ai-langgraph-send-state-schema-parity",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "LangGraph1.2.23：Send派发的工具，也读取节点schema约束的状态"
+      },
+      {
+        "id": "ai-pydantic-codemode-native-deferred-placement",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "Pydantic AI2.71：CodeMode默认保留两类延迟工具的原生调用"
+      },
+      {
+        "id": "web3-viem-abi-head-cursor-bounds",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "viem2.58.1：动态ABI读完之后，下一参数从自己的head重新读取"
+      },
+      {
+        "id": "web3-foundry-skipped-project-test-suite-warning",
+        "domain": "web3",
+        "topic": "security",
+        "title": "Foundry1.10：项目测试合约被编译却没被选中时，给出具体告警"
+      }
+    ],
+    "deepDive": {
+      "id": "deep-foundry-compiled-versus-selected-suites",
+      "title": "专题：两条测试都通过，为什么仍少跑了一个测试合约？",
+      "basedOnBriefId": "web3-foundry-skipped-project-test-suite-warning"
+    },
+    "marketSignals": []
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "snapshotId": "learning-2026-11-16-20147f94783c1b8e",
@@ -1992,6 +2034,347 @@ export const radarIndex: RadarIndexEntry[] = [
 ]
 
 export const latestRadars: DailyRadar[] = [
+  {
+    "date": "2026-11-20",
+    "slug": "2026-11-20",
+    "title": "学习雷达 · 2026-11-20",
+    "summary": "本期为自动汇总，未经人工复核。AI看Send工具的状态结构与CodeMode的延迟调用位置；Web3看ABI游标边界和未被选中的测试合约。专题说明测试全绿所覆盖的集合。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-11-19T21:39:14.366Z",
+    "generatedAt": "2026-11-19T21:39:14.366Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-langgraph-send-state-schema-parity",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "LangGraph1.2.23：Send派发的工具，也读取节点schema约束的状态",
+        "whatHappened": "LangGraph1.2.23与prebuilt1.1.3于11月19日（UTC）发布，包含同日合入的PR9728。裸工具调用列表经Send进入ToolNode时，现在像普通边一样取得节点输入状态；Pydantic或dataclass图不再仅拿到原始channel字典。",
+        "mechanism": "Send任务安装专用读取函数，复用_proc_input按节点输入键取channel与managed值，再应用schema mapper。ToolNode优先使用它；普通任务把该配置清为None，避免Send中运行的内图沿用外图读取器。旧版langgraph没有该函数时仍走原始channel回退。",
+        "workedExample": "固定回归在TypedDict、Pydantic和dataclass等schema下分别用Send与普通边调用同一工具，比较ToolRuntime.state和InjectedState的类型。另一回归令外图value为outer、内图为inner，要求工具只记录inner。本期只读实现与断言，未运行图、模型或上游测试。",
+        "whyItMatters": "同一工具换一种派发方式后，不应悄悄换掉它读取状态的结构或归属。排查Agent工具缺字段、类型不符时，需要连同节点输入schema和嵌套图上下文一起核对。",
+        "risksAndLimits": [
+          "这是Python状态注入路径的修复，需要配套的langgraph与prebuilt实现；保留旧版本回退不等于旧路径也已获得schema一致性。",
+          "schema映射与内外图状态归属不提供租户鉴权，也不证明快照持久化、恢复批准或工具副作用正确；类型相等断言不能扩写为全部字段语义已获验证。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "langgraph==1.2.23",
+            "url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.23",
+            "publishedAt": "2026-11-19T05:33:06.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "langgraph-prebuilt==1.1.3",
+            "url": "https://github.com/langchain-ai/langgraph/releases/tag/prebuilt%3D%3D1.1.3",
+            "publishedAt": "2026-11-19T05:26:17.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Send tool state parity PR9728",
+            "url": "https://github.com/langchain-ai/langgraph/pull/9728"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Send task reader and node input reconstruction",
+            "url": "https://github.com/langchain-ai/langgraph/blob/7830b91a24e657a8167e2dbf40c3fa5a77ef5d93/libs/langgraph/langgraph/pregel/_algo.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Bare tool-call list state extraction",
+            "url": "https://github.com/langchain-ai/langgraph/blob/7830b91a24e657a8167e2dbf40c3fa5a77ef5d93/libs/prebuilt/langgraph/prebuilt/tool_node.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Edge parity and inner graph state assertions",
+            "url": "https://github.com/langchain-ai/langgraph/blob/7830b91a24e657a8167e2dbf40c3fa5a77ef5d93/libs/prebuilt/tests/test_tool_node.py"
+          }
+        ],
+        "nextQuestions": [
+          "工具实际读到的状态类型、节点输入键与所属图，能否在每种派发路径分别留证？"
+        ]
+      },
+      {
+        "id": "ai-pydantic-codemode-native-deferred-placement",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "Pydantic AI2.71：CodeMode默认保留两类延迟工具的原生调用",
+        "whatHappened": "Pydantic AI于11月19日（UTC）发布2.71.0，收录前一日合入的PR13742。这项Harness改动让默认CodeMode的tools=all不再把静态标为unapproved或external的工具折入run_code，保留普通延迟调用流程。",
+        "mechanism": "统一选择函数先检查ToolDefinition.defer，它仅对external与unapproved为真；默认all排除这两类，工具放置、隐藏目录与发现公告共用此规则。显式名称或谓词选择仍能将它们折入run_code，届时需内联延迟处理器解决调用。",
+        "workedExample": "固定FunctionModel断言让requires_approval=True的delete_file作为普通工具被请求，先返回DeferredToolRequests，再提供ToolApproved后得到工具返回。对照断言显示，toolset.approval_required()不改变function kind，默认仍折入run_code。本期只读断言，未删除文件、批准真实调用或运行模型。",
+        "whyItMatters": "工具是否出现在代码沙箱的函数目录，与这次调用是否已批准，是不同判断。把声明的延迟种类和实际批准路径同时展示，才能解释一次默认配置升级改变了哪条执行路线。",
+        "risksAndLimits": [
+          "这不是禁止任何工具执行或自动完成审批；requires_approval注册与.approval_required()包装器的kind不同，运行时才抛ApprovalRequired或CallDeferred的普通函数也不能靠静态规则排除。",
+          "显式选择可保留旧的沙箱内处理方式；已有HandleDeferredToolCalls集成需核对行为变化。这里只审阅Harness选择与mock流程，未验证任意应用的身份、批准参数绑定或外部操作回执。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "v2.71.0 (2026-11-18)",
+            "url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.71.0",
+            "publishedAt": "2026-11-19T02:13:05.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Keep statically deferred tools native PR13742",
+            "url": "https://github.com/pydantic/pydantic-ai/pull/13742"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Default selector placement for deferred tool definitions",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/8e4f468aad21f87af6634885b44e2834d8b3b983/src/pydantic_ai_harness/pydantic_ai_harness/code_mode/_toolset.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Definition of statically deferred tool kinds",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/8e4f468aad21f87af6634885b44e2834d8b3b983/pydantic_ai_slim/pydantic_ai/tools.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Default selector and approval wrapper compatibility",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/8e4f468aad21f87af6634885b44e2834d8b3b983/src/pydantic_ai_harness/pydantic_ai_harness/code_mode/_capability.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Native placement, explicit selectors and deferred flow assertions",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/8e4f468aad21f87af6634885b44e2834d8b3b983/tests/harness/code_mode/test_code_mode.py"
+          }
+        ],
+        "nextQuestions": [
+          "配置写着需要批准时，最终ToolDefinition.kind是什么，调用是先暂停还是交给内联处理器？"
+        ]
+      },
+      {
+        "id": "web3-viem-abi-head-cursor-bounds",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "viem2.58.1：动态ABI读完之后，下一参数从自己的head重新读取",
+        "whatHappened": "viem于11月19日（UTC）发布2.58.1，包含前一日合入的PR5572。动态参数的offset回到前部数据后，下一参数的head即使已到输入末尾，也会重新定位；缺失的静态head不再借用旧游标位置解码。",
+        "mechanism": "参数循环无条件把cursor.position设为累计head位置，再解码该参数。具体非空读取自行检查边界；直接设置位置允许不消耗字节的空tuple或零长度数组位于非空输入末尾，避免用一次通用位置检查误拒绝它们。",
+        "workedExample": "固定回归用96字节数据声明uint256、uint256、string或bytes、uint256四个参数，动态offset指回较早的字；要求缺失的第四个head抛PositionOutOfBoundsError。既有对照要求uint256后接空tuple仍得[5n,[]]。本期只读断言，未调用RPC或运行上游测试。",
+        "whyItMatters": "链上返回值的offset控制读取位置，成功解码不应依赖前一字段刚好把游标留在哪里。钱包或索引服务收到不完整数据时，应保留解码错误，避免把重复读到的旧字当作真实字段。",
+        "risksAndLimits": [
+          "这里只核对每个参数head的游标恢复及边界，不是完整ABI规范或任意畸形数据的安全审计，也不证明RPC来源可信或链上内容正确。",
+          "零宽参数保留不代表零字节输入对任意非空参数列表都合法；既有初始数据校验与读取预算仍独立存在。包发布不证明任何钱包或服务已采用此版。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "viem@2.58.1",
+            "url": "https://github.com/wevm/viem/releases/tag/viem%402.58.1",
+            "publishedAt": "2026-11-19T01:55:47.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Restore each ABI head cursor PR5572",
+            "url": "https://github.com/wevm/viem/pull/5572"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "ABI head cursor restoration before decoding",
+            "url": "https://github.com/wevm/viem/blob/6084c8950857252c19434a0bc9e640af22275f0a/src/utils/abi/decodeAbiParameters.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Bounds checking for nonempty cursor reads",
+            "url": "https://github.com/wevm/viem/blob/6084c8950857252c19434a0bc9e640af22275f0a/src/utils/cursor.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Truncated head rejection and zero-width assertions",
+            "url": "https://github.com/wevm/viem/blob/6084c8950857252c19434a0bc9e640af22275f0a/src/utils/abi/decodeAbiParameters.test.ts"
+          }
+        ],
+        "nextQuestions": [
+          "解码失败、RPC请求失败与合法零值，能否在进入展示或后续计算前分别记录？"
+        ]
+      },
+      {
+        "id": "web3-foundry-skipped-project-test-suite-warning",
+        "domain": "web3",
+        "topic": "security",
+        "title": "Foundry1.10：项目测试合约被编译却没被选中时，给出具体告警",
+        "whatHappened": "Foundry于11月19日（UTC）发布稳定版1.10.0，包含前一日合入的PR18572。导入让项目测试合约参与编译，但它位于配置的src、test、script与外部编译根之外时，forge test会提示被漏选的可运行suite；告警本身不把它补跑。",
+        "mechanism": "编译后遍历artifact，筛出项目根内、非lib及node_modules、通过CLI过滤且带可运行测试的合约，对不在发现根内的suite排序去重后告警。实际执行选择仍按roots与过滤器工作；抽象基类不是独立可运行suite。",
+        "workedExample": "固定回归设test为test/unit，UnitTest导入根外的SharedTest并继承SharedBase。断言只运行UnitTest的testUnit与继承来的testInherited，两条通过且命令成功，同时stderr点名未运行的SharedTest；依赖库测试则不告警。本期只读源码与断言，未运行Forge或审计合约。",
+        "whyItMatters": "测试全绿首先描述实际被选中的集合。升级若改变发现范围，编译成功和通过数都可能看起来正常；具体suite告警让维护者有机会发现测试集合已经少了一部分。",
+        "risksAndLimits": [
+          "这是诊断提示，既不自动扩大test目录，也不因遗漏自动让本例失败。用户主动过滤掉的测试、抽象合约或未进入编译产物的文件不由这项告警完整枚举。",
+          "本项只核对测试发现与提示；1.10的evm2、gas及其他兼容变化须另看完整发布说明。源码断言不能证明任何合约安全、全部测试已覆盖或本地升级已验收。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "v1.10.0",
+            "url": "https://github.com/foundry-rs/foundry/releases/tag/v1.10.0",
+            "publishedAt": "2026-11-19T16:41:30.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Warn about skipped project test suites PR18572",
+            "url": "https://github.com/foundry-rs/foundry/pull/18572"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Test roots and omitted project path filtering",
+            "url": "https://github.com/foundry-rs/foundry/blob/083e22994195d6a7e3ad3104d0b57f478c9b9062/crates/forge/src/cmd/test/filter.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Runnable suite warning construction",
+            "url": "https://github.com/foundry-rs/foundry/blob/083e22994195d6a7e3ad3104d0b57f478c9b9062/crates/forge/src/cmd/test/mod.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Imported project suites and dependency exclusion assertions",
+            "url": "https://github.com/foundry-rs/foundry/blob/083e22994195d6a7e3ad3104d0b57f478c9b9062/crates/forge/tests/cli/test_cmd/discovery.rs"
+          }
+        ],
+        "nextQuestions": [
+          "升级前后的实际suite与测试函数清单是否有差异，告警里缺少的项目测试该由谁确认？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-foundry-compiled-versus-selected-suites",
+      "domain": "web3",
+      "topic": "security",
+      "title": "专题：两条测试都通过，为什么仍少跑了一个测试合约？",
+      "whatHappened": "Foundry1.10的告警揭示两个集合：import决定哪些源码需要编译，发现根与过滤器决定哪些合约作为测试suite执行。一个合约可以已编译、有test函数，却不进入这次执行；本专题沿用当天Foundry条目，不重新包装成另一条发布事件。",
+      "mechanism": "先核对编译产物，再核对roots、库目录及CLI条件形成的选择集合，最后读取所选suite的测试结果。SharedBase是抽象基类，它的继承方法可在UnitTest中运行；SharedTest是另一份可运行合约，位于test/unit外，只被import不会让它自动执行。",
+      "workedExample": "上游固定断言同时期待命令成功、UnitTest内两条PASS，以及stderr列出SharedTest。由此作工程推演：只存退出码和两条PASS会丢失这项遗漏；若维护预期suite清单，可把缺项另列为覆盖范围变化。前半是已读断言，后半是建议，均非本期实跑。",
+      "whyItMatters": "评估一次全绿结果，需要知道分母究竟有哪些测试。将预期清单、实际选择清单和执行结果分别保存，能区分测试失败与测试根本没有运行，也方便审查升级前后范围是否符合原目标。",
+      "risksAndLimits": [
+        "无告警不证明测试集合完整：主动过滤、依赖测试、抽象合约或没有编译到的文件有不同处理。告警只补充具体可见遗漏，不是覆盖率、性质证明或漏洞扫描。",
+        "扩大test目录也可能引入原本不想执行的suite；应先确认预期范围。这里没有修改任何项目配置、运行合约、复现上游回归或量化漏洞发现率。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "v1.10.0",
+          "url": "https://github.com/foundry-rs/foundry/releases/tag/v1.10.0",
+          "publishedAt": "2026-11-19T16:41:30.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "Warn about skipped project test suites PR18572",
+          "url": "https://github.com/foundry-rs/foundry/pull/18572"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Test roots and omitted project path filtering",
+          "url": "https://github.com/foundry-rs/foundry/blob/083e22994195d6a7e3ad3104d0b57f478c9b9062/crates/forge/src/cmd/test/filter.rs"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Runnable suite warning construction",
+          "url": "https://github.com/foundry-rs/foundry/blob/083e22994195d6a7e3ad3104d0b57f478c9b9062/crates/forge/src/cmd/test/mod.rs"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Imported project suites and dependency exclusion assertions",
+          "url": "https://github.com/foundry-rs/foundry/blob/083e22994195d6a7e3ad3104d0b57f478c9b9062/crates/forge/tests/cli/test_cmd/discovery.rs"
+        }
+      ],
+      "nextQuestions": [
+        "CI能否保留工具版本、有效roots、CLI过滤器、预期与实际suite清单，再把范围变化交给维护者审核？"
+      ],
+      "basedOnBriefId": "web3-foundry-skipped-project-test-suite-warning"
+    },
+    "sourceUrls": [
+      "https://github.com/langchain-ai/langgraph/releases/tag/1.2.23",
+      "https://github.com/langchain-ai/langgraph/releases/tag/prebuilt%3D%3D1.1.3",
+      "https://github.com/langchain-ai/langgraph/pull/9728",
+      "https://github.com/langchain-ai/langgraph/blob/7830b91a24e657a8167e2dbf40c3fa5a77ef5d93/libs/langgraph/langgraph/pregel/_algo.py",
+      "https://github.com/langchain-ai/langgraph/blob/7830b91a24e657a8167e2dbf40c3fa5a77ef5d93/libs/prebuilt/langgraph/prebuilt/tool_node.py",
+      "https://github.com/langchain-ai/langgraph/blob/7830b91a24e657a8167e2dbf40c3fa5a77ef5d93/libs/prebuilt/tests/test_tool_node.py",
+      "https://github.com/pydantic/pydantic-ai/releases/tag/v2.71.0",
+      "https://github.com/pydantic/pydantic-ai/pull/13742",
+      "https://github.com/pydantic/pydantic-ai/blob/8e4f468aad21f87af6634885b44e2834d8b3b983/src/pydantic_ai_harness/pydantic_ai_harness/code_mode/_toolset.py",
+      "https://github.com/pydantic/pydantic-ai/blob/8e4f468aad21f87af6634885b44e2834d8b3b983/pydantic_ai_slim/pydantic_ai/tools.py",
+      "https://github.com/pydantic/pydantic-ai/blob/8e4f468aad21f87af6634885b44e2834d8b3b983/src/pydantic_ai_harness/pydantic_ai_harness/code_mode/_capability.py",
+      "https://github.com/pydantic/pydantic-ai/blob/8e4f468aad21f87af6634885b44e2834d8b3b983/tests/harness/code_mode/test_code_mode.py",
+      "https://github.com/wevm/viem/releases/tag/viem%402.58.1",
+      "https://github.com/wevm/viem/pull/5572",
+      "https://github.com/wevm/viem/blob/6084c8950857252c19434a0bc9e640af22275f0a/src/utils/abi/decodeAbiParameters.ts",
+      "https://github.com/wevm/viem/blob/6084c8950857252c19434a0bc9e640af22275f0a/src/utils/cursor.ts",
+      "https://github.com/wevm/viem/blob/6084c8950857252c19434a0bc9e640af22275f0a/src/utils/abi/decodeAbiParameters.test.ts",
+      "https://github.com/foundry-rs/foundry/releases/tag/v1.10.0",
+      "https://github.com/foundry-rs/foundry/pull/18572",
+      "https://github.com/foundry-rs/foundry/blob/083e22994195d6a7e3ad3104d0b57f478c9b9062/crates/forge/src/cmd/test/filter.rs",
+      "https://github.com/foundry-rs/foundry/blob/083e22994195d6a7e3ad3104d0b57f478c9b9062/crates/forge/src/cmd/test/mod.rs",
+      "https://github.com/foundry-rs/foundry/blob/083e22994195d6a7e3ad3104d0b57f478c9b9062/crates/forge/tests/cli/test_cmd/discovery.rs"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-11-20-f18ad7463e5ec011",
+    "asOf": "2026-11-19T21:39:14.366Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
   {
     "date": "2026-11-16",
     "slug": "2026-11-16",
@@ -3981,293 +4364,6 @@ export const latestRadars: DailyRadar[] = [
     "marketSignals": [],
     "snapshotId": "learning-2026-11-11-3323ecfb854f3355",
     "asOf": "2026-11-10T21:38:26.706Z",
-    "origin": "research",
-    "publicationState": "published"
-  },
-  {
-    "date": "2026-11-09",
-    "slug": "2026-11-09",
-    "title": "学习雷达 · 2026-11-09",
-    "summary": "AI看遥测跨层前的URL净化与当前模型预算；Web3看HTTP批次配置归属与对象资金执行期失败。补读尚未覆盖的固定发布快照，保留原日期；专题核对观察者接收数据的时点。",
-    "publish": true,
-    "reviewStatus": "automated",
-    "schemaVersion": 2,
-    "editionMode": "daily",
-    "researchedAt": "2026-11-08T21:37:39.755Z",
-    "generatedAt": "2026-11-08T21:37:39.755Z",
-    "sourceSections": [
-      "ai",
-      "web3",
-      "deepDive"
-    ],
-    "missingSections": [],
-    "briefs": [
-      {
-        "id": "ai-sdk-telemetry-url-boundary",
-        "domain": "ai",
-        "topic": "safety",
-        "title": "AI SDK 7.0.165：遥测拿到模型结果之前，先缩减请求 URL",
-        "whatHappened": "AI SDK于11月7日（UTC）发布7.0.165：generateText与streamText此前虽已缩减公开结果URL，遥测integration和tracing subscriber仍可能更早看到原始端点。",
-        "mechanism": "provider回调返回前复制结果并净化request.url：HTTP(S)仅留origin，无效或非HTTP(S)地址省略url。用户信息、路径、query、fragment被去掉；body等元数据保留，原provider对象不变。",
-        "workedExample": "上游mock在两个观察者接收时即时复制request，检查URL净化及原对象未变。本期只读断言，未运行模型或本地复现。",
-        "whyItMatters": "最终输出不能覆盖更早的观察者；应逐接收者核对字段与脱敏时点。",
-        "risksAndLimits": [
-          "仅修两条文本生成路径的URL元数据，不保证headers、body、业务日志或WorkflowAgent安全。",
-          "origin仍暴露主机与端口；本期未验证生产部署或过去数据的撤回。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "AI SDK release",
-            "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-            "publishedAt": "2026-11-07T19:27:48.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR24708",
-            "url": "https://github.com/vercel/ai/pull/24708"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "generateText boundary",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/generate-text.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "URL sanitizer",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/get-request-origin.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "Immediate tracing tests",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts"
-          }
-        ],
-        "nextQuestions": [
-          "接收者的字段范围与脱敏时点如何分别核验？"
-        ]
-      },
-      {
-        "id": "ai-deepagents-selected-model-budget",
-        "domain": "ai",
-        "topic": "infrastructure",
-        "title": "deepagents-code 0.2.5：压缩输入预算跟随当前选定模型",
-        "whatHappened": "0.2.5于11月5日（UTC）发布，修复切换模型仍按启动模型判断压缩的问题，与已刊摘要截点修复不同。",
-        "mechanism": "同步/异步用临时请求核算选定模型与运行期settings的预算；交给handler前恢复原model/settings，让下游中间件继续真正选择模型。",
-        "workedExample": "上游mock矩阵：启动128K转32K，26K输入加8K输出预留需压缩，改2K则不压缩；还检查下游与原请求。本期只读，未运行模型/测试。",
-        "whyItMatters": "切换模型也改变预算；预算准备和最终执行要分开核验，保留下游配置。",
-        "risksAndLimits": [
-          "数字是上游合成断言，不是本期实测窗口、精确token数或延迟收益；provider限制仍需另验。",
-          "预算依据主模型，摘要生成可另选模型；不证明摘要完整或会话恢复正确。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "deepagents-code release",
-            "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5",
-            "publishedAt": "2026-11-05T21:41:43.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR7545",
-            "url": "https://github.com/langchain-ai/deepagents/pull/7545"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Budget request code",
-            "url": "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/deepagents_code/offload_middleware.py"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "Budget matrix tests",
-            "url": "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/tests/unit_tests/test_compact_tool.py"
-          }
-        ],
-        "nextQuestions": [
-          "预算来自当前配置，最终模型选择是否仍走原流程？"
-        ]
-      },
-      {
-        "id": "web3-viem-http-batch-factory-identity",
-        "domain": "web3",
-        "topic": "onchain_infrastructure",
-        "title": "viem 2.57.17：同一 RPC URL，不再把不同 transport 的批次混用",
-        "whatHappened": "viem于11月8日（UTC）发布2.57.17，修复同URL下独立HTTP工厂合批时混用鉴权头与fetch配置的问题。",
-        "mechanism": "调度键组合稳定工厂batchId、实际URL和AbortSignal身份。ID位于initializer外，fallback重初始化同工厂仍合批；独立工厂保留各自RPC配置。",
-        "workedExample": "上游本地鉴权A/B返回1和10，覆盖直接/fallback分离、同工厂共享与URL/signal分离。本期只读，未连RPC或发交易。",
-        "whyItMatters": "相同地址不等于同一调用者；批处理仍需保持鉴权配置和响应归属。",
-        "risksAndLimits": [
-          "这是工厂批次隔离，不是租户认证、链ID校验或WebSocket订阅路由；1和10为本地测试值。",
-          "相同配置的独立工厂也不自动合批；共享需复用工厂并审查配置，不表示写请求可安全重试。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "viem release",
-            "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.17",
-            "publishedAt": "2026-11-08T18:04:10.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR5389",
-            "url": "https://github.com/wevm/viem/pull/5389"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "HTTP factory code",
-            "url": "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "HTTP batch tests",
-            "url": "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.test.ts"
-          }
-        ],
-        "nextQuestions": [
-          "哪些客户端应共享工厂，如何核验配置归属？"
-        ]
-      },
-      {
-        "id": "web3-sui-object-funds-execution-abort",
-        "domain": "web3",
-        "topic": "protocol",
-        "title": "Sui mainnet 1.83.1：对象资金不足，在执行期间形成 Move abort",
-        "whatHappened": "Sui于11月4日（UTC）发布mainnet1.83.1，其protocol140配置让对象资金不足在执行期abort，替代旧检查/重执行。PR于10月20日合入，非当天首创。",
-        "mechanism": "版本化设计先看交易内owner/type余额；不足时按所需accumulator版本读取已结算余额、扣除同commit未结算提款。仍不足则abort；地址调度独立。",
-        "workedExample": "文档中dry-run/孤立replay缺少同commit未结算视图，可能成功而提交执行不足失败。本期只读配置/设计，未运行节点、模拟、回放或资金操作。",
-        "whyItMatters": "模拟成功不能代替执行回执；应区分状态视图、失败阶段与错误类型。",
-        "risksAndLimits": [
-          "对象虚拟余额不足形成Move abort；地址资金执行前调度仍可返回InsufficientFundsForWithdraw。",
-          "文档说明已执行失败可正常收gas；未验证真实主网部署、账户余额或资金安全，孤立replay差异另项追踪。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "Sui mainnet release",
-            "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1",
-            "publishedAt": "2026-11-04T20:01:16.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR28290",
-            "url": "https://github.com/MystenLabs/sui/pull/28290"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Protocol140 config",
-            "url": "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-protocol-config/src/lib.rs"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_design",
-            "name": "Object funds design",
-            "url": "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-core/src/accumulators/design_docs/object_funds_in_execution.md"
-          }
-        ],
-        "nextQuestions": [
-          "三种视图的版本、扣减及对象/地址错误如何分别识别？"
-        ]
-      }
-    ],
-    "deepDive": {
-      "id": "deep-telemetry-observer-sanitization-order",
-      "domain": "ai",
-      "topic": "safety",
-      "title": "专题：最终结果已脱敏，为什么中途观察者仍可能看到原值",
-      "whatHappened": "7.0.165把URL净化前移至provider回调返回前；遥测integration/tracing不再早于公开API看到这一路径的原始request.url。",
-      "mechanism": "只在外层净化时，包装器await execute()后会先见原request。现在生成/流式启动先返回净化元数据，再入遥测；实际请求端点不变。",
-      "workedExample": "上游在integration/asyncEnd即时复制request，避免结束后只查可变引用；还冻结并检查原对象。本期只读，未运行模型或复现。",
-      "whyItMatters": "编辑推论：跨观察边界前处理并逐接收者留证，最终输出只证明自身。",
-      "risksAndLimits": [
-        "未审查全部sink、WorkflowAgent或业务日志；保留的body/其他元数据仍可能有敏感内容，URL净化不是全量隐私保证。",
-        "代码断言不证明已部署、已清理历史遥测或撤回已发送数据。"
-      ],
-      "sources": [
-        {
-          "tier": "tier1",
-          "role": "event",
-          "kind": "official_release",
-          "name": "AI SDK release",
-          "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-          "publishedAt": "2026-11-07T19:27:48.000Z"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_code",
-          "name": "streamText boundary",
-          "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/stream-language-model-call.ts"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_test",
-          "name": "Immediate tracing tests",
-          "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts"
-        }
-      ],
-      "nextQuestions": [
-        "即时接收的字段、处理时点与保留规则是否有证据？"
-      ],
-      "basedOnBriefId": "ai-sdk-telemetry-url-boundary"
-    },
-    "sourceUrls": [
-      "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-      "https://github.com/vercel/ai/pull/24708",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/generate-text.ts",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/get-request-origin.ts",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts",
-      "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5",
-      "https://github.com/langchain-ai/deepagents/pull/7545",
-      "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/deepagents_code/offload_middleware.py",
-      "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/tests/unit_tests/test_compact_tool.py",
-      "https://github.com/wevm/viem/releases/tag/viem%402.57.17",
-      "https://github.com/wevm/viem/pull/5389",
-      "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.ts",
-      "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.test.ts",
-      "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1",
-      "https://github.com/MystenLabs/sui/pull/28290",
-      "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-protocol-config/src/lib.rs",
-      "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-core/src/accumulators/design_docs/object_funds_in_execution.md",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/stream-language-model-call.ts"
-    ],
-    "relatedProjectSlugs": [],
-    "marketSignals": [],
-    "snapshotId": "learning-2026-11-09-bd83a5cc7fff3983",
-    "asOf": "2026-11-08T21:37:39.755Z",
     "origin": "research",
     "publicationState": "published"
   }
