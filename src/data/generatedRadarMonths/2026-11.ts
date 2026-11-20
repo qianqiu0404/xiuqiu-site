@@ -5,6 +5,386 @@ import type { DailyRadar } from '../generatedRadars.ts'
 
 export const monthlyRadars: DailyRadar[] = [
   {
+    "date": "2026-11-21",
+    "slug": "2026-11-21",
+    "title": "学习雷达 · 2026-11-21",
+    "summary": "本期为自动汇总，未经人工复核。AI 看消息 delta 重置和自动拒绝的审批签发；Web3 看跳过批次的资金预留与外部源码写入校验。专题拆解存储结算和内存结算的先后关系。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-11-20T21:42:50.439Z",
+    "generatedAt": "2026-11-20T21:42:50.439Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-langgraph-message-delta-reset-replay",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "LangGraph 1.2.24：批量重放消息时，清空标记也清除本批更早的写入",
+        "whatHappened": "LangGraph 于 11 月 20 日（UTC）发布 1.2.24，包含前一日合入的 PR9735。实验性消息 delta reducer 现在处理 REMOVE_ALL_MESSAGES；DeltaChannel 从 None 检查点恢复时，也先建立空状态再重放写入。",
+        "mechanism": "reducer 将本批写入展开并转成消息后，从后向前找最后一个清空标记，丢弃旧状态和该标记之前的本批写入，再按消息 ID 更新或删除余下消息。None 与 MISSING 走空容器初始化，避免把 None 传入重放 reducer。",
+        "workedExample": "固定断言先有 old，再写 dropped，随后写清空标记与 kept；整批处理和逐条批次处理都只留下 kept。另一断言从 None 恢复后重放 hi，得到仅含 hi 的列表。本期只读实现与断言，未运行图、模型或上游测试。",
+        "whyItMatters": "会话压缩或重置后，在线更新与检查点重放应解释同一条清空指令。排查旧消息重新出现时，需要同时核对标记在批次中的位置、初始状态和恢复路径，不能只看最后一轮界面。",
+        "risksAndLimits": [
+          "该 reducer 仍标为实验性，并不完整等同 add_messages；未知 ID 删除的报错、缺失 ID 分配与消息 chunk 转换仍有各自边界。",
+          "清空当前逻辑消息列表不证明历史检查点、追踪或备份已被擦除；本期没有验证持久化后端、隐私删除或应用授权。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "1.2.24",
+            "url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.24",
+            "publishedAt": "2026-11-20T01:10:26.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Message delta reset and null checkpoint PR9735",
+            "url": "https://github.com/langchain-ai/langgraph/pull/9735"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Last reset marker and ID-based reduction",
+            "url": "https://github.com/langchain-ai/langgraph/blob/58a6e1cc5b7dfc3619fc6e7e7573b040d554649b/libs/langgraph/langgraph/pregel/_messages.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Empty initialization and ordered delta replay",
+            "url": "https://github.com/langchain-ai/langgraph/blob/58a6e1cc5b7dfc3619fc6e7e7573b040d554649b/libs/langgraph/langgraph/channels/delta.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Reset batching and null checkpoint assertions",
+            "url": "https://github.com/langchain-ai/langgraph/blob/58a6e1cc5b7dfc3619fc6e7e7573b040d554649b/libs/langgraph/tests/test_channels.py"
+          }
+        ],
+        "nextQuestions": [
+          "同一组清空与追加写入，在在线更新、合批和检查点重放中能否得到一致的消息集合？"
+        ]
+      },
+      {
+        "id": "ai-sdk-unsigned-automatic-tool-denials",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "AI SDK 7.0.178：策略已自动拒绝的工具调用，不再拿到可回放的审批签名",
+        "whatHappened": "AI SDK 于 11 月 20 日（UTC）发布 7.0.178，收录同日合入的 PR25240。配置 experimental_toolApprovalSecret 时，generateText 与 streamText 不再为策略自动拒绝的工具调用签发审批请求签名，避免客户端改写会话后把拒绝回执包装成批准。",
+        "mechanism": "批准签名绑定 approval ID、tool call ID、工具名与参数摘要，本身不绑定批准决定。新代码先看策略结果，denied 分支不签名；等待人工决定或自动批准仍按原规则签发。客户端后来提交 approved 响应时，既有签名检查会拒绝缺失签名的请求。",
+        "workedExample": "固定 generateText 回归先让策略拒绝一次工具调用，再把策略设为不适用，并用原请求配上 approved=true 回放；断言缺失签名报错，execute 从未被调用。流工具辅助函数的断言也要求自动拒绝请求没有 signature。本期只读 mock 与断言，未调用模型、重放真实批准或执行工具。",
+        "whyItMatters": "证明服务器曾生成某个请求，与证明它允许执行，是两份不同证据。若预算等策略依赖客户端提交的会话，签发阶段就应区分等待决定和明确拒绝，不能只依靠下一轮重新计算策略。",
+        "risksAndLimits": [
+          "升级不会自动撤销旧版本已为自动拒绝签出的有效签名。官方说明要求需要使其失效时轮换配置的 secret；这也会使等待人工决定的旧请求需要重新发起。",
+          "这里限定启用该实验签名配置的审批路径，不证明会话预算、用户身份或外部副作用具备独立权威状态；未配置签名时不能套用这项防护结论。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "ai@7.0.178",
+            "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.178",
+            "publishedAt": "2026-11-20T16:51:22.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Do not sign automatically denied calls PR25240",
+            "url": "https://github.com/vercel/ai/pull/25240"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Generation approval issuance branches",
+            "url": "https://github.com/vercel/ai/blob/3dad57f204c7332178d28c3467c7311875b66a3e/packages/ai/src/generate-text/generate-text.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Streaming approval issuance branches",
+            "url": "https://github.com/vercel/ai/blob/3dad57f204c7332178d28c3467c7311875b66a3e/packages/ai/src/generate-text/execute-tools-from-stream.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Approval payload binding",
+            "url": "https://github.com/vercel/ai/blob/3dad57f204c7332178d28c3467c7311875b66a3e/packages/ai/src/generate-text/tool-approval-signature.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Denied request replay rejected before execution",
+            "url": "https://github.com/vercel/ai/blob/3dad57f204c7332178d28c3467c7311875b66a3e/packages/ai/src/generate-text/generate-text.test.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Signed and unsigned streaming request assertions",
+            "url": "https://github.com/vercel/ai/blob/3dad57f204c7332178d28c3467c7311875b66a3e/packages/ai/src/generate-text/execute-tools-from-stream.test.ts"
+          }
+        ],
+        "nextQuestions": [
+          "自动拒绝、等待决定与已批准三种状态，是否分别对应可签发、可验证和可执行的证据？"
+        ]
+      },
+      {
+        "id": "web3-sui-skipped-batch-tracked-reservations",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Sui 1.84.2：调度批次被跳过，已跟踪账户的资金预留仍要保留",
+        "whatHappened": "Sui 于 11 月 20 日（UTC）发布 mainnet 1.84.2 hotfix，收录发布分支 PR28693。官方将风险限定为检查点执行领先于自身共识路径的落后验证者：地址资金调度器曾可能丢失已跟踪账户的预留，随后批准委员会会拒绝的提款，使该验证者分叉。",
+        "mechanism": "未跟踪账户的存储版本已越过请求版本时，整批仍返回 SkipSchedule；但代码只留下其中已跟踪账户的预留，将批次版本写入 pending_settlements。后续 settle_funds 到达时再释放这些预留，未跟踪账户继续不加入内存状态。",
+        "workedExample": "固定回归让 A 初始有 1100，先预留 100，再让存储先结算含 A 提款 900 的批次。该批因另一个未跟踪账户而被跳过后，A 的新提款 500 必须先等待；内存结算到齐后返回资金不足。本期只读单元断言，没有运行节点、交易或上游测试。",
+        "whyItMatters": "一条执行路径已经完成，并不表示另一份内存账本已同步。SkipSchedule 回答本次是否继续调度，预留回答后续还能承诺多少资金；删除前者的工作，不能同时抹掉后者尚未结清的约束。",
+        "risksAndLimits": [
+          "官方说明全节点和保持同步的验证者不受此问题影响；协议版本仍为 142，无协议配置变更。这里没有独立测量受影响数量或全网升级状态。",
+          "这是地址资金调度及结算路径的修复，不应扩写为对象资金、钱包余额显示或任意提款流程均已验收；本地单元断言也不等于真实网络恢复证据。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "mainnet-v1.84.2",
+            "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.84.2",
+            "publishedAt": "2026-11-20T21:21:48.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Release-branch tracked reservation hotfix PR28693",
+            "url": "https://github.com/MystenLabs/sui/pull/28693"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Tracked-only reservations and settlement cleanup",
+            "url": "https://github.com/MystenLabs/sui/blob/fdbc1e0e2ed8626677abc33ce00afa1f23cdfe98/crates/sui-core/src/execution_scheduler/funds_withdraw_scheduler/address_funds/eager_scheduler/mod.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Skipped batch reservation and release assertions",
+            "url": "https://github.com/MystenLabs/sui/blob/fdbc1e0e2ed8626677abc33ce00afa1f23cdfe98/crates/sui-core/src/execution_scheduler/funds_withdraw_scheduler/address_funds/eager_scheduler/eager_scheduler_tests.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Address-funds scheduling design at release commit",
+            "url": "https://github.com/MystenLabs/sui/blob/fdbc1e0e2ed8626677abc33ce00afa1f23cdfe98/crates/sui-core/src/accumulators/design_docs/address_funds_scheduling.md"
+          }
+        ],
+        "nextQuestions": [
+          "返回跳过时，还有哪些账户预留和待结算版本必须保留，释放又由哪条实际结算证据触发？"
+        ]
+      },
+      {
+        "id": "web3-foundry-explorer-source-destination-preflight",
+        "domain": "web3",
+        "topic": "security",
+        "title": "Foundry 11 月 20 日 nightly：区块浏览器返回的合约名称，写成文件前先校验",
+        "whatHappened": "Foundry 于 11 月 20 日（UTC）发布 nightly-fb3f020，包含前一日合入的 PR18483。cast source 与 forge clone 接入 foundry-core 的来源写入校验：构造源码树时拒绝不合法或隐藏的合约根、清理后为空的源码路径，并在写入前检查最终目标。",
+        "mechanism": "固定版本把 foundry-block-explorers 绑定到 core 的 PR336 合入提交。Metadata 先验证合约根和清理后的相对路径；writer 算出扩展名回退后的全部目标，逐一拒绝已有符号链接组件，通过后才创建目录和写文件。Windows 还检查相关路径别名与流分隔符。",
+        "workedExample": "固定 CLI 回归用本地模拟 explorer 返回不合法元数据，要求命令失败、原 foundry.toml 内容不变，且没有创建外部目录。core 对照还要求：任一目标穿过符号链接时，前面的合法源码也不落盘。本期只读实现和断言，未请求真实 explorer、克隆合约或运行上游测试。",
+        "whyItMatters": "区块浏览器返回的名称和源码路径会变成本机文件系统操作。来源数据看似只是文本，写入时却可能获得目录选择能力；应在整个写入集合确认后再开始落盘，避免前面文件已写、后面才发现非法目标。",
+        "risksAndLimits": [
+          "这是 nightly 发布，本期固定到完整提交，不能假定其他稳定版或本机安装已包含修复。该改动约束放置路径，不证明下载源码可信、合约安全或可自动执行。",
+          "普通目录中的既有文件仍可被覆盖；校验失败不写入的保证，也不等于写入过程中的文件系统错误会自动回滚，源码说明这类错误仍可能留下部分输出。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "nightly-fb3f02084ca9d6a5bd63810e61a67d8fdbf9126a",
+            "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-fb3f02084ca9d6a5bd63810e61a67d8fdbf9126a",
+            "publishedAt": "2026-11-20T07:10:56.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Adopt explorer source validation PR18483",
+            "url": "https://github.com/foundry-rs/foundry/pull/18483"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Validate source writes in foundry-core PR336",
+            "url": "https://github.com/foundry-rs/foundry-core/pull/336"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Exact foundry-core revision pin",
+            "url": "https://github.com/foundry-rs/foundry/blob/fb3f02084ca9d6a5bd63810e61a67d8fdbf9126a/Cargo.toml"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "cast source validated tree entry point",
+            "url": "https://github.com/foundry-rs/foundry/blob/fb3f02084ca9d6a5bd63810e61a67d8fdbf9126a/crates/cast/src/args.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "forge clone validated dump and assertion",
+            "url": "https://github.com/foundry-rs/foundry/blob/fb3f02084ca9d6a5bd63810e61a67d8fdbf9126a/crates/forge/src/cmd/clone.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Validate metadata before constructing entries",
+            "url": "https://github.com/foundry-rs/foundry-core/blob/989f05e23c64b5a96c62ea962191eb1af74a2804/crates/block-explorers/src/contract.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Final destination preflight before writing",
+            "url": "https://github.com/foundry-rs/foundry-core/blob/989f05e23c64b5a96c62ea962191eb1af74a2804/crates/block-explorers/src/source_tree.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "CLI rejection preserves existing sentinel",
+            "url": "https://github.com/foundry-rs/foundry/blob/fb3f02084ca9d6a5bd63810e61a67d8fdbf9126a/crates/cast/tests/cli/source.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Whole tree preflight and overwrite boundaries",
+            "url": "https://github.com/foundry-rs/foundry-core/blob/989f05e23c64b5a96c62ea962191eb1af74a2804/crates/block-explorers/tests/it/source_tree.rs"
+          }
+        ],
+        "nextQuestions": [
+          "外部元数据进入文件系统前，最终目标是否全部校验，既有文件覆盖与部分失败又如何单独记录？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-sui-skip-verdict-versus-reservation-settlement",
+      "domain": "web3",
+      "topic": "onchain_infrastructure",
+      "title": "专题：存储已经结算，为什么内存调度器还不能释放资金预留？",
+      "whatHappened": "本专题沿用当天 Sui 1.84.2 hotfix，拆开检查点执行与共识调度看到结算的先后次序。存储版本已经前进，只能让旧批次不再获得本地调度判定；已跟踪账户的内存余额与预留仍需等待对应 settle_funds。",
+      "mechanism": "调度器自有版本已越过批次时可直接跳过；另一条分支是未跟踪账户的存储版本越过批次，此时只为已跟踪账户记录该批预留及待结算版本。settle_funds 既处理有资金变化的账户，也处理该版本登记的账户，所以实际变化为零也能释放预留。",
+      "workedExample": "第二条固定回归令 A 先预留 100，再对 A 预留 50、同时对余额 10 的 B 请求 20；存储已越过该批，调度返回 SkipSchedule。这个批次最终没有资金变化，但在对应版本的空 funds_changes 结算到达后，断言跟踪账户数从 1 变成 0。这是已读回归场景，未在本期实跑。",
+      "whyItMatters": "预留记录的是尚未被本调度器结算消解的承诺，不只记录它亲自批准过的调用。工程上的推论是：恢复流程需要分别保存已观察的外部版本、内部已应用版本和未释放预留，避免把外部完成直接折算成内部可用余额。",
+      "risksAndLimits": [
+        "该空变化回归检查预留可释放，不证明任意零变化事件都能直接删除账户；仍要匹配顺序推进的结算版本及 pending_settlements 中的归属。",
+        "这套推理限定于已读地址资金调度实现。没有执行上游单元测试、未独立复现验证者分叉，也未验证真实部署的升级和回放结果。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "mainnet-v1.84.2",
+          "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.84.2",
+          "publishedAt": "2026-11-20T21:21:48.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "Release-branch tracked reservation hotfix PR28693",
+          "url": "https://github.com/MystenLabs/sui/pull/28693"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Tracked-only reservations and settlement cleanup",
+          "url": "https://github.com/MystenLabs/sui/blob/fdbc1e0e2ed8626677abc33ce00afa1f23cdfe98/crates/sui-core/src/execution_scheduler/funds_withdraw_scheduler/address_funds/eager_scheduler/mod.rs"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Skipped batch reservation and release assertions",
+          "url": "https://github.com/MystenLabs/sui/blob/fdbc1e0e2ed8626677abc33ce00afa1f23cdfe98/crates/sui-core/src/execution_scheduler/funds_withdraw_scheduler/address_funds/eager_scheduler/eager_scheduler_tests.rs"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Address-funds scheduling design at release commit",
+          "url": "https://github.com/MystenLabs/sui/blob/fdbc1e0e2ed8626677abc33ce00afa1f23cdfe98/crates/sui-core/src/accumulators/design_docs/address_funds_scheduling.md"
+        }
+      ],
+      "nextQuestions": [
+        "当两个执行路径先后观察同一版本时，哪份状态有权释放预留，零资金变化的结算是否也被完整传递？"
+      ],
+      "basedOnBriefId": "web3-sui-skipped-batch-tracked-reservations"
+    },
+    "sourceUrls": [
+      "https://github.com/langchain-ai/langgraph/releases/tag/1.2.24",
+      "https://github.com/langchain-ai/langgraph/pull/9735",
+      "https://github.com/langchain-ai/langgraph/blob/58a6e1cc5b7dfc3619fc6e7e7573b040d554649b/libs/langgraph/langgraph/pregel/_messages.py",
+      "https://github.com/langchain-ai/langgraph/blob/58a6e1cc5b7dfc3619fc6e7e7573b040d554649b/libs/langgraph/langgraph/channels/delta.py",
+      "https://github.com/langchain-ai/langgraph/blob/58a6e1cc5b7dfc3619fc6e7e7573b040d554649b/libs/langgraph/tests/test_channels.py",
+      "https://github.com/vercel/ai/releases/tag/ai%407.0.178",
+      "https://github.com/vercel/ai/pull/25240",
+      "https://github.com/vercel/ai/blob/3dad57f204c7332178d28c3467c7311875b66a3e/packages/ai/src/generate-text/generate-text.ts",
+      "https://github.com/vercel/ai/blob/3dad57f204c7332178d28c3467c7311875b66a3e/packages/ai/src/generate-text/execute-tools-from-stream.ts",
+      "https://github.com/vercel/ai/blob/3dad57f204c7332178d28c3467c7311875b66a3e/packages/ai/src/generate-text/tool-approval-signature.ts",
+      "https://github.com/vercel/ai/blob/3dad57f204c7332178d28c3467c7311875b66a3e/packages/ai/src/generate-text/generate-text.test.ts",
+      "https://github.com/vercel/ai/blob/3dad57f204c7332178d28c3467c7311875b66a3e/packages/ai/src/generate-text/execute-tools-from-stream.test.ts",
+      "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.84.2",
+      "https://github.com/MystenLabs/sui/pull/28693",
+      "https://github.com/MystenLabs/sui/blob/fdbc1e0e2ed8626677abc33ce00afa1f23cdfe98/crates/sui-core/src/execution_scheduler/funds_withdraw_scheduler/address_funds/eager_scheduler/mod.rs",
+      "https://github.com/MystenLabs/sui/blob/fdbc1e0e2ed8626677abc33ce00afa1f23cdfe98/crates/sui-core/src/execution_scheduler/funds_withdraw_scheduler/address_funds/eager_scheduler/eager_scheduler_tests.rs",
+      "https://github.com/MystenLabs/sui/blob/fdbc1e0e2ed8626677abc33ce00afa1f23cdfe98/crates/sui-core/src/accumulators/design_docs/address_funds_scheduling.md",
+      "https://github.com/foundry-rs/foundry/releases/tag/nightly-fb3f02084ca9d6a5bd63810e61a67d8fdbf9126a",
+      "https://github.com/foundry-rs/foundry/pull/18483",
+      "https://github.com/foundry-rs/foundry-core/pull/336",
+      "https://github.com/foundry-rs/foundry/blob/fb3f02084ca9d6a5bd63810e61a67d8fdbf9126a/Cargo.toml",
+      "https://github.com/foundry-rs/foundry/blob/fb3f02084ca9d6a5bd63810e61a67d8fdbf9126a/crates/cast/src/args.rs",
+      "https://github.com/foundry-rs/foundry/blob/fb3f02084ca9d6a5bd63810e61a67d8fdbf9126a/crates/forge/src/cmd/clone.rs",
+      "https://github.com/foundry-rs/foundry-core/blob/989f05e23c64b5a96c62ea962191eb1af74a2804/crates/block-explorers/src/contract.rs",
+      "https://github.com/foundry-rs/foundry-core/blob/989f05e23c64b5a96c62ea962191eb1af74a2804/crates/block-explorers/src/source_tree.rs",
+      "https://github.com/foundry-rs/foundry/blob/fb3f02084ca9d6a5bd63810e61a67d8fdbf9126a/crates/cast/tests/cli/source.rs",
+      "https://github.com/foundry-rs/foundry-core/blob/989f05e23c64b5a96c62ea962191eb1af74a2804/crates/block-explorers/tests/it/source_tree.rs"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-11-21-833e7137bf810d0d",
+    "asOf": "2026-11-20T21:42:50.439Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "title": "学习雷达 · 2026-11-16",

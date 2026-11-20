@@ -5,6 +5,69 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "learning:ai-langgraph-message-delta-reset-replay",
+    "kind": "learning",
+    "date": "2026-11-21",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "LangGraph 1.2.24：批量重放消息时，清空标记也清除本批更早的写入",
+    "summary": "会话压缩或重置后，在线更新与检查点重放应解释同一条清空指令。排查旧消息重新出现时，需要同时核对标记在批次中的位置、初始状态和恢复路径，不能只看最后一轮界面。",
+    "href": "/radar/2026-11-21#ai-langgraph-message-delta-reset-replay",
+    "source": {
+      "name": "1.2.24",
+      "tier": "tier1",
+      "url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.24"
+    }
+  },
+  {
+    "id": "learning:ai-sdk-unsigned-automatic-tool-denials",
+    "kind": "learning",
+    "date": "2026-11-21",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "AI SDK 7.0.178：策略已自动拒绝的工具调用，不再拿到可回放的审批签名",
+    "summary": "证明服务器曾生成某个请求，与证明它允许执行，是两份不同证据。若预算等策略依赖客户端提交的会话，签发阶段就应区分等待决定和明确拒绝，不能只依靠下一轮重新计算策略。",
+    "href": "/radar/2026-11-21#ai-sdk-unsigned-automatic-tool-denials",
+    "source": {
+      "name": "ai@7.0.178",
+      "tier": "tier1",
+      "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.178"
+    }
+  },
+  {
+    "id": "learning:web3-sui-skipped-batch-tracked-reservations",
+    "kind": "learning",
+    "date": "2026-11-21",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "Sui 1.84.2：调度批次被跳过，已跟踪账户的资金预留仍要保留",
+    "summary": "一条执行路径已经完成，并不表示另一份内存账本已同步。SkipSchedule 回答本次是否继续调度，预留回答后续还能承诺多少资金；删除前者的工作，不能同时抹掉后者尚未结清的约束。",
+    "href": "/radar/2026-11-21#web3-sui-skipped-batch-tracked-reservations",
+    "source": {
+      "name": "mainnet-v1.84.2",
+      "tier": "tier1",
+      "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.84.2"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "learning:web3-foundry-explorer-source-destination-preflight",
+    "kind": "learning",
+    "date": "2026-11-21",
+    "domain": "web3",
+    "topic": "security",
+    "title": "Foundry 11 月 20 日 nightly：区块浏览器返回的合约名称，写成文件前先校验",
+    "summary": "区块浏览器返回的名称和源码路径会变成本机文件系统操作。来源数据看似只是文本，写入时却可能获得目录选择能力；应在整个写入集合确认后再开始落盘，避免前面文件已写、后面才发现非法目标。",
+    "href": "/radar/2026-11-21#web3-foundry-explorer-source-destination-preflight",
+    "source": {
+      "name": "nightly-fb3f02084ca9d6a5bd63810e61a67d8fdbf9126a",
+      "tier": "tier1",
+      "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-fb3f02084ca9d6a5bd63810e61a67d8fdbf9126a"
+    }
+  },
+  {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
     "date": "2026-11-16",
