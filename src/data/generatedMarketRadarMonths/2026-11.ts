@@ -3,6 +3,157 @@
 import type { MarketRadarDaily } from '../generatedMarketRadars.ts'
 export const monthlyMarketRadars: MarketRadarDaily[] = [
   {
+    "date": "2026-11-21",
+    "slug": "2026-11-21",
+    "title": "交易研究雷达 · 2026-11-21",
+    "summary": "11月20日SEC提出重组CAT治理与资金模式，拟保留大体相同的监管数据报送，并转向SEC直接控制与拨款支付。本期区分提案、资金意向和实际移交，再保留成本与系统连续性的验证问题。本期为自动汇总，未经人工复核。",
+    "snapshotId": "market-2026-11-21-d59c6e4c09d94ac3",
+    "asOf": "2026-11-20T21:41:23.522Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-20T21:41:23.522Z",
+    "events": [
+      {
+        "id": "sec-cat-governance-funding-proposal-2026-11-20",
+        "priority": "P2",
+        "status": "released",
+        "category": "regulation",
+        "title": "SEC拟重组CAT：监管数据报送延续，治理与资金承担待转移",
+        "fact": "SEC于11月20日提出撤销Regulation NMS Rule 613并新增Rule 17a-26，拟将综合审计追踪系统CAT转为SEC直接控制，要求自律组织与经纪交易商向SEC或其指定方电子报送大体相同的信息；SEC打算以国会拨款支付自身使用、运营及维护CAT的费用。这是提案发布，不是治理移交或资金安排已经完成。",
+        "whyWatch": "研究推断：治理责任与费用承担的调整，可能先影响交易所、经纪商的合规预算和系统迁移，再经服务收费及经营成本联系相关资产。信息报送延续与成本承担改变是不同环节；监管所述效率目标不证明实际费用下降、数据质量改善或资产反应。",
+        "assets": [
+          "美国交易所及经纪商股票",
+          "美国股票ETF"
+        ],
+        "watchFor": "核对最终规则、CAT资产转移、SEC与运营指定方合同、拨款及实际收费，再观察报送连续性、纠错流程与公开运营指标。意见期为Federal Register刊登后60天；本期未核定刊登日及截止日，未采集机构改造成本、收费、资金流或行情样本。",
+        "invalidation": "若提案未获采纳、拨款或迁移安排未落实，或实际收费与系统表现未变化，应收窄即时成本传导解释。后续文本改变时重估；不能把撤销Rule 613等同取消CAT或全部报送义务，也不能把既往削费与个人身份信息豁免算成本次新增效果。",
+        "sourceName": "U.S. SEC — proposal to restructure the Consolidated Audit Trail (2026-117)",
+        "sourceUrl": "https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail",
+        "sourcePublishedAt": "2026-11-20"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "本期核对11月20日CAT提案公告、官方两页事实说明、拟议规则前三页与两份同日声明；未建立机构实际费用、数据质量与资产反应的同窗口样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "规则提案、治理和资产移交、拨款与实际成本属于不同阶段；披露的既往削费不是本次新增实现值，不能换算为资产方向概率。",
+      "nextValidation": "固定机构、费用类别、报送范围和实施窗口，补充最终条文、拨款、运营合同、实际收费与系统连续性资料，再隔离同期信息；样本不足时只保留信号质量。",
+      "invalidation": "后续条文、资金来源、收费或迁移范围改变时重新对齐；缺少实际执行与市场样本时保留未知。",
+      "sourceUrls": [
+        "https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "CAT治理与费用承担的调整，可能经哪些合规预算、系统迁移和服务收费环节联系相关资产，各环需要什么实施证据？",
+        "focusEventIds": [
+          "sec-cat-governance-funding-proposal-2026-11-20"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些最终条文、拨款、实际收费与报送质量证据，能支持或推翻把治理重组解释成即时成本下降？",
+        "focusEventIds": [
+          "sec-cat-governance-funding-proposal-2026-11-20"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若报送义务延续但拨款或迁移未落实，哪些观察应让即时成本传导解释失效，何时重新评估？",
+        "focusEventIds": [
+          "sec-cat-governance-funding-proposal-2026-11-20"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-21",
+      "snapshotId": "market-2026-11-21-d59c6e4c09d94ac3",
+      "asOf": "2026-11-20T21:41:23.522Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-21",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "CAT治理与费用承担的调整，可能经哪些合规预算、系统迁移和服务收费环节联系相关资产，各环需要什么实施证据？",
+          "focusEventIds": [
+            "sec-cat-governance-funding-proposal-2026-11-20"
+          ],
+          "prompt": "研究任务：CAT治理与费用承担的调整，可能经哪些合规预算、系统迁移和服务收费环节联系相关资产，各环需要什么实施证据？\n证据快照：2026-11-21；asOf=2026-11-20T21:41:23.522Z；snapshotId=market-2026-11-21-d59c6e4c09d94ac3\n\n材料 1｜SEC拟重组CAT：监管数据报送延续，治理与资金承担待转移\n已确认事实：SEC于11月20日提出撤销Regulation NMS Rule 613并新增Rule 17a-26，拟将综合审计追踪系统CAT转为SEC直接控制，要求自律组织与经纪交易商向SEC或其指定方电子报送大体相同的信息；SEC打算以国会拨款支付自身使用、运营及维护CAT的费用。这是提案发布，不是治理移交或资金安排已经完成。\n关注机制：研究推断：治理责任与费用承担的调整，可能先影响交易所、经纪商的合规预算和系统迁移，再经服务收费及经营成本联系相关资产。信息报送延续与成本承担改变是不同环节；监管所述效率目标不证明实际费用下降、数据质量改善或资产反应。\n接下来验证：核对最终规则、CAT资产转移、SEC与运营指定方合同、拨款及实际收费，再观察报送连续性、纠错流程与公开运营指标。意见期为Federal Register刊登后60天；本期未核定刊登日及截止日，未采集机构改造成本、收费、资金流或行情样本。\n失效条件：若提案未获采纳、拨款或迁移安排未落实，或实际收费与系统表现未变化，应收窄即时成本传导解释。后续文本改变时重估；不能把撤销Rule 613等同取消CAT或全部报送义务，也不能把既往削费与个人身份信息豁免算成本次新增效果。\n一手来源：https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "7c691a8119e11fecb5a8ed55f5755556ab4da6a820c89c7ccdcd63628fceff41",
+          "sourceUrls": [
+            "https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些最终条文、拨款、实际收费与报送质量证据，能支持或推翻把治理重组解释成即时成本下降？",
+          "focusEventIds": [
+            "sec-cat-governance-funding-proposal-2026-11-20"
+          ],
+          "prompt": "研究任务：哪些最终条文、拨款、实际收费与报送质量证据，能支持或推翻把治理重组解释成即时成本下降？\n证据快照：2026-11-21；asOf=2026-11-20T21:41:23.522Z；snapshotId=market-2026-11-21-d59c6e4c09d94ac3\n\n材料 1｜SEC拟重组CAT：监管数据报送延续，治理与资金承担待转移\n已确认事实：SEC于11月20日提出撤销Regulation NMS Rule 613并新增Rule 17a-26，拟将综合审计追踪系统CAT转为SEC直接控制，要求自律组织与经纪交易商向SEC或其指定方电子报送大体相同的信息；SEC打算以国会拨款支付自身使用、运营及维护CAT的费用。这是提案发布，不是治理移交或资金安排已经完成。\n关注机制：研究推断：治理责任与费用承担的调整，可能先影响交易所、经纪商的合规预算和系统迁移，再经服务收费及经营成本联系相关资产。信息报送延续与成本承担改变是不同环节；监管所述效率目标不证明实际费用下降、数据质量改善或资产反应。\n接下来验证：核对最终规则、CAT资产转移、SEC与运营指定方合同、拨款及实际收费，再观察报送连续性、纠错流程与公开运营指标。意见期为Federal Register刊登后60天；本期未核定刊登日及截止日，未采集机构改造成本、收费、资金流或行情样本。\n失效条件：若提案未获采纳、拨款或迁移安排未落实，或实际收费与系统表现未变化，应收窄即时成本传导解释。后续文本改变时重估；不能把撤销Rule 613等同取消CAT或全部报送义务，也不能把既往削费与个人身份信息豁免算成本次新增效果。\n一手来源：https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "179a007aee9e2550d7fadc3589feff0fe3640aa28fadc7a744601935f5a66cd2",
+          "sourceUrls": [
+            "https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若报送义务延续但拨款或迁移未落实，哪些观察应让即时成本传导解释失效，何时重新评估？",
+          "focusEventIds": [
+            "sec-cat-governance-funding-proposal-2026-11-20"
+          ],
+          "prompt": "研究任务：若报送义务延续但拨款或迁移未落实，哪些观察应让即时成本传导解释失效，何时重新评估？\n证据快照：2026-11-21；asOf=2026-11-20T21:41:23.522Z；snapshotId=market-2026-11-21-d59c6e4c09d94ac3\n\n材料 1｜SEC拟重组CAT：监管数据报送延续，治理与资金承担待转移\n已确认事实：SEC于11月20日提出撤销Regulation NMS Rule 613并新增Rule 17a-26，拟将综合审计追踪系统CAT转为SEC直接控制，要求自律组织与经纪交易商向SEC或其指定方电子报送大体相同的信息；SEC打算以国会拨款支付自身使用、运营及维护CAT的费用。这是提案发布，不是治理移交或资金安排已经完成。\n关注机制：研究推断：治理责任与费用承担的调整，可能先影响交易所、经纪商的合规预算和系统迁移，再经服务收费及经营成本联系相关资产。信息报送延续与成本承担改变是不同环节；监管所述效率目标不证明实际费用下降、数据质量改善或资产反应。\n接下来验证：核对最终规则、CAT资产转移、SEC与运营指定方合同、拨款及实际收费，再观察报送连续性、纠错流程与公开运营指标。意见期为Federal Register刊登后60天；本期未核定刊登日及截止日，未采集机构改造成本、收费、资金流或行情样本。\n失效条件：若提案未获采纳、拨款或迁移安排未落实，或实际收费与系统表现未变化，应收窄即时成本传导解释。后续文本改变时重估；不能把撤销Rule 613等同取消CAT或全部报送义务，也不能把既往削费与个人身份信息豁免算成本次新增效果。\n一手来源：https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "82dcf23a269cdaa7a9c19d5c9a9b199e17a6b7629f76379662265c1894fbee5e",
+          "sourceUrls": [
+            "https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail"
+          ]
+        }
+      ]
+    }
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "title": "交易研究雷达 · 2026-11-16",

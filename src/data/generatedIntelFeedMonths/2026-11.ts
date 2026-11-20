@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-11-21:sec-cat-governance-funding-proposal-2026-11-20",
+    "kind": "market",
+    "date": "2026-11-21",
+    "domain": "market",
+    "topic": "market_regulation",
+    "title": "SEC拟重组CAT：监管数据报送延续，治理与资金承担待转移",
+    "summary": "研究推断：治理责任与费用承担的调整，可能先影响交易所、经纪商的合规预算和系统迁移，再经服务收费及经营成本联系相关资产。信息报送延续与成本承担改变是不同环节；监管所述效率目标不证明实际费用下降、数据质量改善或资产反应。",
+    "href": "/market-radar/2026-11-21#sec-cat-governance-funding-proposal-2026-11-20",
+    "source": {
+      "name": "U.S. SEC — proposal to restructure the Consolidated Audit Trail (2026-117)",
+      "url": "https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail"
+    },
+    "flags": {
+      "priority": "P2"
+    }
+  },
+  {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
     "date": "2026-11-16",

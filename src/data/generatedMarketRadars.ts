@@ -16,6 +16,17 @@ export interface MarketRadarDaily { schemaVersion?: 2; date: string; slug: strin
 export interface MarketRadarIndexEntry { date: string; slug: string; snapshotId: string; asOf: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
 export const marketRadarIndex: MarketRadarIndexEntry[] = [
   {
+    "date": "2026-11-21",
+    "slug": "2026-11-21",
+    "title": "交易研究雷达 · 2026-11-21",
+    "summary": "11月20日SEC提出重组CAT治理与资金模式，拟保留大体相同的监管数据报送，并转向SEC直接控制与拨款支付。本期区分提案、资金意向和实际移交，再保留成本与系统连续性的验证问题。本期为自动汇总，未经人工复核。",
+    "snapshotId": "market-2026-11-21-d59c6e4c09d94ac3",
+    "asOf": "2026-11-20T21:41:23.522Z",
+    "eventCount": 1,
+    "assetCount": 2,
+    "leadTitle": "SEC拟重组CAT：监管数据报送延续，治理与资金承担待转移"
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "title": "交易研究雷达 · 2026-11-16",
@@ -314,6 +325,157 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
   }
 ]
 export const latestMarketRadars: MarketRadarDaily[] = [
+  {
+    "date": "2026-11-21",
+    "slug": "2026-11-21",
+    "title": "交易研究雷达 · 2026-11-21",
+    "summary": "11月20日SEC提出重组CAT治理与资金模式，拟保留大体相同的监管数据报送，并转向SEC直接控制与拨款支付。本期区分提案、资金意向和实际移交，再保留成本与系统连续性的验证问题。本期为自动汇总，未经人工复核。",
+    "snapshotId": "market-2026-11-21-d59c6e4c09d94ac3",
+    "asOf": "2026-11-20T21:41:23.522Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-20T21:41:23.522Z",
+    "events": [
+      {
+        "id": "sec-cat-governance-funding-proposal-2026-11-20",
+        "priority": "P2",
+        "status": "released",
+        "category": "regulation",
+        "title": "SEC拟重组CAT：监管数据报送延续，治理与资金承担待转移",
+        "fact": "SEC于11月20日提出撤销Regulation NMS Rule 613并新增Rule 17a-26，拟将综合审计追踪系统CAT转为SEC直接控制，要求自律组织与经纪交易商向SEC或其指定方电子报送大体相同的信息；SEC打算以国会拨款支付自身使用、运营及维护CAT的费用。这是提案发布，不是治理移交或资金安排已经完成。",
+        "whyWatch": "研究推断：治理责任与费用承担的调整，可能先影响交易所、经纪商的合规预算和系统迁移，再经服务收费及经营成本联系相关资产。信息报送延续与成本承担改变是不同环节；监管所述效率目标不证明实际费用下降、数据质量改善或资产反应。",
+        "assets": [
+          "美国交易所及经纪商股票",
+          "美国股票ETF"
+        ],
+        "watchFor": "核对最终规则、CAT资产转移、SEC与运营指定方合同、拨款及实际收费，再观察报送连续性、纠错流程与公开运营指标。意见期为Federal Register刊登后60天；本期未核定刊登日及截止日，未采集机构改造成本、收费、资金流或行情样本。",
+        "invalidation": "若提案未获采纳、拨款或迁移安排未落实，或实际收费与系统表现未变化，应收窄即时成本传导解释。后续文本改变时重估；不能把撤销Rule 613等同取消CAT或全部报送义务，也不能把既往削费与个人身份信息豁免算成本次新增效果。",
+        "sourceName": "U.S. SEC — proposal to restructure the Consolidated Audit Trail (2026-117)",
+        "sourceUrl": "https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail",
+        "sourcePublishedAt": "2026-11-20"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "本期核对11月20日CAT提案公告、官方两页事实说明、拟议规则前三页与两份同日声明；未建立机构实际费用、数据质量与资产反应的同窗口样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "规则提案、治理和资产移交、拨款与实际成本属于不同阶段；披露的既往削费不是本次新增实现值，不能换算为资产方向概率。",
+      "nextValidation": "固定机构、费用类别、报送范围和实施窗口，补充最终条文、拨款、运营合同、实际收费与系统连续性资料，再隔离同期信息；样本不足时只保留信号质量。",
+      "invalidation": "后续条文、资金来源、收费或迁移范围改变时重新对齐；缺少实际执行与市场样本时保留未知。",
+      "sourceUrls": [
+        "https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "CAT治理与费用承担的调整，可能经哪些合规预算、系统迁移和服务收费环节联系相关资产，各环需要什么实施证据？",
+        "focusEventIds": [
+          "sec-cat-governance-funding-proposal-2026-11-20"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些最终条文、拨款、实际收费与报送质量证据，能支持或推翻把治理重组解释成即时成本下降？",
+        "focusEventIds": [
+          "sec-cat-governance-funding-proposal-2026-11-20"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若报送义务延续但拨款或迁移未落实，哪些观察应让即时成本传导解释失效，何时重新评估？",
+        "focusEventIds": [
+          "sec-cat-governance-funding-proposal-2026-11-20"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-21",
+      "snapshotId": "market-2026-11-21-d59c6e4c09d94ac3",
+      "asOf": "2026-11-20T21:41:23.522Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-21",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "CAT治理与费用承担的调整，可能经哪些合规预算、系统迁移和服务收费环节联系相关资产，各环需要什么实施证据？",
+          "focusEventIds": [
+            "sec-cat-governance-funding-proposal-2026-11-20"
+          ],
+          "prompt": "研究任务：CAT治理与费用承担的调整，可能经哪些合规预算、系统迁移和服务收费环节联系相关资产，各环需要什么实施证据？\n证据快照：2026-11-21；asOf=2026-11-20T21:41:23.522Z；snapshotId=market-2026-11-21-d59c6e4c09d94ac3\n\n材料 1｜SEC拟重组CAT：监管数据报送延续，治理与资金承担待转移\n已确认事实：SEC于11月20日提出撤销Regulation NMS Rule 613并新增Rule 17a-26，拟将综合审计追踪系统CAT转为SEC直接控制，要求自律组织与经纪交易商向SEC或其指定方电子报送大体相同的信息；SEC打算以国会拨款支付自身使用、运营及维护CAT的费用。这是提案发布，不是治理移交或资金安排已经完成。\n关注机制：研究推断：治理责任与费用承担的调整，可能先影响交易所、经纪商的合规预算和系统迁移，再经服务收费及经营成本联系相关资产。信息报送延续与成本承担改变是不同环节；监管所述效率目标不证明实际费用下降、数据质量改善或资产反应。\n接下来验证：核对最终规则、CAT资产转移、SEC与运营指定方合同、拨款及实际收费，再观察报送连续性、纠错流程与公开运营指标。意见期为Federal Register刊登后60天；本期未核定刊登日及截止日，未采集机构改造成本、收费、资金流或行情样本。\n失效条件：若提案未获采纳、拨款或迁移安排未落实，或实际收费与系统表现未变化，应收窄即时成本传导解释。后续文本改变时重估；不能把撤销Rule 613等同取消CAT或全部报送义务，也不能把既往削费与个人身份信息豁免算成本次新增效果。\n一手来源：https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "7c691a8119e11fecb5a8ed55f5755556ab4da6a820c89c7ccdcd63628fceff41",
+          "sourceUrls": [
+            "https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些最终条文、拨款、实际收费与报送质量证据，能支持或推翻把治理重组解释成即时成本下降？",
+          "focusEventIds": [
+            "sec-cat-governance-funding-proposal-2026-11-20"
+          ],
+          "prompt": "研究任务：哪些最终条文、拨款、实际收费与报送质量证据，能支持或推翻把治理重组解释成即时成本下降？\n证据快照：2026-11-21；asOf=2026-11-20T21:41:23.522Z；snapshotId=market-2026-11-21-d59c6e4c09d94ac3\n\n材料 1｜SEC拟重组CAT：监管数据报送延续，治理与资金承担待转移\n已确认事实：SEC于11月20日提出撤销Regulation NMS Rule 613并新增Rule 17a-26，拟将综合审计追踪系统CAT转为SEC直接控制，要求自律组织与经纪交易商向SEC或其指定方电子报送大体相同的信息；SEC打算以国会拨款支付自身使用、运营及维护CAT的费用。这是提案发布，不是治理移交或资金安排已经完成。\n关注机制：研究推断：治理责任与费用承担的调整，可能先影响交易所、经纪商的合规预算和系统迁移，再经服务收费及经营成本联系相关资产。信息报送延续与成本承担改变是不同环节；监管所述效率目标不证明实际费用下降、数据质量改善或资产反应。\n接下来验证：核对最终规则、CAT资产转移、SEC与运营指定方合同、拨款及实际收费，再观察报送连续性、纠错流程与公开运营指标。意见期为Federal Register刊登后60天；本期未核定刊登日及截止日，未采集机构改造成本、收费、资金流或行情样本。\n失效条件：若提案未获采纳、拨款或迁移安排未落实，或实际收费与系统表现未变化，应收窄即时成本传导解释。后续文本改变时重估；不能把撤销Rule 613等同取消CAT或全部报送义务，也不能把既往削费与个人身份信息豁免算成本次新增效果。\n一手来源：https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "179a007aee9e2550d7fadc3589feff0fe3640aa28fadc7a744601935f5a66cd2",
+          "sourceUrls": [
+            "https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若报送义务延续但拨款或迁移未落实，哪些观察应让即时成本传导解释失效，何时重新评估？",
+          "focusEventIds": [
+            "sec-cat-governance-funding-proposal-2026-11-20"
+          ],
+          "prompt": "研究任务：若报送义务延续但拨款或迁移未落实，哪些观察应让即时成本传导解释失效，何时重新评估？\n证据快照：2026-11-21；asOf=2026-11-20T21:41:23.522Z；snapshotId=market-2026-11-21-d59c6e4c09d94ac3\n\n材料 1｜SEC拟重组CAT：监管数据报送延续，治理与资金承担待转移\n已确认事实：SEC于11月20日提出撤销Regulation NMS Rule 613并新增Rule 17a-26，拟将综合审计追踪系统CAT转为SEC直接控制，要求自律组织与经纪交易商向SEC或其指定方电子报送大体相同的信息；SEC打算以国会拨款支付自身使用、运营及维护CAT的费用。这是提案发布，不是治理移交或资金安排已经完成。\n关注机制：研究推断：治理责任与费用承担的调整，可能先影响交易所、经纪商的合规预算和系统迁移，再经服务收费及经营成本联系相关资产。信息报送延续与成本承担改变是不同环节；监管所述效率目标不证明实际费用下降、数据质量改善或资产反应。\n接下来验证：核对最终规则、CAT资产转移、SEC与运营指定方合同、拨款及实际收费，再观察报送连续性、纠错流程与公开运营指标。意见期为Federal Register刊登后60天；本期未核定刊登日及截止日，未采集机构改造成本、收费、资金流或行情样本。\n失效条件：若提案未获采纳、拨款或迁移安排未落实，或实际收费与系统表现未变化，应收窄即时成本传导解释。后续文本改变时重估；不能把撤销Rule 613等同取消CAT或全部报送义务，也不能把既往削费与个人身份信息豁免算成本次新增效果。\n一手来源：https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "82dcf23a269cdaa7a9c19d5c9a9b199e17a6b7629f76379662265c1894fbee5e",
+          "sourceUrls": [
+            "https://www.sec.gov/newsroom/press-releases/2026-117-sec-issues-proposal-restructure-consolidated-audit-trail"
+          ]
+        }
+      ]
+    }
+  },
   {
     "date": "2026-11-16",
     "slug": "2026-11-16",
@@ -1215,157 +1377,6 @@ export const latestMarketRadars: MarketRadarDaily[] = [
           "promptChecksum": "b51c3ac516a1c07dde99ae9da2bb3791c04f34f554274828a451ef9584b543b8",
           "sourceUrls": [
             "https://www.newyorkfed.org/newsevents/news/research/2026/20261110"
-          ]
-        }
-      ]
-    }
-  },
-  {
-    "date": "2026-11-10",
-    "slug": "2026-11-10",
-    "title": "交易研究雷达 · 2026-11-10",
-    "summary": "FinCEN与美联储撤回2020年跨境资金传送门槛提案；本期区分11月6日公告、11月9日正式刊登与现行规则，不把撤回旧提案解读为取消既有义务。",
-    "snapshotId": "market-2026-11-10-01bdf765eaf1db2d",
-    "asOf": "2026-11-09T21:36:03.266Z",
-    "origin": "research",
-    "publicationState": "published",
-    "reviewStatus": "automated",
-    "generatedAt": "2026-11-09T21:36:03.266182Z",
-    "events": [
-      {
-        "id": "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
-        "priority": "P1",
-        "status": "released",
-        "category": "regulation",
-        "title": "FinCEN与美联储撤回跨境250美元门槛提案",
-        "fact": "11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。",
-        "whyWatch": "研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。",
-        "assets": [
-          "跨境资金通道",
-          "加密资产"
-        ],
-        "watchFor": "核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。",
-        "invalidation": "后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。",
-        "sourceName": "Federal Register / GPO — 2026-22809",
-        "sourceUrl": "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm",
-        "sourcePublishedAt": "2026-11-09"
-      }
-    ],
-    "sourceUrls": [
-      "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-    ],
-    "quantStrategy": {
-      "horizonTradingDays": 3,
-      "status": "historical_samples_insufficient",
-      "methodology": "本期仅核对一份提案撤回文件及先前公告，未建立机构开发排期、资金服务与资产反应的同窗口样本。",
-      "assets": [
-        {
-          "symbol": "SPY",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "QQQ",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "BTC",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "ETH",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "GLD",
-          "group": "gold_etf",
-          "signalQuality": "weak"
-        }
-      ],
-      "sampleSize": 0,
-      "rationale": "规则文件变化、机构实际执行与市场反应是不同层次；没有样本便不量化跨资产影响。",
-      "nextValidation": "固定公告及正式撤回时点，再核对公开实施说明、既有规则和可比服务数据，样本不足时仅记录信号质量。",
-      "invalidation": "新提案或正式范围改变时重估；数据口径、时间窗口不一致或缺少实际服务变化证据时保留未知。",
-      "sourceUrls": [
-        "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-      ]
-    },
-    "schemaVersion": 2,
-    "researchQuestions": [
-      {
-        "id": "1",
-        "lens": "transmission",
-        "shortQuestion": "旧提案退出如何经合规开发排期、机构执行和跨境资金服务传导到市场，各环需要哪些独立证据？",
-        "focusEventIds": [
-          "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-        ]
-      },
-      {
-        "id": "2",
-        "lens": "falsification",
-        "shortQuestion": "哪些既有规则、机构说明和同窗口服务数据，能推翻把当前市场变化归因于本次撤回的解释？",
-        "focusEventIds": [
-          "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-        ]
-      },
-      {
-        "id": "3",
-        "lens": "scenario",
-        "shortQuestion": "现行配置不变、新提案重启与服务实际调整分别对应什么情景，什么证据会使当前判断失效？",
-        "focusEventIds": [
-          "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-        ]
-      }
-    ],
-    "researchPack": {
-      "schemaVersion": 2,
-      "date": "2026-11-10",
-      "snapshotId": "market-2026-11-10-01bdf765eaf1db2d",
-      "asOf": "2026-11-09T21:36:03.266Z",
-      "origin": "research",
-      "publicationState": "published",
-      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-10",
-      "questions": [
-        {
-          "id": "1",
-          "lens": "transmission",
-          "shortQuestion": "旧提案退出如何经合规开发排期、机构执行和跨境资金服务传导到市场，各环需要哪些独立证据？",
-          "focusEventIds": [
-            "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-          ],
-          "prompt": "研究任务：旧提案退出如何经合规开发排期、机构执行和跨境资金服务传导到市场，各环需要哪些独立证据？\n证据快照：2026-11-10；asOf=2026-11-09T21:36:03.266Z；snapshotId=market-2026-11-10-01bdf765eaf1db2d\n\n材料 1｜FinCEN与美联储撤回跨境250美元门槛提案\n已确认事实：11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。\n关注机制：研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。\n接下来验证：核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。\n失效条件：后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。\n一手来源：https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "6bdf797b1a69478a921459f978c1506d2c7006e190819973ee4e76316dab80ff",
-          "sourceUrls": [
-            "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-          ]
-        },
-        {
-          "id": "2",
-          "lens": "falsification",
-          "shortQuestion": "哪些既有规则、机构说明和同窗口服务数据，能推翻把当前市场变化归因于本次撤回的解释？",
-          "focusEventIds": [
-            "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-          ],
-          "prompt": "研究任务：哪些既有规则、机构说明和同窗口服务数据，能推翻把当前市场变化归因于本次撤回的解释？\n证据快照：2026-11-10；asOf=2026-11-09T21:36:03.266Z；snapshotId=market-2026-11-10-01bdf765eaf1db2d\n\n材料 1｜FinCEN与美联储撤回跨境250美元门槛提案\n已确认事实：11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。\n关注机制：研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。\n接下来验证：核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。\n失效条件：后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。\n一手来源：https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "b07627ead551add6ce0062f0cac3748f964c2ce255524fa093a1f4539ed3e896",
-          "sourceUrls": [
-            "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-          ]
-        },
-        {
-          "id": "3",
-          "lens": "scenario",
-          "shortQuestion": "现行配置不变、新提案重启与服务实际调整分别对应什么情景，什么证据会使当前判断失效？",
-          "focusEventIds": [
-            "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-          ],
-          "prompt": "研究任务：现行配置不变、新提案重启与服务实际调整分别对应什么情景，什么证据会使当前判断失效？\n证据快照：2026-11-10；asOf=2026-11-09T21:36:03.266Z；snapshotId=market-2026-11-10-01bdf765eaf1db2d\n\n材料 1｜FinCEN与美联储撤回跨境250美元门槛提案\n已确认事实：11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。\n关注机制：研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。\n接下来验证：核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。\n失效条件：后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。\n一手来源：https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "a18a64a71ef388b379425fa6a84d7891d887815875a28e56fc58e3e22087590f",
-          "sourceUrls": [
-            "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
           ]
         }
       ]
