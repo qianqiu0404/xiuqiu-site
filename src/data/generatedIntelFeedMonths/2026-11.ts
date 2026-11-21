@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-11-22:eu-mff-2028-2034-draft-commitment-table-2026-11-21",
+    "kind": "market",
+    "date": "2026-11-22",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "欧盟2028–2034预算草案：承诺额度与支付、借款须分开",
+    "summary": "研究推断：长期支出框架的总额和结构，可能经最终预算决定、后续项目安排和实际支付，影响相关企业的订单与现金流预期。传导仍需逐环证据；相对委员会方案的承诺额度变化，不能直接换算为当期财政支出、债券发行量或资产价格变化。",
+    "href": "/market-radar/2026-11-22#eu-mff-2028-2034-draft-commitment-table-2026-11-21",
+    "source": {
+      "name": "Council of the European Union — MFF 2028–2034 draft summary table (16196/26)",
+      "url": "https://data.consilium.europa.eu/doc/document/ST-16196-2026-INIT/en/pdf"
+    },
+    "flags": {
+      "priority": "P2"
+    }
+  },
+  {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
     "date": "2026-11-16",
