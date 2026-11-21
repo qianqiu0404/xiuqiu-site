@@ -6,6 +6,58 @@
   "language": "zh-CN",
   "items": [
     {
+      "id": "xiuqiu-radar:ai-fastmcp-oauth-single-use-redemption",
+      "url": "https://xoqiu.cn/radar/2026-11-22#ai-fastmcp-oauth-single-use-redemption",
+      "title": "FastMCP 4.2.4：一次性令牌的并发兑换，由真正删除记录的请求胜出",
+      "summary": "Agent 连接 MCP 服务时，一次登录或一次刷新会跨越多份状态。仅检查先前读到的记录无法决定谁取得了这次消费权；签发路径需要保存可竞争、可核对的单次消费结果。",
+      "content_text": "Agent 连接 MCP 服务时，一次登录或一次刷新会跨越多份状态。仅检查先前读到的记录无法决定谁取得了这次消费权；签发路径需要保存可竞争、可核对的单次消费结果。",
+      "date_published": "2026-11-22T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "safety"
+      ],
+      "external_url": "https://github.com/PrefectHQ/fastmcp/releases/tag/v4.2.4"
+    },
+    {
+      "id": "xiuqiu-radar:ai-agents-codex-provider-thread-history",
+      "url": "https://xoqiu.cn/radar/2026-11-22#ai-agents-codex-provider-thread-history",
+      "title": "Agents SDK 1.0 alpha：复用 Codex 运行服务，每次模型调用仍创建新线程",
+      "summary": "把 Agent 切到另一推理后端时，连接复用、对话保存与任务恢复分别需要明确的负责人。这里由 Runner 提供历史和执行 SDK 工具，应用负责 provider 生命周期，能让资源回收与多轮行为的证据对应到具体层。",
+      "content_text": "把 Agent 切到另一推理后端时，连接复用、对话保存与任务恢复分别需要明确的负责人。这里由 Runner 提供历史和执行 SDK 工具，应用负责 provider 生命周期，能让资源回收与多轮行为的证据对应到具体层。",
+      "date_published": "2026-11-22T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "agent"
+      ],
+      "external_url": "https://github.com/openai/openai-agents-python/releases/tag/v1.0.0-alpha.1"
+    },
+    {
+      "id": "xiuqiu-radar:web3-viem-op-portal-current-factory",
+      "url": "https://xoqiu.cn/radar/2026-11-22#web3-viem-op-portal-current-factory",
+      "title": "viem 2.58.4：OP Stack 提款查询，先向 portal 读取当前争议工厂",
+      "summary": "协议升级后，客户端随包附带的地址可能落后于合约实际接受的依赖。以执行入口当前指向的工厂作为默认发现依据，可减少从旧工厂选游戏而无法推进提款流程的情况。",
+      "content_text": "协议升级后，客户端随包附带的地址可能落后于合约实际接受的依赖。以执行入口当前指向的工厂作为默认发现依据，可减少从旧工厂选游戏而无法推进提款流程的情况。",
+      "date_published": "2026-11-22T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "l2"
+      ],
+      "external_url": "https://github.com/wevm/viem/releases/tag/viem%402.58.4"
+    },
+    {
+      "id": "xiuqiu-radar:web3-erigon-touched-empty-account-versioned-writes",
+      "url": "https://xoqiu.cn/radar/2026-11-22#web3-erigon-touched-empty-account-versioned-writes",
+      "title": "Erigon 3.8.2：被清除的空账户，要作为删除写入并行执行状态",
+      "summary": "并行执行需要传播“某个对象被删除”这个事实，使抢先执行的后续交易重新验证。只过滤掉本交易的空写入，会漏掉一个原先存在的对象已被移除的信息。",
+      "content_text": "并行执行需要传播“某个对象被删除”这个事实，使抢先执行的后续交易重新验证。只过滤掉本交易的空写入，会漏掉一个原先存在的对象已被移除的信息。",
+      "date_published": "2026-11-22T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "onchain_infrastructure"
+      ],
+      "external_url": "https://github.com/erigontech/erigon/releases/tag/v3.8.2"
+    },
+    {
       "id": "xiuqiu-radar:ai-fastmcp-skill-manifest-byte-verification",
       "url": "https://xoqiu.cn/radar/2026-11-16#ai-fastmcp-skill-manifest-byte-verification",
       "title": "FastMCP4.2：读到Skill文件之后，先核对清单承诺的字节",
@@ -732,58 +784,6 @@
         "onchain_infrastructure"
       ],
       "external_url": "https://github.com/paradigmxyz/reth/releases/tag/v2.9.0"
-    },
-    {
-      "id": "xiuqiu-radar:ai-acr-method-diversity",
-      "url": "https://xoqiu.cn/radar/2026-10-30#ai-acr-method-diversity",
-      "title": "ACR：同一模型的四条轨迹，要分别核对解法与正确性",
-      "summary": "并行 Agent 数量增加，不自动带来独立证据。若要用多条轨迹降低同一种推理盲点，应同时记录不同方法的数量、每条轨迹的正确性与生成预算，避免只奖励措辞变化。",
-      "content_text": "并行 Agent 数量增加，不自动带来独立证据。若要用多条轨迹降低同一种推理盲点，应同时记录不同方法的数量、每条轨迹的正确性与生成预算，避免只奖励措辞变化。",
-      "date_published": "2026-10-30T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "model_inference"
-      ],
-      "external_url": "https://arxiv.org/abs/2610.37375"
-    },
-    {
-      "id": "xiuqiu-radar:ai-tao-tool-aware-admission",
-      "url": "https://xoqiu.cn/radar/2026-10-30#ai-tao-tool-aware-admission",
-      "title": "TAO：工具即将返回，才可能需要下一轮 GPU 准入",
-      "summary": "工具期间保留了多少上下文、何时再需要推理、目标节点还有多少容量，是不同观测。把这些量分开，才能解释调度是在利用真实缓存、预测短期需求，还是只在统计更大的会话。",
-      "content_text": "工具期间保留了多少上下文、何时再需要推理、目标节点还有多少容量，是不同观测。把这些量分开，才能解释调度是在利用真实缓存、预测短期需求，还是只在统计更大的会话。",
-      "date_published": "2026-10-30T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "infrastructure"
-      ],
-      "external_url": "https://arxiv.org/abs/2610.37230"
-    },
-    {
-      "id": "xiuqiu-radar:web3-viem-chain-scoped-config",
-      "url": "https://xoqiu.cn/radar/2026-10-30#web3-viem-chain-scoped-config",
-      "title": "viem 2.57.13：账户配置缓存要把链 ID 纳入键",
-      "summary": "账户地址相同不意味着配置可跨链共享。钱包与中继的缓存契约要同时说明命名空间、选中配置的链上依据和未命中时的行为，避免把缓存内容当成当前授权状态。",
-      "content_text": "账户地址相同不意味着配置可跨链共享。钱包与中继的缓存契约要同时说明命名空间、选中配置的链上依据和未命中时的行为，避免把缓存内容当成当前授权状态。",
-      "date_published": "2026-10-30T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "wallet_cex"
-      ],
-      "external_url": "https://github.com/wevm/viem/releases/tag/viem%402.57.13"
-    },
-    {
-      "id": "xiuqiu-radar:web3-agave-padded-vote-state",
-      "url": "https://xoqiu.cn/radar/2026-10-30#web3-agave-padded-vote-state",
-      "title": "Agave 4.4.0：先编码投票状态，再只补零尾部",
-      "summary": "降低重复内存写入时，仍需核对序列化输出的字节内容、长度及错误边界。把这些契约与部署建议分别检查，能避免将一个局部实现优化夸成整网性能或兼容性结论。",
-      "content_text": "降低重复内存写入时，仍需核对序列化输出的字节内容、长度及错误边界。把这些契约与部署建议分别检查，能避免将一个局部实现优化夸成整网性能或兼容性结论。",
-      "date_published": "2026-10-30T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "onchain_infrastructure"
-      ],
-      "external_url": "https://github.com/anza-xyz/agave/releases/tag/v4.4.0"
     }
   ]
 }
