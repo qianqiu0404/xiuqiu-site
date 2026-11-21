@@ -5,6 +5,69 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "learning:ai-fastmcp-oauth-single-use-redemption",
+    "kind": "learning",
+    "date": "2026-11-22",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "FastMCP 4.2.4：一次性令牌的并发兑换，由真正删除记录的请求胜出",
+    "summary": "Agent 连接 MCP 服务时，一次登录或一次刷新会跨越多份状态。仅检查先前读到的记录无法决定谁取得了这次消费权；签发路径需要保存可竞争、可核对的单次消费结果。",
+    "href": "/radar/2026-11-22#ai-fastmcp-oauth-single-use-redemption",
+    "source": {
+      "name": "v4.2.4: Burn After Reading",
+      "tier": "tier1",
+      "url": "https://github.com/PrefectHQ/fastmcp/releases/tag/v4.2.4"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "learning:ai-agents-codex-provider-thread-history",
+    "kind": "learning",
+    "date": "2026-11-22",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "Agents SDK 1.0 alpha：复用 Codex 运行服务，每次模型调用仍创建新线程",
+    "summary": "把 Agent 切到另一推理后端时，连接复用、对话保存与任务恢复分别需要明确的负责人。这里由 Runner 提供历史和执行 SDK 工具，应用负责 provider 生命周期，能让资源回收与多轮行为的证据对应到具体层。",
+    "href": "/radar/2026-11-22#ai-agents-codex-provider-thread-history",
+    "source": {
+      "name": "Agents SDK v1.0.0-alpha.1",
+      "tier": "tier1",
+      "url": "https://github.com/openai/openai-agents-python/releases/tag/v1.0.0-alpha.1"
+    }
+  },
+  {
+    "id": "learning:web3-viem-op-portal-current-factory",
+    "kind": "learning",
+    "date": "2026-11-22",
+    "domain": "web3",
+    "topic": "l2",
+    "title": "viem 2.58.4：OP Stack 提款查询，先向 portal 读取当前争议工厂",
+    "summary": "协议升级后，客户端随包附带的地址可能落后于合约实际接受的依赖。以执行入口当前指向的工厂作为默认发现依据，可减少从旧工厂选游戏而无法推进提款流程的情况。",
+    "href": "/radar/2026-11-22#web3-viem-op-portal-current-factory",
+    "source": {
+      "name": "viem@2.58.4",
+      "tier": "tier1",
+      "url": "https://github.com/wevm/viem/releases/tag/viem%402.58.4"
+    }
+  },
+  {
+    "id": "learning:web3-erigon-touched-empty-account-versioned-writes",
+    "kind": "learning",
+    "date": "2026-11-22",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "Erigon 3.8.2：被清除的空账户，要作为删除写入并行执行状态",
+    "summary": "并行执行需要传播“某个对象被删除”这个事实，使抢先执行的后续交易重新验证。只过滤掉本交易的空写入，会漏掉一个原先存在的对象已被移除的信息。",
+    "href": "/radar/2026-11-22#web3-erigon-touched-empty-account-versioned-writes",
+    "source": {
+      "name": "v3.8.2",
+      "tier": "tier1",
+      "url": "https://github.com/erigontech/erigon/releases/tag/v3.8.2"
+    }
+  },
+  {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
     "date": "2026-11-16",

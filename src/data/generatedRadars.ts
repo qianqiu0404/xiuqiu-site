@@ -12,6 +12,48 @@ export interface RadarIndexEntry { date: string; slug: string; snapshotId: strin
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-11-22",
+    "slug": "2026-11-22",
+    "snapshotId": "learning-2026-11-22-c5cb7c61c06307a0",
+    "asOf": "2026-11-21T21:43:31.997Z",
+    "title": "学习雷达 · 2026-11-22",
+    "summary": "一次性令牌的消费权、Codex provider 的线程与历史、OP Stack 当前工厂发现，以及并行执行的显式删除。本期为自动汇总，未经人工复核。",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "briefs": [
+      {
+        "id": "ai-fastmcp-oauth-single-use-redemption",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "FastMCP 4.2.4：一次性令牌的并发兑换，由真正删除记录的请求胜出"
+      },
+      {
+        "id": "ai-agents-codex-provider-thread-history",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "Agents SDK 1.0 alpha：复用 Codex 运行服务，每次模型调用仍创建新线程"
+      },
+      {
+        "id": "web3-viem-op-portal-current-factory",
+        "domain": "web3",
+        "topic": "l2",
+        "title": "viem 2.58.4：OP Stack 提款查询，先向 portal 读取当前争议工厂"
+      },
+      {
+        "id": "web3-erigon-touched-empty-account-versioned-writes",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Erigon 3.8.2：被清除的空账户，要作为删除写入并行执行状态"
+      }
+    ],
+    "deepDive": {
+      "id": "deep-fastmcp-local-consumption-after-upstream-refresh",
+      "title": "专题：上游刷新成功后，本地刷新令牌为何还要竞争一次消费权？",
+      "basedOnBriefId": "ai-fastmcp-oauth-single-use-redemption"
+    },
+    "marketSignals": []
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "snapshotId": "learning-2026-11-16-20147f94783c1b8e",
@@ -1992,6 +2034,341 @@ export const radarIndex: RadarIndexEntry[] = [
 ]
 
 export const latestRadars: DailyRadar[] = [
+  {
+    "date": "2026-11-22",
+    "slug": "2026-11-22",
+    "title": "学习雷达 · 2026-11-22",
+    "summary": "一次性令牌的消费权、Codex provider 的线程与历史、OP Stack 当前工厂发现，以及并行执行的显式删除。本期为自动汇总，未经人工复核。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-11-21T21:43:31.997Z",
+    "generatedAt": "2026-11-21T21:43:31.997Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-fastmcp-oauth-single-use-redemption",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "FastMCP 4.2.4：一次性令牌的并发兑换，由真正删除记录的请求胜出",
+        "whatHappened": "FastMCP 于 11 月 21 日（UTC）发布 4.2.4，并公开 GHSA-78c8-3jhx-5mg7。公告将 OAuthProxy 并发重复兑换的影响范围列为 2.13.0 至 4.2.3：同一授权码可能换出两个独立会话，同一刷新令牌也可能产生两个后继令牌。",
+        "mechanism": "修复保留读取与校验，但要求存储 delete 返回本次确实移除了记录，才签发令牌；并发竞争失败者收到 invalid_grant。授权码在签发前消费；刷新令牌则等上游刷新与 claims 提取成功、保存上游状态后，再竞争消费本地记录。跨副本成立依赖共享存储提供原子的删除结果。",
+        "workedExample": "固定单元回归用 barrier 让两次授权码请求都先读到同一记录，断言只签发一次，另一请求报 invalid_grant。刷新回归让不轮换令牌的 mock 上游同时返回成功，仍只允许一个本地后继令牌可用。本期只读实现和断言，未运行上游测试或真实 OAuth 请求。",
+        "whyItMatters": "Agent 连接 MCP 服务时，一次登录或一次刷新会跨越多份状态。仅检查先前读到的记录无法决定谁取得了这次消费权；签发路径需要保存可竞争、可核对的单次消费结果。",
+        "risksAndLimits": [
+          "公告评级为 Medium，CVSS 4.8；它描述的攻击需要已有授权码及对应 PKCE verifier，或取得刷新令牌，修复不授予额外 scopes。",
+          "本地只有一个后继令牌，并不限制上游刷新请求只发生一次；本期没有验证自定义存储的原子性、分布式部署或实际登录恢复。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "v4.2.4: Burn After Reading",
+            "url": "https://github.com/PrefectHQ/fastmcp/releases/tag/v4.2.4",
+            "publishedAt": "2026-11-21T05:24:22.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_security_advisory",
+            "name": "OAuthProxy concurrent single-use redemption GHSA-78c8-3jhx-5mg7",
+            "url": "https://github.com/PrefectHQ/fastmcp/security/advisories/GHSA-78c8-3jhx-5mg7",
+            "publishedAt": "2026-11-21T05:31:47.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Single-use authorization and refresh token redemption",
+            "url": "https://github.com/PrefectHQ/fastmcp/pull/6614"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Consume the stored record before issuing successor tokens",
+            "url": "https://github.com/PrefectHQ/fastmcp/blob/5ac27a2c6e0c31adf3bbc0ac46704ab0279902f9/fastmcp_slim/fastmcp/server/auth/oauth_proxy/proxy.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Barrier-based concurrent redemption and retry assertions",
+            "url": "https://github.com/PrefectHQ/fastmcp/blob/5ac27a2c6e0c31adf3bbc0ac46704ab0279902f9/tests/server/auth/oauth_proxy/test_single_use.py"
+          }
+        ],
+        "nextQuestions": [
+          "共享存储能否把“这次确实删除成功”作为唯一签发依据，并分别覆盖并发、失败重试与已消费后的请求？"
+        ]
+      },
+      {
+        "id": "ai-agents-codex-provider-thread-history",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "Agents SDK 1.0 alpha：复用 Codex 运行服务，每次模型调用仍创建新线程",
+        "whatHappened": "OpenAI 于 11 月 20 日（UTC）发布 Python Agents SDK v1.0.0-alpha.1，首次预览可选的 CodexProvider。制品来自 feat/simple-codex 分支，通过 GitHub Release 的预编译 wheel 提供；Python Runner 继续管理工具、交接、审批和会话历史。",
+        "mechanism": "provider 延迟创建并缓存原生 manager，每次模型请求调用 start_thread；SDK 把该次历史注入新线程，模型调用结束在 finally 中关闭线程，应用结束再 aclose provider。复用的是底层服务；跨轮上下文由 SDK session 或显式输入历史保存。",
+        "workedExample": "固定 mock 回归先返回一轮结果，再把 to_input_list 加上新问题送入另一条 FakeThread，断言两条线程不同、第二条收到前轮历史且两条都关闭。另一个回归复用同一 provider 同时跑两条线程，取消其中一条后另一条仍完成，manager 只创建一次。本期没有安装 wheel、调用模型或运行这些测试。",
+        "whyItMatters": "把 Agent 切到另一推理后端时，连接复用、对话保存与任务恢复分别需要明确的负责人。这里由 Runner 提供历史和执行 SDK 工具，应用负责 provider 生命周期，能让资源回收与多轮行为的证据对应到具体层。",
+        "risksAndLimits": [
+          "这是预览版本，不代表本机已经接入，也不建立官方桌面 App 会话续聊；Codex 本地 turn ID 不能作为服务端 Responses ID 使用。",
+          "原生 Codex 命令与 SDK 工具使用不同审批路径；原生审批请求会使模型调用失败，取消或 guardrail 不回滚已经发生的工具副作用。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Agents SDK v1.0.0-alpha.1",
+            "url": "https://github.com/openai/openai-agents-python/releases/tag/v1.0.0-alpha.1",
+            "publishedAt": "2026-11-20T20:51:28.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Embedded Codex Core provider preview",
+            "url": "https://github.com/openai/openai-agents-python/pull/6111"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Provider lifecycle, SDK history and execution boundaries",
+            "url": "https://github.com/openai/openai-agents-python/blob/87e8f533c3b457fe632a5eb38ac42590d7f4d9fc/docs/models/codex.md"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Cached native manager and ephemeral thread cleanup",
+            "url": "https://github.com/openai/openai-agents-python/blob/87e8f533c3b457fe632a5eb38ac42590d7f4d9fc/src/agents/models/codex.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Native manager starts a new Core thread for each request",
+            "url": "https://github.com/openai/openai-agents-python/blob/87e8f533c3b457fe632a5eb38ac42590d7f4d9fc/native/codex/src/lib.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Mock thread history, tool ownership and cancellation assertions",
+            "url": "https://github.com/openai/openai-agents-python/blob/87e8f533c3b457fe632a5eb38ac42590d7f4d9fc/tests/models/test_codex_provider.py"
+          }
+        ],
+        "nextQuestions": [
+          "恢复一次暂停的 SDK 任务时，历史、工具审批与底层运行资源分别由哪一份状态承接？"
+        ]
+      },
+      {
+        "id": "web3-viem-op-portal-current-factory",
+        "domain": "web3",
+        "topic": "l2",
+        "title": "viem 2.58.4：OP Stack 提款查询，先向 portal 读取当前争议工厂",
+        "whatHappened": "viem 于 11 月 21 日（UTC）发布 2.58.4，收录 PR5625。面向 OP Stack Lagoon 的共享争议工厂迁移，getGames 默认改从 portal 读取 disputeGameFactory，供提款状态与证明等待等上层操作使用。",
+        "mechanism": "调用者显式指定 factory 时仍优先采用该值；否则以 client.uid 与 portal 地址组成缓存键，调用 portal 的 disputeGameFactory，再读取 gameCount、respectedGameType 与游戏。固定实现把缓存年龄按毫秒比较，cacheTime 为 300，即 300ms。",
+        "workedExample": "固定回归在 fork 区块 26430000 上，先用显式 portal 与 factory 得到期望游戏集合，再分别移除链定义的 factory、放入另一条链的旧 factory，断言两次默认查询仍返回相同结果。本期只读测试配置与断言，没有连接 fork RPC、构建提款证明或发交易。",
+        "whyItMatters": "协议升级后，客户端随包附带的地址可能落后于合约实际接受的依赖。以执行入口当前指向的工厂作为默认发现依据，可减少从旧工厂选游戏而无法推进提款流程的情况。",
+        "risksAndLimits": [
+          "PR 说明写 cached 300s，与固定实现的毫秒计算不一致；本期按代码记录 300ms。显式 override 会绕过这项默认发现，仍需由调用者核对。",
+          "回归用另一条链的地址模拟过期配置，未证明已激活共享工厂的真实网络完成提款；新工厂查询也不覆盖提款成熟期、争议结果或资金执行安全。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "viem@2.58.4",
+            "url": "https://github.com/wevm/viem/releases/tag/viem%402.58.4",
+            "publishedAt": "2026-11-21T00:49:53.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Read the dispute factory from the portal for Lagoon",
+            "url": "https://github.com/wevm/viem/pull/5625"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Portal factory lookup with explicit override",
+            "url": "https://github.com/wevm/viem/blob/2450e26872b47aac7dc9f098298c04d2e8d4f374/src/op-stack/actions/getGames.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Missing and stale chain factory regression assertions",
+            "url": "https://github.com/wevm/viem/blob/2450e26872b47aac7dc9f098298c04d2e8d4f374/src/op-stack/actions/getGames.test.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Cache age measured in milliseconds",
+            "url": "https://github.com/wevm/viem/blob/2450e26872b47aac7dc9f098298c04d2e8d4f374/src/utils/promise/withCache.ts"
+          }
+        ],
+        "nextQuestions": [
+          "迁移前后的 portal 当前依赖与本地显式覆盖，能否分别进入集成验收，避免依赖地址只随版本静态更新？"
+        ]
+      },
+      {
+        "id": "web3-erigon-touched-empty-account-versioned-writes",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Erigon 3.8.2：被清除的空账户，要作为删除写入并行执行状态",
+        "whatHappened": "Erigon 于 11 月 19 日（UTC）发布 3.8.2，包含发布分支 PR25375 的修复：某笔交易触及带 storage 的空账户，后续同块交易再给它入金时，旧并行路径可能以状态根错误拒绝串行路径接受的区块。该 PR 于 10 月 26 日合入，发布日期与合入日期分别保留。",
+        "mechanism": "FinalizedWrites 按 EIP-161 对交易前存在、交易后余额与 nonce 为零且无 code 的被触及账户，写入删除及 incarnation 变化。后续交易读取会看到账户不存在；已提前读取旧存在状态的交易必须失效。原先不存在且仍为空的账户，继续只省略其空写入。",
+        "workedExample": "固定状态单元回归让后续交易先读到存在，再提交较早交易的零值触及，断言新的读取为不存在且旧读取版本无效。区块回归在自定义 genesis 放入仅有 storage 的账户，依次转入 0 和 1，断言串行与版本化执行状态根一致，并可按串行及并行模式导入。本期未运行节点或上游测试。",
+        "whyItMatters": "并行执行需要传播“某个对象被删除”这个事实，使抢先执行的后续交易重新验证。只过滤掉本交易的空写入，会漏掉一个原先存在的对象已被移除的信息。",
+        "risksAndLimits": [
+          "PR 明确说明以太坊主网没有这一类 storage-only 空账户，带此类 genesis 分配的定制链可能遇到；不能把该回归扩写成主网已经发生此故障。",
+          "规则受 EIP-161 激活与 AuRa 系统地址例外约束，延后领取费用的地址也单独处理；本文只分析该修复，不概括该版本其他性能或安全项目。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "v3.8.2",
+            "url": "https://github.com/erigontech/erigon/releases/tag/v3.8.2",
+            "publishedAt": "2026-11-19T13:33:00.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Touched empty account removal in release 3.8",
+            "url": "https://github.com/erigontech/erigon/pull/25375"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "EIP-161 deletion and incarnation writes",
+            "url": "https://github.com/erigontech/erigon/blob/8a3f3b2c7a34429f101e9a9d05b861120c8e4d77/execution/state/intra_block_state.go"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Later reads invalidated after a touched empty account is removed",
+            "url": "https://github.com/erigontech/erigon/blob/8a3f3b2c7a34429f101e9a9d05b861120c8e4d77/execution/state/created_empty_versioned_test.go"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Storage-only genesis account serial and parallel root assertions",
+            "url": "https://github.com/erigontech/erigon/blob/8a3f3b2c7a34429f101e9a9d05b861120c8e4d77/execution/tests/eip161_touched_empty_authority_test.go"
+          }
+        ],
+        "nextQuestions": [
+          "哪些状态变化必须写成显式删除，才能让后续已投机读取的交易正确失效并重放？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-fastmcp-local-consumption-after-upstream-refresh",
+      "domain": "ai",
+      "topic": "safety",
+      "title": "专题：上游刷新成功后，本地刷新令牌为何还要竞争一次消费权？",
+      "whatHappened": "FastMCP 11 月 21 日的 OAuthProxy 修复，同时约束授权码和本地刷新令牌的单次使用。刷新路径还要保留失败后的恢复能力：临时上游错误或 claims 提取失败时，本次没有签发后继令牌，原本的本地令牌仍可重试。",
+      "mechanism": "代码先验证本地刷新 JWT，按 JTI 找到上游令牌并发起刷新；再更新和保存上游状态，随后用本地刷新令牌摘要竞争删除元数据。只有删除成功者签发新 access 与 refresh JWT、写入新映射并删除旧 refresh JTI。上游状态已推进和本地消费权到手，是两个按顺序核对的事实。",
+      "workedExample": "回归一让两个请求都在不轮换 refresh token 的 mock 上游 barrier 汇合，断言一个本地签发成功，另一个 invalid_grant，赢家的新令牌可加载、旧令牌不可加载。回归二让上游报 temporarily_unavailable，断言旧元数据仍在，随后重试可得到新令牌。回归三让 claims hook 报错，仍能加载原本的本地刷新令牌。以上是实际阅读到的断言，未在本机执行。",
+      "whyItMatters": "若在上游调用前就消费本地令牌，瞬时失败会失去可继续使用的凭据；若完全不竞争消费，两个并发请求又可能留下两个独立后继。把消费放在签发前、可恢复步骤之后，明确了这里保障的边界。把同一思路用于 Agent 的一次授权时，也应逐步记录请求、外部结果和本地状态，而非只存一个“成功”。",
+      "risksAndLimits": [
+        "这里保证的是以存储删除结果控制本地后继签发；两个上游刷新请求仍可能都已发送。它不是跨 IdP 与本地存储的分布式事务，也没有给外部副作用提供恰好一次承诺。",
+        "删除元数据与后续多次写入不是同一原子事务；进程在消费后、签发或保存完成前退出的恢复，不由这些回归证明。本期也未运行多副本存储或真实 IdP 故障演练。",
+        "自定义存储必须提供可信的单次删除结果；测试的 barrier 和 mock 证明的是预设并发交错下的断言，不能代替实际后端的并发契约验证。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "v4.2.4: Burn After Reading",
+          "url": "https://github.com/PrefectHQ/fastmcp/releases/tag/v4.2.4",
+          "publishedAt": "2026-11-21T05:24:22.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_security_advisory",
+          "name": "OAuthProxy concurrent single-use redemption GHSA-78c8-3jhx-5mg7",
+          "url": "https://github.com/PrefectHQ/fastmcp/security/advisories/GHSA-78c8-3jhx-5mg7",
+          "publishedAt": "2026-11-21T05:31:47.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "Single-use authorization and refresh token redemption",
+          "url": "https://github.com/PrefectHQ/fastmcp/pull/6614"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Consume the stored record before issuing successor tokens",
+          "url": "https://github.com/PrefectHQ/fastmcp/blob/5ac27a2c6e0c31adf3bbc0ac46704ab0279902f9/fastmcp_slim/fastmcp/server/auth/oauth_proxy/proxy.py"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Barrier-based concurrent redemption and retry assertions",
+          "url": "https://github.com/PrefectHQ/fastmcp/blob/5ac27a2c6e0c31adf3bbc0ac46704ab0279902f9/tests/server/auth/oauth_proxy/test_single_use.py"
+        }
+      ],
+      "nextQuestions": [
+        "能否分别定位“上游已刷新”“本地已消费”“后继已存储”和“客户端已收到”，并为每个中断点定义可核对的恢复行为？"
+      ],
+      "basedOnBriefId": "ai-fastmcp-oauth-single-use-redemption"
+    },
+    "sourceUrls": [
+      "https://github.com/PrefectHQ/fastmcp/releases/tag/v4.2.4",
+      "https://github.com/PrefectHQ/fastmcp/security/advisories/GHSA-78c8-3jhx-5mg7",
+      "https://github.com/PrefectHQ/fastmcp/pull/6614",
+      "https://github.com/PrefectHQ/fastmcp/blob/5ac27a2c6e0c31adf3bbc0ac46704ab0279902f9/fastmcp_slim/fastmcp/server/auth/oauth_proxy/proxy.py",
+      "https://github.com/PrefectHQ/fastmcp/blob/5ac27a2c6e0c31adf3bbc0ac46704ab0279902f9/tests/server/auth/oauth_proxy/test_single_use.py",
+      "https://github.com/openai/openai-agents-python/releases/tag/v1.0.0-alpha.1",
+      "https://github.com/openai/openai-agents-python/pull/6111",
+      "https://github.com/openai/openai-agents-python/blob/87e8f533c3b457fe632a5eb38ac42590d7f4d9fc/docs/models/codex.md",
+      "https://github.com/openai/openai-agents-python/blob/87e8f533c3b457fe632a5eb38ac42590d7f4d9fc/src/agents/models/codex.py",
+      "https://github.com/openai/openai-agents-python/blob/87e8f533c3b457fe632a5eb38ac42590d7f4d9fc/native/codex/src/lib.rs",
+      "https://github.com/openai/openai-agents-python/blob/87e8f533c3b457fe632a5eb38ac42590d7f4d9fc/tests/models/test_codex_provider.py",
+      "https://github.com/wevm/viem/releases/tag/viem%402.58.4",
+      "https://github.com/wevm/viem/pull/5625",
+      "https://github.com/wevm/viem/blob/2450e26872b47aac7dc9f098298c04d2e8d4f374/src/op-stack/actions/getGames.ts",
+      "https://github.com/wevm/viem/blob/2450e26872b47aac7dc9f098298c04d2e8d4f374/src/op-stack/actions/getGames.test.ts",
+      "https://github.com/wevm/viem/blob/2450e26872b47aac7dc9f098298c04d2e8d4f374/src/utils/promise/withCache.ts",
+      "https://github.com/erigontech/erigon/releases/tag/v3.8.2",
+      "https://github.com/erigontech/erigon/pull/25375",
+      "https://github.com/erigontech/erigon/blob/8a3f3b2c7a34429f101e9a9d05b861120c8e4d77/execution/state/intra_block_state.go",
+      "https://github.com/erigontech/erigon/blob/8a3f3b2c7a34429f101e9a9d05b861120c8e4d77/execution/state/created_empty_versioned_test.go",
+      "https://github.com/erigontech/erigon/blob/8a3f3b2c7a34429f101e9a9d05b861120c8e4d77/execution/tests/eip161_touched_empty_authority_test.go"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-11-22-c5cb7c61c06307a0",
+    "asOf": "2026-11-21T21:43:31.997Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
   {
     "date": "2026-11-16",
     "slug": "2026-11-16",
@@ -3981,293 +4358,6 @@ export const latestRadars: DailyRadar[] = [
     "marketSignals": [],
     "snapshotId": "learning-2026-11-11-3323ecfb854f3355",
     "asOf": "2026-11-10T21:38:26.706Z",
-    "origin": "research",
-    "publicationState": "published"
-  },
-  {
-    "date": "2026-11-09",
-    "slug": "2026-11-09",
-    "title": "学习雷达 · 2026-11-09",
-    "summary": "AI看遥测跨层前的URL净化与当前模型预算；Web3看HTTP批次配置归属与对象资金执行期失败。补读尚未覆盖的固定发布快照，保留原日期；专题核对观察者接收数据的时点。",
-    "publish": true,
-    "reviewStatus": "automated",
-    "schemaVersion": 2,
-    "editionMode": "daily",
-    "researchedAt": "2026-11-08T21:37:39.755Z",
-    "generatedAt": "2026-11-08T21:37:39.755Z",
-    "sourceSections": [
-      "ai",
-      "web3",
-      "deepDive"
-    ],
-    "missingSections": [],
-    "briefs": [
-      {
-        "id": "ai-sdk-telemetry-url-boundary",
-        "domain": "ai",
-        "topic": "safety",
-        "title": "AI SDK 7.0.165：遥测拿到模型结果之前，先缩减请求 URL",
-        "whatHappened": "AI SDK于11月7日（UTC）发布7.0.165：generateText与streamText此前虽已缩减公开结果URL，遥测integration和tracing subscriber仍可能更早看到原始端点。",
-        "mechanism": "provider回调返回前复制结果并净化request.url：HTTP(S)仅留origin，无效或非HTTP(S)地址省略url。用户信息、路径、query、fragment被去掉；body等元数据保留，原provider对象不变。",
-        "workedExample": "上游mock在两个观察者接收时即时复制request，检查URL净化及原对象未变。本期只读断言，未运行模型或本地复现。",
-        "whyItMatters": "最终输出不能覆盖更早的观察者；应逐接收者核对字段与脱敏时点。",
-        "risksAndLimits": [
-          "仅修两条文本生成路径的URL元数据，不保证headers、body、业务日志或WorkflowAgent安全。",
-          "origin仍暴露主机与端口；本期未验证生产部署或过去数据的撤回。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "AI SDK release",
-            "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-            "publishedAt": "2026-11-07T19:27:48.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR24708",
-            "url": "https://github.com/vercel/ai/pull/24708"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "generateText boundary",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/generate-text.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "URL sanitizer",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/get-request-origin.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "Immediate tracing tests",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts"
-          }
-        ],
-        "nextQuestions": [
-          "接收者的字段范围与脱敏时点如何分别核验？"
-        ]
-      },
-      {
-        "id": "ai-deepagents-selected-model-budget",
-        "domain": "ai",
-        "topic": "infrastructure",
-        "title": "deepagents-code 0.2.5：压缩输入预算跟随当前选定模型",
-        "whatHappened": "0.2.5于11月5日（UTC）发布，修复切换模型仍按启动模型判断压缩的问题，与已刊摘要截点修复不同。",
-        "mechanism": "同步/异步用临时请求核算选定模型与运行期settings的预算；交给handler前恢复原model/settings，让下游中间件继续真正选择模型。",
-        "workedExample": "上游mock矩阵：启动128K转32K，26K输入加8K输出预留需压缩，改2K则不压缩；还检查下游与原请求。本期只读，未运行模型/测试。",
-        "whyItMatters": "切换模型也改变预算；预算准备和最终执行要分开核验，保留下游配置。",
-        "risksAndLimits": [
-          "数字是上游合成断言，不是本期实测窗口、精确token数或延迟收益；provider限制仍需另验。",
-          "预算依据主模型，摘要生成可另选模型；不证明摘要完整或会话恢复正确。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "deepagents-code release",
-            "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5",
-            "publishedAt": "2026-11-05T21:41:43.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR7545",
-            "url": "https://github.com/langchain-ai/deepagents/pull/7545"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Budget request code",
-            "url": "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/deepagents_code/offload_middleware.py"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "Budget matrix tests",
-            "url": "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/tests/unit_tests/test_compact_tool.py"
-          }
-        ],
-        "nextQuestions": [
-          "预算来自当前配置，最终模型选择是否仍走原流程？"
-        ]
-      },
-      {
-        "id": "web3-viem-http-batch-factory-identity",
-        "domain": "web3",
-        "topic": "onchain_infrastructure",
-        "title": "viem 2.57.17：同一 RPC URL，不再把不同 transport 的批次混用",
-        "whatHappened": "viem于11月8日（UTC）发布2.57.17，修复同URL下独立HTTP工厂合批时混用鉴权头与fetch配置的问题。",
-        "mechanism": "调度键组合稳定工厂batchId、实际URL和AbortSignal身份。ID位于initializer外，fallback重初始化同工厂仍合批；独立工厂保留各自RPC配置。",
-        "workedExample": "上游本地鉴权A/B返回1和10，覆盖直接/fallback分离、同工厂共享与URL/signal分离。本期只读，未连RPC或发交易。",
-        "whyItMatters": "相同地址不等于同一调用者；批处理仍需保持鉴权配置和响应归属。",
-        "risksAndLimits": [
-          "这是工厂批次隔离，不是租户认证、链ID校验或WebSocket订阅路由；1和10为本地测试值。",
-          "相同配置的独立工厂也不自动合批；共享需复用工厂并审查配置，不表示写请求可安全重试。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "viem release",
-            "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.17",
-            "publishedAt": "2026-11-08T18:04:10.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR5389",
-            "url": "https://github.com/wevm/viem/pull/5389"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "HTTP factory code",
-            "url": "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "HTTP batch tests",
-            "url": "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.test.ts"
-          }
-        ],
-        "nextQuestions": [
-          "哪些客户端应共享工厂，如何核验配置归属？"
-        ]
-      },
-      {
-        "id": "web3-sui-object-funds-execution-abort",
-        "domain": "web3",
-        "topic": "protocol",
-        "title": "Sui mainnet 1.83.1：对象资金不足，在执行期间形成 Move abort",
-        "whatHappened": "Sui于11月4日（UTC）发布mainnet1.83.1，其protocol140配置让对象资金不足在执行期abort，替代旧检查/重执行。PR于10月20日合入，非当天首创。",
-        "mechanism": "版本化设计先看交易内owner/type余额；不足时按所需accumulator版本读取已结算余额、扣除同commit未结算提款。仍不足则abort；地址调度独立。",
-        "workedExample": "文档中dry-run/孤立replay缺少同commit未结算视图，可能成功而提交执行不足失败。本期只读配置/设计，未运行节点、模拟、回放或资金操作。",
-        "whyItMatters": "模拟成功不能代替执行回执；应区分状态视图、失败阶段与错误类型。",
-        "risksAndLimits": [
-          "对象虚拟余额不足形成Move abort；地址资金执行前调度仍可返回InsufficientFundsForWithdraw。",
-          "文档说明已执行失败可正常收gas；未验证真实主网部署、账户余额或资金安全，孤立replay差异另项追踪。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "Sui mainnet release",
-            "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1",
-            "publishedAt": "2026-11-04T20:01:16.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR28290",
-            "url": "https://github.com/MystenLabs/sui/pull/28290"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Protocol140 config",
-            "url": "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-protocol-config/src/lib.rs"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_design",
-            "name": "Object funds design",
-            "url": "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-core/src/accumulators/design_docs/object_funds_in_execution.md"
-          }
-        ],
-        "nextQuestions": [
-          "三种视图的版本、扣减及对象/地址错误如何分别识别？"
-        ]
-      }
-    ],
-    "deepDive": {
-      "id": "deep-telemetry-observer-sanitization-order",
-      "domain": "ai",
-      "topic": "safety",
-      "title": "专题：最终结果已脱敏，为什么中途观察者仍可能看到原值",
-      "whatHappened": "7.0.165把URL净化前移至provider回调返回前；遥测integration/tracing不再早于公开API看到这一路径的原始request.url。",
-      "mechanism": "只在外层净化时，包装器await execute()后会先见原request。现在生成/流式启动先返回净化元数据，再入遥测；实际请求端点不变。",
-      "workedExample": "上游在integration/asyncEnd即时复制request，避免结束后只查可变引用；还冻结并检查原对象。本期只读，未运行模型或复现。",
-      "whyItMatters": "编辑推论：跨观察边界前处理并逐接收者留证，最终输出只证明自身。",
-      "risksAndLimits": [
-        "未审查全部sink、WorkflowAgent或业务日志；保留的body/其他元数据仍可能有敏感内容，URL净化不是全量隐私保证。",
-        "代码断言不证明已部署、已清理历史遥测或撤回已发送数据。"
-      ],
-      "sources": [
-        {
-          "tier": "tier1",
-          "role": "event",
-          "kind": "official_release",
-          "name": "AI SDK release",
-          "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-          "publishedAt": "2026-11-07T19:27:48.000Z"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_code",
-          "name": "streamText boundary",
-          "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/stream-language-model-call.ts"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_test",
-          "name": "Immediate tracing tests",
-          "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts"
-        }
-      ],
-      "nextQuestions": [
-        "即时接收的字段、处理时点与保留规则是否有证据？"
-      ],
-      "basedOnBriefId": "ai-sdk-telemetry-url-boundary"
-    },
-    "sourceUrls": [
-      "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-      "https://github.com/vercel/ai/pull/24708",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/generate-text.ts",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/get-request-origin.ts",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts",
-      "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5",
-      "https://github.com/langchain-ai/deepagents/pull/7545",
-      "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/deepagents_code/offload_middleware.py",
-      "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/tests/unit_tests/test_compact_tool.py",
-      "https://github.com/wevm/viem/releases/tag/viem%402.57.17",
-      "https://github.com/wevm/viem/pull/5389",
-      "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.ts",
-      "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.test.ts",
-      "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1",
-      "https://github.com/MystenLabs/sui/pull/28290",
-      "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-protocol-config/src/lib.rs",
-      "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-core/src/accumulators/design_docs/object_funds_in_execution.md",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/stream-language-model-call.ts"
-    ],
-    "relatedProjectSlugs": [],
-    "marketSignals": [],
-    "snapshotId": "learning-2026-11-09-bd83a5cc7fff3983",
-    "asOf": "2026-11-08T21:37:39.755Z",
     "origin": "research",
     "publicationState": "published"
   }
