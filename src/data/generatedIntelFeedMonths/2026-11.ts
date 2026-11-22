@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-11-23:sse-margin-floor-existing-contract-option-2026-11-22",
+    "kind": "market",
+    "date": "2026-11-23",
+    "domain": "market",
+    "topic": "market_regulation",
+    "title": "上交所融资保证金下限80%：11月30日施行，存量调整有条件",
+    "summary": "研究推断：保证金下限变化可能经券商实际适用比例、授信约束和客户融资需求，影响可用融资空间及交易活动。下限放宽属于制度条件，不证明已形成新增融资、资金流入或资产价格变化；异常交易的约束仍可限制这一传导。",
+    "href": "/market-radar/2026-11-23#sse-margin-floor-existing-contract-option-2026-11-22",
+    "source": {
+      "name": "上海证券交易所—关于调整融资保证金比例等相关安排的通知（上证发〔2026〕108号）",
+      "url": "https://www.sse.com.cn/lawandrules/sselawsrules2025/trade/specific/margin/c/c_20261122_10838633.shtml"
+    },
+    "flags": {
+      "priority": "P2"
+    }
+  },
+  {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
     "date": "2026-11-16",
