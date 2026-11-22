@@ -12,6 +12,48 @@ export interface RadarIndexEntry { date: string; slug: string; snapshotId: strin
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-11-23",
+    "slug": "2026-11-23",
+    "snapshotId": "learning-2026-11-23-547c9f67385c8add",
+    "asOf": "2026-11-22T21:31:47.432Z",
+    "title": "学习雷达 · 2026-11-23",
+    "summary": "本期为自动汇总，未经人工复核。循环模型的参数与状态、非文本流的恢复边界、trace原始字节脱敏，以及条件交易的节点本地准入。",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "briefs": [
+      {
+        "id": "ai-transformers-inkling-loop-visit-cache",
+        "domain": "ai",
+        "topic": "model_inference",
+        "title": "Transformers 5.24：同一组 Inkling 层反复计算，每轮仍有自己的缓存"
+      },
+      {
+        "id": "ai-litellm-nontext-output-fresh-fallback",
+        "domain": "ai",
+        "topic": "infrastructure",
+        "title": "LiteLLM 1.110.2：推理事件已经出流，失败后不能重新拼入另一份回答"
+      },
+      {
+        "id": "web3-foundry-json-raw-cheatcode-redaction",
+        "domain": "web3",
+        "topic": "security",
+        "title": "Foundry 11月22日 nightly：JSON里的原始cheatcode字节，也要遵守脱敏规则"
+      },
+      {
+        "id": "web3-nitro-conditional-publish-admission",
+        "domain": "web3",
+        "topic": "l2",
+        "title": "Nitro 3.12.4：条件交易在节点内发布未返回时，先占住一个准入名额"
+      }
+    ],
+    "deepDive": {
+      "id": "deep-loop-weight-sharing-state-identity",
+      "title": "专题：权重重复使用，为什么同一物理层仍需要多份缓存？",
+      "basedOnBriefId": "ai-transformers-inkling-loop-visit-cache"
+    },
+    "marketSignals": []
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "snapshotId": "learning-2026-11-16-20147f94783c1b8e",
@@ -1992,6 +2034,378 @@ export const radarIndex: RadarIndexEntry[] = [
 ]
 
 export const latestRadars: DailyRadar[] = [
+  {
+    "date": "2026-11-23",
+    "slug": "2026-11-23",
+    "title": "学习雷达 · 2026-11-23",
+    "summary": "本期为自动汇总，未经人工复核。循环模型的参数与状态、非文本流的恢复边界、trace原始字节脱敏，以及条件交易的节点本地准入。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-11-22T21:31:47.432Z",
+    "generatedAt": "2026-11-22T21:31:47.432Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-transformers-inkling-loop-visit-cache",
+        "domain": "ai",
+        "topic": "model_inference",
+        "title": "Transformers 5.24：同一组 Inkling 层反复计算，每轮仍有自己的缓存",
+        "whatHappened": "Transformers 于11月21日（UTC）发布5.24.0，接入 Inkling 2 Mini。发布与固定文档描述24个物理 decoder 层，其中索引6至17循环三轮；本项是库接入事件，不把该日期写成模型最早发布日。",
+        "mechanism": "第一轮正常经过循环层；后续轮从循环前的 hidden 和 block states 重新开始，通过学习到的消息检索与门控，把上一轮残差信息混入当前 Q、K、V 与 MLP 输入。权重被复用，但每轮各有独立的 KV 和卷积状态槽，默认共48次层访问。",
+        "workedExample": "固定小配置用4个物理层、索引1和2循环三轮，缓存检查要求4+2×2=8个槽，并逐个核对额外槽与对应物理层的类型、key形状和卷积状态形状。另有缩小且未训练checkpoint的logits与生成序列断言；这些不是质量评测，本期没有下载权重或运行上游测试。",
+        "whyItMatters": "推理计算可以通过反复使用权重增加，而参数数量与运行时状态不必同比变化。选型和容量评估需要分别记录物理层数、实际层访问次数与缓存结构，不能仅从层数判断显存或延迟。",
+        "risksAndLimits": [
+          "文档把可调循环数的用法指向独立的 varloop research checkpoint；不能据此声称正式checkpoint任意增减轮数都会保持质量。本文没有独立验证速度、质量或内存收益。",
+          "固定实现只支持eager attention，通用attention输出检查被跳过，torch export检查关闭；缓存形状断言不证明所有设备与部署路径都已兼容。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Transformers v5.24.0",
+            "url": "https://github.com/huggingface/transformers/releases/tag/v5.24.0",
+            "publishedAt": "2026-11-21T12:28:26.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Add Inkling2 Mini PR51050",
+            "url": "https://github.com/huggingface/transformers/pull/51050"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Physical layers, loop visits and valid configuration",
+            "url": "https://github.com/huggingface/transformers/blob/eeee11099135592f1d03c2871fbd3d8132e5a4d7/src/transformers/models/inkling2_loop/configuration_inkling2_loop.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Residual message gates and pass-specific caches",
+            "url": "https://github.com/huggingface/transformers/blob/eeee11099135592f1d03c2871fbd3d8132e5a4d7/src/transformers/models/inkling2_loop/modeling_inkling2_loop.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Layer-visit cache shape and tiny-model assertions",
+            "url": "https://github.com/huggingface/transformers/blob/eeee11099135592f1d03c2871fbd3d8132e5a4d7/tests/models/inkling2_loop/test_modeling_inkling2_loop.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Released checkpoint, research checkpoint and backend limits",
+            "url": "https://github.com/huggingface/transformers/blob/eeee11099135592f1d03c2871fbd3d8132e5a4d7/docs/source/en/model_doc/inkling2_loop.md"
+          }
+        ],
+        "nextQuestions": [
+          "评估循环模型时，能否固定同一checkpoint与输入，分别测层访问、KV及卷积状态占用、延迟和任务质量？"
+        ]
+      },
+      {
+        "id": "ai-litellm-nontext-output-fresh-fallback",
+        "domain": "ai",
+        "topic": "infrastructure",
+        "title": "LiteLLM 1.110.2：推理事件已经出流，失败后不能重新拼入另一份回答",
+        "whatHappened": "LiteLLM 于11月20日（UTC）发布稳定版1.110.2，收录非文本输出后的 Responses fresh-fallback 修复。原PR52616于11月18日合入，稳定分支经PR52751于11月19日回补；这些日期与后续RC或dev发布分别保留。",
+        "mechanism": "流包装器在首个不再暂存的事件出流时置 output_started；即使generated_content仍为空，reasoning item等结构事件也算已开始。跨模型组恢复在这个标志为真、错误又被视为“文本前”时抛原错误，阻止新response；已经产生文本的受限continuation仍是另一条路径。",
+        "workedExample": "固定合成provider回归依次发送created、reasoning或content-part事件、in_progress，再注入限流错误；无论配置重试还是fallback，断言仅调用一次provider、只有一个created，最后是failed。单元回归还要求201个lifecycle事件溢出释放后不再重开。本期只读断言，未启动网关或调用模型。",
+        "whyItMatters": "模型尚未输出可见文字时，客户端也可能已经接收一份回答的身份和结构。恢复策略应同时核对已发出的事件与文本状态，避免把空文本错误当作从未开始过。",
+        "risksAndLimits": [
+          "这是特定Responses路由的fresh-response恢复约束，不等于所有流失败均禁止fallback；文本continuation仍受工具调用、输出约束、内容策略和剩余输出预算等检查。",
+          "HTTP流连接成功与response完成是不同状态；源码中的合成provider断言不证明生产采用、真实故障发生率、计费无误或外部工具副作用幂等。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "LiteLLM v1.110.2 stable release",
+            "url": "https://github.com/BerriAI/litellm/releases/tag/v1.110.2",
+            "publishedAt": "2026-11-20T04:06:19.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Original non-text stream fallback fix PR52616",
+            "url": "https://github.com/BerriAI/litellm/pull/52616"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Stable backport PR52751",
+            "url": "https://github.com/BerriAI/litellm/pull/52751"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "First released output and fresh-fallback guard",
+            "url": "https://github.com/BerriAI/litellm/blob/c3cafa3782642685ef10777e4c5931400c0a7176/litellm/router_rust/invoke/streaming.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Non-text output, overflow and text-continuation assertions",
+            "url": "https://github.com/BerriAI/litellm/blob/c3cafa3782642685ef10777e4c5931400c0a7176/tests/unit/test_router/core/test_streaming_characterization_responses.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Synthetic-provider event order and call-count assertions",
+            "url": "https://github.com/BerriAI/litellm/blob/c3cafa3782642685ef10777e4c5931400c0a7176/tests/integration/routing/test_responses_stream_same_group_retry.py"
+          }
+        ],
+        "nextQuestions": [
+          "客户端能否分别记录response身份、已释放事件、已输出文本及最终状态，使重试决策与用户已看到的内容一致？"
+        ]
+      },
+      {
+        "id": "web3-foundry-json-raw-cheatcode-redaction",
+        "domain": "web3",
+        "topic": "security",
+        "title": "Foundry 11月22日 nightly：JSON里的原始cheatcode字节，也要遵守脱敏规则",
+        "whatHappened": "Foundry 于11月22日（UTC）发布nightly，收录前一日合入的PR18639。JSON trace同时携带decoded视图与raw calldata、return data；修复让原始字段按同一套cheatcode秘密选择规则处理。该事件是nightly发布，不是稳定版升级或生产验收。",
+        "mechanism": "解码器识别cheatcode地址与selector：匹配含秘密输入的调用时把raw calldata截到4字节selector；匹配秘密输出且调用成功时清空return data。普通解码后及forge test准备JSON时都应用此逻辑；非秘密字段和失败调用的revert诊断按其规则保留。",
+        "workedExample": "script固定回归让envUint提供测试密钥，再用于startBroadcast，断言env返回raw output为空、startBroadcast只余selector；test回归通过deriveKey再addr，断言密钥参数和输出被去掉，而公开地址输出保留。解码器断言还区分带key和仅digest的sign重载。本期未广播交易或运行上游测试。",
+        "whyItMatters": "查看到占位符只证明展示字段经过处理；同一份JSON里的原始字节仍可承载原值。用于研究、CI或Agent输入的trace，需要逐种表示核对哪些字节被实际保留。",
+        "risksAndLimits": [
+          "此逻辑只处理已识别cheatcode及列举的秘密规则，不承诺业务日志、storage、内存步骤或任意合约输出全量脱敏；RPC别名、环境变量名和公开地址仍可能保留。",
+          "秘密输出只在成功调用时清除，revert data保留诊断；发布与固定回归也不证明历史制品已经撤回、使用者已经升级或所有分享内容均可公开。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Foundry November 22 nightly",
+            "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-20ccce88eeb5d4d78ed0662699706d6b021a692c",
+            "publishedAt": "2026-11-22T07:07:35.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Redact cheatcode data in JSON traces PR18639",
+            "url": "https://github.com/foundry-rs/foundry/pull/18639"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Shared secret selection for decoded and raw trace fields",
+            "url": "https://github.com/foundry-rs/foundry/blob/20ccce88eeb5d4d78ed0662699706d6b021a692c/crates/evm/traces/src/decoder/mod.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Apply raw redaction while preparing JSON results",
+            "url": "https://github.com/foundry-rs/foundry/blob/20ccce88eeb5d4d78ed0662699706d6b021a692c/crates/forge/src/cmd/test/mod.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Script JSON keeps selector and removes secret bytes",
+            "url": "https://github.com/foundry-rs/foundry/blob/20ccce88eeb5d4d78ed0662699706d6b021a692c/crates/forge/tests/cli/script.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Test JSON strips key arguments and keeps public address",
+            "url": "https://github.com/foundry-rs/foundry/blob/20ccce88eeb5d4d78ed0662699706d6b021a692c/crates/forge/tests/cli/test_cmd/mod.rs"
+          }
+        ],
+        "nextQuestions": [
+          "一份trace的decoded、calldata、return data和其他调试字段，能否分别列出实际保留规则，而不是只检查屏幕上的占位符？"
+        ]
+      },
+      {
+        "id": "web3-nitro-conditional-publish-admission",
+        "domain": "web3",
+        "topic": "l2",
+        "title": "Nitro 3.12.4：条件交易在节点内发布未返回时，先占住一个准入名额",
+        "whatHappened": "Nitro 于11月19日（UTC）发布3.12.4，发布正文内版本说明日期为11月9日。该版本加入可热更新的max-pending-conditional-txs，默认0关闭上限；本项只研究这条节点本地准入路径，保留发布与说明日期的差别。",
+        "mechanism": "PublishTransaction仅对options非空的条件交易，在读当前链状态前通过CAS竞争计数名额；达到正数上限立即返回RPC错误-32012。成功准入后用defer在预检查或下游PublishTransaction返回时减计数。降限不会撤销已经持有的名额，0表示不限制，而不是拒绝全部请求。",
+        "workedExample": "固定系统回归暂停执行，先持有两个条件交易，再要求第三个收到明确RPC错误，同时普通交易仍可进入队列；恢复后检查已准入及普通交易有回执、被拒交易无回执。单元回归还以32个worker竞争4个名额，断言观测计数不超限并最终归零。本期未启动节点、发交易或执行这些测试。",
+        "whyItMatters": "条件检查可能在等待下游处理期间继续占用请求资源。准入发生在哪一步、名额持有到何时，以及哪些入口参与计数，决定了这个参数实际约束的工作范围。",
+        "risksAndLimits": [
+          "计数属于单个TxPreChecker实例，不能解释为全网mempool容量、全局速率、内存字节上限或每个请求的超时；普通交易不经过这项名额检查。",
+          "固定文件另有PublishExpressLaneTransaction路径，未使用这项计数；默认0且热降限不驱逐已在途请求。没有生产负载数据，不能推断整体抗拒绝服务能力或节点已经启用该参数。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Nitro v3.12.4 official release",
+            "url": "https://github.com/OffchainLabs/nitro/releases/tag/v3.12.4",
+            "publishedAt": "2026-11-19T22:21:44.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Release-linked conditional transaction cap commit",
+            "url": "https://github.com/OffchainLabs/nitro/commit/7df16069311c86fed59149bd89f065cd48c87210"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Atomic admission and release of node-local slots",
+            "url": "https://github.com/OffchainLabs/nitro/blob/960ca0aa66b3c769a17f20e3bca6fab68f663f54/execution/gethexec/pending_conditional_txs.go"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Conditional-only admission before state access",
+            "url": "https://github.com/OffchainLabs/nitro/blob/960ca0aa66b3c769a17f20e3bca6fab68f663f54/execution/gethexec/tx_pre_checker.go"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Cap, disabled mode and contention assertions",
+            "url": "https://github.com/OffchainLabs/nitro/blob/960ca0aa66b3c769a17f20e3bca6fab68f663f54/execution/gethexec/pending_conditional_txs_test.go"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Sequencer and forwarding prechecker rejection assertions",
+            "url": "https://github.com/OffchainLabs/nitro/blob/960ca0aa66b3c769a17f20e3bca6fab68f663f54/system_tests/conditional_cap_test.go"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Zero, positive and negative configuration checks",
+            "url": "https://github.com/OffchainLabs/nitro/blob/960ca0aa66b3c769a17f20e3bca6fab68f663f54/execution/gethexec/tx_pre_checker_test.go"
+          }
+        ],
+        "nextQuestions": [
+          "节点的普通发布、条件发布与Express Lane入口，能否分别给出准入位置、在途计数和释放时点的运行证据？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-loop-weight-sharing-state-identity",
+      "domain": "ai",
+      "topic": "model_inference",
+      "title": "专题：权重重复使用，为什么同一物理层仍需要多份缓存？",
+      "whatHappened": "Transformers 5.24接入的Inkling 2 Mini以24个物理decoder层完成默认48次层访问。专题沿固定实现区分可复用的参数、每轮重算的激活与各轮保留的解码状态，不把层数减少直接换算为部署收益。",
+      "mechanism": "索引6至17在第一轮使用物理层原有cache槽。后两轮复用同一组decoder对象，但cache_offset把它们映射到追加槽；每轮从循环前状态重启，并以学习到的消息门注入上一轮信息。因本轮输入已变，同一组权重计算出的K、V和卷积状态也必须按轮区分，不能只以物理层索引覆盖。",
+      "workedExample": "固定小配置有4层，循环层1、2共访问三轮。槽0至3对应物理层，额外两轮各追加2槽，共8槽；hidden-state记录还包含embedding，因此配置期望为9项。测试实际核对缓存数量与对应槽的key及卷积形状，代码以deepcopy追加状态对象；形状相同并不是数值相同的断言。本例没有测真实模型显存。",
+      "whyItMatters": "工程推断：参数共享省掉的权重与运行时状态有不同生命周期。容量表至少需要同时描述物理参数、访问次数、每轮缓存，以及attention后端；这样才能解释为何较少层并不自动带来同幅度的显存或延迟下降。",
+      "risksAndLimits": [
+        "默认48指层访问次数与缓存槽数，不是48套独立训练的层，也不是固定字节大小。滑动注意力、全注意力、卷积状态、dtype与上下文长度都会影响实际占用。",
+        "固定小checkpoint明确未训练，其输出断言用于实现一致性，不能评估模型能力；可调轮数的research checkpoint也不等于所有checkpoint都支持同样的速质折中。",
+        "本期未下载模型、运行GPU测试或做基准；通用attention输出测试被跳过、torch export检查关闭与eager-only限制均保留，不能写成全面兼容。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "Transformers v5.24.0",
+          "url": "https://github.com/huggingface/transformers/releases/tag/v5.24.0",
+          "publishedAt": "2026-11-21T12:28:26.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "Add Inkling2 Mini PR51050",
+          "url": "https://github.com/huggingface/transformers/pull/51050"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Physical layers, loop visits and valid configuration",
+          "url": "https://github.com/huggingface/transformers/blob/eeee11099135592f1d03c2871fbd3d8132e5a4d7/src/transformers/models/inkling2_loop/configuration_inkling2_loop.py"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Residual message gates and pass-specific caches",
+          "url": "https://github.com/huggingface/transformers/blob/eeee11099135592f1d03c2871fbd3d8132e5a4d7/src/transformers/models/inkling2_loop/modeling_inkling2_loop.py"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Layer-visit cache shape and tiny-model assertions",
+          "url": "https://github.com/huggingface/transformers/blob/eeee11099135592f1d03c2871fbd3d8132e5a4d7/tests/models/inkling2_loop/test_modeling_inkling2_loop.py"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Released checkpoint, research checkpoint and backend limits",
+          "url": "https://github.com/huggingface/transformers/blob/eeee11099135592f1d03c2871fbd3d8132e5a4d7/docs/source/en/model_doc/inkling2_loop.md"
+        }
+      ],
+      "nextQuestions": [
+        "如果同一部署固定权重但调整访问次数，能否分别验证cache槽映射正确性、实测峰值显存、端到端延迟和任务质量？"
+      ],
+      "basedOnBriefId": "ai-transformers-inkling-loop-visit-cache"
+    },
+    "sourceUrls": [
+      "https://github.com/huggingface/transformers/releases/tag/v5.24.0",
+      "https://github.com/huggingface/transformers/pull/51050",
+      "https://github.com/huggingface/transformers/blob/eeee11099135592f1d03c2871fbd3d8132e5a4d7/src/transformers/models/inkling2_loop/configuration_inkling2_loop.py",
+      "https://github.com/huggingface/transformers/blob/eeee11099135592f1d03c2871fbd3d8132e5a4d7/src/transformers/models/inkling2_loop/modeling_inkling2_loop.py",
+      "https://github.com/huggingface/transformers/blob/eeee11099135592f1d03c2871fbd3d8132e5a4d7/tests/models/inkling2_loop/test_modeling_inkling2_loop.py",
+      "https://github.com/huggingface/transformers/blob/eeee11099135592f1d03c2871fbd3d8132e5a4d7/docs/source/en/model_doc/inkling2_loop.md",
+      "https://github.com/BerriAI/litellm/releases/tag/v1.110.2",
+      "https://github.com/BerriAI/litellm/pull/52616",
+      "https://github.com/BerriAI/litellm/pull/52751",
+      "https://github.com/BerriAI/litellm/blob/c3cafa3782642685ef10777e4c5931400c0a7176/litellm/router_rust/invoke/streaming.py",
+      "https://github.com/BerriAI/litellm/blob/c3cafa3782642685ef10777e4c5931400c0a7176/tests/unit/test_router/core/test_streaming_characterization_responses.py",
+      "https://github.com/BerriAI/litellm/blob/c3cafa3782642685ef10777e4c5931400c0a7176/tests/integration/routing/test_responses_stream_same_group_retry.py",
+      "https://github.com/foundry-rs/foundry/releases/tag/nightly-20ccce88eeb5d4d78ed0662699706d6b021a692c",
+      "https://github.com/foundry-rs/foundry/pull/18639",
+      "https://github.com/foundry-rs/foundry/blob/20ccce88eeb5d4d78ed0662699706d6b021a692c/crates/evm/traces/src/decoder/mod.rs",
+      "https://github.com/foundry-rs/foundry/blob/20ccce88eeb5d4d78ed0662699706d6b021a692c/crates/forge/src/cmd/test/mod.rs",
+      "https://github.com/foundry-rs/foundry/blob/20ccce88eeb5d4d78ed0662699706d6b021a692c/crates/forge/tests/cli/script.rs",
+      "https://github.com/foundry-rs/foundry/blob/20ccce88eeb5d4d78ed0662699706d6b021a692c/crates/forge/tests/cli/test_cmd/mod.rs",
+      "https://github.com/OffchainLabs/nitro/releases/tag/v3.12.4",
+      "https://github.com/OffchainLabs/nitro/commit/7df16069311c86fed59149bd89f065cd48c87210",
+      "https://github.com/OffchainLabs/nitro/blob/960ca0aa66b3c769a17f20e3bca6fab68f663f54/execution/gethexec/pending_conditional_txs.go",
+      "https://github.com/OffchainLabs/nitro/blob/960ca0aa66b3c769a17f20e3bca6fab68f663f54/execution/gethexec/tx_pre_checker.go",
+      "https://github.com/OffchainLabs/nitro/blob/960ca0aa66b3c769a17f20e3bca6fab68f663f54/execution/gethexec/pending_conditional_txs_test.go",
+      "https://github.com/OffchainLabs/nitro/blob/960ca0aa66b3c769a17f20e3bca6fab68f663f54/system_tests/conditional_cap_test.go",
+      "https://github.com/OffchainLabs/nitro/blob/960ca0aa66b3c769a17f20e3bca6fab68f663f54/execution/gethexec/tx_pre_checker_test.go"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-11-23-547c9f67385c8add",
+    "asOf": "2026-11-22T21:31:47.432Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
   {
     "date": "2026-11-16",
     "slug": "2026-11-16",
@@ -3981,293 +4395,6 @@ export const latestRadars: DailyRadar[] = [
     "marketSignals": [],
     "snapshotId": "learning-2026-11-11-3323ecfb854f3355",
     "asOf": "2026-11-10T21:38:26.706Z",
-    "origin": "research",
-    "publicationState": "published"
-  },
-  {
-    "date": "2026-11-09",
-    "slug": "2026-11-09",
-    "title": "学习雷达 · 2026-11-09",
-    "summary": "AI看遥测跨层前的URL净化与当前模型预算；Web3看HTTP批次配置归属与对象资金执行期失败。补读尚未覆盖的固定发布快照，保留原日期；专题核对观察者接收数据的时点。",
-    "publish": true,
-    "reviewStatus": "automated",
-    "schemaVersion": 2,
-    "editionMode": "daily",
-    "researchedAt": "2026-11-08T21:37:39.755Z",
-    "generatedAt": "2026-11-08T21:37:39.755Z",
-    "sourceSections": [
-      "ai",
-      "web3",
-      "deepDive"
-    ],
-    "missingSections": [],
-    "briefs": [
-      {
-        "id": "ai-sdk-telemetry-url-boundary",
-        "domain": "ai",
-        "topic": "safety",
-        "title": "AI SDK 7.0.165：遥测拿到模型结果之前，先缩减请求 URL",
-        "whatHappened": "AI SDK于11月7日（UTC）发布7.0.165：generateText与streamText此前虽已缩减公开结果URL，遥测integration和tracing subscriber仍可能更早看到原始端点。",
-        "mechanism": "provider回调返回前复制结果并净化request.url：HTTP(S)仅留origin，无效或非HTTP(S)地址省略url。用户信息、路径、query、fragment被去掉；body等元数据保留，原provider对象不变。",
-        "workedExample": "上游mock在两个观察者接收时即时复制request，检查URL净化及原对象未变。本期只读断言，未运行模型或本地复现。",
-        "whyItMatters": "最终输出不能覆盖更早的观察者；应逐接收者核对字段与脱敏时点。",
-        "risksAndLimits": [
-          "仅修两条文本生成路径的URL元数据，不保证headers、body、业务日志或WorkflowAgent安全。",
-          "origin仍暴露主机与端口；本期未验证生产部署或过去数据的撤回。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "AI SDK release",
-            "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-            "publishedAt": "2026-11-07T19:27:48.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR24708",
-            "url": "https://github.com/vercel/ai/pull/24708"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "generateText boundary",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/generate-text.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "URL sanitizer",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/get-request-origin.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "Immediate tracing tests",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts"
-          }
-        ],
-        "nextQuestions": [
-          "接收者的字段范围与脱敏时点如何分别核验？"
-        ]
-      },
-      {
-        "id": "ai-deepagents-selected-model-budget",
-        "domain": "ai",
-        "topic": "infrastructure",
-        "title": "deepagents-code 0.2.5：压缩输入预算跟随当前选定模型",
-        "whatHappened": "0.2.5于11月5日（UTC）发布，修复切换模型仍按启动模型判断压缩的问题，与已刊摘要截点修复不同。",
-        "mechanism": "同步/异步用临时请求核算选定模型与运行期settings的预算；交给handler前恢复原model/settings，让下游中间件继续真正选择模型。",
-        "workedExample": "上游mock矩阵：启动128K转32K，26K输入加8K输出预留需压缩，改2K则不压缩；还检查下游与原请求。本期只读，未运行模型/测试。",
-        "whyItMatters": "切换模型也改变预算；预算准备和最终执行要分开核验，保留下游配置。",
-        "risksAndLimits": [
-          "数字是上游合成断言，不是本期实测窗口、精确token数或延迟收益；provider限制仍需另验。",
-          "预算依据主模型，摘要生成可另选模型；不证明摘要完整或会话恢复正确。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "deepagents-code release",
-            "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5",
-            "publishedAt": "2026-11-05T21:41:43.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR7545",
-            "url": "https://github.com/langchain-ai/deepagents/pull/7545"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Budget request code",
-            "url": "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/deepagents_code/offload_middleware.py"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "Budget matrix tests",
-            "url": "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/tests/unit_tests/test_compact_tool.py"
-          }
-        ],
-        "nextQuestions": [
-          "预算来自当前配置，最终模型选择是否仍走原流程？"
-        ]
-      },
-      {
-        "id": "web3-viem-http-batch-factory-identity",
-        "domain": "web3",
-        "topic": "onchain_infrastructure",
-        "title": "viem 2.57.17：同一 RPC URL，不再把不同 transport 的批次混用",
-        "whatHappened": "viem于11月8日（UTC）发布2.57.17，修复同URL下独立HTTP工厂合批时混用鉴权头与fetch配置的问题。",
-        "mechanism": "调度键组合稳定工厂batchId、实际URL和AbortSignal身份。ID位于initializer外，fallback重初始化同工厂仍合批；独立工厂保留各自RPC配置。",
-        "workedExample": "上游本地鉴权A/B返回1和10，覆盖直接/fallback分离、同工厂共享与URL/signal分离。本期只读，未连RPC或发交易。",
-        "whyItMatters": "相同地址不等于同一调用者；批处理仍需保持鉴权配置和响应归属。",
-        "risksAndLimits": [
-          "这是工厂批次隔离，不是租户认证、链ID校验或WebSocket订阅路由；1和10为本地测试值。",
-          "相同配置的独立工厂也不自动合批；共享需复用工厂并审查配置，不表示写请求可安全重试。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "viem release",
-            "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.17",
-            "publishedAt": "2026-11-08T18:04:10.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR5389",
-            "url": "https://github.com/wevm/viem/pull/5389"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "HTTP factory code",
-            "url": "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "HTTP batch tests",
-            "url": "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.test.ts"
-          }
-        ],
-        "nextQuestions": [
-          "哪些客户端应共享工厂，如何核验配置归属？"
-        ]
-      },
-      {
-        "id": "web3-sui-object-funds-execution-abort",
-        "domain": "web3",
-        "topic": "protocol",
-        "title": "Sui mainnet 1.83.1：对象资金不足，在执行期间形成 Move abort",
-        "whatHappened": "Sui于11月4日（UTC）发布mainnet1.83.1，其protocol140配置让对象资金不足在执行期abort，替代旧检查/重执行。PR于10月20日合入，非当天首创。",
-        "mechanism": "版本化设计先看交易内owner/type余额；不足时按所需accumulator版本读取已结算余额、扣除同commit未结算提款。仍不足则abort；地址调度独立。",
-        "workedExample": "文档中dry-run/孤立replay缺少同commit未结算视图，可能成功而提交执行不足失败。本期只读配置/设计，未运行节点、模拟、回放或资金操作。",
-        "whyItMatters": "模拟成功不能代替执行回执；应区分状态视图、失败阶段与错误类型。",
-        "risksAndLimits": [
-          "对象虚拟余额不足形成Move abort；地址资金执行前调度仍可返回InsufficientFundsForWithdraw。",
-          "文档说明已执行失败可正常收gas；未验证真实主网部署、账户余额或资金安全，孤立replay差异另项追踪。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "Sui mainnet release",
-            "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1",
-            "publishedAt": "2026-11-04T20:01:16.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR28290",
-            "url": "https://github.com/MystenLabs/sui/pull/28290"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Protocol140 config",
-            "url": "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-protocol-config/src/lib.rs"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_design",
-            "name": "Object funds design",
-            "url": "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-core/src/accumulators/design_docs/object_funds_in_execution.md"
-          }
-        ],
-        "nextQuestions": [
-          "三种视图的版本、扣减及对象/地址错误如何分别识别？"
-        ]
-      }
-    ],
-    "deepDive": {
-      "id": "deep-telemetry-observer-sanitization-order",
-      "domain": "ai",
-      "topic": "safety",
-      "title": "专题：最终结果已脱敏，为什么中途观察者仍可能看到原值",
-      "whatHappened": "7.0.165把URL净化前移至provider回调返回前；遥测integration/tracing不再早于公开API看到这一路径的原始request.url。",
-      "mechanism": "只在外层净化时，包装器await execute()后会先见原request。现在生成/流式启动先返回净化元数据，再入遥测；实际请求端点不变。",
-      "workedExample": "上游在integration/asyncEnd即时复制request，避免结束后只查可变引用；还冻结并检查原对象。本期只读，未运行模型或复现。",
-      "whyItMatters": "编辑推论：跨观察边界前处理并逐接收者留证，最终输出只证明自身。",
-      "risksAndLimits": [
-        "未审查全部sink、WorkflowAgent或业务日志；保留的body/其他元数据仍可能有敏感内容，URL净化不是全量隐私保证。",
-        "代码断言不证明已部署、已清理历史遥测或撤回已发送数据。"
-      ],
-      "sources": [
-        {
-          "tier": "tier1",
-          "role": "event",
-          "kind": "official_release",
-          "name": "AI SDK release",
-          "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-          "publishedAt": "2026-11-07T19:27:48.000Z"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_code",
-          "name": "streamText boundary",
-          "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/stream-language-model-call.ts"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_test",
-          "name": "Immediate tracing tests",
-          "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts"
-        }
-      ],
-      "nextQuestions": [
-        "即时接收的字段、处理时点与保留规则是否有证据？"
-      ],
-      "basedOnBriefId": "ai-sdk-telemetry-url-boundary"
-    },
-    "sourceUrls": [
-      "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-      "https://github.com/vercel/ai/pull/24708",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/generate-text.ts",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/get-request-origin.ts",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts",
-      "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5",
-      "https://github.com/langchain-ai/deepagents/pull/7545",
-      "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/deepagents_code/offload_middleware.py",
-      "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/tests/unit_tests/test_compact_tool.py",
-      "https://github.com/wevm/viem/releases/tag/viem%402.57.17",
-      "https://github.com/wevm/viem/pull/5389",
-      "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.ts",
-      "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.test.ts",
-      "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1",
-      "https://github.com/MystenLabs/sui/pull/28290",
-      "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-protocol-config/src/lib.rs",
-      "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-core/src/accumulators/design_docs/object_funds_in_execution.md",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/stream-language-model-call.ts"
-    ],
-    "relatedProjectSlugs": [],
-    "marketSignals": [],
-    "snapshotId": "learning-2026-11-09-bd83a5cc7fff3983",
-    "asOf": "2026-11-08T21:37:39.755Z",
     "origin": "research",
     "publicationState": "published"
   }
