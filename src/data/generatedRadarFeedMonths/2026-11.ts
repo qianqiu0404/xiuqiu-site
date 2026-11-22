@@ -5,6 +5,55 @@ import type { RadarFeedItem } from '../generatedRadarFeed.ts'
 
 export const monthlyFeedItems: RadarFeedItem[] = [
   {
+    "id": "ai-transformers-inkling-loop-visit-cache",
+    "date": "2026-11-23",
+    "domain": "ai",
+    "topic": "model_inference",
+    "title": "Transformers 5.24：同一组 Inkling 层反复计算，每轮仍有自己的缓存",
+    "summary": "推理计算可以通过反复使用权重增加，而参数数量与运行时状态不必同比变化。选型和容量评估需要分别记录物理层数、实际层访问次数与缓存结构，不能仅从层数判断显存或延迟。",
+    "anchor": "ai-transformers-inkling-loop-visit-cache",
+    "sourceName": "Transformers v5.24.0",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/huggingface/transformers/releases/tag/v5.24.0",
+    "isDeepDive": true
+  },
+  {
+    "id": "ai-litellm-nontext-output-fresh-fallback",
+    "date": "2026-11-23",
+    "domain": "ai",
+    "topic": "infrastructure",
+    "title": "LiteLLM 1.110.2：推理事件已经出流，失败后不能重新拼入另一份回答",
+    "summary": "模型尚未输出可见文字时，客户端也可能已经接收一份回答的身份和结构。恢复策略应同时核对已发出的事件与文本状态，避免把空文本错误当作从未开始过。",
+    "anchor": "ai-litellm-nontext-output-fresh-fallback",
+    "sourceName": "LiteLLM v1.110.2 stable release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/BerriAI/litellm/releases/tag/v1.110.2"
+  },
+  {
+    "id": "web3-foundry-json-raw-cheatcode-redaction",
+    "date": "2026-11-23",
+    "domain": "web3",
+    "topic": "security",
+    "title": "Foundry 11月22日 nightly：JSON里的原始cheatcode字节，也要遵守脱敏规则",
+    "summary": "查看到占位符只证明展示字段经过处理；同一份JSON里的原始字节仍可承载原值。用于研究、CI或Agent输入的trace，需要逐种表示核对哪些字节被实际保留。",
+    "anchor": "web3-foundry-json-raw-cheatcode-redaction",
+    "sourceName": "Foundry November 22 nightly",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/foundry-rs/foundry/releases/tag/nightly-20ccce88eeb5d4d78ed0662699706d6b021a692c"
+  },
+  {
+    "id": "web3-nitro-conditional-publish-admission",
+    "date": "2026-11-23",
+    "domain": "web3",
+    "topic": "l2",
+    "title": "Nitro 3.12.4：条件交易在节点内发布未返回时，先占住一个准入名额",
+    "summary": "条件检查可能在等待下游处理期间继续占用请求资源。准入发生在哪一步、名额持有到何时，以及哪些入口参与计数，决定了这个参数实际约束的工作范围。",
+    "anchor": "web3-nitro-conditional-publish-admission",
+    "sourceName": "Nitro v3.12.4 official release",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/OffchainLabs/nitro/releases/tag/v3.12.4"
+  },
+  {
     "id": "ai-fastmcp-skill-manifest-byte-verification",
     "date": "2026-11-16",
     "domain": "ai",

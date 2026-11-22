@@ -5,6 +5,69 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "learning:ai-transformers-inkling-loop-visit-cache",
+    "kind": "learning",
+    "date": "2026-11-23",
+    "domain": "ai",
+    "topic": "model_inference",
+    "title": "Transformers 5.24：同一组 Inkling 层反复计算，每轮仍有自己的缓存",
+    "summary": "推理计算可以通过反复使用权重增加，而参数数量与运行时状态不必同比变化。选型和容量评估需要分别记录物理层数、实际层访问次数与缓存结构，不能仅从层数判断显存或延迟。",
+    "href": "/radar/2026-11-23#ai-transformers-inkling-loop-visit-cache",
+    "source": {
+      "name": "Transformers v5.24.0",
+      "tier": "tier1",
+      "url": "https://github.com/huggingface/transformers/releases/tag/v5.24.0"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "learning:ai-litellm-nontext-output-fresh-fallback",
+    "kind": "learning",
+    "date": "2026-11-23",
+    "domain": "ai",
+    "topic": "infrastructure",
+    "title": "LiteLLM 1.110.2：推理事件已经出流，失败后不能重新拼入另一份回答",
+    "summary": "模型尚未输出可见文字时，客户端也可能已经接收一份回答的身份和结构。恢复策略应同时核对已发出的事件与文本状态，避免把空文本错误当作从未开始过。",
+    "href": "/radar/2026-11-23#ai-litellm-nontext-output-fresh-fallback",
+    "source": {
+      "name": "LiteLLM v1.110.2 stable release",
+      "tier": "tier1",
+      "url": "https://github.com/BerriAI/litellm/releases/tag/v1.110.2"
+    }
+  },
+  {
+    "id": "learning:web3-foundry-json-raw-cheatcode-redaction",
+    "kind": "learning",
+    "date": "2026-11-23",
+    "domain": "web3",
+    "topic": "security",
+    "title": "Foundry 11月22日 nightly：JSON里的原始cheatcode字节，也要遵守脱敏规则",
+    "summary": "查看到占位符只证明展示字段经过处理；同一份JSON里的原始字节仍可承载原值。用于研究、CI或Agent输入的trace，需要逐种表示核对哪些字节被实际保留。",
+    "href": "/radar/2026-11-23#web3-foundry-json-raw-cheatcode-redaction",
+    "source": {
+      "name": "Foundry November 22 nightly",
+      "tier": "tier1",
+      "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-20ccce88eeb5d4d78ed0662699706d6b021a692c"
+    }
+  },
+  {
+    "id": "learning:web3-nitro-conditional-publish-admission",
+    "kind": "learning",
+    "date": "2026-11-23",
+    "domain": "web3",
+    "topic": "l2",
+    "title": "Nitro 3.12.4：条件交易在节点内发布未返回时，先占住一个准入名额",
+    "summary": "条件检查可能在等待下游处理期间继续占用请求资源。准入发生在哪一步、名额持有到何时，以及哪些入口参与计数，决定了这个参数实际约束的工作范围。",
+    "href": "/radar/2026-11-23#web3-nitro-conditional-publish-admission",
+    "source": {
+      "name": "Nitro v3.12.4 official release",
+      "tier": "tier1",
+      "url": "https://github.com/OffchainLabs/nitro/releases/tag/v3.12.4"
+    }
+  },
+  {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
     "date": "2026-11-16",
