@@ -1,8 +1,16 @@
 {
   "schemaVersion": 1,
-  "latestDate": "2026-11-16",
+  "latestDate": "2026-11-23",
   "homePageUrl": "https://xoqiu.cn/",
   "topics": [
+    {
+      "topic": "market_regulation",
+      "domain": "market",
+      "count": 7,
+      "lastSeen": "2026-11-23",
+      "firstSeen": "2026-10-25",
+      "url": "https://xoqiu.cn/topics/market_regulation"
+    },
     {
       "topic": "onchain_infrastructure",
       "domain": "web3",
@@ -34,14 +42,6 @@
       "lastSeen": "2026-11-16",
       "firstSeen": "2026-08-10",
       "url": "https://xoqiu.cn/topics/security"
-    },
-    {
-      "topic": "market_regulation",
-      "domain": "market",
-      "count": 6,
-      "lastSeen": "2026-11-16",
-      "firstSeen": "2026-10-25",
-      "url": "https://xoqiu.cn/topics/market_regulation"
     },
     {
       "topic": "market_macro",
