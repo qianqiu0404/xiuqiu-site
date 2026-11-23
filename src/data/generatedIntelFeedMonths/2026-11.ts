@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-11-24:ecb-dlt-pilot-collateral-t2s-conditions-2026-11-23",
+    "kind": "market",
+    "date": "2026-11-24",
+    "domain": "market",
+    "topic": "market_regulation",
+    "title": "ECB批准DLT抵押品扩围，实施计划2027年6月且附接入条件",
+    "summary": "研究推断：资格扩围可能经合格资产供给、银行实际抵押动用与信贷操作影响融资条件。获许可、具备抵押资格、实际动用与新增融资是不同证据；公告不证明已实施、央行购入资产或流动性已经增加。",
+    "href": "/market-radar/2026-11-24#ecb-dlt-pilot-collateral-t2s-conditions-2026-11-23",
+    "source": {
+      "name": "European Central Bank — ECB expands acceptance of DLT-based assets as eligible Eurosystem collateral",
+      "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261123~76b6f57b74.en.html"
+    },
+    "flags": {
+      "priority": "P2"
+    }
+  },
+  {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
     "date": "2026-11-16",
