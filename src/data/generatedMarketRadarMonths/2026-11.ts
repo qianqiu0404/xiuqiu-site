@@ -3,6 +3,157 @@
 import type { MarketRadarDaily } from '../generatedMarketRadars.ts'
 export const monthlyMarketRadars: MarketRadarDaily[] = [
   {
+    "date": "2026-11-24",
+    "slug": "2026-11-24",
+    "title": "交易研究雷达 · 2026-11-24",
+    "summary": "ECB11月23日批准附条件扩大DLT平台资产的抵押品资格，实施计划2027年6月。本期区分许可、合格结算接入、实际抵押动用与新增融资，不把未来资格扩围写成当前流动性。本期为自动汇总，未经人工复核。",
+    "snapshotId": "market-2026-11-24-16987790dfea8935",
+    "asOf": "2026-11-23T21:37:17.515Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-23T21:37:17.515712Z",
+    "events": [
+      {
+        "id": "ecb-dlt-pilot-collateral-t2s-conditions-2026-11-23",
+        "priority": "P2",
+        "status": "released",
+        "category": "regulation",
+        "title": "ECB批准DLT抵押品扩围，实施计划2027年6月且附接入条件",
+        "fact": "ECB11月23日宣布，理事会批准将获欧盟DLT试点制度许可的平台发行的可交易资产纳入欧元体系信贷操作抵押品。资产仍须满足全部标准资格条件，并经合格链接接入运营合格证券结算系统的中央证券存管机构；结算系统须符合CSDR并提供T2S结算。DLT平台另须满足法律确定性与运营安全要求，细节预计2027年春公布，实施计划2027年6月。完全在DLT网络发行与结算资产的进一步扩围仍待探索。",
+        "whyWatch": "研究推断：资格扩围可能经合格资产供给、银行实际抵押动用与信贷操作影响融资条件。获许可、具备抵押资格、实际动用与新增融资是不同证据；公告不证明已实施、央行购入资产或流动性已经增加。",
+        "assets": [
+          "欧元计价代币化证券",
+          "欧元区银行债"
+        ],
+        "watchFor": "核对2027年春专门要求、合格资产及CSD链接、T2S结算路径，再核对6月实施安排和实际抵押动用、信贷操作证据。3交易日只观察公告澄清；本期没有采集资产资格名单、实际动用、融资或行情样本。",
+        "invalidation": "若实施推迟、平台或资产未满足资格及结算要求，扩围不能转化为可用抵押品。即使资格获批，若没有实际动用或融资约束仍由其他因素主导，应收窄融资传导解释；不能外推为所有链上资产均获接纳。",
+        "sourceName": "European Central Bank — ECB expands acceptance of DLT-based assets as eligible Eurosystem collateral",
+        "sourceUrl": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261123~76b6f57b74.en.html",
+        "sourcePublishedAt": "2026-11-23"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261123~76b6f57b74.en.html"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "实读ECB11月23日公告，核对平台许可、标准资格、CSD与T2S路径、专门要求及未来实施安排；未建立实际抵押动用、融资和行情的可比样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "3交易日只用于公告澄清与准备观察，早于计划2027年6月的实施；固定资产弱信号标签仅表示证据不足，不表示方向或实现概率。",
+      "nextValidation": "分别记录公告、2027年春要求公布及6月实施后的证据；补充资格名单、接入路径、抵押动用和信贷操作，并隔离同期融资与行情因素。",
+      "invalidation": "若要求或实施安排变化，重定观察窗；缺少实际动用及可比融资样本时保持未知，不把制度资格变成资金流或因果效果。",
+      "sourceUrls": [
+        "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261123~76b6f57b74.en.html"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "DLT平台资产的抵押品资格，须经过哪些许可、CSD与T2S接入及实际动用环节，才可能影响银行融资条件？",
+        "focusEventIds": [
+          "ecb-dlt-pilot-collateral-t2s-conditions-2026-11-23"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些资格名单、结算及实际信贷操作证据，能支持或推翻把公告解释为已增加可用抵押品或新增融资？",
+        "focusEventIds": [
+          "ecb-dlt-pilot-collateral-t2s-conditions-2026-11-23"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若2027年实施延后、平台未满足专门要求或银行未实际动用，哪些观察应使融资传导解释失效？",
+        "focusEventIds": [
+          "ecb-dlt-pilot-collateral-t2s-conditions-2026-11-23"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-24",
+      "snapshotId": "market-2026-11-24-16987790dfea8935",
+      "asOf": "2026-11-23T21:37:17.515Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-24",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "DLT平台资产的抵押品资格，须经过哪些许可、CSD与T2S接入及实际动用环节，才可能影响银行融资条件？",
+          "focusEventIds": [
+            "ecb-dlt-pilot-collateral-t2s-conditions-2026-11-23"
+          ],
+          "prompt": "研究任务：DLT平台资产的抵押品资格，须经过哪些许可、CSD与T2S接入及实际动用环节，才可能影响银行融资条件？\n证据快照：2026-11-24；asOf=2026-11-23T21:37:17.515Z；snapshotId=market-2026-11-24-16987790dfea8935\n\n材料 1｜ECB批准DLT抵押品扩围，实施计划2027年6月且附接入条件\n已确认事实：ECB11月23日宣布，理事会批准将获欧盟DLT试点制度许可的平台发行的可交易资产纳入欧元体系信贷操作抵押品。资产仍须满足全部标准资格条件，并经合格链接接入运营合格证券结算系统的中央证券存管机构；结算系统须符合CSDR并提供T2S结算。DLT平台另须满足法律确定性与运营安全要求，细节预计2027年春公布，实施计划2027年6月。完全在DLT网络发行与结算资产的进一步扩围仍待探索。\n关注机制：研究推断：资格扩围可能经合格资产供给、银行实际抵押动用与信贷操作影响融资条件。获许可、具备抵押资格、实际动用与新增融资是不同证据；公告不证明已实施、央行购入资产或流动性已经增加。\n接下来验证：核对2027年春专门要求、合格资产及CSD链接、T2S结算路径，再核对6月实施安排和实际抵押动用、信贷操作证据。3交易日只观察公告澄清；本期没有采集资产资格名单、实际动用、融资或行情样本。\n失效条件：若实施推迟、平台或资产未满足资格及结算要求，扩围不能转化为可用抵押品。即使资格获批，若没有实际动用或融资约束仍由其他因素主导，应收窄融资传导解释；不能外推为所有链上资产均获接纳。\n一手来源：https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261123~76b6f57b74.en.html\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "51b965ce09216c501b30ffeb9fc13a267bd4839daec156555e5608c1df78e741",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261123~76b6f57b74.en.html"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些资格名单、结算及实际信贷操作证据，能支持或推翻把公告解释为已增加可用抵押品或新增融资？",
+          "focusEventIds": [
+            "ecb-dlt-pilot-collateral-t2s-conditions-2026-11-23"
+          ],
+          "prompt": "研究任务：哪些资格名单、结算及实际信贷操作证据，能支持或推翻把公告解释为已增加可用抵押品或新增融资？\n证据快照：2026-11-24；asOf=2026-11-23T21:37:17.515Z；snapshotId=market-2026-11-24-16987790dfea8935\n\n材料 1｜ECB批准DLT抵押品扩围，实施计划2027年6月且附接入条件\n已确认事实：ECB11月23日宣布，理事会批准将获欧盟DLT试点制度许可的平台发行的可交易资产纳入欧元体系信贷操作抵押品。资产仍须满足全部标准资格条件，并经合格链接接入运营合格证券结算系统的中央证券存管机构；结算系统须符合CSDR并提供T2S结算。DLT平台另须满足法律确定性与运营安全要求，细节预计2027年春公布，实施计划2027年6月。完全在DLT网络发行与结算资产的进一步扩围仍待探索。\n关注机制：研究推断：资格扩围可能经合格资产供给、银行实际抵押动用与信贷操作影响融资条件。获许可、具备抵押资格、实际动用与新增融资是不同证据；公告不证明已实施、央行购入资产或流动性已经增加。\n接下来验证：核对2027年春专门要求、合格资产及CSD链接、T2S结算路径，再核对6月实施安排和实际抵押动用、信贷操作证据。3交易日只观察公告澄清；本期没有采集资产资格名单、实际动用、融资或行情样本。\n失效条件：若实施推迟、平台或资产未满足资格及结算要求，扩围不能转化为可用抵押品。即使资格获批，若没有实际动用或融资约束仍由其他因素主导，应收窄融资传导解释；不能外推为所有链上资产均获接纳。\n一手来源：https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261123~76b6f57b74.en.html\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "8f75440813e149d6393e3203c2b672e11fc06d013ae854028393bdd2c7f7aa9c",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261123~76b6f57b74.en.html"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若2027年实施延后、平台未满足专门要求或银行未实际动用，哪些观察应使融资传导解释失效？",
+          "focusEventIds": [
+            "ecb-dlt-pilot-collateral-t2s-conditions-2026-11-23"
+          ],
+          "prompt": "研究任务：若2027年实施延后、平台未满足专门要求或银行未实际动用，哪些观察应使融资传导解释失效？\n证据快照：2026-11-24；asOf=2026-11-23T21:37:17.515Z；snapshotId=market-2026-11-24-16987790dfea8935\n\n材料 1｜ECB批准DLT抵押品扩围，实施计划2027年6月且附接入条件\n已确认事实：ECB11月23日宣布，理事会批准将获欧盟DLT试点制度许可的平台发行的可交易资产纳入欧元体系信贷操作抵押品。资产仍须满足全部标准资格条件，并经合格链接接入运营合格证券结算系统的中央证券存管机构；结算系统须符合CSDR并提供T2S结算。DLT平台另须满足法律确定性与运营安全要求，细节预计2027年春公布，实施计划2027年6月。完全在DLT网络发行与结算资产的进一步扩围仍待探索。\n关注机制：研究推断：资格扩围可能经合格资产供给、银行实际抵押动用与信贷操作影响融资条件。获许可、具备抵押资格、实际动用与新增融资是不同证据；公告不证明已实施、央行购入资产或流动性已经增加。\n接下来验证：核对2027年春专门要求、合格资产及CSD链接、T2S结算路径，再核对6月实施安排和实际抵押动用、信贷操作证据。3交易日只观察公告澄清；本期没有采集资产资格名单、实际动用、融资或行情样本。\n失效条件：若实施推迟、平台或资产未满足资格及结算要求，扩围不能转化为可用抵押品。即使资格获批，若没有实际动用或融资约束仍由其他因素主导，应收窄融资传导解释；不能外推为所有链上资产均获接纳。\n一手来源：https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261123~76b6f57b74.en.html\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "3c6db006b616dff027b6753d141483662a744807114ddbb388808ec23b3cd41e",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261123~76b6f57b74.en.html"
+          ]
+        }
+      ]
+    }
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "title": "交易研究雷达 · 2026-11-16",
