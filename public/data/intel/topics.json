@@ -1,8 +1,40 @@
 {
   "schemaVersion": 1,
-  "latestDate": "2026-11-16",
+  "latestDate": "2026-11-24",
   "homePageUrl": "https://xoqiu.cn/",
   "topics": [
+    {
+      "topic": "agent",
+      "domain": "ai",
+      "count": 16,
+      "lastSeen": "2026-11-24",
+      "firstSeen": "2026-08-11",
+      "url": "https://xoqiu.cn/topics/agent"
+    },
+    {
+      "topic": "wallet_cex",
+      "domain": "web3",
+      "count": 14,
+      "lastSeen": "2026-11-24",
+      "firstSeen": "2026-08-10",
+      "url": "https://xoqiu.cn/topics/wallet_cex"
+    },
+    {
+      "topic": "infrastructure",
+      "domain": "ai",
+      "count": 13,
+      "lastSeen": "2026-11-24",
+      "firstSeen": "2026-10-29",
+      "url": "https://xoqiu.cn/topics/infrastructure"
+    },
+    {
+      "topic": "security",
+      "domain": "web3",
+      "count": 13,
+      "lastSeen": "2026-11-24",
+      "firstSeen": "2026-08-10",
+      "url": "https://xoqiu.cn/topics/security"
+    },
     {
       "topic": "onchain_infrastructure",
       "domain": "web3",
@@ -10,30 +42,6 @@
       "lastSeen": "2026-11-16",
       "firstSeen": "2026-08-11",
       "url": "https://xoqiu.cn/topics/onchain_infrastructure"
-    },
-    {
-      "topic": "agent",
-      "domain": "ai",
-      "count": 15,
-      "lastSeen": "2026-11-16",
-      "firstSeen": "2026-08-11",
-      "url": "https://xoqiu.cn/topics/agent"
-    },
-    {
-      "topic": "infrastructure",
-      "domain": "ai",
-      "count": 12,
-      "lastSeen": "2026-11-16",
-      "firstSeen": "2026-10-29",
-      "url": "https://xoqiu.cn/topics/infrastructure"
-    },
-    {
-      "topic": "security",
-      "domain": "web3",
-      "count": 12,
-      "lastSeen": "2026-11-16",
-      "firstSeen": "2026-08-10",
-      "url": "https://xoqiu.cn/topics/security"
     },
     {
       "topic": "market_regulation",
@@ -66,14 +74,6 @@
       "lastSeen": "2026-11-15",
       "firstSeen": "2026-08-12",
       "url": "https://xoqiu.cn/topics/protocol"
-    },
-    {
-      "topic": "wallet_cex",
-      "domain": "web3",
-      "count": 13,
-      "lastSeen": "2026-11-14",
-      "firstSeen": "2026-08-10",
-      "url": "https://xoqiu.cn/topics/wallet_cex"
     },
     {
       "topic": "market_crypto",

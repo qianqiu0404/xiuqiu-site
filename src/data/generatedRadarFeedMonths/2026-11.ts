@@ -5,6 +5,55 @@ import type { RadarFeedItem } from '../generatedRadarFeed.ts'
 
 export const monthlyFeedItems: RadarFeedItem[] = [
   {
+    "id": "ai-sdk-loop-stop-reason-classification",
+    "date": "2026-11-24",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "AI SDK 7.0.181：最后一次模型调用结束，工具循环仍有自己的停止原因",
+    "summary": "Agent控制器可以分别记录模型调用结果与循环调度结果，按明确状态决定显示等待批准、等待工具结果还是步数已用完，减少从同一个tool-calls结束原因反推下一步的歧义。",
+    "anchor": "ai-sdk-loop-stop-reason-classification",
+    "sourceName": "AI SDK ai@7.0.181",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/vercel/ai/releases/tag/ai%407.0.181"
+  },
+  {
+    "id": "ai-anthropic-union-list-shape-construction",
+    "date": "2026-11-24",
+    "domain": "ai",
+    "topic": "infrastructure",
+    "title": "Anthropic Python SDK 2.13：列表里的异常值，仍按结果列表构造",
+    "summary": "服务端前向兼容字段或异常值可能令严格校验失败；宽松反序列化若连外层形状都换成错误类型，会误导调用方分支。保留列表形状有助于诊断，但调用方仍要验证需要据此采取行动的字段。",
+    "anchor": "ai-anthropic-union-list-shape-construction",
+    "sourceName": "Anthropic Python SDK v2.13.0",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/anthropics/anthropic-sdk-python/releases/tag/v2.13.0"
+  },
+  {
+    "id": "web3-metamask-withdrawal-route-preflight-parity",
+    "date": "2026-11-24",
+    "domain": "web3",
+    "topic": "wallet_cex",
+    "title": "MetaMask perps 26：先解析提款实际场所，再检查该场所的账户支持",
+    "summary": "默认读取路由与实际写入目的地可能采用不同规则。界面需要先获得明确场所，再对同一个providerId查询账户支持，避免从第一条可用路径或默认账户支持结果推断实际目的地。",
+    "anchor": "web3-metamask-withdrawal-route-preflight-parity",
+    "sourceName": "MetaMask Core v1447.0.0 / perps-controller 26.0.0",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/MetaMask/core/releases/tag/v1447.0.0"
+  },
+  {
+    "id": "web3-viem-siwe-statement-line-boundary",
+    "date": "2026-11-24",
+    "domain": "web3",
+    "topic": "security",
+    "title": "viem 2.58.2：SIWE声明里的换行，不能被解析时悄悄丢掉",
+    "summary": "用户签名的是原始消息字节，业务往往依据解析字段作判断。如果可选声明组被跳过却继续提取后续字段，两边看到的内容就可能不同；结构检查应在接受解析字段前保留这种差异。",
+    "anchor": "web3-viem-siwe-statement-line-boundary",
+    "sourceName": "viem 2.58.2",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/wevm/viem/releases/tag/viem%402.58.2",
+    "isDeepDive": true
+  },
+  {
     "id": "ai-fastmcp-skill-manifest-byte-verification",
     "date": "2026-11-16",
     "domain": "ai",

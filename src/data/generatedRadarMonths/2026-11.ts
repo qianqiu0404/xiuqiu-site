@@ -5,6 +5,370 @@ import type { DailyRadar } from '../generatedRadars.ts'
 
 export const monthlyRadars: DailyRadar[] = [
   {
+    "date": "2026-11-24",
+    "slug": "2026-11-24",
+    "title": "学习雷达 · 2026-11-24",
+    "summary": "本期为自动汇总，未经人工复核。工具循环的停止原因、宽松构造中的列表形状、提款实际路由，以及SIWE原始消息与解析字段的边界。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-11-23T21:36:45.407Z",
+    "generatedAt": "2026-11-23T21:36:45.407Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-sdk-loop-stop-reason-classification",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "AI SDK 7.0.181：最后一次模型调用结束，工具循环仍有自己的停止原因",
+        "whatHappened": "AI SDK于11月23日（UTC）发布7.0.181，收录同日合入的PR25287。generateText、streamText、onEnd及最终finish事件增加stoppedBy，用来说明工具循环为何停止；原有finishReason继续描述最后一次模型调用。",
+        "mechanism": "两条生成路径分别在缺工具结果、没有后续工作及stopWhen命中时记录停止原因，并共用辅助函数区分待批准工具与缺execute工具。四类值为model、stop-condition、tool-without-execute与approval；自动处理的批准请求不被辅助函数当作待人工批准。",
+        "workedExample": "固定MockLanguageModel回归连续返回weather工具调用，工具有execute且isStepCount(2)命中时，断言generate与stream的result及onEnd为stop-condition；stream另核对最终finish事件同值。另有缺execute、待批准、输出被length截断及流中止断言；本期只读这些测试，没有调用模型或执行上游测试。",
+        "whyItMatters": "Agent控制器可以分别记录模型调用结果与循环调度结果，按明确状态决定显示等待批准、等待工具结果还是步数已用完，减少从同一个tool-calls结束原因反推下一步的歧义。",
+        "risksAndLimits": [
+          "model也可能表示length、interrupted等结束，不能把它显示为任务已经成功；流abort时stoppedBy的Promise会拒绝，onEnd不被调用，不能期待总有一个完成分类。",
+          "固定文档明确WorkflowAgent与HarnessAgent尚不报告此字段。分类也不是工具副作用回执、持久化恢复协议或业务验收证据，本期未验证真实provider与生产集成。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "AI SDK ai@7.0.181",
+            "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.181",
+            "publishedAt": "2026-11-23T21:09:00.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Expose tool-loop stop reason PR25287",
+            "url": "https://github.com/vercel/ai/pull/25287"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Shared loop-stop categories and pending approval selection",
+            "url": "https://github.com/vercel/ai/blob/d5d5dd0f2fbc6789d477b8624d9f944c72aa21da/packages/ai/src/generate-text/stopped-by.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Generate loop stop decision",
+            "url": "https://github.com/vercel/ai/blob/d5d5dd0f2fbc6789d477b8624d9f944c72aa21da/packages/ai/src/generate-text/generate-text.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Streaming stop decision and finish part",
+            "url": "https://github.com/vercel/ai/blob/d5d5dd0f2fbc6789d477b8624d9f944c72aa21da/packages/ai/src/generate-text/stream-text.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Mock-model result, callback and finish-part assertions",
+            "url": "https://github.com/vercel/ai/blob/d5d5dd0f2fbc6789d477b8624d9f944c72aa21da/packages/ai/src/generate-text/stopped-by.test.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Loop stop reason coverage and agent limits",
+            "url": "https://github.com/vercel/ai/blob/d5d5dd0f2fbc6789d477b8624d9f944c72aa21da/content/docs/03-agents/04-loop-control.mdx"
+          }
+        ],
+        "nextQuestions": [
+          "控制器能否同时保存finishReason、stoppedBy、待工具结果与最终业务回执，并为不同组合定义可复核的后续行为？"
+        ]
+      },
+      {
+        "id": "ai-anthropic-union-list-shape-construction",
+        "domain": "ai",
+        "topic": "infrastructure",
+        "title": "Anthropic Python SDK 2.13：列表里的异常值，仍按结果列表构造",
+        "whatHappened": "Anthropic Python SDK于11月23日（UTC）发布2.13.0，包含工具结果未知值的类构造修复。对应提交于当日17:11 UTC写入，发布于18:34 UTC；这两个时间分别保留，不写成11月24日新增接口能力。",
+        "mechanism": "construct_type先尝试按union验证。验证失败后，带type判别字段的字典优先构造对应已知类；如果实际值是列表且union含列表分支，则从候选中移除BaseModel类，再按列表分支构造内部元素。多个工具结果content也增加显式type判别元数据。",
+        "workedExample": "新增固定回归令content类型为Error或List[Result]，输入[{level: high}]，其中level预期为int；断言外层仍是列表、元素仍是Result且原始high保留。对字典形输入另断言仍可构造Error；已有判别回归还保留未知type值的首分支回退。本期未请求API或运行上游测试。",
+        "whyItMatters": "服务端前向兼容字段或异常值可能令严格校验失败；宽松反序列化若连外层形状都换成错误类型，会误导调用方分支。保留列表形状有助于诊断，但调用方仍要验证需要据此采取行动的字段。",
+        "risksAndLimits": [
+          "这是宽松构造修复，不是把所有未知值拒绝或转成合法类型；high仍可留在声明为int的属性中，已构造的Python类不证明字段契约成立。",
+          "未知判别值仍可能回退至第一个union分支，并保留未知字段；通用构造回归不覆盖每个真实工具结果或所有运行版本，本期没有端到端provider验证。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Anthropic Python SDK v2.13.0",
+            "url": "https://github.com/anthropics/anthropic-sdk-python/releases/tag/v2.13.0",
+            "publishedAt": "2026-11-23T18:34:26.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Build tool result class with unknown values",
+            "url": "https://github.com/anthropics/anthropic-sdk-python/commit/c8260a5aa2e79845217ad816f272c6fe5c54cbc8"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Loose union construction and list-shaped fallback",
+            "url": "https://github.com/anthropics/anthropic-sdk-python/blob/bda18c620dbec4c7febed947d7b8367d84c9171d/src/anthropic/_models.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Tool-result content discriminator annotation",
+            "url": "https://github.com/anthropics/anthropic-sdk-python/blob/bda18c620dbec4c7febed947d7b8367d84c9171d/src/anthropic/types/bash_code_execution_tool_result_block.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Invalid list data and discriminator behavior assertions",
+            "url": "https://github.com/anthropics/anthropic-sdk-python/blob/bda18c620dbec4c7febed947d7b8367d84c9171d/tests/test_models.py"
+          }
+        ],
+        "nextQuestions": [
+          "在按工具结果采取动作之前，哪些字段必须单独严格校验，哪些未知值应保留用于兼容与诊断？"
+        ]
+      },
+      {
+        "id": "web3-metamask-withdrawal-route-preflight-parity",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "MetaMask perps 26：先解析提款实际场所，再检查该场所的账户支持",
+        "whatHappened": "MetaMask Core于11月23日（UTC）发布v1447.0.0，其中perps-controller 26.0.0加入resolveWithdrawalRoute；实现PR11676于11月20日合入。新增查询沿用withdraw的路由规则，并提前拒绝显式路由与当前直连provider冲突的调用。",
+        "mechanism": "查询在等待provider就绪前后都检查聚合模式歧义：多个场所已注册且未指明providerId时返回route_required值；单场所或明确有效路由返回resolved及providerId。直连冲突或查询中的未知场所抛PROVIDER_NOT_FOUND；withdraw共用歧义与直连冲突检查，再进入AccountService。",
+        "workedExample": "固定模拟回归中，聚合模式同时注册两个场所，即使默认场所支持账户，无参数resolveWithdrawalRoute与withdraw仍拒绝未定路由。另有回归先解析一个场所、再切成另一场所直连，断言后续withdraw在AccountService调用前拒绝；冷启动迁移也在就绪后重新判定。本期未连接钱包、签名、提款或运行测试。",
+        "whyItMatters": "默认读取路由与实际写入目的地可能采用不同规则。界面需要先获得明确场所，再对同一个providerId查询账户支持，避免从第一条可用路径或默认账户支持结果推断实际目的地。",
+        "risksAndLimits": [
+          "resolved仅说明当前路由，不证明账户支持、费用、余额、签名、提交或完成。账户、网络或provider上下文变化后须丢弃预检；结果不是冻结后续状态的凭证。",
+          "未知聚合路由在查询中会抛错，实际withdraw由AccountService保留既有失败结果返回，不能泛称二者所有错误形态完全相同。客户端采纳仍是另一项工作，包发布不证明Mobile已接入。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "MetaMask Core v1447.0.0 / perps-controller 26.0.0",
+            "url": "https://github.com/MetaMask/core/releases/tag/v1447.0.0",
+            "publishedAt": "2026-11-23T18:32:47.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Withdrawal account support per venue PR11676",
+            "url": "https://github.com/MetaMask/core/pull/11676"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Route resolution and withdrawal share ambiguity checks",
+            "url": "https://github.com/MetaMask/core/blob/0e57ff3f62c05a96d3f1e14eda09e4c7cc367d04/packages/perps-controller/src/PerpsController.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Mock-provider route parity and pre-sign refusal assertions",
+            "url": "https://github.com/MetaMask/core/blob/0e57ff3f62c05a96d3f1e14eda09e4c7cc367d04/packages/perps-controller/tests/src/PerpsController.operations.test.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Cold-start migration route refusal assertion",
+            "url": "https://github.com/MetaMask/core/blob/0e57ff3f62c05a96d3f1e14eda09e4c7cc367d04/packages/perps-controller/tests/src/PerpsController.default-provider.test.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Resolve route, check support and discard changed context",
+            "url": "https://github.com/MetaMask/core/blob/0e57ff3f62c05a96d3f1e14eda09e4c7cc367d04/packages/perps-controller/README.md"
+          }
+        ],
+        "nextQuestions": [
+          "界面能否让路由、账户支持与后续动作携带同一providerId，并在上下文切换时清理尚未使用的预检结果？"
+        ]
+      },
+      {
+        "id": "web3-viem-siwe-statement-line-boundary",
+        "domain": "web3",
+        "topic": "security",
+        "title": "viem 2.58.2：SIWE声明里的换行，不能被解析时悄悄丢掉",
+        "whatHappened": "viem于11月19日（UTC）发布2.58.2，收录同日合入的PR5609。修复拒绝SIWE statement中的CR、LF、U+2028和U+2029，并把suffix匹配锚定在行首；本期研究11月19日事件，不把发布日期改写为今天。",
+        "mechanism": "解析器先找prefix与suffix，再检查地址后空行至suffix起点之间的文本，移除末尾结构换行后若仍含四类分隔符便返回空对象。创建器对statement执行相同字符检查并抛字段错误；suffix使用多行模式的行首锚点，减少无锚搜索的尝试位置。",
+        "workedExample": "固定解析回归把foo加不同分隔符及伪URI文本放在真实suffix前，七组输入均要求得到空对象；创建回归分别要求四类换行抛出statement错误。原有单行声明仍解析为相同文本。本期只读源码与断言，未执行基准、签名或登录流程。",
+        "whyItMatters": "用户签名的是原始消息字节，业务往往依据解析字段作判断。如果可选声明组被跳过却继续提取后续字段，两边看到的内容就可能不同；结构检查应在接受解析字段前保留这种差异。",
+        "risksAndLimits": [
+          "parseSiweMessage返回部分字段对象，本修复不是完整语法验证，更不包括签名、domain、nonce消费与会话授权验证；获得非空对象不能直接当作登录成功。",
+          "PR正文仍称suffix未锚定，与最终release代码及changeset不一致。本项以固定release中的行首锚点为准；没有实测最坏耗时或证明所有重复suffix、异常nonce和消息边界问题已解决。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "viem 2.58.2",
+            "url": "https://github.com/wevm/viem/releases/tag/viem%402.58.2",
+            "publishedAt": "2026-11-19T21:22:34.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Reject SIWE statement line breaks PR5609",
+            "url": "https://github.com/wevm/viem/pull/5609"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Reject statement separators and anchor suffix at line start",
+            "url": "https://github.com/wevm/viem/blob/9f8783cd06567ed43368b7306669a44272fdcfdc/src/utils/siwe/parseSiweMessage.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Reject four line-break forms before creating a message",
+            "url": "https://github.com/wevm/viem/blob/9f8783cd06567ed43368b7306669a44272fdcfdc/src/utils/siwe/createSiweMessage.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Seven multiline statement rejection cases",
+            "url": "https://github.com/wevm/viem/blob/9f8783cd06567ed43368b7306669a44272fdcfdc/src/utils/siwe/parseSiweMessage.test.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Creator line-break rejection assertions",
+            "url": "https://github.com/wevm/viem/blob/9f8783cd06567ed43368b7306669a44272fdcfdc/src/utils/siwe/createSiweMessage.test.ts"
+          }
+        ],
+        "nextQuestions": [
+          "登录服务能否分别核对原始签名字节、完整字段约束、期望domain与一次性nonce，再建立会话？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-siwe-parsed-fields-signed-message-boundary",
+      "domain": "web3",
+      "topic": "security",
+      "title": "专题：SIWE解析出字段后，为什么仍要核对用户签下的整段消息？",
+      "whatHappened": "viem2.58.2修复的是声明文本与解析结果不一致的一条路径。专题沿固定实现区分消息创建、部分字段解析与认证验签，重点检查用户签名内容是否在业务读取时被省略，不把一个解析修复写成完整登录安全结论。",
+      "mechanism": "prefix中的statement原为可选单行匹配；遇到额外分隔符，后续suffix仍可能匹配，令声明从解析结果消失。新代码检查prefix到suffix之间的实际区间，把四类分隔符作为拒绝条件；创建器也拒绝这些输入。两处对齐的是表示边界，签名有效性和业务授权仍在别处。",
+      "workedExample": "固定测试把foo、U+2028和伪URI文本放到真实URI字段前，另有只留一个LF而非空行的变体；这些原始消息现在应解析为空对象。合法单行声明仍按原文保留。工程推断：接入方应把空对象与缺必填字段都视为尚未满足认证条件，而不是只检查某个已提取的URI字段。",
+      "whyItMatters": "原始消息、解析对象与当前登录请求分别有自己的证据。解析对象保留了几个字段，并不自动证明它完整描述了用户同意的内容，也不证明nonce尚未使用、请求来自期望站点或当前签名有效。",
+      "risksAndLimits": [
+        "固定返回类型明确是ExactPartial，suffix的行首锚点没有改成全消息结束锚点，不能据此断言解析器覆盖全部EIP-4361语法或拒绝所有额外尾部内容。",
+        "换行拒绝测试只覆盖列出的样例；本期未执行模糊测试、最坏复杂度基准或真实认证集成。PR旧正文的限制清单不能直接作为最终代码事实，需要逐项对照。",
+        "原始字节与解析结果一致，也只是完整认证的一部分；本期没有接入任何钱包、身份服务或会话状态，未验证部署升级与外部使用。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "viem 2.58.2",
+          "url": "https://github.com/wevm/viem/releases/tag/viem%402.58.2",
+          "publishedAt": "2026-11-19T21:22:34.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "Reject SIWE statement line breaks PR5609",
+          "url": "https://github.com/wevm/viem/pull/5609"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Reject statement separators and anchor suffix at line start",
+          "url": "https://github.com/wevm/viem/blob/9f8783cd06567ed43368b7306669a44272fdcfdc/src/utils/siwe/parseSiweMessage.ts"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Reject four line-break forms before creating a message",
+          "url": "https://github.com/wevm/viem/blob/9f8783cd06567ed43368b7306669a44272fdcfdc/src/utils/siwe/createSiweMessage.ts"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Seven multiline statement rejection cases",
+          "url": "https://github.com/wevm/viem/blob/9f8783cd06567ed43368b7306669a44272fdcfdc/src/utils/siwe/parseSiweMessage.test.ts"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Creator line-break rejection assertions",
+          "url": "https://github.com/wevm/viem/blob/9f8783cd06567ed43368b7306669a44272fdcfdc/src/utils/siwe/createSiweMessage.test.ts"
+        }
+      ],
+      "nextQuestions": [
+        "能否建立只读回归样本库，同时保存原始消息、解析结果、拒绝原因及独立验签和nonce检查结果，防止各层把彼此的成功当作整体成功？"
+      ],
+      "basedOnBriefId": "web3-viem-siwe-statement-line-boundary"
+    },
+    "sourceUrls": [
+      "https://github.com/vercel/ai/releases/tag/ai%407.0.181",
+      "https://github.com/vercel/ai/pull/25287",
+      "https://github.com/vercel/ai/blob/d5d5dd0f2fbc6789d477b8624d9f944c72aa21da/packages/ai/src/generate-text/stopped-by.ts",
+      "https://github.com/vercel/ai/blob/d5d5dd0f2fbc6789d477b8624d9f944c72aa21da/packages/ai/src/generate-text/generate-text.ts",
+      "https://github.com/vercel/ai/blob/d5d5dd0f2fbc6789d477b8624d9f944c72aa21da/packages/ai/src/generate-text/stream-text.ts",
+      "https://github.com/vercel/ai/blob/d5d5dd0f2fbc6789d477b8624d9f944c72aa21da/packages/ai/src/generate-text/stopped-by.test.ts",
+      "https://github.com/vercel/ai/blob/d5d5dd0f2fbc6789d477b8624d9f944c72aa21da/content/docs/03-agents/04-loop-control.mdx",
+      "https://github.com/anthropics/anthropic-sdk-python/releases/tag/v2.13.0",
+      "https://github.com/anthropics/anthropic-sdk-python/commit/c8260a5aa2e79845217ad816f272c6fe5c54cbc8",
+      "https://github.com/anthropics/anthropic-sdk-python/blob/bda18c620dbec4c7febed947d7b8367d84c9171d/src/anthropic/_models.py",
+      "https://github.com/anthropics/anthropic-sdk-python/blob/bda18c620dbec4c7febed947d7b8367d84c9171d/src/anthropic/types/bash_code_execution_tool_result_block.py",
+      "https://github.com/anthropics/anthropic-sdk-python/blob/bda18c620dbec4c7febed947d7b8367d84c9171d/tests/test_models.py",
+      "https://github.com/MetaMask/core/releases/tag/v1447.0.0",
+      "https://github.com/MetaMask/core/pull/11676",
+      "https://github.com/MetaMask/core/blob/0e57ff3f62c05a96d3f1e14eda09e4c7cc367d04/packages/perps-controller/src/PerpsController.ts",
+      "https://github.com/MetaMask/core/blob/0e57ff3f62c05a96d3f1e14eda09e4c7cc367d04/packages/perps-controller/tests/src/PerpsController.operations.test.ts",
+      "https://github.com/MetaMask/core/blob/0e57ff3f62c05a96d3f1e14eda09e4c7cc367d04/packages/perps-controller/tests/src/PerpsController.default-provider.test.ts",
+      "https://github.com/MetaMask/core/blob/0e57ff3f62c05a96d3f1e14eda09e4c7cc367d04/packages/perps-controller/README.md",
+      "https://github.com/wevm/viem/releases/tag/viem%402.58.2",
+      "https://github.com/wevm/viem/pull/5609",
+      "https://github.com/wevm/viem/blob/9f8783cd06567ed43368b7306669a44272fdcfdc/src/utils/siwe/parseSiweMessage.ts",
+      "https://github.com/wevm/viem/blob/9f8783cd06567ed43368b7306669a44272fdcfdc/src/utils/siwe/createSiweMessage.ts",
+      "https://github.com/wevm/viem/blob/9f8783cd06567ed43368b7306669a44272fdcfdc/src/utils/siwe/parseSiweMessage.test.ts",
+      "https://github.com/wevm/viem/blob/9f8783cd06567ed43368b7306669a44272fdcfdc/src/utils/siwe/createSiweMessage.test.ts"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-11-24-d94bbdae939ac522",
+    "asOf": "2026-11-23T21:36:45.407Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "title": "学习雷达 · 2026-11-16",

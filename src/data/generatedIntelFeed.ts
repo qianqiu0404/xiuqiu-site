@@ -6,535 +6,108 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-11-16"
-export const intelItemCount = 335
+export const intelLatestDate: string | null = "2026-11-24"
+export const intelItemCount = 339
 export const intelLatestItems: IntelItem[] = [
   {
-    "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
+    "id": "learning:ai-sdk-loop-stop-reason-classification",
     "kind": "learning",
-    "date": "2026-11-16",
+    "date": "2026-11-24",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "AI SDK 7.0.181：最后一次模型调用结束，工具循环仍有自己的停止原因",
+    "summary": "Agent控制器可以分别记录模型调用结果与循环调度结果，按明确状态决定显示等待批准、等待工具结果还是步数已用完，减少从同一个tool-calls结束原因反推下一步的歧义。",
+    "href": "/radar/2026-11-24#ai-sdk-loop-stop-reason-classification",
+    "source": {
+      "name": "AI SDK ai@7.0.181",
+      "tier": "tier1",
+      "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.181"
+    }
+  },
+  {
+    "id": "learning:ai-anthropic-union-list-shape-construction",
+    "kind": "learning",
+    "date": "2026-11-24",
     "domain": "ai",
     "topic": "infrastructure",
-    "title": "FastMCP4.2：读到Skill文件之后，先核对清单承诺的字节",
-    "summary": "远端返回了文件，不代表返回的是清单承诺的那份文件。把清单、内容校验和落盘分开，可以在更换服务器、代理资源或版本漂移时定位证据断点，避免只凭成功读取就直接执行。",
-    "href": "/radar/2026-11-16#ai-fastmcp-skill-manifest-byte-verification",
+    "title": "Anthropic Python SDK 2.13：列表里的异常值，仍按结果列表构造",
+    "summary": "服务端前向兼容字段或异常值可能令严格校验失败；宽松反序列化若连外层形状都换成错误类型，会误导调用方分支。保留列表形状有助于诊断，但调用方仍要验证需要据此采取行动的字段。",
+    "href": "/radar/2026-11-24#ai-anthropic-union-list-shape-construction",
     "source": {
-      "name": "FastMCP4.2.0 stable release",
+      "name": "Anthropic Python SDK v2.13.0",
       "tier": "tier1",
-      "url": "https://github.com/PrefectHQ/fastmcp/releases/tag/v4.2.0"
-    },
-    "flags": {
-      "deepDive": true
+      "url": "https://github.com/anthropics/anthropic-sdk-python/releases/tag/v2.13.0"
     }
   },
   {
-    "id": "learning:ai-archestra-optional-github-reconnect",
+    "id": "learning:web3-metamask-withdrawal-route-preflight-parity",
     "kind": "learning",
-    "date": "2026-11-16",
-    "domain": "ai",
-    "topic": "agent",
-    "title": "Archestra1.4.32：可选GitHub连接失效，提示重连与阻断启动分开",
-    "summary": "设置界面、启动前检查和运行中用到外部服务是不同状态。把可选连接的恢复提示当成全局硬门，会阻塞不需要它的工作；反过来，允许启动也不能被记作该GitHub操作已经可用。",
-    "href": "/radar/2026-11-16#ai-archestra-optional-github-reconnect",
-    "source": {
-      "name": "Archestra1.4.32 stable release",
-      "tier": "tier1",
-      "url": "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.4.32"
-    }
-  },
-  {
-    "id": "learning:web3-viem-eip712-domain-field-presence",
-    "kind": "learning",
-    "date": "2026-11-16",
-    "domain": "web3",
-    "topic": "security",
-    "title": "viem2.57.20：chainId是字符串时，也不能从EIP-712签名域中消失",
-    "summary": "签名绑定什么，取决于schema实际包含什么。请求对象中看得到链ID，不代表哈希时一定带入；解析、类型推导、编码与最终验证需要沿同一份域数据核对。",
-    "href": "/radar/2026-11-16#web3-viem-eip712-domain-field-presence",
-    "source": {
-      "name": "viem2.57.20 release",
-      "tier": "tier1",
-      "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.20"
-    }
-  },
-  {
-    "id": "learning:web3-foundry-multiblock-mining-guard",
-    "kind": "learning",
-    "date": "2026-11-16",
-    "domain": "web3",
-    "topic": "onchain_infrastructure",
-    "title": "Foundry11月15日nightly：挖完整批块，再释放读回结果所需的锁",
-    "summary": "多步操作的结果读取也依赖被保护的状态，只锁每次写入可能不够。异步与阻塞任务跨边界时，guard的所有权和生命周期需要覆盖完整不变量，而非在最后写入后立刻释放。",
-    "href": "/radar/2026-11-16#web3-foundry-multiblock-mining-guard",
-    "source": {
-      "name": "Foundry November15 nightly release",
-      "tier": "tier1",
-      "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-cd3767105be7fa27eae63743c26359cefa0214fb"
-    }
-  },
-  {
-    "id": "market:2026-11-16:sec-executive-compensation-disclosure-proposal-2026-11-13",
-    "kind": "market",
-    "date": "2026-11-16",
-    "domain": "market",
-    "topic": "market_regulation",
-    "title": "SEC拟改薪酬披露：人员范围与衡量口径须分开",
-    "summary": "研究推断：披露范围和衡量口径改变，可能先影响可比数据、投资者监督与激励判断，再联系企业股权定价；各环仍待验证，提案宣称的透明度与合规效率目标不等于已实现效果。",
-    "href": "/market-radar/2026-11-16#sec-executive-compensation-disclosure-proposal-2026-11-13",
-    "source": {
-      "name": "SEC — Executive and Director Compensation Disclosure Reforms, release 2026-114",
-      "url": "https://www.sec.gov/newsroom/press-releases/2026-114-sec-proposes-executive-director-compensation-disclosure-reforms"
-    },
-    "flags": {
-      "priority": "P2"
-    }
-  },
-  {
-    "id": "learning:ai-sdk-approval-input-copy",
-    "kind": "learning",
-    "date": "2026-11-15",
-    "domain": "ai",
-    "topic": "safety",
-    "title": "AI SDK7.0.173：回放批准前，先保护原参数不被校验器改写",
-    "summary": "批准记录需要绑定当时的操作内容。若校验过程同时改掉历史input和比较基准，后续看到两者相等也不能说明用户批准过实际执行值；回放链必须保留可核对的原值。",
-    "href": "/radar/2026-11-15#ai-sdk-approval-input-copy",
-    "source": {
-      "name": "AI SDK7.0.173 release",
-      "tier": "tier1",
-      "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.173"
-    },
-    "flags": {
-      "deepDive": true
-    }
-  },
-  {
-    "id": "learning:ai-langgraph-own-thread-subgraph-stream",
-    "kind": "learning",
-    "date": "2026-11-15",
-    "domain": "ai",
-    "topic": "agent",
-    "title": "LangGraph1.2.22：独立thread的子图，也要服从调用者的流订阅范围",
-    "summary": "看不到子任务输出，可能是订阅handler被过滤，而非子任务没有执行。排查流式进度时，需要同时保留配置、订阅范围、事件namespace和业务完成证据，不能用一个空列表直接判失败。",
-    "href": "/radar/2026-11-15#ai-langgraph-own-thread-subgraph-stream",
-    "source": {
-      "name": "LangGraph1.2.22 release",
-      "tier": "tier1",
-      "url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.22"
-    }
-  },
-  {
-    "id": "learning:web3-foundry-symbolic-balance-unknown",
-    "kind": "learning",
-    "date": "2026-11-15",
-    "domain": "web3",
-    "topic": "security",
-    "title": "Foundry11月14日nightly：账户读取失败，符号执行不能把余额当成零",
-    "summary": "测试输入的未知与真实零值含义不同。把读取错误改成零，会把未获得的前提当作反例搜索的确定事实；符号执行结论需要同时携带模型边界、输入读取状态与完整性状态。",
-    "href": "/radar/2026-11-15#web3-foundry-symbolic-balance-unknown",
-    "source": {
-      "name": "Foundry November14 nightly release",
-      "tier": "tier1",
-      "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-c644b436cd2994035df5a823398e2a39feca143c"
-    }
-  },
-  {
-    "id": "learning:web3-aptos-ledger-message-binding",
-    "kind": "learning",
-    "date": "2026-11-15",
-    "domain": "web3",
-    "topic": "protocol",
-    "title": "Aptos1.50.1：验签通过，仍须核对它签的是哪一份LedgerInfo",
-    "summary": "一个“验证过”的状态如果不记录验证对象，就可能在换上下文后被误用。共识票、授权和缓存结果都需要把签名、原消息与目标聚合上下文关联，而非只沿用一个布尔标记。",
-    "href": "/radar/2026-11-15#web3-aptos-ledger-message-binding",
-    "source": {
-      "name": "Aptos node1.50.1 release",
-      "tier": "tier1",
-      "url": "https://github.com/aptos-labs/aptos-core/releases/tag/aptos-node-v1.50.1"
-    }
-  },
-  {
-    "id": "market:2026-11-15:fed-fsr-data-center-debt-commitments-2026-11-13",
-    "kind": "market",
-    "date": "2026-11-15",
-    "domain": "market",
-    "topic": "market_macro",
-    "title": "美联储数据中心融资研究：表内债务与未折现承诺须分开",
-    "summary": "研究推断：若项目现金流不足或担保触发，损失可能由开发商、特殊目的实体与资本提供方分担。大型科技企业既可能先吸收损失、缓和传导，也可能有超出表内负债的经济暴露；联系增加不等于已发生系统冲击。",
-    "href": "/market-radar/2026-11-15#fed-fsr-data-center-debt-commitments-2026-11-13",
-    "source": {
-      "name": "Federal Reserve — Financial Stability Report, November 2026, Box 2.2",
-      "url": "https://www.federalreserve.gov/publications/files/financial-stability-report-20261113.pdf"
-    },
-    "flags": {
-      "priority": "P1"
-    }
-  },
-  {
-    "id": "learning:ai-deepagents-bulk-search-resolved-scope",
-    "kind": "learning",
-    "date": "2026-11-14",
-    "domain": "ai",
-    "topic": "safety",
-    "title": "DeepAgents 0.7.38：搜索目录获准，不等于目录里的链接目标也获准",
-    "summary": "Agent批准一次目录搜索时，批准对象包含范围。结果的表面路径仍在目录里，并不能证明符号链接最终指向的材料也在同一范围；批量返回前需要重新核对目标与批准范围的关系。",
-    "href": "/radar/2026-11-14#ai-deepagents-bulk-search-resolved-scope",
-    "source": {
-      "name": "DeepAgents 0.7.38 release",
-      "tier": "tier1",
-      "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents%3D%3D0.7.38"
-    }
-  },
-  {
-    "id": "learning:ai-pydantic-output-limit-fallback",
-    "kind": "learning",
-    "date": "2026-11-14",
-    "domain": "ai",
-    "topic": "model_inference",
-    "title": "Pydantic AI 2.68：ModelFallback默认切换被截断的非流式回答",
-    "summary": "一段看似完整的文本和可解析的参数，都不能替代模型正常结束的信号。编排层需要把可展示、可执行、被拒绝与实际消耗分开记录，避免把预算截断当成一次正常完成。",
-    "href": "/radar/2026-11-14#ai-pydantic-output-limit-fallback",
-    "source": {
-      "name": "Pydantic AI 2.68.0 release",
-      "tier": "tier1",
-      "url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.68.0"
-    },
-    "flags": {
-      "deepDive": true
-    }
-  },
-  {
-    "id": "learning:web3-metamask-eip7702-safe-integers",
-    "kind": "learning",
-    "date": "2026-11-14",
-    "domain": "web3",
-    "topic": "security",
-    "title": "MetaMask eth-sig-util 10：EIP-7702数值进入哈希前，先拒绝不安全整数",
-    "summary": "JSON中的number进入密码学编码前可能已经丢失整数精度。先确认调用方实际表示的数值，再解释哈希和签名，能够避免把近似值当成用户原本授权的链或计数器。",
-    "href": "/radar/2026-11-14#web3-metamask-eip7702-safe-integers",
-    "source": {
-      "name": "MetaMask core1423 release",
-      "tier": "tier1",
-      "url": "https://github.com/MetaMask/core/releases/tag/v1423.0.0"
-    }
-  },
-  {
-    "id": "learning:web3-foundry-safe-local-hash-crosscheck",
-    "kind": "learning",
-    "date": "2026-11-14",
+    "date": "2026-11-24",
     "domain": "web3",
     "topic": "wallet_cex",
-    "title": "Foundry 11月13日nightly：Safe交易摘要要同时对上本地字段、合约和服务",
-    "summary": "服务给出一个摘要、RPC返回一个摘要，仍需要确认它们对应界面展示的同一组字段。把字段、本地计算、链身份和远端返回逐项关联，才能解释授权对象是否一致。",
-    "href": "/radar/2026-11-14#web3-foundry-safe-local-hash-crosscheck",
+    "title": "MetaMask perps 26：先解析提款实际场所，再检查该场所的账户支持",
+    "summary": "默认读取路由与实际写入目的地可能采用不同规则。界面需要先获得明确场所，再对同一个providerId查询账户支持，避免从第一条可用路径或默认账户支持结果推断实际目的地。",
+    "href": "/radar/2026-11-24#web3-metamask-withdrawal-route-preflight-parity",
     "source": {
-      "name": "Foundry November13 nightly release",
+      "name": "MetaMask Core v1447.0.0 / perps-controller 26.0.0",
       "tier": "tier1",
-      "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-36a8cbbfda1d78f7098cfe071c7bd90eb6eb3df6"
+      "url": "https://github.com/MetaMask/core/releases/tag/v1447.0.0"
     }
   },
   {
-    "id": "market:2026-11-14:ecb-ces-stablecoin-household-exposure-2026-11-11",
-    "kind": "market",
-    "date": "2026-11-14",
-    "domain": "market",
-    "topic": "market_crypto",
-    "title": "ECB稳定币持有调查：历史家庭问卷与当前风险须分开",
-    "summary": "研究推断：若采用显著扩大，赎回可能经储备资产处置、银行资金与消费者信心联系传统金融；美元稳定币用于加密交易之外时，还需观察货币替代渠道。各环是待验证机制，不能据此推断资产方向。",
-    "href": "/market-radar/2026-11-14#ecb-ces-stablecoin-household-exposure-2026-11-11",
-    "source": {
-      "name": "ECB — Who holds stablecoins? New evidence on euro area consumer holdings",
-      "url": "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_08~f4ddf0117c.en.html"
-    },
-    "flags": {
-      "priority": "P1"
-    }
-  },
-  {
-    "id": "learning:ai-deepagents-fifo-download-nonblocking",
+    "id": "learning:web3-viem-siwe-statement-line-boundary",
     "kind": "learning",
-    "date": "2026-11-13",
-    "domain": "ai",
-    "topic": "safety",
-    "title": "DeepAgents 0.7.36：下载FIFO时，不再等待一个尚未出现的写入者",
-    "summary": "Agent拿到的路径可能指向管道或设备，名字像文件并不保证读取会立即结束；同时，这里的file_not_found也可能表示类型被拒绝，调用方不能仅据错误名断定路径不存在。",
-    "href": "/radar/2026-11-13#ai-deepagents-fifo-download-nonblocking",
-    "source": {
-      "name": "DeepAgents 0.7.36 release",
-      "tier": "tier1",
-      "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents%3D%3D0.7.36"
-    }
-  },
-  {
-    "id": "learning:ai-langgraph-exact-subgraph-namespace",
-    "kind": "learning",
-    "date": "2026-11-13",
-    "domain": "ai",
-    "topic": "agent",
-    "title": "LangGraph 1.2.21：research_review与research里的review，要按完整路径区分",
-    "summary": "多Agent图常用近似的任务名。名称前缀相同不等于同一路径，查看或编辑状态之前应先核对完整命名空间，避免把另一个节点的状态当作目标。",
-    "href": "/radar/2026-11-13#ai-langgraph-exact-subgraph-namespace",
-    "source": {
-      "name": "LangGraph 1.2.21 release",
-      "tier": "tier1",
-      "url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.21"
-    }
-  },
-  {
-    "id": "learning:web3-viem-retired-root-verification",
-    "kind": "learning",
-    "date": "2026-11-13",
+    "date": "2026-11-24",
     "domain": "web3",
     "topic": "security",
-    "title": "viem 2.57.19：root key已退休，恢复出账户地址仍不能放行",
-    "summary": "密码学上能证明某把旧密钥签过消息，不等于它在所选链和区块仍代表该账户。钱包登录或授权服务要把验签时点与账户当前权限一起解释。",
-    "href": "/radar/2026-11-13#web3-viem-retired-root-verification",
+    "title": "viem 2.58.2：SIWE声明里的换行，不能被解析时悄悄丢掉",
+    "summary": "用户签名的是原始消息字节，业务往往依据解析字段作判断。如果可选声明组被跳过却继续提取后续字段，两边看到的内容就可能不同；结构检查应在接受解析字段前保留这种差异。",
+    "href": "/radar/2026-11-24#web3-viem-siwe-statement-line-boundary",
     "source": {
-      "name": "viem 2.57.19 release",
+      "name": "viem 2.58.2",
       "tier": "tier1",
-      "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.19"
+      "url": "https://github.com/wevm/viem/releases/tag/viem%402.58.2"
     },
     "flags": {
       "deepDive": true
-    }
-  },
-  {
-    "id": "learning:web3-metamask-mfa-signer-nonatomic-quote",
-    "kind": "learning",
-    "date": "2026-11-13",
-    "domain": "web3",
-    "topic": "wallet_cex",
-    "title": "MetaMask支付31.2：报价是否原子化，要看实际签委托的MFA账户",
-    "summary": "报价不断刷新时，付款人和签委托的人可能不同。若按付款人的能力决定签名流程，金额页面就可能重复弹出另一账户的MFA确认；能力判断须跟着实际签名主体。",
-    "href": "/radar/2026-11-13#web3-metamask-mfa-signer-nonatomic-quote",
-    "source": {
-      "name": "MetaMask core1419 release",
-      "tier": "tier1",
-      "url": "https://github.com/MetaMask/core/releases/tag/v1419.0.0"
-    }
-  },
-  {
-    "id": "market:2026-11-13:ecb-ai-disclosure-financing-association-2026-11-12",
-    "kind": "market",
-    "date": "2026-11-13",
-    "domain": "market",
-    "topic": "market_equity",
-    "title": "ECB研究AI披露与融资定价：历史相关性须与实际采用分开",
-    "summary": "研究推断：投资者对AI现金流与资本开支的预期，可能经估值和信用风险联系企业融资；但无形资产抵押能力有限，成本也可能上升，需逐环验证，不能仅凭AI标签判断融资或资产方向。",
-    "href": "/market-radar/2026-11-13#ecb-ai-disclosure-financing-association-2026-11-12",
-    "source": {
-      "name": "ECB — Artificial intelligence and European firms: the cost of market-based financing",
-      "url": "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_06~a36e367caf.en.html"
-    },
-    "flags": {
-      "priority": "P1"
-    }
-  },
-  {
-    "id": "learning:ai-sdk-incremental-array-stream-parser",
-    "kind": "learning",
-    "date": "2026-11-12",
-    "domain": "ai",
-    "topic": "infrastructure",
-    "title": "AI SDK 7.0.170：流数组按新增元素解析，最终结果仍单独校验",
-    "summary": "流式UI不断收到小片段时，已完成的元素不应随每次输入重复做相同工作；但界面拿到部分元素，也不能替代最终完整结果的校验。",
-    "href": "/radar/2026-11-12#ai-sdk-incremental-array-stream-parser",
-    "source": {
-      "name": "AI SDK ai7.0.170 release",
-      "tier": "tier1",
-      "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.170"
-    },
-    "flags": {
-      "deepDive": true
-    }
-  },
-  {
-    "id": "learning:ai-archestra-denied-history-refused-output-waiver",
-    "kind": "learning",
-    "date": "2026-11-12",
-    "domain": "ai",
-    "topic": "safety",
-    "title": "Archestra 1.4.27：历史拒绝回执，不应单独触发当前输出豁免",
-    "summary": "Agent历史中“某次调用没执行”和“本次实际输出被扣留”是不同事件；恢复时若把两者混用，旧裁定可能错误改变当前会话的执行边界。",
-    "href": "/radar/2026-11-12#ai-archestra-denied-history-refused-output-waiver",
-    "source": {
-      "name": "Archestra platform1.4.27 release",
-      "tier": "tier1",
-      "url": "https://github.com/archestra-ai/archestra/releases/tag/platform-v1.4.27"
-    }
-  },
-  {
-    "id": "learning:web3-reth-p2p-response-before-item-decode",
-    "kind": "learning",
-    "date": "2026-11-12",
-    "domain": "web3",
-    "topic": "onchain_infrastructure",
-    "title": "Reth 2.11：先核对P2P请求，再解码响应条目",
-    "summary": "节点先为一个本不该接受的响应分配整批解码对象，再到会话层丢弃，会把无效输入的成本留在热路径；请求上下文应更早约束响应工作量。",
-    "href": "/radar/2026-11-12#web3-reth-p2p-response-before-item-decode",
-    "source": {
-      "name": "Reth2.11.0 release",
-      "tier": "tier1",
-      "url": "https://github.com/paradigmxyz/reth/releases/tag/v2.11.0"
-    }
-  },
-  {
-    "id": "learning:web3-metamask-vault-valuations-found-cache",
-    "kind": "learning",
-    "date": "2026-11-12",
-    "domain": "web3",
-    "topic": "wallet_cex",
-    "title": "MetaMask估值服务2.4：已找到与未找到的批次，缓存时间分开",
-    "summary": "接口未找到对应估值，不等于该交易没有份额移动；历史估值和当前市价也不同。缓存寿命、缺失状态和单位必须一起解释，才能避免把未就绪数据当作稳定金额。",
-    "href": "/radar/2026-11-12#web3-metamask-vault-valuations-found-cache",
-    "source": {
-      "name": "MetaMask core1415 release",
-      "tier": "tier1",
-      "url": "https://github.com/MetaMask/core/releases/tag/v1415.0.0"
-    }
-  },
-  {
-    "id": "market:2026-11-12:ecb-refining-margins-energy-inflation-model-2026-11-11",
-    "kind": "market",
-    "date": "2026-11-12",
-    "domain": "market",
-    "topic": "market_macro",
-    "title": "ECB研究拆解炼油价差：原油假设下调不必带来能源通胀下调",
-    "summary": "研究推断：燃料价格可能经家庭支出与企业成本影响通胀分析，再联系相关资产；需逐环验证，不能只凭原油变化推断消费者价格、利率决定或资产方向。",
-    "href": "/market-radar/2026-11-12#ecb-refining-margins-energy-inflation-model-2026-11-11",
-    "source": {
-      "name": "ECB — Refining costs and margins in HICP energy inflation",
-      "url": "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_05~d82730508f.en.html"
-    },
-    "flags": {
-      "priority": "P1"
-    }
-  },
-  {
-    "id": "learning:ai-sdk-queue-approval-options-pending-decision",
-    "kind": "learning",
-    "date": "2026-11-11",
-    "domain": "ai",
-    "topic": "agent",
-    "title": "AI SDK 7.0.169：自动发送还在判定，消息队列就不能当作空闲",
-    "summary": "响应流结束和下一步决策结束是两个时刻；把中间窗口当空闲，容易让新消息越过审批或抢先启动另一请求。",
-    "href": "/radar/2026-11-11#ai-sdk-queue-approval-options-pending-decision",
-    "source": {
-      "name": "AI SDK ai7.0.169 release",
-      "tier": "tier1",
-      "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.169"
-    },
-    "flags": {
-      "deepDive": true
-    }
-  },
-  {
-    "id": "learning:ai-deepagents-git-attribution-probe-backoff",
-    "kind": "learning",
-    "date": "2026-11-11",
-    "domain": "ai",
-    "topic": "infrastructure",
-    "title": "DeepAgents Code 0.2.7：归属探针复用基线，连续失败后退避停用",
-    "summary": "辅助追踪不应在每次工具前后重复扫描，也不应在持续失败时拖慢主流程；减少探针仍要保留基线与观察顺序，才能解释归属证据。",
-    "href": "/radar/2026-11-11#ai-deepagents-git-attribution-probe-backoff",
-    "source": {
-      "name": "DeepAgents Code0.2.7 release",
-      "tier": "tier1",
-      "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.7"
-    }
-  },
-  {
-    "id": "learning:web3-op-reth-out-of-scope-health-quorum",
-    "kind": "learning",
-    "date": "2026-11-11",
-    "domain": "web3",
-    "topic": "l2",
-    "title": "op-reth 2.8.2：消息太新时保留up旧值，仍不能给quorum投票",
-    "summary": "端点能回应、能否判断当前消息、整组是否凑够确定性回答，是三件事；保留表针可减少误判，却不能替代当前消息的quorum证据。",
-    "href": "/radar/2026-11-11#web3-op-reth-out-of-scope-health-quorum",
-    "source": {
-      "name": "op-reth2.8.2 release",
-      "tier": "tier1",
-      "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-reth/v2.8.2"
-    }
-  },
-  {
-    "id": "learning:web3-metamask-chart-right-scale-detach",
-    "kind": "learning",
-    "date": "2026-11-11",
-    "domain": "web3",
-    "topic": "wallet_cex",
-    "title": "MetaMask图表1.1.1：已有右轴时，切图不再重复新建价格轴",
-    "summary": "可反复触发的布局同步若每次都创建新对象，会把显示层关系拆散；先识别已有结构，才能让初始化逻辑在更新时复用。",
-    "href": "/radar/2026-11-11#web3-metamask-chart-right-scale-detach",
-    "source": {
-      "name": "MetaMask core1413 release",
-      "tier": "tier1",
-      "url": "https://github.com/MetaMask/core/releases/tag/v1413.0.0"
-    }
-  },
-  {
-    "id": "market:2026-11-11:nyfed-q3-household-debt-reporting-stock-flow-2026-11-10",
-    "kind": "market",
-    "date": "2026-11-11",
-    "domain": "market",
-    "topic": "market_macro",
-    "title": "纽约联储三季家庭债务增至19.1万亿美元，补报与逾期口径须拆开",
-    "summary": "研究判断：债务偿付压力可能经家庭现金流、贷款损失和信贷可得性影响消费，再联系相关资产；需独立核对收入、实际支出及信贷表现，余额上升与逾期存量变化不能单独证明需求下降或资产方向。",
-    "href": "/market-radar/2026-11-11#nyfed-q3-household-debt-reporting-stock-flow-2026-11-10",
-    "source": {
-      "name": "New York Fed — Q3 2026 Household Debt and Credit",
-      "url": "https://www.newyorkfed.org/newsevents/news/research/2026/20261110"
-    },
-    "flags": {
-      "priority": "P1"
-    }
-  },
-  {
-    "id": "market:2026-11-10:fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
-    "kind": "market",
-    "date": "2026-11-10",
-    "domain": "market",
-    "topic": "market_regulation",
-    "title": "FinCEN与美联储撤回跨境250美元门槛提案",
-    "summary": "研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。",
-    "href": "/market-radar/2026-11-10#fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
-    "source": {
-      "name": "Federal Register / GPO — 2026-22809",
-      "url": "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-    },
-    "flags": {
-      "priority": "P1"
     }
   }
 ]
 export const intelTopics: IntelTopic[] = [
+  {
+    "topic": "agent",
+    "domain": "ai",
+    "count": 16,
+    "lastSeen": "2026-11-24",
+    "firstSeen": "2026-08-11"
+  },
+  {
+    "topic": "wallet_cex",
+    "domain": "web3",
+    "count": 14,
+    "lastSeen": "2026-11-24",
+    "firstSeen": "2026-08-10"
+  },
+  {
+    "topic": "infrastructure",
+    "domain": "ai",
+    "count": 13,
+    "lastSeen": "2026-11-24",
+    "firstSeen": "2026-10-29"
+  },
+  {
+    "topic": "security",
+    "domain": "web3",
+    "count": 13,
+    "lastSeen": "2026-11-24",
+    "firstSeen": "2026-08-10"
+  },
   {
     "topic": "onchain_infrastructure",
     "domain": "web3",
     "count": 16,
     "lastSeen": "2026-11-16",
     "firstSeen": "2026-08-11"
-  },
-  {
-    "topic": "agent",
-    "domain": "ai",
-    "count": 15,
-    "lastSeen": "2026-11-16",
-    "firstSeen": "2026-08-11"
-  },
-  {
-    "topic": "infrastructure",
-    "domain": "ai",
-    "count": 12,
-    "lastSeen": "2026-11-16",
-    "firstSeen": "2026-10-29"
-  },
-  {
-    "topic": "security",
-    "domain": "web3",
-    "count": 12,
-    "lastSeen": "2026-11-16",
-    "firstSeen": "2026-08-10"
   },
   {
     "topic": "market_regulation",
@@ -563,13 +136,6 @@ export const intelTopics: IntelTopic[] = [
     "count": 6,
     "lastSeen": "2026-11-15",
     "firstSeen": "2026-08-12"
-  },
-  {
-    "topic": "wallet_cex",
-    "domain": "web3",
-    "count": 13,
-    "lastSeen": "2026-11-14",
-    "firstSeen": "2026-08-10"
   },
   {
     "topic": "market_crypto",
