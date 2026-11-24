@@ -3,6 +3,156 @@
 import type { MarketRadarDaily } from '../generatedMarketRadars.ts'
 export const monthlyMarketRadars: MarketRadarDaily[] = [
   {
+    "date": "2026-11-25",
+    "slug": "2026-11-25",
+    "title": "交易研究雷达 · 2026-11-25",
+    "summary": "美联储11月24日实际发布工业产出年度修订，更新2022基期与历史基准。本期区分基期换算、跨年增长路径及行业修订，强调同版本比较，不把修订写成发布日增产或政策动作。自动汇总，未经人工复核。",
+    "snapshotId": "market-2026-11-25-51d935c7e16ded8e",
+    "asOf": "2026-11-24T21:41:30.101Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-24T21:41:30.101451Z",
+    "events": [
+      {
+        "id": "fed-g17-annual-revision-vintage-base-2026-11-24",
+        "priority": "P2",
+        "status": "released",
+        "category": "macro",
+        "title": "美联储工业产出年修订：基期与历史增长路径须分开",
+        "fact": "美联储11月24日发布G.17年度修订，纳入2023、2024年AIES基准及2025年利用率调查，将产出与产能指数基期更新为2022。修订后，2026年10月工业产出仍比2022年末高3.6%，与旧估计相同；2023、2024年增长率每年平均上修0.5个百分点，2025年下修0.5个百分点。除另注明外，年度变化率按上年第四季至当年第四季计算，不能当成年均同比或发布日期即时产出变化。",
+        "whyWatch": "研究推断：历史数据与行业构成的修订，可能先改变需求、产能约束及企业盈利的研究输入，再影响工业资产的估值判断；这是待验证的解释路径。基期换算本身不代表真实增产，累计总量变化未改也不代表各行业路径未变。",
+        "assets": [
+          "美国工业及设备企业股票"
+        ],
+        "watchFor": "用同一发布版本、期间与行业口径对齐产出、产能和利用率；分开核对基期换算、年度基准、季调与行业修订，再与企业订单、资本开支和利润披露交叉验证。原文对部分缺失或未公开调查数据使用估算。本期没有采集企业盈利、行情、资金流或因果样本。",
+        "invalidation": "若解释仅来自指数基期更换、混用新旧版本或把第四季变化率误当年均同比，应撤回并重算。若配套企业数据不支持需求或产能约束变化，则收窄传导解释；后续修订可能再改历史路径，不能据此认定新政策动作、当日景气冲击或资产方向。",
+        "sourceName": "Federal Reserve — Industrial Production and Capacity Utilization: The 2026 Annual Revision",
+        "sourceUrl": "https://www.federalreserve.gov/RELEASES/g17/Revisions/20261124/DefaultRev.htm",
+        "sourcePublishedAt": "2026-11-24"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.federalreserve.gov/RELEASES/g17/Revisions/20261124/DefaultRev.htm"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "实读11月24日美联储G.17年度修订与发布索引，核对基期、AIES年份、累计水平与第四季变化率口径；没有建立企业、行情或因果样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "3交易日只观察数据版本对齐和解释核查；固定资产弱信号标签只表示证据不足，不表示方向或实现概率。",
+      "nextValidation": "保存新旧发布版本，分行业比较同期间产出、产能与利用率，再补充企业订单、投资和利润证据，并隔离同期其他信息。",
+      "invalidation": "混用基期、版本或期间时撤回比较并重算；缺少配套企业及行情样本时保持未知，不能把统计修订当作即时经济冲击。",
+      "sourceUrls": [
+        "https://www.federalreserve.gov/RELEASES/g17/Revisions/20261124/DefaultRev.htm"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "历史产出与产能修订，经哪些可核对的研究输入和企业盈利环节，才可能影响工业资产的估值判断？",
+        "focusEventIds": [
+          "fed-g17-annual-revision-vintage-base-2026-11-24"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "怎样用同版本、同期间与同业口径，区分基期换算、历史路径变化和实际需求证据，推翻错误传导解释？",
+        "focusEventIds": [
+          "fed-g17-annual-revision-vintage-base-2026-11-24"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若累计产出判断未变、行业修订相互抵消或企业数据不支持变化，哪些观察应使景气与盈利解释收窄？",
+        "focusEventIds": [
+          "fed-g17-annual-revision-vintage-base-2026-11-24"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-25",
+      "snapshotId": "market-2026-11-25-51d935c7e16ded8e",
+      "asOf": "2026-11-24T21:41:30.101Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-25",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "历史产出与产能修订，经哪些可核对的研究输入和企业盈利环节，才可能影响工业资产的估值判断？",
+          "focusEventIds": [
+            "fed-g17-annual-revision-vintage-base-2026-11-24"
+          ],
+          "prompt": "研究任务：历史产出与产能修订，经哪些可核对的研究输入和企业盈利环节，才可能影响工业资产的估值判断？\n证据快照：2026-11-25；asOf=2026-11-24T21:41:30.101Z；snapshotId=market-2026-11-25-51d935c7e16ded8e\n\n材料 1｜美联储工业产出年修订：基期与历史增长路径须分开\n已确认事实：美联储11月24日发布G.17年度修订，纳入2023、2024年AIES基准及2025年利用率调查，将产出与产能指数基期更新为2022。修订后，2026年10月工业产出仍比2022年末高3.6%，与旧估计相同；2023、2024年增长率每年平均上修0.5个百分点，2025年下修0.5个百分点。除另注明外，年度变化率按上年第四季至当年第四季计算，不能当成年均同比或发布日期即时产出变化。\n关注机制：研究推断：历史数据与行业构成的修订，可能先改变需求、产能约束及企业盈利的研究输入，再影响工业资产的估值判断；这是待验证的解释路径。基期换算本身不代表真实增产，累计总量变化未改也不代表各行业路径未变。\n接下来验证：用同一发布版本、期间与行业口径对齐产出、产能和利用率；分开核对基期换算、年度基准、季调与行业修订，再与企业订单、资本开支和利润披露交叉验证。原文对部分缺失或未公开调查数据使用估算。本期没有采集企业盈利、行情、资金流或因果样本。\n失效条件：若解释仅来自指数基期更换、混用新旧版本或把第四季变化率误当年均同比，应撤回并重算。若配套企业数据不支持需求或产能约束变化，则收窄传导解释；后续修订可能再改历史路径，不能据此认定新政策动作、当日景气冲击或资产方向。\n一手来源：https://www.federalreserve.gov/RELEASES/g17/Revisions/20261124/DefaultRev.htm\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "59d434b313a09fafbe37c9c6b4636e812cb57bf86d412af16016aa50fee7a321",
+          "sourceUrls": [
+            "https://www.federalreserve.gov/RELEASES/g17/Revisions/20261124/DefaultRev.htm"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "怎样用同版本、同期间与同业口径，区分基期换算、历史路径变化和实际需求证据，推翻错误传导解释？",
+          "focusEventIds": [
+            "fed-g17-annual-revision-vintage-base-2026-11-24"
+          ],
+          "prompt": "研究任务：怎样用同版本、同期间与同业口径，区分基期换算、历史路径变化和实际需求证据，推翻错误传导解释？\n证据快照：2026-11-25；asOf=2026-11-24T21:41:30.101Z；snapshotId=market-2026-11-25-51d935c7e16ded8e\n\n材料 1｜美联储工业产出年修订：基期与历史增长路径须分开\n已确认事实：美联储11月24日发布G.17年度修订，纳入2023、2024年AIES基准及2025年利用率调查，将产出与产能指数基期更新为2022。修订后，2026年10月工业产出仍比2022年末高3.6%，与旧估计相同；2023、2024年增长率每年平均上修0.5个百分点，2025年下修0.5个百分点。除另注明外，年度变化率按上年第四季至当年第四季计算，不能当成年均同比或发布日期即时产出变化。\n关注机制：研究推断：历史数据与行业构成的修订，可能先改变需求、产能约束及企业盈利的研究输入，再影响工业资产的估值判断；这是待验证的解释路径。基期换算本身不代表真实增产，累计总量变化未改也不代表各行业路径未变。\n接下来验证：用同一发布版本、期间与行业口径对齐产出、产能和利用率；分开核对基期换算、年度基准、季调与行业修订，再与企业订单、资本开支和利润披露交叉验证。原文对部分缺失或未公开调查数据使用估算。本期没有采集企业盈利、行情、资金流或因果样本。\n失效条件：若解释仅来自指数基期更换、混用新旧版本或把第四季变化率误当年均同比，应撤回并重算。若配套企业数据不支持需求或产能约束变化，则收窄传导解释；后续修订可能再改历史路径，不能据此认定新政策动作、当日景气冲击或资产方向。\n一手来源：https://www.federalreserve.gov/RELEASES/g17/Revisions/20261124/DefaultRev.htm\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "7a54c01e5d3c2fcd8c7ef61d42c6fa979ed4c10b209324ba14047de7cb59de3b",
+          "sourceUrls": [
+            "https://www.federalreserve.gov/RELEASES/g17/Revisions/20261124/DefaultRev.htm"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若累计产出判断未变、行业修订相互抵消或企业数据不支持变化，哪些观察应使景气与盈利解释收窄？",
+          "focusEventIds": [
+            "fed-g17-annual-revision-vintage-base-2026-11-24"
+          ],
+          "prompt": "研究任务：若累计产出判断未变、行业修订相互抵消或企业数据不支持变化，哪些观察应使景气与盈利解释收窄？\n证据快照：2026-11-25；asOf=2026-11-24T21:41:30.101Z；snapshotId=market-2026-11-25-51d935c7e16ded8e\n\n材料 1｜美联储工业产出年修订：基期与历史增长路径须分开\n已确认事实：美联储11月24日发布G.17年度修订，纳入2023、2024年AIES基准及2025年利用率调查，将产出与产能指数基期更新为2022。修订后，2026年10月工业产出仍比2022年末高3.6%，与旧估计相同；2023、2024年增长率每年平均上修0.5个百分点，2025年下修0.5个百分点。除另注明外，年度变化率按上年第四季至当年第四季计算，不能当成年均同比或发布日期即时产出变化。\n关注机制：研究推断：历史数据与行业构成的修订，可能先改变需求、产能约束及企业盈利的研究输入，再影响工业资产的估值判断；这是待验证的解释路径。基期换算本身不代表真实增产，累计总量变化未改也不代表各行业路径未变。\n接下来验证：用同一发布版本、期间与行业口径对齐产出、产能和利用率；分开核对基期换算、年度基准、季调与行业修订，再与企业订单、资本开支和利润披露交叉验证。原文对部分缺失或未公开调查数据使用估算。本期没有采集企业盈利、行情、资金流或因果样本。\n失效条件：若解释仅来自指数基期更换、混用新旧版本或把第四季变化率误当年均同比，应撤回并重算。若配套企业数据不支持需求或产能约束变化，则收窄传导解释；后续修订可能再改历史路径，不能据此认定新政策动作、当日景气冲击或资产方向。\n一手来源：https://www.federalreserve.gov/RELEASES/g17/Revisions/20261124/DefaultRev.htm\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "701dafd56f527d960f7465c88d10421c4c4ec0d59c9858962af2c758711a5d00",
+          "sourceUrls": [
+            "https://www.federalreserve.gov/RELEASES/g17/Revisions/20261124/DefaultRev.htm"
+          ]
+        }
+      ]
+    }
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "title": "交易研究雷达 · 2026-11-16",

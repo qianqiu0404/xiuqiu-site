@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-11-25:fed-g17-annual-revision-vintage-base-2026-11-24",
+    "kind": "market",
+    "date": "2026-11-25",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "美联储工业产出年修订：基期与历史增长路径须分开",
+    "summary": "研究推断：历史数据与行业构成的修订，可能先改变需求、产能约束及企业盈利的研究输入，再影响工业资产的估值判断；这是待验证的解释路径。基期换算本身不代表真实增产，累计总量变化未改也不代表各行业路径未变。",
+    "href": "/market-radar/2026-11-25#fed-g17-annual-revision-vintage-base-2026-11-24",
+    "source": {
+      "name": "Federal Reserve — Industrial Production and Capacity Utilization: The 2026 Annual Revision",
+      "url": "https://www.federalreserve.gov/RELEASES/g17/Revisions/20261124/DefaultRev.htm"
+    },
+    "flags": {
+      "priority": "P2"
+    }
+  },
+  {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
     "date": "2026-11-16",
