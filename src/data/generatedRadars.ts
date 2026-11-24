@@ -12,6 +12,48 @@ export interface RadarIndexEntry { date: string; slug: string; snapshotId: strin
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-11-25",
+    "slug": "2026-11-25",
+    "snapshotId": "learning-2026-11-25-bb0b2dbbbfb5b67f",
+    "asOf": "2026-11-24T21:41:01.323Z",
+    "title": "学习雷达 · 2026-11-25",
+    "summary": "本期为自动汇总，未经人工复核。工具参数的非有限数拒绝、流式累计用量、服务返回的网络支持清单，以及授权签名表示的兼容边界。",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "briefs": [
+      {
+        "id": "ai-openai-python-nonfinite-agent-tool-arguments",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "OpenAI Python 3.59：工具参数解码以后，非有限数仍须在调用前拒绝"
+      },
+      {
+        "id": "ai-pydantic-gemini-stream-usage-running-totals",
+        "domain": "ai",
+        "topic": "infrastructure",
+        "title": "Pydantic AI 2.74：流里反复报告累计用量，不能再逐块相加"
+      },
+      {
+        "id": "web3-metamask-social-supported-networks-response",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "MetaMask social 3.24：网络支持清单由服务返回，响应形状仍先校验"
+      },
+      {
+        "id": "web3-viem-erc8010-legacy-v-parity-fallback",
+        "domain": "web3",
+        "topic": "security",
+        "title": "viem 2.58.6：授权只有v时，ERC-8010封装先补齐恢复奇偶位"
+      }
+    ],
+    "deepDive": {
+      "id": "deep-running-usage-delta-budget-evidence",
+      "title": "专题：用量数字变小，为什么还不能宣布Agent成本下降？",
+      "basedOnBriefId": "ai-pydantic-gemini-stream-usage-running-totals"
+    },
+    "marketSignals": []
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "snapshotId": "learning-2026-11-16-20147f94783c1b8e",
@@ -1992,6 +2034,376 @@ export const radarIndex: RadarIndexEntry[] = [
 ]
 
 export const latestRadars: DailyRadar[] = [
+  {
+    "date": "2026-11-25",
+    "slug": "2026-11-25",
+    "title": "学习雷达 · 2026-11-25",
+    "summary": "本期为自动汇总，未经人工复核。工具参数的非有限数拒绝、流式累计用量、服务返回的网络支持清单，以及授权签名表示的兼容边界。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-11-24T21:41:01.323Z",
+    "generatedAt": "2026-11-24T21:41:01.323Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-openai-python-nonfinite-agent-tool-arguments",
+        "domain": "ai",
+        "topic": "agent",
+        "title": "OpenAI Python 3.59：工具参数解码以后，非有限数仍须在调用前拒绝",
+        "whatHappened": "OpenAI Python SDK于11月24日（UTC）发布3.59.0，包含同日合入的PR4326。beta Agent会话的本地工具调用在解析参数后，新增对非有限浮点数的递归检查；保留合入与发布两个时点，不写成11月25日API新增能力。",
+        "mechanism": "字符串参数先json.loads，对象参数先深拷贝，再要求外层是字典。检查器遍历字典值与列表元素，发现NaN或正负无穷浮点数便抛ValueError；ToolInvocation在arguments返回之后才切换到execution并调用handler，因此这类输入在进入本地函数前失败。",
+        "workedExample": "固定回归把NaN、-Infinity和会溢出为无穷的1e999放进JSON数组，也给出对象中直接包含inf的样例；断言handler调用列表为空，返回success=false及固定错误文本。同步与异步SDK共用参数化测试。本期只读源码与断言，没有调用API或运行上游测试。",
+        "whyItMatters": "能够解码为Python对象，不证明数值适合驱动后续动作。工程上可把解析、数值约束、业务校验和执行分开记录，在调用有副作用的本地工具前保留明确拒绝点。",
+        "risksAndLimits": [
+          "检查仅拒绝遍历到的非有限float；有限数也可能超出业务范围，整数精度、单位、权限和幂等性仍需各工具单独约束，不能据此称工具参数已全面安全。",
+          "失败回给模型的是既有通用错误，不包含本次ValueError的详情；诊断可结合AgentToolError的arguments阶段。本期未验证真实服务、部署版本或实际副作用。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "openai/openai-python v3.59.0",
+            "url": "https://github.com/openai/openai-python/releases/tag/v3.59.0",
+            "publishedAt": "2026-11-24T19:18:59.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "openai/openai-python PR4326",
+            "url": "https://github.com/openai/openai-python/pull/4326"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Argument validation before tool invocation",
+            "url": "https://github.com/openai/openai-python/blob/d296ec3be3a98b225d391ef81717b20320f9b598/src/openai/lib/streaming/agents/_tools.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Non-finite arguments skip local handler assertions",
+            "url": "https://github.com/openai/openai-python/blob/d296ec3be3a98b225d391ef81717b20320f9b598/tests/lib/streaming/agents/test_streams.py"
+          }
+        ],
+        "nextQuestions": [
+          "工具调用记录能否同时保存解析是否成功、数值与业务约束是否成立，以及本地函数有没有真正开始执行？"
+        ]
+      },
+      {
+        "id": "ai-pydantic-gemini-stream-usage-running-totals",
+        "domain": "ai",
+        "topic": "infrastructure",
+        "title": "Pydantic AI 2.74：流里反复报告累计用量，不能再逐块相加",
+        "whatHappened": "Pydantic AI于11月24日（UTC）发布2.74.0，包含同日合入的PR14285。通过OpenAIProvider流式调用名称以gemini开头的模型时，OpenAIChatModel改用每块报告的累计用量替换旧值，修正重复累加。",
+        "mechanism": "provider为gemini前缀设置openai_chat_streaming_repeats_usage_totals；流映射在该标记或continuous_usage_stats生效时采用cumulative路径。缺少usage的中间块不覆盖已有记录。标记也作用于自定义base_url，但共享openai_model_profile保持默认关闭。",
+        "workedExample": "固定录制回归有七个块，各报14个输入token，输出累计从2增至110。测试断言最终为14/110，而非把块相加得到98/455；另有模拟回归验证缺usage块保留旧累计值，以及显式关闭标记后对增量块正常求和。本期未请求模型、重放录制或运行上游测试。",
+        "whyItMatters": "Token计数会影响成本展示与UsageLimits。修改统计方式后，旧阈值触发时间可能变化，需要对照真实endpoint的计量口径复核；显示数字下降本身不证明实际请求更便宜。",
+        "risksAndLimits": [
+          "gemini前缀匹配包含自定义endpoint，若该服务发的是逐块增量，应显式关闭此profile字段；google/gemini前缀没有自动命中，其他provider也不能直接套用本结论。",
+          "PR说明该兼容endpoint的completion_tokens仍可能不含thinking tokens。本修复不证明账单完整或预算绝不超限；录制与模拟断言也不覆盖所有代理服务。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "pydantic/pydantic-ai v2.74.0",
+            "url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.74.0",
+            "publishedAt": "2026-11-24T21:24:29.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "pydantic/pydantic-ai PR14285",
+            "url": "https://github.com/pydantic/pydantic-ai/pull/14285"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Replace cumulative usage without erasing usage-less chunks",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/c504f52321a5ce7bdcab9600c6cf621c23d40ff7/pydantic_ai_slim/pydantic_ai/models/openai/_chat_streaming.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Provider profile selects bare gemini names",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/c504f52321a5ce7bdcab9600c6cf621c23d40ff7/pydantic_ai_slim/pydantic_ai/providers/openai.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Usage contract and custom endpoint opt-out",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/c504f52321a5ce7bdcab9600c6cf621c23d40ff7/pydantic_ai_slim/pydantic_ai/profiles/openai.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Recorded totals and synthetic delta assertions",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/c504f52321a5ce7bdcab9600c6cf621c23d40ff7/tests/models/test_openai_stream.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Provider and shared-profile scope assertions",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/c504f52321a5ce7bdcab9600c6cf621c23d40ff7/tests/profiles/test_openai.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Streamed usage compatibility guidance",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/c504f52321a5ce7bdcab9600c6cf621c23d40ff7/docs/models/compatible-apis.md"
+          }
+        ],
+        "nextQuestions": [
+          "每个接入endpoint能否声明usage是累计还是增量，并用原始流与最终服务账单分别核对展示和预算阈值？"
+        ]
+      },
+      {
+        "id": "web3-metamask-social-supported-networks-response",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "MetaMask social 3.24：网络支持清单由服务返回，响应形状仍先校验",
+        "whatHappened": "MetaMask Core于11月24日（UTC）发布v1452.0.0，其中social-controllers 3.24.0新增fetchSupportedNetworks及同名messenger动作。客户端可读取social-api的全支持与部分支持网络清单；这是新增只读查询，发布包本身不证明服务端已在每个环境部署。",
+        "mechanism": "SocialService先取认证header，再GET /v1/supportedNetworks；非OK响应沿HTTP错误路径失败。成功JSON按SupportedNetworksResponseStruct检查，两组字段都必须是CAIP-2链ID数组，通过后返回fullSupport和partialSupport，保留两类含义。",
+        "workedExample": "固定模拟测试分别给出正确响应、401、fullSupport含数字，以及partialSupport含非法链ID；后两种即使HTTP 200也要求拒绝。另有messenger调用断言返回相同结果。本期只读测试，没有获取用户token或请求实际social-api。",
+        "whyItMatters": "网络列表从客户端硬编码迁到服务契约后，HTTP成功与可用支持清单仍是两层判断。接入界面可以按全支持、部分支持和查询失败分别显示，不把加载失败自动当成无支持网络。",
+        "risksAndLimits": [
+          "CAIP-2格式通过，只说明响应结构符合客户端契约；没有逐项证明实际功能、用户资格或每条链当前可用，也没有把partialSupport升级为全支持。",
+          "PR明确提醒依赖服务端endpoint先部署。本期未读取其私有后端、验证各环境部署或Mobile接入，不从mock样例推定线上支持哪些网络。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "MetaMask/core v1452.0.0",
+            "url": "https://github.com/MetaMask/core/releases/tag/v1452.0.0",
+            "publishedAt": "2026-11-24T17:07:14.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "MetaMask/core PR11743",
+            "url": "https://github.com/MetaMask/core/pull/11743"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Authenticated supported network query and validation",
+            "url": "https://github.com/MetaMask/core/blob/6419fd782ae111f7b15e26974b5e155fa8356fe5/packages/social-controllers/src/SocialService.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "CAIP-2 arrays response schema",
+            "url": "https://github.com/MetaMask/core/blob/6419fd782ae111f7b15e26974b5e155fa8356fe5/packages/social-controllers/src/structs.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Full and partial support result contract",
+            "url": "https://github.com/MetaMask/core/blob/6419fd782ae111f7b15e26974b5e155fa8356fe5/packages/social-controllers/src/social-types.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "HTTP failure malformed response and messenger assertions",
+            "url": "https://github.com/MetaMask/core/blob/6419fd782ae111f7b15e26974b5e155fa8356fe5/packages/social-controllers/src/SocialService.test.ts"
+          }
+        ],
+        "nextQuestions": [
+          "消费方能否保留查询失败与有效空数组的区别，并在使用具体社交功能前核对该功能的支持范围？"
+        ]
+      },
+      {
+        "id": "web3-viem-erc8010-legacy-v-parity-fallback",
+        "domain": "web3",
+        "topic": "security",
+        "title": "viem 2.58.6：授权只有v时，ERC-8010封装先补齐恢复奇偶位",
+        "whatHappened": "viem于11月24日（UTC）发布2.58.6，收录11月23日合入的PR5645。serializeErc8010Signature不再假定authorization一定提供yParity；只有v的受支持签名形状也可进入封装。",
+        "mechanism": "封装前先采用已有yParity，缺失时调用Signature.vToYParity从v推导，再交给SignatureErc8010.wrap；原有nonce、r和s仍转换为BigInt。这里修复的是两种签名表示进入封装时的兼容路径。",
+        "workedExample": "固定测试先生成同一份授权与消息签名，然后去掉yParity、补v=27n，断言序列化结果与原授权完全相同。它还保留原来的完整输出快照。本期只读测试，不签名、不连接钱包、不广播交易，也未执行上游测试。",
+        "whyItMatters": "类型允许的输入形状，必须沿运行时路径得到同样支持。钱包或签名适配器接入时，可以保留原始表示及规范化结果，避免只因缺少重复字段而在封装阶段失败。",
+        "risksAndLimits": [
+          "已有yParity优先；修复没有增加v与yParity同时存在时的一致性检查，不能把本测试写成所有矛盾或非法签名都已拒绝。",
+          "回归新增的是v=27n这一具体样例，不证明所有v值、签名来源或链上场景均有效。成功封装也不证明nonce、链ID、授权权限或最终链上执行已被验证。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "wevm/viem viem@2.58.6",
+            "url": "https://github.com/wevm/viem/releases/tag/viem%402.58.6",
+            "publishedAt": "2026-11-24T02:50:07.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "wevm/viem PR5645",
+            "url": "https://github.com/wevm/viem/pull/5645"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Parity fallback for ERC-8010 authorization wrapping",
+            "url": "https://github.com/wevm/viem/blob/e0f3e8fa673d5335b3364ed526c9b57520e8b1d2/src/utils/signature/serializeErc8010Signature.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Equivalent serialization with v-only authorization",
+            "url": "https://github.com/wevm/viem/blob/e0f3e8fa673d5335b3364ed526c9b57520e8b1d2/src/utils/signature/serializeErc8010Signature.test.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Signed authorization type uses the signature union",
+            "url": "https://github.com/wevm/viem/blob/e0f3e8fa673d5335b3364ed526c9b57520e8b1d2/src/types/authorization.ts"
+          }
+        ],
+        "nextQuestions": [
+          "适配器能否为不同签名表示建立等价样例，并另行检查冲突字段、授权上下文与实际执行回执？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-running-usage-delta-budget-evidence",
+      "domain": "ai",
+      "topic": "infrastructure",
+      "title": "专题：用量数字变小，为什么还不能宣布Agent成本下降？",
+      "whatHappened": "Pydantic AI 2.74修正同一份流里累计token被反复相加的问题。专题沿固定实现把流块的计量口径、客户端汇总和服务最终计费分开，避免把统计修复包装成模型效率提升。",
+      "mechanism": "若每块表示到目前为止的总量，应替换旧累计值；若每块只表示新增量，才应求和。新profile明确选择前一种解释，usage缺失时保留上一份累计值；只看字段同名或接口兼容，不能推定所有endpoint遵守相同含义。",
+      "workedExample": "录制回归的14/110是最终累计输入和输出；旧相加法得到98/455。另一个模拟回归显式关闭profile，以10/5、0/5、0/5三个增量块得到10/15。两组样例分别核对各自契约，不能互换。工程推断：预算回归应保存原始块、汇总方式和阈值触发点，再与独立账单核对。",
+      "whyItMatters": "Agent成本面板和执行限额可能共用同一用量对象。修复虚高统计会改变展示及触发时机，却没有减少这次请求实际生成的token；预算策略应基于正确口径重新核对。",
+      "risksAndLimits": [
+        "自动选择仅按provider与gemini名称前缀，不识别自定义endpoint的实际协议。兼容接口若发送增量，错误采用替换会少计；测试中的opt-out是模拟覆盖，不能说已验证所有代理。",
+        "thinking tokens仍有endpoint报告范围的限制，客户端数字与完整账单可能存在差异。本期未调用模型、运行账单比对或验证任何实际费用节省。",
+        "此处聚焦同一次响应内累计值与增量的聚合，不涵盖跨重试重复记账、并发预算准入或工具副作用限额。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "pydantic/pydantic-ai v2.74.0",
+          "url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.74.0",
+          "publishedAt": "2026-11-24T21:24:29.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "pydantic/pydantic-ai PR14285",
+          "url": "https://github.com/pydantic/pydantic-ai/pull/14285"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Replace cumulative usage without erasing usage-less chunks",
+          "url": "https://github.com/pydantic/pydantic-ai/blob/c504f52321a5ce7bdcab9600c6cf621c23d40ff7/pydantic_ai_slim/pydantic_ai/models/openai/_chat_streaming.py"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Provider profile selects bare gemini names",
+          "url": "https://github.com/pydantic/pydantic-ai/blob/c504f52321a5ce7bdcab9600c6cf621c23d40ff7/pydantic_ai_slim/pydantic_ai/providers/openai.py"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Usage contract and custom endpoint opt-out",
+          "url": "https://github.com/pydantic/pydantic-ai/blob/c504f52321a5ce7bdcab9600c6cf621c23d40ff7/pydantic_ai_slim/pydantic_ai/profiles/openai.py"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Recorded totals and synthetic delta assertions",
+          "url": "https://github.com/pydantic/pydantic-ai/blob/c504f52321a5ce7bdcab9600c6cf621c23d40ff7/tests/models/test_openai_stream.py"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Provider and shared-profile scope assertions",
+          "url": "https://github.com/pydantic/pydantic-ai/blob/c504f52321a5ce7bdcab9600c6cf621c23d40ff7/tests/profiles/test_openai.py"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Streamed usage compatibility guidance",
+          "url": "https://github.com/pydantic/pydantic-ai/blob/c504f52321a5ce7bdcab9600c6cf621c23d40ff7/docs/models/compatible-apis.md"
+        }
+      ],
+      "nextQuestions": [
+        "能否为每个endpoint保留一份带日期的计量契约与只读流样本，让成本展示、执行预算和最终账单分别有证据可查？"
+      ],
+      "basedOnBriefId": "ai-pydantic-gemini-stream-usage-running-totals"
+    },
+    "sourceUrls": [
+      "https://github.com/openai/openai-python/releases/tag/v3.59.0",
+      "https://github.com/openai/openai-python/pull/4326",
+      "https://github.com/openai/openai-python/blob/d296ec3be3a98b225d391ef81717b20320f9b598/src/openai/lib/streaming/agents/_tools.py",
+      "https://github.com/openai/openai-python/blob/d296ec3be3a98b225d391ef81717b20320f9b598/tests/lib/streaming/agents/test_streams.py",
+      "https://github.com/pydantic/pydantic-ai/releases/tag/v2.74.0",
+      "https://github.com/pydantic/pydantic-ai/pull/14285",
+      "https://github.com/pydantic/pydantic-ai/blob/c504f52321a5ce7bdcab9600c6cf621c23d40ff7/pydantic_ai_slim/pydantic_ai/models/openai/_chat_streaming.py",
+      "https://github.com/pydantic/pydantic-ai/blob/c504f52321a5ce7bdcab9600c6cf621c23d40ff7/pydantic_ai_slim/pydantic_ai/providers/openai.py",
+      "https://github.com/pydantic/pydantic-ai/blob/c504f52321a5ce7bdcab9600c6cf621c23d40ff7/pydantic_ai_slim/pydantic_ai/profiles/openai.py",
+      "https://github.com/pydantic/pydantic-ai/blob/c504f52321a5ce7bdcab9600c6cf621c23d40ff7/tests/models/test_openai_stream.py",
+      "https://github.com/pydantic/pydantic-ai/blob/c504f52321a5ce7bdcab9600c6cf621c23d40ff7/tests/profiles/test_openai.py",
+      "https://github.com/pydantic/pydantic-ai/blob/c504f52321a5ce7bdcab9600c6cf621c23d40ff7/docs/models/compatible-apis.md",
+      "https://github.com/MetaMask/core/releases/tag/v1452.0.0",
+      "https://github.com/MetaMask/core/pull/11743",
+      "https://github.com/MetaMask/core/blob/6419fd782ae111f7b15e26974b5e155fa8356fe5/packages/social-controllers/src/SocialService.ts",
+      "https://github.com/MetaMask/core/blob/6419fd782ae111f7b15e26974b5e155fa8356fe5/packages/social-controllers/src/structs.ts",
+      "https://github.com/MetaMask/core/blob/6419fd782ae111f7b15e26974b5e155fa8356fe5/packages/social-controllers/src/social-types.ts",
+      "https://github.com/MetaMask/core/blob/6419fd782ae111f7b15e26974b5e155fa8356fe5/packages/social-controllers/src/SocialService.test.ts",
+      "https://github.com/wevm/viem/releases/tag/viem%402.58.6",
+      "https://github.com/wevm/viem/pull/5645",
+      "https://github.com/wevm/viem/blob/e0f3e8fa673d5335b3364ed526c9b57520e8b1d2/src/utils/signature/serializeErc8010Signature.ts",
+      "https://github.com/wevm/viem/blob/e0f3e8fa673d5335b3364ed526c9b57520e8b1d2/src/utils/signature/serializeErc8010Signature.test.ts",
+      "https://github.com/wevm/viem/blob/e0f3e8fa673d5335b3364ed526c9b57520e8b1d2/src/types/authorization.ts"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-11-25-bb0b2dbbbfb5b67f",
+    "asOf": "2026-11-24T21:41:01.323Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
   {
     "date": "2026-11-16",
     "slug": "2026-11-16",
@@ -3981,293 +4393,6 @@ export const latestRadars: DailyRadar[] = [
     "marketSignals": [],
     "snapshotId": "learning-2026-11-11-3323ecfb854f3355",
     "asOf": "2026-11-10T21:38:26.706Z",
-    "origin": "research",
-    "publicationState": "published"
-  },
-  {
-    "date": "2026-11-09",
-    "slug": "2026-11-09",
-    "title": "学习雷达 · 2026-11-09",
-    "summary": "AI看遥测跨层前的URL净化与当前模型预算；Web3看HTTP批次配置归属与对象资金执行期失败。补读尚未覆盖的固定发布快照，保留原日期；专题核对观察者接收数据的时点。",
-    "publish": true,
-    "reviewStatus": "automated",
-    "schemaVersion": 2,
-    "editionMode": "daily",
-    "researchedAt": "2026-11-08T21:37:39.755Z",
-    "generatedAt": "2026-11-08T21:37:39.755Z",
-    "sourceSections": [
-      "ai",
-      "web3",
-      "deepDive"
-    ],
-    "missingSections": [],
-    "briefs": [
-      {
-        "id": "ai-sdk-telemetry-url-boundary",
-        "domain": "ai",
-        "topic": "safety",
-        "title": "AI SDK 7.0.165：遥测拿到模型结果之前，先缩减请求 URL",
-        "whatHappened": "AI SDK于11月7日（UTC）发布7.0.165：generateText与streamText此前虽已缩减公开结果URL，遥测integration和tracing subscriber仍可能更早看到原始端点。",
-        "mechanism": "provider回调返回前复制结果并净化request.url：HTTP(S)仅留origin，无效或非HTTP(S)地址省略url。用户信息、路径、query、fragment被去掉；body等元数据保留，原provider对象不变。",
-        "workedExample": "上游mock在两个观察者接收时即时复制request，检查URL净化及原对象未变。本期只读断言，未运行模型或本地复现。",
-        "whyItMatters": "最终输出不能覆盖更早的观察者；应逐接收者核对字段与脱敏时点。",
-        "risksAndLimits": [
-          "仅修两条文本生成路径的URL元数据，不保证headers、body、业务日志或WorkflowAgent安全。",
-          "origin仍暴露主机与端口；本期未验证生产部署或过去数据的撤回。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "AI SDK release",
-            "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-            "publishedAt": "2026-11-07T19:27:48.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR24708",
-            "url": "https://github.com/vercel/ai/pull/24708"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "generateText boundary",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/generate-text.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "URL sanitizer",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/get-request-origin.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "Immediate tracing tests",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts"
-          }
-        ],
-        "nextQuestions": [
-          "接收者的字段范围与脱敏时点如何分别核验？"
-        ]
-      },
-      {
-        "id": "ai-deepagents-selected-model-budget",
-        "domain": "ai",
-        "topic": "infrastructure",
-        "title": "deepagents-code 0.2.5：压缩输入预算跟随当前选定模型",
-        "whatHappened": "0.2.5于11月5日（UTC）发布，修复切换模型仍按启动模型判断压缩的问题，与已刊摘要截点修复不同。",
-        "mechanism": "同步/异步用临时请求核算选定模型与运行期settings的预算；交给handler前恢复原model/settings，让下游中间件继续真正选择模型。",
-        "workedExample": "上游mock矩阵：启动128K转32K，26K输入加8K输出预留需压缩，改2K则不压缩；还检查下游与原请求。本期只读，未运行模型/测试。",
-        "whyItMatters": "切换模型也改变预算；预算准备和最终执行要分开核验，保留下游配置。",
-        "risksAndLimits": [
-          "数字是上游合成断言，不是本期实测窗口、精确token数或延迟收益；provider限制仍需另验。",
-          "预算依据主模型，摘要生成可另选模型；不证明摘要完整或会话恢复正确。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "deepagents-code release",
-            "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5",
-            "publishedAt": "2026-11-05T21:41:43.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR7545",
-            "url": "https://github.com/langchain-ai/deepagents/pull/7545"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Budget request code",
-            "url": "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/deepagents_code/offload_middleware.py"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "Budget matrix tests",
-            "url": "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/tests/unit_tests/test_compact_tool.py"
-          }
-        ],
-        "nextQuestions": [
-          "预算来自当前配置，最终模型选择是否仍走原流程？"
-        ]
-      },
-      {
-        "id": "web3-viem-http-batch-factory-identity",
-        "domain": "web3",
-        "topic": "onchain_infrastructure",
-        "title": "viem 2.57.17：同一 RPC URL，不再把不同 transport 的批次混用",
-        "whatHappened": "viem于11月8日（UTC）发布2.57.17，修复同URL下独立HTTP工厂合批时混用鉴权头与fetch配置的问题。",
-        "mechanism": "调度键组合稳定工厂batchId、实际URL和AbortSignal身份。ID位于initializer外，fallback重初始化同工厂仍合批；独立工厂保留各自RPC配置。",
-        "workedExample": "上游本地鉴权A/B返回1和10，覆盖直接/fallback分离、同工厂共享与URL/signal分离。本期只读，未连RPC或发交易。",
-        "whyItMatters": "相同地址不等于同一调用者；批处理仍需保持鉴权配置和响应归属。",
-        "risksAndLimits": [
-          "这是工厂批次隔离，不是租户认证、链ID校验或WebSocket订阅路由；1和10为本地测试值。",
-          "相同配置的独立工厂也不自动合批；共享需复用工厂并审查配置，不表示写请求可安全重试。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "viem release",
-            "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.17",
-            "publishedAt": "2026-11-08T18:04:10.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR5389",
-            "url": "https://github.com/wevm/viem/pull/5389"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "HTTP factory code",
-            "url": "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "HTTP batch tests",
-            "url": "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.test.ts"
-          }
-        ],
-        "nextQuestions": [
-          "哪些客户端应共享工厂，如何核验配置归属？"
-        ]
-      },
-      {
-        "id": "web3-sui-object-funds-execution-abort",
-        "domain": "web3",
-        "topic": "protocol",
-        "title": "Sui mainnet 1.83.1：对象资金不足，在执行期间形成 Move abort",
-        "whatHappened": "Sui于11月4日（UTC）发布mainnet1.83.1，其protocol140配置让对象资金不足在执行期abort，替代旧检查/重执行。PR于10月20日合入，非当天首创。",
-        "mechanism": "版本化设计先看交易内owner/type余额；不足时按所需accumulator版本读取已结算余额、扣除同commit未结算提款。仍不足则abort；地址调度独立。",
-        "workedExample": "文档中dry-run/孤立replay缺少同commit未结算视图，可能成功而提交执行不足失败。本期只读配置/设计，未运行节点、模拟、回放或资金操作。",
-        "whyItMatters": "模拟成功不能代替执行回执；应区分状态视图、失败阶段与错误类型。",
-        "risksAndLimits": [
-          "对象虚拟余额不足形成Move abort；地址资金执行前调度仍可返回InsufficientFundsForWithdraw。",
-          "文档说明已执行失败可正常收gas；未验证真实主网部署、账户余额或资金安全，孤立replay差异另项追踪。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "Sui mainnet release",
-            "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1",
-            "publishedAt": "2026-11-04T20:01:16.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR28290",
-            "url": "https://github.com/MystenLabs/sui/pull/28290"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Protocol140 config",
-            "url": "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-protocol-config/src/lib.rs"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_design",
-            "name": "Object funds design",
-            "url": "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-core/src/accumulators/design_docs/object_funds_in_execution.md"
-          }
-        ],
-        "nextQuestions": [
-          "三种视图的版本、扣减及对象/地址错误如何分别识别？"
-        ]
-      }
-    ],
-    "deepDive": {
-      "id": "deep-telemetry-observer-sanitization-order",
-      "domain": "ai",
-      "topic": "safety",
-      "title": "专题：最终结果已脱敏，为什么中途观察者仍可能看到原值",
-      "whatHappened": "7.0.165把URL净化前移至provider回调返回前；遥测integration/tracing不再早于公开API看到这一路径的原始request.url。",
-      "mechanism": "只在外层净化时，包装器await execute()后会先见原request。现在生成/流式启动先返回净化元数据，再入遥测；实际请求端点不变。",
-      "workedExample": "上游在integration/asyncEnd即时复制request，避免结束后只查可变引用；还冻结并检查原对象。本期只读，未运行模型或复现。",
-      "whyItMatters": "编辑推论：跨观察边界前处理并逐接收者留证，最终输出只证明自身。",
-      "risksAndLimits": [
-        "未审查全部sink、WorkflowAgent或业务日志；保留的body/其他元数据仍可能有敏感内容，URL净化不是全量隐私保证。",
-        "代码断言不证明已部署、已清理历史遥测或撤回已发送数据。"
-      ],
-      "sources": [
-        {
-          "tier": "tier1",
-          "role": "event",
-          "kind": "official_release",
-          "name": "AI SDK release",
-          "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-          "publishedAt": "2026-11-07T19:27:48.000Z"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_code",
-          "name": "streamText boundary",
-          "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/stream-language-model-call.ts"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_test",
-          "name": "Immediate tracing tests",
-          "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts"
-        }
-      ],
-      "nextQuestions": [
-        "即时接收的字段、处理时点与保留规则是否有证据？"
-      ],
-      "basedOnBriefId": "ai-sdk-telemetry-url-boundary"
-    },
-    "sourceUrls": [
-      "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-      "https://github.com/vercel/ai/pull/24708",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/generate-text.ts",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/get-request-origin.ts",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts",
-      "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5",
-      "https://github.com/langchain-ai/deepagents/pull/7545",
-      "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/deepagents_code/offload_middleware.py",
-      "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/tests/unit_tests/test_compact_tool.py",
-      "https://github.com/wevm/viem/releases/tag/viem%402.57.17",
-      "https://github.com/wevm/viem/pull/5389",
-      "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.ts",
-      "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.test.ts",
-      "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1",
-      "https://github.com/MystenLabs/sui/pull/28290",
-      "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-protocol-config/src/lib.rs",
-      "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-core/src/accumulators/design_docs/object_funds_in_execution.md",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/stream-language-model-call.ts"
-    ],
-    "relatedProjectSlugs": [],
-    "marketSignals": [],
-    "snapshotId": "learning-2026-11-09-bd83a5cc7fff3983",
-    "asOf": "2026-11-08T21:37:39.755Z",
     "origin": "research",
     "publicationState": "published"
   }

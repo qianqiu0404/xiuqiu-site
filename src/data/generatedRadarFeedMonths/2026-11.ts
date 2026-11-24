@@ -5,6 +5,55 @@ import type { RadarFeedItem } from '../generatedRadarFeed.ts'
 
 export const monthlyFeedItems: RadarFeedItem[] = [
   {
+    "id": "ai-openai-python-nonfinite-agent-tool-arguments",
+    "date": "2026-11-25",
+    "domain": "ai",
+    "topic": "agent",
+    "title": "OpenAI Python 3.59：工具参数解码以后，非有限数仍须在调用前拒绝",
+    "summary": "能够解码为Python对象，不证明数值适合驱动后续动作。工程上可把解析、数值约束、业务校验和执行分开记录，在调用有副作用的本地工具前保留明确拒绝点。",
+    "anchor": "ai-openai-python-nonfinite-agent-tool-arguments",
+    "sourceName": "openai/openai-python v3.59.0",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/openai/openai-python/releases/tag/v3.59.0"
+  },
+  {
+    "id": "ai-pydantic-gemini-stream-usage-running-totals",
+    "date": "2026-11-25",
+    "domain": "ai",
+    "topic": "infrastructure",
+    "title": "Pydantic AI 2.74：流里反复报告累计用量，不能再逐块相加",
+    "summary": "Token计数会影响成本展示与UsageLimits。修改统计方式后，旧阈值触发时间可能变化，需要对照真实endpoint的计量口径复核；显示数字下降本身不证明实际请求更便宜。",
+    "anchor": "ai-pydantic-gemini-stream-usage-running-totals",
+    "sourceName": "pydantic/pydantic-ai v2.74.0",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.74.0",
+    "isDeepDive": true
+  },
+  {
+    "id": "web3-metamask-social-supported-networks-response",
+    "date": "2026-11-25",
+    "domain": "web3",
+    "topic": "wallet_cex",
+    "title": "MetaMask social 3.24：网络支持清单由服务返回，响应形状仍先校验",
+    "summary": "网络列表从客户端硬编码迁到服务契约后，HTTP成功与可用支持清单仍是两层判断。接入界面可以按全支持、部分支持和查询失败分别显示，不把加载失败自动当成无支持网络。",
+    "anchor": "web3-metamask-social-supported-networks-response",
+    "sourceName": "MetaMask/core v1452.0.0",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/MetaMask/core/releases/tag/v1452.0.0"
+  },
+  {
+    "id": "web3-viem-erc8010-legacy-v-parity-fallback",
+    "date": "2026-11-25",
+    "domain": "web3",
+    "topic": "security",
+    "title": "viem 2.58.6：授权只有v时，ERC-8010封装先补齐恢复奇偶位",
+    "summary": "类型允许的输入形状，必须沿运行时路径得到同样支持。钱包或签名适配器接入时，可以保留原始表示及规范化结果，避免只因缺少重复字段而在封装阶段失败。",
+    "anchor": "web3-viem-erc8010-legacy-v-parity-fallback",
+    "sourceName": "wevm/viem viem@2.58.6",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/wevm/viem/releases/tag/viem%402.58.6"
+  },
+  {
     "id": "ai-fastmcp-skill-manifest-byte-verification",
     "date": "2026-11-16",
     "domain": "ai",

@@ -6,7 +6,43 @@
     <atom:link href="https://xoqiu.cn/radar/rss.xml" rel="self" type="application/rss+xml" />
     <description>每天 2 条 AI、2 条 Web3 工程简报：先讲机制，再给例子和边界。</description>
     <language>zh-CN</language>
-    <lastBuildDate>Mon, 16 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <lastBuildDate>Wed, 25 Nov 2026 00:00:00 GMT</lastBuildDate>
+    <item>
+      <title>OpenAI Python 3.59：工具参数解码以后，非有限数仍须在调用前拒绝</title>
+      <link>https://xoqiu.cn/radar/2026-11-25#ai-openai-python-nonfinite-agent-tool-arguments</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-openai-python-nonfinite-agent-tool-arguments</guid>
+      <pubDate>Wed, 25 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>agent</category>
+      <description>能够解码为Python对象，不证明数值适合驱动后续动作。工程上可把解析、数值约束、业务校验和执行分开记录，在调用有副作用的本地工具前保留明确拒绝点。</description>
+    </item>
+    <item>
+      <title>Pydantic AI 2.74：流里反复报告累计用量，不能再逐块相加</title>
+      <link>https://xoqiu.cn/radar/2026-11-25#ai-pydantic-gemini-stream-usage-running-totals</link>
+      <guid isPermaLink="false">xiuqiu-radar:ai-pydantic-gemini-stream-usage-running-totals</guid>
+      <pubDate>Wed, 25 Nov 2026 00:00:00 GMT</pubDate>
+      <category>AI</category>
+      <category>infrastructure</category>
+      <description>Token计数会影响成本展示与UsageLimits。修改统计方式后，旧阈值触发时间可能变化，需要对照真实endpoint的计量口径复核；显示数字下降本身不证明实际请求更便宜。</description>
+    </item>
+    <item>
+      <title>MetaMask social 3.24：网络支持清单由服务返回，响应形状仍先校验</title>
+      <link>https://xoqiu.cn/radar/2026-11-25#web3-metamask-social-supported-networks-response</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-metamask-social-supported-networks-response</guid>
+      <pubDate>Wed, 25 Nov 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>wallet_cex</category>
+      <description>网络列表从客户端硬编码迁到服务契约后，HTTP成功与可用支持清单仍是两层判断。接入界面可以按全支持、部分支持和查询失败分别显示，不把加载失败自动当成无支持网络。</description>
+    </item>
+    <item>
+      <title>viem 2.58.6：授权只有v时，ERC-8010封装先补齐恢复奇偶位</title>
+      <link>https://xoqiu.cn/radar/2026-11-25#web3-viem-erc8010-legacy-v-parity-fallback</link>
+      <guid isPermaLink="false">xiuqiu-radar:web3-viem-erc8010-legacy-v-parity-fallback</guid>
+      <pubDate>Wed, 25 Nov 2026 00:00:00 GMT</pubDate>
+      <category>WEB3</category>
+      <category>security</category>
+      <description>类型允许的输入形状，必须沿运行时路径得到同样支持。钱包或签名适配器接入时，可以保留原始表示及规范化结果，避免只因缺少重复字段而在封装阶段失败。</description>
+    </item>
     <item>
       <title>FastMCP4.2：读到Skill文件之后，先核对清单承诺的字节</title>
       <link>https://xoqiu.cn/radar/2026-11-16#ai-fastmcp-skill-manifest-byte-verification</link>
@@ -510,42 +546,6 @@
       <category>WEB3</category>
       <category>onchain_infrastructure</category>
       <description>同一版本对节点运营方和 SDK 开发者可能有不同迁移成本。升级验收应按实际使用的接口划分，避免把无需改配置理解为所有自定义组件都保持兼容。</description>
-    </item>
-    <item>
-      <title>ACR：同一模型的四条轨迹，要分别核对解法与正确性</title>
-      <link>https://xoqiu.cn/radar/2026-10-30#ai-acr-method-diversity</link>
-      <guid isPermaLink="false">xiuqiu-radar:ai-acr-method-diversity</guid>
-      <pubDate>Fri, 30 Oct 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>model_inference</category>
-      <description>并行 Agent 数量增加，不自动带来独立证据。若要用多条轨迹降低同一种推理盲点，应同时记录不同方法的数量、每条轨迹的正确性与生成预算，避免只奖励措辞变化。</description>
-    </item>
-    <item>
-      <title>TAO：工具即将返回，才可能需要下一轮 GPU 准入</title>
-      <link>https://xoqiu.cn/radar/2026-10-30#ai-tao-tool-aware-admission</link>
-      <guid isPermaLink="false">xiuqiu-radar:ai-tao-tool-aware-admission</guid>
-      <pubDate>Fri, 30 Oct 2026 00:00:00 GMT</pubDate>
-      <category>AI</category>
-      <category>infrastructure</category>
-      <description>工具期间保留了多少上下文、何时再需要推理、目标节点还有多少容量，是不同观测。把这些量分开，才能解释调度是在利用真实缓存、预测短期需求，还是只在统计更大的会话。</description>
-    </item>
-    <item>
-      <title>viem 2.57.13：账户配置缓存要把链 ID 纳入键</title>
-      <link>https://xoqiu.cn/radar/2026-10-30#web3-viem-chain-scoped-config</link>
-      <guid isPermaLink="false">xiuqiu-radar:web3-viem-chain-scoped-config</guid>
-      <pubDate>Fri, 30 Oct 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>wallet_cex</category>
-      <description>账户地址相同不意味着配置可跨链共享。钱包与中继的缓存契约要同时说明命名空间、选中配置的链上依据和未命中时的行为，避免把缓存内容当成当前授权状态。</description>
-    </item>
-    <item>
-      <title>Agave 4.4.0：先编码投票状态，再只补零尾部</title>
-      <link>https://xoqiu.cn/radar/2026-10-30#web3-agave-padded-vote-state</link>
-      <guid isPermaLink="false">xiuqiu-radar:web3-agave-padded-vote-state</guid>
-      <pubDate>Fri, 30 Oct 2026 00:00:00 GMT</pubDate>
-      <category>WEB3</category>
-      <category>onchain_infrastructure</category>
-      <description>降低重复内存写入时，仍需核对序列化输出的字节内容、长度及错误边界。把这些契约与部署建议分别检查，能避免将一个局部实现优化夸成整网性能或兼容性结论。</description>
     </item>
   </channel>
 </rss>
