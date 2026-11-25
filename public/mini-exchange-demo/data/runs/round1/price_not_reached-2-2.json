@@ -1,0 +1,128 @@
+{
+ "round": "round1",
+ "case_id": "price_not_reached-2",
+ "run": 2,
+ "scenario": "price_not_reached",
+ "seed": 2,
+ "question": "用户 7 的订单 26 为什么没有正常成交？",
+ "expected": {
+  "root_cause": "PRICE_NOT_REACHED",
+  "must_cite": [
+   91
+  ],
+  "target_user": 7
+ },
+ "status": "COMPLETED",
+ "reason": "",
+ "diagnosis": {
+  "root_cause": "PRICE_NOT_REACHED",
+  "conclusion": "订单 26 为限价买单，限价 50 tick（0.5 USDT），而当前卖一为 100 tick（1 USDT），买价低于卖价因此无法撮合。该单已在买一价位排队且队列第一（QtyAhead 0），成交量为 0，冻结 100 个最小单位 USDT 与挂单占用一致，资金侧正常。",
+  "evidence": [
+   91,
+   92
+  ],
+  "confidence": "high",
+  "not_found": []
+ },
+ "steps": [
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 26
+   },
+   "content": "{\"Order\":{\"ID\":26,\"UserID\":7,\"Symbol\":\"BTC-USDT\",\"Side\":1,\"Type\":1,\"Price\":50,\"Qty\":2,\"FilledQty\":0,\"QuoteAmount\":0,\"FilledAmount\":0,\"Status\":1,\"CancelReason\":0},\"OnBook\":true,\"Queue\":{\"LevelPrice\":50,\"Position\":1,\"QtyAhead\":0,\"LevelOrders\":1},\"BestOpposite\":100,\"EventSeqs\":[91,92]}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "order_id": 26
+   },
+   "content": "{\"Events\":[{\"Seq\":91,\"CommandSeq\":42,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 26 受理：用户 7 LIMIT BUY 50 × 2（预算 0）\",\"UntrustedClientText\":\"scenario-42\"},{\"Seq\":92,\"CommandSeq\":42,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Available -100；户主 1 用户 7 USDT Frozen +100；\",\"UntrustedClientText\":\"scenario-42\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_book",
+   "input": {
+    "symbol": "BTC-USDT",
+    "depth": 5
+   },
+   "content": "{\"Symbol\":\"BTC-USDT\",\"Bids\":[{\"Price\":50,\"Qty\":2,\"Orders\":1}],\"Asks\":[{\"Price\":100,\"Qty\":1,\"Orders\":1}]}",
+   "is_error": false
+  },
+  {
+   "tool": "get_account",
+   "input": {
+    "user_id": 7,
+    "asset": "USDT"
+   },
+   "content": "{\"User\":7,\"Asset\":\"USDT\",\"Available\":900,\"Frozen\":100,\"OpenOrders\":[{\"OrderID\":26,\"Reserved\":100}],\"ReservedSum\":100,\"FrozenMinusReserved\":0,\"RecentPostings\":[{\"Seq\":92,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Frozen\",\"Delta\":100},{\"Seq\":92,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Available\",\"Delta\":-100},{\"Seq\":90,\"Reason\":\"DEPOSIT\",\"Bucket\":\"Available\",\"Delta\":1000}]}",
+   "is_error": false
+  },
+  {
+   "tool": "submit_diagnosis",
+   "input": {
+    "root_cause": "PRICE_NOT_REACHED",
+    "conclusion": "订单 26 为限价买单，限价 50 tick（0.5 USDT），而当前卖一为 100 tick（1 USDT），买价低于卖价因此无法撮合。该单已在买一价位排队且队列第一（QtyAhead 0），成交量为 0，冻结 100 个最小单位 USDT 与挂单占用一致，资金侧正常。",
+    "evidence": [
+     91,
+     92
+    ],
+    "confidence": "high",
+    "not_found": []
+   },
+   "content": "诊断已提交",
+   "is_error": false
+  }
+ ],
+ "events": [
+  {
+   "seq": 91,
+   "exists": true,
+   "command_seq": 42,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 26 受理：用户 7 LIMIT BUY 50 × 2（预算 0）",
+   "untrusted_client_text": "scenario-42",
+   "cited": true,
+   "required": true,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 92,
+   "exists": true,
+   "command_seq": 42,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Available -100；户主 1 用户 7 USDT Frozen +100；",
+   "untrusted_client_text": "scenario-42",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  }
+ ],
+ "grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "recorded_grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "pass": true,
+ "recorded_pass": true,
+ "tool_calls": 4,
+ "turns": 3,
+ "usage": {
+  "input_tokens": 4767,
+  "output_tokens": 652,
+  "cache_read_tokens": 3968
+ },
+ "elapsed_ms": 5002,
+ "estimated_usd": 0.001045908,
+ "semantic_issues": []
+}

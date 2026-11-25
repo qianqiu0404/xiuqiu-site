@@ -1,0 +1,148 @@
+{
+ "round": "round2",
+ "case_id": "ioc_remainder-2",
+ "run": 2,
+ "scenario": "ioc_remainder",
+ "seed": 2,
+ "question": "用户 7 的订单 26 为什么没有正常成交？",
+ "expected": {
+  "root_cause": "IOC_REMAINDER",
+  "must_cite": [
+   95
+  ],
+  "target_user": 7
+ },
+ "status": "COMPLETED",
+ "reason": "",
+ "diagnosis": {
+  "root_cause": "IOC_REMAINDER",
+  "conclusion": "订单 26 是市价 IOC 买单（预算 300），受理后仅与用户 8 的 maker 订单 25 成交 1 lot（事件 93），剩余部分因 IOC 规则被立即取消（事件 95，原因 IOC_REMAINDER），冻结的 200 已退回可用（事件 96）。当前买盘无流动性（盘口为空），市价单剩余部分无对手方，属正常 IOC 行为而非异常。",
+  "evidence": [
+   91,
+   93,
+   95,
+   96
+  ],
+  "confidence": "high",
+  "not_found": []
+ },
+ "steps": [
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 26
+   },
+   "content": "{\"Order\":{\"ID\":26,\"UserID\":7,\"Symbol\":\"BTC-USDT\",\"Side\":1,\"Type\":2,\"Price\":0,\"Qty\":0,\"FilledQty\":1,\"QuoteAmount\":300,\"FilledAmount\":100,\"Status\":4,\"CancelReason\":2},\"OnBook\":false,\"Queue\":null,\"BestOpposite\":null,\"EventSeqs\":[91,92,93,94,95,96],\"LevelTrades\":null,\"LevelTradesTotal\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "order_id": 26,
+    "limit": 100
+   },
+   "content": "{\"Events\":[{\"Seq\":91,\"CommandSeq\":42,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 26 受理：用户 7 MARKET BUY 0 × 0（预算 300）\",\"UntrustedClientText\":\"scenario-42\"},{\"Seq\":92,\"CommandSeq\":42,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Available -300；户主 1 用户 7 USDT Frozen +300；\",\"UntrustedClientText\":\"scenario-42\"},{\"Seq\":93,\"CommandSeq\":42,\"Kind\":\"TRADE\",\"Text\":\"成交 13：maker 订单 25（用户 8）与 taker 订单 26（用户 7），100 × 1\",\"UntrustedClientText\":\"scenario-42\"},{\"Seq\":94,\"CommandSeq\":42,\"Kind\":\"FUNDS\",\"Text\":\"资金 TRADE_SETTLE（订单 26，成交 13）：户主 1 用户 8 BTC Frozen -10000；户主 1 用户 7 BTC Available +9990；户主 2 用户 0 BTC Available +10；户主 1 用户 7 USDT Frozen -100；户主 1 用户 8 USDT Available +100；\",\"UntrustedClientText\":\"scenario-42\"},{\"Seq\":95,\"CommandSeq\":42,\"Kind\":\"ORDER_CANCELED\",\"Text\":\"订单 26 取消，用户 7，原因 IOC_REMAINDER，已成交 1/0\",\"UntrustedClientText\":\"scenario-42\"},{\"Seq\":96,\"CommandSeq\":42,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_UNFREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Frozen -200；户主 1 用户 7 USDT Available +200；\",\"UntrustedClientText\":\"scenario-42\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_book",
+   "input": {
+    "symbol": "BTC-USDT",
+    "depth": 5
+   },
+   "content": "{\"Symbol\":\"BTC-USDT\",\"Bids\":null,\"Asks\":null}",
+   "is_error": false
+  },
+  {
+   "tool": "submit_diagnosis",
+   "input": {
+    "root_cause": "IOC_REMAINDER",
+    "conclusion": "订单 26 是市价 IOC 买单（预算 300），受理后仅与用户 8 的 maker 订单 25 成交 1 lot（事件 93），剩余部分因 IOC 规则被立即取消（事件 95，原因 IOC_REMAINDER），冻结的 200 已退回可用（事件 96）。当前买盘无流动性（盘口为空），市价单剩余部分无对手方，属正常 IOC 行为而非异常。",
+    "evidence": [
+     91,
+     93,
+     95,
+     96
+    ],
+    "confidence": "high",
+    "not_found": []
+   },
+   "content": "诊断已提交",
+   "is_error": false
+  }
+ ],
+ "events": [
+  {
+   "seq": 91,
+   "exists": true,
+   "command_seq": 42,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 26 受理：用户 7 MARKET BUY 0 × 0（预算 300）",
+   "untrusted_client_text": "scenario-42",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 93,
+   "exists": true,
+   "command_seq": 42,
+   "kind": "TRADE",
+   "text": "成交 13：maker 订单 25（用户 8）与 taker 订单 26（用户 7），100 × 1",
+   "untrusted_client_text": "scenario-42",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 95,
+   "exists": true,
+   "command_seq": 42,
+   "kind": "ORDER_CANCELED",
+   "text": "订单 26 取消，用户 7，原因 IOC_REMAINDER，已成交 1/0",
+   "untrusted_client_text": "scenario-42",
+   "cited": true,
+   "required": true,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 96,
+   "exists": true,
+   "command_seq": 42,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_UNFREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Frozen -200；户主 1 用户 7 USDT Available +200；",
+   "untrusted_client_text": "scenario-42",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  }
+ ],
+ "grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "recorded_grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "pass": true,
+ "recorded_pass": true,
+ "tool_calls": 3,
+ "turns": 3,
+ "usage": {
+  "input_tokens": 6049,
+  "output_tokens": 1006,
+  "cache_read_tokens": 4992
+ },
+ "elapsed_ms": 6861,
+ "estimated_usd": 0.0015542519999999999,
+ "semantic_issues": []
+}

@@ -1,0 +1,120 @@
+{
+ "round": "round2",
+ "case_id": "price_not_reached-1",
+ "run": 3,
+ "scenario": "price_not_reached",
+ "seed": 1,
+ "question": "用户 7 的订单 24 为什么没有正常成交？",
+ "expected": {
+  "root_cause": "PRICE_NOT_REACHED",
+  "must_cite": [
+   84
+  ],
+  "target_user": 7
+ },
+ "status": "COMPLETED",
+ "reason": "",
+ "diagnosis": {
+  "root_cause": "PRICE_NOT_REACHED",
+  "conclusion": "订单24在事件84受理为50 tick的限价买单，事件85仅完成资金冻结，此后无成交或撤单事件。当前最低卖价为100 tick，买单限价50未触及对手价，且同价位无成交记录，因此未能成交；该单仍在买一排队，前方无订单。",
+  "evidence": [
+   84,
+   85
+  ],
+  "confidence": "high",
+  "not_found": []
+ },
+ "steps": [
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 24
+   },
+   "content": "{\"Order\":{\"ID\":24,\"UserID\":7,\"Symbol\":\"BTC-USDT\",\"Side\":1,\"Type\":1,\"Price\":50,\"Qty\":2,\"FilledQty\":0,\"QuoteAmount\":0,\"FilledAmount\":0,\"Status\":1,\"CancelReason\":0},\"OnBook\":true,\"Queue\":{\"LevelPrice\":50,\"Position\":1,\"QtyAhead\":0,\"LevelOrders\":1},\"BestOpposite\":100,\"EventSeqs\":[84,85],\"LevelTrades\":null,\"LevelTradesTotal\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "order_id": 24,
+    "limit": 200
+   },
+   "content": "{\"Events\":[{\"Seq\":84,\"CommandSeq\":39,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 24 受理：用户 7 LIMIT BUY 50 × 2（预算 0）\",\"UntrustedClientText\":\"scenario-39\"},{\"Seq\":85,\"CommandSeq\":39,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 24，成交 0）：户主 1 用户 7 USDT Available -100；户主 1 用户 7 USDT Frozen +100；\",\"UntrustedClientText\":\"scenario-39\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_book",
+   "input": {
+    "symbol": "BTC-USDT",
+    "depth": 20
+   },
+   "content": "{\"Symbol\":\"BTC-USDT\",\"Bids\":[{\"Price\":50,\"Qty\":2,\"Orders\":1}],\"Asks\":[{\"Price\":100,\"Qty\":1,\"Orders\":1}]}",
+   "is_error": false
+  },
+  {
+   "tool": "submit_diagnosis",
+   "input": {
+    "root_cause": "PRICE_NOT_REACHED",
+    "conclusion": "订单24在事件84受理为50 tick的限价买单，事件85仅完成资金冻结，此后无成交或撤单事件。当前最低卖价为100 tick，买单限价50未触及对手价，且同价位无成交记录，因此未能成交；该单仍在买一排队，前方无订单。",
+    "evidence": [
+     84,
+     85
+    ],
+    "confidence": "high",
+    "not_found": []
+   },
+   "content": "诊断已提交",
+   "is_error": false
+  }
+ ],
+ "events": [
+  {
+   "seq": 84,
+   "exists": true,
+   "command_seq": 39,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 24 受理：用户 7 LIMIT BUY 50 × 2（预算 0）",
+   "untrusted_client_text": "scenario-39",
+   "cited": true,
+   "required": true,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 85,
+   "exists": true,
+   "command_seq": 39,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 24，成交 0）：户主 1 用户 7 USDT Available -100；户主 1 用户 7 USDT Frozen +100；",
+   "untrusted_client_text": "scenario-39",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  }
+ ],
+ "grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "recorded_grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "pass": true,
+ "recorded_pass": true,
+ "tool_calls": 3,
+ "turns": 2,
+ "usage": {
+  "input_tokens": 3306,
+  "output_tokens": 1162,
+  "cache_read_tokens": 2688
+ },
+ "elapsed_ms": 7498,
+ "estimated_usd": 0.001595928,
+ "semantic_issues": []
+}

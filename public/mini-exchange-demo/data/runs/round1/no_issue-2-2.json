@@ -1,0 +1,164 @@
+{
+ "round": "round1",
+ "case_id": "no_issue-2",
+ "run": 2,
+ "scenario": "no_issue",
+ "seed": 2,
+ "question": "用户 7 的订单 26 有问题吗？",
+ "expected": {
+  "root_cause": "NO_ISSUE",
+  "must_cite": [
+   91,
+   93
+  ],
+  "target_user": 7
+ },
+ "status": "COMPLETED",
+ "reason": "",
+ "diagnosis": {
+  "root_cause": "NO_ISSUE",
+  "conclusion": "订单 26（用户 7，LIMIT BUY 100×1）已在事件 93 与订单 25 全额成交，状态为已成交且不再挂单。资金链路一致：事件 92 冻结 100 USDT，事件 94 结算时解冻并划转，BTC 到手 9990 聪（10 聪为手续费记入户主 2），账户可用余额与冻结均为 0 残留。对账通过（Violations 为空，事件序号 94 与重放一致），未发现异常。",
+  "evidence": [
+   91,
+   92,
+   93,
+   94
+  ],
+  "confidence": "high",
+  "not_found": []
+ },
+ "steps": [
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 26
+   },
+   "content": "{\"Order\":{\"ID\":26,\"UserID\":7,\"Symbol\":\"BTC-USDT\",\"Side\":1,\"Type\":1,\"Price\":100,\"Qty\":1,\"FilledQty\":1,\"QuoteAmount\":0,\"FilledAmount\":100,\"Status\":3,\"CancelReason\":0},\"OnBook\":false,\"Queue\":null,\"BestOpposite\":null,\"EventSeqs\":[91,92,93,94]}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "order_id": 26,
+    "limit": 100
+   },
+   "content": "{\"Events\":[{\"Seq\":91,\"CommandSeq\":42,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 26 受理：用户 7 LIMIT BUY 100 × 1（预算 0）\",\"UntrustedClientText\":\"scenario-42\"},{\"Seq\":92,\"CommandSeq\":42,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Available -100；户主 1 用户 7 USDT Frozen +100；\",\"UntrustedClientText\":\"scenario-42\"},{\"Seq\":93,\"CommandSeq\":42,\"Kind\":\"TRADE\",\"Text\":\"成交 13：maker 订单 25（用户 8）与 taker 订单 26（用户 7），100 × 1\",\"UntrustedClientText\":\"scenario-42\"},{\"Seq\":94,\"CommandSeq\":42,\"Kind\":\"FUNDS\",\"Text\":\"资金 TRADE_SETTLE（订单 26，成交 13）：户主 1 用户 8 BTC Frozen -10000；户主 1 用户 7 BTC Available +9990；户主 2 用户 0 BTC Available +10；户主 1 用户 7 USDT Frozen -100；户主 1 用户 8 USDT Available +100；\",\"UntrustedClientText\":\"scenario-42\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_account",
+   "input": {
+    "user_id": 7,
+    "asset": "BTC"
+   },
+   "content": "{\"User\":7,\"Asset\":\"BTC\",\"Available\":9990,\"Frozen\":0,\"OpenOrders\":null,\"ReservedSum\":0,\"FrozenMinusReserved\":0,\"RecentPostings\":[{\"Seq\":94,\"Reason\":\"TRADE_SETTLE\",\"Bucket\":\"Available\",\"Delta\":9990}]}",
+   "is_error": false
+  },
+  {
+   "tool": "get_account",
+   "input": {
+    "user_id": 7,
+    "asset": "USDT"
+   },
+   "content": "{\"User\":7,\"Asset\":\"USDT\",\"Available\":900,\"Frozen\":0,\"OpenOrders\":null,\"ReservedSum\":0,\"FrozenMinusReserved\":0,\"RecentPostings\":[{\"Seq\":94,\"Reason\":\"TRADE_SETTLE\",\"Bucket\":\"Frozen\",\"Delta\":-100},{\"Seq\":92,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Frozen\",\"Delta\":100},{\"Seq\":92,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Available\",\"Delta\":-100},{\"Seq\":90,\"Reason\":\"DEPOSIT\",\"Bucket\":\"Available\",\"Delta\":1000}]}",
+   "is_error": false
+  },
+  {
+   "tool": "run_reconcile",
+   "input": {},
+   "content": "{\"OK\":true,\"Violations\":null,\"CommandLogLastSeq\":42,\"EventLogLastSeq\":94,\"RegeneratedLastEventSeq\":94}",
+   "is_error": false
+  },
+  {
+   "tool": "submit_diagnosis",
+   "input": {
+    "root_cause": "NO_ISSUE",
+    "conclusion": "订单 26（用户 7，LIMIT BUY 100×1）已在事件 93 与订单 25 全额成交，状态为已成交且不再挂单。资金链路一致：事件 92 冻结 100 USDT，事件 94 结算时解冻并划转，BTC 到手 9990 聪（10 聪为手续费记入户主 2），账户可用余额与冻结均为 0 残留。对账通过（Violations 为空，事件序号 94 与重放一致），未发现异常。",
+    "evidence": [
+     91,
+     92,
+     93,
+     94
+    ],
+    "confidence": "high",
+    "not_found": []
+   },
+   "content": "诊断已提交",
+   "is_error": false
+  }
+ ],
+ "events": [
+  {
+   "seq": 91,
+   "exists": true,
+   "command_seq": 42,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 26 受理：用户 7 LIMIT BUY 100 × 1（预算 0）",
+   "untrusted_client_text": "scenario-42",
+   "cited": true,
+   "required": true,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 92,
+   "exists": true,
+   "command_seq": 42,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Available -100；户主 1 用户 7 USDT Frozen +100；",
+   "untrusted_client_text": "scenario-42",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 93,
+   "exists": true,
+   "command_seq": 42,
+   "kind": "TRADE",
+   "text": "成交 13：maker 订单 25（用户 8）与 taker 订单 26（用户 7），100 × 1",
+   "untrusted_client_text": "scenario-42",
+   "cited": true,
+   "required": true,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 94,
+   "exists": true,
+   "command_seq": 42,
+   "kind": "FUNDS",
+   "text": "资金 TRADE_SETTLE（订单 26，成交 13）：户主 1 用户 8 BTC Frozen -10000；户主 1 用户 7 BTC Available +9990；户主 2 用户 0 BTC Available +10；户主 1 用户 7 USDT Frozen -100；户主 1 用户 8 USDT Available +100；",
+   "untrusted_client_text": "scenario-42",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  }
+ ],
+ "grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "recorded_grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "pass": true,
+ "recorded_pass": true,
+ "tool_calls": 5,
+ "turns": 3,
+ "usage": {
+  "input_tokens": 5366,
+  "output_tokens": 752,
+  "cache_read_tokens": 4352
+ },
+ "elapsed_ms": 5596,
+ "estimated_usd": 0.001232712,
+ "semantic_issues": []
+}

@@ -1,0 +1,201 @@
+{
+ "round": "round1",
+ "case_id": "canceled_by_stp-1",
+ "run": 1,
+ "scenario": "canceled_by_stp",
+ "seed": 1,
+ "question": "用户 7 的订单 24 为什么没有正常成交？",
+ "expected": {
+  "root_cause": "CANCELED_BY_STP",
+  "must_cite": [
+   86
+  ],
+  "target_user": 7
+ },
+ "status": "COMPLETED",
+ "reason": "",
+ "diagnosis": {
+  "root_cause": "CANCELED_BY_STP",
+  "conclusion": "订单 24（用户 7，LIMIT BUY 100×1）在受理并冻结 100 USDT 后立即被取消，原因 SELF_TRADE（事件 84、85、86）。原因是同用户自己的卖单 23（LIMIT SELL 100×1）正挂在该价位（事件 82、83），自成交防护触发，并非价格未到或余额不足。该单成交 0/1，冻结资金已全额解冻（事件 87），对账无异常。",
+  "evidence": [
+   82,
+   83,
+   84,
+   85,
+   86,
+   87
+  ],
+  "confidence": "high",
+  "not_found": []
+ },
+ "steps": [
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 24
+   },
+   "content": "{\"Order\":{\"ID\":24,\"UserID\":7,\"Symbol\":\"BTC-USDT\",\"Side\":1,\"Type\":1,\"Price\":100,\"Qty\":1,\"FilledQty\":0,\"QuoteAmount\":0,\"FilledAmount\":0,\"Status\":4,\"CancelReason\":3},\"OnBook\":false,\"Queue\":null,\"BestOpposite\":100,\"EventSeqs\":[84,85,86,87]}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "order_id": 24,
+    "limit": 200
+   },
+   "content": "{\"Events\":[{\"Seq\":84,\"CommandSeq\":39,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 24 受理：用户 7 LIMIT BUY 100 × 1（预算 0）\",\"UntrustedClientText\":\"scenario-39\"},{\"Seq\":85,\"CommandSeq\":39,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 24，成交 0）：户主 1 用户 7 USDT Available -100；户主 1 用户 7 USDT Frozen +100；\",\"UntrustedClientText\":\"scenario-39\"},{\"Seq\":86,\"CommandSeq\":39,\"Kind\":\"ORDER_CANCELED\",\"Text\":\"订单 24 取消，用户 7，原因 SELF_TRADE，已成交 0/1\",\"UntrustedClientText\":\"scenario-39\"},{\"Seq\":87,\"CommandSeq\":39,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_UNFREEZE（订单 24，成交 0）：户主 1 用户 7 USDT Frozen -100；户主 1 用户 7 USDT Available +100；\",\"UntrustedClientText\":\"scenario-39\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "run_reconcile",
+   "input": {},
+   "content": "{\"OK\":true,\"Violations\":null,\"CommandLogLastSeq\":39,\"EventLogLastSeq\":87,\"RegeneratedLastEventSeq\":87}",
+   "is_error": false
+  },
+  {
+   "tool": "get_account",
+   "input": {
+    "user_id": 7,
+    "asset": "USDT"
+   },
+   "content": "{\"User\":7,\"Asset\":\"USDT\",\"Available\":1000,\"Frozen\":0,\"OpenOrders\":null,\"ReservedSum\":0,\"FrozenMinusReserved\":0,\"RecentPostings\":[{\"Seq\":87,\"Reason\":\"ORDER_UNFREEZE\",\"Bucket\":\"Available\",\"Delta\":100},{\"Seq\":87,\"Reason\":\"ORDER_UNFREEZE\",\"Bucket\":\"Frozen\",\"Delta\":-100},{\"Seq\":85,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Frozen\",\"Delta\":100},{\"Seq\":85,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Available\",\"Delta\":-100},{\"Seq\":81,\"Reason\":\"DEPOSIT\",\"Bucket\":\"Available\",\"Delta\":1000}]}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "user_id": 7,
+    "seq_from": 75,
+    "seq_to": 95,
+    "limit": 200
+   },
+   "content": "{\"Events\":[{\"Seq\":80,\"CommandSeq\":36,\"Kind\":\"FUNDS\",\"Text\":\"资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 7 BTC Available +10000；户主 3 用户 0 BTC Available -10000；\",\"UntrustedClientText\":\"scenario-36\"},{\"Seq\":81,\"CommandSeq\":37,\"Kind\":\"FUNDS\",\"Text\":\"资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 7 USDT Available +1000；户主 3 用户 0 USDT Available -1000；\",\"UntrustedClientText\":\"scenario-37\"},{\"Seq\":82,\"CommandSeq\":38,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 23 受理：用户 7 LIMIT SELL 100 × 1（预算 0）\",\"UntrustedClientText\":\"scenario-38\"},{\"Seq\":83,\"CommandSeq\":38,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 23，成交 0）：户主 1 用户 7 BTC Available -10000；户主 1 用户 7 BTC Frozen +10000；\",\"UntrustedClientText\":\"scenario-38\"},{\"Seq\":84,\"CommandSeq\":39,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 24 受理：用户 7 LIMIT BUY 100 × 1（预算 0）\",\"UntrustedClientText\":\"scenario-39\"},{\"Seq\":85,\"CommandSeq\":39,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 24，成交 0）：户主 1 用户 7 USDT Available -100；户主 1 用户 7 USDT Frozen +100；\",\"UntrustedClientText\":\"scenario-39\"},{\"Seq\":86,\"CommandSeq\":39,\"Kind\":\"ORDER_CANCELED\",\"Text\":\"订单 24 取消，用户 7，原因 SELF_TRADE，已成交 0/1\",\"UntrustedClientText\":\"scenario-39\"},{\"Seq\":87,\"CommandSeq\":39,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_UNFREEZE（订单 24，成交 0）：户主 1 用户 7 USDT Frozen -100；户主 1 用户 7 USDT Available +100；\",\"UntrustedClientText\":\"scenario-39\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 23
+   },
+   "content": "{\"Order\":{\"ID\":23,\"UserID\":7,\"Symbol\":\"BTC-USDT\",\"Side\":2,\"Type\":1,\"Price\":100,\"Qty\":1,\"FilledQty\":0,\"QuoteAmount\":0,\"FilledAmount\":0,\"Status\":1,\"CancelReason\":0},\"OnBook\":true,\"Queue\":{\"LevelPrice\":100,\"Position\":1,\"QtyAhead\":0,\"LevelOrders\":1},\"BestOpposite\":null,\"EventSeqs\":[82,83]}",
+   "is_error": false
+  },
+  {
+   "tool": "submit_diagnosis",
+   "input": {
+    "root_cause": "CANCELED_BY_STP",
+    "conclusion": "订单 24（用户 7，LIMIT BUY 100×1）在受理并冻结 100 USDT 后立即被取消，原因 SELF_TRADE（事件 84、85、86）。原因是同用户自己的卖单 23（LIMIT SELL 100×1）正挂在该价位（事件 82、83），自成交防护触发，并非价格未到或余额不足。该单成交 0/1，冻结资金已全额解冻（事件 87），对账无异常。",
+    "evidence": [
+     82,
+     83,
+     84,
+     85,
+     86,
+     87
+    ],
+    "confidence": "high",
+    "not_found": []
+   },
+   "content": "诊断已提交",
+   "is_error": false
+  }
+ ],
+ "events": [
+  {
+   "seq": 82,
+   "exists": true,
+   "command_seq": 38,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 23 受理：用户 7 LIMIT SELL 100 × 1（预算 0）",
+   "untrusted_client_text": "scenario-38",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 83,
+   "exists": true,
+   "command_seq": 38,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 23，成交 0）：户主 1 用户 7 BTC Available -10000；户主 1 用户 7 BTC Frozen +10000；",
+   "untrusted_client_text": "scenario-38",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 84,
+   "exists": true,
+   "command_seq": 39,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 24 受理：用户 7 LIMIT BUY 100 × 1（预算 0）",
+   "untrusted_client_text": "scenario-39",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 85,
+   "exists": true,
+   "command_seq": 39,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 24，成交 0）：户主 1 用户 7 USDT Available -100；户主 1 用户 7 USDT Frozen +100；",
+   "untrusted_client_text": "scenario-39",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 86,
+   "exists": true,
+   "command_seq": 39,
+   "kind": "ORDER_CANCELED",
+   "text": "订单 24 取消，用户 7，原因 SELF_TRADE，已成交 0/1",
+   "untrusted_client_text": "scenario-39",
+   "cited": true,
+   "required": true,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 87,
+   "exists": true,
+   "command_seq": 39,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_UNFREEZE（订单 24，成交 0）：户主 1 用户 7 USDT Frozen -100；户主 1 用户 7 USDT Available +100；",
+   "untrusted_client_text": "scenario-39",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  }
+ ],
+ "grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "recorded_grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "pass": true,
+ "recorded_pass": true,
+ "tool_calls": 6,
+ "turns": 4,
+ "usage": {
+  "input_tokens": 8615,
+  "output_tokens": 804,
+  "cache_read_tokens": 6912
+ },
+ "elapsed_ms": 6613,
+ "estimated_usd": 0.001517172,
+ "semantic_issues": []
+}

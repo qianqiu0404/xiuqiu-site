@@ -455,4 +455,6 @@ test('static and runtime homepage SEO stay aligned', () => {
 
   assert.equal(title, resumeSeo.title)
   assert.equal(description, resumeSeo.description)
+  assert.ok(resumeSeo.title.includes('AI 应用工程师'))
+  assert.ok(resumeSeo.description.includes('交易所只读诊断 Agent 与评测'))
 })

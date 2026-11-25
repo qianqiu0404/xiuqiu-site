@@ -1,0 +1,154 @@
+{
+ "round": "round1",
+ "case_id": "rejected_insufficient-1",
+ "run": 3,
+ "scenario": "rejected_insufficient",
+ "seed": 1,
+ "question": "用户 7 刚下的买单为什么没有出现？",
+ "expected": {
+  "root_cause": "REJECTED_INSUFFICIENT_BALANCE",
+  "must_cite": [
+   81
+  ],
+  "target_user": 7
+ },
+ "status": "COMPLETED",
+ "reason": "",
+ "diagnosis": {
+  "root_cause": "REJECTED_INSUFFICIENT_BALANCE",
+  "conclusion": "用户 7 的买单并未进入撮合，而是在下单环节被拒（事件 81：ORDER_REJECTED，INSUFFICIENT_BALANCE）。其 USDT 可用余额仅 5 个最小单位（约 0.000005 USDT，事件 80 的入账），远不足以支付任何买单所需冻结金额，且该用户没有 BTC 账户。对账无异常（不变量无违反、事件日志与重建一致到序号 81），故不是冻结泄漏或日志截断。",
+  "evidence": [
+   80,
+   81
+  ],
+  "confidence": "high",
+  "not_found": [
+   "未获得该买单的订单号，无法查询其价格与数量",
+   "被拒事件的文本未包含委托价格/数量，故无法计算具体缺口金额",
+   "用户 7 无 BTC 账户记录，未找到 BTC 侧余额快照"
+  ]
+ },
+ "steps": [
+  {
+   "tool": "list_events",
+   "input": {
+    "user_id": 7,
+    "limit": 50
+   },
+   "content": "{\"Events\":[{\"Seq\":80,\"CommandSeq\":36,\"Kind\":\"FUNDS\",\"Text\":\"资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 7 USDT Available +5；户主 3 用户 0 USDT Available -5；\",\"UntrustedClientText\":\"scenario-36\"},{\"Seq\":81,\"CommandSeq\":37,\"Kind\":\"ORDER_REJECTED\",\"Text\":\"用户 7 下单被拒：INSUFFICIENT_BALANCE，交易对 BTC-USDT\",\"UntrustedClientText\":\"scenario-37\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_account",
+   "input": {
+    "user_id": 7,
+    "asset": "USDT"
+   },
+   "content": "{\"User\":7,\"Asset\":\"USDT\",\"Available\":5,\"Frozen\":0,\"OpenOrders\":null,\"ReservedSum\":0,\"FrozenMinusReserved\":0,\"RecentPostings\":[{\"Seq\":80,\"Reason\":\"DEPOSIT\",\"Bucket\":\"Available\",\"Delta\":5}]}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "seq_from": 75,
+    "seq_to": 90,
+    "limit": 50
+   },
+   "content": "{\"Events\":[{\"Seq\":75,\"CommandSeq\":34,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 22 受理：用户 102 MARKET BUY 0 × 0（预算 31）\",\"UntrustedClientText\":\"scenario-34\"},{\"Seq\":76,\"CommandSeq\":34,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 22，成交 0）：户主 1 用户 102 USDT Available -31；户主 1 用户 102 USDT Frozen +31；\",\"UntrustedClientText\":\"scenario-34\"},{\"Seq\":77,\"CommandSeq\":34,\"Kind\":\"TRADE\",\"Text\":\"成交 11：maker 订单 21（用户 101）与 taker 订单 22（用户 102），31 × 1\",\"UntrustedClientText\":\"scenario-34\"},{\"Seq\":78,\"CommandSeq\":34,\"Kind\":\"FUNDS\",\"Text\":\"资金 TRADE_SETTLE（订单 22，成交 11）：户主 1 用户 101 BTC Frozen -10000；户主 1 用户 102 BTC Available +9990；户主 2 用户 0 BTC Available +10；户主 1 用户 102 USDT Frozen -31；户主 1 用户 101 USDT Available +31；\",\"UntrustedClientText\":\"scenario-34\"},{\"Seq\":79,\"CommandSeq\":35,\"Kind\":\"CANCEL_REJECTED\",\"Text\":\"用户 101 撤订单 21 被拒：ALREADY_FINAL\",\"UntrustedClientText\":\"scenario-35\"},{\"Seq\":80,\"CommandSeq\":36,\"Kind\":\"FUNDS\",\"Text\":\"资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 7 USDT Available +5；户主 3 用户 0 USDT Available -5；\",\"UntrustedClientText\":\"scenario-36\"},{\"Seq\":81,\"CommandSeq\":37,\"Kind\":\"ORDER_REJECTED\",\"Text\":\"用户 7 下单被拒：INSUFFICIENT_BALANCE，交易对 BTC-USDT\",\"UntrustedClientText\":\"scenario-37\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_account",
+   "input": {
+    "asset": "BTC",
+    "user_id": 7
+   },
+   "content": "diag: 未找到：用户 7 的 BTC 账户",
+   "is_error": true
+  },
+  {
+   "tool": "run_reconcile",
+   "input": {},
+   "content": "{\"OK\":true,\"Violations\":null,\"CommandLogLastSeq\":37,\"EventLogLastSeq\":81,\"RegeneratedLastEventSeq\":81}",
+   "is_error": false
+  },
+  {
+   "tool": "get_book",
+   "input": {
+    "symbol": "BTC-USDT",
+    "depth": 3
+   },
+   "content": "{\"Symbol\":\"BTC-USDT\",\"Bids\":null,\"Asks\":null}",
+   "is_error": false
+  },
+  {
+   "tool": "submit_diagnosis",
+   "input": {
+    "root_cause": "REJECTED_INSUFFICIENT_BALANCE",
+    "conclusion": "用户 7 的买单并未进入撮合，而是在下单环节被拒（事件 81：ORDER_REJECTED，INSUFFICIENT_BALANCE）。其 USDT 可用余额仅 5 个最小单位（约 0.000005 USDT，事件 80 的入账），远不足以支付任何买单所需冻结金额，且该用户没有 BTC 账户。对账无异常（不变量无违反、事件日志与重建一致到序号 81），故不是冻结泄漏或日志截断。",
+    "evidence": [
+     80,
+     81
+    ],
+    "confidence": "high",
+    "not_found": [
+     "未获得该买单的订单号，无法查询其价格与数量",
+     "被拒事件的文本未包含委托价格/数量，故无法计算具体缺口金额",
+     "用户 7 无 BTC 账户记录，未找到 BTC 侧余额快照"
+    ]
+   },
+   "content": "诊断已提交",
+   "is_error": false
+  }
+ ],
+ "events": [
+  {
+   "seq": 80,
+   "exists": true,
+   "command_seq": 36,
+   "kind": "FUNDS",
+   "text": "资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 7 USDT Available +5；户主 3 用户 0 USDT Available -5；",
+   "untrusted_client_text": "scenario-36",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 81,
+   "exists": true,
+   "command_seq": 37,
+   "kind": "ORDER_REJECTED",
+   "text": "用户 7 下单被拒：INSUFFICIENT_BALANCE，交易对 BTC-USDT",
+   "untrusted_client_text": "scenario-37",
+   "cited": true,
+   "required": true,
+   "alternative": false,
+   "target_user": true
+  }
+ ],
+ "grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "recorded_grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "pass": true,
+ "recorded_pass": true,
+ "tool_calls": 6,
+ "turns": 4,
+ "usage": {
+  "input_tokens": 8185,
+  "output_tokens": 1105,
+  "cache_read_tokens": 6784
+ },
+ "elapsed_ms": 8798,
+ "estimated_usd": 0.0017870039999999998,
+ "semantic_issues": []
+}

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { featuredProjects, miniExchangeDemo, resumeExperience } from '../data'
 import { useResume } from '../useResume'
 const { projects, query, includeHistory, category, visibleProjects, activeProject, activeIndex, dialog, dialogBody, closeButton, searchInput, detailState, noteHtml, copyLabel, copied, dark, toggleTheme, setCategory, resetSearch, openProject, closeProject, onDialogClose, loadDetail, stepProject, onDialogKey, onBackdropClick, copyLink } = useResume()
 </script>
@@ -15,7 +16,7 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 <a href="#catalog">全部项目</a>
 <a href="#experience">经历</a>
 <a href="#contact">联系</a>
-<router-link to="/intel">雷达与文章 ↗</router-link>
+<router-link to="/intel">雷达与文章 <span aria-hidden="true">↗</span></router-link>
 </nav>
 <button id="theme-toggle" type="button" :aria-label="dark ? '切换为浅色外观' : '切换为深色外观'" @click="toggleTheme">{{ dark ? '浅色' : '深色' }}</button>
 </div>
@@ -23,20 +24,24 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 <main id="resume-main" tabindex="-1">
 <section class="wrap hero">
 <div class="hero-copy">
-<p class="eyebrow">HELLO, I’M</p>
-<h1>xiuqiu<span>/ Qiu</span>
+<p class="eyebrow">你好，我是</p>
+<h1>xiuqiu<span aria-hidden="true">/ Qiu</span>
 </h1>
-<p class="role">后端与全栈 · AI 应用 · Web3 工程</p>
+<p class="role">AI 应用工程师 · Agent / AI 自动化</p>
 <h2>写系统，也做工具。<br>把好奇心，变成可以体验的作品。</h2>
-<p class="intro">从 AI 客服、交易与钱包工程，<br class="desktop-br">到本机工具、知识系统和代码影像。</p>
+<p class="intro">从企业客服 Agent、Agent 评测，到多 Agent 进展台和交易系统。</p>
 <dl class="hero-facts">
+<div>
+<dt>经历</dt>
+<dd>{{ resumeExperience.company }} · {{ resumeExperience.role }} · {{ resumeExperience.start }}—{{ resumeExperience.end }}</dd>
+</div>
+<div>
+<dt>状态</dt>
+<dd>已离职 · 随时到岗</dd>
+</div>
 <div>
 <dt>教育</dt>
 <dd>大连科技学院 · 软件工程本科 · 2021—2025</dd>
-</div>
-<div>
-<dt>常用</dt>
-<dd>Go · Python · TypeScript · PostgreSQL</dd>
 </div>
 <div>
 <dt>作品</dt>
@@ -45,12 +50,12 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 </dl>
 <div class="hero-actions">
 <a class="button primary" href="#selected">从精选作品开始 ↓</a>
-<a class="button secondary" href="#catalog">浏览完整目录 · 29 项 ↗</a>
+<a class="button secondary" href="#catalog">浏览完整目录 · 29 项 <span aria-hidden="true">↗</span></a>
 </div>
 <div class="social-links">
-<a href="mailto:qianqiuquq@gmail.com">邮箱 ↗</a>
-<a href="https://github.com/xoqiu09" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
-<a href="https://x.com/Xiuqiu2211" target="_blank" rel="noopener noreferrer">X ↗</a>
+<a href="mailto:qianqiuquq@gmail.com">邮箱 <span aria-hidden="true">↗</span></a>
+<a href="https://github.com/xoqiu09" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+<a href="https://x.com/Xiuqiu2211" target="_blank" rel="noopener noreferrer">X <span aria-hidden="true">↗</span></a>
 </div>
 </div>
 <figure class="hero-feature">
@@ -68,42 +73,42 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 </section>
 <section class="wrap tracks" aria-labelledby="tracks-title">
 <div class="tracks-heading">
-<p class="eyebrow" id="tracks-title">三条阅读路线 / READ BY FOCUS</p>
+<p class="eyebrow" id="tracks-title">三条阅读路线</p>
 <p>按你关心的方向，直接打开对应作品。</p>
 </div>
 <div class="track-grid">
 <article class="track">
 <p class="track-head">
 <b>A</b>
-<span>AI 应用 · 全栈</span>
+<span>AI 应用 · Agent</span>
 </p>
-<p class="track-desc">模型接入、检索与引用、Agent 工具，以及从后端到界面的完整产品。</p>
+<p class="track-desc">企业客服、只读诊断与评测、模型用量和多 Agent 协作。</p>
 <ul class="track-chips">
 <li>
-<button type="button" data-open="saas" @click="openProject('saas', $event)">Agent SaaS · 智能客服<em>团队参与</em>
+<button type="button" data-open="saas" @click="openProject('saas', $event)">Agent SaaS · 企业客服 Agent<em>团队参与</em>
 </button>
 </li>
 <li>
-<button type="button" data-open="xiaomao" @click="openProject('xiaomao', $event)">小猫 Agent / xiaomao-agent</button>
+<button type="button" data-open="miniexchange" @click="openProject('miniexchange', $event)">mini-exchange</button>
 </li>
 <li>
 <button type="button" data-open="qai" @click="openProject('qai', $event)">QAI</button>
 </li>
 <li>
-<button type="button" data-open="wildheart" @click="openProject('wildheart', $event)">知识地图</button>
+<button type="button" data-open="xiaomao" @click="openProject('xiaomao', $event)">小猫 Agent</button>
+</li>
+<li>
+<button type="button" data-open="steward" @click="openProject('steward', $event)">Session Steward</button>
 </li>
 </ul>
 </article>
 <article class="track">
 <p class="track-head">
 <b>B</b>
-<span>后端 · Web3 工程</span>
+<span>交易与资金链路</span>
 </p>
-<p class="track-desc">撮合与账本、日志恢复与回放、钱包链路和合约实验。</p>
+<p class="track-desc">多源行情、钱包充提、账本一致性和异常恢复。</p>
 <ul class="track-chips">
-<li>
-<button type="button" data-open="miniexchange" @click="openProject('miniexchange', $event)">mini-exchange</button>
-</li>
 <li>
 <button type="button" data-open="qiumarket" @click="openProject('qiumarket', $event)">Qiu Market</button>
 </li>
@@ -113,23 +118,26 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 <li>
 <button type="button" data-open="stableflow" @click="openProject('stableflow', $event)">StableFlow</button>
 </li>
+<li>
+<button type="button" data-open="wallet" @click="openProject('wallet', $event)">Wallet Infrastructure</button>
+</li>
 </ul>
 </article>
 <article class="track">
 <p class="track-head">
 <b>C</b>
-<span>项目合作</span>
+<span>工具与创作</span>
 </p>
-<p class="track-desc">本机工具、信息产品、知识系统与代码影像，可以从一个具体问题开始。</p>
+<p class="track-desc">研究情报、内容制作、知识整理与互动影像。</p>
 <ul class="track-chips">
-<li>
-<button type="button" data-open="steward" @click="openProject('steward', $event)">Session Steward · 小镇</button>
-</li>
 <li>
 <button type="button" data-open="radar" @click="openProject('radar', $event)">Learning Radar</button>
 </li>
 <li>
 <button type="button" data-open="studio" @click="openProject('studio', $event)">Qiu Studio / 代码短视频工作室</button>
+</li>
+<li>
+<button type="button" data-open="wildheart" @click="openProject('wildheart', $event)">知识地图</button>
 </li>
 <li>
 <button type="button" data-open="zhuangzi" @click="openProject('zhuangzi', $event)">庄子 · 梦游天地</button>
@@ -141,222 +149,53 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 <section class="wrap selected-section" id="selected">
 <div class="section-heading">
 <div>
-<p class="eyebrow">01 / SELECTED WORK</p>
+<p class="eyebrow">01 / 精选作品</p>
 <h2>先从这些作品认识我。</h2>
 </div>
 <a href="#catalog">全部项目与经历 <span>29</span> ↓</a>
 </div>
 <div class="selected-grid">
-<article class="selected-card">
-<button class="project-image visual-steward" data-open="steward" @click="openProject('steward', $event)" aria-label="查看Session Steward · 小镇详情">
-<img src="/resume/steward-final-daily.jpg" alt="小镇终版体验设计，使用演示数据" loading="lazy" decoding="async">
-<span>终版体验设计 · 演示数据</span>
-<i aria-hidden="true">↗</i>
-</button>
-<div class="card-meta">
-<div>
-<span class="kind kind-personal">个人作品</span>
-<span>工具与产品</span>
-</div>
-<span>01 / 08</span>
-</div>
-<h3>
-<button data-open="steward" @click="openProject('steward', $event)">Session Steward · 小镇<span aria-hidden="true">↗</span>
-</button>
-</h3>
-<p>给 Claude Code 和 Codex 用户的本机项目进展台。看进展、找卡点，也知道下一步由谁处理。</p>
-<p class="card-status">公开 App 与设计原型分开展示</p>
-</article>
-<article class="selected-card">
-<button class="project-image visual-xiaomao" data-open="xiaomao" @click="openProject('xiaomao', $event)" aria-label="查看小猫 Agent / xiaomao-agent详情">
-<img src="/resume/xiaomao.svg" alt="小猫进度秘书流程示意" loading="lazy" decoding="async">
-<span>流程示意</span>
-<i aria-hidden="true">↗</i>
-</button>
-<div class="card-meta">
-<div>
-<span class="kind kind-personal">个人作品</span>
-<span>工具与产品</span>
-</div>
-<span>02 / 08</span>
-</div>
-<h3>
-<button data-open="xiaomao" @click="openProject('xiaomao', $event)">小猫 Agent / xiaomao-agent<span aria-hidden="true">↗</span>
-</button>
-</h3>
-<p>把每天的代码变化与项目进展，写成看得懂的白话晚报。</p>
-<p class="card-status">本机已部署 · 有近期产物</p>
-</article>
-<article class="selected-card">
-<button class="project-image visual-saas" data-open="saas" @click="openProject('saas', $event)" aria-label="查看Agent SaaS · 智能客服详情">
-<div class="project-diagram">
-<small>AGENT SAAS / 业务应用</small>
-<strong>知识，进入对话。</strong>
-<ol>
-<li>
-<b>01</b>资料与检索</li>
-<li>
-<b>02</b>模型与引用</li>
-<li>
-<b>03</b>业务与回复</li>
-</ol>
-<p>团队项目 · 本人参与模块</p>
-</div>
-<i aria-hidden="true">↗</i>
-</button>
-<div class="card-meta">
-<div>
-<span class="kind kind-team">团队业务 · 本人参与</span>
-<span>业务经历</span>
-</div>
-<span>03 / 08</span>
-</div>
-<h3>
-<button data-open="saas" @click="openProject('saas', $event)">Agent SaaS · 智能客服<span aria-hidden="true">↗</span>
-</button>
-</h3>
-<p>把模型、知识检索与微信回复连接到多租户业务。</p>
-<p class="card-status">团队业务项目 · 本人参与模块</p>
-</article>
-<article class="selected-card">
-<button class="project-image visual-qiumarket" data-open="qiumarket" @click="openProject('qiumarket', $event)" aria-label="查看Qiu Market详情">
-<div class="project-diagram">
-<small>QIU MARKET / 数据与产品</small>
-<strong>从行情，走向系统。</strong>
-<ol>
-<li>
-<b>01</b>来源与新鲜度</li>
-<li>
-<b>02</b>订单与撮合</li>
-<li>
-<b>03</b>账本与恢复</li>
-</ol>
-<p>虚拟资金 · 不连接真实账户</p>
-</div>
-<i aria-hidden="true">↗</i>
-</button>
-<div class="card-meta">
-<div>
-<span class="kind kind-personal">个人作品</span>
-<span>系统与 Web3</span>
-</div>
-<span>04 / 08</span>
-</div>
-<h3>
-<button data-open="qiumarket" @click="openProject('qiumarket', $event)">Qiu Market<span aria-hidden="true">↗</span>
-</button>
-</h3>
-<p>聚合市场信息，用虚拟资金体验交易与资产变化。</p>
-<p class="card-status">有部署入口 · 数据待核对</p>
-</article>
-<article class="selected-card">
-<button class="project-image visual-miniexchange" data-open="miniexchange" @click="openProject('miniexchange', $event)" aria-label="查看mini-exchange详情">
-<div class="project-diagram">
-<small>MINI EXCHANGE / 系统工程</small>
-<strong>确定性，也要可恢复。</strong>
-<ol>
-<li>
-<b>01</b>撮合与账本</li>
-<li>
-<b>02</b>日志与重放</li>
-<li>
-<b>03</b>只读诊断</li>
-</ol>
-<p>个人工程 · 非生产交易系统</p>
-</div>
-<i aria-hidden="true">↗</i>
-</button>
-<div class="card-meta">
-<div>
-<span class="kind kind-personal">个人作品</span>
-<span>系统与 Web3</span>
-</div>
-<span>05 / 08</span>
-</div>
-<h3>
-<button data-open="miniexchange" @click="openProject('miniexchange', $event)">mini-exchange<span aria-hidden="true">↗</span>
-</button>
-</h3>
-<p>从撮合与账本，到日志恢复和只读诊断，把正确性做成可检查的证据。</p>
-<p class="card-status">核心阶段实现 · 诊断待改进</p>
-</article>
-<article class="selected-card">
-<button class="project-image visual-qai" data-open="qai" @click="openProject('qai', $event)" aria-label="查看QAI详情">
-<div class="project-diagram">
-<small>QAI / 开发者工具</small>
-<strong>让每次调用，有账可查。</strong>
-<ol>
-<li>
-<b>01</b>准入与配额</li>
-<li>
-<b>02</b>请求与用量</li>
-<li>
-<b>03</b>审计与恢复</li>
-</ol>
-<p>v0.1 · 限定阶段验证</p>
-</div>
-<i aria-hidden="true">↗</i>
-</button>
-<div class="card-meta">
-<div>
-<span class="kind kind-personal">个人作品</span>
-<span>工具与产品</span>
-</div>
-<span>06 / 08</span>
-</div>
-<h3>
-<button data-open="qai" @click="openProject('qai', $event)">QAI<span aria-hidden="true">↗</span>
-</button>
-</h3>
-<p>为独立 Key 管理 Token 配额、用量账本、并发与异常恢复。</p>
-<p class="card-status">v0.1 限定阶段验证</p>
-</article>
-<article class="selected-card">
-<button class="project-image visual-wildheart" data-open="wildheart" @click="openProject('wildheart', $event)" aria-label="查看知识地图详情">
-<img src="/resume/knowledge-map.svg" alt="知识地图的虚构结构示意：示例资料、概念、阅读笔记与时间线，不包含真实资料" loading="lazy" decoding="async">
-<i aria-hidden="true">↗</i>
-</button>
-<div class="card-meta">
-<div>
-<span class="kind kind-private">个人作品 · 私有</span>
-<span>知识与数据</span>
-</div>
-<span>07 / 08</span>
-</div>
-<h3>
-<button data-open="wildheart" @click="openProject('wildheart', $event)">知识地图<span aria-hidden="true">↗</span>
-</button>
-</h3>
-<p>把零散资料、概念与笔记，连成可以回看的知识结构。</p>
-<p class="card-status">私有项目 · 仅展示方法与示意</p>
-</article>
-<article class="selected-card">
-<button class="project-image visual-qiwu" data-open="qiwu" @click="openProject('qiwu', $event)" aria-label="查看庄子 · 代码影像详情">
-<img class="portrait-cover" src="/resume/qiwu-cover.png" alt="既有齐物论作品封面" loading="lazy" decoding="async">
-<span>代码影像 · 封面</span>
-<i aria-hidden="true">↗</i>
-</button>
-<div class="card-meta">
-<div>
-<span class="kind kind-personal">个人作品</span>
-<span>影像与交互</span>
-</div>
-<span>08 / 08</span>
-</div>
-<h3>
-<button data-open="qiwu" @click="openProject('qiwu', $event)">庄子 · 代码影像<span aria-hidden="true">↗</span>
-</button>
-</h3>
-<p>从原文、脚本到镜头，用程序构建一段可观看的思考。</p>
-<p class="card-status">已有作品片段</p>
-</article>
+  <article v-for="{ project, visual, position } in featuredProjects" :key="project.id" class="selected-card">
+    <div class="project-image" :class="`visual-${project.id}`">
+      <template v-if="'src' in visual">
+        <img :src="visual.src" :alt="visual.alt" loading="lazy" decoding="async">
+        <span v-if="visual.caption">{{ visual.caption }}</span>
+      </template>
+      <div v-else class="project-diagram">
+        <small>{{ visual.label }}</small>
+        <strong>{{ visual.headline }}</strong>
+        <ol>
+          <li v-for="(step, index) in visual.steps" :key="step">
+            <b aria-hidden="true">0{{ index + 1 }}</b>{{ step }}
+          </li>
+        </ol>
+        <p>{{ visual.caption }}</p>
+      </div>
+      <i aria-hidden="true">↗</i>
+    </div>
+    <div class="card-meta">
+      <div>
+        <span class="kind" :class="`kind-${project.kind}`">{{ project.kindLabel }}</span>
+        <span>{{ project.label }}</span>
+      </div>
+      <span>{{ position }}</span>
+    </div>
+    <h3>
+      <button type="button" :data-open="project.id" @click="openProject(project.id, $event)">
+        {{ project.title }}<span aria-hidden="true">↗</span>
+      </button>
+    </h3>
+    <p>{{ project.intro }}</p>
+    <p class="card-status">{{ project.status }}</p>
+    <a v-if="project.id === 'miniexchange'" class="demo-link" :href="miniExchangeDemo.href">{{ miniExchangeDemo.label }} <span aria-hidden="true">↗</span></a>
+  </article>
 </div>
 </section>
 <section class="catalog-section" id="catalog">
 <div class="wrap">
 <div class="section-heading">
 <div>
-<p class="eyebrow">02 / THE FULL COLLECTION</p>
+<p class="eyebrow">02 / 全部项目</p>
 <h2>完整项目目录 <sup>29</sup>
 </h2>
 </div>
@@ -380,7 +219,7 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 </button>
 <button type="button" data-category-filter="business" :aria-pressed="category === 'business'" @click="setCategory('business')">业务经历 <span>2</span>
 </button>
-<button type="button" data-category-filter="engineering" :aria-pressed="category === 'engineering'" @click="setCategory('engineering')">系统与 Web3 <span>7</span>
+<button type="button" data-category-filter="engineering" :aria-pressed="category === 'engineering'" @click="setCategory('engineering')">交易与系统 <span>7</span>
 </button>
 <button type="button" data-category-filter="knowledge" :aria-pressed="category === 'knowledge'" @click="setCategory('knowledge')">知识与数据 <span>7</span>
 </button>
@@ -423,45 +262,26 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 <section class="wrap experience-section" id="experience">
 <div class="section-heading">
 <div>
-<p class="eyebrow">03 / EXPERIENCE & EDUCATION</p>
+<p class="eyebrow">03 / 经历与教育</p>
 <h2>业务里的实践，作品背后的基础。</h2>
 </div>
 </div>
 <div class="experience-grid">
 <div class="experience-list">
-<article class="experience-row">
-<div class="experience-head">
-<span class="kind kind-team">团队业务 · 本人参与</span>
-<span class="experience-when">公司与任职时间待补充</span>
-</div>
-<h3>Agent SaaS · 智能客服与知识库</h3>
-<p class="experience-lead">面向企业租户的智能客服与微信回复场景。</p>
-<ul>
-<li>参与资料上传、知识库关联、会话试聊、知识检索与答案引用链路，复用现有模型授权与知识服务。</li>
-<li>围绕租户、用户、客服与知识库约束数据访问，处理权限变化、资料删除、无命中与引用校验。</li>
-<li>参与微信自动回复任务执行：租约领取、幂等、额度预占与发送前检查。</li>
-</ul>
-<p class="experience-tags">Go · PostgreSQL · 检索增强 · 多租户权限</p>
-<p class="experience-scope">验证以本地交付链路与模拟微信为界，不含真实微信发送或线上规模数据。</p>
-<button class="text-button" type="button" data-open="saas" @click="openProject('saas', $event)">查看参与模块与验证记录 →</button>
-</article>
-<article class="experience-row">
-<div class="experience-head">
-<span class="kind kind-team">团队业务 · 本人参与</span>
-<span class="experience-when">公司与任职时间待补充</span>
-</div>
-<h3>The AI · 后端与管理后台</h3>
-<p class="experience-lead">围绕内容与学习的产品，关注数据、权限与运营体验。</p>
-<ul>
-<li>课程与小册的内容访问管理，以及相关 API 契约。</li>
-<li>管理后台的编辑与配置体验，包括富文本编辑器选择范围与中文输入问题。</li>
-<li>整理运营说明与发布交接，让配置、保存和结果检查更清楚。</li>
-</ul>
-<p class="experience-tags">后端 · 管理后台 · 接口契约</p>
-<p class="experience-scope">团队产品；各项变更的线上状态以实际发布为准。</p>
-<button class="text-button" type="button" data-open="theai" @click="openProject('theai', $event)">查看本人参与范围 →</button>
-</article>
-<p class="resume-note">正式任职公司、岗位与起止时间待本人确认后补入；当前按业务项目与本人参与模块展示。</p>
+  <header class="experience-company">
+    <h3>{{ resumeExperience.company }} · {{ resumeExperience.role }}</h3>
+    <p class="experience-when">{{ resumeExperience.start }} — {{ resumeExperience.end }}</p>
+    <p class="experience-lead">{{ resumeExperience.description }}</p>
+  </header>
+  <article v-for="entry in resumeExperience.entries" :key="entry.id" class="experience-row">
+    <h4>{{ entry.title }}</h4>
+    <p class="experience-role">{{ entry.responsibility }}</p>
+    <ul>
+      <li v-for="bullet in entry.bullets" :key="bullet">{{ bullet }}</li>
+    </ul>
+    <p class="experience-result"><strong>结果</strong> {{ entry.result }}</p>
+    <button v-if="entry.id === 'saas'" class="text-button" type="button" data-open="saas" @click="openProject('saas', $event)">查看参与模块与验证记录 →</button>
+  </article>
 </div>
 <aside class="side-column">
 <section class="education">
@@ -478,23 +298,26 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 <p class="eyebrow">常用技术</p>
 <dl>
 <div>
-<dt>后端与数据</dt>
-<dd>Go · PostgreSQL · SQLite · Python</dd>
-</div>
-<div>
 <dt>AI 应用</dt>
-<dd>检索增强与引用 · 模型接入 · Agent 工具调用 · 评测用例</dd>
+<dd>Agent 工具调用与评测 · RAG 检索和引用校验 · MCP · 提示注入防护 · 模型额度和用量计量</dd>
 </div>
 <div>
-<dt>Web3</dt>
-<dd>Solidity · Foundry · EIP-712 · 测试网钱包链路</dd>
+<dt>AI 开发</dt>
+<dd>Claude Code · Codex · Claude Code hooks</dd>
 </div>
 <div>
-<dt>前端与交互</dt>
-<dd>Vue · React · TypeScript · Three.js · Swift</dd>
+<dt>后端与数据</dt>
+<dd>Go · Python · TypeScript · PostgreSQL · Redis · SQLite · Kafka · HTTP API · gRPC · SSE · WebSocket</dd>
+</div>
+<div>
+<dt>前端</dt>
+<dd>React · Vue · Remotion</dd>
+</div>
+<div>
+<dt>部署与运维</dt>
+<dd>Vercel · Cloudflare · 腾讯云 · 阿里云 · Docker · Tailscale · GitHub Actions</dd>
 </div>
 </dl>
-<p class="skills-note">按作品与业务记录整理，具体深度见各项目详情。</p>
 </section>
 </aside>
 </div>
@@ -502,33 +325,32 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 <section class="about-band">
 <div class="wrap about-grid">
 <div>
-<p class="eyebrow">A LITTLE ABOUT ME</p>
+<p class="eyebrow">关于我</p>
 <h2>把问题讲清楚，<br>再把它做成东西。</h2>
 </div>
 <div>
 <p>我是 xiuqiu。我的实践分布在后端系统、AI 工具、知识整理与代码创作之间。既关心功能如何落地，也关心别人怎样理解和使用它。</p>
 <p>这个网站同时是一份简历和一座作品档案：你可以快速查看业务与工程案例，也可以走进那些来自兴趣的长期探索。每个项目都写明归属与验证范围。</p>
+<p>我的个人项目用 Claude Code 和 Codex 辅助开发，由我负责需求、设计决策、验收和评测。</p>
 </div>
 </div>
 </section>
 <section class="wrap contact-section" id="contact">
-<p class="eyebrow">LET’S CONNECT</p>
+<p class="eyebrow">联系我</p>
 <div class="contact-main">
 <h2>从一个具体的问题，<br>开始下一次交流。</h2>
-<a class="contact-arrow" href="mailto:qianqiuquq@gmail.com" aria-label="发邮件给 xiuqiu">↗</a>
+<a class="contact-arrow" href="mailto:qianqiuquq@gmail.com" aria-label="发邮件给 xiuqiu"><span aria-hidden="true">↗</span></a>
 </div>
 <ul class="contact-topics">
-<li>
-<b>岗位</b>AI 应用 / 全栈</li>
-<li>
-<b>岗位</b>后端 / Web3 工程</li>
-<li>
-<b>合作</b>工具、知识系统与交互作品</li>
+<li><b>岗位</b>AI 应用 / Agent</li>
+<li><b>岗位</b>AI 自动化 / 效能</li>
+<li><b>岗位</b>AI 全栈</li>
+<li><b>合作</b>工具、知识系统与交互作品</li>
 </ul>
 <div class="contact-links">
-<a href="mailto:qianqiuquq@gmail.com">qianqiuquq@gmail.com ↗</a>
-<a href="https://github.com/xoqiu09" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
-<a href="https://x.com/Xiuqiu2211" target="_blank" rel="noopener noreferrer">X ↗</a>
+<a href="mailto:qianqiuquq@gmail.com">qianqiuquq@gmail.com <span aria-hidden="true">↗</span></a>
+<a href="https://github.com/xoqiu09" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+<a href="https://x.com/Xiuqiu2211" target="_blank" rel="noopener noreferrer">X <span aria-hidden="true">↗</span></a>
 </div>
 </section>
 </main>

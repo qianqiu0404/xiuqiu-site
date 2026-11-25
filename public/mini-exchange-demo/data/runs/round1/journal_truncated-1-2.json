@@ -1,0 +1,190 @@
+{
+ "round": "round1",
+ "case_id": "journal_truncated-1",
+ "run": 2,
+ "scenario": "journal_truncated",
+ "seed": 1,
+ "question": "用户 7 刚下的买单为什么没有出现？",
+ "expected": {
+  "root_cause": "JOURNAL_TRUNCATED",
+  "must_cite": [
+   81
+  ],
+  "target_user": 7
+ },
+ "status": "COMPLETED",
+ "reason": "",
+ "diagnosis": {
+  "root_cause": "JOURNAL_TRUNCATED",
+  "conclusion": "用户 7 的买单（订单 23，LIMIT BUY 70×1）在事件日志中已于序号 81 受理、序号 82 冻结 70 USDT，但命令日志只到序号 36、事件日志到 84，重放只恢复到序号 80，故该订单没有进入撮合状态，查不到也不在盘口中。对账报 EVENT_LOG_AHEAD（最早异常序号 81），说明命令日志尾部丢失，属于日志截断而非下单被拒。",
+  "evidence": [
+   80,
+   81,
+   82,
+   83,
+   84
+  ],
+  "confidence": "high",
+  "not_found": [
+   "订单 23 在订单存储中不存在（get_order 未找到），无法给出排队位置与成交情况",
+   "买卖盘前 20 档均为空，无法判断挂价是否已被触及",
+   "命令日志 CommandSeq 37–39 缺失，无法确认订单 23 之后的完整指令序列"
+  ]
+ },
+ "steps": [
+  {
+   "tool": "list_events",
+   "input": {
+    "user_id": 7,
+    "limit": 50
+   },
+   "content": "{\"Events\":[{\"Seq\":80,\"CommandSeq\":36,\"Kind\":\"FUNDS\",\"Text\":\"资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 7 USDT Available +1000；户主 3 用户 0 USDT Available -1000；\",\"UntrustedClientText\":\"scenario-36\"},{\"Seq\":81,\"CommandSeq\":37,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 23 受理：用户 7 LIMIT BUY 70 × 1（预算 0）\",\"UntrustedClientText\":\"\"},{\"Seq\":82,\"CommandSeq\":37,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 23，成交 0）：户主 1 用户 7 USDT Available -70；户主 1 用户 7 USDT Frozen +70；\",\"UntrustedClientText\":\"\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 23
+   },
+   "content": "diag: 未找到：订单 23；可以用 list_events 按 user_id 查找；可以用 list_events 按 user_id 查找",
+   "is_error": true
+  },
+  {
+   "tool": "get_book",
+   "input": {
+    "symbol": "BTC-USDT",
+    "depth": 20
+   },
+   "content": "{\"Symbol\":\"BTC-USDT\",\"Bids\":null,\"Asks\":null}",
+   "is_error": false
+  },
+  {
+   "tool": "run_reconcile",
+   "input": {},
+   "content": "{\"OK\":false,\"Violations\":[{\"Rule\":\"EVENT_LOG_AHEAD\",\"User\":0,\"Asset\":\"\",\"OrderID\":0,\"Expected\":80,\"Actual\":84,\"Detail\":\"事件日志超前，命令日志可能丢失尾部数据\",\"FirstSeq\":81}],\"CommandLogLastSeq\":36,\"EventLogLastSeq\":84,\"RegeneratedLastEventSeq\":80}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "seq_from": 78,
+    "limit": 50
+   },
+   "content": "{\"Events\":[{\"Seq\":78,\"CommandSeq\":34,\"Kind\":\"FUNDS\",\"Text\":\"资金 TRADE_SETTLE（订单 22，成交 11）：户主 1 用户 101 BTC Frozen -10000；户主 1 用户 102 BTC Available +9990；户主 2 用户 0 BTC Available +10；户主 1 用户 102 USDT Frozen -31；户主 1 用户 101 USDT Available +31；\",\"UntrustedClientText\":\"scenario-34\"},{\"Seq\":79,\"CommandSeq\":35,\"Kind\":\"CANCEL_REJECTED\",\"Text\":\"用户 101 撤订单 21 被拒：ALREADY_FINAL\",\"UntrustedClientText\":\"scenario-35\"},{\"Seq\":80,\"CommandSeq\":36,\"Kind\":\"FUNDS\",\"Text\":\"资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 7 USDT Available +1000；户主 3 用户 0 USDT Available -1000；\",\"UntrustedClientText\":\"scenario-36\"},{\"Seq\":81,\"CommandSeq\":37,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 23 受理：用户 7 LIMIT BUY 70 × 1（预算 0）\",\"UntrustedClientText\":\"\"},{\"Seq\":82,\"CommandSeq\":37,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 23，成交 0）：户主 1 用户 7 USDT Available -70；户主 1 用户 7 USDT Frozen +70；\",\"UntrustedClientText\":\"\"},{\"Seq\":83,\"CommandSeq\":38,\"Kind\":\"FUNDS\",\"Text\":\"资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 8 BTC Available +10000；户主 3 用户 0 BTC Available -10000；\",\"UntrustedClientText\":\"\"},{\"Seq\":84,\"CommandSeq\":39,\"Kind\":\"FUNDS\",\"Text\":\"资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 9 USDT Available +1000；户主 3 用户 0 USDT Available -1000；\",\"UntrustedClientText\":\"\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_account",
+   "input": {
+    "user_id": 7,
+    "asset": "USDT"
+   },
+   "content": "{\"User\":7,\"Asset\":\"USDT\",\"Available\":1000,\"Frozen\":0,\"OpenOrders\":null,\"ReservedSum\":0,\"FrozenMinusReserved\":0,\"RecentPostings\":[{\"Seq\":82,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Frozen\",\"Delta\":70},{\"Seq\":82,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Available\",\"Delta\":-70},{\"Seq\":80,\"Reason\":\"DEPOSIT\",\"Bucket\":\"Available\",\"Delta\":1000}]}",
+   "is_error": false
+  },
+  {
+   "tool": "submit_diagnosis",
+   "input": {
+    "root_cause": "JOURNAL_TRUNCATED",
+    "conclusion": "用户 7 的买单（订单 23，LIMIT BUY 70×1）在事件日志中已于序号 81 受理、序号 82 冻结 70 USDT，但命令日志只到序号 36、事件日志到 84，重放只恢复到序号 80，故该订单没有进入撮合状态，查不到也不在盘口中。对账报 EVENT_LOG_AHEAD（最早异常序号 81），说明命令日志尾部丢失，属于日志截断而非下单被拒。",
+    "evidence": [
+     80,
+     81,
+     82,
+     83,
+     84
+    ],
+    "confidence": "high",
+    "not_found": [
+     "订单 23 在订单存储中不存在（get_order 未找到），无法给出排队位置与成交情况",
+     "买卖盘前 20 档均为空，无法判断挂价是否已被触及",
+     "命令日志 CommandSeq 37–39 缺失，无法确认订单 23 之后的完整指令序列"
+    ]
+   },
+   "content": "诊断已提交",
+   "is_error": false
+  }
+ ],
+ "events": [
+  {
+   "seq": 80,
+   "exists": true,
+   "command_seq": 36,
+   "kind": "FUNDS",
+   "text": "资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 7 USDT Available +1000；户主 3 用户 0 USDT Available -1000；",
+   "untrusted_client_text": "scenario-36",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 81,
+   "exists": true,
+   "command_seq": 37,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 23 受理：用户 7 LIMIT BUY 70 × 1（预算 0）",
+   "cited": true,
+   "required": true,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 82,
+   "exists": true,
+   "command_seq": 37,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 23，成交 0）：户主 1 用户 7 USDT Available -70；户主 1 用户 7 USDT Frozen +70；",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 83,
+   "exists": true,
+   "command_seq": 38,
+   "kind": "FUNDS",
+   "text": "资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 8 BTC Available +10000；户主 3 用户 0 BTC Available -10000；",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": false
+  },
+  {
+   "seq": 84,
+   "exists": true,
+   "command_seq": 39,
+   "kind": "FUNDS",
+   "text": "资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 9 USDT Available +1000；户主 3 用户 0 USDT Available -1000；",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": false
+  }
+ ],
+ "grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "recorded_grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "pass": true,
+ "recorded_pass": true,
+ "tool_calls": 6,
+ "turns": 5,
+ "usage": {
+  "input_tokens": 10442,
+  "output_tokens": 1376,
+  "cache_read_tokens": 8832
+ },
+ "elapsed_ms": 10251,
+ "estimated_usd": 0.002187192,
+ "semantic_issues": []
+}

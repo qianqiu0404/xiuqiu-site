@@ -1,0 +1,203 @@
+{
+ "round": "round1",
+ "case_id": "queue_behind-2",
+ "run": 2,
+ "scenario": "queue_behind",
+ "seed": 2,
+ "question": "用户 7 的订单 26 为什么没有正常成交？",
+ "expected": {
+  "root_cause": "QUEUE_BEHIND",
+  "must_cite": [
+   92,
+   90
+  ],
+  "alt_cite": [
+   [],
+   [
+    96
+   ]
+  ],
+  "target_user": 7
+ },
+ "status": "COMPLETED",
+ "reason": "",
+ "diagnosis": {
+  "root_cause": "QUEUE_BEHIND",
+  "conclusion": "订单 26（用户 7，限价买 1 USDT × 2 lot）在事件 92 受理并冻结 200 单位 USDT（事件 93），价格 100 上排在同价买方队列第 2 位，前方有 7 lot。事件 96 的成交 13 中，市价卖单 27（3 lot）只吃掉了排在前面的买单 25 的 3 lot，剩余前方 5 lot 仍未成交，因此订单 26 未获分配。当前盘口买一 100 共 9 lot、卖盘为空，资金冻结与挂单占用一致（Frozen 200 = ReservedSum 200），对账无异常。",
+  "evidence": [
+   92,
+   93,
+   96
+  ],
+  "confidence": "high",
+  "not_found": []
+ },
+ "steps": [
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 26
+   },
+   "content": "{\"Order\":{\"ID\":26,\"UserID\":7,\"Symbol\":\"BTC-USDT\",\"Side\":1,\"Type\":1,\"Price\":100,\"Qty\":2,\"FilledQty\":0,\"QuoteAmount\":0,\"FilledAmount\":0,\"Status\":1,\"CancelReason\":0},\"OnBook\":true,\"Queue\":{\"LevelPrice\":100,\"Position\":2,\"QtyAhead\":7,\"LevelOrders\":2},\"BestOpposite\":null,\"EventSeqs\":[92,93]}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "order_id": 26,
+    "limit": 200
+   },
+   "content": "{\"Events\":[{\"Seq\":92,\"CommandSeq\":43,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 26 受理：用户 7 LIMIT BUY 100 × 2（预算 0）\",\"UntrustedClientText\":\"scenario-43\"},{\"Seq\":93,\"CommandSeq\":43,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Available -200；户主 1 用户 7 USDT Frozen +200；\",\"UntrustedClientText\":\"scenario-43\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_book",
+   "input": {
+    "symbol": "BTC-USDT",
+    "depth": 10
+   },
+   "content": "{\"Symbol\":\"BTC-USDT\",\"Bids\":[{\"Price\":100,\"Qty\":9,\"Orders\":2}],\"Asks\":null}",
+   "is_error": false
+  },
+  {
+   "tool": "get_account",
+   "input": {
+    "user_id": 7,
+    "asset": "USDT"
+   },
+   "content": "{\"User\":7,\"Asset\":\"USDT\",\"Available\":800,\"Frozen\":200,\"OpenOrders\":[{\"OrderID\":26,\"Reserved\":200}],\"ReservedSum\":200,\"FrozenMinusReserved\":0,\"RecentPostings\":[{\"Seq\":93,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Frozen\",\"Delta\":200},{\"Seq\":93,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Available\",\"Delta\":-200},{\"Seq\":88,\"Reason\":\"DEPOSIT\",\"Bucket\":\"Available\",\"Delta\":1000}]}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "kind": "TRADE",
+    "limit": 50
+   },
+   "content": "{\"Events\":[{\"Seq\":7,\"CommandSeq\":4,\"Kind\":\"TRADE\",\"Text\":\"成交 1：maker 订单 1（用户 101）与 taker 订单 2（用户 102），33 × 1\",\"UntrustedClientText\":\"scenario-4\"},{\"Seq\":14,\"CommandSeq\":7,\"Kind\":\"TRADE\",\"Text\":\"成交 2：maker 订单 3（用户 101）与 taker 订单 4（用户 102），38 × 1\",\"UntrustedClientText\":\"scenario-7\"},{\"Seq\":21,\"CommandSeq\":10,\"Kind\":\"TRADE\",\"Text\":\"成交 3：maker 订单 5（用户 101）与 taker 订单 6（用户 102），26 × 1\",\"UntrustedClientText\":\"scenario-10\"},{\"Seq\":28,\"CommandSeq\":13,\"Kind\":\"TRADE\",\"Text\":\"成交 4：maker 订单 7（用户 101）与 taker 订单 8（用户 102），25 × 1\",\"UntrustedClientText\":\"scenario-13\"},{\"Seq\":35,\"CommandSeq\":16,\"Kind\":\"TRADE\",\"Text\":\"成交 5：maker 订单 9（用户 101）与 taker 订单 10（用户 102），25 × 1\",\"UntrustedClientText\":\"scenario-16\"},{\"Seq\":42,\"CommandSeq\":19,\"Kind\":\"TRADE\",\"Text\":\"成交 6：maker 订单 11（用户 101）与 taker 订单 12（用户 102），36 × 1\",\"UntrustedClientText\":\"scenario-19\"},{\"Seq\":49,\"CommandSeq\":22,\"Kind\":\"TRADE\",\"Text\":\"成交 7：maker 订单 13（用户 101）与 taker 订单 14（用户 102），28 × 1\",\"UntrustedClientText\":\"scenario-22\"},{\"Seq\":56,\"CommandSeq\":25,\"Kind\":\"TRADE\",\"Text\":\"成交 8：maker 订单 15（用户 101）与 taker 订单 16（用户 102），21 × 1\",\"UntrustedClientText\":\"scenario-25\"},{\"Seq\":63,\"CommandSeq\":28,\"Kind\":\"TRADE\",\"Text\":\"成交 9：maker 订单 17（用户 101）与 taker 订单 18（用户 102），24 × 1\",\"UntrustedClientText\":\"scenario-28\"},{\"Seq\":70,\"CommandSeq\":31,\"Kind\":\"TRADE\",\"Text\":\"成交 10：maker 订单 19（用户 101）与 taker 订单 20（用户 102），24 × 1\",\"UntrustedClientText\":\"scenario-31\"},{\"Seq\":77,\"CommandSeq\":34,\"Kind\":\"TRADE\",\"Text\":\"成交 11：maker 订单 21（用户 101）与 taker 订单 22（用户 102），35 × 1\",\"UntrustedClientText\":\"scenario-34\"},{\"Seq\":84,\"CommandSeq\":37,\"Kind\":\"TRADE\",\"Text\":\"成交 12：maker 订单 23（用户 101）与 taker 订单 24（用户 102），27 × 1\",\"UntrustedClientText\":\"scenario-37\"},{\"Seq\":96,\"CommandSeq\":44,\"Kind\":\"TRADE\",\"Text\":\"成交 13：maker 订单 25（用户 8）与 taker 订单 27（用户 9），100 × 3\",\"UntrustedClientText\":\"scenario-44\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "run_reconcile",
+   "input": {},
+   "content": "{\"OK\":true,\"Violations\":null,\"CommandLogLastSeq\":44,\"EventLogLastSeq\":97,\"RegeneratedLastEventSeq\":97}",
+   "is_error": false
+  },
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 25
+   },
+   "content": "{\"Order\":{\"ID\":25,\"UserID\":8,\"Symbol\":\"BTC-USDT\",\"Side\":1,\"Type\":1,\"Price\":100,\"Qty\":10,\"FilledQty\":3,\"QuoteAmount\":0,\"FilledAmount\":300,\"Status\":2,\"CancelReason\":0},\"OnBook\":true,\"Queue\":{\"LevelPrice\":100,\"Position\":1,\"QtyAhead\":0,\"LevelOrders\":2},\"BestOpposite\":null,\"EventSeqs\":[90,91,96,97]}",
+   "is_error": false
+  },
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 27
+   },
+   "content": "{\"Order\":{\"ID\":27,\"UserID\":9,\"Symbol\":\"BTC-USDT\",\"Side\":2,\"Type\":2,\"Price\":0,\"Qty\":3,\"FilledQty\":3,\"QuoteAmount\":0,\"FilledAmount\":300,\"Status\":3,\"CancelReason\":0},\"OnBook\":false,\"Queue\":null,\"BestOpposite\":100,\"EventSeqs\":[94,95,96,97]}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "limit": 50,
+    "seq_from": 85,
+    "seq_to": 0
+   },
+   "content": "已达到工具调用上限（8 次），请立即调用 submit_diagnosis",
+   "is_error": true
+  },
+  {
+   "tool": "submit_diagnosis",
+   "input": {
+    "root_cause": "QUEUE_BEHIND",
+    "conclusion": "订单 26（用户 7，限价买 1 USDT × 2 lot）在事件 92 受理并冻结 200 单位 USDT（事件 93），价格 100 上排在同价买方队列第 2 位，前方有 7 lot。事件 96 的成交 13 中，市价卖单 27（3 lot）只吃掉了排在前面的买单 25 的 3 lot，剩余前方 5 lot 仍未成交，因此订单 26 未获分配。当前盘口买一 100 共 9 lot、卖盘为空，资金冻结与挂单占用一致（Frozen 200 = ReservedSum 200），对账无异常。",
+    "evidence": [
+     92,
+     93,
+     96
+    ],
+    "confidence": "high",
+    "not_found": []
+   },
+   "content": "诊断已提交",
+   "is_error": false
+  }
+ ],
+ "events": [
+  {
+   "seq": 90,
+   "exists": true,
+   "command_seq": 42,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 25 受理：用户 8 LIMIT BUY 100 × 10（预算 0）",
+   "untrusted_client_text": "scenario-42",
+   "cited": false,
+   "required": true,
+   "alternative": false,
+   "target_user": false
+  },
+  {
+   "seq": 92,
+   "exists": true,
+   "command_seq": 43,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 26 受理：用户 7 LIMIT BUY 100 × 2（预算 0）",
+   "untrusted_client_text": "scenario-43",
+   "cited": true,
+   "required": true,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 93,
+   "exists": true,
+   "command_seq": 43,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Available -200；户主 1 用户 7 USDT Frozen +200；",
+   "untrusted_client_text": "scenario-43",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 96,
+   "exists": true,
+   "command_seq": 44,
+   "kind": "TRADE",
+   "text": "成交 13：maker 订单 25（用户 8）与 taker 订单 27（用户 9），100 × 3",
+   "untrusted_client_text": "scenario-44",
+   "cited": true,
+   "required": false,
+   "alternative": true,
+   "target_user": false
+  }
+ ],
+ "grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "recorded_grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": false,
+  "no_hallucination": true
+ },
+ "pass": true,
+ "recorded_pass": false,
+ "tool_calls": 8,
+ "turns": 5,
+ "usage": {
+  "input_tokens": 11658,
+  "output_tokens": 1861,
+  "cache_read_tokens": 9600
+ },
+ "elapsed_ms": 12662,
+ "estimated_usd": 0.0029081999999999997,
+ "semantic_issues": []
+}

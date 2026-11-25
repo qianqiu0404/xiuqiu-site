@@ -1,0 +1,182 @@
+{
+ "round": "round1",
+ "case_id": "canceled_by_stp-2",
+ "run": 3,
+ "scenario": "canceled_by_stp",
+ "seed": 2,
+ "question": "用户 7 的订单 26 为什么没有正常成交？",
+ "expected": {
+  "root_cause": "CANCELED_BY_STP",
+  "must_cite": [
+   93
+  ],
+  "target_user": 7
+ },
+ "status": "COMPLETED",
+ "reason": "",
+ "diagnosis": {
+  "root_cause": "CANCELED_BY_STP",
+  "conclusion": "订单 26（用户7，LIMIT BUY 100×1）未成交是因自成交保护（STP）触发：用户7自己的挂单 25（LIMIT SELL 100×1，事件89/90）正占据对手方最优价 100，订单 26 会与之自成交，故被系统取消，原因 SELF_TRADE，成交 0/1（事件93）。资金按冻结/解冻完整回滚，USDT Frozen -100、Available +100（事件92、94），对账无不变量违规。因此并非价格未到或排队靠后，也不是余额或日志问题。",
+  "evidence": [
+   89,
+   90,
+   91,
+   92,
+   93,
+   94
+  ],
+  "confidence": "high",
+  "not_found": []
+ },
+ "steps": [
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 26
+   },
+   "content": "{\"Order\":{\"ID\":26,\"UserID\":7,\"Symbol\":\"BTC-USDT\",\"Side\":1,\"Type\":1,\"Price\":100,\"Qty\":1,\"FilledQty\":0,\"QuoteAmount\":0,\"FilledAmount\":0,\"Status\":4,\"CancelReason\":3},\"OnBook\":false,\"Queue\":null,\"BestOpposite\":100,\"EventSeqs\":[91,92,93,94]}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "order_id": 26,
+    "limit": 100
+   },
+   "content": "{\"Events\":[{\"Seq\":91,\"CommandSeq\":42,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 26 受理：用户 7 LIMIT BUY 100 × 1（预算 0）\",\"UntrustedClientText\":\"scenario-42\"},{\"Seq\":92,\"CommandSeq\":42,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Available -100；户主 1 用户 7 USDT Frozen +100；\",\"UntrustedClientText\":\"scenario-42\"},{\"Seq\":93,\"CommandSeq\":42,\"Kind\":\"ORDER_CANCELED\",\"Text\":\"订单 26 取消，用户 7，原因 SELF_TRADE，已成交 0/1\",\"UntrustedClientText\":\"scenario-42\"},{\"Seq\":94,\"CommandSeq\":42,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_UNFREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Frozen -100；户主 1 用户 7 USDT Available +100；\",\"UntrustedClientText\":\"scenario-42\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "user_id": 7,
+    "limit": 100
+   },
+   "content": "{\"Events\":[{\"Seq\":87,\"CommandSeq\":39,\"Kind\":\"FUNDS\",\"Text\":\"资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 7 BTC Available +10000；户主 3 用户 0 BTC Available -10000；\",\"UntrustedClientText\":\"scenario-39\"},{\"Seq\":88,\"CommandSeq\":40,\"Kind\":\"FUNDS\",\"Text\":\"资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 7 USDT Available +1000；户主 3 用户 0 USDT Available -1000；\",\"UntrustedClientText\":\"scenario-40\"},{\"Seq\":89,\"CommandSeq\":41,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 25 受理：用户 7 LIMIT SELL 100 × 1（预算 0）\",\"UntrustedClientText\":\"scenario-41\"},{\"Seq\":90,\"CommandSeq\":41,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 25，成交 0）：户主 1 用户 7 BTC Available -10000；户主 1 用户 7 BTC Frozen +10000；\",\"UntrustedClientText\":\"scenario-41\"},{\"Seq\":91,\"CommandSeq\":42,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 26 受理：用户 7 LIMIT BUY 100 × 1（预算 0）\",\"UntrustedClientText\":\"scenario-42\"},{\"Seq\":92,\"CommandSeq\":42,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Available -100；户主 1 用户 7 USDT Frozen +100；\",\"UntrustedClientText\":\"scenario-42\"},{\"Seq\":93,\"CommandSeq\":42,\"Kind\":\"ORDER_CANCELED\",\"Text\":\"订单 26 取消，用户 7，原因 SELF_TRADE，已成交 0/1\",\"UntrustedClientText\":\"scenario-42\"},{\"Seq\":94,\"CommandSeq\":42,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_UNFREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Frozen -100；户主 1 用户 7 USDT Available +100；\",\"UntrustedClientText\":\"scenario-42\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "run_reconcile",
+   "input": {},
+   "content": "{\"OK\":true,\"Violations\":null,\"CommandLogLastSeq\":42,\"EventLogLastSeq\":94,\"RegeneratedLastEventSeq\":94}",
+   "is_error": false
+  },
+  {
+   "tool": "submit_diagnosis",
+   "input": {
+    "root_cause": "CANCELED_BY_STP",
+    "conclusion": "订单 26（用户7，LIMIT BUY 100×1）未成交是因自成交保护（STP）触发：用户7自己的挂单 25（LIMIT SELL 100×1，事件89/90）正占据对手方最优价 100，订单 26 会与之自成交，故被系统取消，原因 SELF_TRADE，成交 0/1（事件93）。资金按冻结/解冻完整回滚，USDT Frozen -100、Available +100（事件92、94），对账无不变量违规。因此并非价格未到或排队靠后，也不是余额或日志问题。",
+    "evidence": [
+     89,
+     90,
+     91,
+     92,
+     93,
+     94
+    ],
+    "confidence": "high",
+    "not_found": []
+   },
+   "content": "诊断已提交",
+   "is_error": false
+  }
+ ],
+ "events": [
+  {
+   "seq": 89,
+   "exists": true,
+   "command_seq": 41,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 25 受理：用户 7 LIMIT SELL 100 × 1（预算 0）",
+   "untrusted_client_text": "scenario-41",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 90,
+   "exists": true,
+   "command_seq": 41,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 25，成交 0）：户主 1 用户 7 BTC Available -10000；户主 1 用户 7 BTC Frozen +10000；",
+   "untrusted_client_text": "scenario-41",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 91,
+   "exists": true,
+   "command_seq": 42,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 26 受理：用户 7 LIMIT BUY 100 × 1（预算 0）",
+   "untrusted_client_text": "scenario-42",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 92,
+   "exists": true,
+   "command_seq": 42,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Available -100；户主 1 用户 7 USDT Frozen +100；",
+   "untrusted_client_text": "scenario-42",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 93,
+   "exists": true,
+   "command_seq": 42,
+   "kind": "ORDER_CANCELED",
+   "text": "订单 26 取消，用户 7，原因 SELF_TRADE，已成交 0/1",
+   "untrusted_client_text": "scenario-42",
+   "cited": true,
+   "required": true,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 94,
+   "exists": true,
+   "command_seq": 42,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_UNFREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Frozen -100；户主 1 用户 7 USDT Available +100；",
+   "untrusted_client_text": "scenario-42",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  }
+ ],
+ "grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "recorded_grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "pass": true,
+ "recorded_pass": true,
+ "tool_calls": 4,
+ "turns": 3,
+ "usage": {
+  "input_tokens": 5512,
+  "output_tokens": 758,
+  "cache_read_tokens": 4224
+ },
+ "elapsed_ms": 5702,
+ "estimated_usd": 0.0013213440000000001,
+ "semantic_issues": []
+}

@@ -1,0 +1,212 @@
+{
+ "round": "round2",
+ "case_id": "ioc_remainder-1",
+ "run": 1,
+ "scenario": "ioc_remainder",
+ "seed": 1,
+ "question": "用户 7 的订单 24 为什么没有正常成交？",
+ "expected": {
+  "root_cause": "IOC_REMAINDER",
+  "must_cite": [
+   88
+  ],
+  "target_user": 7
+ },
+ "status": "COMPLETED",
+ "reason": "",
+ "diagnosis": {
+  "root_cause": "IOC_REMAINDER",
+  "conclusion": "订单 24 并非异常未成交，而是市价 IOC 买单：受理并冻结 300 后，仅与订单 23 的卖单成交 1 手（成交 12），随后因 IOC_REMAINDER 被撤销。剩余 200 已解冻退回，用户 7 最终获得 9990 聪 BTC、可用 USDT 恢复为 900，资金无异常。",
+  "evidence": [
+   84,
+   85,
+   86,
+   87,
+   88,
+   89
+  ],
+  "confidence": "high",
+  "not_found": []
+ },
+ "steps": [
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 24
+   },
+   "content": "{\"Order\":{\"ID\":24,\"UserID\":7,\"Symbol\":\"BTC-USDT\",\"Side\":1,\"Type\":2,\"Price\":0,\"Qty\":0,\"FilledQty\":1,\"QuoteAmount\":300,\"FilledAmount\":100,\"Status\":4,\"CancelReason\":2},\"OnBook\":false,\"Queue\":null,\"BestOpposite\":null,\"EventSeqs\":[84,85,86,87,88,89],\"LevelTrades\":null,\"LevelTradesTotal\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "order_id": 24,
+    "limit": 200
+   },
+   "content": "{\"Events\":[{\"Seq\":84,\"CommandSeq\":39,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 24 受理：用户 7 MARKET BUY 0 × 0（预算 300）\",\"UntrustedClientText\":\"scenario-39\"},{\"Seq\":85,\"CommandSeq\":39,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 24，成交 0）：户主 1 用户 7 USDT Available -300；户主 1 用户 7 USDT Frozen +300；\",\"UntrustedClientText\":\"scenario-39\"},{\"Seq\":86,\"CommandSeq\":39,\"Kind\":\"TRADE\",\"Text\":\"成交 12：maker 订单 23（用户 8）与 taker 订单 24（用户 7），100 × 1\",\"UntrustedClientText\":\"scenario-39\"},{\"Seq\":87,\"CommandSeq\":39,\"Kind\":\"FUNDS\",\"Text\":\"资金 TRADE_SETTLE（订单 24，成交 12）：户主 1 用户 8 BTC Frozen -10000；户主 1 用户 7 BTC Available +9990；户主 2 用户 0 BTC Available +10；户主 1 用户 7 USDT Frozen -100；户主 1 用户 8 USDT Available +100；\",\"UntrustedClientText\":\"scenario-39\"},{\"Seq\":88,\"CommandSeq\":39,\"Kind\":\"ORDER_CANCELED\",\"Text\":\"订单 24 取消，用户 7，原因 IOC_REMAINDER，已成交 1/0\",\"UntrustedClientText\":\"scenario-39\"},{\"Seq\":89,\"CommandSeq\":39,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_UNFREEZE（订单 24，成交 0）：户主 1 用户 7 USDT Frozen -200；户主 1 用户 7 USDT Available +200；\",\"UntrustedClientText\":\"scenario-39\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_account",
+   "input": {
+    "user_id": 7,
+    "asset": "USDT"
+   },
+   "content": "{\"User\":7,\"Asset\":\"USDT\",\"Available\":900,\"Frozen\":0,\"OpenOrders\":null,\"ReservedSum\":0,\"FrozenMinusReserved\":0,\"RecentPostings\":[{\"Seq\":89,\"Reason\":\"ORDER_UNFREEZE\",\"Bucket\":\"Available\",\"Delta\":200},{\"Seq\":89,\"Reason\":\"ORDER_UNFREEZE\",\"Bucket\":\"Frozen\",\"Delta\":-200},{\"Seq\":87,\"Reason\":\"TRADE_SETTLE\",\"Bucket\":\"Frozen\",\"Delta\":-100},{\"Seq\":85,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Frozen\",\"Delta\":300},{\"Seq\":85,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Available\",\"Delta\":-300},{\"Seq\":83,\"Reason\":\"DEPOSIT\",\"Bucket\":\"Available\",\"Delta\":1000}]}",
+   "is_error": false
+  },
+  {
+   "tool": "get_account",
+   "input": {
+    "user_id": 7,
+    "asset": "BTC"
+   },
+   "content": "{\"User\":7,\"Asset\":\"BTC\",\"Available\":9990,\"Frozen\":0,\"OpenOrders\":null,\"ReservedSum\":0,\"FrozenMinusReserved\":0,\"RecentPostings\":[{\"Seq\":87,\"Reason\":\"TRADE_SETTLE\",\"Bucket\":\"Available\",\"Delta\":9990}]}",
+   "is_error": false
+  },
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 23
+   },
+   "content": "{\"Order\":{\"ID\":23,\"UserID\":8,\"Symbol\":\"BTC-USDT\",\"Side\":2,\"Type\":1,\"Price\":100,\"Qty\":1,\"FilledQty\":1,\"QuoteAmount\":0,\"FilledAmount\":100,\"Status\":3,\"CancelReason\":0},\"OnBook\":false,\"Queue\":null,\"BestOpposite\":null,\"EventSeqs\":[81,82,86,87],\"LevelTrades\":[{\"Seq\":86,\"TradeID\":12,\"MakerOrderID\":23,\"MakerUserID\":8,\"Price\":100,\"Qty\":1}],\"LevelTradesTotal\":1}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "seq_from": 75,
+    "seq_to": 100,
+    "limit": 200
+   },
+   "content": "{\"Events\":[{\"Seq\":75,\"CommandSeq\":34,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 22 受理：用户 102 MARKET BUY 0 × 0（预算 31）\",\"UntrustedClientText\":\"scenario-34\"},{\"Seq\":76,\"CommandSeq\":34,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 22，成交 0）：户主 1 用户 102 USDT Available -31；户主 1 用户 102 USDT Frozen +31；\",\"UntrustedClientText\":\"scenario-34\"},{\"Seq\":77,\"CommandSeq\":34,\"Kind\":\"TRADE\",\"Text\":\"成交 11：maker 订单 21（用户 101）与 taker 订单 22（用户 102），31 × 1\",\"UntrustedClientText\":\"scenario-34\"},{\"Seq\":78,\"CommandSeq\":34,\"Kind\":\"FUNDS\",\"Text\":\"资金 TRADE_SETTLE（订单 22，成交 11）：户主 1 用户 101 BTC Frozen -10000；户主 1 用户 102 BTC Available +9990；户主 2 用户 0 BTC Available +10；户主 1 用户 102 USDT Frozen -31；户主 1 用户 101 USDT Available +31；\",\"UntrustedClientText\":\"scenario-34\"},{\"Seq\":79,\"CommandSeq\":35,\"Kind\":\"CANCEL_REJECTED\",\"Text\":\"用户 101 撤订单 21 被拒：ALREADY_FINAL\",\"UntrustedClientText\":\"scenario-35\"},{\"Seq\":80,\"CommandSeq\":36,\"Kind\":\"FUNDS\",\"Text\":\"资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 8 BTC Available +10000；户主 3 用户 0 BTC Available -10000；\",\"UntrustedClientText\":\"scenario-36\"},{\"Seq\":81,\"CommandSeq\":37,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 23 受理：用户 8 LIMIT SELL 100 × 1（预算 0）\",\"UntrustedClientText\":\"scenario-37\"},{\"Seq\":82,\"CommandSeq\":37,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 23，成交 0）：户主 1 用户 8 BTC Available -10000；户主 1 用户 8 BTC Frozen +10000；\",\"UntrustedClientText\":\"scenario-37\"},{\"Seq\":83,\"CommandSeq\":38,\"Kind\":\"FUNDS\",\"Text\":\"资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 7 USDT Available +1000；户主 3 用户 0 USDT Available -1000；\",\"UntrustedClientText\":\"scenario-38\"},{\"Seq\":84,\"CommandSeq\":39,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 24 受理：用户 7 MARKET BUY 0 × 0（预算 300）\",\"UntrustedClientText\":\"scenario-39\"},{\"Seq\":85,\"CommandSeq\":39,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 24，成交 0）：户主 1 用户 7 USDT Available -300；户主 1 用户 7 USDT Frozen +300；\",\"UntrustedClientText\":\"scenario-39\"},{\"Seq\":86,\"CommandSeq\":39,\"Kind\":\"TRADE\",\"Text\":\"成交 12：maker 订单 23（用户 8）与 taker 订单 24（用户 7），100 × 1\",\"UntrustedClientText\":\"scenario-39\"},{\"Seq\":87,\"CommandSeq\":39,\"Kind\":\"FUNDS\",\"Text\":\"资金 TRADE_SETTLE（订单 24，成交 12）：户主 1 用户 8 BTC Frozen -10000；户主 1 用户 7 BTC Available +9990；户主 2 用户 0 BTC Available +10；户主 1 用户 7 USDT Frozen -100；户主 1 用户 8 USDT Available +100；\",\"UntrustedClientText\":\"scenario-39\"},{\"Seq\":88,\"CommandSeq\":39,\"Kind\":\"ORDER_CANCELED\",\"Text\":\"订单 24 取消，用户 7，原因 IOC_REMAINDER，已成交 1/0\",\"UntrustedClientText\":\"scenario-39\"},{\"Seq\":89,\"CommandSeq\":39,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_UNFREEZE（订单 24，成交 0）：户主 1 用户 7 USDT Frozen -200；户主 1 用户 7 USDT Available +200；\",\"UntrustedClientText\":\"scenario-39\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_book",
+   "input": {
+    "symbol": "BTC-USDT",
+    "depth": 5
+   },
+   "content": "{\"Symbol\":\"BTC-USDT\",\"Bids\":null,\"Asks\":null}",
+   "is_error": false
+  },
+  {
+   "tool": "submit_diagnosis",
+   "input": {
+    "root_cause": "IOC_REMAINDER",
+    "conclusion": "订单 24 并非异常未成交，而是市价 IOC 买单：受理并冻结 300 后，仅与订单 23 的卖单成交 1 手（成交 12），随后因 IOC_REMAINDER 被撤销。剩余 200 已解冻退回，用户 7 最终获得 9990 聪 BTC、可用 USDT 恢复为 900，资金无异常。",
+    "evidence": [
+     84,
+     85,
+     86,
+     87,
+     88,
+     89
+    ],
+    "confidence": "high",
+    "not_found": []
+   },
+   "content": "诊断已提交",
+   "is_error": false
+  }
+ ],
+ "events": [
+  {
+   "seq": 84,
+   "exists": true,
+   "command_seq": 39,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 24 受理：用户 7 MARKET BUY 0 × 0（预算 300）",
+   "untrusted_client_text": "scenario-39",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 85,
+   "exists": true,
+   "command_seq": 39,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 24，成交 0）：户主 1 用户 7 USDT Available -300；户主 1 用户 7 USDT Frozen +300；",
+   "untrusted_client_text": "scenario-39",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 86,
+   "exists": true,
+   "command_seq": 39,
+   "kind": "TRADE",
+   "text": "成交 12：maker 订单 23（用户 8）与 taker 订单 24（用户 7），100 × 1",
+   "untrusted_client_text": "scenario-39",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 87,
+   "exists": true,
+   "command_seq": 39,
+   "kind": "FUNDS",
+   "text": "资金 TRADE_SETTLE（订单 24，成交 12）：户主 1 用户 8 BTC Frozen -10000；户主 1 用户 7 BTC Available +9990；户主 2 用户 0 BTC Available +10；户主 1 用户 7 USDT Frozen -100；户主 1 用户 8 USDT Available +100；",
+   "untrusted_client_text": "scenario-39",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 88,
+   "exists": true,
+   "command_seq": 39,
+   "kind": "ORDER_CANCELED",
+   "text": "订单 24 取消，用户 7，原因 IOC_REMAINDER，已成交 1/0",
+   "untrusted_client_text": "scenario-39",
+   "cited": true,
+   "required": true,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 89,
+   "exists": true,
+   "command_seq": 39,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_UNFREEZE（订单 24，成交 0）：户主 1 用户 7 USDT Frozen -200；户主 1 用户 7 USDT Available +200；",
+   "untrusted_client_text": "scenario-39",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  }
+ ],
+ "grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "recorded_grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "pass": true,
+ "recorded_pass": true,
+ "tool_calls": 7,
+ "turns": 4,
+ "usage": {
+  "input_tokens": 9555,
+  "output_tokens": 1394,
+  "cache_read_tokens": 7040
+ },
+ "elapsed_ms": 10152,
+ "estimated_usd": 0.0024695399999999997,
+ "semantic_issues": []
+}

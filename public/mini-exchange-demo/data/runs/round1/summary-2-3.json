@@ -1,0 +1,156 @@
+{
+ "round": "round1",
+ "case_id": "summary-2",
+ "run": 3,
+ "scenario": "summary",
+ "seed": 2,
+ "question": "seq 88–90 之间用户 7 做了什么？",
+ "expected": {
+  "root_cause": "SUMMARY",
+  "must_cite": [],
+  "cite_range": [
+   88,
+   90
+  ],
+  "range_commands": [
+   40,
+   41
+  ],
+  "target_user": 7
+ },
+ "status": "COMPLETED",
+ "reason": "",
+ "diagnosis": {
+  "root_cause": "NO_ISSUE",
+  "conclusion": "序号 88–90 之间用户 7 只有一笔订单 25（LIMIT BUY 60×1）：88 受理、89 冻结 USDT 60、90 主动撤单且成交 0/1。撤单后的解冻发生在序号 91（冻结 -60、可用 +60），订单终态为已撤销、未上簿，无异常。",
+  "evidence": [
+   88,
+   89,
+   90,
+   91
+  ],
+  "confidence": "high",
+  "not_found": []
+ },
+ "steps": [
+  {
+   "tool": "list_events",
+   "input": {
+    "user_id": 7,
+    "seq_from": 88,
+    "seq_to": 90,
+    "limit": 200
+   },
+   "content": "{\"Events\":[{\"Seq\":88,\"CommandSeq\":40,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 25 受理：用户 7 LIMIT BUY 60 × 1（预算 0）\",\"UntrustedClientText\":\"scenario-40\"},{\"Seq\":89,\"CommandSeq\":40,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 25，成交 0）：户主 1 用户 7 USDT Available -60；户主 1 用户 7 USDT Frozen +60；\",\"UntrustedClientText\":\"scenario-40\"},{\"Seq\":90,\"CommandSeq\":41,\"Kind\":\"ORDER_CANCELED\",\"Text\":\"订单 25 取消，用户 7，原因 USER，已成交 0/1\",\"UntrustedClientText\":\"scenario-41\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 25
+   },
+   "content": "{\"Order\":{\"ID\":25,\"UserID\":7,\"Symbol\":\"BTC-USDT\",\"Side\":1,\"Type\":1,\"Price\":60,\"Qty\":1,\"FilledQty\":0,\"QuoteAmount\":0,\"FilledAmount\":0,\"Status\":4,\"CancelReason\":1},\"OnBook\":false,\"Queue\":null,\"BestOpposite\":null,\"EventSeqs\":[88,89,90,91]}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "order_id": 25,
+    "limit": 50
+   },
+   "content": "{\"Events\":[{\"Seq\":88,\"CommandSeq\":40,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 25 受理：用户 7 LIMIT BUY 60 × 1（预算 0）\",\"UntrustedClientText\":\"scenario-40\"},{\"Seq\":89,\"CommandSeq\":40,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 25，成交 0）：户主 1 用户 7 USDT Available -60；户主 1 用户 7 USDT Frozen +60；\",\"UntrustedClientText\":\"scenario-40\"},{\"Seq\":90,\"CommandSeq\":41,\"Kind\":\"ORDER_CANCELED\",\"Text\":\"订单 25 取消，用户 7，原因 USER，已成交 0/1\",\"UntrustedClientText\":\"scenario-41\"},{\"Seq\":91,\"CommandSeq\":41,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_UNFREEZE（订单 25，成交 0）：户主 1 用户 7 USDT Frozen -60；户主 1 用户 7 USDT Available +60；\",\"UntrustedClientText\":\"scenario-41\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "submit_diagnosis",
+   "input": {
+    "root_cause": "NO_ISSUE",
+    "conclusion": "序号 88–90 之间用户 7 只有一笔订单 25（LIMIT BUY 60×1）：88 受理、89 冻结 USDT 60、90 主动撤单且成交 0/1。撤单后的解冻发生在序号 91（冻结 -60、可用 +60），订单终态为已撤销、未上簿，无异常。",
+    "evidence": [
+     88,
+     89,
+     90,
+     91
+    ],
+    "confidence": "high",
+    "not_found": []
+   },
+   "content": "诊断已提交",
+   "is_error": false
+  }
+ ],
+ "events": [
+  {
+   "seq": 88,
+   "exists": true,
+   "command_seq": 40,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 25 受理：用户 7 LIMIT BUY 60 × 1（预算 0）",
+   "untrusted_client_text": "scenario-40",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 89,
+   "exists": true,
+   "command_seq": 40,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 25，成交 0）：户主 1 用户 7 USDT Available -60；户主 1 用户 7 USDT Frozen +60；",
+   "untrusted_client_text": "scenario-40",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 90,
+   "exists": true,
+   "command_seq": 41,
+   "kind": "ORDER_CANCELED",
+   "text": "订单 25 取消，用户 7，原因 USER，已成交 0/1",
+   "untrusted_client_text": "scenario-41",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 91,
+   "exists": true,
+   "command_seq": 41,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_UNFREEZE（订单 25，成交 0）：户主 1 用户 7 USDT Frozen -60；户主 1 用户 7 USDT Available +60；",
+   "untrusted_client_text": "scenario-41",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  }
+ ],
+ "grade": {
+  "structured": true,
+  "root_cause": false,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "recorded_grade": {
+  "structured": true,
+  "root_cause": false,
+  "evidence": false,
+  "no_hallucination": true
+ },
+ "pass": false,
+ "recorded_pass": false,
+ "tool_calls": 3,
+ "turns": 3,
+ "usage": {
+  "input_tokens": 4999,
+  "output_tokens": 708,
+  "cache_read_tokens": 4096
+ },
+ "elapsed_ms": 5581,
+ "estimated_usd": 0.001145076,
+ "semantic_issues": []
+}
