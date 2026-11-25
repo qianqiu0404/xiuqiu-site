@@ -1,29 +1,16 @@
-/* 配色、字体和圆角沿用 ui-prototype/styles.css。 */
+/* 蓝白配色（2026-11-25 按 Owner 偏好，由青绿改为蓝白，只用浅色）；字体和圆角沿用 ui-prototype/styles.css。 */
 :root {
   color-scheme: light;
-  --bg:#faf9f6; --sunk:#f3f3ef; --surface:#fff;
-  --ink:#202a30; --ink2:#3b464c; --ink3:#59656b; --line:#dfe4e1;
-  --accent:#176b75; --accent-soft:#e7f1f1;
-  --ok:#2f7d5c; --ok-soft:#ecf5f0; --ok-line:#cfe5d9;
+  --bg:#f5f8fd; --sunk:#e9f0fb; --surface:#fff;
+  --ink:#0f1f3d; --ink2:#2b3b57; --ink3:#465977; --line:#d3deef;
+  --accent:#1d4ed8; --accent-soft:#e3ecff;
+  --ok:#276b4f; --ok-soft:#ecf5f0; --ok-line:#cfe5d9;
   --amber-ink:#85601f; --amber-soft:#fbf4e6; --amber-line:#ecd8b0;
   --hot:#b3402a; --hot-soft:#fbeeea; --hot-line:#efcabf;
-  --unknown:#4a555b; --unknown-soft:#f1f2ef; --unknown-line:#9aa5a8;
+  --unknown:#465977; --unknown-soft:#eef2f8; --unknown-line:#a3b1c6;
   --sans:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
   --mono:ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
   --r5:5px; --r8:8px; --r10:10px; --r12:12px;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
-    --bg:#13181b; --sunk:#0e1214; --surface:#1a2024;
-    --ink:#e4e8e9; --ink2:#c2c9cc; --ink3:#97a2a7; --line:#2b3438;
-    --accent:#4fc4cf; --accent-soft:#16302f;
-    --ok:#6fcf9f; --ok-soft:#14281f; --ok-line:#24493a;
-    --amber-ink:#e0b366; --amber-soft:#2a2316; --amber-line:#4d3f22;
-    --hot:#f08a74; --hot-soft:#2e1a15; --hot-line:#5a2f25;
-    --unknown:#aab4b8; --unknown-soft:#20272a; --unknown-line:#5d686c;
-  }
 }
 
 * { box-sizing: border-box; }
