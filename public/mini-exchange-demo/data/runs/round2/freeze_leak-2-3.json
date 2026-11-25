@@ -1,0 +1,140 @@
+{
+ "round": "round2",
+ "case_id": "freeze_leak-2",
+ "run": 3,
+ "scenario": "freeze_leak",
+ "seed": 2,
+ "question": "用户 7 的 USDT 为什么还有冻结？",
+ "expected": {
+  "root_cause": "FREEZE_LEAK",
+  "must_cite": [
+   90
+  ],
+  "target_user": 7
+ },
+ "status": "COMPLETED",
+ "reason": "",
+ "diagnosis": {
+  "root_cause": "FREEZE_LEAK",
+  "conclusion": "用户 7 的 300（0.0003 USDT）冻结来自订单 25（LIMIT BUY 1 USDT × 3 lot）在受理时冻结的资金（事件 88、89），该单已在事件 90 以 USER 原因全部撤销、成交 0/3。撤销后冻结未解冻，对账显示 I2 违规：冻结 300 而挂单应预留 0（最早异常序号 90），属于撤单后冻结未释放。",
+  "evidence": [
+   88,
+   89,
+   90
+  ],
+  "confidence": "high",
+  "not_found": []
+ },
+ "steps": [
+  {
+   "tool": "get_account",
+   "input": {
+    "user_id": 7,
+    "asset": "USDT"
+   },
+   "content": "{\"User\":7,\"Asset\":\"USDT\",\"Available\":700,\"Frozen\":300,\"OpenOrders\":null,\"ReservedSum\":0,\"FrozenMinusReserved\":300,\"RecentPostings\":[{\"Seq\":89,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Frozen\",\"Delta\":300},{\"Seq\":89,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Available\",\"Delta\":-300},{\"Seq\":87,\"Reason\":\"DEPOSIT\",\"Bucket\":\"Available\",\"Delta\":1000}]}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "user_id": 7,
+    "limit": 200
+   },
+   "content": "{\"Events\":[{\"Seq\":87,\"CommandSeq\":39,\"Kind\":\"FUNDS\",\"Text\":\"资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 7 USDT Available +1000；户主 3 用户 0 USDT Available -1000；\",\"UntrustedClientText\":\"scenario-39\"},{\"Seq\":88,\"CommandSeq\":40,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 25 受理：用户 7 LIMIT BUY 100 × 3（预算 0）\",\"UntrustedClientText\":\"scenario-40\"},{\"Seq\":89,\"CommandSeq\":40,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 25，成交 0）：户主 1 用户 7 USDT Available -300；户主 1 用户 7 USDT Frozen +300；\",\"UntrustedClientText\":\"scenario-40\"},{\"Seq\":90,\"CommandSeq\":41,\"Kind\":\"ORDER_CANCELED\",\"Text\":\"订单 25 取消，用户 7，原因 USER，已成交 0/3\",\"UntrustedClientText\":\"scenario-41\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 25
+   },
+   "content": "{\"Order\":{\"ID\":25,\"UserID\":7,\"Symbol\":\"BTC-USDT\",\"Side\":1,\"Type\":1,\"Price\":100,\"Qty\":3,\"FilledQty\":0,\"QuoteAmount\":0,\"FilledAmount\":0,\"Status\":4,\"CancelReason\":1},\"OnBook\":false,\"Queue\":null,\"BestOpposite\":null,\"EventSeqs\":[88,89,90],\"LevelTrades\":null,\"LevelTradesTotal\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "run_reconcile",
+   "input": {},
+   "content": "{\"OK\":false,\"Violations\":[{\"Rule\":\"I2\",\"User\":7,\"Asset\":\"USDT\",\"OrderID\":0,\"Expected\":0,\"Actual\":300,\"Detail\":\"冻结 300，挂单应预留 0\",\"FirstSeq\":90}],\"CommandLogLastSeq\":41,\"EventLogLastSeq\":90,\"RegeneratedLastEventSeq\":90}",
+   "is_error": false
+  },
+  {
+   "tool": "submit_diagnosis",
+   "input": {
+    "root_cause": "FREEZE_LEAK",
+    "conclusion": "用户 7 的 300（0.0003 USDT）冻结来自订单 25（LIMIT BUY 1 USDT × 3 lot）在受理时冻结的资金（事件 88、89），该单已在事件 90 以 USER 原因全部撤销、成交 0/3。撤销后冻结未解冻，对账显示 I2 违规：冻结 300 而挂单应预留 0（最早异常序号 90），属于撤单后冻结未释放。",
+    "evidence": [
+     88,
+     89,
+     90
+    ],
+    "confidence": "high",
+    "not_found": []
+   },
+   "content": "诊断已提交",
+   "is_error": false
+  }
+ ],
+ "events": [
+  {
+   "seq": 88,
+   "exists": true,
+   "command_seq": 40,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 25 受理：用户 7 LIMIT BUY 100 × 3（预算 0）",
+   "untrusted_client_text": "scenario-40",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 89,
+   "exists": true,
+   "command_seq": 40,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 25，成交 0）：户主 1 用户 7 USDT Available -300；户主 1 用户 7 USDT Frozen +300；",
+   "untrusted_client_text": "scenario-40",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 90,
+   "exists": true,
+   "command_seq": 41,
+   "kind": "ORDER_CANCELED",
+   "text": "订单 25 取消，用户 7，原因 USER，已成交 0/3",
+   "untrusted_client_text": "scenario-41",
+   "cited": true,
+   "required": true,
+   "alternative": false,
+   "target_user": true
+  }
+ ],
+ "grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "recorded_grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "pass": true,
+ "recorded_pass": true,
+ "tool_calls": 4,
+ "turns": 3,
+ "usage": {
+  "input_tokens": 5649,
+  "output_tokens": 720,
+  "cache_read_tokens": 4608
+ },
+ "elapsed_ms": 5745,
+ "estimated_usd": 0.0012039479999999998,
+ "semantic_issues": []
+}

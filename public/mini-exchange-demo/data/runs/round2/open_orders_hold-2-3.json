@@ -1,0 +1,177 @@
+{
+ "round": "round2",
+ "case_id": "open_orders_hold-2",
+ "run": 3,
+ "scenario": "open_orders_hold",
+ "seed": 2,
+ "question": "用户 7 的 USDT 为什么还有冻结？",
+ "expected": {
+  "root_cause": "OPEN_ORDERS_HOLD",
+  "must_cite": [
+   89,
+   91
+  ],
+  "target_user": 7
+ },
+ "status": "COMPLETED",
+ "reason": "",
+ "diagnosis": {
+  "root_cause": "OPEN_ORDERS_HOLD",
+  "conclusion": "用户 7 的 290 USDT 冻结全部来自两笔仍在盘口挂着的限价买单：订单 25（价格 100，冻结 200，序号 89）和订单 26（价格 90，冻结 90，序号 91），受理记录见序号 88、90。这两笔单均未成交（FilledQty 为 0），因为买盘上方没有卖盘（asks 为空），冻结仍属于合法挂单占用，Frozen=290 与 ReservedSum=290 一致，对账无异常。",
+  "evidence": [
+   88,
+   89,
+   90,
+   91
+  ],
+  "confidence": "high",
+  "not_found": []
+ },
+ "steps": [
+  {
+   "tool": "get_account",
+   "input": {
+    "user_id": 7,
+    "asset": "USDT"
+   },
+   "content": "{\"User\":7,\"Asset\":\"USDT\",\"Available\":710,\"Frozen\":290,\"OpenOrders\":[{\"OrderID\":25,\"Reserved\":200},{\"OrderID\":26,\"Reserved\":90}],\"ReservedSum\":290,\"FrozenMinusReserved\":0,\"RecentPostings\":[{\"Seq\":91,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Frozen\",\"Delta\":90},{\"Seq\":91,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Available\",\"Delta\":-90},{\"Seq\":89,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Frozen\",\"Delta\":200},{\"Seq\":89,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Available\",\"Delta\":-200},{\"Seq\":87,\"Reason\":\"DEPOSIT\",\"Bucket\":\"Available\",\"Delta\":1000}]}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "user_id": 7,
+    "limit": 100
+   },
+   "content": "{\"Events\":[{\"Seq\":87,\"CommandSeq\":39,\"Kind\":\"FUNDS\",\"Text\":\"资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 7 USDT Available +1000；户主 3 用户 0 USDT Available -1000；\",\"UntrustedClientText\":\"scenario-39\"},{\"Seq\":88,\"CommandSeq\":40,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 25 受理：用户 7 LIMIT BUY 100 × 2（预算 0）\",\"UntrustedClientText\":\"scenario-40\"},{\"Seq\":89,\"CommandSeq\":40,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 25，成交 0）：户主 1 用户 7 USDT Available -200；户主 1 用户 7 USDT Frozen +200；\",\"UntrustedClientText\":\"scenario-40\"},{\"Seq\":90,\"CommandSeq\":41,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 26 受理：用户 7 LIMIT BUY 90 × 1（预算 0）\",\"UntrustedClientText\":\"scenario-41\"},{\"Seq\":91,\"CommandSeq\":41,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Available -90；户主 1 用户 7 USDT Frozen +90；\",\"UntrustedClientText\":\"scenario-41\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "run_reconcile",
+   "input": {},
+   "content": "{\"OK\":true,\"Violations\":null,\"CommandLogLastSeq\":41,\"EventLogLastSeq\":91,\"RegeneratedLastEventSeq\":91}",
+   "is_error": false
+  },
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 25
+   },
+   "content": "{\"Order\":{\"ID\":25,\"UserID\":7,\"Symbol\":\"BTC-USDT\",\"Side\":1,\"Type\":1,\"Price\":100,\"Qty\":2,\"FilledQty\":0,\"QuoteAmount\":0,\"FilledAmount\":0,\"Status\":1,\"CancelReason\":0},\"OnBook\":true,\"Queue\":{\"LevelPrice\":100,\"Position\":1,\"QtyAhead\":0,\"LevelOrders\":1},\"BestOpposite\":null,\"EventSeqs\":[88,89],\"LevelTrades\":null,\"LevelTradesTotal\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 26
+   },
+   "content": "{\"Order\":{\"ID\":26,\"UserID\":7,\"Symbol\":\"BTC-USDT\",\"Side\":1,\"Type\":1,\"Price\":90,\"Qty\":1,\"FilledQty\":0,\"QuoteAmount\":0,\"FilledAmount\":0,\"Status\":1,\"CancelReason\":0},\"OnBook\":true,\"Queue\":{\"LevelPrice\":90,\"Position\":1,\"QtyAhead\":0,\"LevelOrders\":1},\"BestOpposite\":null,\"EventSeqs\":[90,91],\"LevelTrades\":null,\"LevelTradesTotal\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_book",
+   "input": {
+    "symbol": "BTC-USDT",
+    "depth": 5
+   },
+   "content": "{\"Symbol\":\"BTC-USDT\",\"Bids\":[{\"Price\":100,\"Qty\":2,\"Orders\":1},{\"Price\":90,\"Qty\":1,\"Orders\":1}],\"Asks\":null}",
+   "is_error": false
+  },
+  {
+   "tool": "submit_diagnosis",
+   "input": {
+    "root_cause": "OPEN_ORDERS_HOLD",
+    "conclusion": "用户 7 的 290 USDT 冻结全部来自两笔仍在盘口挂着的限价买单：订单 25（价格 100，冻结 200，序号 89）和订单 26（价格 90，冻结 90，序号 91），受理记录见序号 88、90。这两笔单均未成交（FilledQty 为 0），因为买盘上方没有卖盘（asks 为空），冻结仍属于合法挂单占用，Frozen=290 与 ReservedSum=290 一致，对账无异常。",
+    "evidence": [
+     88,
+     89,
+     90,
+     91
+    ],
+    "confidence": "high",
+    "not_found": []
+   },
+   "content": "诊断已提交",
+   "is_error": false
+  }
+ ],
+ "events": [
+  {
+   "seq": 88,
+   "exists": true,
+   "command_seq": 40,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 25 受理：用户 7 LIMIT BUY 100 × 2（预算 0）",
+   "untrusted_client_text": "scenario-40",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 89,
+   "exists": true,
+   "command_seq": 40,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 25，成交 0）：户主 1 用户 7 USDT Available -200；户主 1 用户 7 USDT Frozen +200；",
+   "untrusted_client_text": "scenario-40",
+   "cited": true,
+   "required": true,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 90,
+   "exists": true,
+   "command_seq": 41,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 26 受理：用户 7 LIMIT BUY 90 × 1（预算 0）",
+   "untrusted_client_text": "scenario-41",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 91,
+   "exists": true,
+   "command_seq": 41,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Available -90；户主 1 用户 7 USDT Frozen +90；",
+   "untrusted_client_text": "scenario-41",
+   "cited": true,
+   "required": true,
+   "alternative": false,
+   "target_user": true
+  }
+ ],
+ "grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "recorded_grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "pass": true,
+ "recorded_pass": true,
+ "tool_calls": 6,
+ "turns": 3,
+ "usage": {
+  "input_tokens": 6122,
+  "output_tokens": 757,
+  "cache_read_tokens": 4992
+ },
+ "elapsed_ms": 4658,
+ "estimated_usd": 0.0012773519999999998,
+ "semantic_issues": [
+  {
+   "type": "confirmed_currency_unit_text_error",
+   "quote": "用户 7 的 290 USDT 冻结全部来自两笔仍在盘口挂着的限价买单：订"
+  }
+ ]
+}

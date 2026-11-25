@@ -1,0 +1,192 @@
+{
+ "round": "round1",
+ "case_id": "queue_behind-1",
+ "run": 2,
+ "scenario": "queue_behind",
+ "seed": 1,
+ "question": "用户 7 的订单 24 为什么没有正常成交？",
+ "expected": {
+  "root_cause": "QUEUE_BEHIND",
+  "must_cite": [
+   85,
+   83
+  ],
+  "alt_cite": [
+   [],
+   [
+    89
+   ]
+  ],
+  "target_user": 7
+ },
+ "status": "COMPLETED",
+ "reason": "",
+ "diagnosis": {
+  "root_cause": "QUEUE_BEHIND",
+  "conclusion": "订单 24（用户 7，LIMIT BUY 100×2）已受理并冻结 200 USDT 后一直挂在买盘，队列位置第 2、同价前方尚有 7 lot（事件 85、86）。价位 100 实际有成交发生，但事件 89 的 3 lot 成交由排在前面的 maker 订单 23（用户 8，队列第 1、共 10 lot）全部吃掉，所以订单 24 未能成交。对账无不变量违规，属正常排队未轮到，非资金或日志异常。",
+  "evidence": [
+   85,
+   86,
+   89
+  ],
+  "confidence": "high",
+  "not_found": [
+   "订单 24 无 TRADE、ORDER_CANCELED 事件（FilledQty 为 0、状态仍为挂单）",
+   "当前盘口 Asks 为空，无法评估卖侧后续流动性；也未查到该笔后续更多对手方成交记录"
+  ]
+ },
+ "steps": [
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 24
+   },
+   "content": "{\"Order\":{\"ID\":24,\"UserID\":7,\"Symbol\":\"BTC-USDT\",\"Side\":1,\"Type\":1,\"Price\":100,\"Qty\":2,\"FilledQty\":0,\"QuoteAmount\":0,\"FilledAmount\":0,\"Status\":1,\"CancelReason\":0},\"OnBook\":true,\"Queue\":{\"LevelPrice\":100,\"Position\":2,\"QtyAhead\":7,\"LevelOrders\":2},\"BestOpposite\":null,\"EventSeqs\":[85,86]}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "order_id": 24,
+    "limit": 200
+   },
+   "content": "{\"Events\":[{\"Seq\":85,\"CommandSeq\":40,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 24 受理：用户 7 LIMIT BUY 100 × 2（预算 0）\",\"UntrustedClientText\":\"scenario-40\"},{\"Seq\":86,\"CommandSeq\":40,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 24，成交 0）：户主 1 用户 7 USDT Available -200；户主 1 用户 7 USDT Frozen +200；\",\"UntrustedClientText\":\"scenario-40\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_book",
+   "input": {
+    "symbol": "BTC-USDT",
+    "depth": 10
+   },
+   "content": "{\"Symbol\":\"BTC-USDT\",\"Bids\":[{\"Price\":100,\"Qty\":9,\"Orders\":2}],\"Asks\":null}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "user_id": 7,
+    "limit": 200
+   },
+   "content": "{\"Events\":[{\"Seq\":81,\"CommandSeq\":37,\"Kind\":\"FUNDS\",\"Text\":\"资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 7 USDT Available +1000；户主 3 用户 0 USDT Available -1000；\",\"UntrustedClientText\":\"scenario-37\"},{\"Seq\":85,\"CommandSeq\":40,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 24 受理：用户 7 LIMIT BUY 100 × 2（预算 0）\",\"UntrustedClientText\":\"scenario-40\"},{\"Seq\":86,\"CommandSeq\":40,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 24，成交 0）：户主 1 用户 7 USDT Available -200；户主 1 用户 7 USDT Frozen +200；\",\"UntrustedClientText\":\"scenario-40\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "run_reconcile",
+   "input": {},
+   "content": "{\"OK\":true,\"Violations\":null,\"CommandLogLastSeq\":41,\"EventLogLastSeq\":90,\"RegeneratedLastEventSeq\":90}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "seq_from": 87,
+    "seq_to": 90,
+    "limit": 200
+   },
+   "content": "{\"Events\":[{\"Seq\":87,\"CommandSeq\":41,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 25 受理：用户 9 MARKET SELL 0 × 3（预算 0）\",\"UntrustedClientText\":\"scenario-41\"},{\"Seq\":88,\"CommandSeq\":41,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 25，成交 0）：户主 1 用户 9 BTC Available -30000；户主 1 用户 9 BTC Frozen +30000；\",\"UntrustedClientText\":\"scenario-41\"},{\"Seq\":89,\"CommandSeq\":41,\"Kind\":\"TRADE\",\"Text\":\"成交 12：maker 订单 23（用户 8）与 taker 订单 25（用户 9），100 × 3\",\"UntrustedClientText\":\"scenario-41\"},{\"Seq\":90,\"CommandSeq\":41,\"Kind\":\"FUNDS\",\"Text\":\"资金 TRADE_SETTLE（订单 25，成交 12）：户主 1 用户 8 USDT Frozen -300；户主 1 用户 9 USDT Available +299；户主 2 用户 0 USDT Available +1；户主 1 用户 9 BTC Frozen -30000；户主 1 用户 8 BTC Available +30000；\",\"UntrustedClientText\":\"scenario-41\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 23
+   },
+   "content": "{\"Order\":{\"ID\":23,\"UserID\":8,\"Symbol\":\"BTC-USDT\",\"Side\":1,\"Type\":1,\"Price\":100,\"Qty\":10,\"FilledQty\":3,\"QuoteAmount\":0,\"FilledAmount\":300,\"Status\":2,\"CancelReason\":0},\"OnBook\":true,\"Queue\":{\"LevelPrice\":100,\"Position\":1,\"QtyAhead\":0,\"LevelOrders\":2},\"BestOpposite\":null,\"EventSeqs\":[83,84,89,90]}",
+   "is_error": false
+  },
+  {
+   "tool": "submit_diagnosis",
+   "input": {
+    "root_cause": "QUEUE_BEHIND",
+    "conclusion": "订单 24（用户 7，LIMIT BUY 100×2）已受理并冻结 200 USDT 后一直挂在买盘，队列位置第 2、同价前方尚有 7 lot（事件 85、86）。价位 100 实际有成交发生，但事件 89 的 3 lot 成交由排在前面的 maker 订单 23（用户 8，队列第 1、共 10 lot）全部吃掉，所以订单 24 未能成交。对账无不变量违规，属正常排队未轮到，非资金或日志异常。",
+    "evidence": [
+     85,
+     86,
+     89
+    ],
+    "confidence": "high",
+    "not_found": [
+     "订单 24 无 TRADE、ORDER_CANCELED 事件（FilledQty 为 0、状态仍为挂单）",
+     "当前盘口 Asks 为空，无法评估卖侧后续流动性；也未查到该笔后续更多对手方成交记录"
+    ]
+   },
+   "content": "诊断已提交",
+   "is_error": false
+  }
+ ],
+ "events": [
+  {
+   "seq": 83,
+   "exists": true,
+   "command_seq": 39,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 23 受理：用户 8 LIMIT BUY 100 × 10（预算 0）",
+   "untrusted_client_text": "scenario-39",
+   "cited": false,
+   "required": true,
+   "alternative": false,
+   "target_user": false
+  },
+  {
+   "seq": 85,
+   "exists": true,
+   "command_seq": 40,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 24 受理：用户 7 LIMIT BUY 100 × 2（预算 0）",
+   "untrusted_client_text": "scenario-40",
+   "cited": true,
+   "required": true,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 86,
+   "exists": true,
+   "command_seq": 40,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 24，成交 0）：户主 1 用户 7 USDT Available -200；户主 1 用户 7 USDT Frozen +200；",
+   "untrusted_client_text": "scenario-40",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 89,
+   "exists": true,
+   "command_seq": 41,
+   "kind": "TRADE",
+   "text": "成交 12：maker 订单 23（用户 8）与 taker 订单 25（用户 9），100 × 3",
+   "untrusted_client_text": "scenario-41",
+   "cited": true,
+   "required": false,
+   "alternative": true,
+   "target_user": false
+  }
+ ],
+ "grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "recorded_grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": false,
+  "no_hallucination": true
+ },
+ "pass": true,
+ "recorded_pass": false,
+ "tool_calls": 7,
+ "turns": 5,
+ "usage": {
+  "input_tokens": 11242,
+  "output_tokens": 1673,
+  "cache_read_tokens": 9856
+ },
+ "elapsed_ms": 12483,
+ "estimated_usd": 0.002482536,
+ "semantic_issues": []
+}

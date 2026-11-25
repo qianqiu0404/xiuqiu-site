@@ -1,0 +1,153 @@
+{
+ "round": "round2",
+ "case_id": "canceled_by_stp-2",
+ "run": 3,
+ "scenario": "canceled_by_stp",
+ "seed": 2,
+ "question": "用户 7 的订单 26 为什么没有正常成交？",
+ "expected": {
+  "root_cause": "CANCELED_BY_STP",
+  "must_cite": [
+   93
+  ],
+  "target_user": 7
+ },
+ "status": "COMPLETED",
+ "reason": "",
+ "diagnosis": {
+  "root_cause": "CANCELED_BY_STP",
+  "conclusion": "订单 26（用户 7，LIMIT BUY 100×1）受理并冻结 100 USDT 后（序号 91、92），因自成交保护被取消，成交 0/1（序号 93），随后冻结资金全额退回（序号 94）。因此未成交不是价格或排队问题，而是被 STP 撤销，账户当前可用 1000 USDT、冻结 0。",
+  "evidence": [
+   91,
+   92,
+   93,
+   94
+  ],
+  "confidence": "high",
+  "not_found": []
+ },
+ "steps": [
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 26
+   },
+   "content": "{\"Order\":{\"ID\":26,\"UserID\":7,\"Symbol\":\"BTC-USDT\",\"Side\":1,\"Type\":1,\"Price\":100,\"Qty\":1,\"FilledQty\":0,\"QuoteAmount\":0,\"FilledAmount\":0,\"Status\":4,\"CancelReason\":3},\"OnBook\":false,\"Queue\":null,\"BestOpposite\":100,\"EventSeqs\":[91,92,93,94],\"LevelTrades\":null,\"LevelTradesTotal\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "order_id": 26,
+    "limit": 100
+   },
+   "content": "{\"Events\":[{\"Seq\":91,\"CommandSeq\":42,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 26 受理：用户 7 LIMIT BUY 100 × 1（预算 0）\",\"UntrustedClientText\":\"scenario-42\"},{\"Seq\":92,\"CommandSeq\":42,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Available -100；户主 1 用户 7 USDT Frozen +100；\",\"UntrustedClientText\":\"scenario-42\"},{\"Seq\":93,\"CommandSeq\":42,\"Kind\":\"ORDER_CANCELED\",\"Text\":\"订单 26 取消，用户 7，原因 SELF_TRADE，已成交 0/1\",\"UntrustedClientText\":\"scenario-42\"},{\"Seq\":94,\"CommandSeq\":42,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_UNFREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Frozen -100；户主 1 用户 7 USDT Available +100；\",\"UntrustedClientText\":\"scenario-42\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_account",
+   "input": {
+    "user_id": 7,
+    "asset": "USDT"
+   },
+   "content": "{\"User\":7,\"Asset\":\"USDT\",\"Available\":1000,\"Frozen\":0,\"OpenOrders\":null,\"ReservedSum\":0,\"FrozenMinusReserved\":0,\"RecentPostings\":[{\"Seq\":94,\"Reason\":\"ORDER_UNFREEZE\",\"Bucket\":\"Available\",\"Delta\":100},{\"Seq\":94,\"Reason\":\"ORDER_UNFREEZE\",\"Bucket\":\"Frozen\",\"Delta\":-100},{\"Seq\":92,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Frozen\",\"Delta\":100},{\"Seq\":92,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Available\",\"Delta\":-100},{\"Seq\":88,\"Reason\":\"DEPOSIT\",\"Bucket\":\"Available\",\"Delta\":1000}]}",
+   "is_error": false
+  },
+  {
+   "tool": "submit_diagnosis",
+   "input": {
+    "root_cause": "CANCELED_BY_STP",
+    "conclusion": "订单 26（用户 7，LIMIT BUY 100×1）受理并冻结 100 USDT 后（序号 91、92），因自成交保护被取消，成交 0/1（序号 93），随后冻结资金全额退回（序号 94）。因此未成交不是价格或排队问题，而是被 STP 撤销，账户当前可用 1000 USDT、冻结 0。",
+    "evidence": [
+     91,
+     92,
+     93,
+     94
+    ],
+    "confidence": "high",
+    "not_found": []
+   },
+   "content": "诊断已提交",
+   "is_error": false
+  }
+ ],
+ "events": [
+  {
+   "seq": 91,
+   "exists": true,
+   "command_seq": 42,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 26 受理：用户 7 LIMIT BUY 100 × 1（预算 0）",
+   "untrusted_client_text": "scenario-42",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 92,
+   "exists": true,
+   "command_seq": 42,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Available -100；户主 1 用户 7 USDT Frozen +100；",
+   "untrusted_client_text": "scenario-42",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 93,
+   "exists": true,
+   "command_seq": 42,
+   "kind": "ORDER_CANCELED",
+   "text": "订单 26 取消，用户 7，原因 SELF_TRADE，已成交 0/1",
+   "untrusted_client_text": "scenario-42",
+   "cited": true,
+   "required": true,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 94,
+   "exists": true,
+   "command_seq": 42,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_UNFREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Frozen -100；户主 1 用户 7 USDT Available +100；",
+   "untrusted_client_text": "scenario-42",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  }
+ ],
+ "grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "recorded_grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "pass": true,
+ "recorded_pass": true,
+ "tool_calls": 3,
+ "turns": 3,
+ "usage": {
+  "input_tokens": 5468,
+  "output_tokens": 538,
+  "cache_read_tokens": 4608
+ },
+ "elapsed_ms": 4725,
+ "estimated_usd": 0.0009312480000000001,
+ "semantic_issues": [
+  {
+   "type": "confirmed_currency_unit_text_error",
+   "quote": "T BUY 100×1）受理并冻结 100 USDT 后（序号 91、92），因自成交保护被取消"
+  }
+ ]
+}

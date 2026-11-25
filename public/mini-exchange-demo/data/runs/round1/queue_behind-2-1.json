@@ -1,0 +1,181 @@
+{
+ "round": "round1",
+ "case_id": "queue_behind-2",
+ "run": 1,
+ "scenario": "queue_behind",
+ "seed": 2,
+ "question": "用户 7 的订单 26 为什么没有正常成交？",
+ "expected": {
+  "root_cause": "QUEUE_BEHIND",
+  "must_cite": [
+   92,
+   90
+  ],
+  "alt_cite": [
+   [],
+   [
+    96
+   ]
+  ],
+  "target_user": 7
+ },
+ "status": "COMPLETED",
+ "reason": "",
+ "diagnosis": {
+  "root_cause": "PRICE_NOT_REACHED",
+  "conclusion": "订单 26 于事件 92 受理并以事件 93 正确冻结 200（2 lot × 100 tick），状态仍为挂单中，资金冻结与挂单占用一致（FrozenMinusReserved=0），无资金异常。未成交原因是对手盘卖盘为空（盘口 Asks 为 null），限价买 100 tick 无卖方可达，非拒单或撤单。订单在该价位还排在第 2 位（前方 7 lot），即使出现卖盘也需先消化前方挂单。",
+  "evidence": [
+   92,
+   93
+  ],
+  "confidence": "high",
+  "not_found": [
+   "卖盘为空，无对手方订单或 TRADE 事件可引用序号",
+   "用户 7 无其他订单/成交事件（仅 88、92、93）"
+  ]
+ },
+ "steps": [
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 26
+   },
+   "content": "{\"Order\":{\"ID\":26,\"UserID\":7,\"Symbol\":\"BTC-USDT\",\"Side\":1,\"Type\":1,\"Price\":100,\"Qty\":2,\"FilledQty\":0,\"QuoteAmount\":0,\"FilledAmount\":0,\"Status\":1,\"CancelReason\":0},\"OnBook\":true,\"Queue\":{\"LevelPrice\":100,\"Position\":2,\"QtyAhead\":7,\"LevelOrders\":2},\"BestOpposite\":null,\"EventSeqs\":[92,93]}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "order_id": 26,
+    "limit": 100
+   },
+   "content": "{\"Events\":[{\"Seq\":92,\"CommandSeq\":43,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 26 受理：用户 7 LIMIT BUY 100 × 2（预算 0）\",\"UntrustedClientText\":\"scenario-43\"},{\"Seq\":93,\"CommandSeq\":43,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Available -200；户主 1 用户 7 USDT Frozen +200；\",\"UntrustedClientText\":\"scenario-43\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_book",
+   "input": {
+    "symbol": "BTC-USDT",
+    "depth": 10
+   },
+   "content": "{\"Symbol\":\"BTC-USDT\",\"Bids\":[{\"Price\":100,\"Qty\":9,\"Orders\":2}],\"Asks\":null}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "user_id": 7,
+    "limit": 100
+   },
+   "content": "{\"Events\":[{\"Seq\":88,\"CommandSeq\":40,\"Kind\":\"FUNDS\",\"Text\":\"资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 7 USDT Available +1000；户主 3 用户 0 USDT Available -1000；\",\"UntrustedClientText\":\"scenario-40\"},{\"Seq\":92,\"CommandSeq\":43,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 26 受理：用户 7 LIMIT BUY 100 × 2（预算 0）\",\"UntrustedClientText\":\"scenario-43\"},{\"Seq\":93,\"CommandSeq\":43,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Available -200；户主 1 用户 7 USDT Frozen +200；\",\"UntrustedClientText\":\"scenario-43\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "run_reconcile",
+   "input": {},
+   "content": "{\"OK\":true,\"Violations\":null,\"CommandLogLastSeq\":44,\"EventLogLastSeq\":97,\"RegeneratedLastEventSeq\":97}",
+   "is_error": false
+  },
+  {
+   "tool": "get_account",
+   "input": {
+    "user_id": 7,
+    "asset": "USDT"
+   },
+   "content": "{\"User\":7,\"Asset\":\"USDT\",\"Available\":800,\"Frozen\":200,\"OpenOrders\":[{\"OrderID\":26,\"Reserved\":200}],\"ReservedSum\":200,\"FrozenMinusReserved\":0,\"RecentPostings\":[{\"Seq\":93,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Frozen\",\"Delta\":200},{\"Seq\":93,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Available\",\"Delta\":-200},{\"Seq\":88,\"Reason\":\"DEPOSIT\",\"Bucket\":\"Available\",\"Delta\":1000}]}",
+   "is_error": false
+  },
+  {
+   "tool": "submit_diagnosis",
+   "input": {
+    "root_cause": "PRICE_NOT_REACHED",
+    "conclusion": "订单 26 于事件 92 受理并以事件 93 正确冻结 200（2 lot × 100 tick），状态仍为挂单中，资金冻结与挂单占用一致（FrozenMinusReserved=0），无资金异常。未成交原因是对手盘卖盘为空（盘口 Asks 为 null），限价买 100 tick 无卖方可达，非拒单或撤单。订单在该价位还排在第 2 位（前方 7 lot），即使出现卖盘也需先消化前方挂单。",
+    "evidence": [
+     92,
+     93
+    ],
+    "confidence": "high",
+    "not_found": [
+     "卖盘为空，无对手方订单或 TRADE 事件可引用序号",
+     "用户 7 无其他订单/成交事件（仅 88、92、93）"
+    ]
+   },
+   "content": "诊断已提交",
+   "is_error": false
+  }
+ ],
+ "events": [
+  {
+   "seq": 90,
+   "exists": true,
+   "command_seq": 42,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 25 受理：用户 8 LIMIT BUY 100 × 10（预算 0）",
+   "untrusted_client_text": "scenario-42",
+   "cited": false,
+   "required": true,
+   "alternative": false,
+   "target_user": false
+  },
+  {
+   "seq": 92,
+   "exists": true,
+   "command_seq": 43,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 26 受理：用户 7 LIMIT BUY 100 × 2（预算 0）",
+   "untrusted_client_text": "scenario-43",
+   "cited": true,
+   "required": true,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 93,
+   "exists": true,
+   "command_seq": 43,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 26，成交 0）：户主 1 用户 7 USDT Available -200；户主 1 用户 7 USDT Frozen +200；",
+   "untrusted_client_text": "scenario-43",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 96,
+   "exists": true,
+   "command_seq": 44,
+   "kind": "TRADE",
+   "text": "成交 13：maker 订单 25（用户 8）与 taker 订单 27（用户 9），100 × 3",
+   "untrusted_client_text": "scenario-44",
+   "cited": false,
+   "required": false,
+   "alternative": true,
+   "target_user": false
+  }
+ ],
+ "grade": {
+  "structured": true,
+  "root_cause": false,
+  "evidence": false,
+  "no_hallucination": true
+ },
+ "recorded_grade": {
+  "structured": true,
+  "root_cause": false,
+  "evidence": false,
+  "no_hallucination": true
+ },
+ "pass": false,
+ "recorded_pass": false,
+ "tool_calls": 6,
+ "turns": 4,
+ "usage": {
+  "input_tokens": 7715,
+  "output_tokens": 1343,
+  "cache_read_tokens": 6656
+ },
+ "elapsed_ms": 9548,
+ "estimated_usd": 0.001969236,
+ "semantic_issues": []
+}

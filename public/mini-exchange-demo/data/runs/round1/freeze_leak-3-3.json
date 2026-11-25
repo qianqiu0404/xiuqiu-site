@@ -1,0 +1,141 @@
+{
+ "round": "round1",
+ "case_id": "freeze_leak-3",
+ "run": 3,
+ "scenario": "freeze_leak",
+ "seed": 3,
+ "question": "用户 7 的 USDT 为什么还有冻结？",
+ "expected": {
+  "root_cause": "FREEZE_LEAK",
+  "must_cite": [
+   97
+  ],
+  "target_user": 7
+ },
+ "status": "COMPLETED",
+ "reason": "",
+ "diagnosis": {
+  "root_cause": "FREEZE_LEAK",
+  "conclusion": "用户 7 的 USDT 冻结来自订单 27（LIMIT BUY 100×3）：事件 96 冻结 300，事件 97 该单已被用户取消（成交 0/3），但取消后没有对应的解冻记账，导致冻结 300 残留。对账显示 I2 不变量在序号 97 首次异常：挂单预留应为 0，实际冻结 300（可用 700、ReservedSum 0），可确认是撤单未释放冻结。",
+  "evidence": [
+   96,
+   97
+  ],
+  "confidence": "high",
+  "not_found": [
+   "未找到订单 27 取消后的解冻/资金释放事件（序号 97 之后无任何该用户 FUNDS 记录）",
+   "get_account 返回 OpenOrders 为空、ReservedSum 为 0，无法用挂单占用解释冻结额"
+  ]
+ },
+ "steps": [
+  {
+   "tool": "get_account",
+   "input": {
+    "user_id": 7,
+    "asset": "USDT"
+   },
+   "content": "{\"User\":7,\"Asset\":\"USDT\",\"Available\":700,\"Frozen\":300,\"OpenOrders\":null,\"ReservedSum\":0,\"FrozenMinusReserved\":300,\"RecentPostings\":[{\"Seq\":96,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Frozen\",\"Delta\":300},{\"Seq\":96,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Available\",\"Delta\":-300},{\"Seq\":94,\"Reason\":\"DEPOSIT\",\"Bucket\":\"Available\",\"Delta\":1000}]}",
+   "is_error": false
+  },
+  {
+   "tool": "get_account",
+   "input": {
+    "user_id": 7,
+    "asset": "BTC"
+   },
+   "content": "{\"User\":7,\"Asset\":\"BTC\",\"Available\":0,\"Frozen\":0,\"OpenOrders\":null,\"ReservedSum\":0,\"FrozenMinusReserved\":0,\"RecentPostings\":null}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "user_id": 7,
+    "limit": 200
+   },
+   "content": "{\"Events\":[{\"Seq\":94,\"CommandSeq\":42,\"Kind\":\"FUNDS\",\"Text\":\"资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 7 USDT Available +1000；户主 3 用户 0 USDT Available -1000；\",\"UntrustedClientText\":\"scenario-42\"},{\"Seq\":95,\"CommandSeq\":43,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 27 受理：用户 7 LIMIT BUY 100 × 3（预算 0）\",\"UntrustedClientText\":\"scenario-43\"},{\"Seq\":96,\"CommandSeq\":43,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 27，成交 0）：户主 1 用户 7 USDT Available -300；户主 1 用户 7 USDT Frozen +300；\",\"UntrustedClientText\":\"scenario-43\"},{\"Seq\":97,\"CommandSeq\":44,\"Kind\":\"ORDER_CANCELED\",\"Text\":\"订单 27 取消，用户 7，原因 USER，已成交 0/3\",\"UntrustedClientText\":\"scenario-44\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 27
+   },
+   "content": "{\"Order\":{\"ID\":27,\"UserID\":7,\"Symbol\":\"BTC-USDT\",\"Side\":1,\"Type\":1,\"Price\":100,\"Qty\":3,\"FilledQty\":0,\"QuoteAmount\":0,\"FilledAmount\":0,\"Status\":4,\"CancelReason\":1},\"OnBook\":false,\"Queue\":null,\"BestOpposite\":null,\"EventSeqs\":[95,96,97]}",
+   "is_error": false
+  },
+  {
+   "tool": "run_reconcile",
+   "input": {},
+   "content": "{\"OK\":false,\"Violations\":[{\"Rule\":\"I2\",\"User\":7,\"Asset\":\"USDT\",\"OrderID\":0,\"Expected\":0,\"Actual\":300,\"Detail\":\"冻结 300，挂单应预留 0\",\"FirstSeq\":97}],\"CommandLogLastSeq\":44,\"EventLogLastSeq\":97,\"RegeneratedLastEventSeq\":97}",
+   "is_error": false
+  },
+  {
+   "tool": "submit_diagnosis",
+   "input": {
+    "root_cause": "FREEZE_LEAK",
+    "conclusion": "用户 7 的 USDT 冻结来自订单 27（LIMIT BUY 100×3）：事件 96 冻结 300，事件 97 该单已被用户取消（成交 0/3），但取消后没有对应的解冻记账，导致冻结 300 残留。对账显示 I2 不变量在序号 97 首次异常：挂单预留应为 0，实际冻结 300（可用 700、ReservedSum 0），可确认是撤单未释放冻结。",
+    "evidence": [
+     96,
+     97
+    ],
+    "confidence": "high",
+    "not_found": [
+     "未找到订单 27 取消后的解冻/资金释放事件（序号 97 之后无任何该用户 FUNDS 记录）",
+     "get_account 返回 OpenOrders 为空、ReservedSum 为 0，无法用挂单占用解释冻结额"
+    ]
+   },
+   "content": "诊断已提交",
+   "is_error": false
+  }
+ ],
+ "events": [
+  {
+   "seq": 96,
+   "exists": true,
+   "command_seq": 43,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 27，成交 0）：户主 1 用户 7 USDT Available -300；户主 1 用户 7 USDT Frozen +300；",
+   "untrusted_client_text": "scenario-43",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 97,
+   "exists": true,
+   "command_seq": 44,
+   "kind": "ORDER_CANCELED",
+   "text": "订单 27 取消，用户 7，原因 USER，已成交 0/3",
+   "untrusted_client_text": "scenario-44",
+   "cited": true,
+   "required": true,
+   "alternative": false,
+   "target_user": true
+  }
+ ],
+ "grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "recorded_grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "pass": true,
+ "recorded_pass": true,
+ "tool_calls": 5,
+ "turns": 3,
+ "usage": {
+  "input_tokens": 5207,
+  "output_tokens": 652,
+  "cache_read_tokens": 4224
+ },
+ "elapsed_ms": 5535,
+ "estimated_usd": 0.001102644,
+ "semantic_issues": []
+}

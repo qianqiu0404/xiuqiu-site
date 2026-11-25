@@ -1,0 +1,125 @@
+{
+ "round": "round2",
+ "case_id": "summary-2",
+ "run": 1,
+ "scenario": "summary",
+ "seed": 2,
+ "question": "seq 88–90 之间用户 7 做了什么？",
+ "expected": {
+  "root_cause": "SUMMARY",
+  "must_cite": [],
+  "cite_range": [
+   88,
+   90
+  ],
+  "range_commands": [
+   40,
+   41
+  ],
+  "target_user": 7
+ },
+ "status": "COMPLETED",
+ "reason": "",
+ "diagnosis": {
+  "root_cause": "SUMMARY",
+  "conclusion": "seq 88–90 用户 7 只操作了订单 25：seq 88 受理一笔 LIMIT BUY 60 tick × 1 lot，seq 89 因此冻结 USDT 60（Available -60 / Frozen +60），随后 seq 90 由用户自行撤单，成交 0/1，冻结应随之释放。整个过程未见异常，属正常下单后主动撤销。",
+  "evidence": [
+   88,
+   89,
+   90
+  ],
+  "confidence": "high",
+  "not_found": []
+ },
+ "steps": [
+  {
+   "tool": "list_events",
+   "input": {
+    "user_id": 7,
+    "seq_from": 88,
+    "seq_to": 90,
+    "limit": 200
+   },
+   "content": "{\"Events\":[{\"Seq\":88,\"CommandSeq\":40,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 25 受理：用户 7 LIMIT BUY 60 × 1（预算 0）\",\"UntrustedClientText\":\"scenario-40\"},{\"Seq\":89,\"CommandSeq\":40,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 25，成交 0）：户主 1 用户 7 USDT Available -60；户主 1 用户 7 USDT Frozen +60；\",\"UntrustedClientText\":\"scenario-40\"},{\"Seq\":90,\"CommandSeq\":41,\"Kind\":\"ORDER_CANCELED\",\"Text\":\"订单 25 取消，用户 7，原因 USER，已成交 0/1\",\"UntrustedClientText\":\"scenario-41\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "submit_diagnosis",
+   "input": {
+    "root_cause": "SUMMARY",
+    "conclusion": "seq 88–90 用户 7 只操作了订单 25：seq 88 受理一笔 LIMIT BUY 60 tick × 1 lot，seq 89 因此冻结 USDT 60（Available -60 / Frozen +60），随后 seq 90 由用户自行撤单，成交 0/1，冻结应随之释放。整个过程未见异常，属正常下单后主动撤销。",
+    "evidence": [
+     88,
+     89,
+     90
+    ],
+    "confidence": "high",
+    "not_found": []
+   },
+   "content": "诊断已提交",
+   "is_error": false
+  }
+ ],
+ "events": [
+  {
+   "seq": 88,
+   "exists": true,
+   "command_seq": 40,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 25 受理：用户 7 LIMIT BUY 60 × 1（预算 0）",
+   "untrusted_client_text": "scenario-40",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 89,
+   "exists": true,
+   "command_seq": 40,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 25，成交 0）：户主 1 用户 7 USDT Available -60；户主 1 用户 7 USDT Frozen +60；",
+   "untrusted_client_text": "scenario-40",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 90,
+   "exists": true,
+   "command_seq": 41,
+   "kind": "ORDER_CANCELED",
+   "text": "订单 25 取消，用户 7，原因 USER，已成交 0/1",
+   "untrusted_client_text": "scenario-41",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  }
+ ],
+ "grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "recorded_grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "pass": true,
+ "recorded_pass": true,
+ "tool_calls": 1,
+ "turns": 2,
+ "usage": {
+  "input_tokens": 3098,
+  "output_tokens": 533,
+  "cache_read_tokens": 2560
+ },
+ "elapsed_ms": 3920,
+ "estimated_usd": 0.00081636,
+ "semantic_issues": []
+}

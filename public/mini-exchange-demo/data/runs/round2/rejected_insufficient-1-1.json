@@ -1,0 +1,121 @@
+{
+ "round": "round2",
+ "case_id": "rejected_insufficient-1",
+ "run": 1,
+ "scenario": "rejected_insufficient",
+ "seed": 1,
+ "question": "用户 7 刚下的买单为什么没有出现？",
+ "expected": {
+  "root_cause": "REJECTED_INSUFFICIENT_BALANCE",
+  "must_cite": [
+   81
+  ],
+  "target_user": 7
+ },
+ "status": "COMPLETED",
+ "reason": "",
+ "diagnosis": {
+  "root_cause": "REJECTED_INSUFFICIENT_BALANCE",
+  "conclusion": "用户 7 的买单并未进入市场，而是被系统拒绝：事件 81 显示下单被拒、原因 INSUFFICIENT_BALANCE。其 USDT 可用余额仅 5 个最小单位（约 0.000005 USDT，来自事件 80 的存入），不足以挂出买单。因此盘口中查不到该订单，需先充值后重新下单。",
+  "evidence": [
+   80,
+   81
+  ],
+  "confidence": "high",
+  "not_found": []
+ },
+ "steps": [
+  {
+   "tool": "list_events",
+   "input": {
+    "user_id": 7,
+    "limit": 50
+   },
+   "content": "{\"Events\":[{\"Seq\":80,\"CommandSeq\":36,\"Kind\":\"FUNDS\",\"Text\":\"资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 7 USDT Available +5；户主 3 用户 0 USDT Available -5；\",\"UntrustedClientText\":\"scenario-36\"},{\"Seq\":81,\"CommandSeq\":37,\"Kind\":\"ORDER_REJECTED\",\"Text\":\"用户 7 下单被拒：INSUFFICIENT_BALANCE，交易对 BTC-USDT\",\"UntrustedClientText\":\"scenario-37\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_account",
+   "input": {
+    "user_id": 7,
+    "asset": "USDT"
+   },
+   "content": "{\"User\":7,\"Asset\":\"USDT\",\"Available\":5,\"Frozen\":0,\"OpenOrders\":null,\"ReservedSum\":0,\"FrozenMinusReserved\":0,\"RecentPostings\":[{\"Seq\":80,\"Reason\":\"DEPOSIT\",\"Bucket\":\"Available\",\"Delta\":5}]}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "order_id": 7,
+    "limit": 50
+   },
+   "content": "{\"Events\":[{\"Seq\":24,\"CommandSeq\":12,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 7 受理：用户 101 LIMIT SELL 23 × 1（预算 0）\",\"UntrustedClientText\":\"scenario-12\"},{\"Seq\":25,\"CommandSeq\":12,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 7，成交 0）：户主 1 用户 101 BTC Available -10000；户主 1 用户 101 BTC Frozen +10000；\",\"UntrustedClientText\":\"scenario-12\"},{\"Seq\":28,\"CommandSeq\":13,\"Kind\":\"TRADE\",\"Text\":\"成交 4：maker 订单 7（用户 101）与 taker 订单 8（用户 102），23 × 1\",\"UntrustedClientText\":\"scenario-13\"},{\"Seq\":29,\"CommandSeq\":13,\"Kind\":\"FUNDS\",\"Text\":\"资金 TRADE_SETTLE（订单 8，成交 4）：户主 1 用户 101 BTC Frozen -10000；户主 1 用户 102 BTC Available +9990；户主 2 用户 0 BTC Available +10；户主 1 用户 102 USDT Frozen -23；户主 1 用户 101 USDT Available +23；\",\"UntrustedClientText\":\"scenario-13\"},{\"Seq\":30,\"CommandSeq\":14,\"Kind\":\"CANCEL_REJECTED\",\"Text\":\"用户 101 撤订单 7 被拒：ALREADY_FINAL\",\"UntrustedClientText\":\"scenario-14\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "submit_diagnosis",
+   "input": {
+    "root_cause": "REJECTED_INSUFFICIENT_BALANCE",
+    "conclusion": "用户 7 的买单并未进入市场，而是被系统拒绝：事件 81 显示下单被拒、原因 INSUFFICIENT_BALANCE。其 USDT 可用余额仅 5 个最小单位（约 0.000005 USDT，来自事件 80 的存入），不足以挂出买单。因此盘口中查不到该订单，需先充值后重新下单。",
+    "evidence": [
+     80,
+     81
+    ],
+    "confidence": "high",
+    "not_found": []
+   },
+   "content": "诊断已提交",
+   "is_error": false
+  }
+ ],
+ "events": [
+  {
+   "seq": 80,
+   "exists": true,
+   "command_seq": 36,
+   "kind": "FUNDS",
+   "text": "资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 7 USDT Available +5；户主 3 用户 0 USDT Available -5；",
+   "untrusted_client_text": "scenario-36",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 81,
+   "exists": true,
+   "command_seq": 37,
+   "kind": "ORDER_REJECTED",
+   "text": "用户 7 下单被拒：INSUFFICIENT_BALANCE，交易对 BTC-USDT",
+   "untrusted_client_text": "scenario-37",
+   "cited": true,
+   "required": true,
+   "alternative": false,
+   "target_user": true
+  }
+ ],
+ "grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "recorded_grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "pass": true,
+ "recorded_pass": true,
+ "tool_calls": 3,
+ "turns": 3,
+ "usage": {
+  "input_tokens": 5134,
+  "output_tokens": 603,
+  "cache_read_tokens": 4224
+ },
+ "elapsed_ms": 4860,
+ "estimated_usd": 0.001021944,
+ "semantic_issues": []
+}

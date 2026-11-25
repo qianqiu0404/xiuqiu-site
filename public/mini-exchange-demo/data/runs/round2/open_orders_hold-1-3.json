@@ -1,0 +1,191 @@
+{
+ "round": "round2",
+ "case_id": "open_orders_hold-1",
+ "run": 3,
+ "scenario": "open_orders_hold",
+ "seed": 1,
+ "question": "用户 7 的 USDT 为什么还有冻结？",
+ "expected": {
+  "root_cause": "OPEN_ORDERS_HOLD",
+  "must_cite": [
+   82,
+   84
+  ],
+  "target_user": 7
+ },
+ "status": "COMPLETED",
+ "reason": "",
+ "diagnosis": {
+  "root_cause": "OPEN_ORDERS_HOLD",
+  "conclusion": "用户 7 的 USDT 冻结 290 全部来自两笔未成交挂单：订单 23 买单冻结 200（事件 82），订单 24 买单冻结 90（事件 84），两者的 Reserved 之和正好等于冻结额，FrozenMinusReserved 为 0。两笔订单状态均为在簿未成交（订单 23 见事件 81/82，订单 24 见事件 83/84），对账无不变量异常（日志至序号 84 一致）。资金来自事件 80 的 1000 USDT 入金，属正常挂单占用，不存在冻结泄漏。",
+  "evidence": [
+   80,
+   81,
+   82,
+   83,
+   84
+  ],
+  "confidence": "high",
+  "not_found": []
+ },
+ "steps": [
+  {
+   "tool": "get_account",
+   "input": {
+    "user_id": 7,
+    "asset": "USDT"
+   },
+   "content": "{\"User\":7,\"Asset\":\"USDT\",\"Available\":710,\"Frozen\":290,\"OpenOrders\":[{\"OrderID\":23,\"Reserved\":200},{\"OrderID\":24,\"Reserved\":90}],\"ReservedSum\":290,\"FrozenMinusReserved\":0,\"RecentPostings\":[{\"Seq\":84,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Frozen\",\"Delta\":90},{\"Seq\":84,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Available\",\"Delta\":-90},{\"Seq\":82,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Frozen\",\"Delta\":200},{\"Seq\":82,\"Reason\":\"ORDER_FREEZE\",\"Bucket\":\"Available\",\"Delta\":-200},{\"Seq\":80,\"Reason\":\"DEPOSIT\",\"Bucket\":\"Available\",\"Delta\":1000}]}",
+   "is_error": false
+  },
+  {
+   "tool": "get_account",
+   "input": {
+    "user_id": 7,
+    "asset": "BTC"
+   },
+   "content": "{\"User\":7,\"Asset\":\"BTC\",\"Available\":0,\"Frozen\":0,\"OpenOrders\":null,\"ReservedSum\":0,\"FrozenMinusReserved\":0,\"RecentPostings\":null}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "user_id": 7,
+    "limit": 100
+   },
+   "content": "{\"Events\":[{\"Seq\":80,\"CommandSeq\":36,\"Kind\":\"FUNDS\",\"Text\":\"资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 7 USDT Available +1000；户主 3 用户 0 USDT Available -1000；\",\"UntrustedClientText\":\"scenario-36\"},{\"Seq\":81,\"CommandSeq\":37,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 23 受理：用户 7 LIMIT BUY 100 × 2（预算 0）\",\"UntrustedClientText\":\"scenario-37\"},{\"Seq\":82,\"CommandSeq\":37,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 23，成交 0）：户主 1 用户 7 USDT Available -200；户主 1 用户 7 USDT Frozen +200；\",\"UntrustedClientText\":\"scenario-37\"},{\"Seq\":83,\"CommandSeq\":38,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 24 受理：用户 7 LIMIT BUY 90 × 1（预算 0）\",\"UntrustedClientText\":\"scenario-38\"},{\"Seq\":84,\"CommandSeq\":38,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 24，成交 0）：户主 1 用户 7 USDT Available -90；户主 1 用户 7 USDT Frozen +90；\",\"UntrustedClientText\":\"scenario-38\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 23
+   },
+   "content": "{\"Order\":{\"ID\":23,\"UserID\":7,\"Symbol\":\"BTC-USDT\",\"Side\":1,\"Type\":1,\"Price\":100,\"Qty\":2,\"FilledQty\":0,\"QuoteAmount\":0,\"FilledAmount\":0,\"Status\":1,\"CancelReason\":0},\"OnBook\":true,\"Queue\":{\"LevelPrice\":100,\"Position\":1,\"QtyAhead\":0,\"LevelOrders\":1},\"BestOpposite\":null,\"EventSeqs\":[81,82],\"LevelTrades\":null,\"LevelTradesTotal\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 24
+   },
+   "content": "{\"Order\":{\"ID\":24,\"UserID\":7,\"Symbol\":\"BTC-USDT\",\"Side\":1,\"Type\":1,\"Price\":90,\"Qty\":1,\"FilledQty\":0,\"QuoteAmount\":0,\"FilledAmount\":0,\"Status\":1,\"CancelReason\":0},\"OnBook\":true,\"Queue\":{\"LevelPrice\":90,\"Position\":1,\"QtyAhead\":0,\"LevelOrders\":1},\"BestOpposite\":null,\"EventSeqs\":[83,84],\"LevelTrades\":null,\"LevelTradesTotal\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "run_reconcile",
+   "input": {},
+   "content": "{\"OK\":true,\"Violations\":null,\"CommandLogLastSeq\":38,\"EventLogLastSeq\":84,\"RegeneratedLastEventSeq\":84}",
+   "is_error": false
+  },
+  {
+   "tool": "submit_diagnosis",
+   "input": {
+    "root_cause": "OPEN_ORDERS_HOLD",
+    "conclusion": "用户 7 的 USDT 冻结 290 全部来自两笔未成交挂单：订单 23 买单冻结 200（事件 82），订单 24 买单冻结 90（事件 84），两者的 Reserved 之和正好等于冻结额，FrozenMinusReserved 为 0。两笔订单状态均为在簿未成交（订单 23 见事件 81/82，订单 24 见事件 83/84），对账无不变量异常（日志至序号 84 一致）。资金来自事件 80 的 1000 USDT 入金，属正常挂单占用，不存在冻结泄漏。",
+    "evidence": [
+     80,
+     81,
+     82,
+     83,
+     84
+    ],
+    "confidence": "high",
+    "not_found": []
+   },
+   "content": "诊断已提交",
+   "is_error": false
+  }
+ ],
+ "events": [
+  {
+   "seq": 80,
+   "exists": true,
+   "command_seq": 36,
+   "kind": "FUNDS",
+   "text": "资金 DEPOSIT（订单 0，成交 0）：户主 1 用户 7 USDT Available +1000；户主 3 用户 0 USDT Available -1000；",
+   "untrusted_client_text": "scenario-36",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 81,
+   "exists": true,
+   "command_seq": 37,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 23 受理：用户 7 LIMIT BUY 100 × 2（预算 0）",
+   "untrusted_client_text": "scenario-37",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 82,
+   "exists": true,
+   "command_seq": 37,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 23，成交 0）：户主 1 用户 7 USDT Available -200；户主 1 用户 7 USDT Frozen +200；",
+   "untrusted_client_text": "scenario-37",
+   "cited": true,
+   "required": true,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 83,
+   "exists": true,
+   "command_seq": 38,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 24 受理：用户 7 LIMIT BUY 90 × 1（预算 0）",
+   "untrusted_client_text": "scenario-38",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 84,
+   "exists": true,
+   "command_seq": 38,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 24，成交 0）：户主 1 用户 7 USDT Available -90；户主 1 用户 7 USDT Frozen +90；",
+   "untrusted_client_text": "scenario-38",
+   "cited": true,
+   "required": true,
+   "alternative": false,
+   "target_user": true
+  }
+ ],
+ "grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "recorded_grade": {
+  "structured": true,
+  "root_cause": true,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "pass": true,
+ "recorded_pass": true,
+ "tool_calls": 6,
+ "turns": 4,
+ "usage": {
+  "input_tokens": 8534,
+  "output_tokens": 607,
+  "cache_read_tokens": 7168
+ },
+ "elapsed_ms": 5131,
+ "estimated_usd": 0.001181208,
+ "semantic_issues": [
+  {
+   "type": "confirmed_currency_unit_text_error",
+   "quote": "4 一致）。资金来自事件 80 的 1000 USDT 入金，属正常挂单占用，不存在冻结泄漏。"
+  }
+ ]
+}

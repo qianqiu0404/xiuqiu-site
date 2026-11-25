@@ -1,0 +1,156 @@
+{
+ "round": "round1",
+ "case_id": "summary-1",
+ "run": 3,
+ "scenario": "summary",
+ "seed": 1,
+ "question": "seq 81–83 之间用户 7 做了什么？",
+ "expected": {
+  "root_cause": "SUMMARY",
+  "must_cite": [],
+  "cite_range": [
+   81,
+   83
+  ],
+  "range_commands": [
+   37,
+   38
+  ],
+  "target_user": 7
+ },
+ "status": "COMPLETED",
+ "reason": "",
+ "diagnosis": {
+  "root_cause": "NO_ISSUE",
+  "conclusion": "用户 7 在 seq 81 挂出订单 23（LIMIT BUY 60 tick × 1 lot），seq 82 冻结 60 USDT，seq 83 该订单由用户主动撤单（原因 USER，成交 0/1）。订单 23 无成交，撤单后于 seq 84 解冻 60 USDT，全程无异常。",
+  "evidence": [
+   81,
+   82,
+   83,
+   84
+  ],
+  "confidence": "high",
+  "not_found": []
+ },
+ "steps": [
+  {
+   "tool": "list_events",
+   "input": {
+    "user_id": 7,
+    "seq_from": 81,
+    "seq_to": 83
+   },
+   "content": "{\"Events\":[{\"Seq\":81,\"CommandSeq\":37,\"Kind\":\"ORDER_ACCEPTED\",\"Text\":\"订单 23 受理：用户 7 LIMIT BUY 60 × 1（预算 0）\",\"UntrustedClientText\":\"scenario-37\"},{\"Seq\":82,\"CommandSeq\":37,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_FREEZE（订单 23，成交 0）：户主 1 用户 7 USDT Available -60；户主 1 用户 7 USDT Frozen +60；\",\"UntrustedClientText\":\"scenario-37\"},{\"Seq\":83,\"CommandSeq\":38,\"Kind\":\"ORDER_CANCELED\",\"Text\":\"订单 23 取消，用户 7，原因 USER，已成交 0/1\",\"UntrustedClientText\":\"scenario-38\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "get_order",
+   "input": {
+    "order_id": 23
+   },
+   "content": "{\"Order\":{\"ID\":23,\"UserID\":7,\"Symbol\":\"BTC-USDT\",\"Side\":1,\"Type\":1,\"Price\":60,\"Qty\":1,\"FilledQty\":0,\"QuoteAmount\":0,\"FilledAmount\":0,\"Status\":4,\"CancelReason\":1},\"OnBook\":false,\"Queue\":null,\"BestOpposite\":null,\"EventSeqs\":[81,82,83,84]}",
+   "is_error": false
+  },
+  {
+   "tool": "list_events",
+   "input": {
+    "seq_from": 84,
+    "seq_to": 84,
+    "user_id": 7
+   },
+   "content": "{\"Events\":[{\"Seq\":84,\"CommandSeq\":38,\"Kind\":\"FUNDS\",\"Text\":\"资金 ORDER_UNFREEZE（订单 23，成交 0）：户主 1 用户 7 USDT Frozen -60；户主 1 用户 7 USDT Available +60；\",\"UntrustedClientText\":\"scenario-38\"}],\"Truncated\":false,\"NextSeqFrom\":0}",
+   "is_error": false
+  },
+  {
+   "tool": "submit_diagnosis",
+   "input": {
+    "root_cause": "NO_ISSUE",
+    "conclusion": "用户 7 在 seq 81 挂出订单 23（LIMIT BUY 60 tick × 1 lot），seq 82 冻结 60 USDT，seq 83 该订单由用户主动撤单（原因 USER，成交 0/1）。订单 23 无成交，撤单后于 seq 84 解冻 60 USDT，全程无异常。",
+    "evidence": [
+     81,
+     82,
+     83,
+     84
+    ],
+    "confidence": "high",
+    "not_found": []
+   },
+   "content": "诊断已提交",
+   "is_error": false
+  }
+ ],
+ "events": [
+  {
+   "seq": 81,
+   "exists": true,
+   "command_seq": 37,
+   "kind": "ORDER_ACCEPTED",
+   "text": "订单 23 受理：用户 7 LIMIT BUY 60 × 1（预算 0）",
+   "untrusted_client_text": "scenario-37",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 82,
+   "exists": true,
+   "command_seq": 37,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_FREEZE（订单 23，成交 0）：户主 1 用户 7 USDT Available -60；户主 1 用户 7 USDT Frozen +60；",
+   "untrusted_client_text": "scenario-37",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 83,
+   "exists": true,
+   "command_seq": 38,
+   "kind": "ORDER_CANCELED",
+   "text": "订单 23 取消，用户 7，原因 USER，已成交 0/1",
+   "untrusted_client_text": "scenario-38",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  },
+  {
+   "seq": 84,
+   "exists": true,
+   "command_seq": 38,
+   "kind": "FUNDS",
+   "text": "资金 ORDER_UNFREEZE（订单 23，成交 0）：户主 1 用户 7 USDT Frozen -60；户主 1 用户 7 USDT Available +60；",
+   "untrusted_client_text": "scenario-38",
+   "cited": true,
+   "required": false,
+   "alternative": false,
+   "target_user": true
+  }
+ ],
+ "grade": {
+  "structured": true,
+  "root_cause": false,
+  "evidence": true,
+  "no_hallucination": true
+ },
+ "recorded_grade": {
+  "structured": true,
+  "root_cause": false,
+  "evidence": false,
+  "no_hallucination": true
+ },
+ "pass": false,
+ "recorded_pass": false,
+ "tool_calls": 3,
+ "turns": 4,
+ "usage": {
+  "input_tokens": 6631,
+  "output_tokens": 604,
+  "cache_read_tokens": 5632
+ },
+ "elapsed_ms": 5180,
+ "estimated_usd": 0.001058292,
+ "semantic_issues": []
+}
