@@ -16,6 +16,17 @@ export interface MarketRadarDaily { schemaVersion?: 2; date: string; slug: strin
 export interface MarketRadarIndexEntry { date: string; slug: string; snapshotId: string; asOf: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
 export const marketRadarIndex: MarketRadarIndexEntry[] = [
   {
+    "date": "2026-11-26",
+    "slug": "2026-11-26",
+    "title": "交易研究雷达 · 2026-11-26",
+    "summary": "11月25日美联储褐皮书更新地区定性反馈。本期分开核对发布日、11月16日的信息截至日和非随机联系人口径，不将地区描述换算成全国增长、政策决定或资产方向。自动汇总，未经人工复核。",
+    "snapshotId": "market-2026-11-26-4f4a772cbe3c9929",
+    "asOf": "2026-11-25T21:34:19.474Z",
+    "eventCount": 1,
+    "assetCount": 1,
+    "leadTitle": "褐皮书：地区定性反馈与全国增长、政策判断须分开"
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "title": "交易研究雷达 · 2026-11-16",
@@ -314,6 +325,156 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
   }
 ]
 export const latestMarketRadars: MarketRadarDaily[] = [
+  {
+    "date": "2026-11-26",
+    "slug": "2026-11-26",
+    "title": "交易研究雷达 · 2026-11-26",
+    "summary": "11月25日美联储褐皮书更新地区定性反馈。本期分开核对发布日、11月16日的信息截至日和非随机联系人口径，不将地区描述换算成全国增长、政策决定或资产方向。自动汇总，未经人工复核。",
+    "snapshotId": "market-2026-11-26-4f4a772cbe3c9929",
+    "asOf": "2026-11-25T21:34:19.474Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-25T21:34:19.474148Z",
+    "events": [
+      {
+        "id": "fed-beigebook-contact-cutoff-price-pass-through-2026-11-25",
+        "priority": "P2",
+        "status": "released",
+        "category": "macro",
+        "title": "褐皮书：地区定性反馈与全国增长、政策判断须分开",
+        "fact": "美联储11月25日发布11月褐皮书，全国总结称8个地区小幅至适度增长、4个地区持平，投入成本增速普遍快于售价。报告基于截至11月16日的信息，汇总外部联系人评论；方法页说明联系人非随机选取。它不代表美联储官员观点，也不是全国GDP增长统计或新政策决定。",
+        "whyWatch": "研究推断：若需求与成本转嫁线索得到同业企业披露支持，可能先改变销量、投入成本及利润率的研究假设，再影响对相关股票的估值分析。这只是待验证的传导路径；地区描述不能按数量直接加权成全国结论。",
+        "assets": [
+          "美国消费与工业企业股票"
+        ],
+        "watchFor": "按地区、行业与观察期间核对联系人反馈，再与企业收入、成本、利润率及正式经济统计交叉验证；分开记录量、价与成本转嫁，检查截至日之后的新信息。本期未建立联系人代表性、企业盈利、行情或因果样本。",
+        "invalidation": "若把8个地区换算成全国GDP份额或增长概率、把11月25日误当全部信息的观察日，须撤回并重算。若后续同业披露或正式统计不支持需求、转嫁能力的解释，应收窄适用范围；不能从该报告推出政策动作或资产方向。",
+        "sourceName": "Federal Reserve — Beige Book, November 2026 National Summary",
+        "sourceUrl": "https://www.federalreserve.gov/monetarypolicy/beigebook202611-summary.htm",
+        "sourcePublishedAt": "2026-11-25"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.federalreserve.gov/monetarypolicy/beigebook202611-summary.htm"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "实读11月25日褐皮书全国总结、方法说明及官方发布列表，核对11月16日信息截至日和非随机定性联系人范围；没有建立企业、行情或因果样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "3交易日只用于补充数据与解释核查；固定资产弱信号标签只表示证据不足，不表示方向或实现概率。",
+      "nextValidation": "按地区、行业和观察期间保存联系人描述，再补充企业量价、成本、利润率与正式统计，隔离截至日后新增信息及其他同期事件。",
+      "invalidation": "把地区数量当作全国权重或概率、混用发布日与观察期间时撤回比较；缺少代表性与配套样本时保持未知。",
+      "sourceUrls": [
+        "https://www.federalreserve.gov/monetarypolicy/beigebook202611-summary.htm"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "地区需求与成本转嫁的定性反馈，经哪些可核对的销量、成本及利润率环节，才可能影响相关股票的估值分析？",
+        "focusEventIds": [
+          "fed-beigebook-contact-cutoff-price-pass-through-2026-11-25"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "哪些同期间、同地区或同业的企业披露与正式统计，最可能支持或推翻从联系人反馈得到的解释？",
+        "focusEventIds": [
+          "fed-beigebook-contact-cutoff-price-pass-through-2026-11-25"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若联系人缺乏代表性、成本转嫁存在行业分化或截至日后信息改变，哪些观察应使现有解释失效或收窄？",
+        "focusEventIds": [
+          "fed-beigebook-contact-cutoff-price-pass-through-2026-11-25"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-26",
+      "snapshotId": "market-2026-11-26-4f4a772cbe3c9929",
+      "asOf": "2026-11-25T21:34:19.474Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-26",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "地区需求与成本转嫁的定性反馈，经哪些可核对的销量、成本及利润率环节，才可能影响相关股票的估值分析？",
+          "focusEventIds": [
+            "fed-beigebook-contact-cutoff-price-pass-through-2026-11-25"
+          ],
+          "prompt": "研究任务：地区需求与成本转嫁的定性反馈，经哪些可核对的销量、成本及利润率环节，才可能影响相关股票的估值分析？\n证据快照：2026-11-26；asOf=2026-11-25T21:34:19.474Z；snapshotId=market-2026-11-26-4f4a772cbe3c9929\n\n材料 1｜褐皮书：地区定性反馈与全国增长、政策判断须分开\n已确认事实：美联储11月25日发布11月褐皮书，全国总结称8个地区小幅至适度增长、4个地区持平，投入成本增速普遍快于售价。报告基于截至11月16日的信息，汇总外部联系人评论；方法页说明联系人非随机选取。它不代表美联储官员观点，也不是全国GDP增长统计或新政策决定。\n关注机制：研究推断：若需求与成本转嫁线索得到同业企业披露支持，可能先改变销量、投入成本及利润率的研究假设，再影响对相关股票的估值分析。这只是待验证的传导路径；地区描述不能按数量直接加权成全国结论。\n接下来验证：按地区、行业与观察期间核对联系人反馈，再与企业收入、成本、利润率及正式经济统计交叉验证；分开记录量、价与成本转嫁，检查截至日之后的新信息。本期未建立联系人代表性、企业盈利、行情或因果样本。\n失效条件：若把8个地区换算成全国GDP份额或增长概率、把11月25日误当全部信息的观察日，须撤回并重算。若后续同业披露或正式统计不支持需求、转嫁能力的解释，应收窄适用范围；不能从该报告推出政策动作或资产方向。\n一手来源：https://www.federalreserve.gov/monetarypolicy/beigebook202611-summary.htm\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "3bbb923031e266097b759f9aaced96b201bae84d8e33a8a7b521d769e08110cb",
+          "sourceUrls": [
+            "https://www.federalreserve.gov/monetarypolicy/beigebook202611-summary.htm"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "哪些同期间、同地区或同业的企业披露与正式统计，最可能支持或推翻从联系人反馈得到的解释？",
+          "focusEventIds": [
+            "fed-beigebook-contact-cutoff-price-pass-through-2026-11-25"
+          ],
+          "prompt": "研究任务：哪些同期间、同地区或同业的企业披露与正式统计，最可能支持或推翻从联系人反馈得到的解释？\n证据快照：2026-11-26；asOf=2026-11-25T21:34:19.474Z；snapshotId=market-2026-11-26-4f4a772cbe3c9929\n\n材料 1｜褐皮书：地区定性反馈与全国增长、政策判断须分开\n已确认事实：美联储11月25日发布11月褐皮书，全国总结称8个地区小幅至适度增长、4个地区持平，投入成本增速普遍快于售价。报告基于截至11月16日的信息，汇总外部联系人评论；方法页说明联系人非随机选取。它不代表美联储官员观点，也不是全国GDP增长统计或新政策决定。\n关注机制：研究推断：若需求与成本转嫁线索得到同业企业披露支持，可能先改变销量、投入成本及利润率的研究假设，再影响对相关股票的估值分析。这只是待验证的传导路径；地区描述不能按数量直接加权成全国结论。\n接下来验证：按地区、行业与观察期间核对联系人反馈，再与企业收入、成本、利润率及正式经济统计交叉验证；分开记录量、价与成本转嫁，检查截至日之后的新信息。本期未建立联系人代表性、企业盈利、行情或因果样本。\n失效条件：若把8个地区换算成全国GDP份额或增长概率、把11月25日误当全部信息的观察日，须撤回并重算。若后续同业披露或正式统计不支持需求、转嫁能力的解释，应收窄适用范围；不能从该报告推出政策动作或资产方向。\n一手来源：https://www.federalreserve.gov/monetarypolicy/beigebook202611-summary.htm\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "d776de0edf58d48ac0a7708effc29bb1c344b6a9eeba5c484c2a327336be7cbb",
+          "sourceUrls": [
+            "https://www.federalreserve.gov/monetarypolicy/beigebook202611-summary.htm"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若联系人缺乏代表性、成本转嫁存在行业分化或截至日后信息改变，哪些观察应使现有解释失效或收窄？",
+          "focusEventIds": [
+            "fed-beigebook-contact-cutoff-price-pass-through-2026-11-25"
+          ],
+          "prompt": "研究任务：若联系人缺乏代表性、成本转嫁存在行业分化或截至日后信息改变，哪些观察应使现有解释失效或收窄？\n证据快照：2026-11-26；asOf=2026-11-25T21:34:19.474Z；snapshotId=market-2026-11-26-4f4a772cbe3c9929\n\n材料 1｜褐皮书：地区定性反馈与全国增长、政策判断须分开\n已确认事实：美联储11月25日发布11月褐皮书，全国总结称8个地区小幅至适度增长、4个地区持平，投入成本增速普遍快于售价。报告基于截至11月16日的信息，汇总外部联系人评论；方法页说明联系人非随机选取。它不代表美联储官员观点，也不是全国GDP增长统计或新政策决定。\n关注机制：研究推断：若需求与成本转嫁线索得到同业企业披露支持，可能先改变销量、投入成本及利润率的研究假设，再影响对相关股票的估值分析。这只是待验证的传导路径；地区描述不能按数量直接加权成全国结论。\n接下来验证：按地区、行业与观察期间核对联系人反馈，再与企业收入、成本、利润率及正式经济统计交叉验证；分开记录量、价与成本转嫁，检查截至日之后的新信息。本期未建立联系人代表性、企业盈利、行情或因果样本。\n失效条件：若把8个地区换算成全国GDP份额或增长概率、把11月25日误当全部信息的观察日，须撤回并重算。若后续同业披露或正式统计不支持需求、转嫁能力的解释，应收窄适用范围；不能从该报告推出政策动作或资产方向。\n一手来源：https://www.federalreserve.gov/monetarypolicy/beigebook202611-summary.htm\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "27aaf499d130154eb02a145bc4d32e58bfd8870804cab30a11b7107feab05f95",
+          "sourceUrls": [
+            "https://www.federalreserve.gov/monetarypolicy/beigebook202611-summary.htm"
+          ]
+        }
+      ]
+    }
+  },
   {
     "date": "2026-11-16",
     "slug": "2026-11-16",
@@ -1215,157 +1376,6 @@ export const latestMarketRadars: MarketRadarDaily[] = [
           "promptChecksum": "b51c3ac516a1c07dde99ae9da2bb3791c04f34f554274828a451ef9584b543b8",
           "sourceUrls": [
             "https://www.newyorkfed.org/newsevents/news/research/2026/20261110"
-          ]
-        }
-      ]
-    }
-  },
-  {
-    "date": "2026-11-10",
-    "slug": "2026-11-10",
-    "title": "交易研究雷达 · 2026-11-10",
-    "summary": "FinCEN与美联储撤回2020年跨境资金传送门槛提案；本期区分11月6日公告、11月9日正式刊登与现行规则，不把撤回旧提案解读为取消既有义务。",
-    "snapshotId": "market-2026-11-10-01bdf765eaf1db2d",
-    "asOf": "2026-11-09T21:36:03.266Z",
-    "origin": "research",
-    "publicationState": "published",
-    "reviewStatus": "automated",
-    "generatedAt": "2026-11-09T21:36:03.266182Z",
-    "events": [
-      {
-        "id": "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
-        "priority": "P1",
-        "status": "released",
-        "category": "regulation",
-        "title": "FinCEN与美联储撤回跨境250美元门槛提案",
-        "fact": "11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。",
-        "whyWatch": "研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。",
-        "assets": [
-          "跨境资金通道",
-          "加密资产"
-        ],
-        "watchFor": "核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。",
-        "invalidation": "后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。",
-        "sourceName": "Federal Register / GPO — 2026-22809",
-        "sourceUrl": "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm",
-        "sourcePublishedAt": "2026-11-09"
-      }
-    ],
-    "sourceUrls": [
-      "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-    ],
-    "quantStrategy": {
-      "horizonTradingDays": 3,
-      "status": "historical_samples_insufficient",
-      "methodology": "本期仅核对一份提案撤回文件及先前公告，未建立机构开发排期、资金服务与资产反应的同窗口样本。",
-      "assets": [
-        {
-          "symbol": "SPY",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "QQQ",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "BTC",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "ETH",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "GLD",
-          "group": "gold_etf",
-          "signalQuality": "weak"
-        }
-      ],
-      "sampleSize": 0,
-      "rationale": "规则文件变化、机构实际执行与市场反应是不同层次；没有样本便不量化跨资产影响。",
-      "nextValidation": "固定公告及正式撤回时点，再核对公开实施说明、既有规则和可比服务数据，样本不足时仅记录信号质量。",
-      "invalidation": "新提案或正式范围改变时重估；数据口径、时间窗口不一致或缺少实际服务变化证据时保留未知。",
-      "sourceUrls": [
-        "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-      ]
-    },
-    "schemaVersion": 2,
-    "researchQuestions": [
-      {
-        "id": "1",
-        "lens": "transmission",
-        "shortQuestion": "旧提案退出如何经合规开发排期、机构执行和跨境资金服务传导到市场，各环需要哪些独立证据？",
-        "focusEventIds": [
-          "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-        ]
-      },
-      {
-        "id": "2",
-        "lens": "falsification",
-        "shortQuestion": "哪些既有规则、机构说明和同窗口服务数据，能推翻把当前市场变化归因于本次撤回的解释？",
-        "focusEventIds": [
-          "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-        ]
-      },
-      {
-        "id": "3",
-        "lens": "scenario",
-        "shortQuestion": "现行配置不变、新提案重启与服务实际调整分别对应什么情景，什么证据会使当前判断失效？",
-        "focusEventIds": [
-          "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-        ]
-      }
-    ],
-    "researchPack": {
-      "schemaVersion": 2,
-      "date": "2026-11-10",
-      "snapshotId": "market-2026-11-10-01bdf765eaf1db2d",
-      "asOf": "2026-11-09T21:36:03.266Z",
-      "origin": "research",
-      "publicationState": "published",
-      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-10",
-      "questions": [
-        {
-          "id": "1",
-          "lens": "transmission",
-          "shortQuestion": "旧提案退出如何经合规开发排期、机构执行和跨境资金服务传导到市场，各环需要哪些独立证据？",
-          "focusEventIds": [
-            "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-          ],
-          "prompt": "研究任务：旧提案退出如何经合规开发排期、机构执行和跨境资金服务传导到市场，各环需要哪些独立证据？\n证据快照：2026-11-10；asOf=2026-11-09T21:36:03.266Z；snapshotId=market-2026-11-10-01bdf765eaf1db2d\n\n材料 1｜FinCEN与美联储撤回跨境250美元门槛提案\n已确认事实：11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。\n关注机制：研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。\n接下来验证：核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。\n失效条件：后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。\n一手来源：https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "6bdf797b1a69478a921459f978c1506d2c7006e190819973ee4e76316dab80ff",
-          "sourceUrls": [
-            "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-          ]
-        },
-        {
-          "id": "2",
-          "lens": "falsification",
-          "shortQuestion": "哪些既有规则、机构说明和同窗口服务数据，能推翻把当前市场变化归因于本次撤回的解释？",
-          "focusEventIds": [
-            "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-          ],
-          "prompt": "研究任务：哪些既有规则、机构说明和同窗口服务数据，能推翻把当前市场变化归因于本次撤回的解释？\n证据快照：2026-11-10；asOf=2026-11-09T21:36:03.266Z；snapshotId=market-2026-11-10-01bdf765eaf1db2d\n\n材料 1｜FinCEN与美联储撤回跨境250美元门槛提案\n已确认事实：11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。\n关注机制：研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。\n接下来验证：核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。\n失效条件：后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。\n一手来源：https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "b07627ead551add6ce0062f0cac3748f964c2ce255524fa093a1f4539ed3e896",
-          "sourceUrls": [
-            "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-          ]
-        },
-        {
-          "id": "3",
-          "lens": "scenario",
-          "shortQuestion": "现行配置不变、新提案重启与服务实际调整分别对应什么情景，什么证据会使当前判断失效？",
-          "focusEventIds": [
-            "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-          ],
-          "prompt": "研究任务：现行配置不变、新提案重启与服务实际调整分别对应什么情景，什么证据会使当前判断失效？\n证据快照：2026-11-10；asOf=2026-11-09T21:36:03.266Z；snapshotId=market-2026-11-10-01bdf765eaf1db2d\n\n材料 1｜FinCEN与美联储撤回跨境250美元门槛提案\n已确认事实：11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。\n关注机制：研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。\n接下来验证：核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。\n失效条件：后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。\n一手来源：https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "a18a64a71ef388b379425fa6a84d7891d887815875a28e56fc58e3e22087590f",
-          "sourceUrls": [
-            "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
           ]
         }
       ]
