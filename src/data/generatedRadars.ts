@@ -12,6 +12,48 @@ export interface RadarIndexEntry { date: string; slug: string; snapshotId: strin
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-11-26",
+    "slug": "2026-11-26",
+    "snapshotId": "learning-2026-11-26-1e10a8b62ecf1bde",
+    "asOf": "2026-11-25T21:33:32.787Z",
+    "title": "学习雷达 · 2026-11-26",
+    "summary": "本期为自动汇总，未经人工复核。语音播放的item坐标、Capability说明的权限、图表初窗与后续分页，以及项目和依赖配置的归属边界。",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "briefs": [
+      {
+        "id": "ai-sdk-realtime-playing-item-truncation",
+        "domain": "ai",
+        "topic": "model_inference",
+        "title": "AI SDK 7.0.182：语音被打断时，截断正在播放的item与它自己的位置"
+      },
+      {
+        "id": "ai-pydantic-lowered-capability-instruction-history",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "Pydantic AI 2.75：Capability已降权，它的说明文字也不能继续进入系统指令"
+      },
+      {
+        "id": "web3-metamask-chart-bounded-initial-timeframe",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "MetaMask图表2.0：切到细周期前，先避免继承粗周期的整段时间窗"
+      },
+      {
+        "id": "web3-foundry-dependency-config-env-isolation",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Foundry 11月25日nightly：项目环境覆盖，不再改写依赖自己的配置布局"
+      }
+    ],
+    "deepDive": {
+      "id": "deep-audio-received-scheduled-played-coordinates",
+      "title": "专题：语音已经收到，为什么还不能当作用户已经听到？",
+      "basedOnBriefId": "ai-sdk-realtime-playing-item-truncation"
+    },
+    "marketSignals": []
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "snapshotId": "learning-2026-11-16-20147f94783c1b8e",
@@ -1992,6 +2034,371 @@ export const radarIndex: RadarIndexEntry[] = [
 ]
 
 export const latestRadars: DailyRadar[] = [
+  {
+    "date": "2026-11-26",
+    "slug": "2026-11-26",
+    "title": "学习雷达 · 2026-11-26",
+    "summary": "本期为自动汇总，未经人工复核。语音播放的item坐标、Capability说明的权限、图表初窗与后续分页，以及项目和依赖配置的归属边界。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-11-25T21:33:32.787Z",
+    "generatedAt": "2026-11-25T21:33:32.787Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-sdk-realtime-playing-item-truncation",
+        "domain": "ai",
+        "topic": "model_inference",
+        "title": "AI SDK 7.0.182：语音被打断时，截断正在播放的item与它自己的位置",
+        "whatHappened": "AI SDK于11月25日（UTC）发布7.0.182，收录同日PR25508。WebSocket回合式实时会话在用户插话时，改按客户端正在播放的音频item及item内偏移发送截断事件，避免把最新收到的item当成正在播放的item。",
+        "mechanism": "每个已排程音频块记录itemId、开始时间、样本数和同item此前排程的样本偏移。getPlaybackPosition按AudioContext时钟找当前块，算出item内毫秒位置，并以上限向下取整避免越过音频末尾；speech-started先取位置，再停止播放并核对会话attempt仍有效。",
+        "workedExample": "固定模拟回归先排1.5秒前导音与12.95秒回答，把播放时钟设为1.5+12.457秒，断言截断answer的12457毫秒；时钟为1秒时则截断preamble的1000毫秒。另有同item多块、播放断粮、亚毫秒尾部和下一块尚未开始的零偏移断言。本期未运行测试或连接实时模型。",
+        "whyItMatters": "网络已接收、队列已排程与客户端已播放是三种进度。语音Agent若用整段会话的时钟或最后收到的ID回报已播放范围，可能裁错上下文；工程记录需要同时绑定item身份与该item的坐标。",
+        "risksAndLimits": [
+          "这段截断逻辑位于非continuous且isPlaying的speech-started路径，不代表所有实时传输和音频模式都使用同一机制。",
+          "AudioContext进度是客户端播放证据，不证明人实际听见或理解，也不证明供应商接受了截断。本期没有测真实音频设备、网络或供应商回执。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "vercel/ai ai@7.0.182",
+            "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.182",
+            "publishedAt": "2026-11-25T21:19:49.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "vercel/ai PR25508",
+            "url": "https://github.com/vercel/ai/pull/25508"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Scheduled audio chunks and playback position",
+            "url": "https://github.com/vercel/ai/blob/7dc49985c58ae25456aa1f23c28f2f891266629f/packages/ai/src/realtime/browser-realtime-audio.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Legacy speech interruption uses playback coordinates",
+            "url": "https://github.com/vercel/ai/blob/7dc49985c58ae25456aa1f23c28f2f891266629f/packages/ai/src/realtime/realtime-session.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Queued items underrun and rounding regression assertions",
+            "url": "https://github.com/vercel/ai/blob/7dc49985c58ae25456aa1f23c28f2f891266629f/packages/ai/src/realtime/realtime-client-runtime.test.ts"
+          }
+        ],
+        "nextQuestions": [
+          "会话能否分别保存收到、排程、客户端播放和供应商确认的进度，并在中断时核对同一item的坐标？"
+        ]
+      },
+      {
+        "id": "ai-pydantic-lowered-capability-instruction-history",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "Pydantic AI 2.75：Capability已降权，它的说明文字也不能继续进入系统指令",
+        "whatHappened": "Pydantic AI于11月25日（UTC）发布2.75.0，包含同日合入的PR14457。通过authority或with_authority降低到operator以下的Capability，其get_instructions与所贡献工具集的说明也按该权限作为资料呈现，包含MCP服务器说明；默认operator路径不变。",
+        "mechanism": "低权限说明不进入指令前缀，而以带authority的InstructionDeltaPart记入历史。适配前按记录里的权限渲染为user通道的capability_instructions框架资料，并附归属说明；首次出现和文本变化记录新陈述，旧块替换或撤销有说明，压缩会结束该块。",
+        "workedExample": "固定离线断言把Capability设为none或user，检查主指令仍只有Be brief，说明正文不在适配器的system内容，而在user消息的资料框架中。MCP模拟测试也检查服务器说明没有进入主指令；历史JSON往返保留authority，缺该字段的旧记录仍按operator解释。本期只读源码及断言，不执行模型或MCP。",
+        "whyItMatters": "把一个插件标成低信任，不能只约束它中途发送的内容，还要追踪初始化说明最终进入哪个通道。审查Agent集成时，应核对实际序列化消息与历史权限，而非只看配置对象里有with_authority。",
+        "risksAndLimits": [
+          "默认operator没有自动降低；降低说明权限也不改变MCP工具名称和描述。工具调用权限、参数校验、返回值处理与外部副作用仍须分别审查，不能据此宣称阻止所有提示注入。",
+          "旧历史缺authority仍取operator，不会追溯降权。持久运行跨版本升级仍需按发行兼容说明独立验证；本期没有验证所有服务或升级中的运行。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "pydantic/pydantic-ai v2.75.0",
+            "url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.75.0",
+            "publishedAt": "2026-11-25T18:21:00.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "pydantic/pydantic-ai PR14457",
+            "url": "https://github.com/pydantic/pydantic-ai/pull/14457"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Render lowered instruction statements as framed data",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/ffbcf3ec5fbf4cf2044ebb7366e3554c82e27a5f/pydantic_ai_slim/pydantic_ai/_capability_parts.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Stored authority on instruction deltas",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/ffbcf3ec5fbf4cf2044ebb7366e3554c82e27a5f/pydantic_ai_slim/pydantic_ai/messages.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Lowered instructions adapter MCP and history assertions",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/ffbcf3ec5fbf4cf2044ebb7366e3554c82e27a5f/tests/test_lowered_instructions.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Capability authority contract and limits",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/ffbcf3ec5fbf4cf2044ebb7366e3554c82e27a5f/docs/capabilities/custom.md"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "MCP server instructions and explicit lowering",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/ffbcf3ec5fbf4cf2044ebb7366e3554c82e27a5f/docs/capabilities/mcp.md"
+          }
+        ],
+        "nextQuestions": [
+          "接入不可信Capability时，能否保存权限配置、真正发出的消息通道和历史记录，并独立审查工具定义与执行门禁？"
+        ]
+      },
+      {
+        "id": "web3-metamask-chart-bounded-initial-timeframe",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "MetaMask图表2.0：切到细周期前，先避免继承粗周期的整段时间窗",
+        "whatHappened": "MetaMask Core于11月25日（UTC）发布v1457.0.0，advanced-chart-core升至2.0.0，包含PR11762。修复启用boundedIntervalWindow时从粗周期切到细周期触发向后分页风暴，并将原atomicIntervalWindow标记更名，旧字段不再读取。",
+        "mechanism": "限定条件是标记开启、非Social Leaderboard且存在visibleFromMs。此时不把初始窗口作为TradingView构造器timeframe，而在ready后应用夹到已载入最老bar的窗口；固定版本立即应用，并用dataReady作一次补应用和generation核对。切周期保留setResolution与过期回调guard。",
+        "workedExample": "固定bootstrap回归检查开启新标记时构造参数timeframe缺失，未开启及SLB仍保留原构造窗口。ingestion回归检查立即应用与dataReady补应用均从最老bar开始，新数据到来后旧dataReady不再覆盖窗口，旧setResolution回调也不生效。本期未运行图表或上游测试。",
+        "whyItMatters": "把每次分页请求缩小，不一定能停止对同一缺口的反复补取。钱包界面的时间窗意图需要在新周期下重新解释，避免一次粗周期初始化持续决定细周期的历史读取量。",
+        "risksAndLimits": [
+          "新标记需要消费方迁移；默认未开启与SLB保留旧路径。发行包存在不证明扩展或移动端已采用，也不证明线上API负载已下降。",
+          "此前5000-bar单次上限已移除，本修复不是所有历史查询的统一总量预算。PR描述中的onDataLoaded与固定发行代码的dataReady不同，本期按固定代码和回归写作。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "MetaMask/core v1457.0.0",
+            "url": "https://github.com/MetaMask/core/releases/tag/v1457.0.0",
+            "publishedAt": "2026-11-25T18:25:17.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "MetaMask/core PR11762",
+            "url": "https://github.com/MetaMask/core/pull/11762"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Construct the chart without a remembered bounded timeframe",
+            "url": "https://github.com/MetaMask/core/blob/0767f7e7a57b473816f901d5bc62905c4fd04299/packages/advanced-chart-core/src/core/bootstrap.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Initial dataReady and interval-switch generation guards",
+            "url": "https://github.com/MetaMask/core/blob/0767f7e7a57b473816f901d5bc62905c4fd04299/packages/advanced-chart-core/src/widget/ohlcvIngestion.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Bootstrap opt-in and Social Leaderboard regression assertions",
+            "url": "https://github.com/MetaMask/core/blob/0767f7e7a57b473816f901d5bc62905c4fd04299/packages/advanced-chart-core/src/core/__tests__/bootstrap.initialWindow.test.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "One-shot initial window and stale callback assertions",
+            "url": "https://github.com/MetaMask/core/blob/0767f7e7a57b473816f901d5bc62905c4fd04299/packages/advanced-chart-core/src/widget/__tests__/ohlcvIngestion.test.ts"
+          }
+        ],
+        "nextQuestions": [
+          "消费方能否同时验证新标记、首次构造参数、切周期请求量与旧回调隔离，而非仅观察单次分页条数？"
+        ]
+      },
+      {
+        "id": "web3-foundry-dependency-config-env-isolation",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Foundry 11月25日nightly：项目环境覆盖，不再改写依赖自己的配置布局",
+        "whatHappened": "Foundry于11月25日（UTC）发布nightly-50d75f19，包含11月24日合入的PR18686。读取依赖配置、发现嵌套remapping和链接嵌套库时，改用Dependency provider预设，避免项目级环境变量让依赖加载错误配置或相对路径。",
+        "mechanism": "load_dependency_with_root读取依赖foundry.toml及全局配置，保留FOUNDRY_PROFILE选择与缺profile时的默认回退。Dependency分支不采用FOUNDRY_CONFIG替换文件，也不合并项目的DAPP/FOUNDRY环境覆盖；编译器版本的兼容provider同样关闭环境覆盖，remapping与嵌套库链接复用此入口。",
+        "workedExample": "固定回归逐项设置FOUNDRY_CONFIG、FOUNDRY_ROOT、FOUNDRY_SRC、DAPP_SRC及两种SOLC_VERSION变量，仍要求依赖contracts与嵌套库remapping保持，依赖solc为自己配置的0.8.18。CLI回归要求项目内读取与带外置FOUNDRY_CONFIG加--root读取给出相同三条remapping。本期未运行Forge或上游测试。",
+        "whyItMatters": "同一个进程的环境变量可能属于顶层项目，不该无条件套到每个依赖。排查本地与CI构建差异时，需要记录配置归属和路径基准，区分项目选择与依赖内部布局。",
+        "risksAndLimits": [
+          "这是带日期的nightly，不把它写成稳定发行版已完成升级。全局TOML、profile选择及默认回退仍存在，不能说所有外部配置都被忽略。",
+          "依赖配置隔离不是构建沙箱，也不证明依赖代码、编译器、文件访问或合约部署安全。本期没有下载运行二进制、安装依赖或构建任何合约。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "foundry-rs/foundry nightly-50d75f19dbd7ac88fba3013c93cf4e220b1aad6c",
+            "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-50d75f19dbd7ac88fba3013c93cf4e220b1aad6c",
+            "publishedAt": "2026-11-25T07:19:54.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "foundry-rs/foundry PR18686",
+            "url": "https://github.com/foundry-rs/foundry/pull/18686"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Dependency-only Figment provider preset",
+            "url": "https://github.com/foundry-rs/foundry/blob/50d75f19dbd7ac88fba3013c93cf4e220b1aad6c/crates/config/src/lib.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Disable compiler environment override for dependency TOML",
+            "url": "https://github.com/foundry-rs/foundry/blob/50d75f19dbd7ac88fba3013c93cf4e220b1aad6c/crates/config/src/providers/ext.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Dependency remapping and library config assertions",
+            "url": "https://github.com/foundry-rs/foundry/blob/50d75f19dbd7ac88fba3013c93cf4e220b1aad6c/crates/config/src/providers/remappings.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Nested library linking uses dependency config",
+            "url": "https://github.com/foundry-rs/foundry/blob/50d75f19dbd7ac88fba3013c93cf4e220b1aad6c/crates/forge/src/workspace.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "External project config preserves dependency remappings",
+            "url": "https://github.com/foundry-rs/foundry/blob/50d75f19dbd7ac88fba3013c93cf4e220b1aad6c/crates/forge/tests/cli/config.rs"
+          }
+        ],
+        "nextQuestions": [
+          "构建回执能否分别列出顶层配置、依赖配置、profile和最终remapping，并比较环境变化是否越过了归属边界？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-audio-received-scheduled-played-coordinates",
+      "domain": "ai",
+      "topic": "model_inference",
+      "title": "专题：语音已经收到，为什么还不能当作用户已经听到？",
+      "whatHappened": "AI SDK 7.0.182修复插话截断的item身份与偏移。专题沿固定播放队列和回归样例，区分网络到达、排程时间、客户端播放时钟，以及尚未核实的设备可闻与供应商确认。",
+      "mechanism": "队列可以同时持有前导音和回答。一个截断坐标必须由同一item的身份、已排程样本偏移和当前块播放位置共同计算；整段从空闲转播放以来的时间会混入前一个item或断粮空档。输出毫秒还须限制在该item已排程音频的末尾。",
+      "workedExample": "回归先排1.5秒前导音及回答，时钟到13.957秒时，answer内坐标应为12.457秒。另一回归让同一answer先播放1秒、停到1.2秒再补一块；时钟1.7秒对应item内1500毫秒，而非1700毫秒。24kHz下24013个样本约1000.54毫秒，末尾截断被限制为1000毫秒，避免四舍五入超长。",
+      "whyItMatters": "多模态Agent回放与中断处理需要证据的坐标系一致。研究推断：收到完整回答不等于它已被播放，客户端播放完成也不是人类理解的证据；界面进度、模型上下文裁剪和完成回执应分别记录。",
+      "risksAndLimits": [
+        "这些是固定源码与模拟断言，不是本项目实测。源码使用AudioContext时钟和排程记录，不测扬声器输出、设备路由、用户注意力或理解。",
+        "截断事件发出后，供应商是否接受、后续上下文是否一致，仍需真实协议回执验证；本期未连接模型、调用TTS或采集麦克风。",
+        "本期聚焦回合式WebSocket播放，不把结论推广成连续PCM、所有传输或所有语音Agent的实现。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "vercel/ai ai@7.0.182",
+          "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.182",
+          "publishedAt": "2026-11-25T21:19:49.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "vercel/ai PR25508",
+          "url": "https://github.com/vercel/ai/pull/25508"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Scheduled audio chunks and playback position",
+          "url": "https://github.com/vercel/ai/blob/7dc49985c58ae25456aa1f23c28f2f891266629f/packages/ai/src/realtime/browser-realtime-audio.ts"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Legacy speech interruption uses playback coordinates",
+          "url": "https://github.com/vercel/ai/blob/7dc49985c58ae25456aa1f23c28f2f891266629f/packages/ai/src/realtime/realtime-session.ts"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Queued items underrun and rounding regression assertions",
+          "url": "https://github.com/vercel/ai/blob/7dc49985c58ae25456aa1f23c28f2f891266629f/packages/ai/src/realtime/realtime-client-runtime.test.ts"
+        }
+      ],
+      "nextQuestions": [
+        "能否把每次插话回执绑定原始item、排程样本范围、客户端播放位置与供应商确认，再单独标明哪些用户感知状态仍未知？"
+      ],
+      "basedOnBriefId": "ai-sdk-realtime-playing-item-truncation"
+    },
+    "sourceUrls": [
+      "https://github.com/vercel/ai/releases/tag/ai%407.0.182",
+      "https://github.com/vercel/ai/pull/25508",
+      "https://github.com/vercel/ai/blob/7dc49985c58ae25456aa1f23c28f2f891266629f/packages/ai/src/realtime/browser-realtime-audio.ts",
+      "https://github.com/vercel/ai/blob/7dc49985c58ae25456aa1f23c28f2f891266629f/packages/ai/src/realtime/realtime-session.ts",
+      "https://github.com/vercel/ai/blob/7dc49985c58ae25456aa1f23c28f2f891266629f/packages/ai/src/realtime/realtime-client-runtime.test.ts",
+      "https://github.com/pydantic/pydantic-ai/releases/tag/v2.75.0",
+      "https://github.com/pydantic/pydantic-ai/pull/14457",
+      "https://github.com/pydantic/pydantic-ai/blob/ffbcf3ec5fbf4cf2044ebb7366e3554c82e27a5f/pydantic_ai_slim/pydantic_ai/_capability_parts.py",
+      "https://github.com/pydantic/pydantic-ai/blob/ffbcf3ec5fbf4cf2044ebb7366e3554c82e27a5f/pydantic_ai_slim/pydantic_ai/messages.py",
+      "https://github.com/pydantic/pydantic-ai/blob/ffbcf3ec5fbf4cf2044ebb7366e3554c82e27a5f/tests/test_lowered_instructions.py",
+      "https://github.com/pydantic/pydantic-ai/blob/ffbcf3ec5fbf4cf2044ebb7366e3554c82e27a5f/docs/capabilities/custom.md",
+      "https://github.com/pydantic/pydantic-ai/blob/ffbcf3ec5fbf4cf2044ebb7366e3554c82e27a5f/docs/capabilities/mcp.md",
+      "https://github.com/MetaMask/core/releases/tag/v1457.0.0",
+      "https://github.com/MetaMask/core/pull/11762",
+      "https://github.com/MetaMask/core/blob/0767f7e7a57b473816f901d5bc62905c4fd04299/packages/advanced-chart-core/src/core/bootstrap.ts",
+      "https://github.com/MetaMask/core/blob/0767f7e7a57b473816f901d5bc62905c4fd04299/packages/advanced-chart-core/src/widget/ohlcvIngestion.ts",
+      "https://github.com/MetaMask/core/blob/0767f7e7a57b473816f901d5bc62905c4fd04299/packages/advanced-chart-core/src/core/__tests__/bootstrap.initialWindow.test.ts",
+      "https://github.com/MetaMask/core/blob/0767f7e7a57b473816f901d5bc62905c4fd04299/packages/advanced-chart-core/src/widget/__tests__/ohlcvIngestion.test.ts",
+      "https://github.com/foundry-rs/foundry/releases/tag/nightly-50d75f19dbd7ac88fba3013c93cf4e220b1aad6c",
+      "https://github.com/foundry-rs/foundry/pull/18686",
+      "https://github.com/foundry-rs/foundry/blob/50d75f19dbd7ac88fba3013c93cf4e220b1aad6c/crates/config/src/lib.rs",
+      "https://github.com/foundry-rs/foundry/blob/50d75f19dbd7ac88fba3013c93cf4e220b1aad6c/crates/config/src/providers/ext.rs",
+      "https://github.com/foundry-rs/foundry/blob/50d75f19dbd7ac88fba3013c93cf4e220b1aad6c/crates/config/src/providers/remappings.rs",
+      "https://github.com/foundry-rs/foundry/blob/50d75f19dbd7ac88fba3013c93cf4e220b1aad6c/crates/forge/src/workspace.rs",
+      "https://github.com/foundry-rs/foundry/blob/50d75f19dbd7ac88fba3013c93cf4e220b1aad6c/crates/forge/tests/cli/config.rs"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-11-26-1e10a8b62ecf1bde",
+    "asOf": "2026-11-25T21:33:32.787Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
   {
     "date": "2026-11-16",
     "slug": "2026-11-16",
@@ -3981,293 +4388,6 @@ export const latestRadars: DailyRadar[] = [
     "marketSignals": [],
     "snapshotId": "learning-2026-11-11-3323ecfb854f3355",
     "asOf": "2026-11-10T21:38:26.706Z",
-    "origin": "research",
-    "publicationState": "published"
-  },
-  {
-    "date": "2026-11-09",
-    "slug": "2026-11-09",
-    "title": "学习雷达 · 2026-11-09",
-    "summary": "AI看遥测跨层前的URL净化与当前模型预算；Web3看HTTP批次配置归属与对象资金执行期失败。补读尚未覆盖的固定发布快照，保留原日期；专题核对观察者接收数据的时点。",
-    "publish": true,
-    "reviewStatus": "automated",
-    "schemaVersion": 2,
-    "editionMode": "daily",
-    "researchedAt": "2026-11-08T21:37:39.755Z",
-    "generatedAt": "2026-11-08T21:37:39.755Z",
-    "sourceSections": [
-      "ai",
-      "web3",
-      "deepDive"
-    ],
-    "missingSections": [],
-    "briefs": [
-      {
-        "id": "ai-sdk-telemetry-url-boundary",
-        "domain": "ai",
-        "topic": "safety",
-        "title": "AI SDK 7.0.165：遥测拿到模型结果之前，先缩减请求 URL",
-        "whatHappened": "AI SDK于11月7日（UTC）发布7.0.165：generateText与streamText此前虽已缩减公开结果URL，遥测integration和tracing subscriber仍可能更早看到原始端点。",
-        "mechanism": "provider回调返回前复制结果并净化request.url：HTTP(S)仅留origin，无效或非HTTP(S)地址省略url。用户信息、路径、query、fragment被去掉；body等元数据保留，原provider对象不变。",
-        "workedExample": "上游mock在两个观察者接收时即时复制request，检查URL净化及原对象未变。本期只读断言，未运行模型或本地复现。",
-        "whyItMatters": "最终输出不能覆盖更早的观察者；应逐接收者核对字段与脱敏时点。",
-        "risksAndLimits": [
-          "仅修两条文本生成路径的URL元数据，不保证headers、body、业务日志或WorkflowAgent安全。",
-          "origin仍暴露主机与端口；本期未验证生产部署或过去数据的撤回。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "AI SDK release",
-            "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-            "publishedAt": "2026-11-07T19:27:48.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR24708",
-            "url": "https://github.com/vercel/ai/pull/24708"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "generateText boundary",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/generate-text.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "URL sanitizer",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/get-request-origin.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "Immediate tracing tests",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts"
-          }
-        ],
-        "nextQuestions": [
-          "接收者的字段范围与脱敏时点如何分别核验？"
-        ]
-      },
-      {
-        "id": "ai-deepagents-selected-model-budget",
-        "domain": "ai",
-        "topic": "infrastructure",
-        "title": "deepagents-code 0.2.5：压缩输入预算跟随当前选定模型",
-        "whatHappened": "0.2.5于11月5日（UTC）发布，修复切换模型仍按启动模型判断压缩的问题，与已刊摘要截点修复不同。",
-        "mechanism": "同步/异步用临时请求核算选定模型与运行期settings的预算；交给handler前恢复原model/settings，让下游中间件继续真正选择模型。",
-        "workedExample": "上游mock矩阵：启动128K转32K，26K输入加8K输出预留需压缩，改2K则不压缩；还检查下游与原请求。本期只读，未运行模型/测试。",
-        "whyItMatters": "切换模型也改变预算；预算准备和最终执行要分开核验，保留下游配置。",
-        "risksAndLimits": [
-          "数字是上游合成断言，不是本期实测窗口、精确token数或延迟收益；provider限制仍需另验。",
-          "预算依据主模型，摘要生成可另选模型；不证明摘要完整或会话恢复正确。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "deepagents-code release",
-            "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5",
-            "publishedAt": "2026-11-05T21:41:43.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR7545",
-            "url": "https://github.com/langchain-ai/deepagents/pull/7545"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Budget request code",
-            "url": "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/deepagents_code/offload_middleware.py"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "Budget matrix tests",
-            "url": "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/tests/unit_tests/test_compact_tool.py"
-          }
-        ],
-        "nextQuestions": [
-          "预算来自当前配置，最终模型选择是否仍走原流程？"
-        ]
-      },
-      {
-        "id": "web3-viem-http-batch-factory-identity",
-        "domain": "web3",
-        "topic": "onchain_infrastructure",
-        "title": "viem 2.57.17：同一 RPC URL，不再把不同 transport 的批次混用",
-        "whatHappened": "viem于11月8日（UTC）发布2.57.17，修复同URL下独立HTTP工厂合批时混用鉴权头与fetch配置的问题。",
-        "mechanism": "调度键组合稳定工厂batchId、实际URL和AbortSignal身份。ID位于initializer外，fallback重初始化同工厂仍合批；独立工厂保留各自RPC配置。",
-        "workedExample": "上游本地鉴权A/B返回1和10，覆盖直接/fallback分离、同工厂共享与URL/signal分离。本期只读，未连RPC或发交易。",
-        "whyItMatters": "相同地址不等于同一调用者；批处理仍需保持鉴权配置和响应归属。",
-        "risksAndLimits": [
-          "这是工厂批次隔离，不是租户认证、链ID校验或WebSocket订阅路由；1和10为本地测试值。",
-          "相同配置的独立工厂也不自动合批；共享需复用工厂并审查配置，不表示写请求可安全重试。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "viem release",
-            "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.17",
-            "publishedAt": "2026-11-08T18:04:10.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR5389",
-            "url": "https://github.com/wevm/viem/pull/5389"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "HTTP factory code",
-            "url": "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "HTTP batch tests",
-            "url": "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.test.ts"
-          }
-        ],
-        "nextQuestions": [
-          "哪些客户端应共享工厂，如何核验配置归属？"
-        ]
-      },
-      {
-        "id": "web3-sui-object-funds-execution-abort",
-        "domain": "web3",
-        "topic": "protocol",
-        "title": "Sui mainnet 1.83.1：对象资金不足，在执行期间形成 Move abort",
-        "whatHappened": "Sui于11月4日（UTC）发布mainnet1.83.1，其protocol140配置让对象资金不足在执行期abort，替代旧检查/重执行。PR于10月20日合入，非当天首创。",
-        "mechanism": "版本化设计先看交易内owner/type余额；不足时按所需accumulator版本读取已结算余额、扣除同commit未结算提款。仍不足则abort；地址调度独立。",
-        "workedExample": "文档中dry-run/孤立replay缺少同commit未结算视图，可能成功而提交执行不足失败。本期只读配置/设计，未运行节点、模拟、回放或资金操作。",
-        "whyItMatters": "模拟成功不能代替执行回执；应区分状态视图、失败阶段与错误类型。",
-        "risksAndLimits": [
-          "对象虚拟余额不足形成Move abort；地址资金执行前调度仍可返回InsufficientFundsForWithdraw。",
-          "文档说明已执行失败可正常收gas；未验证真实主网部署、账户余额或资金安全，孤立replay差异另项追踪。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "Sui mainnet release",
-            "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1",
-            "publishedAt": "2026-11-04T20:01:16.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR28290",
-            "url": "https://github.com/MystenLabs/sui/pull/28290"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Protocol140 config",
-            "url": "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-protocol-config/src/lib.rs"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_design",
-            "name": "Object funds design",
-            "url": "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-core/src/accumulators/design_docs/object_funds_in_execution.md"
-          }
-        ],
-        "nextQuestions": [
-          "三种视图的版本、扣减及对象/地址错误如何分别识别？"
-        ]
-      }
-    ],
-    "deepDive": {
-      "id": "deep-telemetry-observer-sanitization-order",
-      "domain": "ai",
-      "topic": "safety",
-      "title": "专题：最终结果已脱敏，为什么中途观察者仍可能看到原值",
-      "whatHappened": "7.0.165把URL净化前移至provider回调返回前；遥测integration/tracing不再早于公开API看到这一路径的原始request.url。",
-      "mechanism": "只在外层净化时，包装器await execute()后会先见原request。现在生成/流式启动先返回净化元数据，再入遥测；实际请求端点不变。",
-      "workedExample": "上游在integration/asyncEnd即时复制request，避免结束后只查可变引用；还冻结并检查原对象。本期只读，未运行模型或复现。",
-      "whyItMatters": "编辑推论：跨观察边界前处理并逐接收者留证，最终输出只证明自身。",
-      "risksAndLimits": [
-        "未审查全部sink、WorkflowAgent或业务日志；保留的body/其他元数据仍可能有敏感内容，URL净化不是全量隐私保证。",
-        "代码断言不证明已部署、已清理历史遥测或撤回已发送数据。"
-      ],
-      "sources": [
-        {
-          "tier": "tier1",
-          "role": "event",
-          "kind": "official_release",
-          "name": "AI SDK release",
-          "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-          "publishedAt": "2026-11-07T19:27:48.000Z"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_code",
-          "name": "streamText boundary",
-          "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/stream-language-model-call.ts"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_test",
-          "name": "Immediate tracing tests",
-          "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts"
-        }
-      ],
-      "nextQuestions": [
-        "即时接收的字段、处理时点与保留规则是否有证据？"
-      ],
-      "basedOnBriefId": "ai-sdk-telemetry-url-boundary"
-    },
-    "sourceUrls": [
-      "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-      "https://github.com/vercel/ai/pull/24708",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/generate-text.ts",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/get-request-origin.ts",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts",
-      "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5",
-      "https://github.com/langchain-ai/deepagents/pull/7545",
-      "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/deepagents_code/offload_middleware.py",
-      "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/tests/unit_tests/test_compact_tool.py",
-      "https://github.com/wevm/viem/releases/tag/viem%402.57.17",
-      "https://github.com/wevm/viem/pull/5389",
-      "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.ts",
-      "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.test.ts",
-      "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1",
-      "https://github.com/MystenLabs/sui/pull/28290",
-      "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-protocol-config/src/lib.rs",
-      "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-core/src/accumulators/design_docs/object_funds_in_execution.md",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/stream-language-model-call.ts"
-    ],
-    "relatedProjectSlugs": [],
-    "marketSignals": [],
-    "snapshotId": "learning-2026-11-09-bd83a5cc7fff3983",
-    "asOf": "2026-11-08T21:37:39.755Z",
     "origin": "research",
     "publicationState": "published"
   }
