@@ -32,6 +32,22 @@ export function useResume() {
   function pauseMedia() {
     dialogBody.value?.querySelectorAll<HTMLMediaElement>('video,audio').forEach(element => element.pause())
   }
+  // The résumé home is blue on white unless the visitor chose a theme;
+  // the owner asked for 蓝白 rather than following a dark system setting.
+  let defaultedLight = false
+  function storedTheme(): string | null {
+    try { return localStorage.getItem('xiuqiu-theme') } catch { return null }
+  }
+  function applyResumeDefaultTheme() {
+    const root = document.documentElement
+    if (storedTheme()) return
+    if (!root.dataset.theme) root.dataset.theme = 'light'
+    defaultedLight = root.dataset.theme === 'light'
+  }
+  function releaseResumeDefaultTheme() {
+    const root = document.documentElement
+    if (defaultedLight && root.dataset.theme === 'light' && !storedTheme()) root.removeAttribute('data-theme')
+  }
   function updateThemeState() {
     dark.value = document.documentElement.dataset.theme === 'dark'
       || (!document.documentElement.dataset.theme && Boolean(media?.matches))
@@ -145,6 +161,7 @@ export function useResume() {
   watch(selectedId, syncDialog)
   onMounted(() => {
     setSeoMeta({ ...resumeSeo, path: '/' })
+    applyResumeDefaultTheme()
     updateThemeState()
     media?.addEventListener('change', updateThemeState)
     window.addEventListener('xiuqiu-theme-change', updateThemeState)
@@ -160,6 +177,7 @@ export function useResume() {
     document.body.removeAttribute('data-resume-modal')
     media?.removeEventListener('change', updateThemeState)
     window.removeEventListener('xiuqiu-theme-change', updateThemeState)
+    releaseResumeDefaultTheme()
     window.removeEventListener('keydown', onSearchShortcut)
   })
   return { projects, query, includeHistory, category, visibleProjects, activeProject, activeIndex, dialog, dialogBody, closeButton, searchInput, detailState, noteHtml, copyLabel, copied, dark, toggleTheme, setCategory, resetSearch, openProject, closeProject, onDialogClose, loadDetail, stepProject, onDialogKey, onBackdropClick, copyLink }
