@@ -2,6 +2,7 @@ import records from './records.json'
 import { featuredProjectIds, formatFeaturedPosition, type ResumeProject } from './presentation'
 
 export const projects: ResumeProject[] = records
+export { githubProfileUrl } from '../../../shared/site'
 export { filterResumeProjects, normalizeCategory, projectIdFromHash, adjacentProjectId, resumeSeo, resumeExperience, miniExchangeDemo } from './presentation'
 
 type FeaturedVisual =
@@ -19,7 +20,7 @@ const featuredVisuals: Record<typeof featuredProjectIds[number], FeaturedVisual>
     label: 'mini-exchange / Agent 评测',
     headline: '用事件记录解释异常',
     steps: ['只读查询', '引用证据', '重复评测'],
-    caption: '两轮真实模型评测 · 练习盘回放',
+    caption: '两轮评测用构造场景，回答由真实模型生成。另有练习盘历史记录回放。',
   },
   steward: {
     src: '/resume/steward-final-daily.jpg',

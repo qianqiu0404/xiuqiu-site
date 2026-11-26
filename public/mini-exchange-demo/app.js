@@ -107,9 +107,9 @@
     card.append(facts([["平均工具调用", round.meanToolCalls + " 次"], [TEXT.cost, round.estimatedUSD]], "round-facts"));
     const review = round.review;
     const reviewed = review.state === "reviewed";
-    const note = el("div", "round-review",
-      el("p", "", reviewed ? `人工审读，其中 ${review.runsWithIssues} 次有问题` : TEXT.reviewNone));
-    if (reviewed) note.append(el("p", "muted", TEXT.reviewScope));
+    const note = el("div", "round-review", el("p", "", reviewed
+      ? `第二轮有 ${now.runs} 次诊断。保存的复核记录中，${review.runsWithIssues} 次被标出解释问题。`
+      : TEXT.reviewNone));
     card.append(note);
     return card;
   }
@@ -297,6 +297,7 @@
       panel("这段记录里发生了什么", list(TEXT.realStory)),
       panel("评测成绩", el("div", "score", el("strong", "score-rate", totals.rate),
         el("span", "score-count", `${totals.passed}/${totals.runs} 次通过`)),
+      el("p", "", `按旧规则，${totals.passed} 次通过。其中 ${totals.flagged} 次引用了本次没查到的事件编号。`),
       facts([["模型", view.model], ["思考强度", view.effort], ["评分版本", view.graderVersion], [TEXT.cost, totals.cost]], "real-score-facts usage"),
       el("p", "context-note", TEXT.realCaveat)),
       panel("题目与试验", el("table", "real-cases", el("tbody", "", ...view.cases.map(realCaseRow)))),
@@ -435,8 +436,7 @@
 
   function reviewPanel(review) {
     const text = { none: TEXT.reviewNone, clean: TEXT.reviewClean, issues: TEXT.reviewIssues }[review.state];
-    const card = panel("人工审读");
-    if (review.state !== "none") card.append(el("p", "context-note", TEXT.reviewScope));
+    const card = panel("解释复核");
     card.append(el("p", "", text));
     if (review.state === "issues") {
       card.append(el("ul", "issue-list", ...review.issues.map(({ type, quote }) =>

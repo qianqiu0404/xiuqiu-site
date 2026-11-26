@@ -1,7 +1,7 @@
 // Flattens published Learning Radar editions into a brief-level feed and
 // renders the public subscription outputs (RSS, JSON Feed, llms.txt).
 
-import { escapeXml, SITE_URL } from '../shared/site.ts'
+import { escapeXml, learningRadarCadence, SITE_URL } from '../shared/site.ts'
 
 export { SITE_URL }
 const SUMMARY_LIMIT = 120
@@ -84,7 +84,7 @@ export function buildRss(items) {
     <title>xiuqiu 学习雷达 · AI 与 Web3</title>
     <link>${SITE_URL}/radar</link>
     <atom:link href="${SITE_URL}/radar/rss.xml" rel="self" type="application/rss+xml" />
-    <description>每天 2 条 AI、2 条 Web3 工程简报：先讲机制，再给例子和边界。</description>
+    <description>${escapeXml(learningRadarCadence(items[0]?.date))}</description>
     <language>zh-CN</language>${lastBuild}
 ${entries.join('\n')}
   </channel>
@@ -116,7 +116,7 @@ export function buildLlmsTxt(items) {
   const recent = items.slice(0, 12).map(item => `- [${item.title}](${itemUrl(item)}) (${item.date}, ${item.domain}/${item.topic}): ${item.summary}`)
   return `# xiuqiu-site
 
-> Qiu Market、Wallet Infrastructure 学习方向与 AI Engineering 交付证据的公开入口。学习雷达每天整理 AI 与 Web3 工程简报。
+> Qiu Market、Wallet Infrastructure 学习方向与 AI Engineering 交付证据的公开入口。学习雷达${learningRadarCadence(items[0]?.date)}
 
 ## Learning Radar
 

@@ -2,7 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { radarIndex, createLatestRadarLoader, loadRadarBySlug, loadRadarFeed, radarFeedItemCount, radarWeeklies, radarReviews, getRadarReviewBoundary, getLearningBriefs, getSupportingRadarItems, isLearningEditionV2, radarSignalCountLabel, radarSourceStatus, radarTopicLabel, filterRadarFeed, groupRadarFeedByDate, countRadarFeedTopics, continuingRadarTopics, getRadarCollectionSeo, getSnapshotFreshness } from '../data'
-import type { RadarFeedItem, RadarFeedDomain, LatestRadarState } from '../data'
+import { learningRadarCadence, type RadarFeedItem, type RadarFeedDomain, type LatestRadarState } from '../data'
 import { setSeoMeta } from '../../../utils/seo'
 import '../../../design/brief.css'
 import '../../../design/reader.css'
@@ -135,11 +135,11 @@ onMounted(() =>
       <div class="brief-shell">
         <p class="brief-dateline">
           <span>学习雷达</span>
-          <span>每天 2 条 AI · 2 条 Web3 · 1 个专题</span>
+          <span>{{ learningRadarCadence(latestRadarIndex?.date) }}</span>
         </p>
         <div class="brief-masthead-row">
           <div>
-            <h1 id="radar-title">{{ latestFreshness.isArchive ? '从归档学懂 AI 与 Web3' : '每天学懂 AI 与 Web3' }}</h1>
+            <h1 id="radar-title">{{ latestFreshness.isArchive ? '从归档学懂 AI 与 Web3' : '学习 AI 与 Web3' }}</h1>
             <p class="brief-lede">先讲机制，再给例子和边界；每条都回到带发布时间的一手来源。</p>
           </div>
           <dl v-if="latestRadar" class="brief-stats">

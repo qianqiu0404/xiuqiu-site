@@ -1,8 +1,7 @@
-import { SITE_URL } from '../../shared/site'
+import { intelDescription, SITE_URL } from '../../shared/site'
 
 const DEFAULT_TITLE = 'xiuqiu｜AI 与 Web3 工程情报流'
-const DEFAULT_DESCRIPTION =
-  '每天 2 条 AI、2 条 Web3 工程简报和市场事件，按主题筛选、搜索与订阅；每条都回到一手来源。'
+const DEFAULT_DESCRIPTION = intelDescription
 
 interface SeoOptions {
   title?: string

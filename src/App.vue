@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { githubProfileUrl } from '../shared/site'
 
 const navOpen = ref(false)
 const navToggle = ref<HTMLButtonElement | null>(null)
@@ -327,7 +328,7 @@ onBeforeUnmount(() => {
         <router-link to="/articles">工程笔记</router-link>
         <router-link to="/engineering/failures">失败手册</router-link>
         <router-link to="/now">关于 / Now</router-link>
-        <a href="https://github.com/qianqiu0404" target="_blank" rel="noopener">GitHub</a>
+        <a :href="githubProfileUrl" target="_blank" rel="noopener">GitHub</a>
       </nav>
     </div>
   </footer>

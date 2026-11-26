@@ -97,7 +97,7 @@ onMounted(() => setSeoMeta({ ...profileSeo, path: '/profile' }))
           <div class="collection-copy">
             <p>如果你也对 AI、Web3 或把想法做成作品感兴趣，欢迎从公开代码和记录开始认识。</p>
             <div class="collection-footer">
-              <a class="collection-link" :href="githubProfileUrl" target="_blank" rel="noopener">GitHub · qianqiu0404 ↗<span class="brief-sr-only">（新窗口打开）</span></a>
+              <a class="collection-link" :href="githubProfileUrl" target="_blank" rel="noopener">GitHub ↗<span class="brief-sr-only">（新窗口打开）</span></a>
               <a class="collection-link" :href="githubRepositoriesUrl" target="_blank" rel="noopener">公开仓库 ↗<span class="brief-sr-only">（新窗口打开）</span></a>
               <router-link class="collection-link" to="/articles">工程与学习笔记 →</router-link>
               <router-link class="collection-link" to="/now">目前在做什么 →</router-link>

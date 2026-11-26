@@ -138,6 +138,7 @@ test('search context survives detail links, expanded archives and encoded keywor
 
 test('return destinations reject external and non-list paths without changing the reader', async () => {
   const { readingReturnLink, readIntelQuery } = await import('../src/data/readingNavigationPresentation.ts')
+  assert.deepEqual(readingReturnLink(undefined), { href: '/intel', label: '返回情报流' })
   for (const value of ['https://evil.example', '//evil.example', '/\\evil.example', '/ai', '/research?id=x', 'javascript:alert(1)', ['/?q=MCP']]) {
     assert.equal(readingReturnLink(value).href, '/intel', String(value))
   }

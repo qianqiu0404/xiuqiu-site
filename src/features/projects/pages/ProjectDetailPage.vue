@@ -48,7 +48,7 @@ watchEffect(() => {
   >
     <header class="brief-masthead">
       <div class="brief-shell">
-        <router-link class="brief-back product-back-link" to="/">← 情报流</router-link>
+        <router-link class="brief-back product-back-link" to="/intel">返回情报流</router-link>
         <p class="brief-dateline">
           <span>{{ presentation.index }} / {{ presentation.label }}</span>
           <span>{{ projectPublicRoleLabels[project.publicRole] }}</span>

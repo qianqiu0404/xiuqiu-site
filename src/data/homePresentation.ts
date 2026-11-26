@@ -1,3 +1,5 @@
+import { githubProfileUrl } from '../../shared/site.ts'
+
 export interface HomeCapability {
   id: string
   title: string
@@ -53,8 +55,8 @@ export interface HomeAiProofContext {
 }
 
 export const walletLabUrl = 'https://wallet-reliability-lab.vercel.app'
-export const githubProfileUrl = 'https://github.com/qianqiu0404'
-export const githubRepositoriesUrl = 'https://github.com/qianqiu0404?tab=repositories'
+export { githubProfileUrl }
+export const githubRepositoriesUrl = `${githubProfileUrl}?tab=repositories`
 export const homeSeo = {
   title: 'xiuqiu｜Qiu Market、Wallet Infrastructure 与 AI Engineering',
   description:

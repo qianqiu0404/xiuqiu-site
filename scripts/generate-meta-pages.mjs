@@ -17,7 +17,7 @@ import { deliveryRecords } from '../src/data/generatedDeliveries.ts'
 import { nowSnapshot } from '../src/data/generatedNow.ts'
 import { allMarketRadars } from '../src/data/generatedMarketRadarAll.ts'
 import { getRadarCollectionSeo } from '../src/data/snapshotFreshness.ts'
-import { escapeHtml, SITE_URL } from '../shared/site.ts'
+import { escapeHtml, githubProfileUrl, SITE_URL } from '../shared/site.ts'
 
 const distIndexUrl = new URL('../dist/index.html', import.meta.url)
 
@@ -115,7 +115,7 @@ writeFileSync(distIndexUrl, replaceMeta(baseHtml, {
   structuredData: {
     '@context': 'https://schema.org', '@type': 'ProfilePage', name: resumeSeo.title,
     url: `${SITE_URL}/`,
-    mainEntity: { '@type': 'Person', name: 'xiuqiu / Qiu', url: `${SITE_URL}/`, sameAs: ['https://github.com/xoqiu09', 'https://x.com/Xiuqiu2211'] },
+    mainEntity: { '@type': 'Person', name: 'xiuqiu / Qiu', url: `${SITE_URL}/`, sameAs: [githubProfileUrl, 'https://x.com/Xiuqiu2211'] },
   },
 }))
 writePage('/intel', replaceMeta(baseHtml, { ...intelHomeSeo, path: '/intel' }))
@@ -143,7 +143,7 @@ writePage(
         '@type': 'Person',
         name: 'xiuqiu',
         url: `${SITE_URL}/profile`,
-        sameAs: ['https://github.com/qianqiu0404'],
+        sameAs: [githubProfileUrl],
       },
     },
   }),

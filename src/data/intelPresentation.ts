@@ -3,11 +3,12 @@ import { radarTopicLabel } from './radarPresentation.ts'
 import { getSnapshotFreshness } from './snapshotFreshness.ts'
 import { researchCardLabel, researchTopicLabel } from './sharedResearchPresentation.ts'
 import { sourceDisplayLabel } from './sourcePresentation.ts'
+import { intelDescription } from '../../shared/site.ts'
 
 // Home page SEO; index.html carries the same values for the static document.
 export const intelHomeSeo = {
   title: 'xiuqiu｜AI 与 Web3 工程情报流',
-  description: '每天 2 条 AI、2 条 Web3 工程简报和市场事件，按主题筛选、搜索与订阅；每条都回到一手来源。',
+  description: intelDescription,
 } as const
 
 export type IntelFilter = 'all' | 'ai' | 'web3' | 'market' | 'research' | 'grok' | 'chatgpt'

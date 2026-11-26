@@ -1,6 +1,6 @@
 # xiuqiu-site
 
-> Qiu Market、Wallet Infrastructure 学习方向与 AI Engineering 交付证据的公开入口。学习雷达每天整理 AI 与 Web3 工程简报。
+> Qiu Market、Wallet Infrastructure 学习方向与 AI Engineering 交付证据的公开入口。学习雷达每期含 2 条 AI、2 条 Web3 和 1 个专题。最近公开一期为 2026-11-16。
 
 ## Learning Radar
 

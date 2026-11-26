@@ -76,7 +76,7 @@ onMounted(() => setSeoMeta({ ...homeSeo, path: '/about' }))
         <section class="brief-panel">
           <h2>公开代码与记录</h2>
           <p class="collection-panel-copy">项目页面连接实现、学习笔记和工程证据。状态以各条记录标注的日期与验证范围为准。</p>
-          <a class="collection-link" :href="githubProfileUrl" target="_blank" rel="noopener">GitHub · qianqiu0404 ↗</a>
+          <a class="collection-link" :href="githubProfileUrl" target="_blank" rel="noopener">GitHub ↗</a>
           <a class="collection-link" :href="githubRepositoriesUrl" target="_blank" rel="noopener">浏览公开仓库 ↗</a>
           <router-link class="collection-link" to="/engineering/failures">失败与恢复记录 →</router-link>
         </section>
