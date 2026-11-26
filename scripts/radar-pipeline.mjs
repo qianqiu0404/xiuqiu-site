@@ -85,11 +85,22 @@ export function validateRadarCandidate(candidate, source) {
   return { ...parsed, candidateUrls }
 }
 
+function containsLocalAbsolutePath(value) {
+  if (typeof value === 'string') return ABSOLUTE_PATH_RE.test(value)
+  if (Array.isArray(value)) return value.some(containsLocalAbsolutePath)
+  if (value && typeof value === 'object') {
+    return Object.entries(value).some(([key, child]) =>
+      ABSOLUTE_PATH_RE.test(key) || containsLocalAbsolutePath(child),
+    )
+  }
+  return false
+}
+
 export function assertPublicRadarContent(candidate) {
   const serialized = JSON.stringify(candidate)
   const errors = []
   try { assertResearchPublication(candidate, 'learning radar') } catch (error) { errors.push(error instanceof Error ? error.message : String(error)) }
-  if (ABSOLUTE_PATH_RE.test(serialized)) errors.push('Output contains a local absolute path.')
+  if (containsLocalAbsolutePath(candidate)) errors.push('Output contains a local absolute path.')
   if (SECRET_RE.test(serialized)) errors.push('Output may contain credentials or secret material.')
   PRIVATE_TERMS.forEach(term => { if (serialized.toLowerCase().includes(term.toLowerCase())) errors.push(`Output contains private term: ${term}`) })
   if (candidate?.schemaVersion === 2) {

@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict'
 import test from 'node:test'
+import { readFileSync } from 'node:fs'
 import './radar-entry-modules.test.mjs'
-import { parseDailyResearchSource, validateRadarCandidate } from './radar-pipeline.mjs'
+import { assertPublicRadarContent, parseDailyResearchSource, validateRadarCandidate } from './radar-pipeline.mjs'
+import { parseMarkdownFrontmatter } from './frontmatter.mjs'
 
 const sourceUrls = {
   crypto: 'https://github.com/ethereum/go-ethereum',
@@ -61,4 +63,67 @@ test('malformed and placeholder source URLs stop publishing', () => {
 
 test('date slug makes same-day publishing idempotent', () => {
   assert.throws(() => validateRadarCandidate({ ...base, slug: 'another-copy' }, source), /slug must equal date/)
+})
+
+function readPublishedLearningEdition() {
+  const source = new URL('../content/radar/2026-11-16.md', import.meta.url)
+  return parseMarkdownFrontmatter(readFileSync(source, 'utf8'), source.pathname).meta
+}
+
+test('the published November 16 learning edition passes the publication safety check unchanged', () => {
+  assert.doesNotThrow(() => assertPublicRadarContent(readPublishedLearningEdition()))
+})
+
+test('quoted fields and separate path fragments do not become local paths during safety checks', () => {
+  const candidate = {
+    ...base,
+    metadata: {
+      'chainId:"1"': [
+        'nonce:"0"',
+        { example: 'chainId:"1", nonce:"0"' },
+        ['/Us', 'ers/example'],
+        ['C:', 'relative-component'],
+      ],
+    },
+  }
+  assert.doesNotThrow(() => assertPublicRadarContent(candidate))
+})
+
+test('local paths in nested arrays, values and object keys still stop publication', () => {
+  const paths = [
+    '/Users/example/report.md',
+    '/home/example/report.md',
+    String.raw`C:\Research\report.md`,
+    String.raw`D:\Research\report.md`,
+    'iCloud~md~obsidian',
+  ]
+  for (const path of paths) {
+    const valueCandidate = { ...base, metadata: [{ nested: ['safe', { value: path }] }] }
+    const keyCandidate = { ...base, metadata: [{ nested: { [path]: 'safe' } }] }
+    assert.throws(() => assertPublicRadarContent(valueCandidate), /local absolute path/, path)
+    assert.throws(() => assertPublicRadarContent(keyCandidate), /local absolute path/, path)
+  }
+})
+
+test('credential, private text, source URL, schema and publication checks remain independent', () => {
+  assert.throws(
+    () => assertPublicRadarContent({ ...base, metadata: [{ text: 'api_key=synthetic-value' }] }),
+    /credentials or secret material/,
+  )
+  assert.throws(
+    () => assertPublicRadarContent({ ...base, metadata: [{ text: '求职计划' }] }),
+    /private term/,
+  )
+  assert.throws(
+    () => assertPublicRadarContent({ ...base, sourceUrls: ['https://'] }),
+    /sourceUrls\[0\]/,
+  )
+  assert.throws(
+    () => assertPublicRadarContent({ ...readPublishedLearningEdition(), briefs: [] }),
+    /briefs/,
+  )
+  assert.throws(
+    () => assertPublicRadarContent({ ...base, summary: '[Preview QA]' }),
+    /Preview or QA fixture/,
+  )
 })
