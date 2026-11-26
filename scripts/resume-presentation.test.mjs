@@ -1,16 +1,18 @@
 import test, { before } from 'node:test'
 import assert from 'node:assert/strict'
 import { isUtf8 } from 'node:buffer'
-import { readFileSync, readdirSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { isIP } from 'node:net'
 import { join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { createContext, runInContext } from 'node:vm'
 import { parse, NodeTypes } from '@vue/compiler-dom'
 import { renderToString } from '@vue/server-renderer'
 import vue from '@vitejs/plugin-vue'
 import { createServer } from 'vite'
 import { createSSRApp, h } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
+import { agreementView, compareReports, filterCases, LABEL_NAMES } from '../public/answer-check-demo/model.js'
 import {
   adjacentProjectId, filterResumeProjects, normalizeCategory, projectIdFromHash,
 } from '../src/features/resume/presentation.ts'
@@ -20,8 +22,12 @@ const publicDir = new URL('../public/', import.meta.url)
 const records = JSON.parse(readFileSync(new URL('records.json', resumeDir)))
 const demoHref = '/mini-exchange-demo/index.html'
 const demoDataPrefix = 'window.DEMO_DATA = JSON.parse('
+const answerCheckDir = new URL('answer-check-demo/', publicDir)
+const answerCheckBundle = JSON.parse(readFileSync(new URL('data/bundle.json', answerCheckDir), 'utf8'))
 let page
 let notes
+let router
+let onDialogKey
 
 before(async () => {
   const server = await createServer({
@@ -34,11 +40,17 @@ before(async () => {
   })
   try {
     const { default: ResumePage } = await server.ssrLoadModule('/src/features/resume/pages/ResumePage.vue')
-    const router = createRouter({
+    const { useResume } = await server.ssrLoadModule('/src/features/resume/useResume.ts')
+    router = createRouter({
       history: createMemoryHistory(),
       routes: [{ path: '/', component: ResumePage, alias: ['/intel', '/radar', '/articles'] }],
     })
-    const app = createSSRApp({ render: () => h(ResumePage) }).use(router)
+    const app = createSSRApp({
+      setup() {
+        onDialogKey = useResume().onDialogKey
+        return () => h(ResumePage)
+      },
+    }).use(router)
     await router.push('/')
     page = parse(await renderToString(app), { parseMode: 'html' })
 
@@ -120,6 +132,57 @@ function parseDemoData(source) {
   const script = source.trimEnd()
   assert.ok(script.startsWith(demoDataPrefix) && script.endsWith(');'), 'Invalid demo data.js wrapper')
   return JSON.parse(JSON.parse(script.slice(demoDataPrefix.length, -2)))
+}
+
+// Minimal document for running the bundled demo scripts without a browser dependency.
+class DemoNode {
+  children = []
+  dataset = {}
+  attributes = new Map()
+
+  constructor(tag, value) {
+    this.tag = tag
+    this.value = value
+  }
+
+  get textContent() {
+    return this.value ?? this.children.map(child => child.textContent).join(' ')
+  }
+
+  set textContent(value) { this.value = value }
+  setAttribute(name, value) { this.attributes.set(name, value) }
+  append(...children) { this.children.push(...children) }
+  replaceChildren(...children) { this.children = children }
+  addEventListener() {}
+
+  descendants() {
+    return this.children.flatMap(child => [child, ...child.descendants()])
+  }
+
+  querySelector(tag) {
+    return this.descendants().find(node => node.tag === tag)
+  }
+}
+
+function renderDemoRoute(hash) {
+  const dir = new URL('mini-exchange-demo/', publicDir)
+  const html = parse(readFileSync(new URL('index.html', dir), 'utf8'), { parseMode: 'html' })
+  const app = new DemoNode('main')
+  const entry = { app, banner: new DemoNode('p'), skip: new DemoNode('a') }
+  const context = createContext({
+    Node: DemoNode,
+    window: { location: { hash }, addEventListener() {} },
+    document: {
+      getElementById: id => entry[id],
+      createElement: tag => new DemoNode(tag),
+      createTextNode: value => new DemoNode('#text', value),
+    },
+  })
+  for (const script of elements(html, node => node.tag === 'script')) {
+    const src = attribute(script, 'src')
+    runInContext(readFileSync(new URL(src, dir), 'utf8'), context, { filename: src })
+  }
+  return app
 }
 
 function assertDemoFiles(files) {
@@ -207,6 +270,56 @@ test('detail navigation wraps in the same order as the complete catalog', () => 
   assert.equal(adjacentProjectId([], '', 1), '')
 })
 
+test('rendered reading routes expose the section and topics as headings', () => {
+  const tracks = elements(page, withClass('tracks'))[0]
+  assert.ok(tracks)
+  assert.deepEqual(
+    elements(tracks, node => /^h[1-6]$/.test(node.tag)).map(node => [node.tag, text(node, true)]),
+    [
+      ['h2', '一条主线'],
+      ['h3', '1回答有依据'],
+      ['h3', '2出了问题查得出'],
+      ['h3', '3用量管得住'],
+      ['h3', '4进展看得见'],
+      ['h2', '另外两个方向'],
+      ['h3', '交易与资金链路'],
+      ['h3', '工具与创作'],
+    ],
+  )
+})
+
+test('map arrow keys leave scrolling to the browser and preserve the current project', async t => {
+  // The handler can navigate through openProject, which checks the DOM element type.
+  if (typeof HTMLElement === 'undefined') {
+    globalThis.HTMLElement = class {}
+    t.after(() => { delete globalThis.HTMLElement })
+  }
+  await router.push('/#project/wildheart')
+  const replace = t.mock.method(router, 'replace')
+  const map = elements(parse(notes.wildheart, { parseMode: 'html' }), withClass('km-scroll'))[0]
+  assert.equal(attribute(map, 'tabindex'), '0')
+  const mapTarget = {
+    closest: selectors => selectors.split(',').some(selector =>
+      selector.startsWith('.') && withClass(selector.slice(1))(map)) ? map : null,
+  }
+  for (const key of ['ArrowRight', 'ArrowLeft']) {
+    const event = new Event('keydown', { cancelable: true })
+    Object.defineProperties(event, { key: { value: key }, target: { value: mapTarget } })
+    onDialogKey(event)
+    assert.equal(event.defaultPrevented, false, key + ' should be available for scrolling')
+  }
+  assert.equal(replace.mock.callCount(), 0)
+  assert.equal(router.currentRoute.value.hash, '#project/wildheart')
+
+  const next = new Event('keydown', { cancelable: true })
+  Object.defineProperties(next, { key: { value: 'ArrowRight' }, target: { value: { closest: () => null } } })
+  onDialogKey(next)
+  assert.equal(next.defaultPrevented, true)
+  assert.equal(replace.mock.callCount(), 1)
+  await replace.mock.calls[0].result
+  assert.equal(router.currentRoute.value.hash, '#project/research')
+})
+
 test('resume features eight catalog entries in the approved order', () => {
   const cards = featuredCards()
   assert.deepEqual(cards.map(card => attribute(featuredTitleButton(card), 'data-open')), [
@@ -230,13 +343,17 @@ test('hero and tracks tell one storyline: four facets in order, each opening its
   const facets = elements(mainline, withClass('track')).map(facet => ({
     title: text(elements(facet, withClass('track-head'))[0]),
     opens: elements(facet, node => node.tag === 'button').map(button => attribute(button, 'data-open')),
+    links: elements(facet, node => node.tag === 'a').map(link => [attribute(link, 'href'), text(link)]),
   }))
   assert.deepEqual(facets, [
-    { title: '1回答有依据', opens: ['saas'] },
-    { title: '2出了问题查得出', opens: ['miniexchange'] },
-    { title: '3用量管得住', opens: ['qai'] },
-    { title: '4进展看得见', opens: ['steward', 'xiaomao'] },
+    { title: '1回答有依据', opens: ['saas'], links: [['/answer-check-demo/index.html', '客服回答质检演示个人项目']] },
+    { title: '2出了问题查得出', opens: ['miniexchange'], links: [] },
+    { title: '3用量管得住', opens: ['qai'], links: [] },
+    { title: '4进展看得见', opens: ['steward', 'xiaomao'], links: [] },
   ])
+  for (const facet of facets) {
+    for (const [href] of facet.links) assert.ok(existsSync(new URL(`.${href}`, publicDir)), `missing ${href}`)
+  }
   const ids = new Set(records.map(record => record.id))
   const others = elements(tracks, withClass('other-grid'))[0]
   for (const button of elements(tracks, node => node.tag === 'button')) assert.ok(ids.has(attribute(button, 'data-open')), attribute(button, 'data-open'))
@@ -283,6 +400,28 @@ test('diagnosis detail links to the bundled demo', () => {
   assertDemoFiles(readFiles(new URL('./mini-exchange-demo/', publicDir)))
 })
 
+test('real case run 3 links include the question and retain their record destinations', () => {
+  const app = renderDemoRoute('#/real')
+  assert.equal(app.querySelector('h1').textContent, '实战案例')
+  const nodes = app.descendants()
+  const byId = new Map(nodes.filter(node => node.id).map(node => [node.id, node]))
+  const cases = [
+    ['#/real/real-order-ok/3', /订单.*第 3 次.*通过.*没有问题/],
+    ['#/real/real-funds-ok/3', /余额.*第 3 次.*通过.*没有问题/],
+  ]
+  for (const [href, expectedName] of cases) {
+    const links = nodes.filter(node => node.tag === 'a' && node.href === href)
+    assert.equal(links.length, 1, href)
+    const [link] = links
+    const references = link.attributes.get('aria-labelledby')
+    // These links use plain text and ID references, including a reference to the link itself.
+    const name = references
+      ? references.split(/\s+/).map(id => byId.get(id)?.textContent ?? '').join(' ')
+      : link.textContent
+    assert.match(name, expectedName, href)
+  }
+})
+
 test('demo link check rejects a fixture with docs.js removed', () => {
   const fixture = readFiles(new URL('./mini-exchange-demo/', publicDir))
   assert.ok(fixture.delete('docs.js'))
@@ -298,6 +437,247 @@ test('demo replay check rejects a replay missing only from data.js', () => {
   delete data.runs[file]
   fixture.set('data.js', `${demoDataPrefix}${JSON.stringify(JSON.stringify(data))});\n`)
   assert.throws(() => assertDemoFiles(fixture), { message: `Missing bundled demo replay: ${file}` })
+})
+
+test('answer-check demo passes the public-file privacy checks', () => {
+  assertPublicPrivacy(readFiles(answerCheckDir))
+})
+
+test('answer-check agreement totals and rates match the paired verdicts', () => {
+  for (const [bot, { report, labels, agree }] of Object.entries(answerCheckBundle.bots)) {
+    const labelVerdicts = new Map(labels.map(({ case_id, verdict }) => [case_id, verdict]))
+    const pairs = report.cases.map(({ case_id, verdict }) => [verdict, labelVerdicts.get(case_id)])
+    const bothFail = pairs.filter(([checker, label]) => checker === 'fail' && label === 'fail').length
+    const checkerFailures = pairs.filter(([checker]) => checker === 'fail').length
+    const labelFailures = pairs.filter(([, label]) => label === 'fail').length
+    assert.deepEqual(agree.confusion, {
+      both_fail: bothFail,
+      checker_only_fail: checkerFailures - bothFail,
+      labels_only_fail: labelFailures - bothFail,
+      both_pass: pairs.filter(([checker, label]) => checker === 'pass' && label === 'pass').length,
+    }, `${bot} agreement counts`)
+    const rate = failures => failures === 0 ? null : Number((bothFail / failures).toFixed(3))
+    assert.equal(agree.precision, rate(checkerFailures), `${bot} precision`)
+    assert.equal(agree.recall, rate(labelFailures), `${bot} recall`)
+  }
+})
+
+test('answer-check bundle totals match both saved report summaries', () => {
+  const { cases, bots } = answerCheckBundle
+  const caseIds = cases.map(item => item.id).sort()
+  assert.equal(caseIds.length, 40)
+  assert.equal(new Set(caseIds).size, caseIds.length)
+  assert.deepEqual(Object.keys(bots).sort(), ['careful', 'naive'])
+
+  for (const [bot, { answers, report, labels }] of Object.entries(bots)) {
+    for (const rows of [answers, report.cases, labels]) {
+      assert.deepEqual(rows.map(row => row.case_id).sort(), caseIds, bot)
+    }
+    assert.equal(report.summary.total, cases.length, bot)
+    const passes = report.cases.filter(row => row.verdict === 'pass').length
+    const failures = report.cases.filter(row => row.verdict === 'fail').length
+    assert.equal(report.summary.pass, passes, bot)
+    assert.equal(report.summary.fail, failures, bot)
+    assert.equal(passes + failures, report.summary.total, bot)
+    assert.deepEqual(Object.keys(report.summary.by_reason).sort(), Object.keys(LABEL_NAMES).sort(), bot)
+    const reasonCodes = report.cases.flatMap(row => row.reasons.map(reason => reason.label))
+    for (const [code, count] of Object.entries(report.summary.by_reason)) {
+      assert.equal(reasonCodes.filter(reason => reason === code).length, count, `${bot}: ${code}`)
+    }
+  }
+
+  assert.deepEqual(compareReports(bots.naive.report, bots.careful.report), { improved: 13, regressed: 0 })
+})
+
+test('answer-check model names all seven labels in Chinese', () => {
+  assert.deepEqual(LABEL_NAMES, {
+    WRONG_FACT: '事实不对',
+    NO_CITATION: '没给出处',
+    BAD_CITATION: '出处不支持',
+    MISSED_HANDOFF: '该转人工没转',
+    NEEDLESS_HANDOFF: '不该转人工却转了',
+    OVERPROMISE: '乱承诺',
+    PRIVACY_LEAK: '泄露隐私',
+  })
+})
+
+test('answer-check disagreement filter returns exactly the cases with different reasons', () => {
+  for (const [bot, { report, labels }] of Object.entries(answerCheckBundle.bots)) {
+    const expected = report.cases.filter(row => {
+      const checkerCodes = row.reasons.map(reason => reason.label).sort()
+      const labelCodes = [...labels.find(label => label.case_id === row.case_id).reasons].sort()
+      return checkerCodes.join(',') !== labelCodes.join(',')
+    }).map(row => row.case_id)
+
+    const filtered = filterCases(answerCheckBundle, { bot, disagreementsOnly: true })
+    assert.deepEqual(filtered.map(item => item.id), expected, bot)
+    assert.deepEqual(agreementView(answerCheckBundle, bot).reasonCases.map(item => item.id), expected, bot)
+  }
+})
+
+test('answer-check page has one h1 and accessible labels for all four filters', () => {
+  const html = parse(readFileSync(new URL('index.html', answerCheckDir), 'utf8'), { parseMode: 'html' })
+  const headings = elements(html, node => node.tag === 'h1')
+  assert.equal(headings.length, 1)
+  assert.equal(text(headings[0]), '客服回答质检演示')
+  const controls = elements(html, node => ['input', 'select', 'textarea', 'button'].includes(node.tag))
+  assert.equal(controls.length, 4)
+  const labels = elements(html, node => node.tag === 'label')
+  for (const control of controls) {
+    const id = attribute(control, 'id')
+    assert.ok(id, 'Missing control ID')
+    assert.equal(elements(html, node => attribute(node, 'id') === id).length, 1, id)
+    assert.ok(labels.some(label => attribute(label, 'for') === id && text(label)), `Missing label: ${id}`)
+  }
+  const [count] = elements(html, node => attribute(node, 'id') === 'result-count')
+  assert.equal(attribute(count, 'aria-live'), 'polite')
+})
+
+// Run the shipped app against its HTML without adding a browser dependency to test:home.
+class DemoElement extends EventTarget {
+  children = []
+
+  constructor(tag, parent = null) {
+    super()
+    this.tag = tag
+    this.parentElement = parent
+  }
+
+  append(...children) {
+    for (const child of children) {
+      if (child instanceof DemoElement) child.parentElement = this
+      this.children.push(child)
+    }
+  }
+
+  replaceChildren(...children) {
+    this.children = []
+    this.append(...children)
+  }
+
+  add(option) {
+    this.append(option)
+  }
+
+  get textContent() {
+    return this.children.map(child => child instanceof DemoElement ? child.textContent : child).join('')
+  }
+
+  set textContent(value) {
+    this.replaceChildren(String(value))
+  }
+}
+
+function demoDocument(html) {
+  const ids = new Map()
+  function mount(element, parent) {
+    const node = new DemoElement(element.tag, parent)
+    const id = attribute(element, 'id')
+    if (id) ids.set(id, node)
+    const hasAttribute = name => element.props.some(prop => prop.type === NodeTypes.ATTRIBUTE && prop.name === name)
+    node.disabled = hasAttribute('disabled')
+    node.hidden = hasAttribute('hidden')
+    node.inert = hasAttribute('inert')
+    node.ariaHidden = attribute(element, 'aria-hidden')
+    node.tabIndex = Number(attribute(element, 'tabindex') ?? 0)
+    node.checked = hasAttribute('checked')
+    if (node.tag === 'select') node.value = attribute(element.children.find(child => child.tag === 'option'), 'value')
+    for (const child of element.children) {
+      if (child.type === NodeTypes.ELEMENT) node.append(mount(child, node))
+      if (child.type === NodeTypes.TEXT) node.append(child.content)
+    }
+    return node
+  }
+  for (const element of html.children.filter(child => child.type === NodeTypes.ELEMENT)) mount(element)
+  return { getElementById: id => ids.get(id), createElement: tag => new DemoElement(tag) }
+}
+
+function demoAncestors(node) {
+  const ancestors = []
+  for (let current = node; current; current = current.parentElement) ancestors.push(current)
+  return ancestors
+}
+
+function changeDemoFilter(control, property, value) {
+  control[property] = value
+  const event = new Event('change', { bubbles: true })
+  Object.defineProperty(event, 'target', { value: control })
+  for (const node of demoAncestors(control)) node.dispatchEvent(event)
+}
+
+test('answer-check page renders report scores and responds to the disagreement control', async t => {
+  const html = parse(readFileSync(new URL('index.html', answerCheckDir), 'utf8'), { parseMode: 'html' })
+  const document = demoDocument(html)
+  class DemoOption extends DemoElement {
+    constructor(name, value) {
+      super('option')
+      this.textContent = name
+      this.value = value
+    }
+  }
+  for (const [name, value] of Object.entries({ document, Node: DemoElement, Option: DemoOption })) {
+    const previous = Object.getOwnPropertyDescriptor(globalThis, name)
+    t.after(() => {
+      if (previous) Object.defineProperty(globalThis, name, previous)
+      else delete globalThis[name]
+    })
+    Object.defineProperty(globalThis, name, { value, configurable: true, writable: true })
+  }
+  t.mock.method(globalThis, 'fetch', async () => ({ ok: true, json: async () => answerCheckBundle }))
+
+  await import(new URL('app.js', answerCheckDir))
+  await new Promise(resolve => setImmediate(resolve))
+
+  const byId = document.getElementById
+  const bot = byId('bot')
+  const disagreements = byId('disagreements')
+  const result = byId('result-count')
+  const exposed = node => demoAncestors(node).every(element => !element.hidden && !element.inert && element.ariaHidden !== 'true')
+
+  await t.test('the two result cards show the corresponding report pass counts', () => {
+    const cards = byId('scores').children
+    assert.equal(cards.length, 2)
+    const scores = Object.fromEntries(cards.map(card => {
+      const name = card.children.find(child => child.tag === 'h3').textContent
+      const score = card.children.find(child => child.className === 'score')
+      return [name, Number(score.children.find(child => child.tag === 'strong').textContent)]
+    }))
+    assert.deepEqual(scores, Object.fromEntries(Object.entries(answerCheckBundle.bots)
+      .map(([name, { report }]) => [name, report.summary.pass])))
+  })
+
+  await t.test('all four filters are operable once loaded and the live count is exposed', () => {
+    for (const id of ['bot', 'verdict', 'category', 'disagreements']) {
+      const control = byId(id)
+      assert.ok(exposed(control) && control.tabIndex >= 0 &&
+        demoAncestors(control).every(element => !element.disabled), `${id} must be usable after loading`)
+    }
+    assert.ok(exposed(result), 'The live result count must be exposed to assistive technology')
+  })
+
+  await t.test('checking and unchecking changes the listed cases and live count for each bot', () => {
+    const allIds = answerCheckBundle.cases.map(({ id }) => id)
+    function assertCases(botName, ids) {
+      const listed = byId('cases').children.filter(node => node.tag === 'details')
+      assert.equal(listed.length, ids.length, botName)
+      assert.deepEqual(listed.map(node => node.children.find(child => child.tag === 'summary').textContent.split('，', 1)[0]), ids)
+      const count = `${botName}：找到 ${ids.length} 道题。`
+      assert.equal(result.textContent, ids.length ? count : `${count}没有符合筛选条件的题目。`)
+    }
+
+    assertCases('naive', allIds)
+    changeDemoFilter(disagreements, 'checked', true)
+    assertCases('naive', ['c26', 'c33', 'c40'])
+    changeDemoFilter(disagreements, 'checked', false)
+    assertCases('naive', allIds)
+
+    changeDemoFilter(bot, 'value', 'careful')
+    assertCases('careful', allIds)
+    changeDemoFilter(disagreements, 'checked', true)
+    assertCases('careful', [])
+    changeDemoFilter(disagreements, 'checked', false)
+    assertCases('careful', allIds)
+  })
 })
 
 test('QAI featured card identifies team ownership, responsibility and delivery', () => {

@@ -25,8 +25,8 @@ body[data-resume-modal]{overflow:hidden}.resume-page dialog{width:min(790px,calc
 .resume-page .track-head b{display:grid;place-content:center;width:26px;height:26px;border-radius:50%;background:var(--resume-primary);color:var(--resume-on-primary);font:600 12px var(--font-mono)}
 .resume-page .track-desc{font-size:12px;color:var(--resume-ink-muted);margin-top:8px;line-height:1.8}
 .resume-page .track-chips{list-style:none;padding:0;margin:14px 0 0;display:flex;flex-wrap:wrap;gap:6px;margin-top:auto;padding-top:14px}
-.resume-page .track-chips button{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:var(--touch-target);padding:6px 10px;border:1px solid var(--resume-line);border-radius:4px;background:var(--resume-bg);font-size:12px;color:var(--resume-ink);text-align:left}
-.resume-page .track-chips button:hover{border-color:var(--resume-accent);color:var(--resume-accent)}
+.resume-page .track-chips button,.resume-page .track-chips a{display:inline-flex;flex-wrap:wrap;align-items:center;gap:6px;min-height:var(--touch-target);padding:6px 10px;border:1px solid var(--resume-line);border-radius:4px;background:var(--resume-bg);font-size:12px;color:var(--resume-ink);text-align:left}
+.resume-page .track-chips button:hover,.resume-page .track-chips a:hover{border-color:var(--resume-accent);color:var(--resume-accent)}
 .resume-page .track-chips em{font-style:normal;font-size:9px;padding:1px 5px;border-radius:999px;background:var(--resume-highlight);color:var(--resume-on-highlight)}
 .resume-page .selected-section{padding-top:30px}
 .resume-page .card-meta{align-items:center}.resume-page .card-meta>div{display:flex;align-items:center;gap:10px;min-width:0;flex-wrap:wrap}
@@ -191,6 +191,7 @@ body[data-resume-modal]{overflow:hidden}.resume-page dialog{width:min(790px,calc
 .resume-page .tracks-heading > p:last-child,
 .resume-page .track-desc,
 .resume-page .track-chips button,
+.resume-page .track-chips a,
 .resume-page .track-chips em,
 .resume-page .kind,
 .resume-page .kind-legend::before,

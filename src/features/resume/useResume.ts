@@ -130,7 +130,7 @@ export function useResume() {
   }
   function onDialogKey(event: KeyboardEvent) {
     if (event.altKey || event.ctrlKey || event.metaKey || event.shiftKey) return
-    if ((event.target as Element)?.closest('input,textarea,video,audio,select,[contenteditable]')) return
+    if ((event.target as Element)?.closest('input,textarea,video,audio,select,[contenteditable],.km-scroll')) return
     if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
       event.preventDefault()
       stepProject(event.key === 'ArrowLeft' ? -1 : 1)
