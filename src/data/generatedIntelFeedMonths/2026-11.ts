@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-11-27:ecb-october-loan-growth-revised-vintage-sector-divergence-2026-11-26",
+    "kind": "market",
+    "date": "2026-11-27",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "ECB十月贷款：企业同比加快，整体私人部门放缓",
+    "summary": "研究推断：企业贷款同比变化可能先对应银行贷款规模及借款人融资结构，再影响利息收入、融资成本与信用风险的分析；仍须核对利率、期限和企业用途。企业分项加快与整体私人部门放缓并存，不能据此认定所有部门融资需求改善或资产价格方向。",
+    "href": "/market-radar/2026-11-27#ecb-october-loan-growth-revised-vintage-sector-divergence-2026-11-26",
+    "source": {
+      "name": "European Central Bank — Monetary developments in the euro area: October 2026",
+      "url": "https://www.ecb.europa.eu/press/stats/md/html/ecb.md2610~4bad1d63b5.en.html"
+    },
+    "flags": {
+      "priority": "P2"
+    }
+  },
+  {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
     "date": "2026-11-16",
