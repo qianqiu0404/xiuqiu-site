@@ -210,7 +210,7 @@ test('detail navigation wraps in the same order as the complete catalog', () => 
 test('resume features eight catalog entries in the approved order', () => {
   const cards = featuredCards()
   assert.deepEqual(cards.map(card => attribute(featuredTitleButton(card), 'data-open')), [
-    'saas', 'miniexchange', 'steward', 'qai', 'xiaomao', 'qiumarket', 'wildheart', 'qiwu',
+    'saas', 'miniexchange', 'qai', 'steward', 'xiaomao', 'qiumarket', 'wildheart', 'qiwu',
   ])
   assert.deepEqual(cards.map(card => {
     const [meta] = elements(card, withClass('card-meta'))
@@ -218,6 +218,29 @@ test('resume features eight catalog entries in the approved order', () => {
   }), [
     '01 / 08', '02 / 08', '03 / 08', '04 / 08', '05 / 08', '06 / 08', '07 / 08', '08 / 08',
   ])
+})
+
+test('hero and tracks tell one storyline: four facets in order, each opening its projects', () => {
+  const [hero] = elements(page, withClass('hero'))
+  assert.equal(text(elements(hero, node => node.tag === 'h2')[0]), '让 AI Agent 在真实业务里靠得住。')
+  assert.equal(text(elements(hero, withClass('intro'))[0]), '回答有依据，出了问题查得出，用量管得住，进展看得见。')
+  const [tracks] = elements(page, withClass('tracks'))
+  assert.equal(text(elements(tracks, node => attribute(node, 'id') === 'tracks-title')[0]), '一条主线')
+  const [mainline] = elements(tracks, withClass('mainline-grid'))
+  const facets = elements(mainline, withClass('track')).map(facet => ({
+    title: text(elements(facet, withClass('track-head'))[0]),
+    opens: elements(facet, node => node.tag === 'button').map(button => attribute(button, 'data-open')),
+  }))
+  assert.deepEqual(facets, [
+    { title: '1回答有依据', opens: ['saas'] },
+    { title: '2出了问题查得出', opens: ['miniexchange'] },
+    { title: '3用量管得住', opens: ['qai'] },
+    { title: '4进展看得见', opens: ['steward', 'xiaomao'] },
+  ])
+  const ids = new Set(records.map(record => record.id))
+  const others = elements(tracks, withClass('other-grid'))[0]
+  for (const button of elements(tracks, node => node.tag === 'button')) assert.ok(ids.has(attribute(button, 'data-open')), attribute(button, 'data-open'))
+  assert.deepEqual(elements(others, withClass('track-head')).map(head => text(head)), ['A交易与资金链路', 'B工具与创作'])
 })
 
 test('work history lists Tianjin GenHash and only its three résumé entries', () => {

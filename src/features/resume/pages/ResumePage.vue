@@ -28,8 +28,8 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 <h1>xiuqiu<span aria-hidden="true">/ Qiu</span>
 </h1>
 <p class="role">AI 应用工程师 · Agent / AI 自动化</p>
-<h2>写系统，也做工具。<br>把好奇心，变成可以体验的作品。</h2>
-<p class="intro">从企业客服 Agent、Agent 评测，到多 Agent 进展台和交易系统。</p>
+<h2>让 AI Agent 在真实业务里靠得住。</h2>
+<p class="intro">回答有依据，出了问题查得出，用量管得住，进展看得见。</p>
 <dl class="hero-facts">
 <div>
 <dt>经历</dt>
@@ -73,38 +73,69 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 </section>
 <section class="wrap tracks" aria-labelledby="tracks-title">
 <div class="tracks-heading">
-<p class="eyebrow" id="tracks-title">三条阅读路线</p>
-<p>按你关心的方向，直接打开对应作品。</p>
+<p class="eyebrow" id="tracks-title">一条主线</p>
+<p>我做的事，是让 AI Agent 在真实业务里靠得住。下面四件作品各管一环。</p>
 </div>
-<div class="track-grid">
+<div class="track-grid mainline-grid">
 <article class="track">
 <p class="track-head">
-<b>A</b>
-<span>AI 应用 · Agent</span>
+<b>1</b>
+<span>回答有依据</span>
 </p>
-<p class="track-desc">企业客服、只读诊断与评测、模型用量和多 Agent 协作。</p>
+<p class="track-desc">按租户和知识库限定检索范围，校验引用来自已绑定的资料，发送前检查泄露风险。</p>
 <ul class="track-chips">
 <li>
-<button type="button" data-open="saas" @click="openProject('saas', $event)">Agent SaaS · 企业客服 Agent<em>团队参与</em>
-</button>
-</li>
-<li>
-<button type="button" data-open="miniexchange" @click="openProject('miniexchange', $event)">mini-exchange</button>
-</li>
-<li>
-<button type="button" data-open="qai" @click="openProject('qai', $event)">QAI</button>
-</li>
-<li>
-<button type="button" data-open="xiaomao" @click="openProject('xiaomao', $event)">小猫 Agent</button>
-</li>
-<li>
-<button type="button" data-open="steward" @click="openProject('steward', $event)">Session Steward</button>
+<button type="button" data-open="saas" @click="openProject('saas', $event)">Agent SaaS · 企业客服 Agent<em>团队参与</em></button>
 </li>
 </ul>
 </article>
 <article class="track">
 <p class="track-head">
-<b>B</b>
+<b>2</b>
+<span>出了问题查得出</span>
+</p>
+<p class="track-desc">只读诊断 Agent 引用事件编号解释“为什么没成交、钱为什么冻着”，再用重复评测检验它答得对不对。</p>
+<ul class="track-chips">
+<li>
+<button type="button" data-open="miniexchange" @click="openProject('miniexchange', $event)">mini-exchange</button>
+</li>
+</ul>
+</article>
+<article class="track">
+<p class="track-head">
+<b>3</b>
+<span>用量管得住</span>
+</p>
+<p class="track-desc">每位同事一把独立 Key，按人限额、计量，每次调用都能追查。</p>
+<ul class="track-chips">
+<li>
+<button type="button" data-open="qai" @click="openProject('qai', $event)">QAI</button>
+</li>
+</ul>
+</article>
+<article class="track">
+<p class="track-head">
+<b>4</b>
+<span>进展看得见</span>
+</p>
+<p class="track-desc">把多个 Agent 会话和每天的代码变化，整理成人一眼能看懂的进展和白话晚报。</p>
+<ul class="track-chips">
+<li>
+<button type="button" data-open="steward" @click="openProject('steward', $event)">Session Steward</button>
+</li>
+<li>
+<button type="button" data-open="xiaomao" @click="openProject('xiaomao', $event)">小猫 Agent</button>
+</li>
+</ul>
+</article>
+</div>
+<div class="tracks-heading other-heading">
+<p class="eyebrow" id="other-tracks-title">另外两个方向</p>
+</div>
+<div class="track-grid other-grid">
+<article class="track">
+<p class="track-head">
+<b>A</b>
 <span>交易与资金链路</span>
 </p>
 <p class="track-desc">多源行情、钱包充提、账本一致性和异常恢复。</p>
@@ -125,7 +156,7 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 </article>
 <article class="track">
 <p class="track-head">
-<b>C</b>
+<b>B</b>
 <span>工具与创作</span>
 </p>
 <p class="track-desc">研究情报、内容制作、知识整理与互动影像。</p>

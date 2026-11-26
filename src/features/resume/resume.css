@@ -246,3 +246,10 @@ body[data-resume-modal]{overflow:hidden}.resume-page dialog{width:min(790px,calc
 @media (max-width: 600px) {
   .resume-page .selected-grid { grid-template-columns: minmax(0,1fr); }
 }
+
+/* ===== 一条主线（11-27）：四环一行，另外两个方向两列 ===== */
+.resume-page .mainline-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+.resume-page .other-heading{margin-top:22px}
+.resume-page .other-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(max-width:1000px){.resume-page .mainline-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.resume-page .other-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:560px){.resume-page .mainline-grid{grid-template-columns:minmax(0,1fr)}}

@@ -15,11 +15,11 @@ export interface ResumeProject {
 
 export const resumeSeo = {
   title: 'xiuqiu · AI 应用工程师｜简历与作品集',
-  description: 'xiuqiu 的 AI 应用工程师简历与作品集，涵盖企业客服 Agent、交易所只读诊断 Agent 与评测、多 Agent 进展台及团队模型中转站。',
+  description: 'xiuqiu 的 AI 应用工程师简历与作品集。主线是让 AI Agent 在真实业务里靠得住：企业客服 Agent、交易所只读诊断 Agent 与评测、团队模型中转站和多 Agent 进展台。',
 }
 
 export const featuredProjectIds = [
-  'saas', 'miniexchange', 'steward', 'qai', 'xiaomao', 'qiumarket', 'wildheart', 'qiwu',
+  'saas', 'miniexchange', 'qai', 'steward', 'xiaomao', 'qiumarket', 'wildheart', 'qiwu',
 ] as const
 
 export function formatFeaturedPosition(index: number): string {
