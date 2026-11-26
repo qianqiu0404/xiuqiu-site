@@ -5,6 +5,23 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "market:2026-11-26:fed-beigebook-contact-cutoff-price-pass-through-2026-11-25",
+    "kind": "market",
+    "date": "2026-11-26",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "褐皮书：地区定性反馈与全国增长、政策判断须分开",
+    "summary": "研究推断：若需求与成本转嫁线索得到同业企业披露支持，可能先改变销量、投入成本及利润率的研究假设，再影响对相关股票的估值分析。这只是待验证的传导路径；地区描述不能按数量直接加权成全国结论。",
+    "href": "/market-radar/2026-11-26#fed-beigebook-contact-cutoff-price-pass-through-2026-11-25",
+    "source": {
+      "name": "Federal Reserve — Beige Book, November 2026 National Summary",
+      "url": "https://www.federalreserve.gov/monetarypolicy/beigebook202611-summary.htm"
+    },
+    "flags": {
+      "priority": "P2"
+    }
+  },
+  {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
     "date": "2026-11-16",
