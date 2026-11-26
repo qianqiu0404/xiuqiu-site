@@ -12,6 +12,48 @@ export interface RadarIndexEntry { date: string; slug: string; snapshotId: strin
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-11-27",
+    "slug": "2026-11-27",
+    "snapshotId": "learning-2026-11-27-120d87c63c6a252c",
+    "asOf": "2026-11-26T21:36:53.599Z",
+    "title": "学习雷达 · 2026-11-27",
+    "summary": "本期为自动汇总，未经人工复核。部署更新的省略与替换、输入拒绝后的工具准入、网络自己的授权计费，以及交易回执的对象绑定。",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "briefs": [
+      {
+        "id": "ai-langgraph-deploy-empty-secrets-omission",
+        "domain": "ai",
+        "topic": "infrastructure",
+        "title": "LangGraph CLI 0.4.44：没有新的环境变量，更新请求就省略secrets字段"
+      },
+      {
+        "id": "ai-agents-input-tripwire-queued-tool-gate",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "Agents SDK 0.26：输入已经拒绝，排队工具不能等清理结束再启动"
+      },
+      {
+        "id": "web3-metamask-type4-node-intrinsic-gas",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "MetaMask交易控制器74.5.1：未签授权留在估算请求，由选定网络计固有gas"
+      },
+      {
+        "id": "web3-foundry-cast-requested-receipt-hash",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Foundry 1.10.1：同一区块的回执，也必须属于请求的那笔交易"
+      }
+    ],
+    "deepDive": {
+      "id": "deep-input-rejection-admission-cancellation-effects",
+      "title": "专题：检查仍在清理，为什么工具队列必须先看见拒绝？",
+      "basedOnBriefId": "ai-agents-input-tripwire-queued-tool-gate"
+    },
+    "marketSignals": []
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "snapshotId": "learning-2026-11-16-20147f94783c1b8e",
@@ -1992,6 +2034,345 @@ export const radarIndex: RadarIndexEntry[] = [
 ]
 
 export const latestRadars: DailyRadar[] = [
+  {
+    "date": "2026-11-27",
+    "slug": "2026-11-27",
+    "title": "学习雷达 · 2026-11-27",
+    "summary": "本期为自动汇总，未经人工复核。部署更新的省略与替换、输入拒绝后的工具准入、网络自己的授权计费，以及交易回执的对象绑定。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-11-26T21:36:53.599Z",
+    "generatedAt": "2026-11-26T21:36:53.599Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-langgraph-deploy-empty-secrets-omission",
+        "domain": "ai",
+        "topic": "infrastructure",
+        "title": "LangGraph CLI 0.4.44：没有新的环境变量，更新请求就省略secrets字段",
+        "whatHappened": "LangGraph于11月25日（UTC）发布CLI 0.4.44，收录11月20日合入的PR9737。更新部署时，若没有环境变量可发送，两个host backend更新入口不再发secrets空列表；创建部署的路径不变。",
+        "mechanism": "_secrets_to_replace只在列表非空时返回secrets字段，外部镜像与远程源码构建的PATCH均复用它。非空列表仍完整发送，表示替换；创建入口仍按是否为None决定传字段，允许显式空列表。PR说明控制面此前已把更新时的空列表视为保留，因此这次是让请求更准确表达意图。",
+        "workedExample": "固定客户端回归对镜像更新和远程构建传入secrets=[]，断言PATCH正文没有该键；远程构建传入一项时仍完整保留。命令回归同时覆盖本地构建、远程构建、--push-to和--image-uri四条更新路径。本期只读断言，没有部署Agent或调用控制面。",
+        "whyItMatters": "部署Agent时，没有提供新配置与要求清空配置是两种意图。研究推断：审查更新接口应直接核对发送的字段，而非把本地空集合自动解释为删除远端状态。",
+        "risksAndLimits": [
+          "PR明确说控制面此前已保持现值，不能把这次改动写成已修复线上密钥被清空的事故；发布后真实控制面验收在PR中仍未勾选。",
+          "非空列表仍是整组替换；更新传空列表现在不能表达清空全部变量。它不新增删除接口，也不证明变量内容正确、部署健康或访问权限安全。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "langgraph-cli==0.4.44",
+            "url": "https://github.com/langchain-ai/langgraph/releases/tag/cli%3D%3D0.4.44",
+            "publishedAt": "2026-11-25T20:52:34.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "fix(cli): omit an empty secrets list when updating a deployment",
+            "url": "https://github.com/langchain-ai/langgraph/pull/9737"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Host backend preserves omission versus replacement",
+            "url": "https://github.com/langchain-ai/langgraph/blob/3e3dbd42c5329dd404669ccd923c005c814bee3a/libs/cli/langgraph_cli/host_backend.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Host backend update request assertions",
+            "url": "https://github.com/langchain-ai/langgraph/blob/3e3dbd42c5329dd404669ccd923c005c814bee3a/libs/cli/tests/unit_tests/test_host_backend.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Local remote and external image deployment assertions",
+            "url": "https://github.com/langchain-ai/langgraph/blob/3e3dbd42c5329dd404669ccd923c005c814bee3a/libs/cli/tests/unit_tests/cli/test_deploy_command.py"
+          }
+        ],
+        "nextQuestions": [
+          "客户端能否分别记录保留、替换和显式删除的意图，并将它们与实际PATCH正文及控制面读回逐项对照？"
+        ]
+      },
+      {
+        "id": "ai-agents-input-tripwire-queued-tool-gate",
+        "domain": "ai",
+        "topic": "safety",
+        "title": "Agents SDK 0.26：输入已经拒绝，排队工具不能等清理结束再启动",
+        "whatHappened": "OpenAI Agents Python于11月24日（UTC）发布0.26.0，收录11月23日合入的PR6174。Runner选定输入guardrail拒绝后，立即把该状态发布到本次运行的工具门禁，避免同组检查尚在清理时，排队函数工具继续获得执行名额。",
+        "mechanism": "拒绝结果先写入Runner局部ContextVar，再取消可取消的已登记工具任务，随后等待兄弟guardrail清理。函数工具在填充并发名额、已完成任务处理后，以及真正调用前重新检查拒绝；取消过的任务被记录，避免重叠收尾再次打断清理。嵌套Agent先拒绝时，父运行也取消并等待未完成检查后传播该拒绝。",
+        "workedExample": "固定回归把函数工具并发设为1：active已开始，queued等待；拒绝返回后，兄弟guardrail故意停在清理，断言active已收到取消而queued仍未开始。放行分支则保留active、queued两项结果顺序。另一回归让工具校验器吞掉取消并返回allow，仍断言工具正文没有被调用。本期未运行上游测试或连接模型。",
+        "whyItMatters": "错误最终返回的时间，不等于执行准入被关闭的时间。Agent安全检查并行运行时，拒绝状态需要尽早到达队列和调用边界，不能依赖所有清理协程都已经退出。",
+        "risksAndLimits": [
+          "默认并行输入检查仍可能在给出拒绝前消耗token和执行工具；取消也不能撤回已经发生的外部副作用。官方文档建议需要先检查再执行时使用run_in_parallel=False。",
+          "这次实现针对函数工具执行批次及Runner门禁，不应推广成所有工具、远端任务或系统进程均可可靠撤销；主错误与较晚拒绝的优先级也有专门保留。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "v0.26.0",
+            "url": "https://github.com/openai/openai-agents-python/releases/tag/v0.26.0",
+            "publishedAt": "2026-11-24T03:15:47.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Stop queued function tools after input guardrail rejection",
+            "url": "https://github.com/openai/openai-agents-python/pull/6174"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Runner-local rejection scope and nested error propagation",
+            "url": "https://github.com/openai/openai-agents-python/blob/0ad2d63a9371a23333a95ea6878141a826c9cdda/src/agents/run.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Publish rejection before sibling guardrail cleanup",
+            "url": "https://github.com/openai/openai-agents-python/blob/0ad2d63a9371a23333a95ea6878141a826c9cdda/src/agents/run_internal/guardrails.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Function-tool admission invocation and cancel-once gates",
+            "url": "https://github.com/openai/openai-agents-python/blob/0ad2d63a9371a23333a95ea6878141a826c9cdda/src/agents/run_internal/tool_execution.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Queued-tool cancellation and swallowed-cancellation regressions",
+            "url": "https://github.com/openai/openai-agents-python/blob/0ad2d63a9371a23333a95ea6878141a826c9cdda/tests/test_input_guardrail_tool_cancellation.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Guardrail execution modes and side-effect boundaries",
+            "url": "https://github.com/openai/openai-agents-python/blob/0ad2d63a9371a23333a95ea6878141a826c9cdda/docs/guardrails.md"
+          }
+        ],
+        "nextQuestions": [
+          "日志能否分别证明拒绝被选定、排队准入关闭、活动调用收到取消、清理完成，以及外部副作用是否实际发生？"
+        ]
+      },
+      {
+        "id": "web3-metamask-type4-node-intrinsic-gas",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "MetaMask交易控制器74.5.1：未签授权留在估算请求，由选定网络计固有gas",
+        "whatHappened": "MetaMask Core于11月26日（UTC）发布v1460.0.0，transaction-controller升至74.5.1并收录同日PR11783。修复未使用Simulation API时，未签名的type-4授权在无EIP-2780网络上撤销或替换委托可能低于固有gas的问题。",
+        "mechanism": "节点回退请求保留未签授权的占位签名与sender委托state override，让所选网络按自身规则计授权固有成本，不再删除授权后统一补7816。已有委托时直接用节点估值；首次委托仍额外补35190。批次模拟失败且有逐项gas限额时，替换委托改补两种规则中较大的25000，首次升级仍补43006。",
+        "workedExample": "固定回归检查eth_estimateGas仍带type-4、accessList与补齐占位签名的授权，并通过state override指定执行委托。已委托账户有1或2项未签授权时，结果仅为模拟节点估值；批次回退的521000基数在替换时加25000，在首次升级时加43006。本期未连接RPC、签授权或广播交易。",
+        "whyItMatters": "钱包不能把一套分叉规则的常量当成所有网络的共同成本。研究推断：估算需要保留让节点计费的交易形状，同时把无法从占位签名表达的执行状态和额外费用分开。",
+        "risksAndLimits": [
+          "客户端仍没有分叉检测；首次委托在某些规则下会保守高估。PR也记录有公开端点忽略authorizationList，因此不能保证所有RPC实现都按此请求正确估算。",
+          "占位签名与state override用于估算，不是用户真实授权。Simulation API可用路径和全已签授权路径保持原逻辑；发行包存在不证明钱包客户端已升级或真实交易已成功。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "1460.0.0",
+            "url": "https://github.com/MetaMask/core/releases/tag/v1460.0.0",
+            "publishedAt": "2026-11-26T17:25:59.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "fix(transaction-controller): estimate type-4 authorization intrinsic gas on the selected network",
+            "url": "https://github.com/MetaMask/core/pull/11783"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Selected-network type-4 estimate and batch fallback",
+            "url": "https://github.com/MetaMask/core/blob/52228b879a0cf6a9d3b3cbb8a8669d3058e40542/packages/transaction-controller/src/utils/gas.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Placeholder authorization and batch intrinsic gas assertions",
+            "url": "https://github.com/MetaMask/core/blob/52228b879a0cf6a9d3b3cbb8a8669d3058e40542/packages/transaction-controller/src/utils/gas.test.ts"
+          }
+        ],
+        "nextQuestions": [
+          "估算回执能否绑定所选网络、完整请求形状、节点是否接受授权列表及最终已签交易，再比较估值与实际执行消耗？"
+        ]
+      },
+      {
+        "id": "web3-foundry-cast-requested-receipt-hash",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Foundry 1.10.1：同一区块的回执，也必须属于请求的那笔交易",
+        "whatHappened": "Foundry于11月26日（UTC）发布稳定版1.10.1，收录同日合入的PR18733。cast run在消费交易回执前增加transactionHash核对，避免RPC把同一区块另一笔交易的状态、gas或创建地址与目标交易的trace拼在一起。",
+        "mechanism": "ensure_requested_receipt把请求哈希与回执transaction_hash逐一比较，不符立即报错。检查覆盖debug_traceTransaction路径、普通本地重放取得的可选回执，以及Nitro逐笔读取gasUsedForL1的入口。普通重放中回执查询失败仍可跳过末尾核对，但返回错交易的回执不能被当成缺失。",
+        "workedExample": "固定CLI回归在同一个本地块中放两笔交易，由代理把第一笔回执请求替换成第二笔回执，断言普通run和--debug-trace-transaction都失败。Nitro回归则把更早交易的回执换成目标交易回执，断言读取更早交易gas信息时即拒绝。本期只读代码与断言，没有启动Anvil或重放链上交易。",
+        "whyItMatters": "区块位置相同，只证明两份材料处于同一容器，不能证明它们描述同一对象。研究推断：节点调试结果需要分别绑定请求、交易、回执与trace，才能避免把一笔交易的成功状态归给另一笔。",
+        "risksAndLimits": [
+          "哈希一致是必要的一致性检查，不能单独证明恶意RPC给出的全部字段真实、区块已最终确认或trace正确；它没有新增独立共识验证。",
+          "普通重放仍允许回执查询失败时继续，不能将本改动概括为所有模式都必须取得回执。稳定版还有其他兼容变化，本期仅研究PR18733，不重复昨天的依赖配置隔离。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "v1.10.1",
+            "url": "https://github.com/foundry-rs/foundry/releases/tag/v1.10.1",
+            "publishedAt": "2026-11-26T20:19:09.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "fix(cast): reject mismatched receipt in cast run",
+            "url": "https://github.com/foundry-rs/foundry/pull/18733"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Receipt hash check at replay debug-trace and Nitro reads",
+            "url": "https://github.com/foundry-rs/foundry/blob/7c15a1dd0ca75f2b4d6d7961ac55aacbe5cf6378/crates/cast/src/cmd/run.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Same-block receipt substitution regression assertions",
+            "url": "https://github.com/foundry-rs/foundry/blob/7c15a1dd0ca75f2b4d6d7961ac55aacbe5cf6378/crates/cast/tests/cli/run.rs"
+          }
+        ],
+        "nextQuestions": [
+          "调试工具能否把每次RPC请求哈希、回执哈希、区块标识和trace来源保留下来，并显式区分缺失、错配与已经核对？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-input-rejection-admission-cancellation-effects",
+      "domain": "ai",
+      "topic": "safety",
+      "title": "专题：检查仍在清理，为什么工具队列必须先看见拒绝？",
+      "whatHappened": "Agents SDK 0.26的PR6174把输入拒绝提前发布到函数工具门禁，修补拒绝已选定、兄弟检查仍在清理时的执行窗口。专题沿固定实现与模拟回归区分准入、活动调用和外部结果。",
+      "mechanism": "设active占用唯一执行名额、queued等待，另一个guardrail的清理尚未返回。若只等整组检查结束才传播错误，active释放名额时queued仍可能启动。固定代码先保存本次运行的拒绝，取消已登记任务，并在补名额和实际调用前再次检查；即使工具校验器捕获取消后返回allow，后面的独立拒绝检查仍阻止调用正文。",
+      "workedExample": "回归用事件把拒绝与清理人为分开：先等active开始，再返回拒绝，让兄弟guardrail停在finally；此时检查active_cancelled已置位、queued_started仍为空，最后释放清理并等待InputGuardrailTripwireTriggered。另一个模拟校验器吞掉CancelledError并返回allow，工具正文的invoked标记仍应为false。这些是上游固定断言，本期没有执行测试。",
+      "whyItMatters": "研究推断：拒绝选择、准入关闭、取消请求、清理完成和外部副作用属于不同状态。运行最终报错不能倒推前面的工具从未执行；任务收到取消也不能证明支付、消息或远端写入没有完成。证据应绑定本次Runner和具体调用，再由外部回执确认实际结果。",
+      "risksAndLimits": [
+        "并行输入检查的默认设计允许检查前的推测执行。对必须先批准才开始的动作，固定文档提供run_in_parallel=False，但工具自身的授权与外部幂等仍须另外验证。",
+        "asyncio取消是协作式信号；实现的重复取消保护与收尾逻辑不构成外部事务回滚。本专题不宣称修复可以撤回已发送请求或终止所有远端任务。",
+        "这些用ScriptedModel、事件和本地标记构造的断言，验证的是代码中可观测的顺序，不是本项目模型、生产延迟或第三方执行成功率。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "v0.26.0",
+          "url": "https://github.com/openai/openai-agents-python/releases/tag/v0.26.0",
+          "publishedAt": "2026-11-24T03:15:47.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "Stop queued function tools after input guardrail rejection",
+          "url": "https://github.com/openai/openai-agents-python/pull/6174"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Runner-local rejection scope and nested error propagation",
+          "url": "https://github.com/openai/openai-agents-python/blob/0ad2d63a9371a23333a95ea6878141a826c9cdda/src/agents/run.py"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Publish rejection before sibling guardrail cleanup",
+          "url": "https://github.com/openai/openai-agents-python/blob/0ad2d63a9371a23333a95ea6878141a826c9cdda/src/agents/run_internal/guardrails.py"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Function-tool admission invocation and cancel-once gates",
+          "url": "https://github.com/openai/openai-agents-python/blob/0ad2d63a9371a23333a95ea6878141a826c9cdda/src/agents/run_internal/tool_execution.py"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Queued-tool cancellation and swallowed-cancellation regressions",
+          "url": "https://github.com/openai/openai-agents-python/blob/0ad2d63a9371a23333a95ea6878141a826c9cdda/tests/test_input_guardrail_tool_cancellation.py"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Guardrail execution modes and side-effect boundaries",
+          "url": "https://github.com/openai/openai-agents-python/blob/0ad2d63a9371a23333a95ea6878141a826c9cdda/docs/guardrails.md"
+        }
+      ],
+      "nextQuestions": [
+        "能否用同一调用ID串起拒绝时间、最后一次准入检查、取消和清理回执，再单独记录远端已完成、未完成或未知，避免把运行报错写成无副作用？"
+      ],
+      "basedOnBriefId": "ai-agents-input-tripwire-queued-tool-gate"
+    },
+    "sourceUrls": [
+      "https://github.com/langchain-ai/langgraph/releases/tag/cli%3D%3D0.4.44",
+      "https://github.com/langchain-ai/langgraph/pull/9737",
+      "https://github.com/langchain-ai/langgraph/blob/3e3dbd42c5329dd404669ccd923c005c814bee3a/libs/cli/langgraph_cli/host_backend.py",
+      "https://github.com/langchain-ai/langgraph/blob/3e3dbd42c5329dd404669ccd923c005c814bee3a/libs/cli/tests/unit_tests/test_host_backend.py",
+      "https://github.com/langchain-ai/langgraph/blob/3e3dbd42c5329dd404669ccd923c005c814bee3a/libs/cli/tests/unit_tests/cli/test_deploy_command.py",
+      "https://github.com/openai/openai-agents-python/releases/tag/v0.26.0",
+      "https://github.com/openai/openai-agents-python/pull/6174",
+      "https://github.com/openai/openai-agents-python/blob/0ad2d63a9371a23333a95ea6878141a826c9cdda/src/agents/run.py",
+      "https://github.com/openai/openai-agents-python/blob/0ad2d63a9371a23333a95ea6878141a826c9cdda/src/agents/run_internal/guardrails.py",
+      "https://github.com/openai/openai-agents-python/blob/0ad2d63a9371a23333a95ea6878141a826c9cdda/src/agents/run_internal/tool_execution.py",
+      "https://github.com/openai/openai-agents-python/blob/0ad2d63a9371a23333a95ea6878141a826c9cdda/tests/test_input_guardrail_tool_cancellation.py",
+      "https://github.com/openai/openai-agents-python/blob/0ad2d63a9371a23333a95ea6878141a826c9cdda/docs/guardrails.md",
+      "https://github.com/MetaMask/core/releases/tag/v1460.0.0",
+      "https://github.com/MetaMask/core/pull/11783",
+      "https://github.com/MetaMask/core/blob/52228b879a0cf6a9d3b3cbb8a8669d3058e40542/packages/transaction-controller/src/utils/gas.ts",
+      "https://github.com/MetaMask/core/blob/52228b879a0cf6a9d3b3cbb8a8669d3058e40542/packages/transaction-controller/src/utils/gas.test.ts",
+      "https://github.com/foundry-rs/foundry/releases/tag/v1.10.1",
+      "https://github.com/foundry-rs/foundry/pull/18733",
+      "https://github.com/foundry-rs/foundry/blob/7c15a1dd0ca75f2b4d6d7961ac55aacbe5cf6378/crates/cast/src/cmd/run.rs",
+      "https://github.com/foundry-rs/foundry/blob/7c15a1dd0ca75f2b4d6d7961ac55aacbe5cf6378/crates/cast/tests/cli/run.rs"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-11-27-120d87c63c6a252c",
+    "asOf": "2026-11-26T21:36:53.599Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
   {
     "date": "2026-11-16",
     "slug": "2026-11-16",
@@ -3981,293 +4362,6 @@ export const latestRadars: DailyRadar[] = [
     "marketSignals": [],
     "snapshotId": "learning-2026-11-11-3323ecfb854f3355",
     "asOf": "2026-11-10T21:38:26.706Z",
-    "origin": "research",
-    "publicationState": "published"
-  },
-  {
-    "date": "2026-11-09",
-    "slug": "2026-11-09",
-    "title": "学习雷达 · 2026-11-09",
-    "summary": "AI看遥测跨层前的URL净化与当前模型预算；Web3看HTTP批次配置归属与对象资金执行期失败。补读尚未覆盖的固定发布快照，保留原日期；专题核对观察者接收数据的时点。",
-    "publish": true,
-    "reviewStatus": "automated",
-    "schemaVersion": 2,
-    "editionMode": "daily",
-    "researchedAt": "2026-11-08T21:37:39.755Z",
-    "generatedAt": "2026-11-08T21:37:39.755Z",
-    "sourceSections": [
-      "ai",
-      "web3",
-      "deepDive"
-    ],
-    "missingSections": [],
-    "briefs": [
-      {
-        "id": "ai-sdk-telemetry-url-boundary",
-        "domain": "ai",
-        "topic": "safety",
-        "title": "AI SDK 7.0.165：遥测拿到模型结果之前，先缩减请求 URL",
-        "whatHappened": "AI SDK于11月7日（UTC）发布7.0.165：generateText与streamText此前虽已缩减公开结果URL，遥测integration和tracing subscriber仍可能更早看到原始端点。",
-        "mechanism": "provider回调返回前复制结果并净化request.url：HTTP(S)仅留origin，无效或非HTTP(S)地址省略url。用户信息、路径、query、fragment被去掉；body等元数据保留，原provider对象不变。",
-        "workedExample": "上游mock在两个观察者接收时即时复制request，检查URL净化及原对象未变。本期只读断言，未运行模型或本地复现。",
-        "whyItMatters": "最终输出不能覆盖更早的观察者；应逐接收者核对字段与脱敏时点。",
-        "risksAndLimits": [
-          "仅修两条文本生成路径的URL元数据，不保证headers、body、业务日志或WorkflowAgent安全。",
-          "origin仍暴露主机与端口；本期未验证生产部署或过去数据的撤回。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "AI SDK release",
-            "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-            "publishedAt": "2026-11-07T19:27:48.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR24708",
-            "url": "https://github.com/vercel/ai/pull/24708"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "generateText boundary",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/generate-text.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "URL sanitizer",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/get-request-origin.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "Immediate tracing tests",
-            "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts"
-          }
-        ],
-        "nextQuestions": [
-          "接收者的字段范围与脱敏时点如何分别核验？"
-        ]
-      },
-      {
-        "id": "ai-deepagents-selected-model-budget",
-        "domain": "ai",
-        "topic": "infrastructure",
-        "title": "deepagents-code 0.2.5：压缩输入预算跟随当前选定模型",
-        "whatHappened": "0.2.5于11月5日（UTC）发布，修复切换模型仍按启动模型判断压缩的问题，与已刊摘要截点修复不同。",
-        "mechanism": "同步/异步用临时请求核算选定模型与运行期settings的预算；交给handler前恢复原model/settings，让下游中间件继续真正选择模型。",
-        "workedExample": "上游mock矩阵：启动128K转32K，26K输入加8K输出预留需压缩，改2K则不压缩；还检查下游与原请求。本期只读，未运行模型/测试。",
-        "whyItMatters": "切换模型也改变预算；预算准备和最终执行要分开核验，保留下游配置。",
-        "risksAndLimits": [
-          "数字是上游合成断言，不是本期实测窗口、精确token数或延迟收益；provider限制仍需另验。",
-          "预算依据主模型，摘要生成可另选模型；不证明摘要完整或会话恢复正确。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "deepagents-code release",
-            "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5",
-            "publishedAt": "2026-11-05T21:41:43.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR7545",
-            "url": "https://github.com/langchain-ai/deepagents/pull/7545"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Budget request code",
-            "url": "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/deepagents_code/offload_middleware.py"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "Budget matrix tests",
-            "url": "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/tests/unit_tests/test_compact_tool.py"
-          }
-        ],
-        "nextQuestions": [
-          "预算来自当前配置，最终模型选择是否仍走原流程？"
-        ]
-      },
-      {
-        "id": "web3-viem-http-batch-factory-identity",
-        "domain": "web3",
-        "topic": "onchain_infrastructure",
-        "title": "viem 2.57.17：同一 RPC URL，不再把不同 transport 的批次混用",
-        "whatHappened": "viem于11月8日（UTC）发布2.57.17，修复同URL下独立HTTP工厂合批时混用鉴权头与fetch配置的问题。",
-        "mechanism": "调度键组合稳定工厂batchId、实际URL和AbortSignal身份。ID位于initializer外，fallback重初始化同工厂仍合批；独立工厂保留各自RPC配置。",
-        "workedExample": "上游本地鉴权A/B返回1和10，覆盖直接/fallback分离、同工厂共享与URL/signal分离。本期只读，未连RPC或发交易。",
-        "whyItMatters": "相同地址不等于同一调用者；批处理仍需保持鉴权配置和响应归属。",
-        "risksAndLimits": [
-          "这是工厂批次隔离，不是租户认证、链ID校验或WebSocket订阅路由；1和10为本地测试值。",
-          "相同配置的独立工厂也不自动合批；共享需复用工厂并审查配置，不表示写请求可安全重试。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "viem release",
-            "url": "https://github.com/wevm/viem/releases/tag/viem%402.57.17",
-            "publishedAt": "2026-11-08T18:04:10.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR5389",
-            "url": "https://github.com/wevm/viem/pull/5389"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "HTTP factory code",
-            "url": "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "HTTP batch tests",
-            "url": "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.test.ts"
-          }
-        ],
-        "nextQuestions": [
-          "哪些客户端应共享工厂，如何核验配置归属？"
-        ]
-      },
-      {
-        "id": "web3-sui-object-funds-execution-abort",
-        "domain": "web3",
-        "topic": "protocol",
-        "title": "Sui mainnet 1.83.1：对象资金不足，在执行期间形成 Move abort",
-        "whatHappened": "Sui于11月4日（UTC）发布mainnet1.83.1，其protocol140配置让对象资金不足在执行期abort，替代旧检查/重执行。PR于10月20日合入，非当天首创。",
-        "mechanism": "版本化设计先看交易内owner/type余额；不足时按所需accumulator版本读取已结算余额、扣除同commit未结算提款。仍不足则abort；地址调度独立。",
-        "workedExample": "文档中dry-run/孤立replay缺少同commit未结算视图，可能成功而提交执行不足失败。本期只读配置/设计，未运行节点、模拟、回放或资金操作。",
-        "whyItMatters": "模拟成功不能代替执行回执；应区分状态视图、失败阶段与错误类型。",
-        "risksAndLimits": [
-          "对象虚拟余额不足形成Move abort；地址资金执行前调度仍可返回InsufficientFundsForWithdraw。",
-          "文档说明已执行失败可正常收gas；未验证真实主网部署、账户余额或资金安全，孤立replay差异另项追踪。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "Sui mainnet release",
-            "url": "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1",
-            "publishedAt": "2026-11-04T20:01:16.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "PR28290",
-            "url": "https://github.com/MystenLabs/sui/pull/28290"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Protocol140 config",
-            "url": "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-protocol-config/src/lib.rs"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_design",
-            "name": "Object funds design",
-            "url": "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-core/src/accumulators/design_docs/object_funds_in_execution.md"
-          }
-        ],
-        "nextQuestions": [
-          "三种视图的版本、扣减及对象/地址错误如何分别识别？"
-        ]
-      }
-    ],
-    "deepDive": {
-      "id": "deep-telemetry-observer-sanitization-order",
-      "domain": "ai",
-      "topic": "safety",
-      "title": "专题：最终结果已脱敏，为什么中途观察者仍可能看到原值",
-      "whatHappened": "7.0.165把URL净化前移至provider回调返回前；遥测integration/tracing不再早于公开API看到这一路径的原始request.url。",
-      "mechanism": "只在外层净化时，包装器await execute()后会先见原request。现在生成/流式启动先返回净化元数据，再入遥测；实际请求端点不变。",
-      "workedExample": "上游在integration/asyncEnd即时复制request，避免结束后只查可变引用；还冻结并检查原对象。本期只读，未运行模型或复现。",
-      "whyItMatters": "编辑推论：跨观察边界前处理并逐接收者留证，最终输出只证明自身。",
-      "risksAndLimits": [
-        "未审查全部sink、WorkflowAgent或业务日志；保留的body/其他元数据仍可能有敏感内容，URL净化不是全量隐私保证。",
-        "代码断言不证明已部署、已清理历史遥测或撤回已发送数据。"
-      ],
-      "sources": [
-        {
-          "tier": "tier1",
-          "role": "event",
-          "kind": "official_release",
-          "name": "AI SDK release",
-          "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-          "publishedAt": "2026-11-07T19:27:48.000Z"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_code",
-          "name": "streamText boundary",
-          "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/stream-language-model-call.ts"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_test",
-          "name": "Immediate tracing tests",
-          "url": "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts"
-        }
-      ],
-      "nextQuestions": [
-        "即时接收的字段、处理时点与保留规则是否有证据？"
-      ],
-      "basedOnBriefId": "ai-sdk-telemetry-url-boundary"
-    },
-    "sourceUrls": [
-      "https://github.com/vercel/ai/releases/tag/ai%407.0.165",
-      "https://github.com/vercel/ai/pull/24708",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/generate-text.ts",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/get-request-origin.ts",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/telemetry/tracing-channel.test.ts",
-      "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.5",
-      "https://github.com/langchain-ai/deepagents/pull/7545",
-      "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/deepagents_code/offload_middleware.py",
-      "https://github.com/langchain-ai/deepagents/blob/efa9f5364b83e9367ea57d9c21b15b4d81fdcb7a/libs/code/tests/unit_tests/test_compact_tool.py",
-      "https://github.com/wevm/viem/releases/tag/viem%402.57.17",
-      "https://github.com/wevm/viem/pull/5389",
-      "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.ts",
-      "https://github.com/wevm/viem/blob/b418acad655723de9b5082475e5894567a486631/src/clients/transports/http.test.ts",
-      "https://github.com/MystenLabs/sui/releases/tag/mainnet-v1.83.1",
-      "https://github.com/MystenLabs/sui/pull/28290",
-      "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-protocol-config/src/lib.rs",
-      "https://github.com/MystenLabs/sui/blob/6a567faf6de142afda7c9ceaec2a3133011929e0/crates/sui-core/src/accumulators/design_docs/object_funds_in_execution.md",
-      "https://github.com/vercel/ai/blob/0f3a85f92d1ce06ccde01d662407ef83e097a712/packages/ai/src/generate-text/stream-language-model-call.ts"
-    ],
-    "relatedProjectSlugs": [],
-    "marketSignals": [],
-    "snapshotId": "learning-2026-11-09-bd83a5cc7fff3983",
-    "asOf": "2026-11-08T21:37:39.755Z",
     "origin": "research",
     "publicationState": "published"
   }
