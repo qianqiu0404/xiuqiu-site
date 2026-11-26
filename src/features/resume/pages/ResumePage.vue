@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { featuredProjects, githubProfileUrl, miniExchangeDemo, resumeExperience } from '../data'
+import { answerCheckDemo, featuredProjects, githubProfileUrl, miniExchangeDemo, resumeExperience } from '../data'
 import { useResume } from '../useResume'
 const { projects, query, includeHistory, category, visibleProjects, activeProject, activeIndex, dialog, dialogBody, closeButton, searchInput, detailState, noteHtml, copyLabel, copied, dark, toggleTheme, setCategory, resetSearch, openProject, closeProject, onDialogClose, loadDetail, stepProject, onDialogKey, onBackdropClick, copyLink } = useResume()
 </script>
@@ -86,6 +86,9 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 <ul class="track-chips">
 <li>
 <button type="button" data-open="saas" @click="openProject('saas', $event)">Agent SaaS · 企业客服 Agent<em>团队参与</em></button>
+</li>
+<li>
+<a :href="answerCheckDemo.href">{{ answerCheckDemo.label }}<em>个人项目</em></a>
 </li>
 </ul>
 </article>

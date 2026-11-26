@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>客服回答质检演示</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <main class="page">
+    <header class="intro">
+      <h1>客服回答质检演示</h1>
+      <p>比较两个客服机器人的回答，逐题查看出处、质检理由和独立标注。</p>
+      <p class="muted">所有数据均为虚构，品牌为青柚家电。两个机器人都按固定规则模拟客服，同样的输入总会得到同样的回答。</p>
+      <a class="home-link" href="/">返回作品集首页</a>
+    </header>
+
+    <noscript><p>启用 JavaScript 后可加载演示数据并筛选题目。</p></noscript>
+
+    <section aria-labelledby="scores-title">
+      <h2 id="scores-title">两个机器人的结果</h2>
+      <p>naive 每次选一个段落，通常只答第一句，从不转人工。careful 通常结合两个段落回答，在命中转人工关键词或知识库匹配度太低时转人工。</p>
+      <div id="scores" class="round-grid"></div>
+      <p id="comparison" class="context-note" hidden></p>
+    </section>
+
+    <section aria-labelledby="agreement-title">
+      <h2 id="agreement-title">质检准不准</h2>
+      <p>拿质检结果和一份独立标注逐题对比。独立标注由一名没有读过质检代码的 AI 标注员对照知识库写成，Claude 抽查了其中 10 条。精确率是质检判不通过的题里，标注也判不通过的比例；召回率是标注判不通过的题里，质检也判不通过的比例。这些数只描述这组虚构用例。</p>
+      <div id="agreement" class="round-grid"></div>
+      <div id="agreement-note" class="context-note" hidden></div>
+    </section>
+
+    <section aria-labelledby="cases-title">
+      <h2 id="cases-title">逐题看</h2>
+      <form id="filters">
+        <fieldset id="filter-controls" class="card filter-card" disabled>
+          <legend>筛选题目</legend>
+          <div class="filter-grid">
+            <div class="field">
+              <label for="bot">机器人</label>
+              <select id="bot">
+                <option value="naive">naive</option>
+                <option value="careful">careful</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="verdict">质检判定</label>
+              <select id="verdict">
+                <option value="">全部判定</option>
+                <option value="pass">通过</option>
+                <option value="fail">不通过</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="category">题目类别</label>
+              <select id="category">
+                <option value="">全部类别</option>
+              </select>
+            </div>
+            <label class="checkbox" for="disagreements">
+              <input id="disagreements" type="checkbox">
+              只看质检和标注不一致
+            </label>
+          </div>
+        </fieldset>
+      </form>
+      <p id="result-count" class="result-count" aria-live="polite" aria-atomic="true"></p>
+      <div id="cases"></div>
+    </section>
+  </main>
+  <footer id="source" class="page muted" hidden></footer>
+</body>
+</html>

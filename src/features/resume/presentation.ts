@@ -27,6 +27,7 @@ export function formatFeaturedPosition(index: number): string {
 }
 
 export const miniExchangeDemo = { href: '/mini-exchange-demo/index.html', label: '打开诊断演示' }
+export const answerCheckDemo = { href: '/answer-check-demo/index.html', label: '客服回答质检演示' }
 
 export const resumeExperience = {
   company: '天津根哈希',
