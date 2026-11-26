@@ -9,7 +9,9 @@ export const V2_RADAR_SECTIONS = ['ai', 'web3', 'deepDive']
 
 const PRIVATE_MARKERS = ['briefing', 'practice']
 const PRIVATE_TERMS = ['晚间复盘', '求职计划', '个人日记', '助记词', '私钥', 'briefing', 'practice']
-const ABSOLUTE_PATH_RE = /(?:\/Users\/|\/home\/|[A-Za-z]:\\|iCloud~md~obsidian)/
+// Tested against JSON.stringify output: a real Windows path C:\Users serializes as C:\\Users,
+// while chainId:"1" serializes as chainId:\"1\" and must not count as a drive letter.
+const ABSOLUTE_PATH_RE = /(?:\/Users\/|\/home\/|(?<![A-Za-z0-9_])[A-Za-z]:\\\\|iCloud~md~obsidian)/
 const SECRET_RE = /(?:api[_-]?key|access[_-]?token|secret|mnemonic|seed phrase)\s*[:=]\s*[^\s]+/i
 const URL_RE = /https?:\/\/[^\s)\]>"']+/g
 
