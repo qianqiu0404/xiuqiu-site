@@ -5,6 +5,7 @@ import { readFileSync, readdirSync } from 'node:fs'
 import { isIP } from 'node:net'
 import { join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { createContext, runInContext } from 'node:vm'
 import { parse, NodeTypes } from '@vue/compiler-dom'
 import { renderToString } from '@vue/server-renderer'
 import vue from '@vitejs/plugin-vue'
@@ -22,6 +23,8 @@ const demoHref = '/mini-exchange-demo/index.html'
 const demoDataPrefix = 'window.DEMO_DATA = JSON.parse('
 let page
 let notes
+let router
+let onDialogKey
 
 before(async () => {
   const server = await createServer({
@@ -34,11 +37,17 @@ before(async () => {
   })
   try {
     const { default: ResumePage } = await server.ssrLoadModule('/src/features/resume/pages/ResumePage.vue')
-    const router = createRouter({
+    const { useResume } = await server.ssrLoadModule('/src/features/resume/useResume.ts')
+    router = createRouter({
       history: createMemoryHistory(),
       routes: [{ path: '/', component: ResumePage, alias: ['/intel', '/radar', '/articles'] }],
     })
-    const app = createSSRApp({ render: () => h(ResumePage) }).use(router)
+    const app = createSSRApp({
+      setup() {
+        onDialogKey = useResume().onDialogKey
+        return () => h(ResumePage)
+      },
+    }).use(router)
     await router.push('/')
     page = parse(await renderToString(app), { parseMode: 'html' })
 
@@ -120,6 +129,57 @@ function parseDemoData(source) {
   const script = source.trimEnd()
   assert.ok(script.startsWith(demoDataPrefix) && script.endsWith(');'), 'Invalid demo data.js wrapper')
   return JSON.parse(JSON.parse(script.slice(demoDataPrefix.length, -2)))
+}
+
+// Minimal document for running the bundled demo scripts without a browser dependency.
+class DemoNode {
+  children = []
+  dataset = {}
+  attributes = new Map()
+
+  constructor(tag, value) {
+    this.tag = tag
+    this.value = value
+  }
+
+  get textContent() {
+    return this.value ?? this.children.map(child => child.textContent).join(' ')
+  }
+
+  set textContent(value) { this.value = value }
+  setAttribute(name, value) { this.attributes.set(name, value) }
+  append(...children) { this.children.push(...children) }
+  replaceChildren(...children) { this.children = children }
+  addEventListener() {}
+
+  descendants() {
+    return this.children.flatMap(child => [child, ...child.descendants()])
+  }
+
+  querySelector(tag) {
+    return this.descendants().find(node => node.tag === tag)
+  }
+}
+
+function renderDemoRoute(hash) {
+  const dir = new URL('mini-exchange-demo/', publicDir)
+  const html = parse(readFileSync(new URL('index.html', dir), 'utf8'), { parseMode: 'html' })
+  const app = new DemoNode('main')
+  const entry = { app, banner: new DemoNode('p'), skip: new DemoNode('a') }
+  const context = createContext({
+    Node: DemoNode,
+    window: { location: { hash }, addEventListener() {} },
+    document: {
+      getElementById: id => entry[id],
+      createElement: tag => new DemoNode(tag),
+      createTextNode: value => new DemoNode('#text', value),
+    },
+  })
+  for (const script of elements(html, node => node.tag === 'script')) {
+    const src = attribute(script, 'src')
+    runInContext(readFileSync(new URL(src, dir), 'utf8'), context, { filename: src })
+  }
+  return app
 }
 
 function assertDemoFiles(files) {
@@ -207,6 +267,56 @@ test('detail navigation wraps in the same order as the complete catalog', () => 
   assert.equal(adjacentProjectId([], '', 1), '')
 })
 
+test('rendered reading routes expose the section and topics as headings', () => {
+  const tracks = elements(page, withClass('tracks'))[0]
+  assert.ok(tracks)
+  assert.deepEqual(
+    elements(tracks, node => /^h[1-6]$/.test(node.tag)).map(node => [node.tag, text(node, true)]),
+    [
+      ['h2', '一条主线'],
+      ['h3', '1回答有依据'],
+      ['h3', '2出了问题查得出'],
+      ['h3', '3用量管得住'],
+      ['h3', '4进展看得见'],
+      ['h2', '另外两个方向'],
+      ['h3', '交易与资金链路'],
+      ['h3', '工具与创作'],
+    ],
+  )
+})
+
+test('map arrow keys leave scrolling to the browser and preserve the current project', async t => {
+  // The handler can navigate through openProject, which checks the DOM element type.
+  if (typeof HTMLElement === 'undefined') {
+    globalThis.HTMLElement = class {}
+    t.after(() => { delete globalThis.HTMLElement })
+  }
+  await router.push('/#project/wildheart')
+  const replace = t.mock.method(router, 'replace')
+  const map = elements(parse(notes.wildheart, { parseMode: 'html' }), withClass('km-scroll'))[0]
+  assert.equal(attribute(map, 'tabindex'), '0')
+  const mapTarget = {
+    closest: selectors => selectors.split(',').some(selector =>
+      selector.startsWith('.') && withClass(selector.slice(1))(map)) ? map : null,
+  }
+  for (const key of ['ArrowRight', 'ArrowLeft']) {
+    const event = new Event('keydown', { cancelable: true })
+    Object.defineProperties(event, { key: { value: key }, target: { value: mapTarget } })
+    onDialogKey(event)
+    assert.equal(event.defaultPrevented, false, key + ' should be available for scrolling')
+  }
+  assert.equal(replace.mock.callCount(), 0)
+  assert.equal(router.currentRoute.value.hash, '#project/wildheart')
+
+  const next = new Event('keydown', { cancelable: true })
+  Object.defineProperties(next, { key: { value: 'ArrowRight' }, target: { value: { closest: () => null } } })
+  onDialogKey(next)
+  assert.equal(next.defaultPrevented, true)
+  assert.equal(replace.mock.callCount(), 1)
+  await replace.mock.calls[0].result
+  assert.equal(router.currentRoute.value.hash, '#project/research')
+})
+
 test('resume features eight catalog entries in the approved order', () => {
   const cards = featuredCards()
   assert.deepEqual(cards.map(card => attribute(featuredTitleButton(card), 'data-open')), [
@@ -281,6 +391,28 @@ test('diagnosis featured card links to the bundled demo', () => {
 test('diagnosis detail links to the bundled demo', () => {
   assertDemoLink(parse(notes.miniexchange, { parseMode: 'html' }))
   assertDemoFiles(readFiles(new URL('./mini-exchange-demo/', publicDir)))
+})
+
+test('real case run 3 links include the question and retain their record destinations', () => {
+  const app = renderDemoRoute('#/real')
+  assert.equal(app.querySelector('h1').textContent, '实战案例')
+  const nodes = app.descendants()
+  const byId = new Map(nodes.filter(node => node.id).map(node => [node.id, node]))
+  const cases = [
+    ['#/real/real-order-ok/3', /订单.*第 3 次.*通过.*没有问题/],
+    ['#/real/real-funds-ok/3', /余额.*第 3 次.*通过.*没有问题/],
+  ]
+  for (const [href, expectedName] of cases) {
+    const links = nodes.filter(node => node.tag === 'a' && node.href === href)
+    assert.equal(links.length, 1, href)
+    const [link] = links
+    const references = link.attributes.get('aria-labelledby')
+    // These links use plain text and ID references, including a reference to the link itself.
+    const name = references
+      ? references.split(/\s+/).map(id => byId.get(id)?.textContent ?? '').join(' ')
+      : link.textContent
+    assert.match(name, expectedName, href)
+  }
 })
 
 test('demo link check rejects a fixture with docs.js removed', () => {

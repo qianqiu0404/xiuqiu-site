@@ -260,7 +260,9 @@
   }
 
   function realCaseRow(item) {
-    const question = el("th", "", item.question, el("span", "root-label", "标准答案 · " + item.rootLabel));
+    const questionText = el("span", "", item.question);
+    questionText.id = "real-question-" + item.id;
+    const question = el("th", "", questionText, el("span", "root-label", "标准答案 · " + item.rootLabel));
     question.scope = "row";
     const row = el("tr", "", question);
     row.dataset.realCase = item.id;
@@ -268,6 +270,8 @@
       const cell = link(realPath(item.id, run.run), "trial",
         el("strong", "trial-index", `第 ${run.run} 次`), verdictBadge(run.pass),
         el("span", "trial-answer", run.answeredLabel || "没有得出结论"));
+      cell.id = "real-run-" + item.id + "-" + run.run;
+      cell.setAttribute("aria-labelledby", questionText.id + " " + cell.id);
       cell.dataset.realRun = item.id + "/" + run.run;
       cell.dataset.pass = run.pass;
       cell.dataset.flag = run.flagged;
