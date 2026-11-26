@@ -3,6 +3,157 @@
 import type { MarketRadarDaily } from '../generatedMarketRadars.ts'
 export const monthlyMarketRadars: MarketRadarDaily[] = [
   {
+    "date": "2026-11-27",
+    "slug": "2026-11-27",
+    "title": "交易研究雷达 · 2026-11-27",
+    "summary": "11月26日ECB公布10月货币数据：企业贷款同比加快，整体私人部门放缓。本期固定修订版本，分开贷款同比、月度流量及部门范围，不从单项数据推出需求、政策或资产方向。自动汇总，未经人工复核。",
+    "snapshotId": "market-2026-11-27-eee426604db58edc",
+    "asOf": "2026-11-26T21:32:39.444Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-26T21:32:39.444233Z",
+    "events": [
+      {
+        "id": "ecb-october-loan-growth-revised-vintage-sector-divergence-2026-11-26",
+        "priority": "P2",
+        "status": "released",
+        "category": "macro",
+        "title": "ECB十月贷款：企业同比加快，整体私人部门放缓",
+        "fact": "ECB于11月26日公布10月货币数据：调整后非金融企业贷款同比增4.5%，9月为4.3%（由4.2%修订）；家庭贷款同比仍为3.1%，整体私人部门贷款同比由4.4%降至4.3%。贷款按转移和名义现金池作调整，数据另经季节及月末日历调整。这是同比统计，不是当月新增贷款增速，也不是新的政策决定。",
+        "whyWatch": "研究推断：企业贷款同比变化可能先对应银行贷款规模及借款人融资结构，再影响利息收入、融资成本与信用风险的分析；仍须核对利率、期限和企业用途。企业分项加快与整体私人部门放缓并存，不能据此认定所有部门融资需求改善或资产价格方向。",
+        "assets": [
+          "欧元区银行股",
+          "欧元区非金融企业融资"
+        ],
+        "watchFor": "固定11月26日发布版本和10月观察期，对照附件的贷款存量、月度净流量、年度增速与部门分项，再补同期间贷款利率、企业融资用途及资产质量证据。9月比较值用本次修订后4.3%；官网数据链接会随以后发布修订，本期未测量行情或因果效应。",
+        "invalidation": "若将4.5%当作月度增速、新发放贷款或银行调查净比例，或将企业分项外推到全部私人部门，撤回比较。后续修订、贷款构成或融资成本证据若不支持解释，应重估；同比加快本身不能确认需求改善、信贷标准放松或资产方向。",
+        "sourceName": "European Central Bank — Monetary developments in the euro area: October 2026",
+        "sourceUrl": "https://www.ecb.europa.eu/press/stats/md/html/ecb.md2610~4bad1d63b5.en.html",
+        "sourcePublishedAt": "2026-11-26"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.ecb.europa.eu/press/stats/md/html/ecb.md2610~4bad1d63b5.en.html"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "实读ECB11月26日发布正文、官方日期索引及附件，固定10月统计与9月修订比较值；未建立银行、企业、行情或因果样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "3交易日仅用于补充统计口径及解释核查；固定资产弱信号表示证据不足，不表示方向或实现概率。",
+      "nextValidation": "按同一发布版本保存部门贷款存量、月度净流量与年度增速，再补贷款利率、用途及资产质量；分开历史修订和实际融资变化。",
+      "invalidation": "混用数据版本、同比与月度增速或部门范围时撤回比较；缺少利率、用途及信用质量证据时保持解释未知。",
+      "sourceUrls": [
+        "https://www.ecb.europa.eu/press/stats/md/html/ecb.md2610~4bad1d63b5.en.html"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "企业贷款同比变化通过哪些贷款规模、利率与信用风险环节，才可能影响银行收入和企业融资条件？",
+        "focusEventIds": [
+          "ecb-october-loan-growth-revised-vintage-sector-divergence-2026-11-26"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "同一发布版本的月度净流量、家庭及其他私人部门分项，哪些最能支持或推翻融资需求改善的解释？",
+        "focusEventIds": [
+          "ecb-october-loan-growth-revised-vintage-sector-divergence-2026-11-26"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若同比变化主要来自基数、构成或历史修订，哪些后续证据应使原有传导解释失效或收窄？",
+        "focusEventIds": [
+          "ecb-october-loan-growth-revised-vintage-sector-divergence-2026-11-26"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-27",
+      "snapshotId": "market-2026-11-27-eee426604db58edc",
+      "asOf": "2026-11-26T21:32:39.444Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-27",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "企业贷款同比变化通过哪些贷款规模、利率与信用风险环节，才可能影响银行收入和企业融资条件？",
+          "focusEventIds": [
+            "ecb-october-loan-growth-revised-vintage-sector-divergence-2026-11-26"
+          ],
+          "prompt": "研究任务：企业贷款同比变化通过哪些贷款规模、利率与信用风险环节，才可能影响银行收入和企业融资条件？\n证据快照：2026-11-27；asOf=2026-11-26T21:32:39.444Z；snapshotId=market-2026-11-27-eee426604db58edc\n\n材料 1｜ECB十月贷款：企业同比加快，整体私人部门放缓\n已确认事实：ECB于11月26日公布10月货币数据：调整后非金融企业贷款同比增4.5%，9月为4.3%（由4.2%修订）；家庭贷款同比仍为3.1%，整体私人部门贷款同比由4.4%降至4.3%。贷款按转移和名义现金池作调整，数据另经季节及月末日历调整。这是同比统计，不是当月新增贷款增速，也不是新的政策决定。\n关注机制：研究推断：企业贷款同比变化可能先对应银行贷款规模及借款人融资结构，再影响利息收入、融资成本与信用风险的分析；仍须核对利率、期限和企业用途。企业分项加快与整体私人部门放缓并存，不能据此认定所有部门融资需求改善或资产价格方向。\n接下来验证：固定11月26日发布版本和10月观察期，对照附件的贷款存量、月度净流量、年度增速与部门分项，再补同期间贷款利率、企业融资用途及资产质量证据。9月比较值用本次修订后4.3%；官网数据链接会随以后发布修订，本期未测量行情或因果效应。\n失效条件：若将4.5%当作月度增速、新发放贷款或银行调查净比例，或将企业分项外推到全部私人部门，撤回比较。后续修订、贷款构成或融资成本证据若不支持解释，应重估；同比加快本身不能确认需求改善、信贷标准放松或资产方向。\n一手来源：https://www.ecb.europa.eu/press/stats/md/html/ecb.md2610~4bad1d63b5.en.html\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "6219c0a27c990662890b06b72e84e6a22ecd60cc149062694734364328dff1d6",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/stats/md/html/ecb.md2610~4bad1d63b5.en.html"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "同一发布版本的月度净流量、家庭及其他私人部门分项，哪些最能支持或推翻融资需求改善的解释？",
+          "focusEventIds": [
+            "ecb-october-loan-growth-revised-vintage-sector-divergence-2026-11-26"
+          ],
+          "prompt": "研究任务：同一发布版本的月度净流量、家庭及其他私人部门分项，哪些最能支持或推翻融资需求改善的解释？\n证据快照：2026-11-27；asOf=2026-11-26T21:32:39.444Z；snapshotId=market-2026-11-27-eee426604db58edc\n\n材料 1｜ECB十月贷款：企业同比加快，整体私人部门放缓\n已确认事实：ECB于11月26日公布10月货币数据：调整后非金融企业贷款同比增4.5%，9月为4.3%（由4.2%修订）；家庭贷款同比仍为3.1%，整体私人部门贷款同比由4.4%降至4.3%。贷款按转移和名义现金池作调整，数据另经季节及月末日历调整。这是同比统计，不是当月新增贷款增速，也不是新的政策决定。\n关注机制：研究推断：企业贷款同比变化可能先对应银行贷款规模及借款人融资结构，再影响利息收入、融资成本与信用风险的分析；仍须核对利率、期限和企业用途。企业分项加快与整体私人部门放缓并存，不能据此认定所有部门融资需求改善或资产价格方向。\n接下来验证：固定11月26日发布版本和10月观察期，对照附件的贷款存量、月度净流量、年度增速与部门分项，再补同期间贷款利率、企业融资用途及资产质量证据。9月比较值用本次修订后4.3%；官网数据链接会随以后发布修订，本期未测量行情或因果效应。\n失效条件：若将4.5%当作月度增速、新发放贷款或银行调查净比例，或将企业分项外推到全部私人部门，撤回比较。后续修订、贷款构成或融资成本证据若不支持解释，应重估；同比加快本身不能确认需求改善、信贷标准放松或资产方向。\n一手来源：https://www.ecb.europa.eu/press/stats/md/html/ecb.md2610~4bad1d63b5.en.html\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "2381ef1849b2c2571b8c92aacc0b1add387857e10bd074d459d3804cc53be596",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/stats/md/html/ecb.md2610~4bad1d63b5.en.html"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若同比变化主要来自基数、构成或历史修订，哪些后续证据应使原有传导解释失效或收窄？",
+          "focusEventIds": [
+            "ecb-october-loan-growth-revised-vintage-sector-divergence-2026-11-26"
+          ],
+          "prompt": "研究任务：若同比变化主要来自基数、构成或历史修订，哪些后续证据应使原有传导解释失效或收窄？\n证据快照：2026-11-27；asOf=2026-11-26T21:32:39.444Z；snapshotId=market-2026-11-27-eee426604db58edc\n\n材料 1｜ECB十月贷款：企业同比加快，整体私人部门放缓\n已确认事实：ECB于11月26日公布10月货币数据：调整后非金融企业贷款同比增4.5%，9月为4.3%（由4.2%修订）；家庭贷款同比仍为3.1%，整体私人部门贷款同比由4.4%降至4.3%。贷款按转移和名义现金池作调整，数据另经季节及月末日历调整。这是同比统计，不是当月新增贷款增速，也不是新的政策决定。\n关注机制：研究推断：企业贷款同比变化可能先对应银行贷款规模及借款人融资结构，再影响利息收入、融资成本与信用风险的分析；仍须核对利率、期限和企业用途。企业分项加快与整体私人部门放缓并存，不能据此认定所有部门融资需求改善或资产价格方向。\n接下来验证：固定11月26日发布版本和10月观察期，对照附件的贷款存量、月度净流量、年度增速与部门分项，再补同期间贷款利率、企业融资用途及资产质量证据。9月比较值用本次修订后4.3%；官网数据链接会随以后发布修订，本期未测量行情或因果效应。\n失效条件：若将4.5%当作月度增速、新发放贷款或银行调查净比例，或将企业分项外推到全部私人部门，撤回比较。后续修订、贷款构成或融资成本证据若不支持解释，应重估；同比加快本身不能确认需求改善、信贷标准放松或资产方向。\n一手来源：https://www.ecb.europa.eu/press/stats/md/html/ecb.md2610~4bad1d63b5.en.html\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "022d27453337ae181291ee03ef8dbf626b2173f32d8ff8423e5874ea6a964d62",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/stats/md/html/ecb.md2610~4bad1d63b5.en.html"
+          ]
+        }
+      ]
+    }
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "title": "交易研究雷达 · 2026-11-16",

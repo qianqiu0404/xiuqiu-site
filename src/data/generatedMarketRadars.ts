@@ -16,6 +16,17 @@ export interface MarketRadarDaily { schemaVersion?: 2; date: string; slug: strin
 export interface MarketRadarIndexEntry { date: string; slug: string; snapshotId: string; asOf: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
 export const marketRadarIndex: MarketRadarIndexEntry[] = [
   {
+    "date": "2026-11-27",
+    "slug": "2026-11-27",
+    "title": "交易研究雷达 · 2026-11-27",
+    "summary": "11月26日ECB公布10月货币数据：企业贷款同比加快，整体私人部门放缓。本期固定修订版本，分开贷款同比、月度流量及部门范围，不从单项数据推出需求、政策或资产方向。自动汇总，未经人工复核。",
+    "snapshotId": "market-2026-11-27-eee426604db58edc",
+    "asOf": "2026-11-26T21:32:39.444Z",
+    "eventCount": 1,
+    "assetCount": 2,
+    "leadTitle": "ECB十月贷款：企业同比加快，整体私人部门放缓"
+  },
+  {
     "date": "2026-11-16",
     "slug": "2026-11-16",
     "title": "交易研究雷达 · 2026-11-16",
@@ -314,6 +325,157 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
   }
 ]
 export const latestMarketRadars: MarketRadarDaily[] = [
+  {
+    "date": "2026-11-27",
+    "slug": "2026-11-27",
+    "title": "交易研究雷达 · 2026-11-27",
+    "summary": "11月26日ECB公布10月货币数据：企业贷款同比加快，整体私人部门放缓。本期固定修订版本，分开贷款同比、月度流量及部门范围，不从单项数据推出需求、政策或资产方向。自动汇总，未经人工复核。",
+    "snapshotId": "market-2026-11-27-eee426604db58edc",
+    "asOf": "2026-11-26T21:32:39.444Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-26T21:32:39.444233Z",
+    "events": [
+      {
+        "id": "ecb-october-loan-growth-revised-vintage-sector-divergence-2026-11-26",
+        "priority": "P2",
+        "status": "released",
+        "category": "macro",
+        "title": "ECB十月贷款：企业同比加快，整体私人部门放缓",
+        "fact": "ECB于11月26日公布10月货币数据：调整后非金融企业贷款同比增4.5%，9月为4.3%（由4.2%修订）；家庭贷款同比仍为3.1%，整体私人部门贷款同比由4.4%降至4.3%。贷款按转移和名义现金池作调整，数据另经季节及月末日历调整。这是同比统计，不是当月新增贷款增速，也不是新的政策决定。",
+        "whyWatch": "研究推断：企业贷款同比变化可能先对应银行贷款规模及借款人融资结构，再影响利息收入、融资成本与信用风险的分析；仍须核对利率、期限和企业用途。企业分项加快与整体私人部门放缓并存，不能据此认定所有部门融资需求改善或资产价格方向。",
+        "assets": [
+          "欧元区银行股",
+          "欧元区非金融企业融资"
+        ],
+        "watchFor": "固定11月26日发布版本和10月观察期，对照附件的贷款存量、月度净流量、年度增速与部门分项，再补同期间贷款利率、企业融资用途及资产质量证据。9月比较值用本次修订后4.3%；官网数据链接会随以后发布修订，本期未测量行情或因果效应。",
+        "invalidation": "若将4.5%当作月度增速、新发放贷款或银行调查净比例，或将企业分项外推到全部私人部门，撤回比较。后续修订、贷款构成或融资成本证据若不支持解释，应重估；同比加快本身不能确认需求改善、信贷标准放松或资产方向。",
+        "sourceName": "European Central Bank — Monetary developments in the euro area: October 2026",
+        "sourceUrl": "https://www.ecb.europa.eu/press/stats/md/html/ecb.md2610~4bad1d63b5.en.html",
+        "sourcePublishedAt": "2026-11-26"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.ecb.europa.eu/press/stats/md/html/ecb.md2610~4bad1d63b5.en.html"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "实读ECB11月26日发布正文、官方日期索引及附件，固定10月统计与9月修订比较值；未建立银行、企业、行情或因果样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "3交易日仅用于补充统计口径及解释核查；固定资产弱信号表示证据不足，不表示方向或实现概率。",
+      "nextValidation": "按同一发布版本保存部门贷款存量、月度净流量与年度增速，再补贷款利率、用途及资产质量；分开历史修订和实际融资变化。",
+      "invalidation": "混用数据版本、同比与月度增速或部门范围时撤回比较；缺少利率、用途及信用质量证据时保持解释未知。",
+      "sourceUrls": [
+        "https://www.ecb.europa.eu/press/stats/md/html/ecb.md2610~4bad1d63b5.en.html"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "企业贷款同比变化通过哪些贷款规模、利率与信用风险环节，才可能影响银行收入和企业融资条件？",
+        "focusEventIds": [
+          "ecb-october-loan-growth-revised-vintage-sector-divergence-2026-11-26"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "同一发布版本的月度净流量、家庭及其他私人部门分项，哪些最能支持或推翻融资需求改善的解释？",
+        "focusEventIds": [
+          "ecb-october-loan-growth-revised-vintage-sector-divergence-2026-11-26"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若同比变化主要来自基数、构成或历史修订，哪些后续证据应使原有传导解释失效或收窄？",
+        "focusEventIds": [
+          "ecb-october-loan-growth-revised-vintage-sector-divergence-2026-11-26"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-27",
+      "snapshotId": "market-2026-11-27-eee426604db58edc",
+      "asOf": "2026-11-26T21:32:39.444Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-27",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "企业贷款同比变化通过哪些贷款规模、利率与信用风险环节，才可能影响银行收入和企业融资条件？",
+          "focusEventIds": [
+            "ecb-october-loan-growth-revised-vintage-sector-divergence-2026-11-26"
+          ],
+          "prompt": "研究任务：企业贷款同比变化通过哪些贷款规模、利率与信用风险环节，才可能影响银行收入和企业融资条件？\n证据快照：2026-11-27；asOf=2026-11-26T21:32:39.444Z；snapshotId=market-2026-11-27-eee426604db58edc\n\n材料 1｜ECB十月贷款：企业同比加快，整体私人部门放缓\n已确认事实：ECB于11月26日公布10月货币数据：调整后非金融企业贷款同比增4.5%，9月为4.3%（由4.2%修订）；家庭贷款同比仍为3.1%，整体私人部门贷款同比由4.4%降至4.3%。贷款按转移和名义现金池作调整，数据另经季节及月末日历调整。这是同比统计，不是当月新增贷款增速，也不是新的政策决定。\n关注机制：研究推断：企业贷款同比变化可能先对应银行贷款规模及借款人融资结构，再影响利息收入、融资成本与信用风险的分析；仍须核对利率、期限和企业用途。企业分项加快与整体私人部门放缓并存，不能据此认定所有部门融资需求改善或资产价格方向。\n接下来验证：固定11月26日发布版本和10月观察期，对照附件的贷款存量、月度净流量、年度增速与部门分项，再补同期间贷款利率、企业融资用途及资产质量证据。9月比较值用本次修订后4.3%；官网数据链接会随以后发布修订，本期未测量行情或因果效应。\n失效条件：若将4.5%当作月度增速、新发放贷款或银行调查净比例，或将企业分项外推到全部私人部门，撤回比较。后续修订、贷款构成或融资成本证据若不支持解释，应重估；同比加快本身不能确认需求改善、信贷标准放松或资产方向。\n一手来源：https://www.ecb.europa.eu/press/stats/md/html/ecb.md2610~4bad1d63b5.en.html\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "6219c0a27c990662890b06b72e84e6a22ecd60cc149062694734364328dff1d6",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/stats/md/html/ecb.md2610~4bad1d63b5.en.html"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "同一发布版本的月度净流量、家庭及其他私人部门分项，哪些最能支持或推翻融资需求改善的解释？",
+          "focusEventIds": [
+            "ecb-october-loan-growth-revised-vintage-sector-divergence-2026-11-26"
+          ],
+          "prompt": "研究任务：同一发布版本的月度净流量、家庭及其他私人部门分项，哪些最能支持或推翻融资需求改善的解释？\n证据快照：2026-11-27；asOf=2026-11-26T21:32:39.444Z；snapshotId=market-2026-11-27-eee426604db58edc\n\n材料 1｜ECB十月贷款：企业同比加快，整体私人部门放缓\n已确认事实：ECB于11月26日公布10月货币数据：调整后非金融企业贷款同比增4.5%，9月为4.3%（由4.2%修订）；家庭贷款同比仍为3.1%，整体私人部门贷款同比由4.4%降至4.3%。贷款按转移和名义现金池作调整，数据另经季节及月末日历调整。这是同比统计，不是当月新增贷款增速，也不是新的政策决定。\n关注机制：研究推断：企业贷款同比变化可能先对应银行贷款规模及借款人融资结构，再影响利息收入、融资成本与信用风险的分析；仍须核对利率、期限和企业用途。企业分项加快与整体私人部门放缓并存，不能据此认定所有部门融资需求改善或资产价格方向。\n接下来验证：固定11月26日发布版本和10月观察期，对照附件的贷款存量、月度净流量、年度增速与部门分项，再补同期间贷款利率、企业融资用途及资产质量证据。9月比较值用本次修订后4.3%；官网数据链接会随以后发布修订，本期未测量行情或因果效应。\n失效条件：若将4.5%当作月度增速、新发放贷款或银行调查净比例，或将企业分项外推到全部私人部门，撤回比较。后续修订、贷款构成或融资成本证据若不支持解释，应重估；同比加快本身不能确认需求改善、信贷标准放松或资产方向。\n一手来源：https://www.ecb.europa.eu/press/stats/md/html/ecb.md2610~4bad1d63b5.en.html\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "2381ef1849b2c2571b8c92aacc0b1add387857e10bd074d459d3804cc53be596",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/stats/md/html/ecb.md2610~4bad1d63b5.en.html"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若同比变化主要来自基数、构成或历史修订，哪些后续证据应使原有传导解释失效或收窄？",
+          "focusEventIds": [
+            "ecb-october-loan-growth-revised-vintage-sector-divergence-2026-11-26"
+          ],
+          "prompt": "研究任务：若同比变化主要来自基数、构成或历史修订，哪些后续证据应使原有传导解释失效或收窄？\n证据快照：2026-11-27；asOf=2026-11-26T21:32:39.444Z；snapshotId=market-2026-11-27-eee426604db58edc\n\n材料 1｜ECB十月贷款：企业同比加快，整体私人部门放缓\n已确认事实：ECB于11月26日公布10月货币数据：调整后非金融企业贷款同比增4.5%，9月为4.3%（由4.2%修订）；家庭贷款同比仍为3.1%，整体私人部门贷款同比由4.4%降至4.3%。贷款按转移和名义现金池作调整，数据另经季节及月末日历调整。这是同比统计，不是当月新增贷款增速，也不是新的政策决定。\n关注机制：研究推断：企业贷款同比变化可能先对应银行贷款规模及借款人融资结构，再影响利息收入、融资成本与信用风险的分析；仍须核对利率、期限和企业用途。企业分项加快与整体私人部门放缓并存，不能据此认定所有部门融资需求改善或资产价格方向。\n接下来验证：固定11月26日发布版本和10月观察期，对照附件的贷款存量、月度净流量、年度增速与部门分项，再补同期间贷款利率、企业融资用途及资产质量证据。9月比较值用本次修订后4.3%；官网数据链接会随以后发布修订，本期未测量行情或因果效应。\n失效条件：若将4.5%当作月度增速、新发放贷款或银行调查净比例，或将企业分项外推到全部私人部门，撤回比较。后续修订、贷款构成或融资成本证据若不支持解释，应重估；同比加快本身不能确认需求改善、信贷标准放松或资产方向。\n一手来源：https://www.ecb.europa.eu/press/stats/md/html/ecb.md2610~4bad1d63b5.en.html\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "022d27453337ae181291ee03ef8dbf626b2173f32d8ff8423e5874ea6a964d62",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/stats/md/html/ecb.md2610~4bad1d63b5.en.html"
+          ]
+        }
+      ]
+    }
+  },
   {
     "date": "2026-11-16",
     "slug": "2026-11-16",
@@ -1215,157 +1377,6 @@ export const latestMarketRadars: MarketRadarDaily[] = [
           "promptChecksum": "b51c3ac516a1c07dde99ae9da2bb3791c04f34f554274828a451ef9584b543b8",
           "sourceUrls": [
             "https://www.newyorkfed.org/newsevents/news/research/2026/20261110"
-          ]
-        }
-      ]
-    }
-  },
-  {
-    "date": "2026-11-10",
-    "slug": "2026-11-10",
-    "title": "交易研究雷达 · 2026-11-10",
-    "summary": "FinCEN与美联储撤回2020年跨境资金传送门槛提案；本期区分11月6日公告、11月9日正式刊登与现行规则，不把撤回旧提案解读为取消既有义务。",
-    "snapshotId": "market-2026-11-10-01bdf765eaf1db2d",
-    "asOf": "2026-11-09T21:36:03.266Z",
-    "origin": "research",
-    "publicationState": "published",
-    "reviewStatus": "automated",
-    "generatedAt": "2026-11-09T21:36:03.266182Z",
-    "events": [
-      {
-        "id": "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09",
-        "priority": "P1",
-        "status": "released",
-        "category": "regulation",
-        "title": "FinCEN与美联储撤回跨境250美元门槛提案",
-        "fact": "11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。",
-        "whyWatch": "研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。",
-        "assets": [
-          "跨境资金通道",
-          "加密资产"
-        ],
-        "watchFor": "核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。",
-        "invalidation": "后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。",
-        "sourceName": "Federal Register / GPO — 2026-22809",
-        "sourceUrl": "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm",
-        "sourcePublishedAt": "2026-11-09"
-      }
-    ],
-    "sourceUrls": [
-      "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-    ],
-    "quantStrategy": {
-      "horizonTradingDays": 3,
-      "status": "historical_samples_insufficient",
-      "methodology": "本期仅核对一份提案撤回文件及先前公告，未建立机构开发排期、资金服务与资产反应的同窗口样本。",
-      "assets": [
-        {
-          "symbol": "SPY",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "QQQ",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "BTC",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "ETH",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "GLD",
-          "group": "gold_etf",
-          "signalQuality": "weak"
-        }
-      ],
-      "sampleSize": 0,
-      "rationale": "规则文件变化、机构实际执行与市场反应是不同层次；没有样本便不量化跨资产影响。",
-      "nextValidation": "固定公告及正式撤回时点，再核对公开实施说明、既有规则和可比服务数据，样本不足时仅记录信号质量。",
-      "invalidation": "新提案或正式范围改变时重估；数据口径、时间窗口不一致或缺少实际服务变化证据时保留未知。",
-      "sourceUrls": [
-        "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-      ]
-    },
-    "schemaVersion": 2,
-    "researchQuestions": [
-      {
-        "id": "1",
-        "lens": "transmission",
-        "shortQuestion": "旧提案退出如何经合规开发排期、机构执行和跨境资金服务传导到市场，各环需要哪些独立证据？",
-        "focusEventIds": [
-          "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-        ]
-      },
-      {
-        "id": "2",
-        "lens": "falsification",
-        "shortQuestion": "哪些既有规则、机构说明和同窗口服务数据，能推翻把当前市场变化归因于本次撤回的解释？",
-        "focusEventIds": [
-          "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-        ]
-      },
-      {
-        "id": "3",
-        "lens": "scenario",
-        "shortQuestion": "现行配置不变、新提案重启与服务实际调整分别对应什么情景，什么证据会使当前判断失效？",
-        "focusEventIds": [
-          "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-        ]
-      }
-    ],
-    "researchPack": {
-      "schemaVersion": 2,
-      "date": "2026-11-10",
-      "snapshotId": "market-2026-11-10-01bdf765eaf1db2d",
-      "asOf": "2026-11-09T21:36:03.266Z",
-      "origin": "research",
-      "publicationState": "published",
-      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-10",
-      "questions": [
-        {
-          "id": "1",
-          "lens": "transmission",
-          "shortQuestion": "旧提案退出如何经合规开发排期、机构执行和跨境资金服务传导到市场，各环需要哪些独立证据？",
-          "focusEventIds": [
-            "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-          ],
-          "prompt": "研究任务：旧提案退出如何经合规开发排期、机构执行和跨境资金服务传导到市场，各环需要哪些独立证据？\n证据快照：2026-11-10；asOf=2026-11-09T21:36:03.266Z；snapshotId=market-2026-11-10-01bdf765eaf1db2d\n\n材料 1｜FinCEN与美联储撤回跨境250美元门槛提案\n已确认事实：11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。\n关注机制：研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。\n接下来验证：核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。\n失效条件：后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。\n一手来源：https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "6bdf797b1a69478a921459f978c1506d2c7006e190819973ee4e76316dab80ff",
-          "sourceUrls": [
-            "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-          ]
-        },
-        {
-          "id": "2",
-          "lens": "falsification",
-          "shortQuestion": "哪些既有规则、机构说明和同窗口服务数据，能推翻把当前市场变化归因于本次撤回的解释？",
-          "focusEventIds": [
-            "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-          ],
-          "prompt": "研究任务：哪些既有规则、机构说明和同窗口服务数据，能推翻把当前市场变化归因于本次撤回的解释？\n证据快照：2026-11-10；asOf=2026-11-09T21:36:03.266Z；snapshotId=market-2026-11-10-01bdf765eaf1db2d\n\n材料 1｜FinCEN与美联储撤回跨境250美元门槛提案\n已确认事实：11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。\n关注机制：研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。\n接下来验证：核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。\n失效条件：后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。\n一手来源：https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "b07627ead551add6ce0062f0cac3748f964c2ce255524fa093a1f4539ed3e896",
-          "sourceUrls": [
-            "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
-          ]
-        },
-        {
-          "id": "3",
-          "lens": "scenario",
-          "shortQuestion": "现行配置不变、新提案重启与服务实际调整分别对应什么情景，什么证据会使当前判断失效？",
-          "focusEventIds": [
-            "fincen-fed-travel-rule-proposal-withdrawal-2026-11-09"
-          ],
-          "prompt": "研究任务：现行配置不变、新提案重启与服务实际调整分别对应什么情景，什么证据会使当前判断失效？\n证据快照：2026-11-10；asOf=2026-11-09T21:36:03.266Z；snapshotId=market-2026-11-10-01bdf765eaf1db2d\n\n材料 1｜FinCEN与美联储撤回跨境250美元门槛提案\n已确认事实：11月9日《联邦公报》刊登FinCEN与美联储共同撤回2020年10月27日提案的文件，撤回自11月9日起适用；FinCEN已于11月6日公告。原提案拟把美国境外起始或结束的资金传送记录及信息传递门槛从3000美元降至250美元，并明确相关定义覆盖可兑换虚拟货币及具法偿地位数字资产。本次撤回未将这些拟议修订变成现行规则。\n关注机制：研究判断：提案退出可能影响机构合规开发排期和规则变更预期，再经跨境资金服务传导到市场；实际系统配置、服务能力和成本是否改变仍须独立证据，不能由撤回公告直接推断。\n接下来验证：核对机构公开实施说明、既有规则与后续新提案；将拟议配置、实际系统和资金服务数据分开留证。未来类似修订须有新的公众评论机会；本期未采集实际成本、跨境流量或资产反应样本。\n失效条件：后续正式文本或新提案改变范围时重估；若机构系统和资金服务没有变化，则不成立即时市场传导。撤回旧提案不代表废除现行Recordkeeping或Travel Rule，也不构成特定机构、资产或全球交易的豁免。\n一手来源：https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "a18a64a71ef388b379425fa6a84d7891d887815875a28e56fc58e3e22087590f",
-          "sourceUrls": [
-            "https://www.govinfo.gov/content/pkg/FR-2026-11-09/html/2026-22809.htm"
           ]
         }
       ]
