@@ -5,6 +5,55 @@ import type { RadarFeedItem } from '../generatedRadarFeed.ts'
 
 export const monthlyFeedItems: RadarFeedItem[] = [
   {
+    "id": "ai-sdk-realtime-playing-item-truncation",
+    "date": "2026-11-26",
+    "domain": "ai",
+    "topic": "model_inference",
+    "title": "AI SDK 7.0.182：语音被打断时，截断正在播放的item与它自己的位置",
+    "summary": "网络已接收、队列已排程与客户端已播放是三种进度。语音Agent若用整段会话的时钟或最后收到的ID回报已播放范围，可能裁错上下文；工程记录需要同时绑定item身份与该item的坐标。",
+    "anchor": "ai-sdk-realtime-playing-item-truncation",
+    "sourceName": "vercel/ai ai@7.0.182",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/vercel/ai/releases/tag/ai%407.0.182",
+    "isDeepDive": true
+  },
+  {
+    "id": "ai-pydantic-lowered-capability-instruction-history",
+    "date": "2026-11-26",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "Pydantic AI 2.75：Capability已降权，它的说明文字也不能继续进入系统指令",
+    "summary": "把一个插件标成低信任，不能只约束它中途发送的内容，还要追踪初始化说明最终进入哪个通道。审查Agent集成时，应核对实际序列化消息与历史权限，而非只看配置对象里有with_authority。",
+    "anchor": "ai-pydantic-lowered-capability-instruction-history",
+    "sourceName": "pydantic/pydantic-ai v2.75.0",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.75.0"
+  },
+  {
+    "id": "web3-metamask-chart-bounded-initial-timeframe",
+    "date": "2026-11-26",
+    "domain": "web3",
+    "topic": "wallet_cex",
+    "title": "MetaMask图表2.0：切到细周期前，先避免继承粗周期的整段时间窗",
+    "summary": "把每次分页请求缩小，不一定能停止对同一缺口的反复补取。钱包界面的时间窗意图需要在新周期下重新解释，避免一次粗周期初始化持续决定细周期的历史读取量。",
+    "anchor": "web3-metamask-chart-bounded-initial-timeframe",
+    "sourceName": "MetaMask/core v1457.0.0",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/MetaMask/core/releases/tag/v1457.0.0"
+  },
+  {
+    "id": "web3-foundry-dependency-config-env-isolation",
+    "date": "2026-11-26",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "Foundry 11月25日nightly：项目环境覆盖，不再改写依赖自己的配置布局",
+    "summary": "同一个进程的环境变量可能属于顶层项目，不该无条件套到每个依赖。排查本地与CI构建差异时，需要记录配置归属和路径基准，区分项目选择与依赖内部布局。",
+    "anchor": "web3-foundry-dependency-config-env-isolation",
+    "sourceName": "foundry-rs/foundry nightly-50d75f19dbd7ac88fba3013c93cf4e220b1aad6c",
+    "sourceTier": "tier1",
+    "sourceUrl": "https://github.com/foundry-rs/foundry/releases/tag/nightly-50d75f19dbd7ac88fba3013c93cf4e220b1aad6c"
+  },
+  {
     "id": "ai-fastmcp-skill-manifest-byte-verification",
     "date": "2026-11-16",
     "domain": "ai",
