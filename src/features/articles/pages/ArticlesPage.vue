@@ -30,6 +30,7 @@ onMounted(() => setSeoMeta({
   <div class="brief" lang="zh-CN">
     <header class="brief-masthead">
       <div class="brief-shell">
+        <router-link class="brief-back" to="/intel">返回情报流</router-link>
         <p class="brief-dateline"><span>工程笔记</span><span>问题 · 实现 · 复盘</span></p>
         <div class="brief-masthead-row">
           <div>

@@ -68,7 +68,7 @@ export function intelItemId(id: string): string { return `intel-item-${id}` }
 // Only the allowlisted list readers are valid return destinations. Query and fragment
 // are reconstructed so a shared detail URL cannot become an open redirect.
 export function readingReturnLink(from: unknown): { href: string; label: string } {
-  const fallback = { href: '/intel', label: '← 情报流' }
+  const fallback = { href: '/intel', label: '返回情报流' }
   if (typeof from !== 'string' || from.length > 5000 || !from.startsWith('/') || from.startsWith('//') || from.includes('\\')) return fallback
   try {
     const url = new URL(from, SITE_URL)

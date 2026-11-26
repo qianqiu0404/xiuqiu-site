@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { featuredProjects, miniExchangeDemo, resumeExperience } from '../data'
+import { featuredProjects, githubProfileUrl, miniExchangeDemo, resumeExperience } from '../data'
 import { useResume } from '../useResume'
 const { projects, query, includeHistory, category, visibleProjects, activeProject, activeIndex, dialog, dialogBody, closeButton, searchInput, detailState, noteHtml, copyLabel, copied, dark, toggleTheme, setCategory, resetSearch, openProject, closeProject, onDialogClose, loadDetail, stepProject, onDialogKey, onBackdropClick, copyLink } = useResume()
 </script>
@@ -54,7 +54,7 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 </div>
 <div class="social-links">
 <a href="mailto:qianqiuquq@gmail.com">邮箱 <span aria-hidden="true">↗</span></a>
-<a href="https://github.com/xoqiu09" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+<a :href="githubProfileUrl" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
 <a href="https://x.com/Xiuqiu2211" target="_blank" rel="noopener noreferrer">X <span aria-hidden="true">↗</span></a>
 </div>
 </div>
@@ -349,7 +349,7 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 </ul>
 <div class="contact-links">
 <a href="mailto:qianqiuquq@gmail.com">qianqiuquq@gmail.com <span aria-hidden="true">↗</span></a>
-<a href="https://github.com/xoqiu09" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
+<a :href="githubProfileUrl" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a>
 <a href="https://x.com/Xiuqiu2211" target="_blank" rel="noopener noreferrer">X <span aria-hidden="true">↗</span></a>
 </div>
 </section>

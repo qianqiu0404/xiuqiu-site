@@ -2,7 +2,7 @@
 
 [Live site](https://xiuqiu-site.vercel.app) · [学习雷达 RSS](https://xiuqiu-site.vercel.app/radar/rss.xml)
 
-xiuqiu-site 是一个个人站点，正在从「作品集 + 工程证据」转向以 **AI + Web3 Radar 情报流** 为主：每天整理 2 条 AI、2 条 Web3 工程简报和 1 个专题，并提供信息流、主题筛选、搜索与 RSS / JSON Feed 订阅。
+xiuqiu-site 是一个个人站点，也提供 **AI + Web3 Radar 情报流**。学习雷达每期含 2 条 AI、2 条 Web3 工程简报和 1 个专题。可到[学习雷达页](https://xoqiu.cn/radar)查看最新公开日期，也可按主题筛选、搜索和订阅。
 
 站点同时保留 Qiu Market、Wallet Infrastructure 与 AI Engineering 的公开证据。当前只把 Qiu Market 作为产品呈现；Wallet Infrastructure 是当前钱包后端学习与工程证据方向，仍处于学习、私有基线审计与最小失败证据阶段，不把历史材料或模拟实验包装成当前实现、生产钱包或真实资金经验。
 
@@ -68,7 +68,7 @@ Hermes 只在本机密钥环境中保存 dispatch token 与微信通道配置，
 ## 发布与自动化
 
 - **生产发布**只走 [`release-controller.yml`](.github/workflows/release-controller.yml)：精确 SHA、先迁移数据库、Vercel 候选验证后再提升，见 [`docs/release-controller.md`](docs/release-controller.md)。Vercel 的 Git 自动部署（包括 PR Preview）已关闭。
-- **学习雷达**每日由 ResearchOps 流程产出，PR 分支 `automation/daily-radar-YYYY-MM-DD`，只能改白名单内文件，见 [`docs/learning-radar-researchops.md`](docs/learning-radar-researchops.md)。
+- **学习雷达**每期经研究流程生成并检查。PR 分支 `automation/daily-radar-YYYY-MM-DD`，只能改白名单内文件，见 [`docs/learning-radar-researchops.md`](docs/learning-radar-researchops.md)。
 - **交易雷达**每日流程与 v2 研究问题规则见 [`docs/market-radar-researchops.md`](docs/market-radar-researchops.md)。
 - 静态快照与数据库共用同一个不可变 `snapshotId`，见 [`docs/radar-publication-boundary.md`](docs/radar-publication-boundary.md)。
 

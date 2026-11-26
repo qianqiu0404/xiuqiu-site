@@ -51,6 +51,10 @@ test('rss, json feed and llms.txt escape content and link to brief anchors', () 
   assert.equal(json.version, 'https://jsonfeed.org/version/1.1')
   assert.equal(json.items[0].external_url, 'https://example.com/a1')
   assert.match(buildLlmsTxt(items), /\/radar\/rss\.xml/)
+  for (const output of [rss, buildLlmsTxt(items)]) {
+    assert.ok(output.includes('每期含 2 条 AI、2 条 Web3 和 1 个专题。最近公开一期为 2026-08-13。'))
+    assert.doesNotMatch(output, /每天/)
+  }
 })
 
 test('feed helpers filter, group and detect continuing topics', () => {
@@ -72,6 +76,7 @@ test('generated feed stays aligned with the published archive', async () => {
   assert.equal(radarFeedItemCount, radarFeedItems.length)
   assert.deepEqual(radarFeedItems, JSON.parse(JSON.stringify(buildRadarFeedItems(dailyRadars))))
   assert.equal(readFileSync(new URL('../public/radar/rss.xml', import.meta.url), 'utf8'), buildRss(radarFeedItems))
+  assert.equal(readFileSync(new URL('../public/llms.txt', import.meta.url), 'utf8'), buildLlmsTxt(radarFeedItems))
 })
 
 test('daily radar automation may commit the generated feed outputs', () => {
