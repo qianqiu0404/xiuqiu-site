@@ -56,9 +56,19 @@ test('v2 privacy validation rejects local paths and credential-shaped content be
   pathLeak.briefs[0].whatHappened += ' 调试证据位于 /Users/example/private/result.json。'
   assert.throws(() => assertPublicRadarContent(pathLeak), /local absolute path/)
 
+  const windowsPath = clone(valid)
+  windowsPath.briefs[0].whatHappened += ' 调试证据位于 C:\\Users\\example\\result.json。'
+  assert.throws(() => assertPublicRadarContent(windowsPath), /local absolute path/)
+
   const secretLeak = clone(valid)
   secretLeak.briefs[0].mechanism += ' api_key=not-a-real-key'
   assert.throws(() => assertPublicRadarContent(secretLeak), /credentials or secret material/)
+})
+
+test('v2 privacy validation accepts quoted key-value text that only looks like a drive letter', () => {
+  const quoted = clone(valid)
+  quoted.briefs[0].workedExample += ' 上游断言要求 name 加 chainId:"1"，x:"2" 同理。'
+  assert.doesNotThrow(() => assertPublicRadarContent(quoted))
 })
 
 test('fails closed on duplicate sources and invalid deep-dive references', () => {
