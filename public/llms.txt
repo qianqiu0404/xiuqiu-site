@@ -1,6 +1,6 @@
 # xiuqiu-site
 
-> Qiu Market、Wallet Infrastructure 学习方向与 AI Engineering 交付证据的公开入口。学习雷达每期含 2 条 AI、2 条 Web3 和 1 个专题。最近公开一期为 2026-11-16。
+> Qiu Market、Wallet Infrastructure 学习方向与 AI Engineering 交付证据的公开入口。学习雷达每期含 2 条 AI、2 条 Web3 和 1 个专题。最近公开一期为 2026-11-27。
 
 ## Learning Radar
 
@@ -10,6 +10,10 @@
 
 ## Recent briefs
 
+- [LangGraph CLI 0.4.44：没有新的环境变量，更新请求就省略secrets字段](https://xoqiu.cn/radar/2026-11-27#ai-langgraph-deploy-empty-secrets-omission) (2026-11-27, ai/infrastructure): 部署Agent时，没有提供新配置与要求清空配置是两种意图。研究推断：审查更新接口应直接核对发送的字段，而非把本地空集合自动解释为删除远端状态。
+- [Agents SDK 0.26：输入已经拒绝，排队工具不能等清理结束再启动](https://xoqiu.cn/radar/2026-11-27#ai-agents-input-tripwire-queued-tool-gate) (2026-11-27, ai/safety): 错误最终返回的时间，不等于执行准入被关闭的时间。Agent安全检查并行运行时，拒绝状态需要尽早到达队列和调用边界，不能依赖所有清理协程都已经退出。
+- [MetaMask交易控制器74.5.1：未签授权留在估算请求，由选定网络计固有gas](https://xoqiu.cn/radar/2026-11-27#web3-metamask-type4-node-intrinsic-gas) (2026-11-27, web3/wallet_cex): 钱包不能把一套分叉规则的常量当成所有网络的共同成本。研究推断：估算需要保留让节点计费的交易形状，同时把无法从占位签名表达的执行状态和额外费用分开。
+- [Foundry 1.10.1：同一区块的回执，也必须属于请求的那笔交易](https://xoqiu.cn/radar/2026-11-27#web3-foundry-cast-requested-receipt-hash) (2026-11-27, web3/onchain_infrastructure): 区块位置相同，只证明两份材料处于同一容器，不能证明它们描述同一对象。研究推断：节点调试结果需要分别绑定请求、交易、回执与trace，才能避免把一笔交易的成功状态归给另一笔。
 - [FastMCP4.2：读到Skill文件之后，先核对清单承诺的字节](https://xoqiu.cn/radar/2026-11-16#ai-fastmcp-skill-manifest-byte-verification) (2026-11-16, ai/infrastructure): 远端返回了文件，不代表返回的是清单承诺的那份文件。把清单、内容校验和落盘分开，可以在更换服务器、代理资源或版本漂移时定位证据断点，避免只凭成功读取就直接执行。
 - [Archestra1.4.32：可选GitHub连接失效，提示重连与阻断启动分开](https://xoqiu.cn/radar/2026-11-16#ai-archestra-optional-github-reconnect) (2026-11-16, ai/agent): 设置界面、启动前检查和运行中用到外部服务是不同状态。把可选连接的恢复提示当成全局硬门，会阻塞不需要它的工作；反过来，允许启动也不能被记作该GitHub操作已经可用。
 - [viem2.57.20：chainId是字符串时，也不能从EIP-712签名域中消失](https://xoqiu.cn/radar/2026-11-16#web3-viem-eip712-domain-field-presence) (2026-11-16, web3/security): 签名绑定什么，取决于schema实际包含什么。请求对象中看得到链ID，不代表哈希时一定带入；解析、类型推导、编码与最终验证需要沿同一份域数据核对。
@@ -18,10 +22,6 @@
 - [LangGraph1.2.22：独立thread的子图，也要服从调用者的流订阅范围](https://xoqiu.cn/radar/2026-11-15#ai-langgraph-own-thread-subgraph-stream) (2026-11-15, ai/agent): 看不到子任务输出，可能是订阅handler被过滤，而非子任务没有执行。排查流式进度时，需要同时保留配置、订阅范围、事件namespace和业务完成证据，不能用一个空列表直接判失败。
 - [Foundry11月14日nightly：账户读取失败，符号执行不能把余额当成零](https://xoqiu.cn/radar/2026-11-15#web3-foundry-symbolic-balance-unknown) (2026-11-15, web3/security): 测试输入的未知与真实零值含义不同。把读取错误改成零，会把未获得的前提当作反例搜索的确定事实；符号执行结论需要同时携带模型边界、输入读取状态与完整性状态。
 - [Aptos1.50.1：验签通过，仍须核对它签的是哪一份LedgerInfo](https://xoqiu.cn/radar/2026-11-15#web3-aptos-ledger-message-binding) (2026-11-15, web3/protocol): 一个“验证过”的状态如果不记录验证对象，就可能在换上下文后被误用。共识票、授权和缓存结果都需要把签名、原消息与目标聚合上下文关联，而非只沿用一个布尔标记。
-- [DeepAgents 0.7.38：搜索目录获准，不等于目录里的链接目标也获准](https://xoqiu.cn/radar/2026-11-14#ai-deepagents-bulk-search-resolved-scope) (2026-11-14, ai/safety): Agent批准一次目录搜索时，批准对象包含范围。结果的表面路径仍在目录里，并不能证明符号链接最终指向的材料也在同一范围；批量返回前需要重新核对目标与批准范围的关系。
-- [Pydantic AI 2.68：ModelFallback默认切换被截断的非流式回答](https://xoqiu.cn/radar/2026-11-14#ai-pydantic-output-limit-fallback) (2026-11-14, ai/model_inference): 一段看似完整的文本和可解析的参数，都不能替代模型正常结束的信号。编排层需要把可展示、可执行、被拒绝与实际消耗分开记录，避免把预算截断当成一次正常完成。
-- [MetaMask eth-sig-util 10：EIP-7702数值进入哈希前，先拒绝不安全整数](https://xoqiu.cn/radar/2026-11-14#web3-metamask-eip7702-safe-integers) (2026-11-14, web3/security): JSON中的number进入密码学编码前可能已经丢失整数精度。先确认调用方实际表示的数值，再解释哈希和签名，能够避免把近似值当成用户原本授权的链或计数器。
-- [Foundry 11月13日nightly：Safe交易摘要要同时对上本地字段、合约和服务](https://xoqiu.cn/radar/2026-11-14#web3-foundry-safe-local-hash-crosscheck) (2026-11-14, web3/wallet_cex): 服务给出一个摘要、RPC返回一个摘要，仍需要确认它们对应界面展示的同一组字段。把字段、本地计算、链身份和远端返回逐项关联，才能解释授权对象是否一致。
 
 ## Boundaries
 

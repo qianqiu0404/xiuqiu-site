@@ -6,6 +6,58 @@
   "language": "zh-CN",
   "items": [
     {
+      "id": "xiuqiu-radar:ai-langgraph-deploy-empty-secrets-omission",
+      "url": "https://xoqiu.cn/radar/2026-11-27#ai-langgraph-deploy-empty-secrets-omission",
+      "title": "LangGraph CLI 0.4.44：没有新的环境变量，更新请求就省略secrets字段",
+      "summary": "部署Agent时，没有提供新配置与要求清空配置是两种意图。研究推断：审查更新接口应直接核对发送的字段，而非把本地空集合自动解释为删除远端状态。",
+      "content_text": "部署Agent时，没有提供新配置与要求清空配置是两种意图。研究推断：审查更新接口应直接核对发送的字段，而非把本地空集合自动解释为删除远端状态。",
+      "date_published": "2026-11-27T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "infrastructure"
+      ],
+      "external_url": "https://github.com/langchain-ai/langgraph/releases/tag/cli%3D%3D0.4.44"
+    },
+    {
+      "id": "xiuqiu-radar:ai-agents-input-tripwire-queued-tool-gate",
+      "url": "https://xoqiu.cn/radar/2026-11-27#ai-agents-input-tripwire-queued-tool-gate",
+      "title": "Agents SDK 0.26：输入已经拒绝，排队工具不能等清理结束再启动",
+      "summary": "错误最终返回的时间，不等于执行准入被关闭的时间。Agent安全检查并行运行时，拒绝状态需要尽早到达队列和调用边界，不能依赖所有清理协程都已经退出。",
+      "content_text": "错误最终返回的时间，不等于执行准入被关闭的时间。Agent安全检查并行运行时，拒绝状态需要尽早到达队列和调用边界，不能依赖所有清理协程都已经退出。",
+      "date_published": "2026-11-27T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "safety"
+      ],
+      "external_url": "https://github.com/openai/openai-agents-python/releases/tag/v0.26.0"
+    },
+    {
+      "id": "xiuqiu-radar:web3-metamask-type4-node-intrinsic-gas",
+      "url": "https://xoqiu.cn/radar/2026-11-27#web3-metamask-type4-node-intrinsic-gas",
+      "title": "MetaMask交易控制器74.5.1：未签授权留在估算请求，由选定网络计固有gas",
+      "summary": "钱包不能把一套分叉规则的常量当成所有网络的共同成本。研究推断：估算需要保留让节点计费的交易形状，同时把无法从占位签名表达的执行状态和额外费用分开。",
+      "content_text": "钱包不能把一套分叉规则的常量当成所有网络的共同成本。研究推断：估算需要保留让节点计费的交易形状，同时把无法从占位签名表达的执行状态和额外费用分开。",
+      "date_published": "2026-11-27T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "wallet_cex"
+      ],
+      "external_url": "https://github.com/MetaMask/core/releases/tag/v1460.0.0"
+    },
+    {
+      "id": "xiuqiu-radar:web3-foundry-cast-requested-receipt-hash",
+      "url": "https://xoqiu.cn/radar/2026-11-27#web3-foundry-cast-requested-receipt-hash",
+      "title": "Foundry 1.10.1：同一区块的回执，也必须属于请求的那笔交易",
+      "summary": "区块位置相同，只证明两份材料处于同一容器，不能证明它们描述同一对象。研究推断：节点调试结果需要分别绑定请求、交易、回执与trace，才能避免把一笔交易的成功状态归给另一笔。",
+      "content_text": "区块位置相同，只证明两份材料处于同一容器，不能证明它们描述同一对象。研究推断：节点调试结果需要分别绑定请求、交易、回执与trace，才能避免把一笔交易的成功状态归给另一笔。",
+      "date_published": "2026-11-27T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "onchain_infrastructure"
+      ],
+      "external_url": "https://github.com/foundry-rs/foundry/releases/tag/v1.10.1"
+    },
+    {
       "id": "xiuqiu-radar:ai-fastmcp-skill-manifest-byte-verification",
       "url": "https://xoqiu.cn/radar/2026-11-16#ai-fastmcp-skill-manifest-byte-verification",
       "title": "FastMCP4.2：读到Skill文件之后，先核对清单承诺的字节",
@@ -732,58 +784,6 @@
         "onchain_infrastructure"
       ],
       "external_url": "https://github.com/paradigmxyz/reth/releases/tag/v2.9.0"
-    },
-    {
-      "id": "xiuqiu-radar:ai-acr-method-diversity",
-      "url": "https://xoqiu.cn/radar/2026-10-30#ai-acr-method-diversity",
-      "title": "ACR：同一模型的四条轨迹，要分别核对解法与正确性",
-      "summary": "并行 Agent 数量增加，不自动带来独立证据。若要用多条轨迹降低同一种推理盲点，应同时记录不同方法的数量、每条轨迹的正确性与生成预算，避免只奖励措辞变化。",
-      "content_text": "并行 Agent 数量增加，不自动带来独立证据。若要用多条轨迹降低同一种推理盲点，应同时记录不同方法的数量、每条轨迹的正确性与生成预算，避免只奖励措辞变化。",
-      "date_published": "2026-10-30T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "model_inference"
-      ],
-      "external_url": "https://arxiv.org/abs/2610.37375"
-    },
-    {
-      "id": "xiuqiu-radar:ai-tao-tool-aware-admission",
-      "url": "https://xoqiu.cn/radar/2026-10-30#ai-tao-tool-aware-admission",
-      "title": "TAO：工具即将返回，才可能需要下一轮 GPU 准入",
-      "summary": "工具期间保留了多少上下文、何时再需要推理、目标节点还有多少容量，是不同观测。把这些量分开，才能解释调度是在利用真实缓存、预测短期需求，还是只在统计更大的会话。",
-      "content_text": "工具期间保留了多少上下文、何时再需要推理、目标节点还有多少容量，是不同观测。把这些量分开，才能解释调度是在利用真实缓存、预测短期需求，还是只在统计更大的会话。",
-      "date_published": "2026-10-30T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "infrastructure"
-      ],
-      "external_url": "https://arxiv.org/abs/2610.37230"
-    },
-    {
-      "id": "xiuqiu-radar:web3-viem-chain-scoped-config",
-      "url": "https://xoqiu.cn/radar/2026-10-30#web3-viem-chain-scoped-config",
-      "title": "viem 2.57.13：账户配置缓存要把链 ID 纳入键",
-      "summary": "账户地址相同不意味着配置可跨链共享。钱包与中继的缓存契约要同时说明命名空间、选中配置的链上依据和未命中时的行为，避免把缓存内容当成当前授权状态。",
-      "content_text": "账户地址相同不意味着配置可跨链共享。钱包与中继的缓存契约要同时说明命名空间、选中配置的链上依据和未命中时的行为，避免把缓存内容当成当前授权状态。",
-      "date_published": "2026-10-30T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "wallet_cex"
-      ],
-      "external_url": "https://github.com/wevm/viem/releases/tag/viem%402.57.13"
-    },
-    {
-      "id": "xiuqiu-radar:web3-agave-padded-vote-state",
-      "url": "https://xoqiu.cn/radar/2026-10-30#web3-agave-padded-vote-state",
-      "title": "Agave 4.4.0：先编码投票状态，再只补零尾部",
-      "summary": "降低重复内存写入时，仍需核对序列化输出的字节内容、长度及错误边界。把这些契约与部署建议分别检查，能避免将一个局部实现优化夸成整网性能或兼容性结论。",
-      "content_text": "降低重复内存写入时，仍需核对序列化输出的字节内容、长度及错误边界。把这些契约与部署建议分别检查，能避免将一个局部实现优化夸成整网性能或兼容性结论。",
-      "date_published": "2026-10-30T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "onchain_infrastructure"
-      ],
-      "external_url": "https://github.com/anza-xyz/agave/releases/tag/v4.4.0"
     }
   ]
 }

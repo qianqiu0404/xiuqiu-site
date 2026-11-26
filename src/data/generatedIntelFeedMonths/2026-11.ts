@@ -5,6 +5,86 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "learning:ai-langgraph-deploy-empty-secrets-omission",
+    "kind": "learning",
+    "date": "2026-11-27",
+    "domain": "ai",
+    "topic": "infrastructure",
+    "title": "LangGraph CLI 0.4.44：没有新的环境变量，更新请求就省略secrets字段",
+    "summary": "部署Agent时，没有提供新配置与要求清空配置是两种意图。研究推断：审查更新接口应直接核对发送的字段，而非把本地空集合自动解释为删除远端状态。",
+    "href": "/radar/2026-11-27#ai-langgraph-deploy-empty-secrets-omission",
+    "source": {
+      "name": "langgraph-cli==0.4.44",
+      "tier": "tier1",
+      "url": "https://github.com/langchain-ai/langgraph/releases/tag/cli%3D%3D0.4.44"
+    }
+  },
+  {
+    "id": "learning:ai-agents-input-tripwire-queued-tool-gate",
+    "kind": "learning",
+    "date": "2026-11-27",
+    "domain": "ai",
+    "topic": "safety",
+    "title": "Agents SDK 0.26：输入已经拒绝，排队工具不能等清理结束再启动",
+    "summary": "错误最终返回的时间，不等于执行准入被关闭的时间。Agent安全检查并行运行时，拒绝状态需要尽早到达队列和调用边界，不能依赖所有清理协程都已经退出。",
+    "href": "/radar/2026-11-27#ai-agents-input-tripwire-queued-tool-gate",
+    "source": {
+      "name": "v0.26.0",
+      "tier": "tier1",
+      "url": "https://github.com/openai/openai-agents-python/releases/tag/v0.26.0"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "learning:web3-metamask-type4-node-intrinsic-gas",
+    "kind": "learning",
+    "date": "2026-11-27",
+    "domain": "web3",
+    "topic": "wallet_cex",
+    "title": "MetaMask交易控制器74.5.1：未签授权留在估算请求，由选定网络计固有gas",
+    "summary": "钱包不能把一套分叉规则的常量当成所有网络的共同成本。研究推断：估算需要保留让节点计费的交易形状，同时把无法从占位签名表达的执行状态和额外费用分开。",
+    "href": "/radar/2026-11-27#web3-metamask-type4-node-intrinsic-gas",
+    "source": {
+      "name": "1460.0.0",
+      "tier": "tier1",
+      "url": "https://github.com/MetaMask/core/releases/tag/v1460.0.0"
+    }
+  },
+  {
+    "id": "learning:web3-foundry-cast-requested-receipt-hash",
+    "kind": "learning",
+    "date": "2026-11-27",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "Foundry 1.10.1：同一区块的回执，也必须属于请求的那笔交易",
+    "summary": "区块位置相同，只证明两份材料处于同一容器，不能证明它们描述同一对象。研究推断：节点调试结果需要分别绑定请求、交易、回执与trace，才能避免把一笔交易的成功状态归给另一笔。",
+    "href": "/radar/2026-11-27#web3-foundry-cast-requested-receipt-hash",
+    "source": {
+      "name": "v1.10.1",
+      "tier": "tier1",
+      "url": "https://github.com/foundry-rs/foundry/releases/tag/v1.10.1"
+    }
+  },
+  {
+    "id": "market:2026-11-27:ecb-october-loan-growth-revised-vintage-sector-divergence-2026-11-26",
+    "kind": "market",
+    "date": "2026-11-27",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "ECB十月贷款：企业同比加快，整体私人部门放缓",
+    "summary": "研究推断：企业贷款同比变化可能先对应银行贷款规模及借款人融资结构，再影响利息收入、融资成本与信用风险的分析；仍须核对利率、期限和企业用途。企业分项加快与整体私人部门放缓并存，不能据此认定所有部门融资需求改善或资产价格方向。",
+    "href": "/market-radar/2026-11-27#ecb-october-loan-growth-revised-vintage-sector-divergence-2026-11-26",
+    "source": {
+      "name": "European Central Bank — Monetary developments in the euro area: October 2026",
+      "url": "https://www.ecb.europa.eu/press/stats/md/html/ecb.md2610~4bad1d63b5.en.html"
+    },
+    "flags": {
+      "priority": "P2"
+    }
+  },
+  {
     "id": "learning:ai-fastmcp-skill-manifest-byte-verification",
     "kind": "learning",
     "date": "2026-11-16",
