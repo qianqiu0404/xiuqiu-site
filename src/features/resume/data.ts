@@ -3,7 +3,7 @@ import { featuredProjectIds, formatFeaturedPosition, type ResumeProject } from '
 
 export const projects: ResumeProject[] = records
 export { githubProfileUrl } from '../../../shared/site'
-export { filterResumeProjects, normalizeCategory, projectIdFromHash, adjacentProjectId, resumeSeo, resumeExperience, miniExchangeDemo, answerCheckDemo, memoryDemo, watchDemo } from './presentation'
+export { filterResumeProjects, normalizeCategory, projectIdFromHash, adjacentProjectId, resumeSeo, resumeExperience, miniExchangeDemo, answerCheckDemo, memoryDemo, watchDemo, actionsDemo } from './presentation'
 
 type FeaturedVisual =
   | { src: string; alt: string; caption?: string }

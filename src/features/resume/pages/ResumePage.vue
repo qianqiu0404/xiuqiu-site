@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { answerCheckDemo, featuredProjects, githubProfileUrl, memoryDemo, miniExchangeDemo, resumeExperience, watchDemo } from '../data'
+import { actionsDemo, answerCheckDemo, featuredProjects, githubProfileUrl, memoryDemo, miniExchangeDemo, resumeExperience, watchDemo } from '../data'
 import { useResume } from '../useResume'
 const { projects, query, includeHistory, category, visibleProjects, activeProject, activeIndex, dialog, dialogBody, closeButton, searchInput, detailState, noteHtml, copyLabel, copied, dark, toggleTheme, setCategory, resetSearch, openProject, closeProject, onDialogClose, loadDetail, stepProject, onDialogKey, onBackdropClick, copyLink } = useResume()
 </script>
@@ -104,6 +104,9 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 <ul class="track-chips">
 <li>
 <button type="button" data-open="miniexchange" @click="openProject('miniexchange', $event)">mini-exchange</button>
+</li>
+<li>
+<a :href="actionsDemo.href">{{ actionsDemo.label }}<em>个人项目</em></a>
 </li>
 </ul>
 </article>
@@ -255,7 +258,7 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 <div class="category-filters" role="group" aria-label="项目分类">
 <button type="button" data-category-filter="all" :aria-pressed="category === 'all'" @click="setCategory('all')">全部 <span>{{ projects.length }}</span>
 </button>
-<button type="button" data-category-filter="product" :aria-pressed="category === 'product'" @click="setCategory('product')">工具与产品 <span>9</span>
+<button type="button" data-category-filter="product" :aria-pressed="category === 'product'" @click="setCategory('product')">工具与产品 <span>10</span>
 </button>
 <button type="button" data-category-filter="business" :aria-pressed="category === 'business'" @click="setCategory('business')">业务经历 <span>2</span>
 </button>

@@ -1,0 +1,3 @@
+.case-body .fact dt {
+  flex-shrink: 0;
+}

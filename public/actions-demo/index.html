@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>客服办事演示</title>
+  <link rel="stylesheet" href="../answer-check-demo/styles.css">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <main class="page">
+    <header class="intro">
+      <h1>客服办事演示</h1>
+      <p>看看客服怎样查订单、改地址和处理需要人工批准的退款。</p>
+      <p class="muted">青柚家电、订单、用户请求和处理结果均为虚构，页面只回放记录。</p>
+      <a class="home-link" href="/">返回作品集首页</a>
+    </header>
+
+    <noscript><p>启用 JavaScript 后可查看演示场景。</p></noscript>
+
+    <section aria-labelledby="scenarios-title">
+      <h2 id="scenarios-title">办事场景</h2>
+      <p id="result-count" class="result-count" aria-live="polite" aria-atomic="true"></p>
+      <div id="scenarios"></div>
+    </section>
+
+    <section aria-labelledby="verification-title">
+      <h2 id="verification-title">怎么验证的</h2>
+      <ul>
+        <li>从不同进程请求退款、人工批准和重复批准，再打开数据库，核对只退一笔。</li>
+        <li>源码测试模拟人工拒绝退款，核对退款笔数为 0，后续改地址和另一笔退款都未执行。</li>
+        <li>模拟退款执行后响应超时，核对先查结果，确认成功后停止。若查不到，最多重试两次，仍查不到就转人工核对。</li>
+        <li>用他人订单和白名单外的工具测试权限，核对越权请求被拒，含未开放工具的整个计划被拦下。</li>
+        <li>逐条核对回放和原审计记录，确认回放无需调用业务系统，导出也遮住了门牌号。</li>
+      </ul>
+    </section>
+  </main>
+  <footer class="page muted">
+    <p id="source" hidden></p>
+    <a class="home-link" href="https://github.com/xoqiu09/support-actions">查看 support-actions 源码和测试</a>
+  </footer>
+</body>
+</html>

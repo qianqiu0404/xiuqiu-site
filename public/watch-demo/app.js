@@ -1,4 +1,5 @@
 import { ALERT_NAMES, filterAlerts } from './model.js'
+import { calendarDate, timestamp } from './timestamp.js'
 
 const byId = id => document.getElementById(id)
 const alertType = byId('alert-type')
@@ -40,9 +41,9 @@ function tableHeader(scope, label) {
   return header
 }
 
-function summaryTable(title, groups, tableMetrics = metrics) {
+function summaryTable(title, groups, tableMetrics = metrics, columnLabel = String) {
   const entries = Object.entries(groups)
-  const head = el('tr', '', tableHeader('col', '指标'), ...entries.map(([id]) => tableHeader('col', id)))
+  const head = el('tr', '', tableHeader('col', '指标'), ...entries.map(([id]) => tableHeader('col', columnLabel(id))))
   const rows = tableMetrics.map(([key, label, format = String]) =>
     el('tr', '', tableHeader('row', label), ...entries.map(([, stats]) =>
       el('td', '', stats[key] === null ? '无' : format(stats[key])))))
@@ -70,13 +71,7 @@ function reportView(report) {
   if (comparison.previous) days[comparison.previous_date] = comparison.previous
   return el('div', '',
     el('p', '', '与前一天比较：', comparison.message || comparison.flags.join('、') || '无指标超过门槛', '。'),
-    summaryTable('日报指标', days, reportMetrics))
-}
-
-function timestamp(value) {
-  const time = el('time', '', value)
-  time.setAttribute('datetime', value)
-  return time
+    summaryTable('日报指标', days, reportMetrics, calendarDate))
 }
 
 function traceRecord(record) {
@@ -100,7 +95,7 @@ function alertDetails(alert) {
   const details = el('details', 'card case', summary)
   const body = el('div', 'case-body')
   if (alert.type === 'budget_exceeded') {
-    body.append(el('p', '', `${alert.date} 累计使用 ${alert.tokens} token，当日预算为 ${alert.budget} token。`))
+    body.append(el('p', '', calendarDate(alert.date), `累计使用 ${alert.tokens} token，当日预算为 ${alert.budget} token。`))
   }
   const recordsById = new Map(alert.records.map(record => [record.request_id, record]))
   body.append(el('h3', '', '按请求编号查到的调用记录'),
@@ -110,11 +105,11 @@ function alertDetails(alert) {
 }
 
 function renderAlerts(alerts) {
-  const filtered = filterAlerts(alerts, alertType.value)
+  const type = alertType.value
+  const filtered = filterAlerts(alerts, type)
   byId('alerts').replaceChildren(...filtered.map(alertDetails))
-  resultCount.textContent = filtered.length
-    ? `找到 ${filtered.length} 条事件。`
-    : '找到 0 条事件。没有符合筛选条件的事件。'
+  const count = `${ALERT_NAMES[type] ?? '全部类型'}，共 ${filtered.length} 条事件。`
+  resultCount.textContent = filtered.length ? count : `${count}没有符合筛选条件的事件。`
 }
 
 async function start() {
