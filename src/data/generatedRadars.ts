@@ -12,6 +12,48 @@ export interface RadarIndexEntry { date: string; slug: string; snapshotId: strin
 
 export const radarIndex: RadarIndexEntry[] = [
   {
+    "date": "2026-11-28",
+    "slug": "2026-11-28",
+    "snapshotId": "learning-2026-11-28-d19d5982caf16252",
+    "asOf": "2026-11-27T21:44:51.043Z",
+    "title": "学习雷达 · 2026-11-28",
+    "summary": "本期为自动汇总，未经人工复核。缺价请求的费用覆盖、Engram尾部的实际分配、RPC权限方法集合，以及gas余量的链级上限。",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "briefs": [
+      {
+        "id": "ai-deepagents-partial-price-coverage",
+        "domain": "ai",
+        "topic": "infrastructure",
+        "title": "DeepAgents Code 0.2.15：有token却没有价格，费用表必须标出缺口"
+      },
+      {
+        "id": "ai-ollama-engram-tail-storage-compaction",
+        "domain": "ai",
+        "topic": "model_inference",
+        "title": "Ollama 0.40.19：Engram只留尾部，也要释放整段输入的底层分配"
+      },
+      {
+        "id": "web3-metamask-endowment-rpc-method-gate",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "MetaMask权限控制器15：RPC方法也可由endowment权限守住入口"
+      },
+      {
+        "id": "web3-foundry-chain-gas-margin-cap",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Foundry 11月27日nightly：估算gas加余量，也不能越过链的单笔上限"
+      }
+    ],
+    "deepDive": {
+      "id": "deep-engram-logical-tail-retained-allocation",
+      "title": "专题：切片只剩九行，为什么整段输入的分配仍可能活着？",
+      "basedOnBriefId": "ai-ollama-engram-tail-storage-compaction"
+    },
+    "marketSignals": []
+  },
+  {
     "date": "2026-11-27",
     "slug": "2026-11-27",
     "snapshotId": "learning-2026-11-27-120d87c63c6a252c",
@@ -2034,6 +2076,396 @@ export const radarIndex: RadarIndexEntry[] = [
 ]
 
 export const latestRadars: DailyRadar[] = [
+  {
+    "date": "2026-11-28",
+    "slug": "2026-11-28",
+    "title": "学习雷达 · 2026-11-28",
+    "summary": "本期为自动汇总，未经人工复核。缺价请求的费用覆盖、Engram尾部的实际分配、RPC权限方法集合，以及gas余量的链级上限。",
+    "publish": true,
+    "reviewStatus": "automated",
+    "schemaVersion": 2,
+    "editionMode": "daily",
+    "researchedAt": "2026-11-27T21:44:51.043Z",
+    "generatedAt": "2026-11-27T21:44:51.043Z",
+    "sourceSections": [
+      "ai",
+      "web3",
+      "deepDive"
+    ],
+    "missingSections": [],
+    "briefs": [
+      {
+        "id": "ai-deepagents-partial-price-coverage",
+        "domain": "ai",
+        "topic": "infrastructure",
+        "title": "DeepAgents Code 0.2.15：有token却没有价格，费用表必须标出缺口",
+        "whatHappened": "DeepAgents于11月26日（UTC）发布Code 0.2.15，收录同日合入的PR8023与8024。费用栏在部分请求无法定价时增加警示，并把这些请求的token从已定价费用行中分开，避免很小的已知金额被误读为完整会话成本。",
+        "mechanism": "每次请求分别保存总用量、未定价用量及费用完整性；可拆分时，已定价行扣除未定价token，后者单列为无价格数据。存在缺价请求时，总费用标partial、总占比显示n/a。页脚与/cost共用缺口判断，并检查恢复记录；中断回合合并用量后也刷新页脚。",
+        "workedExample": "固定回归合并一笔35098输入、11输出的无价格请求与一笔106输入、9输出、估价0.00029美元的请求：已定价输入行只写106，未定价输入单列35098，总token35224、总费用显示0.0003并标partial。恢复会话的另一回归也检查页脚警示。本期只读源码与断言，没有运行上游测试或请求模型。",
+        "whyItMatters": "研究推断：用量覆盖率与价格覆盖率需要分别记录。没有价格的请求仍然消耗了token；把它们混入已知费用行，会让每token成本和预算判断失去共同分母。",
+        "risksAndLimits": [
+          "这仍是按可用价格资料计算的估价，不是供应商账单；改动没有补齐未知单价，也不能证明真实成本下降。",
+          "旧检查点没有保存未定价子集时，无法事后准确拆列，只标incl. unpriced；缓存与推理行仍是输入或输出的子集，不能再相加成额外token。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "deepagents-code 0.2.15",
+            "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.15",
+            "publishedAt": "2026-11-26T06:22:47.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Flag partial cost totals in the status bar",
+            "url": "https://github.com/langchain-ai/deepagents/pull/8023"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Keep unpriced usage out of priced cost rows",
+            "url": "https://github.com/langchain-ai/deepagents/pull/8024"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Separate priced and unpriced token accounting",
+            "url": "https://github.com/langchain-ai/deepagents/blob/c70d71a502071f3f075405634d74584b88ebd3f2/libs/code/deepagents_code/cost_tracking.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Cost rows and incomplete historical coverage",
+            "url": "https://github.com/langchain-ai/deepagents/blob/c70d71a502071f3f075405634d74584b88ebd3f2/libs/code/deepagents_code/tui/modals/_cost_breakdown.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Mixed-price and legacy-breakdown assertions",
+            "url": "https://github.com/langchain-ai/deepagents/blob/c70d71a502071f3f075405634d74584b88ebd3f2/libs/code/tests/unit_tests/test_cost_breakdown.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Partial totals across resume and interruption",
+            "url": "https://github.com/langchain-ai/deepagents/blob/c70d71a502071f3f075405634d74584b88ebd3f2/libs/code/deepagents_code/app.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Clickable partial-cost marker",
+            "url": "https://github.com/langchain-ai/deepagents/blob/c70d71a502071f3f075405634d74584b88ebd3f2/libs/code/deepagents_code/tui/widgets/status.py"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Partial footer and restored-thread assertions",
+            "url": "https://github.com/langchain-ai/deepagents/blob/c70d71a502071f3f075405634d74584b88ebd3f2/libs/code/tests/unit_tests/test_app.py"
+          }
+        ],
+        "nextQuestions": [
+          "费用记录能否同时保存请求数、已定价请求数、价格版本和供应商账单对账结果，让partial金额始终带着覆盖范围？"
+        ]
+      },
+      {
+        "id": "ai-ollama-engram-tail-storage-compaction",
+        "domain": "ai",
+        "topic": "model_inference",
+        "title": "Ollama 0.40.19：Engram只留尾部，也要释放整段输入的底层分配",
+        "whatHappened": "Ollama于11月26日（UTC）发布0.40.19，收录同日PR19913。MLX runner的实验性Engram缓存对截取的历史尾部调用Contiguous，避免小尾部继续保留整个处理块的底层存储。",
+        "mechanism": "tailAfter先拼接旧历史和当前块，再截取所需尾部；新增的连续化操作位于返回前，供实时状态和预定快照共同使用。该缓存保留2个原始token ID及9行卷积输入。快照与恢复各自持有数组句柄，释放原缓存不应使仍存活的快照失效。",
+        "workedExample": "固定回归覆盖direct、scheduled、live三种模式、FP32与BF16以及128或1024个token。10240通道的BF16尾部逻辑大小应为2×8+9×10240×2=184336字节；预热后同步Metal并清理分配缓存，再检查活跃内存增量落在逻辑大小加固定容差内。另有恢复、关闭顺序及多owner批次断言。本期未运行这些测试。",
+        "whyItMatters": "研究推断：张量形状缩小不等于底层分配已经缩小。需要跨分块保留少量历史的本地推理系统，应同时核对尾部内容、实际存活分配和每个快照的释放时点。",
+        "risksAndLimits": [
+          "范围是MLX runner的qwen4_exp Engram实现；不能推广为所有Ollama模型、KV缓存或整机内存已经下降。",
+          "内存回归在没有Metal时跳过，每个owner保留64 KiB容差，并先同步、清理缓存；这些断言不是本机实测，也不提供吞吐、峰值内存或生成质量结论。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "Ollama v0.40.19",
+            "url": "https://github.com/ollama/ollama/releases/tag/v0.40.19",
+            "publishedAt": "2026-11-26T17:52:02.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Compact Engram history buffers",
+            "url": "https://github.com/ollama/ollama/pull/19913"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Tail compaction and snapshot ownership",
+            "url": "https://github.com/ollama/ollama/blob/8ae8acb81afba9c3c67adf08190964eb7d1207ef/mlxrunner/model/qwen4_exp/engram_cache.go"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Tail values retained-memory and restore assertions",
+            "url": "https://github.com/ollama/ollama/blob/8ae8acb81afba9c3c67adf08190964eb7d1207ef/mlxrunner/model/qwen4_exp/engram_test.go"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Array handle clone and release implementation",
+            "url": "https://github.com/ollama/ollama/blob/8ae8acb81afba9c3c67adf08190964eb7d1207ef/mlx/array.go"
+          }
+        ],
+        "nextQuestions": [
+          "真实多请求运行中，能否把每个快照的逻辑字节、底层活跃分配和关闭回执一起记录，并单独测量压紧尾部的时间与峰值开销？"
+        ]
+      },
+      {
+        "id": "web3-metamask-endowment-rpc-method-gate",
+        "domain": "web3",
+        "topic": "wallet_cex",
+        "title": "MetaMask权限控制器15：RPC方法也可由endowment权限守住入口",
+        "whatHappened": "MetaMask Core于11月27日（UTC）发布v1463.0.0，包含permission-controller 15.0.0，并收录11月25日合入的PR11704。权限规格新增rpcMethods，允许某些RPC方法由endowment权限控制；CAIP-25规格已列入发送交易与签名等方法。",
+        "mechanism": "控制器分别查询全局规格是否登记该方法，以及当前origin获授的endowment所允许的方法集合。V1与V2中间件先放行unrestricted方法，再检查endowment门禁：登记但未获授则拒绝，获授则交给下游处理；其余请求仍走restricted方法执行。调用方messenger须新增委托两项查询action。",
+        "workedExample": "固定回归给测试origin授予包含eth_sendTransaction的endowment后，下游返回success；未授予时，V1响应错误码4100，V2抛出未授权错误。发行版本CAIP-25规格还列有personal_sign和wallet_sendCalls等。本期只读实现与断言，没有连接钱包、签名或发送交易。",
+        "whyItMatters": "研究推断：RPC方法是否存在、是否受某项权限约束，以及这个origin是否获授，是三个需要分开的集合。把方法清单放入权限规格，可让入口中间件对它实际管理的调用范围做明确判定。",
+        "risksAndLimits": [
+          "这是带messenger契约变化的主版本；消费者必须正确注册规格与委托action。unrestricted检查先执行，不能把此门禁概括为覆盖所有RPC的强制拒绝层。",
+          "这里检查的是方法与origin的endowment关系；账户、链、参数限制以及用户逐笔确认仍依赖其他处理层。包发布不证明所有钱包客户端已经接入。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_release",
+            "name": "MetaMask Core v1463.0.0",
+            "url": "https://github.com/MetaMask/core/releases/tag/v1463.0.0",
+            "publishedAt": "2026-11-27T10:17:54.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Allow gating RPC methods behind endowments",
+            "url": "https://github.com/MetaMask/core/pull/11704"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Registered methods and per-origin permitted union",
+            "url": "https://github.com/MetaMask/core/blob/763b2fe8de5b8405f07729c3c05defb164137664/packages/permission-controller/src/PermissionController.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "V1 and V2 RPC endowment admission",
+            "url": "https://github.com/MetaMask/core/blob/763b2fe8de5b8405f07729c3c05defb164137664/packages/permission-controller/src/permission-middleware.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_test",
+            "name": "Granted and missing endowment assertions",
+            "url": "https://github.com/MetaMask/core/blob/763b2fe8de5b8405f07729c3c05defb164137664/packages/permission-controller/src/PermissionController.test.ts"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "CAIP-25 method list in the released revision",
+            "url": "https://github.com/MetaMask/core/blob/763b2fe8de5b8405f07729c3c05defb164137664/packages/chain-agnostic-permission/src/caip25Permission.ts"
+          }
+        ],
+        "nextQuestions": [
+          "能否对同一origin分别保留全局登记方法、实际获授方法和下游账户/链检查的证据，避免把入口放行当成整笔操作获准？"
+        ]
+      },
+      {
+        "id": "web3-foundry-chain-gas-margin-cap",
+        "domain": "web3",
+        "topic": "onchain_infrastructure",
+        "title": "Foundry 11月27日nightly：估算gas加余量，也不能越过链的单笔上限",
+        "whatHappened": "Foundry于11月27日（UTC）发布nightly，包含前一天合入的PR18766。工具给gas估算值加百分比余量时，开始考虑目标链当前分叉的单笔gas上限，避免原估值可执行、加余量后反而被节点拒绝。",
+        "mechanism": "apply_gas_estimate_multiplier接收目标chain ID，以当前墙上时间解析分叉并读取执行工厂的tx_gas_limit_cap。有已知上限时，结果取min(估值×百分比,上限)后再与原估值取max；不传乘数则原样返回。cast估算与脚本等调用传入链ID，创建交易尚未携带链ID时可从模拟RPC上下文补取。",
+        "workedExample": "固定单元断言在3000万上限下，2500万估值加130%余量得到3000万；原估值已是3100万时仍返回3100万，让节点自行拒绝。未知链则保留3250万的完整余量。另有Tempo与Ethereum已知链断言。本期只读源码与测试，没有广播或复现PR作者报告的链上结果。",
+        "whyItMatters": "研究推断：安全余量仍受协议可接受范围约束。调试估算失败时，应同时保存原始估值、乘数、目标链和上限来源，才能区分执行本身超限与工具额外余量造成的拒绝。",
+        "risksAndLimits": [
+          "这是nightly中的改动，不代表稳定版1.10.1已包含。夹限不会把本来超限或会revert的交易变为可执行，也不保证估算足够准确。",
+          "未知链、未识别上限或上限为u64::MAX时不夹限；Amsterdam起的EIP-8037只限制regular gas，因此解析器不把它当作交易gas limit上限。当前分叉按工具墙上时间解析，并非独立读取目标块确认。"
+        ],
+        "sources": [
+          {
+            "tier": "tier1",
+            "role": "event",
+            "kind": "official_nightly_release",
+            "name": "Foundry 2026-11-27 nightly",
+            "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-4be7c860532ece6069edfd459ec55f3a10b46a3b",
+            "publishedAt": "2026-11-27T07:11:24.000Z"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_implementation_change",
+            "name": "Cap gas estimate multiplier at the chain transaction gas cap",
+            "url": "https://github.com/foundry-rs/foundry/pull/18766"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Gas margin clamp and unit assertions",
+            "url": "https://github.com/foundry-rs/foundry/blob/4be7c860532ece6069edfd459ec55f3a10b46a3b/crates/cli/src/utils/mod.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Chain and hardfork gas-cap resolver",
+            "url": "https://github.com/foundry-rs/foundry/blob/4be7c860532ece6069edfd459ec55f3a10b46a3b/crates/evm/core/src/evm/mod.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Pass target chain into RPC estimate adjustment",
+            "url": "https://github.com/foundry-rs/foundry/blob/4be7c860532ece6069edfd459ec55f3a10b46a3b/crates/cast/src/tx.rs"
+          },
+          {
+            "tier": "tier1",
+            "role": "mechanism",
+            "kind": "official_versioned_code",
+            "name": "Simulation fallback chain ID for creation requests",
+            "url": "https://github.com/foundry-rs/foundry/blob/4be7c860532ece6069edfd459ec55f3a10b46a3b/crates/script/src/transaction.rs"
+          }
+        ],
+        "nextQuestions": [
+          "日志能否绑定估算所用块、目标chain ID、分叉与上限配置，并明确显示最终限额为何被夹限或保持原值？"
+        ]
+      }
+    ],
+    "deepDive": {
+      "id": "deep-engram-logical-tail-retained-allocation",
+      "domain": "ai",
+      "topic": "model_inference",
+      "title": "专题：切片只剩九行，为什么整段输入的分配仍可能活着？",
+      "whatHappened": "Ollama 0.40.19中的PR19913只在尾部返回前增加一次Contiguous，却同时补入内容、内存、恢复和多owner关闭回归。专题沿固定Engram实现区分数组可见大小、底层存储存活与快照所有权。",
+      "mechanism": "tailAfter从拼接结果中取最后width行，旧实现直接返回切片；代码注释明确指出，尾部可能保留整块的backing storage。新路径在切片后连续化。实时缓存和计划快照都经此函数；快照用独立scope持有数组，Restore只接受类型与目标offset相符的快照。恢复后关闭原快照，实时缓存仍须保有可用句柄。 固定包装器的false对应allowColMajor；当前MLX官方文档说明该操作保证行连续、必要时复制，不能据此认定每份快照都会深拷贝。",
+      "workedExample": "固定测试先写1024个token，再让只需9行卷积历史的快照存活、释放原缓存。BF16且10240通道时，逻辑大小断言为184336字节；实际活跃分配以预热后的基线作差，允许每个owner最多64 KiB额外量。关闭快照后又核对回到零附近。其他断言按三种关闭顺序和两个批次owner检查彼此独立，并把恢复后继续计算的历史与冷启动分块结果比较。本期只阅读断言，未执行。",
+      "whyItMatters": "研究推断：形状、NumBytes与活跃分配回答不同问题；正确值也可能来自仍占着大分配的小视图。验证尾部优化时，既要检查2个token和9行卷积值正确，又要让其他owner释放，再观察剩余引用究竟保留多少存储。单看缓存条数或张量逻辑字节无法完成这项证明。",
+      "risksAndLimits": [
+        "该测试量的是特定Metal环境中同步并清理缓存后的活跃分配增量，固定容差覆盖分配取整与小缓冲共享；它不是整个进程RSS、峰值或任意GPU上的严格等式。",
+        "独立句柄、快照关闭顺序和内容断言不等于每份快照都复制一份完整数据。本研究不把Clone函数名直接解释为底层字节深拷贝。",
+        "压紧尾部可能带来物化与复制开销；本次来源没有提供本项目端到端延迟、吞吐或模型质量验收。固定版本代码与上游测试断言也不是本机实测结论。",
+        "补充API文档当前标为MLX 0.32.5，只帮助解释连续化语义；本期没有把它当作Ollama发行实际装载的MLX库版本证明。"
+      ],
+      "sources": [
+        {
+          "tier": "tier1",
+          "role": "event",
+          "kind": "official_release",
+          "name": "Ollama v0.40.19",
+          "url": "https://github.com/ollama/ollama/releases/tag/v0.40.19",
+          "publishedAt": "2026-11-26T17:52:02.000Z"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_implementation_change",
+          "name": "Compact Engram history buffers",
+          "url": "https://github.com/ollama/ollama/pull/19913"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Tail compaction and snapshot ownership",
+          "url": "https://github.com/ollama/ollama/blob/8ae8acb81afba9c3c67adf08190964eb7d1207ef/mlxrunner/model/qwen4_exp/engram_cache.go"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_test",
+          "name": "Tail values retained-memory and restore assertions",
+          "url": "https://github.com/ollama/ollama/blob/8ae8acb81afba9c3c67adf08190964eb7d1207ef/mlxrunner/model/qwen4_exp/engram_test.go"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Array handle clone and release implementation",
+          "url": "https://github.com/ollama/ollama/blob/8ae8acb81afba9c3c67adf08190964eb7d1207ef/mlx/array.go"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_versioned_code",
+          "name": "Contiguous wrapper names the column-major flag",
+          "url": "https://github.com/ollama/ollama/blob/8ae8acb81afba9c3c67adf08190964eb7d1207ef/mlx/ops_extra.go"
+        },
+        {
+          "tier": "tier1",
+          "role": "mechanism",
+          "kind": "official_documentation",
+          "name": "MLX 0.32.5 contiguous API documentation read on research date",
+          "url": "https://ml-explore.github.io/mlx/build/html/python/_autosummary/mlx.core.contiguous.html"
+        }
+      ],
+      "nextQuestions": [
+        "能否在同一请求轨迹上同时画出处理块长度、逻辑尾部字节、存活owner数量与活跃分配，并测出连续化操作的峰值和时间成本？"
+      ],
+      "basedOnBriefId": "ai-ollama-engram-tail-storage-compaction"
+    },
+    "sourceUrls": [
+      "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.15",
+      "https://github.com/langchain-ai/deepagents/pull/8023",
+      "https://github.com/langchain-ai/deepagents/pull/8024",
+      "https://github.com/langchain-ai/deepagents/blob/c70d71a502071f3f075405634d74584b88ebd3f2/libs/code/deepagents_code/cost_tracking.py",
+      "https://github.com/langchain-ai/deepagents/blob/c70d71a502071f3f075405634d74584b88ebd3f2/libs/code/deepagents_code/tui/modals/_cost_breakdown.py",
+      "https://github.com/langchain-ai/deepagents/blob/c70d71a502071f3f075405634d74584b88ebd3f2/libs/code/tests/unit_tests/test_cost_breakdown.py",
+      "https://github.com/langchain-ai/deepagents/blob/c70d71a502071f3f075405634d74584b88ebd3f2/libs/code/deepagents_code/app.py",
+      "https://github.com/langchain-ai/deepagents/blob/c70d71a502071f3f075405634d74584b88ebd3f2/libs/code/deepagents_code/tui/widgets/status.py",
+      "https://github.com/langchain-ai/deepagents/blob/c70d71a502071f3f075405634d74584b88ebd3f2/libs/code/tests/unit_tests/test_app.py",
+      "https://github.com/ollama/ollama/releases/tag/v0.40.19",
+      "https://github.com/ollama/ollama/pull/19913",
+      "https://github.com/ollama/ollama/blob/8ae8acb81afba9c3c67adf08190964eb7d1207ef/mlxrunner/model/qwen4_exp/engram_cache.go",
+      "https://github.com/ollama/ollama/blob/8ae8acb81afba9c3c67adf08190964eb7d1207ef/mlxrunner/model/qwen4_exp/engram_test.go",
+      "https://github.com/ollama/ollama/blob/8ae8acb81afba9c3c67adf08190964eb7d1207ef/mlx/array.go",
+      "https://github.com/MetaMask/core/releases/tag/v1463.0.0",
+      "https://github.com/MetaMask/core/pull/11704",
+      "https://github.com/MetaMask/core/blob/763b2fe8de5b8405f07729c3c05defb164137664/packages/permission-controller/src/PermissionController.ts",
+      "https://github.com/MetaMask/core/blob/763b2fe8de5b8405f07729c3c05defb164137664/packages/permission-controller/src/permission-middleware.ts",
+      "https://github.com/MetaMask/core/blob/763b2fe8de5b8405f07729c3c05defb164137664/packages/permission-controller/src/PermissionController.test.ts",
+      "https://github.com/MetaMask/core/blob/763b2fe8de5b8405f07729c3c05defb164137664/packages/chain-agnostic-permission/src/caip25Permission.ts",
+      "https://github.com/foundry-rs/foundry/releases/tag/nightly-4be7c860532ece6069edfd459ec55f3a10b46a3b",
+      "https://github.com/foundry-rs/foundry/pull/18766",
+      "https://github.com/foundry-rs/foundry/blob/4be7c860532ece6069edfd459ec55f3a10b46a3b/crates/cli/src/utils/mod.rs",
+      "https://github.com/foundry-rs/foundry/blob/4be7c860532ece6069edfd459ec55f3a10b46a3b/crates/evm/core/src/evm/mod.rs",
+      "https://github.com/foundry-rs/foundry/blob/4be7c860532ece6069edfd459ec55f3a10b46a3b/crates/cast/src/tx.rs",
+      "https://github.com/foundry-rs/foundry/blob/4be7c860532ece6069edfd459ec55f3a10b46a3b/crates/script/src/transaction.rs",
+      "https://github.com/ollama/ollama/blob/8ae8acb81afba9c3c67adf08190964eb7d1207ef/mlx/ops_extra.go",
+      "https://ml-explore.github.io/mlx/build/html/python/_autosummary/mlx.core.contiguous.html"
+    ],
+    "relatedProjectSlugs": [],
+    "marketSignals": [],
+    "snapshotId": "learning-2026-11-28-d19d5982caf16252",
+    "asOf": "2026-11-27T21:44:51.043Z",
+    "origin": "research",
+    "publicationState": "published"
+  },
   {
     "date": "2026-11-27",
     "slug": "2026-11-27",
@@ -4061,307 +4493,6 @@ export const latestRadars: DailyRadar[] = [
     "marketSignals": [],
     "snapshotId": "learning-2026-11-12-5116c14a8b3e1cfd",
     "asOf": "2026-11-11T22:03:46.063Z",
-    "origin": "research",
-    "publicationState": "published"
-  },
-  {
-    "date": "2026-11-11",
-    "slug": "2026-11-11",
-    "title": "学习雷达 · 2026-11-11",
-    "summary": "AI看消息队列的待定决策与Git归属探针退避；Web3看interop健康表针和quorum的区别，以及钱包图表的右轴复用。专题拆解流结束后的发送边界。",
-    "publish": true,
-    "reviewStatus": "automated",
-    "schemaVersion": 2,
-    "editionMode": "daily",
-    "researchedAt": "2026-11-10T21:38:26.706Z",
-    "generatedAt": "2026-11-10T21:38:26.706Z",
-    "sourceSections": [
-      "ai",
-      "web3",
-      "deepDive"
-    ],
-    "missingSections": [],
-    "briefs": [
-      {
-        "id": "ai-sdk-queue-approval-options-pending-decision",
-        "domain": "ai",
-        "topic": "agent",
-        "title": "AI SDK 7.0.169：自动发送还在判定，消息队列就不能当作空闲",
-        "whatHappened": "ai@7.0.169于11月10日（UTC）发布，修复useChat实验消息队列：用户发送触发已回答工具审批优先提交时保留请求选项，并等待异步sendAutomaticallyWhen判定。",
-        "mechanism": "队列把当前stopGeneration的待定判定也算作进行中；需要先发审批时暂存这次用户发送的options，判定结束后再处理。stop推进代次并清掉暂存审批，旧判定不再阻塞新一代发送。",
-        "workedExample": "上游mock先回答工具审批，再以x-tenant/body.tenant=t1发送第二条消息，断言审批请求保留选项；另把自动判定悬置，第二条仍在队列，true先续答、false先发用户消息。本期只读断言，未运行上游测试或模型。",
-        "whyItMatters": "响应流结束和下一步决策结束是两个时刻；把中间窗口当空闲，容易让新消息越过审批或抢先启动另一请求。",
-        "risksAndLimits": [
-          "这是稳定包内experimental队列的特定路径修复；传递租户字段不等于服务端身份认证、权限校验或完整租户隔离。",
-          "stop只约束客户端后续发送，不能撤回已发生的工具副作用；本期没有真实服务接入、并发实测或外部恰好一次保证。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "AI SDK ai7.0.169 release",
-            "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.169",
-            "publishedAt": "2026-11-10T20:17:26.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "Queue approval options PR24857",
-            "url": "https://github.com/vercel/ai/pull/24857"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Queue and pending-decision implementation",
-            "url": "https://github.com/vercel/ai/blob/44ba949048fcfe4cd1b801c3bd9c49bffbad96fa/packages/ai/src/ui/chat.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "Queue decision regression assertions",
-            "url": "https://github.com/vercel/ai/blob/44ba949048fcfe4cd1b801c3bd9c49bffbad96fa/packages/ai/src/ui/chat.test.ts"
-          }
-        ],
-        "nextQuestions": [
-          "服务端怎样将审批ID、身份与工具回执绑定，并在客户端恢复后核对实际执行结果？"
-        ]
-      },
-      {
-        "id": "ai-deepagents-git-attribution-probe-backoff",
-        "domain": "ai",
-        "topic": "infrastructure",
-        "title": "DeepAgents Code 0.2.7：归属探针复用基线，连续失败后退避停用",
-        "whatHappened": "deepagents-code==0.2.7于11月10日（UTC）发布，包含PR7661的Git归属探针调整：复用已观察的checkout快照、失败退避，并允许单独关闭这类归属探针。",
-        "mechanism": "同轮工具调用用最新旧快照比较调用后的变化，新见checkout先建基线；首次失败冷却30秒、第二次60秒，连续第三次失败停用会话探针，不支持的后端立即停用。归属开关不会关闭全部LangSmith追踪。",
-        "workedExample": "上游同步/异步测试用假模型和临时repo：8次工具调用得到10次探针，已有脏文件不算新修改；失败测试12次工具仍返回ok，探针计数停在3。另测旧并发快照不能追加错误target。本期只读，未运行测试或性能基准。",
-        "whyItMatters": "辅助追踪不应在每次工具前后重复扫描，也不应在持续失败时拖慢主流程；减少探针仍要保留基线与观察顺序，才能解释归属证据。",
-        "risksAndLimits": [
-          "减少扫描会把两次工具之间或审批等待期的变化归给下一次观察，Git标签不是精确到单个工具的因果证明。",
-          "关闭项只针对Git归属检查，不代表关闭遥测；本期不引用整体Agent提速或本地实测收益，也不证明所有后端与并发归属正确。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "DeepAgents Code0.2.7 release",
-            "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.7",
-            "publishedAt": "2026-11-10T21:00:39.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "Attribution probe PR7661",
-            "url": "https://github.com/langchain-ai/deepagents/pull/7661"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Attribution baseline and backoff",
-            "url": "https://github.com/langchain-ai/deepagents/blob/6a8d452d70f9bcb978e6bd44831dda093ecbe928/libs/code/deepagents_code/git_trace.py"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "Attribution regression assertions",
-            "url": "https://github.com/langchain-ai/deepagents/blob/6a8d452d70f9bcb978e6bd44831dda093ecbe928/libs/code/tests/unit_tests/test_git_trace.py"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Attribution option boundary",
-            "url": "https://github.com/langchain-ai/deepagents/blob/6a8d452d70f9bcb978e6bd44831dda093ecbe928/libs/code/deepagents_code/config.py"
-          }
-        ],
-        "nextQuestions": [
-          "追踪界面如何标出观察区间、缺失探针和外部修改，避免把仓库归属当作操作作者证明？"
-        ]
-      },
-      {
-        "id": "web3-op-reth-out-of-scope-health-quorum",
-        "domain": "web3",
-        "topic": "l2",
-        "title": "op-reth 2.8.2：消息太新时保留up旧值，仍不能给quorum投票",
-        "whatHappened": "op-reth/v2.8.2于11月10日（UTC）发布，修复interop交易池endpoint.up：过滤器以-321100回答消息超出已摄取或交叉验证范围时，不再直接把健康表针置0。",
-        "mechanism": "这项回答仍使endpoint.verdicts的unavailable加1，也仍排除在确定性quorum之外；up只保留原值，不自动置1。超时/传输等其他不可用路径仍置0，明确有效或无效的回答可恢复为1。",
-        "workedExample": "上游metrics测试覆盖三条序列：首次-321100保持初始化up=1；有效后再遇它仍为1；先断连置0再遇它仍为0，三者均增加unavailable。只读代码与测试，未启动节点、过滤器或RPC。",
-        "whyItMatters": "端点能回应、能否判断当前消息、整组是否凑够确定性回答，是三件事；保留表针可减少误判，却不能替代当前消息的quorum证据。",
-        "risksAndLimits": [
-          "up在启动时初始化为1，过滤器摄取停滞时也可能保持旧值；高up与rejected_no_quorum可同时发生，不代表无事件或整条链路健康。",
-          "需联合每端点verdict速率和摄取延迟观察；本期不验证跨链消息被接受、链最终性、生产告警配置或资产安全。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "op-reth2.8.2 release",
-            "url": "https://github.com/ethereum-optimism/optimism/releases/tag/op-reth/v2.8.2",
-            "publishedAt": "2026-11-10T00:03:43.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "Out-of-scope metrics PR23951",
-            "url": "https://github.com/ethereum-optimism/optimism/pull/23951"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Endpoint metrics and assertions",
-            "url": "https://github.com/ethereum-optimism/optimism/blob/969931cdf14fc219598f0aa44d869e718236df7f/rust/op-reth/crates/txpool/src/interop_filter/metrics.rs"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Out-of-scope error classification",
-            "url": "https://github.com/ethereum-optimism/optimism/blob/969931cdf14fc219598f0aa44d869e718236df7f/rust/op-reth/crates/txpool/src/interop_filter/errors.rs"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Quorum aggregation implementation",
-            "url": "https://github.com/ethereum-optimism/optimism/blob/969931cdf14fc219598f0aa44d869e718236df7f/rust/op-reth/crates/txpool/src/interop_filter/client.rs"
-          }
-        ],
-        "nextQuestions": [
-          "告警怎样同时显示旧up、unavailable增量与摄取延迟，避免只凭绿色表针判断可用？"
-        ]
-      },
-      {
-        "id": "web3-metamask-chart-right-scale-detach",
-        "domain": "web3",
-        "topic": "wallet_cex",
-        "title": "MetaMask图表1.1.1：已有右轴时，切图不再重复新建价格轴",
-        "whatHappened": "MetaMask/core v1413.0.0于11月10日（UTC）发布，其中advanced-chart-core 1.1.1修复开启均线后line切candle产生第二价格轴、均线显示偏移的问题。",
-        "mechanism": "布局同步原本总调用detachToRight，而它会新建右轴。修复读取首个pane的getRightPriceScales数量，已有右轴就跳过detach；没有右轴才重新挂载，避免把已有overlay留在另一轴上。",
-        "workedExample": "上游mock分别返回右轴数量0和1：前者断言detach调用一次，后者断言不调用。它检查调用条件，不是在真实图表里完成反复切换的视觉验收；本期只读，未运行测试或钱包。",
-        "whyItMatters": "可反复触发的布局同步若每次都创建新对象，会把显示层关系拆散；先识别已有结构，才能让初始化逻辑在更新时复用。",
-        "risksAndLimits": [
-          "实际guard是首pane的右轴数量，不是检查主series是否属于该轴；缺失API时按0处理，mock不能证明所有多pane或多轴布局。",
-          "仅讨论钱包图表坐标与overlay显示，不证明报价、余额、估值、资金安全或手机端已部署。"
-        ],
-        "sources": [
-          {
-            "tier": "tier1",
-            "role": "event",
-            "kind": "official_release",
-            "name": "MetaMask core1413 release",
-            "url": "https://github.com/MetaMask/core/releases/tag/v1413.0.0",
-            "publishedAt": "2026-11-10T18:01:16.000Z"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_implementation_change",
-            "name": "Right price scale PR11422",
-            "url": "https://github.com/MetaMask/core/pull/11422"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_code",
-            "name": "Chart layout implementation",
-            "url": "https://github.com/MetaMask/core/blob/2c0843bd0c4db7874bebab05a6be8d4a0d91aec4/packages/advanced-chart-core/src/widget/scaleLayout.ts"
-          },
-          {
-            "tier": "tier1",
-            "role": "mechanism",
-            "kind": "official_versioned_test",
-            "name": "Chart layout mock assertions",
-            "url": "https://github.com/MetaMask/core/blob/2c0843bd0c4db7874bebab05a6be8d4a0d91aec4/packages/advanced-chart-core/src/widget/__tests__/scaleLayout.test.ts"
-          }
-        ],
-        "nextQuestions": [
-          "多pane、多个右轴和图表销毁重建时，还需要哪些真实组件回归来验证overlay始终绑定预期坐标？"
-        ]
-      }
-    ],
-    "deepDive": {
-      "id": "deep-agent-queue-decision-and-request-options",
-      "domain": "ai",
-      "topic": "agent",
-      "title": "专题：流结束以后，Agent为什么还没有进入可发送状态",
-      "whatHappened": "AI SDK这次修复把异步自动发送判定纳入进行中状态。一个响应已结束，但若判定结果仍可能启动续答，普通新消息还不能直接越过它。",
-      "mechanism": "编辑拆解为三个边界：响应流占用、自动判定占用、已回答审批的优先提交。pendingAutomaticDecisions按stopGeneration追踪；判定false才让队列接手暂存审批，true可先续答；stop后旧代判定失效。",
-      "workedExample": "上游悬置Promise的测试在true分支先续答再发second，在false分支直接发second；审批场景false分支另断言带入tenant body。sendNow测试先stop旧代，再立即发送排队消息，旧Promise后来true也不新增请求。本期只读这些分支。",
-      "whyItMatters": "工程推论：聊天界面要显式表达决策仍在进行，日志也要区分“等决定”“待审批”“已请求”。否则用户看到ready，后端却仍可能收到旧自动续答。",
-      "risksAndLimits": [
-        "请求选项保留只说明客户端传了什么；服务端必须另验真实身份、审批对象和工具权限，不能信任调用方声明的tenant字段。",
-        "代次失效限制旧自动请求，不回滚已完成的工具；本期未实测服务端授权、外部幂等、断线恢复或任何模型。"
-      ],
-      "sources": [
-        {
-          "tier": "tier1",
-          "role": "event",
-          "kind": "official_release",
-          "name": "AI SDK ai7.0.169 release",
-          "url": "https://github.com/vercel/ai/releases/tag/ai%407.0.169",
-          "publishedAt": "2026-11-10T20:17:26.000Z"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_implementation_change",
-          "name": "Queue approval options PR24857",
-          "url": "https://github.com/vercel/ai/pull/24857"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_code",
-          "name": "Queue and pending-decision implementation",
-          "url": "https://github.com/vercel/ai/blob/44ba949048fcfe4cd1b801c3bd9c49bffbad96fa/packages/ai/src/ui/chat.ts"
-        },
-        {
-          "tier": "tier1",
-          "role": "mechanism",
-          "kind": "official_versioned_test",
-          "name": "Queue decision regression assertions",
-          "url": "https://github.com/vercel/ai/blob/44ba949048fcfe4cd1b801c3bd9c49bffbad96fa/packages/ai/src/ui/chat.test.ts"
-        }
-      ],
-      "nextQuestions": [
-        "如何分别记录判定代次、审批对象与实际工具回执，使恢复流程不会把客户端ready误当外部操作已结束？"
-      ],
-      "basedOnBriefId": "ai-sdk-queue-approval-options-pending-decision"
-    },
-    "sourceUrls": [
-      "https://github.com/vercel/ai/releases/tag/ai%407.0.169",
-      "https://github.com/vercel/ai/pull/24857",
-      "https://github.com/vercel/ai/blob/44ba949048fcfe4cd1b801c3bd9c49bffbad96fa/packages/ai/src/ui/chat.ts",
-      "https://github.com/vercel/ai/blob/44ba949048fcfe4cd1b801c3bd9c49bffbad96fa/packages/ai/src/ui/chat.test.ts",
-      "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.7",
-      "https://github.com/langchain-ai/deepagents/pull/7661",
-      "https://github.com/langchain-ai/deepagents/blob/6a8d452d70f9bcb978e6bd44831dda093ecbe928/libs/code/deepagents_code/git_trace.py",
-      "https://github.com/langchain-ai/deepagents/blob/6a8d452d70f9bcb978e6bd44831dda093ecbe928/libs/code/tests/unit_tests/test_git_trace.py",
-      "https://github.com/langchain-ai/deepagents/blob/6a8d452d70f9bcb978e6bd44831dda093ecbe928/libs/code/deepagents_code/config.py",
-      "https://github.com/ethereum-optimism/optimism/releases/tag/op-reth/v2.8.2",
-      "https://github.com/ethereum-optimism/optimism/pull/23951",
-      "https://github.com/ethereum-optimism/optimism/blob/969931cdf14fc219598f0aa44d869e718236df7f/rust/op-reth/crates/txpool/src/interop_filter/metrics.rs",
-      "https://github.com/ethereum-optimism/optimism/blob/969931cdf14fc219598f0aa44d869e718236df7f/rust/op-reth/crates/txpool/src/interop_filter/errors.rs",
-      "https://github.com/ethereum-optimism/optimism/blob/969931cdf14fc219598f0aa44d869e718236df7f/rust/op-reth/crates/txpool/src/interop_filter/client.rs",
-      "https://github.com/MetaMask/core/releases/tag/v1413.0.0",
-      "https://github.com/MetaMask/core/pull/11422",
-      "https://github.com/MetaMask/core/blob/2c0843bd0c4db7874bebab05a6be8d4a0d91aec4/packages/advanced-chart-core/src/widget/scaleLayout.ts",
-      "https://github.com/MetaMask/core/blob/2c0843bd0c4db7874bebab05a6be8d4a0d91aec4/packages/advanced-chart-core/src/widget/__tests__/scaleLayout.test.ts"
-    ],
-    "relatedProjectSlugs": [],
-    "marketSignals": [],
-    "snapshotId": "learning-2026-11-11-3323ecfb854f3355",
-    "asOf": "2026-11-10T21:38:26.706Z",
     "origin": "research",
     "publicationState": "published"
   }

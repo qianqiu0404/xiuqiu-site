@@ -6,6 +6,58 @@
   "language": "zh-CN",
   "items": [
     {
+      "id": "xiuqiu-radar:ai-deepagents-partial-price-coverage",
+      "url": "https://xoqiu.cn/radar/2026-11-28#ai-deepagents-partial-price-coverage",
+      "title": "DeepAgents Code 0.2.15：有token却没有价格，费用表必须标出缺口",
+      "summary": "研究推断：用量覆盖率与价格覆盖率需要分别记录。没有价格的请求仍然消耗了token；把它们混入已知费用行，会让每token成本和预算判断失去共同分母。",
+      "content_text": "研究推断：用量覆盖率与价格覆盖率需要分别记录。没有价格的请求仍然消耗了token；把它们混入已知费用行，会让每token成本和预算判断失去共同分母。",
+      "date_published": "2026-11-28T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "infrastructure"
+      ],
+      "external_url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.15"
+    },
+    {
+      "id": "xiuqiu-radar:ai-ollama-engram-tail-storage-compaction",
+      "url": "https://xoqiu.cn/radar/2026-11-28#ai-ollama-engram-tail-storage-compaction",
+      "title": "Ollama 0.40.19：Engram只留尾部，也要释放整段输入的底层分配",
+      "summary": "研究推断：张量形状缩小不等于底层分配已经缩小。需要跨分块保留少量历史的本地推理系统，应同时核对尾部内容、实际存活分配和每个快照的释放时点。",
+      "content_text": "研究推断：张量形状缩小不等于底层分配已经缩小。需要跨分块保留少量历史的本地推理系统，应同时核对尾部内容、实际存活分配和每个快照的释放时点。",
+      "date_published": "2026-11-28T00:00:00.000Z",
+      "tags": [
+        "ai",
+        "model_inference"
+      ],
+      "external_url": "https://github.com/ollama/ollama/releases/tag/v0.40.19"
+    },
+    {
+      "id": "xiuqiu-radar:web3-metamask-endowment-rpc-method-gate",
+      "url": "https://xoqiu.cn/radar/2026-11-28#web3-metamask-endowment-rpc-method-gate",
+      "title": "MetaMask权限控制器15：RPC方法也可由endowment权限守住入口",
+      "summary": "研究推断：RPC方法是否存在、是否受某项权限约束，以及这个origin是否获授，是三个需要分开的集合。把方法清单放入权限规格，可让入口中间件对它实际管理的调用范围做明确判定。",
+      "content_text": "研究推断：RPC方法是否存在、是否受某项权限约束，以及这个origin是否获授，是三个需要分开的集合。把方法清单放入权限规格，可让入口中间件对它实际管理的调用范围做明确判定。",
+      "date_published": "2026-11-28T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "wallet_cex"
+      ],
+      "external_url": "https://github.com/MetaMask/core/releases/tag/v1463.0.0"
+    },
+    {
+      "id": "xiuqiu-radar:web3-foundry-chain-gas-margin-cap",
+      "url": "https://xoqiu.cn/radar/2026-11-28#web3-foundry-chain-gas-margin-cap",
+      "title": "Foundry 11月27日nightly：估算gas加余量，也不能越过链的单笔上限",
+      "summary": "研究推断：安全余量仍受协议可接受范围约束。调试估算失败时，应同时保存原始估值、乘数、目标链和上限来源，才能区分执行本身超限与工具额外余量造成的拒绝。",
+      "content_text": "研究推断：安全余量仍受协议可接受范围约束。调试估算失败时，应同时保存原始估值、乘数、目标链和上限来源，才能区分执行本身超限与工具额外余量造成的拒绝。",
+      "date_published": "2026-11-28T00:00:00.000Z",
+      "tags": [
+        "web3",
+        "onchain_infrastructure"
+      ],
+      "external_url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-4be7c860532ece6069edfd459ec55f3a10b46a3b"
+    },
+    {
       "id": "xiuqiu-radar:ai-langgraph-deploy-empty-secrets-omission",
       "url": "https://xoqiu.cn/radar/2026-11-27#ai-langgraph-deploy-empty-secrets-omission",
       "title": "LangGraph CLI 0.4.44：没有新的环境变量，更新请求就省略secrets字段",
@@ -732,58 +784,6 @@
         "onchain_infrastructure"
       ],
       "external_url": "https://github.com/foundry-rs/foundry/releases/tag/v1.9.0"
-    },
-    {
-      "id": "xiuqiu-radar:ai-langgraph-paused-tool-stream",
-      "url": "https://xoqiu.cn/radar/2026-11-02#ai-langgraph-paused-tool-stream",
-      "title": "LangGraph 1.2.19：等待批准的工具，不再被流事件误报成失败",
-      "summary": "Agent 状态面板需要区分等待、执行失败和业务完成。异常类型、图状态与流事件是不同证据；单看一条结束事件或一段没有输出的流，可能错误地触发重试或显示完成。",
-      "content_text": "Agent 状态面板需要区分等待、执行失败和业务完成。异常类型、图状态与流事件是不同证据；单看一条结束事件或一段没有输出的流，可能错误地触发重试或显示完成。",
-      "date_published": "2026-11-02T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "agent"
-      ],
-      "external_url": "https://github.com/langchain-ai/langgraph/releases/tag/1.2.19"
-    },
-    {
-      "id": "xiuqiu-radar:ai-openai-sdk-websocket-policy",
-      "url": "https://xoqiu.cn/radar/2026-11-02#ai-openai-sdk-websocket-policy",
-      "title": "openai-python 3.42.1：连接策略要随代码生成保留下来",
-      "summary": "自动生成的接口和手工维护的传输行为需要共同交付。只确认方法或类型存在，不能证明请求头、恢复预算与取消清理仍遵守原来的契约。",
-      "content_text": "自动生成的接口和手工维护的传输行为需要共同交付。只确认方法或类型存在，不能证明请求头、恢复预算与取消清理仍遵守原来的契约。",
-      "date_published": "2026-11-02T00:00:00.000Z",
-      "tags": [
-        "ai",
-        "infrastructure"
-      ],
-      "external_url": "https://github.com/openai/openai-python/releases/tag/v3.42.1"
-    },
-    {
-      "id": "xiuqiu-radar:web3-metamask-author-comment-authority",
-      "url": "https://xoqiu.cn/radar/2026-11-02#web3-metamask-author-comment-authority",
-      "title": "MetaMask 社交组件：作者评论由后端选择，客户端保留缺失与 null",
-      "summary": "钱包展示的资料应保留字段的权威来源与未知状态。缺失、明确为空和校验失败分别影响界面及排障，不能统一转成没有评论。",
-      "content_text": "钱包展示的资料应保留字段的权威来源与未知状态。缺失、明确为空和校验失败分别影响界面及排障，不能统一转成没有评论。",
-      "date_published": "2026-11-02T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "wallet_cex"
-      ],
-      "external_url": "https://github.com/MetaMask/core/releases/tag/v1378.0.0"
-    },
-    {
-      "id": "xiuqiu-radar:web3-reth-evm2-sdk-boundary",
-      "url": "https://xoqiu.cn/radar/2026-11-02#web3-reth-evm2-sdk-boundary",
-      "title": "Reth 2.9.0：节点配置可沿用，自定义执行组件仍要迁移",
-      "summary": "同一版本对节点运营方和 SDK 开发者可能有不同迁移成本。升级验收应按实际使用的接口划分，避免把无需改配置理解为所有自定义组件都保持兼容。",
-      "content_text": "同一版本对节点运营方和 SDK 开发者可能有不同迁移成本。升级验收应按实际使用的接口划分，避免把无需改配置理解为所有自定义组件都保持兼容。",
-      "date_published": "2026-11-02T00:00:00.000Z",
-      "tags": [
-        "web3",
-        "onchain_infrastructure"
-      ],
-      "external_url": "https://github.com/paradigmxyz/reth/releases/tag/v2.9.0"
     }
   ]
 }

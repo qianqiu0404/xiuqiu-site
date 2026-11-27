@@ -1,6 +1,6 @@
 # xiuqiu-site
 
-> Qiu Market、Wallet Infrastructure 学习方向与 AI Engineering 交付证据的公开入口。学习雷达每期含 2 条 AI、2 条 Web3 和 1 个专题。最近公开一期为 2026-11-27。
+> Qiu Market、Wallet Infrastructure 学习方向与 AI Engineering 交付证据的公开入口。学习雷达每期含 2 条 AI、2 条 Web3 和 1 个专题。最近公开一期为 2026-11-28。
 
 ## Learning Radar
 
@@ -10,6 +10,10 @@
 
 ## Recent briefs
 
+- [DeepAgents Code 0.2.15：有token却没有价格，费用表必须标出缺口](https://xoqiu.cn/radar/2026-11-28#ai-deepagents-partial-price-coverage) (2026-11-28, ai/infrastructure): 研究推断：用量覆盖率与价格覆盖率需要分别记录。没有价格的请求仍然消耗了token；把它们混入已知费用行，会让每token成本和预算判断失去共同分母。
+- [Ollama 0.40.19：Engram只留尾部，也要释放整段输入的底层分配](https://xoqiu.cn/radar/2026-11-28#ai-ollama-engram-tail-storage-compaction) (2026-11-28, ai/model_inference): 研究推断：张量形状缩小不等于底层分配已经缩小。需要跨分块保留少量历史的本地推理系统，应同时核对尾部内容、实际存活分配和每个快照的释放时点。
+- [MetaMask权限控制器15：RPC方法也可由endowment权限守住入口](https://xoqiu.cn/radar/2026-11-28#web3-metamask-endowment-rpc-method-gate) (2026-11-28, web3/wallet_cex): 研究推断：RPC方法是否存在、是否受某项权限约束，以及这个origin是否获授，是三个需要分开的集合。把方法清单放入权限规格，可让入口中间件对它实际管理的调用范围做明确判定。
+- [Foundry 11月27日nightly：估算gas加余量，也不能越过链的单笔上限](https://xoqiu.cn/radar/2026-11-28#web3-foundry-chain-gas-margin-cap) (2026-11-28, web3/onchain_infrastructure): 研究推断：安全余量仍受协议可接受范围约束。调试估算失败时，应同时保存原始估值、乘数、目标链和上限来源，才能区分执行本身超限与工具额外余量造成的拒绝。
 - [LangGraph CLI 0.4.44：没有新的环境变量，更新请求就省略secrets字段](https://xoqiu.cn/radar/2026-11-27#ai-langgraph-deploy-empty-secrets-omission) (2026-11-27, ai/infrastructure): 部署Agent时，没有提供新配置与要求清空配置是两种意图。研究推断：审查更新接口应直接核对发送的字段，而非把本地空集合自动解释为删除远端状态。
 - [Agents SDK 0.26：输入已经拒绝，排队工具不能等清理结束再启动](https://xoqiu.cn/radar/2026-11-27#ai-agents-input-tripwire-queued-tool-gate) (2026-11-27, ai/safety): 错误最终返回的时间，不等于执行准入被关闭的时间。Agent安全检查并行运行时，拒绝状态需要尽早到达队列和调用边界，不能依赖所有清理协程都已经退出。
 - [MetaMask交易控制器74.5.1：未签授权留在估算请求，由选定网络计固有gas](https://xoqiu.cn/radar/2026-11-27#web3-metamask-type4-node-intrinsic-gas) (2026-11-27, web3/wallet_cex): 钱包不能把一套分叉规则的常量当成所有网络的共同成本。研究推断：估算需要保留让节点计费的交易形状，同时把无法从占位签名表达的执行状态和额外费用分开。
@@ -18,10 +22,6 @@
 - [Archestra1.4.32：可选GitHub连接失效，提示重连与阻断启动分开](https://xoqiu.cn/radar/2026-11-16#ai-archestra-optional-github-reconnect) (2026-11-16, ai/agent): 设置界面、启动前检查和运行中用到外部服务是不同状态。把可选连接的恢复提示当成全局硬门，会阻塞不需要它的工作；反过来，允许启动也不能被记作该GitHub操作已经可用。
 - [viem2.57.20：chainId是字符串时，也不能从EIP-712签名域中消失](https://xoqiu.cn/radar/2026-11-16#web3-viem-eip712-domain-field-presence) (2026-11-16, web3/security): 签名绑定什么，取决于schema实际包含什么。请求对象中看得到链ID，不代表哈希时一定带入；解析、类型推导、编码与最终验证需要沿同一份域数据核对。
 - [Foundry11月15日nightly：挖完整批块，再释放读回结果所需的锁](https://xoqiu.cn/radar/2026-11-16#web3-foundry-multiblock-mining-guard) (2026-11-16, web3/onchain_infrastructure): 多步操作的结果读取也依赖被保护的状态，只锁每次写入可能不够。异步与阻塞任务跨边界时，guard的所有权和生命周期需要覆盖完整不变量，而非在最后写入后立刻释放。
-- [AI SDK7.0.173：回放批准前，先保护原参数不被校验器改写](https://xoqiu.cn/radar/2026-11-15#ai-sdk-approval-input-copy) (2026-11-15, ai/safety): 批准记录需要绑定当时的操作内容。若校验过程同时改掉历史input和比较基准，后续看到两者相等也不能说明用户批准过实际执行值；回放链必须保留可核对的原值。
-- [LangGraph1.2.22：独立thread的子图，也要服从调用者的流订阅范围](https://xoqiu.cn/radar/2026-11-15#ai-langgraph-own-thread-subgraph-stream) (2026-11-15, ai/agent): 看不到子任务输出，可能是订阅handler被过滤，而非子任务没有执行。排查流式进度时，需要同时保留配置、订阅范围、事件namespace和业务完成证据，不能用一个空列表直接判失败。
-- [Foundry11月14日nightly：账户读取失败，符号执行不能把余额当成零](https://xoqiu.cn/radar/2026-11-15#web3-foundry-symbolic-balance-unknown) (2026-11-15, web3/security): 测试输入的未知与真实零值含义不同。把读取错误改成零，会把未获得的前提当作反例搜索的确定事实；符号执行结论需要同时携带模型边界、输入读取状态与完整性状态。
-- [Aptos1.50.1：验签通过，仍须核对它签的是哪一份LedgerInfo](https://xoqiu.cn/radar/2026-11-15#web3-aptos-ledger-message-binding) (2026-11-15, web3/protocol): 一个“验证过”的状态如果不记录验证对象，就可能在换上下文后被误用。共识票、授权和缓存结果都需要把签名、原消息与目标聚合上下文关联，而非只沿用一个布尔标记。
 
 ## Boundaries
 
