@@ -1,7 +1,7 @@
-import test, { before } from 'node:test'
+import test, { after, before } from 'node:test'
 import assert from 'node:assert/strict'
 import { isUtf8 } from 'node:buffer'
-import { existsSync, readFileSync, readdirSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs'
 import { isIP } from 'node:net'
 import { join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -10,10 +10,11 @@ import { parse, NodeTypes } from '@vue/compiler-dom'
 import { renderToString } from '@vue/server-renderer'
 import vue from '@vitejs/plugin-vue'
 import { createServer } from 'vite'
-import { createSSRApp, h } from 'vue'
+import { createRenderer, createSSRApp, h } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { agreementView, compareReports, filterCases, LABEL_NAMES } from '../public/answer-check-demo/model.js'
 import { filterAlerts } from '../public/watch-demo/model.js'
+import { escapeHtml } from '../shared/site.ts'
 import {
   adjacentProjectId, filterResumeProjects, normalizeCategory, projectIdFromHash,
 } from '../src/features/resume/presentation.ts'
@@ -34,39 +35,49 @@ let page
 let notes
 let router
 let onDialogKey
+let server
+let ResumePage
 
 before(async () => {
-  const server = await createServer({
+  // Evaluate Vue's client render function in Node so tests can activate its real controls.
+  const vuePlugin = vue({ template: { compilerOptions: { hoistStatic: false } } })
+  const transform = vuePlugin.transform
+  vuePlugin.transform = function (source, id, options) {
+    return transform.call(this, source, id, { ...options, ssr: false })
+  }
+  server = await createServer({
     root: fileURLToPath(new URL('../', import.meta.url)),
     configFile: false,
-    plugins: [vue()],
+    plugins: [vuePlugin],
     optimizeDeps: { noDiscovery: true, include: [] },
-    server: { middlewareMode: true, ws: false, watch: null },
+    server: { middlewareMode: true, hmr: false, ws: false, watch: null },
     appType: 'custom',
   })
-  try {
-    const { default: ResumePage } = await server.ssrLoadModule('/src/features/resume/pages/ResumePage.vue')
-    const { useResume } = await server.ssrLoadModule('/src/features/resume/useResume.ts')
-    router = createRouter({
-      history: createMemoryHistory(),
-      routes: [{ path: '/', component: ResumePage, alias: ['/intel', '/radar', '/articles'] }],
-    })
-    const app = createSSRApp({
-      setup() {
-        onDialogKey = useResume().onDialogKey
-        return () => h(ResumePage)
-      },
-    }).use(router)
-    await router.push('/')
-    page = parse(await renderToString(app), { parseMode: 'html' })
+  const pageModule = await server.ssrLoadModule('/src/features/resume/pages/ResumePage.vue')
+  ResumePage = pageModule.default
+  const { useResume } = await server.ssrLoadModule('/src/features/resume/useResume.ts')
+  router = createResumeRouter()
+  const app = createSSRApp({
+    setup() {
+      onDialogKey = useResume().onDialogKey
+      return () => h(ResumePage)
+    },
+  }).use(router)
+  await router.push('/')
+  page = parse(await renderToString(app), { parseMode: 'html' })
 
-    // The dialog loads these HTML fragments on mount in the browser.
-    const { loadProjectNotes } = await server.ssrLoadModule('/src/features/resume/data.ts')
-    notes = await loadProjectNotes()
-  } finally {
-    await server.close()
-  }
+  const { loadProjectNotes } = await server.ssrLoadModule('/src/features/resume/data.ts')
+  notes = await loadProjectNotes()
 })
+
+after(async () => { await server?.close() })
+
+function createResumeRouter() {
+  return createRouter({
+    history: createMemoryHistory(),
+    routes: [{ path: '/', component: ResumePage, alias: ['/intel', '/radar', '/articles'] }],
+  })
+}
 
 function attribute(element, name) {
   return element?.props?.find(prop => prop.type === NodeTypes.ATTRIBUTE && prop.name === name)?.value?.content
@@ -243,10 +254,23 @@ function assertPublicPrivacy(files) {
 }
 
 test('reviewed catalog is complete and every record has a public summary', () => {
-  assert.equal(records.length, 29)
-  assert.equal(new Set(records.map(project => project.id)).size, 29)
-  assert.deepEqual(Object.keys(notes).sort(), records.map(project => project.id).sort())
+  const ids = records.map(project => project.id)
+  assert.equal(records.length, 32)
+  assert.equal(new Set(ids).size, 32)
+  assert.deepEqual(Object.keys(notes).sort(), [...ids].sort())
   assert.deepEqual(records.filter(project => project.kind === 'team').map(project => project.id).sort(), ['qai', 'saas', 'theai'])
+
+  const catalog = section('catalog')
+  const cards = elements(catalog, withClass('catalog-card'))
+  assert.deepEqual(cards.map(card => attribute(elements(card, node => node.tag === 'button')[0], 'data-open')), ids)
+  const [heading] = elements(catalog, node => node.tag === 'h2')
+  assert.equal(text(elements(heading, node => node.tag === 'sup')[0]), '32')
+  const filters = elements(catalog, node => attribute(node, 'data-category-filter') !== undefined)
+  for (const filter of filters) {
+    const category = attribute(filter, 'data-category-filter')
+    const [count] = elements(filter, node => node.tag === 'span')
+    assert.equal(text(count), String(filterResumeProjects(records, category, true, '').length))
+  }
 })
 
 test('category, historical visibility and search compose without changing catalog order', () => {
@@ -408,6 +432,161 @@ test('diagnosis detail links to the bundled demo', () => {
   assertDemoLink(parse(notes.miniexchange, { parseMode: 'html' }))
   assertDemoFiles(readFiles(new URL('./mini-exchange-demo/', publicDir)))
 })
+
+// Vue supplies the elements, event handlers and updates. The host models only the DOM APIs they use.
+class ResumeElement extends EventTarget {
+  children = []
+  props = {}
+  dataset = {}
+  open = false
+
+  constructor(tag) {
+    super()
+    this.tag = tag
+    this.tagName = tag.toUpperCase()
+  }
+
+  setAttribute(key, value) { this.props[key] = value }
+  removeAttribute(key) { delete this.props[key] }
+  focus() {}
+  querySelectorAll() { return [] }
+  showModal() { this.open = true }
+  close() { this.open = false }
+}
+
+function removeRenderedNode(node) {
+  const parent = node.parent
+  if (parent) parent.children.splice(parent.children.indexOf(node), 1)
+  node.parent = null
+}
+
+const resumeRenderer = createRenderer({
+  createElement: tag => new ResumeElement(tag),
+  createText: value => ({ value }),
+  createComment: () => ({ value: '' }),
+  setText: (node, value) => { node.value = value },
+  setElementText: (node, value) => { node.children = []; node.value = value },
+  patchProp(node, key, previous, value) {
+    node.props[key] = value
+    if (key === 'onClick') {
+      if (previous) node.removeEventListener('click', previous)
+      if (value) node.addEventListener('click', value)
+    }
+  },
+  insert(node, parent, anchor) {
+    removeRenderedNode(node)
+    node.parent = parent
+    parent.children.splice(anchor ? parent.children.indexOf(anchor) : parent.children.length, 0, node)
+  },
+  remove: removeRenderedNode,
+  parentNode: node => node.parent,
+  nextSibling: node => node.parent?.children[node.parent.children.indexOf(node) + 1] ?? null,
+})
+
+function findRendered(node, matches) {
+  if (matches(node)) return node
+  for (const child of node.children ?? []) {
+    const match = findRendered(child, matches)
+    if (match) return match
+  }
+}
+
+function renderedMarkup(node) {
+  if (!node.tag) return escapeHtml(node.value)
+  const attrs = Object.entries(node.props)
+    .filter(([key, value]) => key !== 'innerHTML' && ['string', 'number', 'boolean'].includes(typeof value))
+    .map(([key, value]) => ` ${key}="${escapeHtml(String(value))}"`).join('')
+  const content = node.props.innerHTML ?? (node.children.length
+    ? node.children.map(renderedMarkup).join('')
+    : escapeHtml(node.value ?? ''))
+  return `<${node.tag}${attrs}>${content}</${node.tag}>`
+}
+
+async function openCatalogDialog(t, id) {
+  const clientRouter = createResumeRouter()
+  await clientRouter.push('/')
+  const app = resumeRenderer.createApp(ResumePage).use(clientRouter)
+  const root = new ResumeElement('div')
+  const document = {
+    body: new ResumeElement('body'),
+    documentElement: new ResumeElement('html'),
+    head: { querySelector: () => null, appendChild() {} },
+    createElement: tag => new ResumeElement(tag),
+  }
+  const window = new EventTarget()
+  window.matchMedia = () => Object.assign(new EventTarget(), { matches: false })
+  const globals = { document, window, HTMLElement: ResumeElement }
+  const previous = Object.getOwnPropertyDescriptors(globalThis)
+  t.after(() => {
+    try { app.unmount() } finally {
+      for (const name of Object.keys(globals)) {
+        if (previous[name]) Object.defineProperty(globalThis, name, previous[name])
+        else delete globalThis[name]
+      }
+    }
+  })
+  for (const [name, value] of Object.entries(globals)) {
+    Object.defineProperty(globalThis, name, { value, configurable: true, writable: true })
+  }
+  app.mount(root)
+
+  const catalog = findRendered(root, node => node.props?.id === 'catalog')
+  assert.ok(catalog, 'Missing project catalog')
+  const button = findRendered(catalog, node => node.tag === 'button' && node.props['data-open'] === id)
+  assert.ok(button, `Missing catalog button: ${id}`)
+  const push = t.mock.method(clientRouter, 'push')
+  button.dispatchEvent(new Event('click'))
+  assert.equal(push.mock.callCount(), 1, `Catalog button did not navigate to ${id}`)
+  await push.mock.calls[0].result
+  await new Promise(resolve => setImmediate(resolve))
+
+  assert.equal(clientRouter.currentRoute.value.hash, `#project/${id}`)
+  const dialog = findRendered(root, node => node.tag === 'dialog' && node.props.id === 'project-dialog')
+  assert.ok(dialog?.open, `Project dialog did not open: ${id}`)
+  const body = findRendered(dialog, node => node.props?.id === 'dialog-body')
+  assert.ok(body, `Missing project dialog body: ${id}`)
+  return { html: renderedMarkup(body), titleId: dialog.props['aria-labelledby'] }
+}
+
+for (const [id, href] of [
+  ['support-answer-check', '/answer-check-demo/index.html'],
+  ['support-memory', '/memory-demo/index.html'],
+  ['agent-watch', '/watch-demo/index.html'],
+]) {
+  test(`personal project dialog links to the bundled demo and public repository: ${id}`, async t => {
+    const project = records.find(record => record.id === id)
+    assert.ok(project, `Missing catalog entry: ${id}`)
+    assert.equal(project.kind, 'personal')
+    assert.equal(project.category, 'product')
+    assert.equal(project.visibility, 'public')
+    assert.equal(project.history, false)
+    assert.equal(projectIdFromHash(`#project/${id}`, records), id)
+
+    const { html, titleId } = await openCatalogDialog(t, id)
+    const detail = parse(html, { parseMode: 'html' })
+    assert.ok(titleId, `Dialog has no accessible title reference: ${id}`)
+    const [title] = elements(detail, node => node.tag === 'h2' && attribute(node, 'id') === titleId)
+    assert.equal(text(title), project.title, `Opened project dialog title: ${id}`)
+    const intros = elements(detail, withClass('dialog-intro'))
+    assert.equal(intros.length, 1)
+    assert.ok(text(intros[0], true), `Missing project introduction: ${id}`)
+    assert.equal(elements(detail, node => node.tag === 'dt').length, 3)
+    assert.equal(elements(detail, node => node.tag === 'dd').length, 3)
+    assert.equal(elements(detail, node => node.tag === 'h3').length, 2)
+
+    const links = elements(detail, node => node.tag === 'a')
+    assert.equal(links.length, 2)
+    const [demo, repository] = links
+    assert.equal(attribute(demo, 'href'), href, `Demo link for ${id} must open ${href}`)
+    assert.ok(statSync(new URL(`.${attribute(demo, 'href')}`, publicDir), { throwIfNoEntry: false })?.isFile(), `Missing demo file: ${href}`)
+    assert.equal(attribute(repository, 'href'), `https://github.com/xoqiu09/${id}`)
+    assert.ok(links.every(link => text(link, true).length && attribute(link, 'tabindex') === undefined))
+    assertPublicPrivacy(new Map([
+      [`records.json: ${id}`, JSON.stringify(project)],
+      [`rendered dialog: ${id}`, html],
+    ]))
+  })
+}
 
 test('real case run 3 links include the question and retain their record destinations', () => {
   const app = renderDemoRoute('#/real')

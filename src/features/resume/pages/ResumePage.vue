@@ -45,12 +45,12 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 </div>
 <div>
 <dt>作品</dt>
-<dd>29 条记录 · 8 个精选 · 按真实归属标注</dd>
+<dd>{{ projects.length }} 条记录 · 8 个精选 · 按真实归属标注</dd>
 </div>
 </dl>
 <div class="hero-actions">
 <a class="button primary" href="#selected">从精选作品开始 ↓</a>
-<a class="button secondary" href="#catalog">浏览完整目录 · 29 项 <span aria-hidden="true">↗</span></a>
+<a class="button secondary" href="#catalog">浏览完整目录 · {{ projects.length }} 项 <span aria-hidden="true">↗</span></a>
 </div>
 <div class="social-links">
 <a href="mailto:qianqiuquq@gmail.com">邮箱 <span aria-hidden="true">↗</span></a>
@@ -192,7 +192,7 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 <p class="eyebrow">01 / 精选作品</p>
 <h2>先从这些作品认识我。</h2>
 </div>
-<a href="#catalog">全部项目与经历 <span>29</span> ↓</a>
+<a href="#catalog">全部项目与经历 <span>{{ projects.length }}</span> ↓</a>
 </div>
 <div class="selected-grid">
   <article v-for="{ project, visual, position } in featuredProjects" :key="project.id" class="selected-card">
@@ -236,10 +236,10 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 <div class="section-heading">
 <div>
 <p class="eyebrow">02 / 全部项目</p>
-<h2>完整项目目录 <sup>29</sup>
+<h2>完整项目目录 <sup>{{ projects.length }}</sup>
 </h2>
 </div>
-<p>原作品集 25 项记录 + 4 项补充案例。<br>个人作品、团队业务、学习实验与历史资料分别标注。</p>
+<p>个人作品、团队业务、学习实验与历史资料分别标注。</p>
 </div>
 <div class="catalog-toolbar">
 <label class="search-label">
@@ -253,9 +253,9 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 </label>
 </div>
 <div class="category-filters" role="group" aria-label="项目分类">
-<button type="button" data-category-filter="all" :aria-pressed="category === 'all'" @click="setCategory('all')">全部 <span>29</span>
+<button type="button" data-category-filter="all" :aria-pressed="category === 'all'" @click="setCategory('all')">全部 <span>{{ projects.length }}</span>
 </button>
-<button type="button" data-category-filter="product" :aria-pressed="category === 'product'" @click="setCategory('product')">工具与产品 <span>6</span>
+<button type="button" data-category-filter="product" :aria-pressed="category === 'product'" @click="setCategory('product')">工具与产品 <span>9</span>
 </button>
 <button type="button" data-category-filter="business" :aria-pressed="category === 'business'" @click="setCategory('business')">业务经历 <span>2</span>
 </button>
