@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>客服记忆演示</title>
+  <link rel="stylesheet" href="../answer-check-demo/styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <main class="page">
+    <header class="intro">
+      <h1>客服记忆演示</h1>
+      <p>看看客服怎样跨会话记住同一账户的偏好，并在保存前遮盖手机号。</p>
+      <p class="muted">青柚家电、账户、订单和对话均为虚构，客服按固定规则回复。</p>
+      <a class="home-link" href="/">返回作品集首页</a>
+    </header>
+
+    <noscript><p>启用 JavaScript 后可加载演示步骤。</p></noscript>
+
+    <section aria-labelledby="steps-title">
+      <h2 id="steps-title">逐步看对话和记忆</h2>
+      <p id="result-count" class="result-count" aria-live="polite" aria-atomic="true"></p>
+      <div id="steps"></div>
+    </section>
+
+    <section aria-labelledby="verification-title">
+      <h2 id="verification-title">怎么验证的</h2>
+      <ul>
+        <li>重启程序并换会话后，账户 A 仍只看到未发货订单。账户 B 看到自己的全部订单，偏好为空。</li>
+        <li>清除一项或全部偏好后，账户 B 的设置和写入时间照旧。</li>
+        <li>检查写入值、完整数据库和客服回答，确认没有原始手机号。</li>
+        <li>两次导出的 JSON 逐字节一致，且没有本机路径、主机名或用户名。</li>
+      </ul>
+    </section>
+  </main>
+  <footer class="page muted">
+    <p id="source" hidden></p>
+    <a class="home-link" href="https://github.com/xoqiu09/support-memory">查看 support-memory 源码和测试</a>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,190 @@
+{
+  "source": {
+    "repo": "agent-watch",
+    "commit": "567bec4"
+  },
+  "alerts": [
+    {
+      "model": "model-a",
+      "records": [
+        {
+          "latency_ms": 1237,
+          "model": "model-a",
+          "request_id": "r0001",
+          "status": "timeout",
+          "tokens_in": 8,
+          "tokens_out": 7,
+          "ts": "2026-11-27T10:00:00+08:00",
+          "user": "user-1"
+        },
+        {
+          "latency_ms": 216,
+          "model": "model-a",
+          "request_id": "r0002",
+          "status": "timeout",
+          "tokens_in": 16,
+          "tokens_out": 9,
+          "ts": "2026-11-27T10:00:45+08:00",
+          "user": "user-1"
+        }
+      ],
+      "request_ids": [
+        "r0001",
+        "r0002"
+      ],
+      "ts": "2026-11-27T10:00:45+08:00",
+      "type": "timeout_streak"
+    },
+    {
+      "model": "model-a",
+      "records": [
+        {
+          "latency_ms": 1268,
+          "model": "model-a",
+          "request_id": "r0003",
+          "status": "ok",
+          "tokens_in": 11,
+          "tokens_out": 5001,
+          "ts": "2026-11-27T10:01:30+08:00",
+          "user": "user-1"
+        }
+      ],
+      "request_ids": [
+        "r0003"
+      ],
+      "ts": "2026-11-27T10:01:30+08:00",
+      "type": "recovered"
+    },
+    {
+      "budget": 5000,
+      "date": "2026-11-27",
+      "records": [
+        {
+          "latency_ms": 1268,
+          "model": "model-a",
+          "request_id": "r0003",
+          "status": "ok",
+          "tokens_in": 11,
+          "tokens_out": 5001,
+          "ts": "2026-11-27T10:01:30+08:00",
+          "user": "user-1"
+        }
+      ],
+      "request_ids": [
+        "r0003"
+      ],
+      "tokens": 5052,
+      "ts": "2026-11-27T10:01:30+08:00",
+      "type": "budget_exceeded",
+      "user": "user-1"
+    },
+    {
+      "model": "model-a",
+      "records": [
+        {
+          "latency_ms": 243,
+          "model": "model-a",
+          "request_id": "r0079",
+          "status": "timeout",
+          "tokens_in": 10,
+          "tokens_out": 10,
+          "ts": "2026-11-27T10:58:30+08:00",
+          "user": "user-1"
+        },
+        {
+          "latency_ms": 1695,
+          "model": "model-a",
+          "request_id": "r0080",
+          "status": "timeout",
+          "tokens_in": 12,
+          "tokens_out": 14,
+          "ts": "2026-11-27T10:59:15+08:00",
+          "user": "user-1"
+        }
+      ],
+      "request_ids": [
+        "r0079",
+        "r0080"
+      ],
+      "ts": "2026-11-27T10:59:15+08:00",
+      "type": "timeout_streak"
+    },
+    {
+      "model": "model-a",
+      "records": [
+        {
+          "latency_ms": 1055,
+          "model": "model-a",
+          "request_id": "r0083",
+          "status": "ok",
+          "tokens_in": 11,
+          "tokens_out": 20,
+          "ts": "2026-11-27T11:01:30+08:00",
+          "user": "user-3"
+        }
+      ],
+      "request_ids": [
+        "r0083"
+      ],
+      "ts": "2026-11-27T11:01:30+08:00",
+      "type": "recovered"
+    }
+  ],
+  "summary": {
+    "bad_lines": 2,
+    "by_model": {
+      "model-a": {
+        "calls": 105,
+        "errors": 2,
+        "p50_ms": 880,
+        "p95_ms": 1687,
+        "success_rate": 0.9142857142857143,
+        "timeouts": 7,
+        "tokens_in": 1247,
+        "tokens_out": 6336
+      },
+      "model-b": {
+        "calls": 95,
+        "errors": 4,
+        "p50_ms": 969,
+        "p95_ms": 1694,
+        "success_rate": 0.9368421052631579,
+        "timeouts": 2,
+        "tokens_in": 1127,
+        "tokens_out": 1231
+      }
+    },
+    "by_user": {
+      "user-1": {
+        "calls": 81,
+        "errors": 3,
+        "p50_ms": 931,
+        "p95_ms": 1723,
+        "success_rate": 0.9012345679012346,
+        "timeouts": 5,
+        "tokens_in": 950,
+        "tokens_out": 6014
+      },
+      "user-2": {
+        "calls": 59,
+        "errors": 2,
+        "p50_ms": 910,
+        "p95_ms": 1653,
+        "success_rate": 0.9491525423728814,
+        "timeouts": 1,
+        "tokens_in": 709,
+        "tokens_out": 748
+      },
+      "user-3": {
+        "calls": 60,
+        "errors": 1,
+        "p50_ms": 919,
+        "p95_ms": 1639,
+        "success_rate": 0.9333333333333333,
+        "timeouts": 3,
+        "tokens_in": 715,
+        "tokens_out": 805
+      }
+    }
+  }
+}

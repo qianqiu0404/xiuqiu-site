@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { answerCheckDemo, featuredProjects, githubProfileUrl, miniExchangeDemo, resumeExperience } from '../data'
+import { answerCheckDemo, featuredProjects, githubProfileUrl, memoryDemo, miniExchangeDemo, resumeExperience, watchDemo } from '../data'
 import { useResume } from '../useResume'
 const { projects, query, includeHistory, category, visibleProjects, activeProject, activeIndex, dialog, dialogBody, closeButton, searchInput, detailState, noteHtml, copyLabel, copied, dark, toggleTheme, setCategory, resetSearch, openProject, closeProject, onDialogClose, loadDetail, stepProject, onDialogKey, onBackdropClick, copyLink } = useResume()
 </script>
@@ -90,6 +90,9 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 <li>
 <a :href="answerCheckDemo.href">{{ answerCheckDemo.label }}<em>个人项目</em></a>
 </li>
+<li>
+<a :href="memoryDemo.href">{{ memoryDemo.label }}<em>个人项目</em></a>
+</li>
 </ul>
 </article>
 <article class="track">
@@ -113,6 +116,9 @@ const { projects, query, includeHistory, category, visibleProjects, activeProjec
 <ul class="track-chips">
 <li>
 <button type="button" data-open="qai" @click="openProject('qai', $event)">QAI</button>
+</li>
+<li>
+<a :href="watchDemo.href">{{ watchDemo.label }}<em>个人项目</em></a>
 </li>
 </ul>
 </article>
