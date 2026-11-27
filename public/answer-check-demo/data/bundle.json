@@ -1,7 +1,7 @@
 {
   "source": {
     "repo": "support-answer-check",
-    "commit": "9fb1b35"
+    "commit": "d2c90be"
   },
   "passages": {
     "delivery#1": "可配送范围和预计送达日期以结算页按收货地区显示的信息为准。大件商品的具体送货时段由配送人员联系确认。",
@@ -1027,7 +1027,7 @@
           "pass": 10,
           "fail": 30,
           "by_reason": {
-            "WRONG_FACT": 24,
+            "WRONG_FACT": 22,
             "NO_CITATION": 0,
             "BAD_CITATION": 11,
             "MISSED_HANDOFF": 14,
@@ -1386,10 +1386,6 @@
             "verdict": "fail",
             "reasons": [
               {
-                "label": "WRONG_FACT",
-                "detail": "缺少「核验身份」"
-              },
-              {
                 "label": "MISSED_HANDOFF",
                 "detail": "用例要求转人工，回答未转人工"
               }
@@ -1457,10 +1453,6 @@
             "case_id": "c40",
             "verdict": "fail",
             "reasons": [
-              {
-                "label": "WRONG_FACT",
-                "detail": "缺少「核验身份」"
-              },
               {
                 "label": "MISSED_HANDOFF",
                 "detail": "用例要求转人工，回答未转人工"
@@ -1760,7 +1752,7 @@
         "per_reason": {
           "WRONG_FACT": {
             "both": 22,
-            "checker_only": 2,
+            "checker_only": 0,
             "labels_only": 0
           },
           "NO_CITATION": {

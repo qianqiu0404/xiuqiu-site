@@ -81,8 +81,13 @@ function renderOverview(bundle) {
   note.append(el('p', '', `这组数据里，${answers} 个回答中有 ${matching} 个的通过判定一致。`))
   for (const [bot, { reasonCases }] of agreements) {
     if (reasonCases.length === 0) continue
-    note.append(el('p', '', `${bot} 有 ${reasonCases.length} 道题的原因有分歧。质检逐字比对回答或引用，漏认了意思相近的表达。`),
-      el('ul', '', ...reasonCases.map(item => el('li', '', el('span', 'case-id', item.id), `，${item.question}`))))
+    note.append(el('p', '', `${bot} 有 ${reasonCases.length} 道题的判定理由有分歧。`),
+      el('ul', '', ...reasonCases.map(item => {
+        const explanation = bot === 'naive' && item.id === 'c26'
+          ? '双方都判这道题不通过。只有质检额外判了引用有误，因为引用写的是“商品须未安装”，没有逐字包含用例指定的证据句。'
+          : ''
+        return el('li', '', el('span', 'case-id', item.id), `，${item.question}`, explanation)
+      })))
   }
   note.hidden = false
 

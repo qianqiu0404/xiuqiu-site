@@ -1,0 +1,23 @@
+.usage-table {
+  width: 100%;
+  table-layout: fixed;
+  border-spacing: 0;
+  margin-top: 16px;
+}
+
+.usage-table caption {
+  padding-bottom: 6px;
+  text-align: start;
+  font-weight: 650;
+}
+
+.usage-table th, .usage-table td {
+  padding: 8px;
+  text-align: start;
+  font-variant-numeric: tabular-nums;
+}
+
+.usage-table th:first-child { width: 32%; }
+.usage-table tbody th, .usage-table td { border-top: 1px solid var(--line); }
+.usage-table thead th { color: var(--accent); }
+.trace-records > li + li { margin-top: 12px; }

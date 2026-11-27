@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 调用监测演示</title>
+  <link rel="stylesheet" href="../answer-check-demo/styles.css">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <main class="page">
+    <header class="intro">
+      <h1>AI 调用监测演示</h1>
+      <p>按用户和模型看调用量与延迟，再用请求编号从告警找到对应的调用记录。</p>
+      <p class="muted">所有调用和告警均为虚构示例，用户以代号显示。</p>
+      <a class="home-link" href="/">返回作品集首页</a>
+    </header>
+
+    <noscript><p>启用 JavaScript 后可加载汇总和筛选告警。</p></noscript>
+
+    <section aria-labelledby="overview-title">
+      <h2 id="overview-title">调用汇总</h2>
+      <p id="overview-status" class="result-count" aria-live="polite" aria-atomic="true"></p>
+      <p>延迟只统计成功的调用。p50 和 p95 分别是第 50 和第 95 百分位。</p>
+      <div id="overview"></div>
+    </section>
+
+    <section aria-labelledby="alerts-title">
+      <h2 id="alerts-title">告警与恢复记录</h2>
+      <form id="filters">
+        <fieldset id="filter-controls" class="card filter-card" disabled>
+          <legend>筛选事件</legend>
+          <div class="field">
+            <label for="alert-type">告警类型</label>
+            <select id="alert-type">
+              <option value="">全部类型</option>
+            </select>
+          </div>
+        </fieldset>
+      </form>
+      <p id="result-count" class="result-count" aria-live="polite" aria-atomic="true"></p>
+      <div id="alerts"></div>
+    </section>
+
+    <section aria-labelledby="verification-title">
+      <h2 id="verification-title">怎么验证的</h2>
+      <ul>
+        <li>交错输入两个模型的超时记录，核对独立计数、连续超时告警和成功后的恢复事件。</li>
+        <li>核对用量刚好达到预算时没有告警，超额才提醒，同一用户当天只提醒一次。</li>
+        <li>用已知的成功样本手算延迟，核对 p50、p95 和分组汇总。</li>
+        <li>用告警的请求编号查回原始日志行，核对公开导出的记录和代号。</li>
+      </ul>
+    </section>
+  </main>
+  <footer class="page muted">
+    <p id="source" hidden></p>
+    <a class="home-link" href="https://github.com/xoqiu09/agent-watch">查看 agent-watch 源码和测试</a>
+  </footer>
+</body>
+</html>

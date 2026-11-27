@@ -1,0 +1,81 @@
+{
+  "source": {
+    "repo": "support-memory",
+    "commit": "b5283a5"
+  },
+  "steps": [
+    {
+      "input": {
+        "command": "chat",
+        "account": "A",
+        "session": "a1",
+        "message": "以后只看未发货的"
+      },
+      "answer": "按你的设置，只列未发货订单\nA-102（未发货）",
+      "preferences": {
+        "order_filter": {
+          "value": "unshipped",
+          "written_at": "2026-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "input": {
+        "command": "chat",
+        "account": "A",
+        "session": "a2",
+        "message": "列出订单"
+      },
+      "answer": "按你的设置，只列未发货订单\nA-102（未发货）",
+      "preferences": {
+        "order_filter": {
+          "value": "unshipped",
+          "written_at": "2026-01-01T00:00:00Z"
+        }
+      }
+    },
+    {
+      "input": {
+        "command": "chat",
+        "account": "B",
+        "session": "b1",
+        "message": "列出订单"
+      },
+      "answer": "按默认设置，列出全部订单\nB-201（已发货）\nB-202（未发货）",
+      "preferences": {}
+    },
+    {
+      "input": {
+        "command": "forget",
+        "account": "A"
+      },
+      "answer": "已清除该账户的全部偏好。",
+      "preferences": {}
+    },
+    {
+      "input": {
+        "command": "chat",
+        "account": "A",
+        "session": "a3",
+        "message": "列出订单"
+      },
+      "answer": "按默认设置，列出全部订单\nA-101（已发货）\nA-102（未发货）",
+      "preferences": {}
+    },
+    {
+      "input": {
+        "command": "chat",
+        "account": "A",
+        "session": "a3",
+        "message": "叫我王先生[手机号已遮盖]"
+      },
+      "answer": "王先生[手机号已遮盖]，按默认设置，列出全部订单\nA-101（已发货）\nA-102（未发货）",
+      "preferences": {
+        "salutation": {
+          "value": "王先生[手机号已遮盖]",
+          "written_at": "2026-01-01T00:00:05Z"
+        }
+      }
+    }
+  ]
+}

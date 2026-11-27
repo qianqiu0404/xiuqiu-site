@@ -13,6 +13,7 @@ import { createServer } from 'vite'
 import { createSSRApp, h } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { agreementView, compareReports, filterCases, LABEL_NAMES } from '../public/answer-check-demo/model.js'
+import { filterAlerts } from '../public/watch-demo/model.js'
 import {
   adjacentProjectId, filterResumeProjects, normalizeCategory, projectIdFromHash,
 } from '../src/features/resume/presentation.ts'
@@ -23,7 +24,12 @@ const records = JSON.parse(readFileSync(new URL('records.json', resumeDir)))
 const demoHref = '/mini-exchange-demo/index.html'
 const demoDataPrefix = 'window.DEMO_DATA = JSON.parse('
 const answerCheckDir = new URL('answer-check-demo/', publicDir)
-const answerCheckBundle = JSON.parse(readFileSync(new URL('data/bundle.json', answerCheckDir), 'utf8'))
+const memoryDir = new URL('memory-demo/', publicDir)
+const watchDir = new URL('watch-demo/', publicDir)
+const readBundle = dir => JSON.parse(readFileSync(new URL('data/bundle.json', dir), 'utf8'))
+const answerCheckBundle = readBundle(answerCheckDir)
+const memoryBundle = readBundle(memoryDir)
+const watchBundle = readBundle(watchDir)
 let page
 let notes
 let router
@@ -346,9 +352,12 @@ test('hero and tracks tell one storyline: four facets in order, each opening its
     links: elements(facet, node => node.tag === 'a').map(link => [attribute(link, 'href'), text(link)]),
   }))
   assert.deepEqual(facets, [
-    { title: '1回答有依据', opens: ['saas'], links: [['/answer-check-demo/index.html', '客服回答质检演示个人项目']] },
+    { title: '1回答有依据', opens: ['saas'], links: [
+      ['/answer-check-demo/index.html', '客服回答质检演示个人项目'],
+      ['/memory-demo/index.html', '客服记忆演示个人项目'],
+    ] },
     { title: '2出了问题查得出', opens: ['miniexchange'], links: [] },
-    { title: '3用量管得住', opens: ['qai'], links: [] },
+    { title: '3用量管得住', opens: ['qai'], links: [['/watch-demo/index.html', 'AI 调用监测演示个人项目']] },
     { title: '4进展看得见', opens: ['steward', 'xiaomao'], links: [] },
   ])
   for (const facet of facets) {
@@ -443,6 +452,63 @@ test('answer-check demo passes the public-file privacy checks', () => {
   assertPublicPrivacy(readFiles(answerCheckDir))
 })
 
+test('memory and watch demos pass the public-file privacy checks', () => {
+  const memoryFiles = readFiles(memoryDir)
+  assertPublicPrivacy(memoryFiles)
+  assertPublicPrivacy(readFiles(watchDir))
+  assert.doesNotMatch(memoryFiles.get('data/bundle.json'), /(?<!\d)1[3-9]\d{9}(?!\d)/u)
+})
+
+test('memory bundle matches the six-step source export and masks the sample phone', () => {
+  const { source, steps } = memoryBundle
+  assert.deepEqual(source, { repo: 'support-memory', commit: 'b5283a5' })
+  assert.deepEqual(steps.map(({ input }) => [input.account, input.session, input.command]), [
+    ['A', 'a1', 'chat'], ['A', 'a2', 'chat'], ['B', 'b1', 'chat'], ['A', undefined, 'forget'],
+    ['A', 'a3', 'chat'], ['A', 'a3', 'chat'],
+  ])
+  assert.deepEqual(steps.map(({ preferences }) => Object.keys(preferences)), [
+    ['order_filter'], ['order_filter'], [], [], [], ['salutation'],
+  ])
+  assert.deepEqual(steps[0].preferences, steps[1].preferences)
+  assert.match(steps[1].answer, /A-102/)
+  assert.match(steps[2].answer, /B-201.*\nB-202/)
+  assert.doesNotMatch(steps[2].answer, /A-\d|按你的设置/)
+  assert.match(steps[4].answer, /A-101.*\nA-102/)
+  assert.match(steps[5].input.message, /\[手机号已遮盖\]/)
+  assert.match(steps[5].answer, /\[手机号已遮盖\]/)
+  assert.match(steps[5].preferences.salutation.value, /\[手机号已遮盖\]/)
+})
+
+test('watch bundle totals and alert traces match the source export', () => {
+  const { source, summary, alerts } = watchBundle
+  assert.deepEqual(source, { repo: 'agent-watch', commit: '567bec4' })
+  assert.equal(summary.bad_lines, 2)
+  const totals = groups => Object.fromEntries(Object.entries(groups).map(([name, row]) =>
+    [name, [row.calls, row.timeouts, row.errors, row.tokens_in, row.tokens_out]]))
+  // Values from the pinned source export, independent of how the site groups them.
+  assert.deepEqual(totals(summary.by_user), {
+    'user-1': [81, 5, 3, 950, 6014], 'user-2': [59, 1, 2, 709, 748], 'user-3': [60, 3, 1, 715, 805],
+  })
+  assert.deepEqual(totals(summary.by_model), {
+    'model-a': [105, 7, 2, 1247, 6336], 'model-b': [95, 2, 4, 1127, 1231],
+  })
+  assert.deepEqual(alerts.map(({ type, request_ids }) => [type, request_ids]), [
+    ['timeout_streak', ['r0001', 'r0002']], ['recovered', ['r0003']], ['budget_exceeded', ['r0003']],
+    ['timeout_streak', ['r0079', 'r0080']], ['recovered', ['r0083']],
+  ])
+  assert.deepEqual(alerts.map(({ ts }) => Date.parse(ts)), alerts.map(({ ts }) => Date.parse(ts)).sort((a, b) => a - b))
+  for (const alert of alerts) assert.deepEqual(alert.records.map(record => record.request_id), alert.request_ids)
+})
+
+test('watch filter returns exactly the events of the chosen type', () => {
+  const { alerts } = watchBundle
+  assert.deepEqual(filterAlerts(alerts), alerts)
+  for (const type of ['timeout_streak', 'recovered', 'budget_exceeded']) {
+    assert.deepEqual(filterAlerts(alerts, type), alerts.filter(alert => alert.type === type), type)
+  }
+  assert.deepEqual(filterAlerts(alerts, 'unknown'), [])
+})
+
 test('answer-check agreement totals and rates match the paired verdicts', () => {
   for (const [bot, { report, labels, agree }] of Object.entries(answerCheckBundle.bots)) {
     const labelVerdicts = new Map(labels.map(({ case_id, verdict }) => [case_id, verdict]))
@@ -464,6 +530,7 @@ test('answer-check agreement totals and rates match the paired verdicts', () => 
 
 test('answer-check bundle totals match both saved report summaries', () => {
   const { cases, bots } = answerCheckBundle
+  assert.deepEqual(answerCheckBundle.source, { repo: 'support-answer-check', commit: 'd2c90be' })
   const caseIds = cases.map(item => item.id).sort()
   assert.equal(caseIds.length, 40)
   assert.equal(new Set(caseIds).size, caseIds.length)
@@ -515,13 +582,16 @@ test('answer-check disagreement filter returns exactly the cases with different 
   }
 })
 
-test('answer-check page has one h1 and accessible labels for all four filters', () => {
-  const html = parse(readFileSync(new URL('index.html', answerCheckDir), 'utf8'), { parseMode: 'html' })
+function readDemoHtml(dir) {
+  return parse(readFileSync(new URL('index.html', dir), 'utf8'), { parseMode: 'html' })
+}
+
+function assertDemoMarkup(html, title, repo, controlCount) {
   const headings = elements(html, node => node.tag === 'h1')
   assert.equal(headings.length, 1)
-  assert.equal(text(headings[0]), '客服回答质检演示')
+  assert.equal(text(headings[0]), title)
   const controls = elements(html, node => ['input', 'select', 'textarea', 'button'].includes(node.tag))
-  assert.equal(controls.length, 4)
+  assert.equal(controls.length, controlCount)
   const labels = elements(html, node => node.tag === 'label')
   for (const control of controls) {
     const id = attribute(control, 'id')
@@ -531,11 +601,33 @@ test('answer-check page has one h1 and accessible labels for all four filters', 
   }
   const [count] = elements(html, node => attribute(node, 'id') === 'result-count')
   assert.equal(attribute(count, 'aria-live'), 'polite')
+  assert.equal(attribute(count, 'aria-atomic'), 'true')
+  const [footer] = elements(html, node => node.tag === 'footer')
+  assert.ok(elements(footer, node => node.tag === 'a' &&
+    attribute(node, 'href') === `https://github.com/xoqiu09/${repo}`).some(link => text(link)))
+  assert.ok(elements(html, node => node.tag === 'a' && attribute(node, 'href') === '/').some(link => text(link)))
+}
+
+test('answer-check page has one h1 and accessible labels for all four filters', () => {
+  assertDemoMarkup(readDemoHtml(answerCheckDir), '客服回答质检演示', 'support-answer-check', 4)
+})
+
+test('answer-check page credits the initial annotation, spot check and later relabeling', () => {
+  const [section] = elements(readDemoHtml(answerCheckDir), node => attribute(node, 'aria-labelledby') === 'agreement-title')
+  const [intro] = elements(section, node => node.tag === 'p')
+  assert.match(text(intro), /初版.*一名.*AI 标注员.*Claude 抽查.*10 条/)
+  assert.match(text(intro), /naive 的第 36、38 题更新后，由另一名 AI 标注员独立复标/)
+})
+
+test('memory and watch pages have one h1, named controls, live counts and links', () => {
+  assertDemoMarkup(readDemoHtml(memoryDir), '客服记忆演示', 'support-memory', 0)
+  assertDemoMarkup(readDemoHtml(watchDir), 'AI 调用监测演示', 'agent-watch', 1)
 })
 
 // Run the shipped app against its HTML without adding a browser dependency to test:home.
 class DemoElement extends EventTarget {
   children = []
+  attributes = new Map()
 
   constructor(tag, parent = null) {
     super()
@@ -557,6 +649,10 @@ class DemoElement extends EventTarget {
 
   add(option) {
     this.append(option)
+  }
+
+  setAttribute(name, value) {
+    this.attributes.set(name, value)
   }
 
   get textContent() {
@@ -581,6 +677,7 @@ function demoDocument(html) {
     node.ariaHidden = attribute(element, 'aria-hidden')
     node.tabIndex = Number(attribute(element, 'tabindex') ?? 0)
     node.checked = hasAttribute('checked')
+    if (node.tag === 'option') node.value = attribute(element, 'value')
     if (node.tag === 'select') node.value = attribute(element.children.find(child => child.tag === 'option'), 'value')
     for (const child of element.children) {
       if (child.type === NodeTypes.ELEMENT) node.append(mount(child, node))
@@ -605,9 +702,17 @@ function changeDemoFilter(control, property, value) {
   for (const node of demoAncestors(control)) node.dispatchEvent(event)
 }
 
-test('answer-check page renders report scores and responds to the disagreement control', async t => {
-  const html = parse(readFileSync(new URL('index.html', answerCheckDir), 'utf8'), { parseMode: 'html' })
-  const document = demoDocument(html)
+function demoFacts(list) {
+  assert.equal(list.tag, 'dl')
+  return list.children.map(({ children: [name, value] }) => {
+    assert.equal(name.tag, 'dt')
+    assert.equal(value.tag, 'dd')
+    return [name.textContent, value.textContent]
+  })
+}
+
+async function mountDemo(t, dir, bundle) {
+  const document = demoDocument(readDemoHtml(dir))
   class DemoOption extends DemoElement {
     constructor(name, value) {
       super('option')
@@ -623,12 +728,18 @@ test('answer-check page renders report scores and responds to the disagreement c
     })
     Object.defineProperty(globalThis, name, { value, configurable: true, writable: true })
   }
-  t.mock.method(globalThis, 'fetch', async () => ({ ok: true, json: async () => answerCheckBundle }))
+  const fetch = t.mock.method(globalThis, 'fetch', async () => ({ ok: true, json: async () => bundle }))
 
-  await import(new URL('app.js', answerCheckDir))
+  await import(new URL('app.js', dir))
   await new Promise(resolve => setImmediate(resolve))
+  assert.deepEqual(fetch.mock.calls.map(call => call.arguments[0].href), [
+    new URL('data/bundle.json', dir).href,
+  ])
+  return document.getElementById
+}
 
-  const byId = document.getElementById
+test('answer-check page renders report scores and responds to the disagreement control', async t => {
+  const byId = await mountDemo(t, answerCheckDir, answerCheckBundle)
   const bot = byId('bot')
   const disagreements = byId('disagreements')
   const result = byId('result-count')
@@ -655,6 +766,15 @@ test('answer-check page renders report scores and responds to the disagreement c
     assert.ok(exposed(result), 'The live result count must be exposed to assistive technology')
   })
 
+  await t.test('the agreement note explains the citation disagreement for c26', () => {
+    const [verdicts, reasons, cases] = byId('agreement-note').children
+    assert.match(verdicts.textContent, /80 个回答中有 80 个的通过判定一致/)
+    assert.match(reasons.textContent, /naive 有 1 道题的判定理由有分歧/)
+    assert.equal(cases.children.length, 1)
+    assert.match(cases.children[0].textContent,
+      /^c26，.*双方都判这道题不通过。只有质检额外判了引用有误，因为引用写的是“商品须未安装”，没有逐字包含用例指定的证据句。$/s)
+  })
+
   await t.test('checking and unchecking changes the listed cases and live count for each bot', () => {
     const allIds = answerCheckBundle.cases.map(({ id }) => id)
     function assertCases(botName, ids) {
@@ -667,7 +787,7 @@ test('answer-check page renders report scores and responds to the disagreement c
 
     assertCases('naive', allIds)
     changeDemoFilter(disagreements, 'checked', true)
-    assertCases('naive', ['c26', 'c33', 'c40'])
+    assertCases('naive', ['c26'])
     changeDemoFilter(disagreements, 'checked', false)
     assertCases('naive', allIds)
 
@@ -677,6 +797,120 @@ test('answer-check page renders report scores and responds to the disagreement c
     assertCases('careful', [])
     changeDemoFilter(disagreements, 'checked', false)
     assertCases('careful', allIds)
+  })
+})
+
+test('memory renders every step, including account B and the masked phone', async t => {
+  const byId = await mountDemo(t, memoryDir, memoryBundle)
+  assert.equal(byId('result-count').textContent, '共 6 步。')
+  assert.deepEqual(byId('steps').children.map(step => step.children[0].textContent.split('，', 1)[0]), [
+    '第 1 步', '第 2 步', '第 3 步', '第 4 步', '第 5 步', '第 6 步',
+  ])
+  const steps = byId('steps').children
+  assert.ok(steps.every(step => step.tag === 'details' && step.children[0].tag === 'summary'))
+  const orderPreference = [['订单筛选', '只看未发货订单。写入时间 2026-01-01T00:00:00Z']]
+  const expectedPreferences = [
+    orderPreference, orderPreference, '账户 B 没有已保存的偏好。',
+    '账户 A 没有已保存的偏好。', '账户 A 没有已保存的偏好。',
+    [['称呼', '王先生[手机号已遮盖]。写入时间 2026-01-01T00:00:05Z']],
+  ]
+  for (const [index, step] of steps.entries()) {
+    const { input, answer } = memoryBundle.steps[index]
+    const [summary, body] = step.children
+    const who = input.command === 'chat'
+      ? `账户 ${input.account} 在会话 ${input.session} 说：“${input.message}”`
+      : '账户 A 执行清除全部偏好的命令（独立于会话）'
+    assert.equal(summary.textContent, `第 ${index + 1} 步，${who}`)
+    const [replyTitle, reply, preferenceTitle, preferences] = body.children
+    assert.equal(replyTitle.textContent, input.command === 'chat' ? '客服回复' : '命令结果')
+    assert.equal(reply.textContent, answer, `第 ${index + 1} 步的回复`)
+    assert.equal(preferenceTitle.textContent, '这一步之后保存的偏好')
+    const expected = expectedPreferences[index]
+    if (typeof expected === 'string') {
+      assert.equal(preferences.tag, 'p')
+      assert.equal(preferences.textContent, expected)
+    } else {
+      assert.deepEqual(demoFacts(preferences), expected, `第 ${index + 1} 步的偏好`)
+    }
+  }
+  assert.equal(steps[5].textContent.match(/\[手机号已遮盖\]/g).length, 3)
+})
+
+test('watch renders scoped tables and keeps the live alert list in sync with the control', async t => {
+  const byId = await mountDemo(t, watchDir, watchBundle)
+  assert.match(byId('overview-status').textContent, /200 次有效调用.*2 行/)
+
+  const { summary, alerts } = watchBundle
+  const optionLabels = { '': '全部类型', timeout_streak: '连续超时', recovered: '恢复', budget_exceeded: '用量超额' }
+  const statusLabels = { ok: '成功', timeout: '超时', error: '错误' }
+
+  await t.test('both summary tables provide the correct headers and values under each heading', () => {
+    const tables = byId('overview').children
+    assert.deepEqual(tables.map(table => table.children[0].textContent), ['按用户汇总', '按模型汇总'])
+    const metrics = {
+      '调用数': 'calls', '成功率': 'success_rate', '超时数': 'timeouts', '错误数': 'errors',
+      '延迟 p50（毫秒）': 'p50_ms', '延迟 p95（毫秒）': 'p95_ms', '输入 token': 'tokens_in', '输出 token': 'tokens_out',
+    }
+    for (const [index, groups] of [summary.by_user, summary.by_model].entries()) {
+      const table = tables[index]
+      assert.equal(table.tag, 'table')
+      const [caption, thead, tbody] = table.children
+      assert.deepEqual([caption.tag, thead.tag, tbody.tag], ['caption', 'thead', 'tbody'])
+      const colHeaders = thead.children[0].children
+      assert.deepEqual(colHeaders.map(cell => cell.textContent), ['指标', ...Object.keys(groups)], caption.textContent)
+      assert.ok(colHeaders.every(cell => cell.tag === 'th' && cell.attributes.get('scope') === 'col'))
+      assert.deepEqual(tbody.children.map(row => row.children[0].textContent), Object.keys(metrics), caption.textContent)
+      for (const { children: [header, ...cells] } of tbody.children) {
+        const metric = metrics[header.textContent]
+        assert.equal(header.tag, 'th')
+        assert.equal(header.attributes.get('scope'), 'row')
+        assert.equal(cells.length, colHeaders.length - 1)
+        for (const [column, cell] of cells.entries()) {
+          const group = colHeaders[column + 1].textContent
+          const value = groups[group][metric]
+          const expected = metric === 'success_rate' ? `${Math.round(value * 1000) / 10}%` : String(value)
+          assert.equal(cell.tag, 'td')
+          assert.equal(cell.textContent, expected, `${caption.textContent} / ${group} / ${header.textContent}`)
+        }
+      }
+    }
+  })
+
+  function assertAlerts(expected) {
+    const details = byId('alerts').children
+    assert.deepEqual(details.map(({ tag, children: [heading] }) => [tag, heading.tag, heading.textContent]),
+      expected.map(alert => ['details', 'summary', `${optionLabels[alert.type]}，${alert.model ?? alert.user}，${alert.ts}`]))
+    assert.equal(byId('result-count').textContent, `找到 ${expected.length} 条事件。`)
+  }
+
+  await t.test('each alert shows the fields for each referenced request', () => {
+    assertAlerts(alerts)
+    for (const [index, { request_ids: ids, records }] of alerts.entries()) {
+      const detail = byId('alerts').children[index]
+      const trace = detail.children[1].children.find(node => node.tag === 'ul')
+      assert.deepEqual(trace.children.map(item => item.children[0].textContent), ids.map(id => `请求编号 ${id}`))
+      for (const [position, id] of ids.entries()) {
+        const record = records.find(item => item.request_id === id)
+        const item = trace.children[position]
+        assert.equal(item.tag, 'li')
+        assert.ok(item.children[1], `请求 ${id} 缺少调用明细`)
+        assert.deepEqual(demoFacts(item.children[1]), [
+          ['时间', record.ts], ['用户', record.user], ['模型', record.model], ['状态', statusLabels[record.status]],
+          ['延迟（毫秒）', String(record.latency_ms)], ['输入 token', String(record.tokens_in)], ['输出 token', String(record.tokens_out)],
+        ], `请求 ${id} 的调用明细`)
+      }
+    }
+  })
+
+  await t.test('selecting each displayed option changes the alert events and live count', () => {
+    const control = byId('alert-type')
+    assert.ok(demoAncestors(control).every(node => !node.hidden && !node.disabled))
+    const options = control.children.filter(node => node.tag === 'option')
+    assert.deepEqual(options.map(option => [option.value, option.textContent]), Object.entries(optionLabels))
+    for (const option of options) {
+      changeDemoFilter(control, 'value', option.value)
+      assertAlerts(alerts.filter(alert => option.value === '' || alert.type === option.value))
+    }
   })
 })
 

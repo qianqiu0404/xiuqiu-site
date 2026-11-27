@@ -27,7 +27,7 @@
 
     <section aria-labelledby="agreement-title">
       <h2 id="agreement-title">质检准不准</h2>
-      <p>拿质检结果和一份独立标注逐题对比。独立标注由一名没有读过质检代码的 AI 标注员对照知识库写成，Claude 抽查了其中 10 条。精确率是质检判不通过的题里，标注也判不通过的比例；召回率是标注判不通过的题里，质检也判不通过的比例。这些数只描述这组虚构用例。</p>
+      <p>拿质检结果和一份独立标注逐题对比。初版由一名没有读过质检代码的 AI 标注员对照知识库写成。Claude 抽查了其中 10 条。naive 的第 36、38 题更新后，由另一名 AI 标注员独立复标。精确率是质检判不通过的题里，标注也判不通过的比例。召回率是标注判不通过的题里，质检也判不通过的比例。这些数只描述这组虚构用例。</p>
       <div id="agreement" class="round-grid"></div>
       <div id="agreement-note" class="context-note" hidden></div>
     </section>
@@ -70,6 +70,9 @@
       <div id="cases"></div>
     </section>
   </main>
-  <footer id="source" class="page muted" hidden></footer>
+  <footer class="page muted">
+    <p id="source" hidden></p>
+    <a class="home-link" href="https://github.com/xoqiu09/support-answer-check">查看 support-answer-check 源码和测试</a>
+  </footer>
 </body>
 </html>
