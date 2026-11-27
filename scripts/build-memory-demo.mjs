@@ -6,7 +6,7 @@ if (!sourcePath) {
   process.exit(1)
 }
 
-const bundle = readDemoExport(sourcePath, 'support-memory', 'supportmemory')
+const bundle = readDemoExport(sourcePath, 'support-memory', 'supportmemory', [], { m2: 'export.m2.json' })
 // The upstream export preserves the fictional input verbatim. Mask it before publishing.
 const phone = /(?<![0-9０-９])(?:[+＋]?[8８][6６][ -]?)?[1１][3-9３-９](?:[ -]?[0-9０-９]){9}(?![0-9０-９])/gu
 for (const { input } of bundle.steps) {

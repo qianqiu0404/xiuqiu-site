@@ -16,6 +16,16 @@ const metrics = [
   ['tokens_out', '输出 token'],
 ]
 const statusNames = { ok: '成功', timeout: '超时', error: '错误' }
+const formatCost = value => typeof value === 'number' ? `${value.toFixed(4)} 元` : (value ?? '无数据')
+const reportMetrics = [
+  ['calls', '调用数'],
+  ['p95_ms', '延迟 p95（毫秒）'],
+  ['success_rate', '成功率', value => `${(value * 100).toFixed(2)}%`],
+  ['cost', '费用', formatCost],
+  ['tokens_in', '输入 token'],
+  ['tokens_out', '输出 token'],
+  ['unpriced_model_count', '未定价模型数'],
+]
 
 function el(tag, className, ...children) {
   const node = document.createElement(tag)
@@ -30,13 +40,37 @@ function tableHeader(scope, label) {
   return header
 }
 
-function summaryTable(title, groups) {
+function summaryTable(title, groups, tableMetrics = metrics) {
   const entries = Object.entries(groups)
   const head = el('tr', '', tableHeader('col', '指标'), ...entries.map(([id]) => tableHeader('col', id)))
-  const rows = metrics.map(([key, label, format = String]) =>
+  const rows = tableMetrics.map(([key, label, format = String]) =>
     el('tr', '', tableHeader('row', label), ...entries.map(([, stats]) =>
       el('td', '', stats[key] === null ? '无' : format(stats[key])))))
   return el('table', 'card usage-table', el('caption', '', title), el('thead', '', head), el('tbody', '', ...rows))
+}
+
+function costTable(title, groupName, groups, showUnpricedModels = false) {
+  const entries = Object.entries(groups)
+  if (!entries.length) return el('p', '', `${title}：没有费用记录。`)
+  const headers = [tableHeader('col', groupName), tableHeader('col', '费用')]
+  if (showUnpricedModels) headers.push(tableHeader('col', '未定价模型'))
+  const rows = entries.map(([name, stats]) => {
+    const row = el('tr', '', tableHeader('row', name), el('td', '', formatCost(stats.cost)))
+    if (showUnpricedModels) row.append(el('td', '', stats.unpriced_models?.join('、') || '无'))
+    return row
+  })
+  return el('table', 'card usage-table', el('caption', '', title),
+    el('thead', '', el('tr', '', ...headers)), el('tbody', '', ...rows))
+}
+
+function reportView(report) {
+  if (!report) return el('p', '', '没有可展示的日报。')
+  const { date, metrics, comparison } = report
+  const days = { [date]: metrics }
+  if (comparison.previous) days[comparison.previous_date] = comparison.previous
+  return el('div', '',
+    el('p', '', '与前一天比较：', comparison.message || comparison.flags.join('、') || '无指标超过门槛', '。'),
+    summaryTable('日报指标', days, reportMetrics))
 }
 
 function timestamp(value) {
@@ -88,12 +122,17 @@ async function start() {
   try {
     const response = await fetch(new URL('./data/bundle.json', import.meta.url))
     if (!response.ok) throw new Error(`HTTP ${response.status}`)
-    const { source, alerts, summary } = await response.json()
+    const { source, alerts, summary, report } = await response.json()
     const calls = Object.values(summary.by_user).reduce((total, row) => total + row.calls, 0)
     byId('overview').replaceChildren(
       summaryTable('按用户汇总', summary.by_user),
       summaryTable('按模型汇总', summary.by_model),
     )
+    byId('cost').replaceChildren(
+      costTable('按用户看费用', '用户', summary.by_user, true),
+      costTable('按模型看费用', '模型', summary.by_model),
+    )
+    byId('report').replaceChildren(reportView(report))
     overviewStatus.textContent = `共 ${calls} 次有效调用，另有 ${summary.bad_lines} 行格式有误。`
 
     for (const [value, name] of Object.entries(ALERT_NAMES)) alertType.add(new Option(name, value))

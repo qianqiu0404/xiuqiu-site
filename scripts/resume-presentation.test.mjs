@@ -632,15 +632,21 @@ test('answer-check demo passes the public-file privacy checks', () => {
 })
 
 test('memory and watch demos pass the public-file privacy checks', () => {
-  const memoryFiles = readFiles(memoryDir)
-  assertPublicPrivacy(memoryFiles)
+  assertPublicPrivacy(readFiles(memoryDir))
   assertPublicPrivacy(readFiles(watchDir))
-  assert.doesNotMatch(memoryFiles.get('data/bundle.json'), /(?<!\d)1[3-9]\d{9}(?!\d)/u)
+})
+
+test('none of the three demo bundles contains a raw phone number', () => {
+  const phone = /(?<![0-9０-９])(?:[+＋]?[8８][6６][ -]?)?[1１][3-9３-９](?:[ -]?[0-9０-９]){9}(?![0-9０-９])/u
+  for (const dir of [answerCheckDir, memoryDir, watchDir]) {
+    // Use a boolean so a failure does not print the phone number or bundle.
+    assert.equal(phone.test(readFileSync(new URL('data/bundle.json', dir), 'utf8')), false, dir.pathname)
+  }
 })
 
 test('memory bundle matches the six-step source export and masks the sample phone', () => {
   const { source, steps } = memoryBundle
-  assert.deepEqual(source, { repo: 'support-memory', commit: 'b5283a5' })
+  assert.deepEqual(source, { repo: 'support-memory', commit: '84871a5' })
   assert.deepEqual(steps.map(({ input }) => [input.account, input.session, input.command]), [
     ['A', 'a1', 'chat'], ['A', 'a2', 'chat'], ['B', 'b1', 'chat'], ['A', undefined, 'forget'],
     ['A', 'a3', 'chat'], ['A', 'a3', 'chat'],
@@ -658,22 +664,47 @@ test('memory bundle matches the six-step source export and masks the sample phon
   assert.match(steps[5].preferences.salutation.value, /\[手机号已遮盖\]/)
 })
 
+test('memory M2 bundle preserves the consent, window and audit results from the export', () => {
+  const { consent, preferences, history, audit } = memoryBundle.m2
+  assert.equal(consent.account, 'A')
+  assert.equal(consent.enabled, false)
+  assert.deepEqual(preferences, {})
+  assert.equal(history.turns.length, 6)
+  assert.equal(history.summary.length, 1)
+  assert.match(history.summary[0].user, /\[手机号已遮盖\]/)
+  assert.deepEqual(history.summary[0].preferences, { order_filter: 'unshipped' })
+  assert.deepEqual(audit.map(({ action }) => action), ['write', ...Array(7).fill('read'), 'delete'])
+  for (const entry of audit) assert.deepEqual(Object.keys(entry).sort(), ['account', 'action', 'key', 'session', 'time'])
+})
+
 test('watch bundle totals and alert traces match the source export', () => {
-  const { source, summary, alerts } = watchBundle
-  assert.deepEqual(source, { repo: 'agent-watch', commit: '567bec4' })
+  const { source, summary, alerts, report } = watchBundle
+  assert.deepEqual(source, { repo: 'agent-watch', commit: '4385fd8' })
   assert.equal(summary.bad_lines, 2)
   const totals = groups => Object.fromEntries(Object.entries(groups).map(([name, row]) =>
     [name, [row.calls, row.timeouts, row.errors, row.tokens_in, row.tokens_out]]))
   // Values from the pinned source export, independent of how the site groups them.
   assert.deepEqual(totals(summary.by_user), {
-    'user-1': [81, 5, 3, 950, 6014], 'user-2': [59, 1, 2, 709, 748], 'user-3': [60, 3, 1, 715, 805],
+    'user-1': [86, 7, 4, 1000, 26034], 'user-2': [59, 1, 2, 709, 748], 'user-3': [60, 3, 1, 715, 805],
   })
   assert.deepEqual(totals(summary.by_model), {
-    'model-a': [105, 7, 2, 1247, 6336], 'model-b': [95, 2, 4, 1127, 1231],
+    'model-a': [110, 9, 3, 1297, 26356], 'model-b': [95, 2, 4, 1127, 1231],
+  })
+  const costs = groups => Object.fromEntries(Object.entries(groups).map(([name, row]) => [name, row.cost]))
+  assert.deepEqual(costs(summary.by_user), { 'user-1': 106.6268, 'user-2': 4.8868, 'user-3': 5.1718 })
+  assert.deepEqual(costs(summary.by_model), { 'model-a': 107.0453, 'model-b': 9.64 })
+  assert.deepEqual(report, {
+    date: '2026-11-28',
+    metrics: { calls: 5, p95_ms: 2600, success_rate: 0.4, cost: 80.1425, tokens_in: 50, tokens_out: 20020, unpriced_model_count: 0 },
+    comparison: {
+      flags: ['变慢', '失败变多', '费用上涨'], message: null, previous_date: '2026-11-27',
+      previous: { calls: 200, p95_ms: 1687, success_rate: 0.925, cost: 36.5428, tokens_in: 2374, tokens_out: 7567, unpriced_model_count: 0 },
+    },
   })
   assert.deepEqual(alerts.map(({ type, request_ids }) => [type, request_ids]), [
     ['timeout_streak', ['r0001', 'r0002']], ['recovered', ['r0003']], ['budget_exceeded', ['r0003']],
     ['timeout_streak', ['r0079', 'r0080']], ['recovered', ['r0083']],
+    ['timeout_streak', ['r0201', 'r0202']], ['recovered', ['r0203']], ['budget_exceeded', ['r0203']],
   ])
   assert.deepEqual(alerts.map(({ ts }) => Date.parse(ts)), alerts.map(({ ts }) => Date.parse(ts)).sort((a, b) => a - b))
   for (const alert of alerts) assert.deepEqual(alert.records.map(record => record.request_id), alert.request_ids)
@@ -788,7 +819,11 @@ function assertDemoMarkup(html, title, repo, controlCount) {
 }
 
 test('answer-check page has one h1 and accessible labels for all four filters', () => {
-  assertDemoMarkup(readDemoHtml(answerCheckDir), '客服回答质检演示', 'support-answer-check', 4)
+  const html = readDemoHtml(answerCheckDir)
+  assertDemoMarkup(html, '客服回答质检演示', 'support-answer-check', 4)
+  const [link] = elements(html, node => node.tag === 'a' &&
+    attribute(node, 'href') === 'https://github.com/xoqiu09/support-answer-check/blob/main/docs/PRD.md')
+  assert.equal(text(link), '《客服质检后台产品需求》')
 })
 
 test('answer-check page credits the initial annotation, spot check and later relabeling', () => {
@@ -801,6 +836,22 @@ test('answer-check page credits the initial annotation, spot check and later rel
 test('memory and watch pages have one h1, named controls, live counts and links', () => {
   assertDemoMarkup(readDemoHtml(memoryDir), '客服记忆演示', 'support-memory', 0)
   assertDemoMarkup(readDemoHtml(watchDir), 'AI 调用监测演示', 'agent-watch', 1)
+})
+
+test('memory and watch M2 headings name their sections', () => {
+  for (const [dir, expected] of [
+    [memoryDir, ['同意开关', '对话窗口和摘要', '读写记录']],
+    [watchDir, ['费用', '日报']],
+  ]) {
+    const sections = elements(readDemoHtml(dir), node => node.tag === 'section')
+    const names = sections.map(section => {
+      const [heading] = elements(section, node => node.tag === 'h2' &&
+        attribute(node, 'id') === attribute(section, 'aria-labelledby'))
+      assert.ok(heading)
+      return text(heading)
+    })
+    assert.deepEqual(names.filter(name => expected.includes(name)), expected)
+  }
 })
 
 // Run the shipped app against its HTML without adding a browser dependency to test:home.
@@ -909,7 +960,9 @@ async function mountDemo(t, dir, bundle) {
   }
   const fetch = t.mock.method(globalThis, 'fetch', async () => ({ ok: true, json: async () => bundle }))
 
-  await import(new URL('app.js', dir))
+  const app = new URL('app.js', dir)
+  app.searchParams.set('test', t.name)
+  await import(app)
   await new Promise(resolve => setImmediate(resolve))
   assert.deepEqual(fetch.mock.calls.map(call => call.arguments[0].href), [
     new URL('data/bundle.json', dir).href,
@@ -1015,9 +1068,94 @@ test('memory renders every step, including account B and the masked phone', asyn
   assert.equal(steps[5].textContent.match(/\[手机号已遮盖\]/g).length, 3)
 })
 
+test('memory renders the consent replay, window budget and value-free audit', async t => {
+  const byId = await mountDemo(t, memoryDir, memoryBundle)
+  const { consent, first_answer, same_session_answer, new_session_answer, history, audit } = memoryBundle.m2
+  const [consentCard] = byId('consent').children
+  const paragraphs = consentCard.children.filter(node => node.tag === 'p').map(node => node.textContent)
+  assert.deepEqual(paragraphs, [
+    '账户 A 的跨会话偏好保存：关闭。', consent.answer, '跨会话保存的偏好：0 项。',
+    first_answer, same_session_answer, new_session_answer,
+  ])
+  assert.notEqual(same_session_answer, new_session_answer)
+
+  const [historyCard] = byId('history').children
+  // The pinned Python export has 511 characters in the compact window payload.
+  assert.equal(historyCard.children[0].textContent, '账户 A 的会话 a1 保留了最近 6 轮对话和 1 条摘要。')
+  assert.equal(historyCard.children[1].textContent, '按字符数估算共用 256 个 token，上限 400 个。')
+  const summaryList = historyCard.children.find(node => node.tag === 'ul')
+  assert.deepEqual(summaryList.children.map(node => node.textContent), history.summary.map(({ user }) => user))
+  const turnList = historyCard.children.find(node => node.tag === 'ol')
+  assert.deepEqual(turnList.children.map(node => node.children.map(paragraph => paragraph.textContent)),
+    history.turns.map(({ user, reply }) => [`顾客：${user}`, `客服：${reply}`]))
+
+  const [auditCard] = byId('audit').children
+  const actions = { read: '读取', write: '写入', delete: '删除' }
+  assert.match(auditCard.children[0].textContent, /^共 9 条/)
+  const auditList = auditCard.children.find(node => node.tag === 'ul')
+  assert.deepEqual(auditList.children.map(node => [node.children[0].attributes.get('datetime'), node.textContent]),
+    audit.map(({ time, account, session, action }) =>
+      [time, `${time}，${actions[action]}，账户 ${account}，会话 ${session}，订单筛选`]))
+})
+
+function assertDemoTable(table, title, columns, rows) {
+  assert.equal(table.tag, 'table')
+  const [caption, thead, tbody] = table.children
+  assert.deepEqual([caption.tag, thead.tag, tbody.tag], ['caption', 'thead', 'tbody'])
+  assert.equal(caption.textContent, title)
+  const headers = thead.children[0].children
+  assert.deepEqual(headers.map(cell => cell.textContent), columns)
+  assert.ok(headers.every(cell => cell.tag === 'th' && cell.attributes.get('scope') === 'col'))
+  for (const { children: [header, ...data] } of tbody.children) {
+    assert.equal(header.tag, 'th')
+    assert.equal(header.attributes.get('scope'), 'row')
+    assert.ok(data.every(cell => cell.tag === 'td'))
+  }
+  assert.deepEqual(tbody.children.map(row => row.children.map(cell => cell.textContent)), rows)
+}
+
+test('watch renders both cost tables and the daily comparison flags with their numbers', async t => {
+  const byId = await mountDemo(t, watchDir, watchBundle)
+  const [users, models] = byId('cost').children
+  assertDemoTable(users, '按用户看费用', ['用户', '费用', '未定价模型'], [
+    ['user-1', '106.6268 元', '无'], ['user-2', '4.8868 元', '无'], ['user-3', '5.1718 元', '无'],
+  ])
+  assertDemoTable(models, '按模型看费用', ['模型', '费用'], [
+    ['model-a', '107.0453 元'], ['model-b', '9.6400 元'],
+  ])
+
+  const [{ children: [comparison, table] }] = byId('report').children
+  assert.equal(comparison.textContent, '与前一天比较：变慢、失败变多、费用上涨。')
+  assertDemoTable(table, '日报指标', ['指标', '2026-11-28', '2026-11-27'], [
+    ['调用数', '5', '200'], ['延迟 p95（毫秒）', '2600', '1687'], ['成功率', '40.00%', '92.50%'],
+    ['费用', '80.1425 元', '36.5428 元'], ['输入 token', '50', '2374'], ['输出 token', '20020', '7567'],
+    ['未定价模型数', '0', '0'],
+  ])
+})
+
+test('watch keeps unpriced calls distinct from zero cost and shows a report without a prior day', async t => {
+  const bundle = structuredClone(watchBundle)
+  bundle.summary.by_user['user-1'].unpriced_models = ['model-b']
+  Object.assign(bundle.summary.by_user['user-2'], { cost: '未定价', unpriced_models: ['model-b'] })
+  bundle.summary.by_user['user-3'].cost = 0
+  bundle.summary.by_model['model-b'].cost = '未定价'
+  bundle.report.comparison = { previous: null, previous_date: '2026-11-27', message: '没有前一天的数据', flags: [] }
+  const byId = await mountDemo(t, watchDir, bundle)
+  const [users, models] = byId('cost').children
+  assertDemoTable(users, '按用户看费用', ['用户', '费用', '未定价模型'], [
+    ['user-1', '106.6268 元', 'model-b'], ['user-2', '未定价', 'model-b'], ['user-3', '0.0000 元', '无'],
+  ])
+  assertDemoTable(models, '按模型看费用', ['模型', '费用'], [
+    ['model-a', '107.0453 元'], ['model-b', '未定价'],
+  ])
+  const [{ children: [comparison, table] }] = byId('report').children
+  assert.equal(comparison.textContent, '与前一天比较：没有前一天的数据。')
+  assert.deepEqual(table.children[1].children[0].children.map(cell => cell.textContent), ['指标', '2026-11-28'])
+})
+
 test('watch renders scoped tables and keeps the live alert list in sync with the control', async t => {
   const byId = await mountDemo(t, watchDir, watchBundle)
-  assert.match(byId('overview-status').textContent, /200 次有效调用.*2 行/)
+  assert.match(byId('overview-status').textContent, /205 次有效调用.*2 行/)
 
   const { summary, alerts } = watchBundle
   const optionLabels = { '': '全部类型', timeout_streak: '连续超时', recovered: '恢复', budget_exceeded: '用量超额' }
