@@ -6,9 +6,26 @@ export type IntelDomain = 'ai' | 'web3' | 'market' | 'review'
 export interface IntelItem { id: string; kind: IntelKind; date: string; domain: IntelDomain; topic: string; title: string; summary: string; href: string; source?: { name: string; tier?: 'tier1' | 'tier2'; url: string }; flags?: { deepDive?: true; priority?: 'P0' | 'P1' | 'P2' } }
 export interface IntelTopic { topic: string; domain: IntelDomain; count: number; firstSeen: string; lastSeen: string }
 
-export const intelLatestDate: string | null = "2026-11-27"
-export const intelItemCount = 340
+export const intelLatestDate: string | null = "2026-11-28"
+export const intelItemCount = 341
 export const intelLatestItems: IntelItem[] = [
+  {
+    "id": "market:2026-11-28:ecb-ces-october-horizon-statistic-expectations-2026-11-27",
+    "kind": "market",
+    "date": "2026-11-28",
+    "domain": "market",
+    "topic": "market_macro",
+    "title": "ECB消费者预期：一年通胀上调，五年不变",
+    "summary": "研究推断：通胀与收入预期可能经家庭实际支出、企业销售和利润率影响相关股票的研究判断；仍需核对实际行为、价格和融资证据。不同期限预期与不同统计量不可互换，不能仅凭一年预期上升认定长期预期脱锚、政策动作或资产方向。",
+    "href": "/market-radar/2026-11-28#ecb-ces-october-horizon-statistic-expectations-2026-11-27",
+    "source": {
+      "name": "European Central Bank — Consumer Expectations Survey results: October 2026",
+      "url": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261127~2e53af695e.en.html"
+    },
+    "flags": {
+      "priority": "P2"
+    }
+  },
   {
     "id": "learning:ai-langgraph-deploy-empty-secrets-omission",
     "kind": "learning",
@@ -94,8 +111,8 @@ export const intelTopics: IntelTopic[] = [
   {
     "topic": "market_macro",
     "domain": "market",
-    "count": 23,
-    "lastSeen": "2026-11-27",
+    "count": 24,
+    "lastSeen": "2026-11-28",
     "firstSeen": "2026-08-09"
   },
   {

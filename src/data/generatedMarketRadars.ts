@@ -16,6 +16,17 @@ export interface MarketRadarDaily { schemaVersion?: 2; date: string; slug: strin
 export interface MarketRadarIndexEntry { date: string; slug: string; snapshotId: string; asOf: string; title: string; summary: string; eventCount: number; assetCount: number; leadTitle: string }
 export const marketRadarIndex: MarketRadarIndexEntry[] = [
   {
+    "date": "2026-11-28",
+    "slug": "2026-11-28",
+    "title": "交易研究雷达 · 2026-11-28",
+    "summary": "11月27日ECB发布10月消费者调查：一年通胀预期上升，五年不变，名义收入预期放缓。本期区分期限、中位数和缩尾均值，保留调查窗口；家庭预期不等于实际数据或央行决定。自动汇总，未经人工复核。",
+    "snapshotId": "market-2026-11-28-b8a57425d235bdfc",
+    "asOf": "2026-11-27T21:36:41.419Z",
+    "eventCount": 1,
+    "assetCount": 2,
+    "leadTitle": "ECB消费者预期：一年通胀上调，五年不变"
+  },
+  {
     "date": "2026-11-27",
     "slug": "2026-11-27",
     "title": "交易研究雷达 · 2026-11-27",
@@ -325,6 +336,157 @@ export const marketRadarIndex: MarketRadarIndexEntry[] = [
   }
 ]
 export const latestMarketRadars: MarketRadarDaily[] = [
+  {
+    "date": "2026-11-28",
+    "slug": "2026-11-28",
+    "title": "交易研究雷达 · 2026-11-28",
+    "summary": "11月27日ECB发布10月消费者调查：一年通胀预期上升，五年不变，名义收入预期放缓。本期区分期限、中位数和缩尾均值，保留调查窗口；家庭预期不等于实际数据或央行决定。自动汇总，未经人工复核。",
+    "snapshotId": "market-2026-11-28-b8a57425d235bdfc",
+    "asOf": "2026-11-27T21:36:41.419Z",
+    "origin": "research",
+    "publicationState": "published",
+    "reviewStatus": "automated",
+    "generatedAt": "2026-11-27T21:36:41.419637+00:00",
+    "events": [
+      {
+        "id": "ecb-ces-october-horizon-statistic-expectations-2026-11-27",
+        "priority": "P2",
+        "status": "released",
+        "category": "macro",
+        "title": "ECB消费者预期：一年通胀上调，五年不变",
+        "fact": "ECB11月27日发布10月CES：未来12个月通胀预期中位数从3.1%升至3.5%，三年后从2.9%升至3.0%，五年后仍为2.5%。预期名义收入增长从1.1%降至0.6%，支出增长仍为3.7%；后二者为2%缩尾均值。调查期为10月1日至11月2日，覆盖11国约1.9万成人。这些是家庭调查预期，不是实际通胀、收入或ECB政策决定。",
+        "whyWatch": "研究推断：通胀与收入预期可能经家庭实际支出、企业销售和利润率影响相关股票的研究判断；仍需核对实际行为、价格和融资证据。不同期限预期与不同统计量不可互换，不能仅凭一年预期上升认定长期预期脱锚、政策动作或资产方向。",
+        "assets": [
+          "欧元区消费企业股票",
+          "欧元区主权债券"
+        ],
+        "watchFor": "固定11月27日正文及结果表版本，分开中位数与缩尾均值，并核对国家、收入组和后续实际消费、工资及价格。三年后与五年后指相应未来一年窗口，不是多年累计涨幅；结果页将来可能更新。本期未建立行情或因果样本。",
+        "invalidation": "若混用预期与实际、将中位数与均值直接相减成实际收入，或把11月27日当调查观察日，撤回比较。若后续实际支出或企业披露不支持传导，或修订与样本构成改变结论，应收窄解释；不能从家庭预期推定ECB决策。",
+        "sourceName": "European Central Bank — Consumer Expectations Survey results: October 2026",
+        "sourceUrl": "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261127~2e53af695e.en.html",
+        "sourcePublishedAt": "2026-11-27"
+      }
+    ],
+    "sourceUrls": [
+      "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261127~2e53af695e.en.html"
+    ],
+    "quantStrategy": {
+      "horizonTradingDays": 3,
+      "status": "historical_samples_insufficient",
+      "methodology": "实读11月27日ECB正文与两份结果表，固定10月CES和调查窗口，核对中位数、缩尾均值及未来一年期限定义；未建立资产行情或因果样本。",
+      "assets": [
+        {
+          "symbol": "SPY",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "QQQ",
+          "group": "us_equity_etf",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "BTC",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "ETH",
+          "group": "crypto",
+          "signalQuality": "weak"
+        },
+        {
+          "symbol": "GLD",
+          "group": "gold_etf",
+          "signalQuality": "weak"
+        }
+      ],
+      "sampleSize": 0,
+      "rationale": "3交易日仅用于补充证据与解释核查；固定资产弱信号表示资产样本不足，不表示方向或实现概率，亦不指CES受访者数量。",
+      "nextValidation": "按相同发布版本、期限及统计量保存国家和收入组分项，再用实际消费、工资、价格和企业销售证据检验传导；后续修订另存版本。",
+      "invalidation": "混用预期与实际、统计量或调查窗口时撤回比较；若后续行为不支持解释或样本构成变化主导，应收窄适用范围。",
+      "sourceUrls": [
+        "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261127~2e53af695e.en.html"
+      ]
+    },
+    "schemaVersion": 2,
+    "researchQuestions": [
+      {
+        "id": "1",
+        "lens": "transmission",
+        "shortQuestion": "家庭通胀与收入预期通过哪些实际支出、企业销售和利润率环节，才可能影响相关资产的研究判断？",
+        "focusEventIds": [
+          "ecb-ces-october-horizon-statistic-expectations-2026-11-27"
+        ]
+      },
+      {
+        "id": "2",
+        "lens": "falsification",
+        "shortQuestion": "期限、国家和收入组分项以及后续实际消费数据，哪些最能支持或推翻家庭预期已转化为支出变化的解释？",
+        "focusEventIds": [
+          "ecb-ces-october-horizon-statistic-expectations-2026-11-27"
+        ]
+      },
+      {
+        "id": "3",
+        "lens": "scenario",
+        "shortQuestion": "若短期预期主要受暂时冲击或样本构成影响，且长期预期及实际行为未跟随，哪些证据应使原有解释失效？",
+        "focusEventIds": [
+          "ecb-ces-october-horizon-statistic-expectations-2026-11-27"
+        ]
+      }
+    ],
+    "researchPack": {
+      "schemaVersion": 2,
+      "date": "2026-11-28",
+      "snapshotId": "market-2026-11-28-b8a57425d235bdfc",
+      "asOf": "2026-11-27T21:36:41.419Z",
+      "origin": "research",
+      "publicationState": "published",
+      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-28",
+      "questions": [
+        {
+          "id": "1",
+          "lens": "transmission",
+          "shortQuestion": "家庭通胀与收入预期通过哪些实际支出、企业销售和利润率环节，才可能影响相关资产的研究判断？",
+          "focusEventIds": [
+            "ecb-ces-october-horizon-statistic-expectations-2026-11-27"
+          ],
+          "prompt": "研究任务：家庭通胀与收入预期通过哪些实际支出、企业销售和利润率环节，才可能影响相关资产的研究判断？\n证据快照：2026-11-28；asOf=2026-11-27T21:36:41.419Z；snapshotId=market-2026-11-28-b8a57425d235bdfc\n\n材料 1｜ECB消费者预期：一年通胀上调，五年不变\n已确认事实：ECB11月27日发布10月CES：未来12个月通胀预期中位数从3.1%升至3.5%，三年后从2.9%升至3.0%，五年后仍为2.5%。预期名义收入增长从1.1%降至0.6%，支出增长仍为3.7%；后二者为2%缩尾均值。调查期为10月1日至11月2日，覆盖11国约1.9万成人。这些是家庭调查预期，不是实际通胀、收入或ECB政策决定。\n关注机制：研究推断：通胀与收入预期可能经家庭实际支出、企业销售和利润率影响相关股票的研究判断；仍需核对实际行为、价格和融资证据。不同期限预期与不同统计量不可互换，不能仅凭一年预期上升认定长期预期脱锚、政策动作或资产方向。\n接下来验证：固定11月27日正文及结果表版本，分开中位数与缩尾均值，并核对国家、收入组和后续实际消费、工资及价格。三年后与五年后指相应未来一年窗口，不是多年累计涨幅；结果页将来可能更新。本期未建立行情或因果样本。\n失效条件：若混用预期与实际、将中位数与均值直接相减成实际收入，或把11月27日当调查观察日，撤回比较。若后续实际支出或企业披露不支持传导，或修订与样本构成改变结论，应收窄解释；不能从家庭预期推定ECB决策。\n一手来源：https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261127~2e53af695e.en.html\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "8207fecef0e69067e15c74e6defe01c0d474c25a4e08bb5ae10eb771ac2c163e",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261127~2e53af695e.en.html"
+          ]
+        },
+        {
+          "id": "2",
+          "lens": "falsification",
+          "shortQuestion": "期限、国家和收入组分项以及后续实际消费数据，哪些最能支持或推翻家庭预期已转化为支出变化的解释？",
+          "focusEventIds": [
+            "ecb-ces-october-horizon-statistic-expectations-2026-11-27"
+          ],
+          "prompt": "研究任务：期限、国家和收入组分项以及后续实际消费数据，哪些最能支持或推翻家庭预期已转化为支出变化的解释？\n证据快照：2026-11-28；asOf=2026-11-27T21:36:41.419Z；snapshotId=market-2026-11-28-b8a57425d235bdfc\n\n材料 1｜ECB消费者预期：一年通胀上调，五年不变\n已确认事实：ECB11月27日发布10月CES：未来12个月通胀预期中位数从3.1%升至3.5%，三年后从2.9%升至3.0%，五年后仍为2.5%。预期名义收入增长从1.1%降至0.6%，支出增长仍为3.7%；后二者为2%缩尾均值。调查期为10月1日至11月2日，覆盖11国约1.9万成人。这些是家庭调查预期，不是实际通胀、收入或ECB政策决定。\n关注机制：研究推断：通胀与收入预期可能经家庭实际支出、企业销售和利润率影响相关股票的研究判断；仍需核对实际行为、价格和融资证据。不同期限预期与不同统计量不可互换，不能仅凭一年预期上升认定长期预期脱锚、政策动作或资产方向。\n接下来验证：固定11月27日正文及结果表版本，分开中位数与缩尾均值，并核对国家、收入组和后续实际消费、工资及价格。三年后与五年后指相应未来一年窗口，不是多年累计涨幅；结果页将来可能更新。本期未建立行情或因果样本。\n失效条件：若混用预期与实际、将中位数与均值直接相减成实际收入，或把11月27日当调查观察日，撤回比较。若后续实际支出或企业披露不支持传导，或修订与样本构成改变结论，应收窄解释；不能从家庭预期推定ECB决策。\n一手来源：https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261127~2e53af695e.en.html\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "2059cc10ca9778a93d2bfe6356887b9368c43d53750a685cda9517c861cf92f7",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261127~2e53af695e.en.html"
+          ]
+        },
+        {
+          "id": "3",
+          "lens": "scenario",
+          "shortQuestion": "若短期预期主要受暂时冲击或样本构成影响，且长期预期及实际行为未跟随，哪些证据应使原有解释失效？",
+          "focusEventIds": [
+            "ecb-ces-october-horizon-statistic-expectations-2026-11-27"
+          ],
+          "prompt": "研究任务：若短期预期主要受暂时冲击或样本构成影响，且长期预期及实际行为未跟随，哪些证据应使原有解释失效？\n证据快照：2026-11-28；asOf=2026-11-27T21:36:41.419Z；snapshotId=market-2026-11-28-b8a57425d235bdfc\n\n材料 1｜ECB消费者预期：一年通胀上调，五年不变\n已确认事实：ECB11月27日发布10月CES：未来12个月通胀预期中位数从3.1%升至3.5%，三年后从2.9%升至3.0%，五年后仍为2.5%。预期名义收入增长从1.1%降至0.6%，支出增长仍为3.7%；后二者为2%缩尾均值。调查期为10月1日至11月2日，覆盖11国约1.9万成人。这些是家庭调查预期，不是实际通胀、收入或ECB政策决定。\n关注机制：研究推断：通胀与收入预期可能经家庭实际支出、企业销售和利润率影响相关股票的研究判断；仍需核对实际行为、价格和融资证据。不同期限预期与不同统计量不可互换，不能仅凭一年预期上升认定长期预期脱锚、政策动作或资产方向。\n接下来验证：固定11月27日正文及结果表版本，分开中位数与缩尾均值，并核对国家、收入组和后续实际消费、工资及价格。三年后与五年后指相应未来一年窗口，不是多年累计涨幅；结果页将来可能更新。本期未建立行情或因果样本。\n失效条件：若混用预期与实际、将中位数与均值直接相减成实际收入，或把11月27日当调查观察日，撤回比较。若后续实际支出或企业披露不支持传导，或修订与样本构成改变结论，应收窄解释；不能从家庭预期推定ECB决策。\n一手来源：https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261127~2e53af695e.en.html\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
+          "promptChecksum": "ca2a0c9e8833267da03b90a0e37d33c1cb1bdd73f9af95519bd17a6da23b18ed",
+          "sourceUrls": [
+            "https://www.ecb.europa.eu/press/pr/date/2026/html/ecb.pr261127~2e53af695e.en.html"
+          ]
+        }
+      ]
+    }
+  },
   {
     "date": "2026-11-27",
     "slug": "2026-11-27",
@@ -1226,157 +1388,6 @@ export const latestMarketRadars: MarketRadarDaily[] = [
           "promptChecksum": "1a74e1ac27b47cfcc424227b68eede4fe3cac112da4e61732b31bb50072b3773",
           "sourceUrls": [
             "https://www.ecb.europa.eu/press/economic-bulletin/focus/2026/html/ecb.ebbox202607_05~d82730508f.en.html"
-          ]
-        }
-      ]
-    }
-  },
-  {
-    "date": "2026-11-11",
-    "slug": "2026-11-11",
-    "title": "交易研究雷达 · 2026-11-11",
-    "summary": "纽约联储三季家庭债务增至19.1万亿美元，逾期余额占比升至5.0%；本期保留房贷余额补报限制，区分季度存量、转入逾期流量与尚待验证的消费传导。",
-    "snapshotId": "market-2026-11-11-ea9caa2c488be2fb",
-    "asOf": "2026-11-10T21:36:50.907Z",
-    "origin": "research",
-    "publicationState": "published",
-    "reviewStatus": "automated",
-    "generatedAt": "2026-11-10T21:36:50.907648Z",
-    "events": [
-      {
-        "id": "nyfed-q3-household-debt-reporting-stock-flow-2026-11-10",
-        "priority": "P1",
-        "status": "released",
-        "category": "macro",
-        "title": "纽约联储三季家庭债务增至19.1万亿美元，补报与逾期口径须拆开",
-        "fact": "纽约联储11月10日公布三季家庭债务与信贷报告：名义债务余额季增3340亿美元、1.8%，至19.1万亿美元；9月底5.0%的未偿余额处于某种逾期阶段，季升0.3个百分点。官方报告页同时说明，房贷余额增加2570亿美元，其中约一半来自上季报告缺口后的重新上报，不能全作新增借贷。",
-        "whyWatch": "研究判断：债务偿付压力可能经家庭现金流、贷款损失和信贷可得性影响消费，再联系相关资产；需独立核对收入、实际支出及信贷表现，余额上升与逾期存量变化不能单独证明需求下降或资产方向。",
-        "assets": [
-          "美国家庭信贷",
-          "美国银行业"
-        ],
-        "watchFor": "保留Q3统计期与11月10日发布日，分别核对余额补报、各贷款品种的早期及严重逾期转入率，以及后续收入、消费和贷款损失资料。转入率是年化余额流量，5.0%是期末余额存量占比；本期未采集资产反应样本。",
-        "invalidation": "若补报和构成变化解释余额增长，且后续转入率、贷款损失及实际支出未支持广泛偿付恶化，则暂停即时消费或市场传导解释。数据修订、分母或期间不一致时重估，不把余额占比视为人数比例或违约概率。",
-        "sourceName": "New York Fed — Q3 2026 Household Debt and Credit",
-        "sourceUrl": "https://www.newyorkfed.org/newsevents/news/research/2026/20261110",
-        "sourcePublishedAt": "2026-11-10"
-      }
-    ],
-    "sourceUrls": [
-      "https://www.newyorkfed.org/newsevents/news/research/2026/20261110"
-    ],
-    "quantStrategy": {
-      "horizonTradingDays": 3,
-      "status": "historical_samples_insufficient",
-      "methodology": "本期核对季度信用报告余额及口径，未建立家庭偿付、消费与资产反应的同窗口历史样本。",
-      "assets": [
-        {
-          "symbol": "SPY",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "QQQ",
-          "group": "us_equity_etf",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "BTC",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "ETH",
-          "group": "crypto",
-          "signalQuality": "weak"
-        },
-        {
-          "symbol": "GLD",
-          "group": "gold_etf",
-          "signalQuality": "weak"
-        }
-      ],
-      "sampleSize": 0,
-      "rationale": "季末信贷快照、发布日期和三日市场窗口不同；没有样本便不量化跨资产影响。",
-      "nextValidation": "固定Q3版本与公布窗口，核对补报、各类转入率、收入支出及损失数据；样本不足时仅记录信号质量。",
-      "invalidation": "官方修订、统计分母或观察窗口不一致时重估；缺少实际传导证据时保留未知。",
-      "sourceUrls": [
-        "https://www.newyorkfed.org/newsevents/news/research/2026/20261110"
-      ]
-    },
-    "schemaVersion": 2,
-    "researchQuestions": [
-      {
-        "id": "1",
-        "lens": "transmission",
-        "shortQuestion": "家庭债务和偿付压力如何经现金流、贷款损失与信贷可得性联系消费及相关资产，各环需要什么独立证据？",
-        "focusEventIds": [
-          "nyfed-q3-household-debt-reporting-stock-flow-2026-11-10"
-        ]
-      },
-      {
-        "id": "2",
-        "lens": "falsification",
-        "shortQuestion": "哪些补报、贷款构成与同口径逾期流量资料，能推翻把债务存量增长解释为新增借贷或广泛偿付恶化的说法？",
-        "focusEventIds": [
-          "nyfed-q3-household-debt-reporting-stock-flow-2026-11-10"
-        ]
-      },
-      {
-        "id": "3",
-        "lens": "scenario",
-        "shortQuestion": "若余额变化主要来自补报，与实际偿付压力扩大相比，后续观察什么，哪些收入、支出和损失证据使传导判断失效？",
-        "focusEventIds": [
-          "nyfed-q3-household-debt-reporting-stock-flow-2026-11-10"
-        ]
-      }
-    ],
-    "researchPack": {
-      "schemaVersion": 2,
-      "date": "2026-11-11",
-      "snapshotId": "market-2026-11-11-ea9caa2c488be2fb",
-      "asOf": "2026-11-10T21:36:50.907Z",
-      "origin": "research",
-      "publicationState": "published",
-      "pageUrl": "https://xiuqiu-site.vercel.app/market-radar/2026-11-11",
-      "questions": [
-        {
-          "id": "1",
-          "lens": "transmission",
-          "shortQuestion": "家庭债务和偿付压力如何经现金流、贷款损失与信贷可得性联系消费及相关资产，各环需要什么独立证据？",
-          "focusEventIds": [
-            "nyfed-q3-household-debt-reporting-stock-flow-2026-11-10"
-          ],
-          "prompt": "研究任务：家庭债务和偿付压力如何经现金流、贷款损失与信贷可得性联系消费及相关资产，各环需要什么独立证据？\n证据快照：2026-11-11；asOf=2026-11-10T21:36:50.907Z；snapshotId=market-2026-11-11-ea9caa2c488be2fb\n\n材料 1｜纽约联储三季家庭债务增至19.1万亿美元，补报与逾期口径须拆开\n已确认事实：纽约联储11月10日公布三季家庭债务与信贷报告：名义债务余额季增3340亿美元、1.8%，至19.1万亿美元；9月底5.0%的未偿余额处于某种逾期阶段，季升0.3个百分点。官方报告页同时说明，房贷余额增加2570亿美元，其中约一半来自上季报告缺口后的重新上报，不能全作新增借贷。\n关注机制：研究判断：债务偿付压力可能经家庭现金流、贷款损失和信贷可得性影响消费，再联系相关资产；需独立核对收入、实际支出及信贷表现，余额上升与逾期存量变化不能单独证明需求下降或资产方向。\n接下来验证：保留Q3统计期与11月10日发布日，分别核对余额补报、各贷款品种的早期及严重逾期转入率，以及后续收入、消费和贷款损失资料。转入率是年化余额流量，5.0%是期末余额存量占比；本期未采集资产反应样本。\n失效条件：若补报和构成变化解释余额增长，且后续转入率、贷款损失及实际支出未支持广泛偿付恶化，则暂停即时消费或市场传导解释。数据修订、分母或期间不一致时重估，不把余额占比视为人数比例或违约概率。\n一手来源：https://www.newyorkfed.org/newsevents/news/research/2026/20261110\n\n分析镜头：解释事件到相关资产的传导链，逐步指出每一环需要什么公开证据。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "74207a35955e5b20c90340e55eeab4a3d2d72fc7dc4b6c0e6813dc5e93400429",
-          "sourceUrls": [
-            "https://www.newyorkfed.org/newsevents/news/research/2026/20261110"
-          ]
-        },
-        {
-          "id": "2",
-          "lens": "falsification",
-          "shortQuestion": "哪些补报、贷款构成与同口径逾期流量资料，能推翻把债务存量增长解释为新增借贷或广泛偿付恶化的说法？",
-          "focusEventIds": [
-            "nyfed-q3-household-debt-reporting-stock-flow-2026-11-10"
-          ],
-          "prompt": "研究任务：哪些补报、贷款构成与同口径逾期流量资料，能推翻把债务存量增长解释为新增借贷或广泛偿付恶化的说法？\n证据快照：2026-11-11；asOf=2026-11-10T21:36:50.907Z；snapshotId=market-2026-11-11-ea9caa2c488be2fb\n\n材料 1｜纽约联储三季家庭债务增至19.1万亿美元，补报与逾期口径须拆开\n已确认事实：纽约联储11月10日公布三季家庭债务与信贷报告：名义债务余额季增3340亿美元、1.8%，至19.1万亿美元；9月底5.0%的未偿余额处于某种逾期阶段，季升0.3个百分点。官方报告页同时说明，房贷余额增加2570亿美元，其中约一半来自上季报告缺口后的重新上报，不能全作新增借贷。\n关注机制：研究判断：债务偿付压力可能经家庭现金流、贷款损失和信贷可得性影响消费，再联系相关资产；需独立核对收入、实际支出及信贷表现，余额上升与逾期存量变化不能单独证明需求下降或资产方向。\n接下来验证：保留Q3统计期与11月10日发布日，分别核对余额补报、各贷款品种的早期及严重逾期转入率，以及后续收入、消费和贷款损失资料。转入率是年化余额流量，5.0%是期末余额存量占比；本期未采集资产反应样本。\n失效条件：若补报和构成变化解释余额增长，且后续转入率、贷款损失及实际支出未支持广泛偿付恶化，则暂停即时消费或市场传导解释。数据修订、分母或期间不一致时重估，不把余额占比视为人数比例或违约概率。\n一手来源：https://www.newyorkfed.org/newsevents/news/research/2026/20261110\n\n分析镜头：提出最有力的反证，并列出可支持或推翻当前解释的跨资产验证指标。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "33c1bd896cb60f7a9efdec7430d98b528970e752112e0736177b989b517c79ff",
-          "sourceUrls": [
-            "https://www.newyorkfed.org/newsevents/news/research/2026/20261110"
-          ]
-        },
-        {
-          "id": "3",
-          "lens": "scenario",
-          "shortQuestion": "若余额变化主要来自补报，与实际偿付压力扩大相比，后续观察什么，哪些收入、支出和损失证据使传导判断失效？",
-          "focusEventIds": [
-            "nyfed-q3-household-debt-reporting-stock-flow-2026-11-10"
-          ],
-          "prompt": "研究任务：若余额变化主要来自补报，与实际偿付压力扩大相比，后续观察什么，哪些收入、支出和损失证据使传导判断失效？\n证据快照：2026-11-11；asOf=2026-11-10T21:36:50.907Z；snapshotId=market-2026-11-11-ea9caa2c488be2fb\n\n材料 1｜纽约联储三季家庭债务增至19.1万亿美元，补报与逾期口径须拆开\n已确认事实：纽约联储11月10日公布三季家庭债务与信贷报告：名义债务余额季增3340亿美元、1.8%，至19.1万亿美元；9月底5.0%的未偿余额处于某种逾期阶段，季升0.3个百分点。官方报告页同时说明，房贷余额增加2570亿美元，其中约一半来自上季报告缺口后的重新上报，不能全作新增借贷。\n关注机制：研究判断：债务偿付压力可能经家庭现金流、贷款损失和信贷可得性影响消费，再联系相关资产；需独立核对收入、实际支出及信贷表现，余额上升与逾期存量变化不能单独证明需求下降或资产方向。\n接下来验证：保留Q3统计期与11月10日发布日，分别核对余额补报、各贷款品种的早期及严重逾期转入率，以及后续收入、消费和贷款损失资料。转入率是年化余额流量，5.0%是期末余额存量占比；本期未采集资产反应样本。\n失效条件：若补报和构成变化解释余额增长，且后续转入率、贷款损失及实际支出未支持广泛偿付恶化，则暂停即时消费或市场传导解释。数据修订、分母或期间不一致时重估，不把余额占比视为人数比例或违约概率。\n一手来源：https://www.newyorkfed.org/newsevents/news/research/2026/20261110\n\n分析镜头：建立基准、上行与下行情景，说明触发条件、待验证事项和判断失效条件。\n输出顺序：结论；已确认事实；因果链；最强反证；验证指标；失效条件；仍未知。\n证据契约：所有新增数字必须附公开来源与 asOf；晚于本快照的信息单独列出；无法浏览来源时明确说明。事实、推断与待验证事项必须分开。\n边界：不得编造概率、价格或机构观点；不得给出买卖、仓位、止损、目标价或收益承诺；量化样本门禁关闭时不得自行补精确概率。",
-          "promptChecksum": "b51c3ac516a1c07dde99ae9da2bb3791c04f34f554274828a451ef9584b543b8",
-          "sourceUrls": [
-            "https://www.newyorkfed.org/newsevents/news/research/2026/20261110"
           ]
         }
       ]

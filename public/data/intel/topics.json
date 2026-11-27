@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "latestDate": "2026-11-27",
+  "latestDate": "2026-11-28",
   "homePageUrl": "https://xoqiu.cn/",
   "topics": [
     {
       "topic": "market_macro",
       "domain": "market",
-      "count": 23,
-      "lastSeen": "2026-11-27",
+      "count": 24,
+      "lastSeen": "2026-11-28",
       "firstSeen": "2026-08-09",
       "url": "https://xoqiu.cn/topics/market_macro"
     },
