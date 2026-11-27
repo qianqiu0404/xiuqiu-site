@@ -1,0 +1,24 @@
+.matrix-table {
+  width: 100%;
+  margin-block: 12px;
+  border-collapse: collapse;
+  background: var(--surface);
+  font-variant-numeric: tabular-nums;
+}
+
+.matrix-table caption {
+  padding-block: 8px;
+  text-align: start;
+  font-weight: 650;
+}
+
+.matrix-table th, .matrix-table td {
+  border: 1px solid var(--line);
+  padding: 6px 8px;
+  text-align: start;
+}
+
+.matrix-table thead { background: var(--sunk); }
+.matrix-table td { white-space: nowrap; }
+.failure { margin-top: 12px; }
+.failure h4 { margin: 0 0 4px; }

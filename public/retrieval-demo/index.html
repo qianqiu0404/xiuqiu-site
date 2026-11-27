@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>知识库检索评测演示</title>
+  <link rel="stylesheet" href="../answer-check-demo/styles.css">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <main class="page">
+    <header class="intro">
+      <h1>知识库检索评测演示</h1>
+      <p>比较不同切块和检索方式，看看客服能不能找到回答问题所需的原文。</p>
+      <p class="muted">青柚家电、知识库文章和测试问题均为虚构。</p>
+      <a class="home-link" href="/">返回作品集首页</a>
+    </header>
+
+    <noscript><p>启用 JavaScript 后可查看评测结果和失败题目。</p></noscript>
+
+    <section aria-labelledby="matrix-title">
+      <h2 id="matrix-title">评测结果</h2>
+      <p>Recall@k 是前 k 个片段中找到完整标准原句的题目比例。MRR 越高，完整原句在整个排名里越靠前。</p>
+      <div id="matrix"></div>
+    </section>
+
+    <section id="recommendation" aria-labelledby="recommendation-title" hidden>
+      <h2 id="recommendation-title">推荐设置</h2>
+      <p id="recommended-setting"></p>
+      <p id="recommendation-reason"></p>
+    </section>
+
+    <section aria-labelledby="failures-title">
+      <h2 id="failures-title">失败题目</h2>
+      <fieldset class="card filter-card" id="filters" disabled>
+        <legend>筛选失败题目</legend>
+        <div class="field">
+          <label for="failure-reason">失败原因</label>
+          <select id="failure-reason">
+            <option value="">全部原因</option>
+          </select>
+        </div>
+      </fieldset>
+      <p id="result-count" class="result-count" aria-live="polite" aria-atomic="true"></p>
+      <div id="failures"></div>
+    </section>
+
+    <section aria-labelledby="verification-title">
+      <h2 id="verification-title">怎么验证的</h2>
+      <ul>
+        <li>用 6 篇文章和 40 道题核对 18 种设置，按原文位置重算哪些片段含有完整的标准原句。</li>
+        <li>用手算结果核对 BM25 的打分和排序，以及取前 1、3、5 个片段时的 Recall 和 MRR。</li>
+        <li>用同一道题核对原句在无重叠时会被切断，重叠 50 个字后能完整检出，并验证三种失败归因。</li>
+        <li>核对推荐设置在 Recall@3 相同的情况下优先选择 MRR 较高的一项，并检查两次导出完全一致。</li>
+      </ul>
+    </section>
+  </main>
+  <footer class="page muted">
+    <p id="source" hidden></p>
+    <a class="home-link" href="https://github.com/xoqiu09/kb-retrieval-eval">查看 kb-retrieval-eval 源码和测试</a>
+  </footer>
+</body>
+</html>
