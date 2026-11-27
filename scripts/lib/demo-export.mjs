@@ -3,14 +3,16 @@ import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'nod
 import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 
-export function readDemoExport(sourcePath, repo, module, args = []) {
+export function readDemoExport(sourcePath, repo, module, args = [], companions = {}) {
   const cwd = resolve(sourcePath)
   const commit = execFileSync('git', ['rev-parse', '--short', 'HEAD'], { cwd, encoding: 'utf8' }).trim()
   const directory = mkdtempSync(join(tmpdir(), 'site-demo-'))
   const output = join(directory, 'export.json')
   try {
     execFileSync('python3', ['-B', '-m', module, 'export', ...args, '--out', output], { cwd })
-    return { source: { repo, commit }, ...JSON.parse(readFileSync(output, 'utf8')) }
+    const additional = Object.fromEntries(Object.entries(companions).map(([key, file]) =>
+      [key, JSON.parse(readFileSync(join(directory, file), 'utf8'))]))
+    return { source: { repo, commit }, ...JSON.parse(readFileSync(output, 'utf8')), ...additional }
   } finally {
     rmSync(directory, { recursive: true })
   }

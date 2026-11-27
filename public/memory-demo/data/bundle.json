@@ -1,7 +1,7 @@
 {
   "source": {
     "repo": "support-memory",
-    "commit": "b5283a5"
+    "commit": "84871a5"
   },
   "steps": [
     {
@@ -77,5 +77,125 @@
         }
       }
     }
-  ]
+  ],
+  "m2": {
+    "consent": {
+      "account": "A",
+      "enabled": false,
+      "answer": "已关闭跨会话偏好保存。已有偏好仍然保留，可用 forget 清除。"
+    },
+    "first_answer": "按你的设置，只列未发货订单\nA-102（未发货）",
+    "same_session_answer": "按你的设置，只列未发货订单\nA-102（未发货）",
+    "new_session_answer": "按默认设置，列出全部订单\nA-101（已发货）\nA-102（未发货）",
+    "preferences": {},
+    "history": {
+      "account": "A",
+      "session": "a1",
+      "summary": [
+        {
+          "user": "电话[手机号已遮盖]，以后只看未发货的",
+          "preferences": {
+            "order_filter": "unshipped"
+          }
+        }
+      ],
+      "turns": [
+        {
+          "user": "列出订单",
+          "reply": "按你的设置，只列未发货订单\nA-102（未发货）",
+          "preferences": {}
+        },
+        {
+          "user": "列出订单",
+          "reply": "按你的设置，只列未发货订单\nA-102（未发货）",
+          "preferences": {}
+        },
+        {
+          "user": "列出订单",
+          "reply": "按你的设置，只列未发货订单\nA-102（未发货）",
+          "preferences": {}
+        },
+        {
+          "user": "列出订单",
+          "reply": "按你的设置，只列未发货订单\nA-102（未发货）",
+          "preferences": {}
+        },
+        {
+          "user": "列出订单",
+          "reply": "按你的设置，只列未发货订单\nA-102（未发货）",
+          "preferences": {}
+        },
+        {
+          "user": "列出订单",
+          "reply": "按你的设置，只列未发货订单\nA-102（未发货）",
+          "preferences": {}
+        }
+      ]
+    },
+    "audit": [
+      {
+        "account": "A",
+        "session": "a1",
+        "key": "order_filter",
+        "action": "write",
+        "time": "2026-01-01T00:00:00Z"
+      },
+      {
+        "account": "A",
+        "session": "a1",
+        "key": "order_filter",
+        "action": "read",
+        "time": "2026-01-01T00:00:00Z"
+      },
+      {
+        "account": "A",
+        "session": "a1",
+        "key": "order_filter",
+        "action": "read",
+        "time": "2026-01-01T00:00:01Z"
+      },
+      {
+        "account": "A",
+        "session": "a1",
+        "key": "order_filter",
+        "action": "read",
+        "time": "2026-01-01T00:00:02Z"
+      },
+      {
+        "account": "A",
+        "session": "a1",
+        "key": "order_filter",
+        "action": "read",
+        "time": "2026-01-01T00:00:03Z"
+      },
+      {
+        "account": "A",
+        "session": "a1",
+        "key": "order_filter",
+        "action": "read",
+        "time": "2026-01-01T00:00:04Z"
+      },
+      {
+        "account": "A",
+        "session": "a1",
+        "key": "order_filter",
+        "action": "read",
+        "time": "2026-01-01T00:00:05Z"
+      },
+      {
+        "account": "A",
+        "session": "a1",
+        "key": "order_filter",
+        "action": "read",
+        "time": "2026-01-01T00:00:06Z"
+      },
+      {
+        "account": "A",
+        "session": "a1",
+        "key": "order_filter",
+        "action": "delete",
+        "time": "2026-01-01T00:00:09Z"
+      }
+    ]
+  }
 }

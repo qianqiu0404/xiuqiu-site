@@ -1,7 +1,7 @@
 {
   "source": {
     "repo": "agent-watch",
-    "commit": "567bec4"
+    "commit": "4385fd8"
   },
   "alerts": [
     {
@@ -128,23 +128,129 @@
       ],
       "ts": "2026-11-27T11:01:30+08:00",
       "type": "recovered"
+    },
+    {
+      "model": "model-a",
+      "records": [
+        {
+          "latency_ms": 2600,
+          "model": "model-a",
+          "request_id": "r0201",
+          "status": "timeout",
+          "tokens_in": 10,
+          "tokens_out": 0,
+          "ts": "2026-11-28T10:00:00+08:00",
+          "user": "user-1"
+        },
+        {
+          "latency_ms": 2600,
+          "model": "model-a",
+          "request_id": "r0202",
+          "status": "timeout",
+          "tokens_in": 10,
+          "tokens_out": 0,
+          "ts": "2026-11-28T10:00:45+08:00",
+          "user": "user-1"
+        }
+      ],
+      "request_ids": [
+        "r0201",
+        "r0202"
+      ],
+      "ts": "2026-11-28T10:00:45+08:00",
+      "type": "timeout_streak"
+    },
+    {
+      "model": "model-a",
+      "records": [
+        {
+          "latency_ms": 2600,
+          "model": "model-a",
+          "request_id": "r0203",
+          "status": "ok",
+          "tokens_in": 10,
+          "tokens_out": 20000,
+          "ts": "2026-11-28T10:01:30+08:00",
+          "user": "user-1"
+        }
+      ],
+      "request_ids": [
+        "r0203"
+      ],
+      "ts": "2026-11-28T10:01:30+08:00",
+      "type": "recovered"
+    },
+    {
+      "budget": 5000,
+      "date": "2026-11-28",
+      "records": [
+        {
+          "latency_ms": 2600,
+          "model": "model-a",
+          "request_id": "r0203",
+          "status": "ok",
+          "tokens_in": 10,
+          "tokens_out": 20000,
+          "ts": "2026-11-28T10:01:30+08:00",
+          "user": "user-1"
+        }
+      ],
+      "request_ids": [
+        "r0203"
+      ],
+      "tokens": 20030,
+      "ts": "2026-11-28T10:01:30+08:00",
+      "type": "budget_exceeded",
+      "user": "user-1"
     }
   ],
+  "report": {
+    "comparison": {
+      "flags": [
+        "变慢",
+        "失败变多",
+        "费用上涨"
+      ],
+      "message": null,
+      "previous": {
+        "calls": 200,
+        "cost": 36.5428,
+        "p95_ms": 1687,
+        "success_rate": 0.925,
+        "tokens_in": 2374,
+        "tokens_out": 7567,
+        "unpriced_model_count": 0
+      },
+      "previous_date": "2026-11-27"
+    },
+    "date": "2026-11-28",
+    "metrics": {
+      "calls": 5,
+      "cost": 80.1425,
+      "p95_ms": 2600,
+      "success_rate": 0.4,
+      "tokens_in": 50,
+      "tokens_out": 20020,
+      "unpriced_model_count": 0
+    }
+  },
   "summary": {
     "bad_lines": 2,
     "by_model": {
       "model-a": {
-        "calls": 105,
-        "errors": 2,
-        "p50_ms": 880,
-        "p95_ms": 1687,
-        "success_rate": 0.9142857142857143,
-        "timeouts": 7,
-        "tokens_in": 1247,
-        "tokens_out": 6336
+        "calls": 110,
+        "cost": 107.0453,
+        "errors": 3,
+        "p50_ms": 881,
+        "p95_ms": 1732,
+        "success_rate": 0.8909090909090909,
+        "timeouts": 9,
+        "tokens_in": 1297,
+        "tokens_out": 26356
       },
       "model-b": {
         "calls": 95,
+        "cost": 9.64,
         "errors": 4,
         "p50_ms": 969,
         "p95_ms": 1694,
@@ -156,34 +262,40 @@
     },
     "by_user": {
       "user-1": {
-        "calls": 81,
-        "errors": 3,
-        "p50_ms": 931,
-        "p95_ms": 1723,
-        "success_rate": 0.9012345679012346,
-        "timeouts": 5,
-        "tokens_in": 950,
-        "tokens_out": 6014
+        "calls": 86,
+        "cost": 106.6268,
+        "errors": 4,
+        "p50_ms": 945,
+        "p95_ms": 1786,
+        "success_rate": 0.872093023255814,
+        "timeouts": 7,
+        "tokens_in": 1000,
+        "tokens_out": 26034,
+        "unpriced_models": []
       },
       "user-2": {
         "calls": 59,
+        "cost": 4.8868,
         "errors": 2,
         "p50_ms": 910,
         "p95_ms": 1653,
         "success_rate": 0.9491525423728814,
         "timeouts": 1,
         "tokens_in": 709,
-        "tokens_out": 748
+        "tokens_out": 748,
+        "unpriced_models": []
       },
       "user-3": {
         "calls": 60,
+        "cost": 5.1718,
         "errors": 1,
         "p50_ms": 919,
         "p95_ms": 1639,
         "success_rate": 0.9333333333333333,
         "timeouts": 3,
         "tokens_in": 715,
-        "tokens_out": 805
+        "tokens_out": 805,
+        "unpriced_models": []
       }
     }
   }
