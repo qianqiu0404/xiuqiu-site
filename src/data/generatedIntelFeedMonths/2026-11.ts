@@ -5,6 +5,69 @@ import type { IntelItem } from '../generatedIntelFeed.ts'
 
 export const monthlyIntelItems: IntelItem[] = [
   {
+    "id": "learning:ai-deepagents-partial-price-coverage",
+    "kind": "learning",
+    "date": "2026-11-28",
+    "domain": "ai",
+    "topic": "infrastructure",
+    "title": "DeepAgents Code 0.2.15：有token却没有价格，费用表必须标出缺口",
+    "summary": "研究推断：用量覆盖率与价格覆盖率需要分别记录。没有价格的请求仍然消耗了token；把它们混入已知费用行，会让每token成本和预算判断失去共同分母。",
+    "href": "/radar/2026-11-28#ai-deepagents-partial-price-coverage",
+    "source": {
+      "name": "deepagents-code 0.2.15",
+      "tier": "tier1",
+      "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents-code%3D%3D0.2.15"
+    }
+  },
+  {
+    "id": "learning:ai-ollama-engram-tail-storage-compaction",
+    "kind": "learning",
+    "date": "2026-11-28",
+    "domain": "ai",
+    "topic": "model_inference",
+    "title": "Ollama 0.40.19：Engram只留尾部，也要释放整段输入的底层分配",
+    "summary": "研究推断：张量形状缩小不等于底层分配已经缩小。需要跨分块保留少量历史的本地推理系统，应同时核对尾部内容、实际存活分配和每个快照的释放时点。",
+    "href": "/radar/2026-11-28#ai-ollama-engram-tail-storage-compaction",
+    "source": {
+      "name": "Ollama v0.40.19",
+      "tier": "tier1",
+      "url": "https://github.com/ollama/ollama/releases/tag/v0.40.19"
+    },
+    "flags": {
+      "deepDive": true
+    }
+  },
+  {
+    "id": "learning:web3-metamask-endowment-rpc-method-gate",
+    "kind": "learning",
+    "date": "2026-11-28",
+    "domain": "web3",
+    "topic": "wallet_cex",
+    "title": "MetaMask权限控制器15：RPC方法也可由endowment权限守住入口",
+    "summary": "研究推断：RPC方法是否存在、是否受某项权限约束，以及这个origin是否获授，是三个需要分开的集合。把方法清单放入权限规格，可让入口中间件对它实际管理的调用范围做明确判定。",
+    "href": "/radar/2026-11-28#web3-metamask-endowment-rpc-method-gate",
+    "source": {
+      "name": "MetaMask Core v1463.0.0",
+      "tier": "tier1",
+      "url": "https://github.com/MetaMask/core/releases/tag/v1463.0.0"
+    }
+  },
+  {
+    "id": "learning:web3-foundry-chain-gas-margin-cap",
+    "kind": "learning",
+    "date": "2026-11-28",
+    "domain": "web3",
+    "topic": "onchain_infrastructure",
+    "title": "Foundry 11月27日nightly：估算gas加余量，也不能越过链的单笔上限",
+    "summary": "研究推断：安全余量仍受协议可接受范围约束。调试估算失败时，应同时保存原始估值、乘数、目标链和上限来源，才能区分执行本身超限与工具额外余量造成的拒绝。",
+    "href": "/radar/2026-11-28#web3-foundry-chain-gas-margin-cap",
+    "source": {
+      "name": "Foundry 2026-11-27 nightly",
+      "tier": "tier1",
+      "url": "https://github.com/foundry-rs/foundry/releases/tag/nightly-4be7c860532ece6069edfd459ec55f3a10b46a3b"
+    }
+  },
+  {
     "id": "market:2026-11-28:ecb-ces-october-horizon-statistic-expectations-2026-11-27",
     "kind": "market",
     "date": "2026-11-28",
