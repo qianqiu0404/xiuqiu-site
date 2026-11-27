@@ -1,0 +1,464 @@
+{
+  "source": {
+    "repo": "support-actions",
+    "commit": "8a55ff6"
+  },
+  "brand": "青柚家电",
+  "scenarios": [
+    {
+      "events": [
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-lookup",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "lookup_order"
+        }
+      ],
+      "name": "正常查单",
+      "run_id": "demo-lookup",
+      "status": "成功",
+      "steps": [
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-lookup",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "lookup_order"
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "new_address": "青柚路***",
+            "order_id": "A-101"
+          },
+          "result": null,
+          "risk": "low",
+          "run_id": "demo-address",
+          "status": "待执行",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "change_address"
+        },
+        {
+          "approval": null,
+          "attempt": 1,
+          "error": null,
+          "params": {
+            "new_address": "青柚路***",
+            "order_id": "A-101"
+          },
+          "result": {
+            "address_changed": true,
+            "order_id": "A-101"
+          },
+          "risk": "low",
+          "run_id": "demo-address",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "change_address"
+        }
+      ],
+      "name": "改地址",
+      "run_id": "demo-address",
+      "status": "成功",
+      "steps": [
+        {
+          "approval": null,
+          "attempt": 1,
+          "error": null,
+          "params": {
+            "new_address": "青柚路***",
+            "order_id": "A-101"
+          },
+          "result": {
+            "address_changed": true,
+            "order_id": "A-101"
+          },
+          "risk": "low",
+          "run_id": "demo-address",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "change_address"
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "approval": "待审",
+          "error": null,
+          "params": {
+            "amount": 199,
+            "order_id": "A-102"
+          },
+          "result": null,
+          "risk": "high",
+          "run_id": "demo-refund",
+          "status": "待审",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "refund"
+        },
+        {
+          "approval": "已批准",
+          "error": null,
+          "params": {
+            "amount": 199,
+            "order_id": "A-102"
+          },
+          "result": null,
+          "risk": "high",
+          "run_id": "demo-refund",
+          "status": "待执行",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "refund"
+        },
+        {
+          "approval": "已批准",
+          "attempt": 1,
+          "error": null,
+          "params": {
+            "amount": 199,
+            "order_id": "A-102"
+          },
+          "result": {
+            "order_id": "A-102",
+            "refunded_cents": 19900
+          },
+          "risk": "high",
+          "run_id": "demo-refund",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "refund"
+        }
+      ],
+      "name": "退款审批",
+      "run_id": "demo-refund",
+      "status": "成功",
+      "steps": [
+        {
+          "approval": "已批准",
+          "attempt": 1,
+          "error": null,
+          "params": {
+            "amount": 199,
+            "order_id": "A-102"
+          },
+          "result": {
+            "order_id": "A-102",
+            "refunded_cents": 19900
+          },
+          "risk": "high",
+          "run_id": "demo-refund",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "refund"
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "approval": "待审",
+          "error": null,
+          "params": {
+            "amount": 199,
+            "order_id": "A-102"
+          },
+          "result": null,
+          "risk": "high",
+          "run_id": "demo-refund",
+          "status": "待审",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "refund"
+        },
+        {
+          "approval": "已批准",
+          "error": null,
+          "params": {
+            "amount": 199,
+            "order_id": "A-102"
+          },
+          "result": null,
+          "risk": "high",
+          "run_id": "demo-refund",
+          "status": "待执行",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "refund"
+        },
+        {
+          "approval": "已批准",
+          "attempt": 1,
+          "error": null,
+          "params": {
+            "amount": 199,
+            "order_id": "A-102"
+          },
+          "result": {
+            "order_id": "A-102",
+            "refunded_cents": 19900
+          },
+          "risk": "high",
+          "run_id": "demo-refund",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "refund"
+        }
+      ],
+      "name": "重复批准",
+      "refund_count": 1,
+      "run_id": "demo-refund",
+      "status": "成功",
+      "steps": [
+        {
+          "approval": "已批准",
+          "attempt": 1,
+          "error": null,
+          "params": {
+            "amount": 199,
+            "order_id": "A-102"
+          },
+          "result": {
+            "order_id": "A-102",
+            "refunded_cents": 19900
+          },
+          "risk": "high",
+          "run_id": "demo-refund",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "refund"
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "approval": "待审",
+          "error": null,
+          "params": {
+            "amount": 39,
+            "order_id": "A-101"
+          },
+          "result": null,
+          "risk": "high",
+          "run_id": "demo-timeout",
+          "status": "待审",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "refund"
+        },
+        {
+          "approval": "已批准",
+          "error": null,
+          "params": {
+            "amount": 39,
+            "order_id": "A-101"
+          },
+          "result": null,
+          "risk": "high",
+          "run_id": "demo-timeout",
+          "status": "待执行",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "refund"
+        },
+        {
+          "approval": "已批准",
+          "attempt": 1,
+          "error": "业务系统超时",
+          "params": {
+            "amount": 39,
+            "order_id": "A-101"
+          },
+          "result": null,
+          "risk": "high",
+          "run_id": "demo-timeout",
+          "status": "结果不明",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "refund"
+        },
+        {
+          "approval": "已批准",
+          "attempt": 1,
+          "error": null,
+          "params": {
+            "amount": 39,
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "refunded_cents": 3900
+          },
+          "risk": "high",
+          "run_id": "demo-timeout",
+          "source": "幂等查询",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "refund"
+        }
+      ],
+      "name": "超时后查询确认",
+      "run_id": "demo-timeout",
+      "status": "成功",
+      "steps": [
+        {
+          "approval": "已批准",
+          "attempt": 1,
+          "error": null,
+          "params": {
+            "amount": 39,
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "refunded_cents": 3900
+          },
+          "risk": "high",
+          "run_id": "demo-timeout",
+          "source": "幂等查询",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "refund"
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "approval": null,
+          "error": "无权操作该订单",
+          "params": {
+            "order_id": "B-201"
+          },
+          "result": null,
+          "risk": "read",
+          "run_id": "demo-forbidden",
+          "status": "已拒绝",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "lookup_order"
+        }
+      ],
+      "name": "越权被拒",
+      "run_id": "demo-forbidden",
+      "status": "已拒绝",
+      "steps": [
+        {
+          "approval": null,
+          "error": "无权操作该订单",
+          "params": {
+            "order_id": "B-201"
+          },
+          "result": null,
+          "risk": "read",
+          "run_id": "demo-forbidden",
+          "status": "已拒绝",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "lookup_order"
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "approval": null,
+          "error": "计划含白名单外的工具",
+          "params": {
+            "account": "A"
+          },
+          "result": null,
+          "risk": "read",
+          "run_id": "demo-invalid",
+          "status": "未执行",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "list_orders"
+        },
+        {
+          "approval": null,
+          "error": "工具不在白名单",
+          "params": {},
+          "result": null,
+          "risk": null,
+          "run_id": "demo-invalid",
+          "status": "已拒绝",
+          "step": 2,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "delete_order"
+        }
+      ],
+      "name": "坏计划被拒",
+      "run_id": "demo-invalid",
+      "status": "已拒绝",
+      "steps": [
+        {
+          "approval": null,
+          "error": "计划含白名单外的工具",
+          "params": {
+            "account": "A"
+          },
+          "result": null,
+          "risk": "read",
+          "run_id": "demo-invalid",
+          "status": "未执行",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "list_orders"
+        },
+        {
+          "approval": null,
+          "error": "工具不在白名单",
+          "params": {},
+          "result": null,
+          "risk": null,
+          "run_id": "demo-invalid",
+          "status": "已拒绝",
+          "step": 2,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "delete_order"
+        }
+      ]
+    }
+  ]
+}

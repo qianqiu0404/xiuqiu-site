@@ -23,7 +23,8 @@ function facts(items) {
 
 function scoreCard(bot, { total, pass, by_reason: counts }) {
   return el('article', 'card round', el('h3', '', bot),
-    el('p', 'score', `${total} 题里通过 `, el('strong', '', pass), ' 题'),
+    el('p', 'score', `${total} 题中，`, el('strong', '', pass), ` 题通过，${total - pass} 题不通过。`),
+    el('p', 'muted', '同一道题可能计入多项原因。'),
     facts(Object.entries(LABEL_NAMES).map(([code, name]) => [name, counts[code]])))
 }
 
@@ -98,16 +99,15 @@ function renderOverview(bundle) {
 
 function renderCases(bundle) {
   const bot = botSelect.value
-  const cases = filterCases(bundle, {
-    bot,
-    verdict: verdictSelect.value,
-    category: categorySelect.value,
-    disagreementsOnly: disagreements.checked,
-  })
+  const verdict = verdictSelect.value
+  const category = categorySelect.value
+  const disagreementsOnly = disagreements.checked
+  const cases = filterCases(bundle, { bot, verdict, category, disagreementsOnly })
+  const filters = [bot, VERDICT_NAMES[verdict] ?? '全部判定', CATEGORY_NAMES[category] ?? '全部类别']
+  if (disagreementsOnly) filters.push('只看不一致')
   byId('cases').replaceChildren(...cases.map(caseDetails))
-  resultCount.textContent = cases.length > 0
-    ? `${bot}：找到 ${cases.length} 道题。`
-    : `${bot}：找到 0 道题。没有符合筛选条件的题目。`
+  const count = `${filters.join('，')}：找到 ${cases.length} 道题。`
+  resultCount.textContent = cases.length ? count : `${count}没有符合筛选条件的题目。`
 }
 
 async function start() {
