@@ -29,11 +29,13 @@ const answerCheckDir = new URL('answer-check-demo/', publicDir)
 const memoryDir = new URL('memory-demo/', publicDir)
 const watchDir = new URL('watch-demo/', publicDir)
 const actionsDir = new URL('actions-demo/', publicDir)
+const retrievalDir = new URL('retrieval-demo/', publicDir)
 const readBundle = dir => JSON.parse(readFileSync(new URL('data/bundle.json', dir), 'utf8'))
 const answerCheckBundle = readBundle(answerCheckDir)
 const memoryBundle = readBundle(memoryDir)
 const watchBundle = readBundle(watchDir)
 const actionsBundle = readBundle(actionsDir)
+const retrievalBundle = readBundle(retrievalDir)
 let page
 let notes
 let router
@@ -258,8 +260,8 @@ function assertPublicPrivacy(files) {
 
 test('reviewed catalog is complete and every record has a public summary', () => {
   const ids = records.map(project => project.id)
-  assert.equal(records.length, 33)
-  assert.equal(new Set(ids).size, 33)
+  assert.equal(records.length, 34)
+  assert.equal(new Set(ids).size, 34)
   assert.deepEqual(Object.keys(notes).sort(), [...ids].sort())
   assert.deepEqual(records.filter(project => project.kind === 'team').map(project => project.id).sort(), ['qai', 'saas', 'theai'])
 
@@ -267,7 +269,7 @@ test('reviewed catalog is complete and every record has a public summary', () =>
   const cards = elements(catalog, withClass('catalog-card'))
   assert.deepEqual(cards.map(card => attribute(elements(card, node => node.tag === 'button')[0], 'data-open')), ids)
   const [heading] = elements(catalog, node => node.tag === 'h2')
-  assert.equal(text(elements(heading, node => node.tag === 'sup')[0]), '33')
+  assert.equal(text(elements(heading, node => node.tag === 'sup')[0]), '34')
   const filters = elements(catalog, node => attribute(node, 'data-category-filter') !== undefined)
   for (const filter of filters) {
     const category = attribute(filter, 'data-category-filter')
@@ -382,6 +384,7 @@ test('hero and tracks tell one storyline: four facets in order, each opening its
     { title: '1回答有依据', opens: ['saas'], links: [
       ['/answer-check-demo/index.html', '客服回答质检演示个人项目'],
       ['/memory-demo/index.html', '客服记忆演示个人项目'],
+      ['/retrieval-demo/index.html', '知识库检索评测演示个人项目'],
     ] },
     { title: '2出了问题查得出', opens: ['miniexchange'], links: [['/actions-demo/index.html', '客服办事演示个人项目']] },
     { title: '3用量管得住', opens: ['qai'], links: [['/watch-demo/index.html', 'AI 调用监测演示个人项目']] },
@@ -558,6 +561,7 @@ for (const [id, href] of [
   ['support-memory', '/memory-demo/index.html'],
   ['agent-watch', '/watch-demo/index.html'],
   ['support-actions', '/actions-demo/index.html'],
+  ['kb-retrieval-eval', '/retrieval-demo/index.html'],
 ]) {
   test(`personal project dialog links to the bundled demo and public repository: ${id}`, async t => {
     const project = records.find(record => record.id === id)
@@ -633,8 +637,9 @@ test('demo replay check rejects a replay missing only from data.js', () => {
   assert.throws(() => assertDemoFiles(fixture), { message: `Missing bundled demo replay: ${file}` })
 })
 
-test('answer-check demo passes the public-file privacy checks', () => {
+test('answer-check and retrieval demos pass the public-file privacy checks', () => {
   assertPublicPrivacy(readFiles(answerCheckDir))
+  assertPublicPrivacy(readFiles(retrievalDir))
 })
 
 test('memory and watch demos pass the public-file privacy checks', () => {
@@ -651,9 +656,9 @@ test('actions demo passes the public-file privacy checks and masks street number
   }
 })
 
-test('none of the support and watch demo bundles contains a raw phone number', () => {
+test('none of the support, watch and retrieval demo bundles contains a raw phone number', () => {
   const phone = /(?<![0-9０-９])(?:[+＋]?[8８][6６][ -]?)?[1１][3-9３-９](?:[ -]?[0-9０-９]){9}(?![0-9０-９])/u
-  for (const dir of [answerCheckDir, memoryDir, watchDir, actionsDir]) {
+  for (const dir of [answerCheckDir, memoryDir, watchDir, actionsDir, retrievalDir]) {
     // Use a boolean so a failure does not print the phone number or bundle.
     assert.equal(phone.test(readFileSync(new URL('data/bundle.json', dir), 'utf8')), false, dir.pathname)
   }
@@ -661,10 +666,18 @@ test('none of the support and watch demo bundles contains a raw phone number', (
 
 test('actions bundle is identical to the pinned supportactions demo export', () => {
   const { source, ...data } = actionsBundle
-  assert.deepEqual(source, { repo: 'support-actions', commit: '8a55ff6' })
+  assert.deepEqual(source, { repo: 'support-actions', commit: 'a62bebb' })
   // Digest of the parsed output of python3 -m supportactions demo --out … at that revision.
   assert.equal(createHash('sha256').update(JSON.stringify(data)).digest('hex'),
-    'ea4e60a3cbe4ac0185024d2c9c96d4454e06400a55252830aa1c2747b2e921fa')
+    'e1e28429ad04054dc3f6bae91668c42fbde8a4ea8d4de9ba16887ee0a5a0046d')
+})
+
+test('retrieval bundle is identical to the pinned kbeval export', () => {
+  const { source, ...data } = retrievalBundle
+  assert.deepEqual(source, { repo: 'kb-retrieval-eval', commit: '203fdfe' })
+  // Digest of the parsed output of python3 -m kbeval export --out … at that revision.
+  assert.equal(createHash('sha256').update(JSON.stringify(data)).digest('hex'),
+    'e32253142d579b84e85cdeef268c51f5f5d0988cb3436655412f3b4a5bc1c2dc')
 })
 
 test('memory bundle matches the six-step source export and masks the sample phone', () => {
@@ -867,6 +880,10 @@ test('actions page has one h1, live counts, named links and source evidence for 
   const [section] = elements(html, node => attribute(node, 'aria-labelledby') === 'verification-title')
   assert.ok(elements(section, node => node.tag === 'li').some(node =>
     text(node) === '源码测试模拟人工拒绝退款，核对退款笔数为 0，后续改地址和另一笔退款都未执行。'))
+})
+
+test('retrieval page has one h1, a named reason control, a live count and named links', () => {
+  assertDemoMarkup(readDemoHtml(retrievalDir), '知识库检索评测演示', 'kb-retrieval-eval', 1)
 })
 
 test('memory labels the account B isolation claim as a source test', () => {
@@ -1078,11 +1095,111 @@ async function mountDemo(t, dir, bundle, { ok = true, onLoading } = {}) {
   return document.getElementById
 }
 
-test('actions renders all seven scenarios in keyboard order with the exported plan and outcomes', async t => {
+test('retrieval renders all matrix values with named tables and scoped headers', async t => {
+  const byId = await mountDemo(t, retrievalDir, retrievalBundle)
+  const tables = byId('matrix').children
+  assert.equal(tables.length, 3)
+  const methods = [
+    ['heading/bm25', '按标题切块 · BM25'],
+    ['heading/bigram', '按标题切块 · 相邻两字匹配'],
+    ['fixed-200-0/bm25', '每 200 字切块，无重叠 · BM25'],
+    ['fixed-200-0/bigram', '每 200 字切块，无重叠 · 相邻两字匹配'],
+    ['fixed-200-50/bm25', '每 200 字切块，重叠 50 字 · BM25'],
+    ['fixed-200-50/bigram', '每 200 字切块，重叠 50 字 · 相邻两字匹配'],
+  ]
+  for (const [index, cutoff] of [1, 3, 5].entries()) {
+    const table = tables[index]
+    assert.equal(table.tag, 'table')
+    const [caption, head, body] = table.children
+    assert.equal(caption.tag, 'caption')
+    assert.equal(caption.textContent, `查看前 ${cutoff} 个片段的评测结果`)
+    assert.deepEqual(head.children[0].children.map(cell => [cell.tag, cell.attributes.get('scope'), cell.textContent]),
+      ['切块与检索方式', `Recall@${cutoff}`, 'MRR'].map(name => ['th', 'col', name]))
+    assert.equal(body.children.length, methods.length)
+    for (const [row, [method, name]] of methods.entries()) {
+      const { recall, mrr } = retrievalBundle.configs[`${method}/${cutoff}`]
+      const [header, ...values] = body.children[row].children
+      assert.equal(header.tag, 'th')
+      assert.equal(header.attributes.get('scope'), 'row')
+      assert.equal(header.textContent, name)
+      assert.ok(values.every(cell => cell.tag === 'td'))
+      assert.deepEqual(values.map(cell => cell.textContent), [recall.toFixed(4), mrr.toFixed(5)])
+    }
+  }
+  assert.equal(demoExposedText(byId('recommended-setting')), '按标题切块 · 相邻两字匹配，查看前 3 个片段。')
+  assert.equal(demoExposedText(byId('recommendation-reason')), retrievalBundle.recommendation.reason)
+})
+
+test('retrieval failure filter renders exactly the questions with each chosen reason', async t => {
+  const byId = await mountDemo(t, retrievalDir, retrievalBundle)
+  const results = byId('failures')
+  const control = byId('failure-reason')
+  const expected = new Map([
+    ['', ['Q03', 'Q05', 'Q06', 'Q07', 'Q10', 'Q26', 'Q34', 'Q39']],
+    ['被相似段落挤掉', ['Q03', 'Q05', 'Q39']],
+    ['答案被切断', ['Q06', 'Q07', 'Q10', 'Q26']],
+    ['关键词不重合', ['Q34']],
+  ])
+  assert.deepEqual(control.children.map(option => option.value), [...expected.keys()])
+  for (const [reason, ids] of expected) {
+    changeDemoFilter(control, 'value', reason)
+    assert.deepEqual(results.children.map(({ tag, children: [summary] }) => {
+      assert.equal(tag, 'details')
+      assert.equal(summary.tag, 'summary')
+      return demoExposedText(summary).split(' ')[0]
+    }), ids, reason || '全部原因')
+    assert.equal(byId('result-count').textContent, `${reason || '全部原因'}，共 ${ids.length} 道失败题目。`)
+  }
+
+  changeDemoFilter(control, 'value', '')
+  const root = demoAncestors(control).at(-1)
+  pressDemoKey(root, 'Tab')
+  assert.equal(root.activeElement.attributes.get('href'), '/')
+  pressDemoKey(root, 'Tab')
+  assert.equal(root.activeElement, control)
+  pressDemoKey(root, 'ArrowDown')
+  assert.equal(control.value, '被相似段落挤掉')
+  assert.equal(root.activeElement, control)
+  pressDemoKey(root, 'Tab')
+  const [summary, body] = results.children[0].children
+  const { question, gold } = retrievalBundle.questions.find(item => item.id === 'Q03')
+  assert.equal(root.activeElement, summary)
+  assert.equal(demoExposedText(summary), `Q03 ${question}`)
+  assert.ok(!visibleDemoElements(results).includes(body))
+  pressDemoKey(root, 'Enter')
+  assert.ok(visibleDemoElements(results).includes(body))
+  assert.match(demoExposedText(body), /失败原因：被相似段落挤掉/)
+  assert.equal(body.children.find(node => node.tag === 'blockquote').textContent, gold)
+  const [{ chunk }] = retrievalBundle.configs['heading/bm25/1'].results.Q03.top
+  const chunkText = body.children.find(node => node.className === 'failure')
+    .children.find(node => node.tag === 'ol').children[0].children[1]
+  assert.equal(chunkText.textContent, retrievalBundle.chunks.heading[chunk].text)
+})
+
+test('retrieval announces loading, empty results and fetch errors', async t => {
+  for (const [name, ok, message] of [
+    ['empty export', true, '没有可展示的评测结果。'],
+    ['failed fetch', false, '评测数据加载失败。请刷新页面重试。'],
+  ]) {
+    await t.test(name, async subtest => {
+      let loading
+      const byId = await mountDemo(subtest, retrievalDir, { ...retrievalBundle, configs: {} }, {
+        ok,
+        onLoading: byId => { loading = byId('result-count').textContent },
+      })
+      assert.equal(loading, '正在加载评测数据。')
+      assert.equal(byId('result-count').textContent, message)
+      assert.ok(byId('filters').disabled)
+      assert.ok(byId('recommendation').hidden)
+    })
+  }
+})
+
+test('actions renders all 13 scenarios in keyboard order with the exported plan and outcomes', async t => {
   const byId = await mountDemo(t, actionsDir, actionsBundle)
   const scenarios = byId('scenarios').children
-  assert.equal(byId('result-count').textContent, '共 7 个场景。')
-  assert.equal(scenarios.length, 7, 'Every exported scenario needs its own disclosure')
+  assert.equal(byId('result-count').textContent, '共 13 个场景。')
+  assert.equal(scenarios.length, 13, 'Every exported scenario needs its own disclosure')
   const root = demoAncestors(scenarios[0]).at(-1)
   pressDemoKey(root, 'Tab')
   assert.equal(root.activeElement.attributes.get('href'), '/')
@@ -1145,9 +1262,60 @@ test('actions renders all seven scenarios in keyboard order with the exported pl
     .map(({ children: [summary] }) => summary.textContent)
   assert.deepEqual(duplicateApprovalScenarios, ['重复批准'], '只有重复批准场景可以显示人工重复批准说明')
   assert.match(scenarios[4].textContent, /结果一度不明.*先按原操作编号查询.*确认已退款.*没有重试/)
-  assert.equal(byId('source').textContent, '数据来源：support-actions，提交 8a55ff6。')
+
+  const m2 = [
+    ['可疑订单备注', '场景说明（账户 B）：测试脚本先查订单 B-202 和 B-203，再尝试用 B-203 的订单备注作为退款金额。',
+      '已拒绝', 3, /标记可疑指令.*工具已拦下，未进入审批.*参数来自带可疑指令的工具结果/],
+    ['每分钟工具限额', '场景说明（账户 A）：在同一分钟查订单 A-101 共 11 次。',
+      '已拒绝', 11, /该账户每分钟最多调用 10 次工具/],
+    ['分钟限额重置', '场景说明（账户 A）：下一分钟再查订单 A-101。',
+      '成功', 1, /订单号：A-101.*实付 259 元/],
+    ['每日退款限额', '场景说明（账户 B）：当天为订单 B-201 连续发起 3 笔 10 元退款。',
+      '已拒绝', 3, /该账户每天最多退款 2 次/],
+    ['每日限额重置', '场景说明（账户 B）：次日为订单 B-201 退款 10 元。',
+      '成功', 1, /订单号：B-201.*已退款 10 元/],
+    ['大额退款双人审批', '用户请求（账户 A）：“A-103 退款 600 元”',
+      '成功', 1, /第一位批准后，状态为待审.*同一人重复批准后，状态仍为待审.*共收到 2 位审批人的批准。已退款 600 元/],
+  ]
+  for (const [index, [name, introduction, outcome, steps, evidence]] of m2.entries()) {
+    const details = scenarios[expected.length + index]
+    const [summary, body] = details.children
+    assert.equal(details.tag, 'details', name)
+    assert.equal(summary.tag, 'summary', name)
+    assert.equal(demoExposedText(summary), name)
+    assert.ok(!visibleDemoElements(details).includes(body), `${name} starts collapsed`)
+    pressDemoKey(root, 'Tab')
+    assert.equal(root.activeElement, summary, `Tab can reach ${name}`)
+    pressDemoKey(root, 'Enter')
+    assert.ok(visibleDemoElements(details).includes(body), `Enter opens ${name}`)
+    assert.equal(demoExposedText(body.children[0]), introduction, name)
+    assert.equal(body.children.find(node => node.tag === 'ol').children.length, steps, name)
+    assert.match(demoExposedText(body), evidence, name)
+    assert.equal(demoExposedText(body.children.at(-1)), `最终状态：${outcome}。`, name)
+  }
+  assert.equal(byId('source').textContent, '数据来源：support-actions，提交 a62bebb。')
   pressDemoKey(root, 'Tab')
   assert.equal(root.activeElement.attributes.get('href'), 'https://github.com/xoqiu09/support-actions')
+})
+
+test('actions reports the approval and result of each daily-limit refund separately', async t => {
+  const byId = await mountDemo(t, actionsDir, actionsBundle)
+  const dailyLimit = byId('scenarios').children.find(node => node.children[0].textContent === '每日退款限额')
+  dailyLimit.children[0].focus()
+  pressDemoKey(demoAncestors(dailyLimit).at(-1), 'Enter')
+  const refunds = dailyLimit.children[1].children.find(node => node.tag === 'ol').children
+  const approvalAndResults = refunds.map(refund => {
+    const fields = Object.fromEntries(demoFacts(refund.children.find(node => node.tag === 'dl'), demoExposedText))
+    return [fields['审批状态'], fields['结果']]
+  })
+  assert.deepEqual(approvalAndResults, [
+    ['人工已批准', '已退款 10 元。'],
+    ['人工已批准', '已退款 10 元。'],
+    ['人工已批准', '已拒绝。原因：该账户每天最多退款 2 次。'],
+  ])
+  assert.deepEqual(refunds[2].children.filter(node => node.tag === 'p').slice(1).map(demoExposedText), [
+    '人工已批准，当日额度已用完，本笔未退款。',
+  ])
 })
 
 test('actions announces loading, empty results and fetch errors without hiding its links', async t => {
@@ -1157,7 +1325,7 @@ test('actions announces loading, empty results and fetch errors without hiding i
   ]) {
     await t.test(name, async subtest => {
       let loading
-      const byId = await mountDemo(subtest, actionsDir, { ...actionsBundle, scenarios: [] }, {
+      const byId = await mountDemo(subtest, actionsDir, { ...actionsBundle, scenarios: [], m2_scenarios: [] }, {
         ok,
         onLoading: byId => { loading = byId('result-count').textContent },
       })

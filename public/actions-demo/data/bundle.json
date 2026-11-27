@@ -1,9 +1,940 @@
 {
   "source": {
     "repo": "support-actions",
-    "commit": "8a55ff6"
+    "commit": "a62bebb"
   },
   "brand": "青柚家电",
+  "m2_scenarios": [
+    {
+      "events": [
+        {
+          "approval": null,
+          "error": null,
+          "flags": [
+            "可疑指令"
+          ],
+          "params": {
+            "order_id": "B-202"
+          },
+          "result": {
+            "order_id": "B-202",
+            "paid_cents": 29900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-injection",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": null,
+          "flags": [
+            "可疑指令"
+          ],
+          "params": {
+            "order_id": "B-203"
+          },
+          "result": {
+            "order_id": "B-203",
+            "paid_cents": 69900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-injection",
+          "status": "成功",
+          "step": 2,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": "参数来自带可疑指令的工具结果",
+          "params": {},
+          "result": null,
+          "risk": "high",
+          "run_id": "demo-injection",
+          "status": "已拒绝",
+          "step": 3,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "refund"
+        }
+      ],
+      "name": "可疑订单备注",
+      "run_id": "demo-injection",
+      "status": "已拒绝",
+      "steps": [
+        {
+          "approval": null,
+          "error": null,
+          "flags": [
+            "可疑指令"
+          ],
+          "params": {
+            "order_id": "B-202"
+          },
+          "result": {
+            "order_id": "B-202",
+            "paid_cents": 29900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-injection",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": null,
+          "flags": [
+            "可疑指令"
+          ],
+          "params": {
+            "order_id": "B-203"
+          },
+          "result": {
+            "order_id": "B-203",
+            "paid_cents": 69900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-injection",
+          "status": "成功",
+          "step": 2,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": "参数来自带可疑指令的工具结果",
+          "params": {},
+          "result": null,
+          "risk": "high",
+          "run_id": "demo-injection",
+          "status": "已拒绝",
+          "step": 3,
+          "time": "2026-01-01T00:00:00+00:00",
+          "tool": "refund"
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "成功",
+          "step": 2,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "成功",
+          "step": 3,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "成功",
+          "step": 4,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "成功",
+          "step": 5,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "成功",
+          "step": 6,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "成功",
+          "step": 7,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "成功",
+          "step": 8,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "成功",
+          "step": 9,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "成功",
+          "step": 10,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": "该账户每分钟最多调用 10 次工具",
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": null,
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "已拒绝",
+          "step": 11,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        }
+      ],
+      "name": "每分钟工具限额",
+      "run_id": "demo-minute-limit",
+      "status": "已拒绝",
+      "steps": [
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "成功",
+          "step": 2,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "成功",
+          "step": 3,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "成功",
+          "step": 4,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "成功",
+          "step": 5,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "成功",
+          "step": 6,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "成功",
+          "step": 7,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "成功",
+          "step": 8,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "成功",
+          "step": 9,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "成功",
+          "step": 10,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        },
+        {
+          "approval": null,
+          "error": "该账户每分钟最多调用 10 次工具",
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": null,
+          "risk": "read",
+          "run_id": "demo-minute-limit",
+          "status": "已拒绝",
+          "step": 11,
+          "time": "2026-01-01T23:58:59+00:00",
+          "tool": "lookup_order"
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-reset",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-01T23:59:00+00:00",
+          "tool": "lookup_order"
+        }
+      ],
+      "name": "分钟限额重置",
+      "run_id": "demo-minute-reset",
+      "status": "成功",
+      "steps": [
+        {
+          "approval": null,
+          "error": null,
+          "params": {
+            "order_id": "A-101"
+          },
+          "result": {
+            "order_id": "A-101",
+            "paid_cents": 25900,
+            "shipped": false
+          },
+          "risk": "read",
+          "run_id": "demo-minute-reset",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-01T23:59:00+00:00",
+          "tool": "lookup_order"
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "approval": "待审",
+          "error": null,
+          "params": {
+            "amount": 10,
+            "order_id": "B-201"
+          },
+          "result": null,
+          "risk": "high",
+          "run_id": "demo-day-limit",
+          "status": "待审",
+          "step": 1,
+          "time": "2026-01-01T23:59:00+00:00",
+          "tool": "refund"
+        },
+        {
+          "approval": "已批准",
+          "error": null,
+          "params": {
+            "amount": 10,
+            "order_id": "B-201"
+          },
+          "result": null,
+          "risk": "high",
+          "run_id": "demo-day-limit",
+          "status": "待执行",
+          "step": 1,
+          "time": "2026-01-01T23:59:00+00:00",
+          "tool": "refund"
+        },
+        {
+          "approval": "已批准",
+          "attempt": 1,
+          "error": null,
+          "params": {
+            "amount": 10,
+            "order_id": "B-201"
+          },
+          "result": {
+            "order_id": "B-201",
+            "refunded_cents": 1000
+          },
+          "risk": "high",
+          "run_id": "demo-day-limit",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-01T23:59:00+00:00",
+          "tool": "refund"
+        },
+        {
+          "approval": "待审",
+          "error": null,
+          "params": {
+            "amount": 10,
+            "order_id": "B-201"
+          },
+          "result": null,
+          "risk": "high",
+          "run_id": "demo-day-limit",
+          "status": "待审",
+          "step": 2,
+          "time": "2026-01-01T23:59:00+00:00",
+          "tool": "refund"
+        },
+        {
+          "approval": "已批准",
+          "error": null,
+          "params": {
+            "amount": 10,
+            "order_id": "B-201"
+          },
+          "result": null,
+          "risk": "high",
+          "run_id": "demo-day-limit",
+          "status": "待执行",
+          "step": 2,
+          "time": "2026-01-01T23:59:00+00:00",
+          "tool": "refund"
+        },
+        {
+          "approval": "已批准",
+          "attempt": 1,
+          "error": null,
+          "params": {
+            "amount": 10,
+            "order_id": "B-201"
+          },
+          "result": {
+            "order_id": "B-201",
+            "refunded_cents": 1000
+          },
+          "risk": "high",
+          "run_id": "demo-day-limit",
+          "status": "成功",
+          "step": 2,
+          "time": "2026-01-01T23:59:00+00:00",
+          "tool": "refund"
+        },
+        {
+          "approval": "待审",
+          "error": null,
+          "params": {
+            "amount": 10,
+            "order_id": "B-201"
+          },
+          "result": null,
+          "risk": "high",
+          "run_id": "demo-day-limit",
+          "status": "待审",
+          "step": 3,
+          "time": "2026-01-01T23:59:00+00:00",
+          "tool": "refund"
+        },
+        {
+          "approval": "已批准",
+          "error": "该账户每天最多退款 2 次",
+          "params": {
+            "amount": 10,
+            "order_id": "B-201"
+          },
+          "result": null,
+          "risk": "high",
+          "run_id": "demo-day-limit",
+          "status": "已拒绝",
+          "step": 3,
+          "time": "2026-01-01T23:59:00+00:00",
+          "tool": "refund"
+        }
+      ],
+      "name": "每日退款限额",
+      "run_id": "demo-day-limit",
+      "status": "已拒绝",
+      "steps": [
+        {
+          "approval": "已批准",
+          "attempt": 1,
+          "error": null,
+          "params": {
+            "amount": 10,
+            "order_id": "B-201"
+          },
+          "result": {
+            "order_id": "B-201",
+            "refunded_cents": 1000
+          },
+          "risk": "high",
+          "run_id": "demo-day-limit",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-01T23:59:00+00:00",
+          "tool": "refund"
+        },
+        {
+          "approval": "已批准",
+          "attempt": 1,
+          "error": null,
+          "params": {
+            "amount": 10,
+            "order_id": "B-201"
+          },
+          "result": {
+            "order_id": "B-201",
+            "refunded_cents": 1000
+          },
+          "risk": "high",
+          "run_id": "demo-day-limit",
+          "status": "成功",
+          "step": 2,
+          "time": "2026-01-01T23:59:00+00:00",
+          "tool": "refund"
+        },
+        {
+          "approval": "已批准",
+          "error": "该账户每天最多退款 2 次",
+          "params": {
+            "amount": 10,
+            "order_id": "B-201"
+          },
+          "result": null,
+          "risk": "high",
+          "run_id": "demo-day-limit",
+          "status": "已拒绝",
+          "step": 3,
+          "time": "2026-01-01T23:59:00+00:00",
+          "tool": "refund"
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "approval": "待审",
+          "error": null,
+          "params": {
+            "amount": 10,
+            "order_id": "B-201"
+          },
+          "result": null,
+          "risk": "high",
+          "run_id": "demo-day-reset",
+          "status": "待审",
+          "step": 1,
+          "time": "2026-01-02T00:00:00+00:00",
+          "tool": "refund"
+        },
+        {
+          "approval": "已批准",
+          "error": null,
+          "params": {
+            "amount": 10,
+            "order_id": "B-201"
+          },
+          "result": null,
+          "risk": "high",
+          "run_id": "demo-day-reset",
+          "status": "待执行",
+          "step": 1,
+          "time": "2026-01-02T00:00:00+00:00",
+          "tool": "refund"
+        },
+        {
+          "approval": "已批准",
+          "attempt": 1,
+          "error": null,
+          "params": {
+            "amount": 10,
+            "order_id": "B-201"
+          },
+          "result": {
+            "order_id": "B-201",
+            "refunded_cents": 1000
+          },
+          "risk": "high",
+          "run_id": "demo-day-reset",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-02T00:00:00+00:00",
+          "tool": "refund"
+        }
+      ],
+      "name": "每日限额重置",
+      "run_id": "demo-day-reset",
+      "status": "成功",
+      "steps": [
+        {
+          "approval": "已批准",
+          "attempt": 1,
+          "error": null,
+          "params": {
+            "amount": 10,
+            "order_id": "B-201"
+          },
+          "result": {
+            "order_id": "B-201",
+            "refunded_cents": 1000
+          },
+          "risk": "high",
+          "run_id": "demo-day-reset",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-02T00:00:00+00:00",
+          "tool": "refund"
+        }
+      ]
+    },
+    {
+      "duplicate_approval_status": "待审",
+      "events": [
+        {
+          "approval": "待审",
+          "approvals_received": 0,
+          "approvals_required": 2,
+          "error": null,
+          "params": {
+            "amount": 600,
+            "order_id": "A-103"
+          },
+          "result": null,
+          "risk": "high",
+          "run_id": "demo-cap",
+          "status": "待审",
+          "step": 1,
+          "time": "2026-01-02T00:00:00+00:00",
+          "tool": "refund"
+        },
+        {
+          "approval": "待审",
+          "approvals_received": 1,
+          "approvals_required": 2,
+          "error": null,
+          "params": {
+            "amount": 600,
+            "order_id": "A-103"
+          },
+          "result": null,
+          "risk": "high",
+          "run_id": "demo-cap",
+          "status": "待审",
+          "step": 1,
+          "time": "2026-01-02T00:00:00+00:00",
+          "tool": "refund"
+        },
+        {
+          "approval": "已批准",
+          "approvals_received": 2,
+          "approvals_required": 2,
+          "error": null,
+          "params": {
+            "amount": 600,
+            "order_id": "A-103"
+          },
+          "result": null,
+          "risk": "high",
+          "run_id": "demo-cap",
+          "status": "待执行",
+          "step": 1,
+          "time": "2026-01-02T00:00:00+00:00",
+          "tool": "refund"
+        },
+        {
+          "approval": "已批准",
+          "approvals_received": 2,
+          "approvals_required": 2,
+          "attempt": 1,
+          "error": null,
+          "params": {
+            "amount": 600,
+            "order_id": "A-103"
+          },
+          "result": {
+            "order_id": "A-103",
+            "refunded_cents": 60000
+          },
+          "risk": "high",
+          "run_id": "demo-cap",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-02T00:00:00+00:00",
+          "tool": "refund"
+        }
+      ],
+      "name": "大额退款双人审批",
+      "run_id": "demo-cap",
+      "status": "成功",
+      "steps": [
+        {
+          "approval": "已批准",
+          "approvals_received": 2,
+          "approvals_required": 2,
+          "attempt": 1,
+          "error": null,
+          "params": {
+            "amount": 600,
+            "order_id": "A-103"
+          },
+          "result": {
+            "order_id": "A-103",
+            "refunded_cents": 60000
+          },
+          "risk": "high",
+          "run_id": "demo-cap",
+          "status": "成功",
+          "step": 1,
+          "time": "2026-01-02T00:00:00+00:00",
+          "tool": "refund"
+        }
+      ]
+    }
+  ],
   "scenarios": [
     {
       "events": [
