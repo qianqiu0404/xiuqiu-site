@@ -349,5 +349,47 @@
     "tech": "基于 AI Town 的实验",
     "kind": "archive",
     "kindLabel": "历史资料"
+  },
+  {
+    "id": "support-answer-check",
+    "title": "客服回答质检 / support-answer-check",
+    "intro": "检查客服回答的事实、引用、转人工、承诺和隐私，并用独立标注核对判定。",
+    "category": "product",
+    "label": "工具与产品",
+    "status": "离线验证 · 静态演示",
+    "history": false,
+    "tech": "Python · 规则质检 · 静态网页",
+    "kind": "personal",
+    "kindLabel": "个人作品",
+    "visibility": "public",
+    "openSource": false
+  },
+  {
+    "id": "support-memory",
+    "title": "客服记忆 / support-memory",
+    "intro": "让规则客服跨会话记住账户偏好，支持查看、清除和写入前遮盖隐私。",
+    "category": "product",
+    "label": "工具与产品",
+    "status": "离线验证 · 静态演示",
+    "history": false,
+    "tech": "Python · SQLite · 静态网页",
+    "kind": "personal",
+    "kindLabel": "个人作品",
+    "visibility": "public",
+    "openSource": false
+  },
+  {
+    "id": "agent-watch",
+    "title": "AI 调用监测 / agent-watch",
+    "intro": "从虚构的 AI 调用日志汇总用量和延迟，并从告警追到对应请求。",
+    "category": "product",
+    "label": "工具与产品",
+    "status": "离线验证 · 静态演示",
+    "history": false,
+    "tech": "Python · JSON Lines · 静态网页",
+    "kind": "personal",
+    "kindLabel": "个人作品",
+    "visibility": "public",
+    "openSource": false
   }
 ]
