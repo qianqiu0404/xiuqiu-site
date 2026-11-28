@@ -8,6 +8,7 @@ const verdictSelect = byId('verdict')
 const categorySelect = byId('category')
 const disagreements = byId('disagreements')
 const resultCount = byId('result-count')
+let renderedCases = new Map()
 
 function el(tag, className, ...children) {
   const node = document.createElement(tag)
@@ -105,7 +106,12 @@ function renderCases(bundle) {
   const cases = filterCases(bundle, { bot, verdict, category, disagreementsOnly })
   const filters = [bot, VERDICT_NAMES[verdict] ?? '全部判定', CATEGORY_NAMES[category] ?? '全部类别']
   if (disagreementsOnly) filters.push('只看不一致')
-  byId('cases').replaceChildren(...cases.map(caseDetails))
+  renderedCases = new Map(cases.map(item => {
+    const details = caseDetails(item)
+    details.open = renderedCases.get(item.id)?.open ?? false
+    return [item.id, details]
+  }))
+  byId('cases').replaceChildren(...renderedCases.values())
   const count = `${filters.join('，')}：找到 ${cases.length} 道题。`
   resultCount.textContent = cases.length ? count : `${count}没有符合筛选条件的题目。`
 }

@@ -89,13 +89,13 @@ function scenarioDetails({ name, run_id, status, steps, events, refund_count, du
     : `用户请求（账户 ${account}）：“${requests[name]}”`
   const body = el('div', 'case-body',
     el('p', '', introduction),
+    el('p', '', el('strong', '', `最终状态：${status}。`)),
     el('p', 'muted', `运行号：${run_id}`),
     el('h3', '', `${name}：工具调用计划`),
     el('ol', '', ...steps.map(step => stepView(step, events.filter(event => event.step === step.step), duplicate_approval_status))))
   if (refund_count === 1) {
     body.append(el('p', '', '人工对同一步重复批准，系统返回原结果。账上只有 1 笔退款，没有退第二次。'))
   }
-  body.append(el('p', '', el('strong', '', `最终状态：${status}。`)))
   return el('details', 'card case', el('summary', '', name), body)
 }
 

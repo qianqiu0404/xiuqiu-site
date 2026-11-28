@@ -1,7 +1,7 @@
 {
   "source": {
     "repo": "support-journey",
-    "commit": "8686598"
+    "commit": "ab5c581"
   },
   "policy_version": "712f989f3f8f",
   "deps": {
@@ -290,6 +290,7 @@
         "refund_count": 0,
         "refunded_cents": 0,
         "approval_count": 0,
+        "approved_refund_count": 0,
         "action_run_ids": [
           "sj-1-act-2"
         ]
@@ -423,6 +424,7 @@
         "refund_count": 0,
         "refunded_cents": 0,
         "approval_count": 0,
+        "approved_refund_count": 0,
         "action_run_ids": []
       }
     },
@@ -560,6 +562,7 @@
         "refund_count": 0,
         "refunded_cents": 0,
         "approval_count": 0,
+        "approved_refund_count": 0,
         "action_run_ids": []
       }
     },
@@ -806,6 +809,7 @@
         "refund_count": 1,
         "refunded_cents": 15000,
         "approval_count": 1,
+        "approved_refund_count": 1,
         "action_run_ids": [
           "sj-4-act-1"
         ]
@@ -1004,6 +1008,7 @@
         "refund_count": 0,
         "refunded_cents": 0,
         "approval_count": 0,
+        "approved_refund_count": 0,
         "action_run_ids": [
           "sj-5-act-1"
         ]
@@ -1160,6 +1165,7 @@
         "refund_count": 0,
         "refunded_cents": 0,
         "approval_count": 0,
+        "approved_refund_count": 0,
         "action_run_ids": []
       }
     },
@@ -1217,6 +1223,7 @@
         "refund_count": 0,
         "refunded_cents": 0,
         "approval_count": 0,
+        "approved_refund_count": 0,
         "action_run_ids": []
       }
     },
@@ -1444,8 +1451,569 @@
         "refund_count": 1,
         "refunded_cents": 8000,
         "approval_count": 1,
+        "approved_refund_count": 1,
         "action_run_ids": [
           "sj-8-act-1"
+        ]
+      }
+    },
+    {
+      "id": 9,
+      "title": "每日退款限额",
+      "messages": [
+        "申请第一笔退款，30 元",
+        "申请第二笔退款，40 元",
+        "申请第三笔退款，50 元"
+      ],
+      "steps": [
+        {
+          "ts": "2026-11-28T10:00:00+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r01",
+          "parent_request_id": null,
+          "session_id": "demo-9",
+          "step": "memory",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已读取订单",
+          "account": "B",
+          "preference_keys": [],
+          "order_id": "B-202",
+          "history_turn_count": 1,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.010000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r02",
+          "parent_request_id": "sj-9-r01",
+          "session_id": "demo-9",
+          "step": "retrieve",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "找到 2 个政策段落",
+          "policy_version": "712f989f3f8f",
+          "hits": [
+            {
+              "chunk_id": "cancel.md:29-85",
+              "passage_id": "cancel#1",
+              "start": 29,
+              "end": 85,
+              "score": 47.34273236560158
+            },
+            {
+              "chunk_id": "delivery.md:78-141",
+              "passage_id": "delivery#2",
+              "start": 78,
+              "end": 141,
+              "score": 17.893463331992454
+            }
+          ],
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.020000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r03",
+          "parent_request_id": "sj-9-r02",
+          "session_id": "demo-9",
+          "step": "draft",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已生成模拟草稿",
+          "brevity": null,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.030000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r04",
+          "parent_request_id": "sj-9-r03",
+          "session_id": "demo-9",
+          "step": "draft",
+          "kind": "model",
+          "outcome": "done",
+          "summary": "模拟模型调用成功，耗时 400 毫秒",
+          "user": "B",
+          "model": "careful",
+          "latency_ms": 400,
+          "status": "ok",
+          "simulated": true,
+          "tokens_in": 119,
+          "tokens_out": 94,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.430000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r05",
+          "parent_request_id": "sj-9-r04",
+          "session_id": "demo-9",
+          "step": "check",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "质检通过，引用 cancel#1、delivery#2",
+          "case_id": "s09",
+          "citations": [
+            "cancel#1",
+            "delivery#2"
+          ],
+          "verdict": "passed",
+          "reason_labels": [],
+          "handoff": false,
+          "evidence": [
+            "订单未出库且客户确认取消的，可申请退还部分或全部实付。"
+          ],
+          "order_changed": false,
+          "reply": "订单未出库且客户确认取消的，可申请退还部分或全部实付。单笔退款超过演示门槛需两人审批。\n商品出库前，可以在官方订单页申请修改收货地址。商品出库后需要改地址时，由人工联系配送方确认能否变更。",
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.440000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r06",
+          "parent_request_id": "sj-9-r05",
+          "session_id": "demo-9",
+          "step": "act",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "已提交明确的客户请求",
+          "action_run_id": "sj-9-act-1",
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.450000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r07",
+          "parent_request_id": "sj-9-r06",
+          "session_id": "demo-9",
+          "step": "act",
+          "kind": "step",
+          "outcome": "pending_approval",
+          "summary": "待审批，已收到 0/1 票",
+          "phase": "approval",
+          "action_run_id": "sj-9-act-1",
+          "action_step": 1,
+          "approvals_required": 1,
+          "approvals_received": 0,
+          "approval": "待审",
+          "refund_count": 0,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.460000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r08",
+          "parent_request_id": "sj-9-r06",
+          "session_id": "demo-9",
+          "step": "act",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "审批通过，已收到 1/1 票",
+          "phase": "approval",
+          "action_run_id": "sj-9-act-1",
+          "action_step": 1,
+          "approvals_required": 1,
+          "approvals_received": 1,
+          "approval": "已批准",
+          "refund_count": 0,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.470000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r09",
+          "parent_request_id": "sj-9-r06",
+          "session_id": "demo-9",
+          "step": "act",
+          "kind": "tool",
+          "outcome": "done",
+          "summary": "退款成功，已退 3000 分",
+          "tool": "refund",
+          "latency_ms": 120,
+          "status": "ok",
+          "flags": [],
+          "action_run_id": "sj-9-act-1",
+          "action_step": 1,
+          "attempt": 1,
+          "approval": "已批准",
+          "refund_count": 1,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.590000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r10",
+          "parent_request_id": "sj-9-r09",
+          "session_id": "demo-9",
+          "step": "memory",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已读取订单",
+          "account": "B",
+          "preference_keys": [],
+          "order_id": "B-202",
+          "history_turn_count": 2,
+          "turn": 2
+        },
+        {
+          "ts": "2026-11-28T10:00:00.600000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r11",
+          "parent_request_id": "sj-9-r10",
+          "session_id": "demo-9",
+          "step": "retrieve",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "找到 2 个政策段落",
+          "policy_version": "712f989f3f8f",
+          "hits": [
+            {
+              "chunk_id": "cancel.md:29-85",
+              "passage_id": "cancel#1",
+              "start": 29,
+              "end": 85,
+              "score": 47.34273236560158
+            },
+            {
+              "chunk_id": "delivery.md:78-141",
+              "passage_id": "delivery#2",
+              "start": 78,
+              "end": 141,
+              "score": 17.893463331992454
+            }
+          ],
+          "turn": 2
+        },
+        {
+          "ts": "2026-11-28T10:00:00.610000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r12",
+          "parent_request_id": "sj-9-r11",
+          "session_id": "demo-9",
+          "step": "draft",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已生成模拟草稿",
+          "brevity": null,
+          "turn": 2
+        },
+        {
+          "ts": "2026-11-28T10:00:00.620000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r13",
+          "parent_request_id": "sj-9-r12",
+          "session_id": "demo-9",
+          "step": "draft",
+          "kind": "model",
+          "outcome": "done",
+          "summary": "模拟模型调用成功，耗时 400 毫秒",
+          "user": "B",
+          "model": "careful",
+          "latency_ms": 400,
+          "status": "ok",
+          "simulated": true,
+          "tokens_in": 119,
+          "tokens_out": 94,
+          "turn": 2
+        },
+        {
+          "ts": "2026-11-28T10:00:01.020000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r14",
+          "parent_request_id": "sj-9-r13",
+          "session_id": "demo-9",
+          "step": "check",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "质检通过，引用 cancel#1、delivery#2",
+          "case_id": "s09",
+          "citations": [
+            "cancel#1",
+            "delivery#2"
+          ],
+          "verdict": "passed",
+          "reason_labels": [],
+          "handoff": false,
+          "evidence": [
+            "订单未出库且客户确认取消的，可申请退还部分或全部实付。"
+          ],
+          "order_changed": false,
+          "reply": "订单未出库且客户确认取消的，可申请退还部分或全部实付。单笔退款超过演示门槛需两人审批。\n商品出库前，可以在官方订单页申请修改收货地址。商品出库后需要改地址时，由人工联系配送方确认能否变更。",
+          "turn": 2
+        },
+        {
+          "ts": "2026-11-28T10:00:01.030000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r15",
+          "parent_request_id": "sj-9-r14",
+          "session_id": "demo-9",
+          "step": "act",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "已提交明确的客户请求",
+          "action_run_id": "sj-9-act-2",
+          "turn": 2
+        },
+        {
+          "ts": "2026-11-28T10:00:01.040000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r16",
+          "parent_request_id": "sj-9-r15",
+          "session_id": "demo-9",
+          "step": "act",
+          "kind": "step",
+          "outcome": "pending_approval",
+          "summary": "待审批，已收到 0/1 票",
+          "phase": "approval",
+          "action_run_id": "sj-9-act-2",
+          "action_step": 1,
+          "approvals_required": 1,
+          "approvals_received": 0,
+          "approval": "待审",
+          "refund_count": 1,
+          "turn": 2
+        },
+        {
+          "ts": "2026-11-28T10:00:01.050000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r17",
+          "parent_request_id": "sj-9-r15",
+          "session_id": "demo-9",
+          "step": "act",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "审批通过，已收到 1/1 票",
+          "phase": "approval",
+          "action_run_id": "sj-9-act-2",
+          "action_step": 1,
+          "approvals_required": 1,
+          "approvals_received": 1,
+          "approval": "已批准",
+          "refund_count": 1,
+          "turn": 2
+        },
+        {
+          "ts": "2026-11-28T10:00:01.060000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r18",
+          "parent_request_id": "sj-9-r15",
+          "session_id": "demo-9",
+          "step": "act",
+          "kind": "tool",
+          "outcome": "done",
+          "summary": "退款成功，已退 4000 分",
+          "tool": "refund",
+          "latency_ms": 120,
+          "status": "ok",
+          "flags": [],
+          "action_run_id": "sj-9-act-2",
+          "action_step": 1,
+          "attempt": 1,
+          "approval": "已批准",
+          "refund_count": 2,
+          "turn": 2
+        },
+        {
+          "ts": "2026-11-28T10:00:01.180000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r19",
+          "parent_request_id": "sj-9-r18",
+          "session_id": "demo-9",
+          "step": "memory",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已读取订单",
+          "account": "B",
+          "preference_keys": [],
+          "order_id": "B-202",
+          "history_turn_count": 3,
+          "turn": 3
+        },
+        {
+          "ts": "2026-11-28T10:00:01.190000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r20",
+          "parent_request_id": "sj-9-r19",
+          "session_id": "demo-9",
+          "step": "retrieve",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "找到 2 个政策段落",
+          "policy_version": "712f989f3f8f",
+          "hits": [
+            {
+              "chunk_id": "cancel.md:29-85",
+              "passage_id": "cancel#1",
+              "start": 29,
+              "end": 85,
+              "score": 47.34273236560158
+            },
+            {
+              "chunk_id": "delivery.md:78-141",
+              "passage_id": "delivery#2",
+              "start": 78,
+              "end": 141,
+              "score": 17.893463331992454
+            }
+          ],
+          "turn": 3
+        },
+        {
+          "ts": "2026-11-28T10:00:01.200000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r21",
+          "parent_request_id": "sj-9-r20",
+          "session_id": "demo-9",
+          "step": "draft",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已生成模拟草稿",
+          "brevity": null,
+          "turn": 3
+        },
+        {
+          "ts": "2026-11-28T10:00:01.210000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r22",
+          "parent_request_id": "sj-9-r21",
+          "session_id": "demo-9",
+          "step": "draft",
+          "kind": "model",
+          "outcome": "done",
+          "summary": "模拟模型调用成功，耗时 400 毫秒",
+          "user": "B",
+          "model": "careful",
+          "latency_ms": 400,
+          "status": "ok",
+          "simulated": true,
+          "tokens_in": 119,
+          "tokens_out": 94,
+          "turn": 3
+        },
+        {
+          "ts": "2026-11-28T10:00:01.610000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r23",
+          "parent_request_id": "sj-9-r22",
+          "session_id": "demo-9",
+          "step": "check",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "质检通过，引用 cancel#1、delivery#2",
+          "case_id": "s09",
+          "citations": [
+            "cancel#1",
+            "delivery#2"
+          ],
+          "verdict": "passed",
+          "reason_labels": [],
+          "handoff": false,
+          "evidence": [
+            "订单未出库且客户确认取消的，可申请退还部分或全部实付。"
+          ],
+          "order_changed": false,
+          "reply": "订单未出库且客户确认取消的，可申请退还部分或全部实付。单笔退款超过演示门槛需两人审批。\n商品出库前，可以在官方订单页申请修改收货地址。商品出库后需要改地址时，由人工联系配送方确认能否变更。",
+          "turn": 3
+        },
+        {
+          "ts": "2026-11-28T10:00:01.620000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r24",
+          "parent_request_id": "sj-9-r23",
+          "session_id": "demo-9",
+          "step": "act",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "已提交明确的客户请求",
+          "action_run_id": "sj-9-act-3",
+          "turn": 3
+        },
+        {
+          "ts": "2026-11-28T10:00:01.630000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r25",
+          "parent_request_id": "sj-9-r24",
+          "session_id": "demo-9",
+          "step": "act",
+          "kind": "step",
+          "outcome": "pending_approval",
+          "summary": "待审批，已收到 0/1 票",
+          "phase": "approval",
+          "action_run_id": "sj-9-act-3",
+          "action_step": 1,
+          "approvals_required": 1,
+          "approvals_received": 0,
+          "approval": "待审",
+          "refund_count": 2,
+          "turn": 3
+        },
+        {
+          "ts": "2026-11-28T10:00:01.640000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r26",
+          "parent_request_id": "sj-9-r24",
+          "session_id": "demo-9",
+          "step": "act",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "审批通过，已收到 1/1 票",
+          "phase": "approval",
+          "action_run_id": "sj-9-act-3",
+          "action_step": 1,
+          "approvals_required": 1,
+          "approvals_received": 1,
+          "approval": "已批准",
+          "refund_count": 2,
+          "turn": 3
+        },
+        {
+          "ts": "2026-11-28T10:00:01.650000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r27",
+          "parent_request_id": "sj-9-r24",
+          "session_id": "demo-9",
+          "step": "act",
+          "kind": "step",
+          "outcome": "refused",
+          "summary": "拒绝办理，该账户每天最多退款 2 次",
+          "phase": "guard",
+          "reason": "该账户每天最多退款 2 次",
+          "action_tool": "refund",
+          "action_run_id": "sj-9-act-3",
+          "action_step": 1,
+          "attempt": 1,
+          "approval": "已批准",
+          "turn": 3
+        },
+        {
+          "ts": "2026-11-28T10:00:01.660000+08:00",
+          "trace_id": "sj-9",
+          "request_id": "sj-9-r28",
+          "parent_request_id": "sj-9-r27",
+          "session_id": "demo-9",
+          "step": "watch",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "监控已检查，无告警",
+          "alert_count": 0
+        }
+      ],
+      "alerts": [],
+      "final": {
+        "stop_step": "act",
+        "outcome": "refused",
+        "reply": "拒绝办理，该账户每天最多退款 2 次",
+        "address_change_completed": false,
+        "order_changed": false,
+        "refund_count": 2,
+        "refunded_cents": 7000,
+        "approval_count": 3,
+        "approved_refund_count": 3,
+        "action_run_ids": [
+          "sj-9-act-1",
+          "sj-9-act-2",
+          "sj-9-act-3"
         ]
       }
     }

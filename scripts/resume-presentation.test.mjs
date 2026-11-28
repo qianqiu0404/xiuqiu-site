@@ -562,11 +562,11 @@ async function openCatalogDialog(t, id) {
 
 for (const [id, href, ...currentFacts] of [
   ['support-answer-check', '/answer-check-demo/index.html', '40 道虚构题，两个规则客服分别通过 10 题和 23 题'],
-  ['support-memory', '/memory-demo/index.html', '55 项源码测试'],
-  ['agent-watch', '/watch-demo/index.html', '72 项源码测试。演示日志含 205 条有效记录和 2 行坏数据'],
-  ['support-actions', '/actions-demo/index.html', '55 项源码测试，网页回放 13 个场景'],
-  ['kb-retrieval-eval', '/retrieval-demo/index.html', '40 项源码测试', '6 篇文章、40 道原题和 8 道留出题、18 种基础设置'],
-  ['support-journey', '/journey-demo/index.html', '8 个离线场景'],
+  ['support-memory', '/memory-demo/index.html', '62 项源码测试'],
+  ['agent-watch', '/watch-demo/index.html', '79 项源码测试。演示日志含 205 条有效记录和 2 行坏数据'],
+  ['support-actions', '/actions-demo/index.html', '63 项源码测试，网页回放 13 个场景'],
+  ['kb-retrieval-eval', '/retrieval-demo/index.html', '47 项源码测试', '6 篇文章、40 道原题和 8 道留出题、18 种基础设置'],
+  ['support-journey', '/journey-demo/index.html', '9 个离线场景'],
 ]) {
   test(`personal project dialog links to the bundled demo and public repository: ${id}`, async t => {
     const project = records.find(record => record.id === id)
@@ -691,9 +691,9 @@ test('retrieval bundle matches the pinned kbeval export and expanded evaluation'
 
 test('journey bundle preserves the pinned export and supplies its retrieved policy passages', () => {
   const { source, passages, ...data } = readBundle(journeyDir)
-  assert.deepEqual(source, { repo: 'support-journey', commit: '8686598' })
+  assert.deepEqual(source, { repo: 'support-journey', commit: 'ab5c581' })
   assert.equal(createHash('sha256').update(JSON.stringify(data)).digest('hex'),
-    'f9266a77a66cc3b0f7778a937d17b44b6634614978b80fd78a6b09c1bc3e2581')
+    'f1369bf267f05efaa285d60014443e93d14f99333caa1f81b22e82b080295e38')
   const ids = new Set(data.scenarios.flatMap(scenario =>
     scenario.steps.flatMap(step => step.hits?.map(hit => hit.passage_id) ?? [])))
   assert.deepEqual(Object.keys(passages).sort(), [...ids].sort())
@@ -854,7 +854,7 @@ function readDemoHtml(dir) {
   return parse(readFileSync(new URL('index.html', dir), 'utf8'), { parseMode: 'html' })
 }
 
-function assertDemoMarkup(html, title, repo, controlCount) {
+function assertDemoMarkup(html, title, repo, controlCount, statusId = 'result-count') {
   const headings = elements(html, node => node.tag === 'h1')
   assert.equal(headings.length, 1)
   assert.equal(text(headings[0]), title)
@@ -867,7 +867,7 @@ function assertDemoMarkup(html, title, repo, controlCount) {
     assert.equal(elements(html, node => attribute(node, 'id') === id).length, 1, id)
     assert.ok(labels.some(label => attribute(label, 'for') === id && text(label)), `Missing label: ${id}`)
   }
-  const [count] = elements(html, node => attribute(node, 'id') === 'result-count')
+  const [count] = elements(html, node => attribute(node, 'id') === statusId)
   assert.equal(attribute(count, 'aria-live'), 'polite')
   assert.equal(attribute(count, 'aria-atomic'), 'true')
   const [footer] = elements(html, node => node.tag === 'footer')
@@ -1030,8 +1030,15 @@ function demoAncestors(node) {
 
 function demoExposedText(node) {
   if (!node || demoAncestors(node).some(parent => parent.hidden || parent.inert ||
-      parent.ariaHidden === 'true' || parent.attributes.get('aria-hidden') === 'true')) return ''
+      parent.ariaHidden === 'true' || parent.attributes.get('aria-hidden') === 'true' ||
+      /(?:^|;)\s*display\s*:\s*none\s*(?:!important\s*)?(?:;|$)/iu.test(parent.attributes.get('style') ?? ''))) return ''
   return node.children.map(child => child instanceof DemoElement ? demoExposedText(child) : child).join('')
+}
+
+function demoDisclosureName(summary, byId) {
+  const labels = summary.attributes.get('aria-labelledby')?.trim().split(/\s+/u).map(byId).filter(Boolean)
+  if (labels?.length) return labels.map(label => label.textContent.trim()).join(' ')
+  return (summary.ariaLabel ?? summary.attributes.get('aria-label'))?.trim() || demoExposedText(summary)
 }
 
 function changeDemoFilter(control, property, value) {
@@ -1078,6 +1085,12 @@ function pressDemoKey(root, key) {
       }
     }
   }
+}
+
+function openDemoDetails(details) {
+  const [summary] = details.children
+  summary.focus()
+  pressDemoKey(demoAncestors(summary).at(-1), 'Enter')
 }
 
 function demoFacts(list, readText = node => node.textContent) {
@@ -1129,16 +1142,16 @@ async function mountDemo(t, dir, bundle, { ok = true, onLoading } = {}) {
   return document.getElementById
 }
 
-test('journey offers eight keyboard-selectable scenarios and announces only switches', async t => {
+test('journey offers nine keyboard-selectable scenarios and announces readiness and switches', async t => {
   const html = readDemoHtml(journeyDir)
-  assertDemoMarkup(html, '客服全流程演示', 'support-journey', 1)
+  assertDemoMarkup(html, '客服全流程演示', 'support-journey', 1, 'load-status')
   assert.deepEqual(elements(html, node => attribute(node, 'aria-live') !== undefined)
-    .map(node => attribute(node, 'id')), ['result-count'])
+    .map(node => attribute(node, 'id')), ['load-status'])
   assert.ok(elements(html, node => node.tag === 'p' && text(node).includes('数据、客户和模型均为虚构')).length)
   const byId = await mountDemo(t, journeyDir, readBundle(journeyDir))
   const picker = byId('scenario-picker')
-  assert.equal(picker.children.length, 8)
-  assert.equal(byId('result-count').textContent, '')
+  assert.equal(picker.children.length, 9)
+  assert.equal(demoExposedText(byId('load-status')), '已加载 9 个场景。')
   const root = demoAncestors(picker).at(-1)
   pressDemoKey(root, 'Tab')
   pressDemoKey(root, 'Tab')
@@ -1146,7 +1159,7 @@ test('journey offers eight keyboard-selectable scenarios and announces only swit
   for (let index = 1; index <= 8; index += 1) {
     if (index > 1) {
       pressDemoKey(root, 'ArrowDown')
-      assert.match(demoExposedText(byId('result-count')), new RegExp(`已切换到场景 ${index}`))
+      assert.match(demoExposedText(byId('load-status')), new RegExp(`已切换到场景 ${index}`))
     }
     assert.equal(root.activeElement, picker)
     const content = byId('scenario-content')
@@ -1179,20 +1192,33 @@ test('journey reads out approval, blocks, monitoring and effects in the order th
   assert.match(pick(8), /退款工具超时，办理结果待查.*查到原退款成功，已退 80 元.*已退 1 笔，共 80 元/u)
 })
 
-test('journey exposes loading, empty and error messages without making them live', async t => {
+test('journey result says the preferences were cleared and the history kept', async t => {
+  const byId = await mountDemo(t, journeyDir, readBundle(journeyDir))
+  changeDemoFilter(byId('scenario-picker'), 'value', '7')
+  const result = byId('scenario-content').children.at(-1)
+  const effect = result.children.find(line => line.textContent.startsWith('实际办成：'))
+  assert.equal(demoExposedText(effect), '实际办成：已清除偏好，历史仍保留。')
+})
+
+test('journey announces loading, empty and error messages in the visible status', async t => {
   const bundle = { ...readBundle(journeyDir), scenarios: [] }
   for (const [name, ok, message] of [
     ['empty', true, '没有可展示的场景。'],
     ['error', false, '演示数据加载失败。请刷新页面重试。'],
   ]) {
     await t.test(name, async subtest => {
+      let loading
+      let disabledWhileLoading
       const byId = await mountDemo(subtest, journeyDir, bundle, { ok, onLoading: get => {
-        assert.equal(demoExposedText(get('load-status')), '正在加载演示数据。')
-        assert.equal(get('scenario-picker').disabled, true)
+        loading = demoExposedText(get('load-status'))
+        disabledWhileLoading = get('scenario-picker').disabled
       } })
-      assert.equal(demoExposedText(byId('load-status')), message)
+      const status = byId('load-status')
+      assert.equal(loading, '正在加载演示数据。', '加载时应显示状态行')
+      assert.equal(disabledWhileLoading, true)
+      assert.equal(demoExposedText(status), message)
+      assert.equal(status.attributes.get('aria-live'), 'polite', `必须播报：${message}`)
       assert.equal(byId('scenario-picker').disabled, true)
-      assert.equal(byId('result-count').textContent, '')
     })
   }
 })
@@ -1289,6 +1315,17 @@ test('retrieval held-out table keeps different scores in the correct expansion c
   assert.deepEqual(on.children[0].children.map(score => score.textContent), ['Recall@3 0.6250', 'MRR 0.68750'])
 })
 
+test('retrieval distinguishes the three Q39 disclosure names by group', async t => {
+  const byId = await mountDemo(t, retrievalDir, retrievalBundle)
+  const { question } = retrievalBundle.questions.find(item => item.id === 'Q39')
+  for (const [target, group] of [['failures', '失败题目'], ['improved', '变好的题目'], ['worsened', '变差的题目']]) {
+    const summary = byId(target).children.map(details => details.children[0])
+      .find(node => node.textContent.includes('Q39 '))
+    assert.ok(summary, `${group}应包含 Q39 的展开控件`)
+    assert.equal(demoDisclosureName(summary, byId), `${group}：Q39 ${question}`, `${group}的 Q39 读屏名称`)
+  }
+})
+
 test('retrieval expansion cases disclose the changed ranks and the displacing chunk by keyboard', async t => {
   const byId = await mountDemo(t, retrievalDir, retrievalBundle)
   for (const [target, ids] of [['improved', ['Q03', 'Q34', 'Q39']], ['worsened', ['Q39']]]) {
@@ -1296,7 +1333,7 @@ test('retrieval expansion cases disclose the changed ranks and the displacing ch
     assert.deepEqual(cases.map(({ tag, children: [summary] }) => {
       assert.equal(tag, 'details')
       assert.equal(summary.tag, 'summary')
-      return summary.textContent.split(' ')[0]
+      return summary.textContent.split(' ')[0].split('：').at(-1)
     }), ids)
   }
 
@@ -1334,7 +1371,7 @@ test('retrieval expansion cases disclose the changed ranks and the displacing ch
   const { question, gold } = retrievalBundle.questions.find(item => item.id === 'Q39')
   const { rank: before } = retrievalBundle.configs['heading/bigram/1'].results.Q39
   const { rank: after, top: [{ chunk }] } = retrievalBundle.configs['heading/bigram/1/expanded'].results.Q39
-  assert.equal(summary.textContent, `Q39 ${question}`)
+  assert.equal(summary.textContent, `变差的题目：Q39 ${question}`)
   assert.equal(body.children[1].textContent, gold)
   const [change] = body.children.filter(node => node.className === 'failure')
   assert.equal(change.children[1].textContent,
@@ -1361,7 +1398,7 @@ test('retrieval failure filter renders exactly the questions with each chosen re
     assert.deepEqual(results.children.map(({ tag, children: [summary] }) => {
       assert.equal(tag, 'details')
       assert.equal(summary.tag, 'summary')
-      return demoExposedText(summary).split(' ')[0]
+      return demoExposedText(summary).split(' ')[0].split('：').at(-1)
     }), ids, reason || '全部原因')
     assert.equal(byId('result-count').textContent, `${reason || '全部原因'}，共 ${ids.length} 道失败题目。`)
   }
@@ -1379,7 +1416,7 @@ test('retrieval failure filter renders exactly the questions with each chosen re
   const [summary, body] = results.children[0].children
   const { question, gold } = retrievalBundle.questions.find(item => item.id === 'Q03')
   assert.equal(root.activeElement, summary)
-  assert.equal(demoExposedText(summary), `Q03 ${question}`)
+  assert.equal(demoExposedText(summary), `失败题目：Q03 ${question}`)
   assert.ok(!visibleDemoElements(results).includes(body))
   pressDemoKey(root, 'Enter')
   assert.ok(visibleDemoElements(results).includes(body))
@@ -1422,6 +1459,17 @@ test('retrieval still displays the original evaluation if a browser has cached t
   assert.ok(!byId('source').hidden)
   assert.ok(byId('expansion').hidden)
   assert.ok(byId('held-out').hidden)
+})
+
+test('actions reads the minute limit outcome before the eleven calls', async t => {
+  const byId = await mountDemo(t, actionsDir, actionsBundle)
+  const details = byId('scenarios').children.find(node => node.children[0].textContent === '每分钟工具限额')
+  openDemoDetails(details)
+  const [, body] = details.children
+  const [introduction, outcome] = body.children
+  assert.match(demoExposedText(introduction), /^场景说明.*11 次。$/u)
+  assert.equal(demoExposedText(outcome), '最终状态：已拒绝。')
+  assert.equal(body.children.find(node => node.tag === 'ol').children.length, 11)
 })
 
 test('actions renders all 13 scenarios in keyboard order with the exported plan and outcomes', async t => {
@@ -1481,7 +1529,7 @@ test('actions renders all 13 scenarios in keyboard order with the exported plan 
       assert.deepEqual(demoFacts(item.children.find(node => node.tag === 'dl'), demoExposedText),
         labels.map((label, field) => [label, expectedFields[field]]), name)
     }
-    assert.equal(demoExposedText(body.children.at(-1)), `最终状态：${outcome}。`, `读屏可读到展开后的结果：${name}`)
+    assert.equal(demoExposedText(body.children[1]), `最终状态：${outcome}。`, `读屏可读到展开后的结果：${name}`)
   }
 
   assert.match(scenarios[2].textContent, /先进入待审，人工批准后才执行/)
@@ -1520,7 +1568,7 @@ test('actions renders all 13 scenarios in keyboard order with the exported plan 
     assert.equal(demoExposedText(body.children[0]), introduction, name)
     assert.equal(body.children.find(node => node.tag === 'ol').children.length, steps, name)
     assert.match(demoExposedText(body), evidence, name)
-    assert.equal(demoExposedText(body.children.at(-1)), `最终状态：${outcome}。`, name)
+    assert.equal(demoExposedText(body.children[1]), `最终状态：${outcome}。`, name)
   }
   assert.equal(byId('source').textContent, '数据来源：support-actions，提交 a62bebb。')
   pressDemoKey(root, 'Tab')
@@ -1603,6 +1651,69 @@ test('answer-check announces both equal-count category changes', async t => {
     assert.equal(first.children[0].textContent.split('，', 1)[0], firstId)
     assert.equal(byId('result-count').textContent, `naive，全部判定，${label}：找到 5 道题。`)
   }
+})
+
+test('demo filters keep the matching open details', async t => {
+  await t.test('answer-check keeps c02 open with the new bot answer', async subtest => {
+    const byId = await mountDemo(subtest, answerCheckDir, answerCheckBundle)
+    const cases = byId('cases')
+    const caseById = id => cases.children.find(node => node.children[0].textContent.startsWith(`${id}，`))
+    openDemoDetails(caseById('c02'))
+    const bot = byId('bot')
+    bot.focus()
+    pressDemoKey(demoAncestors(bot).at(-1), 'ArrowDown')
+    const details = caseById('c02')
+    const [, body] = details.children
+    assert.ok(visibleDemoElements(details).includes(body), 'c02 在切换机器人后应继续展开')
+    assert.match(demoExposedText(body.children.find(node => node.className === 'answer')), /遥控器保修 6 个月/)
+    assert.deepEqual(cases.children.filter(node => node.open), [details])
+  })
+
+  await t.test('answer-check keeps c26 open when its position changes', async subtest => {
+    const byId = await mountDemo(subtest, answerCheckDir, answerCheckBundle)
+    const cases = byId('cases')
+    const c26 = () => cases.children.find(node => node.children[0].textContent.startsWith('c26，'))
+    const originalPosition = cases.children.indexOf(c26())
+    openDemoDetails(c26())
+    changeDemoFilter(byId('category'), 'value', 'policy_edge')
+    const details = c26()
+    assert.ok(details, '规则边界筛选结果应包含 c26')
+    assert.notEqual(cases.children.indexOf(details), originalPosition, 'c26 在筛选后应换位')
+    assert.ok(visibleDemoElements(details).includes(details.children[1]), 'c26 换位后应继续展开')
+    assert.deepEqual(cases.children.filter(node => node.open), [details])
+  })
+
+  await t.test('watch keeps the same timeout open when its position changes', async subtest => {
+    const byId = await mountDemo(subtest, watchDir, watchBundle)
+    const alerts = byId('alerts')
+    const timeout = () => alerts.children.find(node => node.textContent.includes('请求编号 r0079'))
+    openDemoDetails(timeout())
+    const filter = byId('alert-type')
+    filter.focus()
+    pressDemoKey(demoAncestors(filter).at(-1), 'ArrowDown')
+    const details = timeout()
+    assert.ok(visibleDemoElements(details).includes(details.children[1]), 'r0079 在筛选后应继续展开')
+    assert.deepEqual(alerts.children.filter(node => node.open), [details])
+  })
+
+  await t.test('retrieval keeps Q39 open when its position changes', async subtest => {
+    const byId = await mountDemo(subtest, retrievalDir, retrievalBundle)
+    const failures = byId('failures')
+    const q39 = () => failures.children.find(node => node.children[0].textContent.includes('Q39 '))
+    const originalPosition = failures.children.indexOf(q39())
+    openDemoDetails(q39())
+    const filter = byId('failure-reason')
+    filter.focus()
+    pressDemoKey(demoAncestors(filter).at(-1), 'ArrowDown')
+    assert.equal(filter.value, '被相似段落挤掉')
+    const details = q39()
+    assert.ok(details, '被相似段落挤掉的筛选结果应包含 Q39')
+    assert.notEqual(failures.children.indexOf(details), originalPosition, 'Q39 在筛选后应换位')
+    const [, body] = details.children
+    assert.ok(visibleDemoElements(details).includes(body), 'Q39 换位后应继续展开')
+    assert.match(demoExposedText(body), /失败原因：被相似段落挤掉/)
+    assert.deepEqual(failures.children.filter(node => node.open), [details])
+  })
 })
 
 test('watch announces equal-count changes and tabs from the filter to the first recovery', async t => {
