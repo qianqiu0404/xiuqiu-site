@@ -32,6 +32,7 @@ export const memoryDemo = { href: '/memory-demo/index.html', label: '客服记�
 export const watchDemo = { href: '/watch-demo/index.html', label: 'AI 调用监测演示' }
 export const actionsDemo = { href: '/actions-demo/index.html', label: '客服办事演示' }
 export const retrievalDemo = { href: '/retrieval-demo/index.html', label: '知识库检索评测演示' }
+export const journeyDemo = { href: '/journey-demo/index.html', label: '客服全流程演示' }
 
 export const resumeExperience = {
   company: '天津根哈希',

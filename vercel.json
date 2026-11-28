@@ -16,6 +16,11 @@
       "permanent": false
     },
     {
+      "source": "/journey-demo",
+      "destination": "/journey-demo/index.html",
+      "permanent": false
+    },
+    {
       "source": "/memory-demo",
       "destination": "/memory-demo/index.html",
       "permanent": false

@@ -1,0 +1,51 @@
+:root {
+  --bg: var(--surface);
+}
+
+.page { max-width: 800px; }
+h4 { margin: 0; color: var(--accent); font-size: 1rem; }
+
+.scenario-control, .result-card {
+  padding: clamp(12px, 3.5vw, 20px);
+  background: var(--sunk);
+}
+
+.scenario-control label { font-weight: 650; }
+#scenario-content { margin-top: 24px; }
+
+.journey-turn, .monitoring, .result-card { margin-top: 20px; }
+.turn-request, .monitoring > p { margin-top: 4px; }
+
+.journey-step {
+  padding-block: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.journey-step > p + p, .journey-step > .policy-passages, .monitoring > ul {
+  margin-top: 6px;
+}
+
+.policy-passages { padding-inline-start: 1.5em; }
+.policy-passages li + li { margin-top: 8px; }
+.policy-passages blockquote {
+  padding-inline-start: 10px;
+  border-inline-start: 2px solid var(--line);
+}
+
+.draft-text { white-space: pre-line; }
+.result-card p { margin-top: 6px; }
+.final-result {
+  padding-top: 8px;
+  border-top: 1px solid var(--control-line);
+  font-weight: 650;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

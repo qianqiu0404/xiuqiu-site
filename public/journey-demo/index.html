@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>客服全流程演示</title>
+  <link rel="stylesheet" href="../answer-check-demo/styles.css">
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <main class="page">
+    <header class="intro">
+      <h1>客服全流程演示</h1>
+      <p>从查政策到改址或退款，回放客服如何回答、获准办理，以及最后办成了什么。</p>
+      <p class="muted">数据、客户和模型均为虚构。场景在离线模拟环境中运行，网页只回放记录。</p>
+      <a class="home-link" href="/">返回作品集首页</a>
+    </header>
+
+    <noscript><p>启用 JavaScript 后可查看演示场景。</p></noscript>
+
+    <div class="field card scenario-control" id="scenario-controls" hidden>
+      <label for="scenario-picker">选择场景</label>
+      <select id="scenario-picker" disabled></select>
+    </div>
+    <p class="muted" id="load-status" hidden></p>
+    <p id="result-count" class="visually-hidden" aria-live="polite" aria-atomic="true"></p>
+    <article id="scenario-content" hidden></article>
+  </main>
+  <footer class="page muted">
+    <p id="source" hidden></p>
+    <a class="home-link" href="https://github.com/xoqiu09/support-journey">查看 support-journey 源码和测试</a>
+  </footer>
+</body>
+</html>
