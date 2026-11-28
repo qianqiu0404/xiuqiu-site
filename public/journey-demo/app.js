@@ -56,6 +56,7 @@ function stepView(step, records, passages, check) {
 function permissionText({ steps, final }, check) {
   const actions = steps.filter(record => record.step === 'act')
   const approval = actions.find(record => record.phase === 'approval' && record.outcome === 'passed')
+  if (final.approved_refund_count > 1) return `批准了 ${final.approved_refund_count} 笔退款，每笔都审批通过。`
   if (approval) return `审批通过，收到 ${approval.approvals_received} 票，共需 ${approval.approvals_required} 票。`
   if (actions.some(record => record.phase === 'guard' && record.outcome === 'refused')) {
     return '查单已获准，退款被拦下。'

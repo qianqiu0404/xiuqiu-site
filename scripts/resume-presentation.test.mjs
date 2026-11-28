@@ -1186,6 +1186,7 @@ test('journey reads out approval, blocks, monitoring and effects in the order th
   assert.match(pick(2), /质检拦截，草稿未引用政策.*办理.*未运行.*没有退款/u)
   assert.match(pick(3), /质检拦截，引用不在本轮检索结果中.*没有退款/u)
   assert.match(pick(4), /检索.*cancel#1.*订单未出库且客户确认取消的.*起草.*质检通过.*0 票，共需 2 票.*1 票，共需 2 票.*同一人重复批准.*1 票，共需 2 票.*2 票，共需 2 票.*退款成功，已退 150 元.*监控已检查，无告警.*引用正确.*允许办理.*实际办成.*已退 1 笔，共 150 元/u)
+  assert.match(pick(9), /允许办理：批准了 3 笔退款，每笔都审批通过。.*实际办成：.*已退 2 笔，共 70 元/u)
   assert.match(pick(5), /查单成功，发现可疑指令.*拒绝办理，参数来自带可疑指令的工具结果.*没有退款/u)
   assert.match(pick(6), /答复成功，耗时超标.*9000 毫秒.*3000 毫秒.*调用编号 sj-6-r04/u)
   assert.match(pick(7), /已清除偏好，历史仍保留.*监控.*未运行.*停在记忆/u)
