@@ -20,5 +20,8 @@
 
 .matrix-table thead { background: var(--sunk); }
 .matrix-table td { white-space: nowrap; }
+.matrix-table td:has(.comparison-scores) { white-space: normal; }
+.comparison-scores span { display: block; }
+.comparison-heading { margin-block: 12px 4px; }
 .failure { margin-top: 12px; }
 .failure h4 { margin: 0 0 4px; }

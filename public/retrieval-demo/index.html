@@ -21,7 +21,7 @@
 
     <section aria-labelledby="matrix-title">
       <h2 id="matrix-title">评测结果</h2>
-      <p>Recall@k 是前 k 个片段中找到完整标准原句的题目比例。MRR 越高，完整原句在整个排名里越靠前。</p>
+      <p>下表是关闭同义词扩展时的结果。Recall@k 是前 k 个片段中找到完整标准原句的题目比例。MRR 越高，完整原句在整个排名里越靠前。</p>
       <div id="matrix"></div>
     </section>
 
@@ -33,6 +33,7 @@
 
     <section aria-labelledby="failures-title">
       <h2 id="failures-title">失败题目</h2>
+      <p>这里列出关闭同义词扩展时的失败题目。</p>
       <fieldset class="card filter-card" id="filters" disabled>
         <legend>筛选失败题目</legend>
         <div class="field">
@@ -46,12 +47,30 @@
       <div id="failures"></div>
     </section>
 
+    <section id="expansion" aria-labelledby="expansion-title" hidden>
+      <h2 id="expansion-title">同义词扩展</h2>
+      <p id="expansion-description"></p>
+      <div id="expansion-matrix"></div>
+      <p>在同一设置和查看范围内，标准原句进入结果或排得更靠前，算变好。掉出结果或排得更靠后，算变差。</p>
+      <h3 class="comparison-heading">变好的题目</h3>
+      <div id="improved"></div>
+      <h3 class="comparison-heading">变差的题目</h3>
+      <div id="worsened"></div>
+    </section>
+
+    <section id="held-out" aria-labelledby="held-out-title" hidden>
+      <h2 id="held-out-title">留出题</h2>
+      <p>同义词表是在看过失败题目后写的，所以原有题上看到的收益偏乐观。</p>
+      <p id="held-out-description"></p>
+      <div id="held-out-matrix"></div>
+    </section>
+
     <section aria-labelledby="verification-title">
       <h2 id="verification-title">怎么验证的</h2>
       <ul>
-        <li>用 6 篇文章和 40 道题核对 18 种设置，按原文位置重算哪些片段含有完整的标准原句。</li>
+        <li>用 6 篇文章和 40 道原有题核对 18 种基础设置，按原文位置重算哪些片段含有完整的标准原句。</li>
         <li>用手算结果核对 BM25 的打分和排序，以及取前 1、3、5 个片段时的 Recall 和 MRR。</li>
-        <li>用同一道题核对原句在无重叠时会被切断，重叠 50 个字后能完整检出，并验证三种失败归因。</li>
+        <li>用同一道题核对原句在无重叠时会被切断，重叠 50 个字后能完整检出，并验证四种失败归因。</li>
         <li>核对推荐设置在 Recall@3 相同的情况下优先选择 MRR 较高的一项，并检查两次导出完全一致。</li>
       </ul>
     </section>
