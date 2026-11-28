@@ -4,6 +4,38 @@
     "deploymentEnabled": false
   },
   "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/actions-demo",
+      "destination": "/actions-demo/index.html",
+      "permanent": false
+    },
+    {
+      "source": "/answer-check-demo",
+      "destination": "/answer-check-demo/index.html",
+      "permanent": false
+    },
+    {
+      "source": "/memory-demo",
+      "destination": "/memory-demo/index.html",
+      "permanent": false
+    },
+    {
+      "source": "/mini-exchange-demo",
+      "destination": "/mini-exchange-demo/index.html",
+      "permanent": false
+    },
+    {
+      "source": "/retrieval-demo",
+      "destination": "/retrieval-demo/index.html",
+      "permanent": false
+    },
+    {
+      "source": "/watch-demo",
+      "destination": "/watch-demo/index.html",
+      "permanent": false
+    }
+  ],
   "rewrites": [
     {
       "source": "/grok-news-data/:path*",

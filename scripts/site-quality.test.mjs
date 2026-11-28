@@ -385,6 +385,22 @@ test('fixed research entries have noindex metadata and stay outside the canonica
   }
 })
 
+test('every static demo folder redirects its short address to index.html', () => {
+  // trailingSlash:false turns /x-demo/ into /x-demo, where the pages' relative
+  // ./app.js would resolve to /app.js and the demo would render empty.
+  const demos = readdirSync(join(ROOT, 'public'), { withFileTypes: true })
+    .filter(entry => entry.isDirectory() && entry.name.endsWith('-demo') && existsSync(join(ROOT, 'public', entry.name, 'index.html')))
+    .map(entry => entry.name)
+  assert.ok(demos.length >= 6)
+  const redirects = JSON.parse(read('vercel.json')).redirects || []
+  for (const demo of demos) {
+    const rule = redirects.find(r => r.source === `/${demo}`)
+    assert.ok(rule, `missing redirect for /${demo}`)
+    assert.equal(rule.destination, `/${demo}/index.html`)
+    assert.equal(rule.permanent, false)
+  }
+})
+
 test('unknown paths render a noindex 404 page instead of redirecting to home', () => {
   const vercelConfig = JSON.parse(read('vercel.json'))
   const platformRoutingRules = JSON.stringify([
