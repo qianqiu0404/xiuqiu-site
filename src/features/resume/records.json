@@ -419,5 +419,19 @@
     "kindLabel": "个人作品",
     "visibility": "public",
     "openSource": false
+  },
+  {
+    "id": "support-journey",
+    "title": "客服全流程 / support-journey",
+    "intro": "用八个虚构场景串起客服记忆、政策检索、回答质检、业务办理和调用监控。",
+    "category": "product",
+    "label": "工具与产品",
+    "status": "离线验证 · 静态演示",
+    "history": false,
+    "tech": "Python · SQLite · 静态网页",
+    "kind": "personal",
+    "kindLabel": "个人作品",
+    "visibility": "public",
+    "openSource": false
   }
 ]

@@ -30,6 +30,7 @@ const memoryDir = new URL('memory-demo/', publicDir)
 const watchDir = new URL('watch-demo/', publicDir)
 const actionsDir = new URL('actions-demo/', publicDir)
 const retrievalDir = new URL('retrieval-demo/', publicDir)
+const journeyDir = new URL('journey-demo/', publicDir)
 const readBundle = dir => JSON.parse(readFileSync(new URL('data/bundle.json', dir), 'utf8'))
 const answerCheckBundle = readBundle(answerCheckDir)
 const memoryBundle = readBundle(memoryDir)
@@ -260,8 +261,8 @@ function assertPublicPrivacy(files) {
 
 test('reviewed catalog is complete and every record has a public summary', () => {
   const ids = records.map(project => project.id)
-  assert.equal(records.length, 34)
-  assert.equal(new Set(ids).size, 34)
+  assert.equal(records.length, 35)
+  assert.equal(new Set(ids).size, 35)
   assert.deepEqual(Object.keys(notes).sort(), [...ids].sort())
   assert.deepEqual(records.filter(project => project.kind === 'team').map(project => project.id).sort(), ['qai', 'saas', 'theai'])
 
@@ -269,7 +270,7 @@ test('reviewed catalog is complete and every record has a public summary', () =>
   const cards = elements(catalog, withClass('catalog-card'))
   assert.deepEqual(cards.map(card => attribute(elements(card, node => node.tag === 'button')[0], 'data-open')), ids)
   const [heading] = elements(catalog, node => node.tag === 'h2')
-  assert.equal(text(elements(heading, node => node.tag === 'sup')[0]), '34')
+  assert.equal(text(elements(heading, node => node.tag === 'sup')[0]), '35')
   const filters = elements(catalog, node => attribute(node, 'data-category-filter') !== undefined)
   for (const filter of filters) {
     const category = attribute(filter, 'data-category-filter')
@@ -386,7 +387,10 @@ test('hero and tracks tell one storyline: four facets in order, each opening its
       ['/memory-demo/index.html', '客服记忆演示个人项目'],
       ['/retrieval-demo/index.html', '知识库检索评测演示个人项目'],
     ] },
-    { title: '2出了问题查得出', opens: ['miniexchange'], links: [['/actions-demo/index.html', '客服办事演示个人项目']] },
+    { title: '2出了问题查得出', opens: ['miniexchange'], links: [
+      ['/actions-demo/index.html', '客服办事演示个人项目'],
+      ['/journey-demo/index.html', '客服全流程演示个人项目'],
+    ] },
     { title: '3用量管得住', opens: ['qai'], links: [['/watch-demo/index.html', 'AI 调用监测演示个人项目']] },
     { title: '4进展看得见', opens: ['steward', 'xiaomao'], links: [] },
   ])
@@ -556,12 +560,13 @@ async function openCatalogDialog(t, id) {
   return { html: renderedMarkup(body), titleId: dialog.props['aria-labelledby'] }
 }
 
-for (const [id, href] of [
-  ['support-answer-check', '/answer-check-demo/index.html'],
-  ['support-memory', '/memory-demo/index.html'],
-  ['agent-watch', '/watch-demo/index.html'],
-  ['support-actions', '/actions-demo/index.html'],
-  ['kb-retrieval-eval', '/retrieval-demo/index.html'],
+for (const [id, href, ...currentFacts] of [
+  ['support-answer-check', '/answer-check-demo/index.html', '40 道虚构题，两个规则客服分别通过 10 题和 23 题'],
+  ['support-memory', '/memory-demo/index.html', '55 项源码测试'],
+  ['agent-watch', '/watch-demo/index.html', '72 项源码测试。演示日志含 205 条有效记录和 2 行坏数据'],
+  ['support-actions', '/actions-demo/index.html', '55 项源码测试，网页回放 13 个场景'],
+  ['kb-retrieval-eval', '/retrieval-demo/index.html', '40 项源码测试', '6 篇文章、40 道原题和 8 道留出题、18 种基础设置'],
+  ['support-journey', '/journey-demo/index.html', '8 个离线场景'],
 ]) {
   test(`personal project dialog links to the bundled demo and public repository: ${id}`, async t => {
     const project = records.find(record => record.id === id)
@@ -581,8 +586,12 @@ for (const [id, href] of [
     assert.equal(intros.length, 1)
     assert.ok(text(intros[0], true), `Missing project introduction: ${id}`)
     assert.equal(elements(detail, node => node.tag === 'dt').length, 3)
-    assert.equal(elements(detail, node => node.tag === 'dd').length, 3)
+    const facts = elements(detail, node => node.tag === 'dd').map(node => text(node))
+    assert.equal(facts.length, 3)
     assert.equal(elements(detail, node => node.tag === 'h3').length, 2)
+    for (const fact of currentFacts) {
+      assert.ok(facts.some(value => value.includes(fact)), `Missing fact for ${id}: ${fact}`)
+    }
 
     const links = elements(detail, node => node.tag === 'a')
     assert.equal(links.length, 2)
@@ -658,7 +667,7 @@ test('actions demo passes the public-file privacy checks and masks street number
 
 test('none of the support, watch and retrieval demo bundles contains a raw phone number', () => {
   const phone = /(?<![0-9０-９])(?:[+＋]?[8８][6６][ -]?)?[1１][3-9３-９](?:[ -]?[0-9０-９]){9}(?![0-9０-９])/u
-  for (const dir of [answerCheckDir, memoryDir, watchDir, actionsDir, retrievalDir]) {
+  for (const dir of [answerCheckDir, memoryDir, watchDir, actionsDir, retrievalDir, journeyDir]) {
     // Use a boolean so a failure does not print the phone number or bundle.
     assert.equal(phone.test(readFileSync(new URL('data/bundle.json', dir), 'utf8')), false, dir.pathname)
   }
@@ -678,6 +687,19 @@ test('retrieval bundle matches the pinned kbeval export and expanded evaluation'
   // Digest of the public chunk text from export and the data from eval --expand at that revision.
   assert.equal(createHash('sha256').update(JSON.stringify(data)).digest('hex'),
     '3cc340d44c8f09da68ab334e83a0d42b868c03a331628e7c3035a83dd14533b3')
+})
+
+test('journey bundle preserves the pinned export and supplies its retrieved policy passages', () => {
+  const { source, passages, ...data } = readBundle(journeyDir)
+  assert.deepEqual(source, { repo: 'support-journey', commit: '8686598' })
+  assert.equal(createHash('sha256').update(JSON.stringify(data)).digest('hex'),
+    'f9266a77a66cc3b0f7778a937d17b44b6634614978b80fd78a6b09c1bc3e2581')
+  const ids = new Set(data.scenarios.flatMap(scenario =>
+    scenario.steps.flatMap(step => step.hits?.map(hit => hit.passage_id) ?? [])))
+  assert.deepEqual(Object.keys(passages).sort(), [...ids].sort())
+  assert.ok(Object.values(passages).every(passage => passage.trim()))
+  assert.match(passages['cancel#1'], /订单未出库且客户确认取消的，可申请退还部分或全部实付。/)
+  assertPublicPrivacy(readFiles(journeyDir))
 })
 
 test('memory bundle matches the six-step source export and masks the sample phone', () => {
@@ -1106,6 +1128,74 @@ async function mountDemo(t, dir, bundle, { ok = true, onLoading } = {}) {
   ])
   return document.getElementById
 }
+
+test('journey offers eight keyboard-selectable scenarios and announces only switches', async t => {
+  const html = readDemoHtml(journeyDir)
+  assertDemoMarkup(html, '客服全流程演示', 'support-journey', 1)
+  assert.deepEqual(elements(html, node => attribute(node, 'aria-live') !== undefined)
+    .map(node => attribute(node, 'id')), ['result-count'])
+  assert.ok(elements(html, node => node.tag === 'p' && text(node).includes('数据、客户和模型均为虚构')).length)
+  const byId = await mountDemo(t, journeyDir, readBundle(journeyDir))
+  const picker = byId('scenario-picker')
+  assert.equal(picker.children.length, 8)
+  assert.equal(byId('result-count').textContent, '')
+  const root = demoAncestors(picker).at(-1)
+  pressDemoKey(root, 'Tab')
+  pressDemoKey(root, 'Tab')
+  assert.equal(root.activeElement, picker)
+  for (let index = 1; index <= 8; index += 1) {
+    if (index > 1) {
+      pressDemoKey(root, 'ArrowDown')
+      assert.match(demoExposedText(byId('result-count')), new RegExp(`已切换到场景 ${index}`))
+    }
+    assert.equal(root.activeElement, picker)
+    const content = byId('scenario-content')
+    const nodes = visibleDemoElements(content)
+    assert.match(demoExposedText(nodes.find(node => node.tag === 'h2')), new RegExp(`场景 ${index}`))
+    const steps = nodes.filter(node => node.tag === 'h4').map(demoExposedText)
+    const order = ['记忆', '检索', '起草', '质检', '办理']
+    assert.deepEqual(steps, index === 1 || index === 7 ? [...order, ...order] : order)
+    assert.ok(nodes.some(node => node.tag === 'h3' && demoExposedText(node) === '监控'))
+    const summary = content.children.at(-1)
+    assert.deepEqual(summary.children.slice(-4, -1).map(line => demoExposedText(line).split('：')[0]),
+      ['引用正确', '允许办理', '实际办成'])
+    assert.match(demoExposedText(summary.children.at(-1)), /^停在哪一步、有没有改订单或退钱：/)
+  }
+})
+
+test('journey reads out approval, blocks, monitoring and effects in the order they happened', async t => {
+  const byId = await mountDemo(t, journeyDir, readBundle(journeyDir))
+  const pick = id => {
+    changeDemoFilter(byId('scenario-picker'), 'value', String(id))
+    return demoExposedText(byId('scenario-content')).replace(/\s+/gu, ' ')
+  }
+  assert.match(pick(1), /改址成功，新地址已记录.*地址字段已变更/u)
+  assert.match(pick(2), /质检拦截，草稿未引用政策.*办理.*未运行.*没有退款/u)
+  assert.match(pick(3), /质检拦截，引用不在本轮检索结果中.*没有退款/u)
+  assert.match(pick(4), /检索.*cancel#1.*订单未出库且客户确认取消的.*起草.*质检通过.*0 票，共需 2 票.*1 票，共需 2 票.*同一人重复批准.*1 票，共需 2 票.*2 票，共需 2 票.*退款成功，已退 150 元.*监控已检查，无告警.*引用正确.*允许办理.*实际办成.*已退 1 笔，共 150 元/u)
+  assert.match(pick(5), /查单成功，发现可疑指令.*拒绝办理，参数来自带可疑指令的工具结果.*没有退款/u)
+  assert.match(pick(6), /答复成功，耗时超标.*9000 毫秒.*3000 毫秒.*调用编号 sj-6-r04/u)
+  assert.match(pick(7), /已清除偏好，历史仍保留.*监控.*未运行.*停在记忆/u)
+  assert.match(pick(8), /退款工具超时，办理结果待查.*查到原退款成功，已退 80 元.*已退 1 笔，共 80 元/u)
+})
+
+test('journey exposes loading, empty and error messages without making them live', async t => {
+  const bundle = { ...readBundle(journeyDir), scenarios: [] }
+  for (const [name, ok, message] of [
+    ['empty', true, '没有可展示的场景。'],
+    ['error', false, '演示数据加载失败。请刷新页面重试。'],
+  ]) {
+    await t.test(name, async subtest => {
+      const byId = await mountDemo(subtest, journeyDir, bundle, { ok, onLoading: get => {
+        assert.equal(demoExposedText(get('load-status')), '正在加载演示数据。')
+        assert.equal(get('scenario-picker').disabled, true)
+      } })
+      assert.equal(demoExposedText(byId('load-status')), message)
+      assert.equal(byId('scenario-picker').disabled, true)
+      assert.equal(byId('result-count').textContent, '')
+    })
+  }
+})
 
 const retrievalMethods = [
   ['heading/bm25', '按标题切块 · BM25'],

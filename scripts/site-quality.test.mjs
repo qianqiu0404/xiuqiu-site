@@ -392,6 +392,7 @@ test('every static demo folder redirects its short address to index.html', () =>
     .filter(entry => entry.isDirectory() && entry.name.endsWith('-demo') && existsSync(join(ROOT, 'public', entry.name, 'index.html')))
     .map(entry => entry.name)
   assert.ok(demos.length >= 6)
+  assert.ok(demos.includes('journey-demo'), 'missing the support-journey static page')
   const redirects = JSON.parse(read('vercel.json')).redirects || []
   for (const demo of demos) {
     const rule = redirects.find(r => r.source === `/${demo}`)

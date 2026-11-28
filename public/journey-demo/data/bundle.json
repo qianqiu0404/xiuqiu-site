@@ -1,0 +1,1460 @@
+{
+  "source": {
+    "repo": "support-journey",
+    "commit": "8686598"
+  },
+  "policy_version": "712f989f3f8f",
+  "deps": {
+    "support-memory": "4532ed4",
+    "kb-retrieval-eval": "f859ef4",
+    "support-answer-check": "bfb98e8",
+    "support-actions": "c1418f8",
+    "agent-watch": "2ae1e00"
+  },
+  "scenarios": [
+    {
+      "id": 1,
+      "title": "正常改址",
+      "messages": [
+        "询问出库前如何改址，希望答复简短",
+        "明确要求为 B-202 改址"
+      ],
+      "steps": [
+        {
+          "ts": "2026-11-28T10:00:00+08:00",
+          "trace_id": "sj-1",
+          "request_id": "sj-1-r01",
+          "parent_request_id": null,
+          "session_id": "demo-1",
+          "step": "memory",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已读取订单和偏好",
+          "account": "B",
+          "preference_keys": [
+            "brevity"
+          ],
+          "order_id": "B-202",
+          "history_turn_count": 1,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.010000+08:00",
+          "trace_id": "sj-1",
+          "request_id": "sj-1-r02",
+          "parent_request_id": "sj-1-r01",
+          "session_id": "demo-1",
+          "step": "retrieve",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "找到 3 个政策段落",
+          "policy_version": "712f989f3f8f",
+          "hits": [
+            {
+              "chunk_id": "delivery.md:78-141",
+              "passage_id": "delivery#2",
+              "start": 78,
+              "end": 141,
+              "score": 36.39462463236837
+            },
+            {
+              "chunk_id": "privacy.md:15-79",
+              "passage_id": "privacy#1",
+              "start": 15,
+              "end": 79,
+              "score": 13.79774290224184
+            },
+            {
+              "chunk_id": "privacy.md:79-146",
+              "passage_id": "privacy#2",
+              "start": 79,
+              "end": 146,
+              "score": 11.640733621274531
+            }
+          ],
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.020000+08:00",
+          "trace_id": "sj-1",
+          "request_id": "sj-1-r03",
+          "parent_request_id": "sj-1-r02",
+          "session_id": "demo-1",
+          "step": "draft",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已生成模拟草稿",
+          "brevity": "short",
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.030000+08:00",
+          "trace_id": "sj-1",
+          "request_id": "sj-1-r04",
+          "parent_request_id": "sj-1-r03",
+          "session_id": "demo-1",
+          "step": "draft",
+          "kind": "model",
+          "outcome": "done",
+          "summary": "模拟模型调用成功，耗时 400 毫秒",
+          "user": "B",
+          "model": "careful",
+          "latency_ms": 400,
+          "status": "ok",
+          "simulated": true,
+          "tokens_in": 170,
+          "tokens_out": 50,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.430000+08:00",
+          "trace_id": "sj-1",
+          "request_id": "sj-1-r05",
+          "parent_request_id": "sj-1-r04",
+          "session_id": "demo-1",
+          "step": "check",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "质检通过，引用 delivery#2",
+          "case_id": "s01-question",
+          "citations": [
+            "delivery#2"
+          ],
+          "verdict": "passed",
+          "reason_labels": [],
+          "handoff": false,
+          "evidence": [
+            "商品出库前，可以在官方订单页申请修改收货地址。"
+          ],
+          "order_changed": false,
+          "reply": "商品出库前，可以在官方订单页申请修改收货地址。商品出库后需要改地址时，由人工联系配送方确认能否变更。",
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.440000+08:00",
+          "trace_id": "sj-1",
+          "request_id": "sj-1-r06",
+          "parent_request_id": "sj-1-r05",
+          "session_id": "demo-1",
+          "step": "memory",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已读取订单和偏好",
+          "account": "B",
+          "preference_keys": [
+            "brevity"
+          ],
+          "order_id": "B-202",
+          "history_turn_count": 2,
+          "turn": 2
+        },
+        {
+          "ts": "2026-11-28T10:00:00.450000+08:00",
+          "trace_id": "sj-1",
+          "request_id": "sj-1-r07",
+          "parent_request_id": "sj-1-r06",
+          "session_id": "demo-1",
+          "step": "retrieve",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "找到 2 个政策段落",
+          "policy_version": "712f989f3f8f",
+          "hits": [
+            {
+              "chunk_id": "delivery.md:78-141",
+              "passage_id": "delivery#2",
+              "start": 78,
+              "end": 141,
+              "score": 37.97523840205775
+            },
+            {
+              "chunk_id": "privacy.md:15-79",
+              "passage_id": "privacy#1",
+              "start": 15,
+              "end": 79,
+              "score": 17.082820325044576
+            }
+          ],
+          "turn": 2
+        },
+        {
+          "ts": "2026-11-28T10:00:00.460000+08:00",
+          "trace_id": "sj-1",
+          "request_id": "sj-1-r08",
+          "parent_request_id": "sj-1-r07",
+          "session_id": "demo-1",
+          "step": "draft",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已生成模拟草稿",
+          "brevity": "short",
+          "turn": 2
+        },
+        {
+          "ts": "2026-11-28T10:00:00.470000+08:00",
+          "trace_id": "sj-1",
+          "request_id": "sj-1-r09",
+          "parent_request_id": "sj-1-r08",
+          "session_id": "demo-1",
+          "step": "draft",
+          "kind": "model",
+          "outcome": "done",
+          "summary": "模拟模型调用成功，耗时 400 毫秒",
+          "user": "B",
+          "model": "careful",
+          "latency_ms": 400,
+          "status": "ok",
+          "simulated": true,
+          "tokens_in": 128,
+          "tokens_out": 50,
+          "turn": 2
+        },
+        {
+          "ts": "2026-11-28T10:00:00.870000+08:00",
+          "trace_id": "sj-1",
+          "request_id": "sj-1-r10",
+          "parent_request_id": "sj-1-r09",
+          "session_id": "demo-1",
+          "step": "check",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "质检通过，引用 delivery#2",
+          "case_id": "s01-change",
+          "citations": [
+            "delivery#2"
+          ],
+          "verdict": "passed",
+          "reason_labels": [],
+          "handoff": false,
+          "evidence": [
+            "商品出库前，可以在官方订单页申请修改收货地址。"
+          ],
+          "order_changed": false,
+          "reply": "商品出库前，可以在官方订单页申请修改收货地址。商品出库后需要改地址时，由人工联系配送方确认能否变更。",
+          "turn": 2
+        },
+        {
+          "ts": "2026-11-28T10:00:00.880000+08:00",
+          "trace_id": "sj-1",
+          "request_id": "sj-1-r11",
+          "parent_request_id": "sj-1-r10",
+          "session_id": "demo-1",
+          "step": "act",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "已提交明确的客户请求",
+          "action_run_id": "sj-1-act-2",
+          "turn": 2
+        },
+        {
+          "ts": "2026-11-28T10:00:00.890000+08:00",
+          "trace_id": "sj-1",
+          "request_id": "sj-1-r12",
+          "parent_request_id": "sj-1-r11",
+          "session_id": "demo-1",
+          "step": "act",
+          "kind": "tool",
+          "outcome": "done",
+          "summary": "改址成功，新地址已记录",
+          "tool": "change_address",
+          "latency_ms": 100,
+          "status": "ok",
+          "flags": [],
+          "action_run_id": "sj-1-act-2",
+          "action_step": 1,
+          "attempt": 1,
+          "approval": null,
+          "address_change_completed": true,
+          "turn": 2
+        },
+        {
+          "ts": "2026-11-28T10:00:00.990000+08:00",
+          "trace_id": "sj-1",
+          "request_id": "sj-1-r13",
+          "parent_request_id": "sj-1-r12",
+          "session_id": "demo-1",
+          "step": "watch",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "监控已检查，无告警",
+          "alert_count": 0
+        }
+      ],
+      "alerts": [],
+      "final": {
+        "stop_step": "act",
+        "outcome": "done",
+        "reply": "新地址已记录",
+        "address_change_completed": true,
+        "order_changed": true,
+        "refund_count": 0,
+        "refunded_cents": 0,
+        "approval_count": 0,
+        "action_run_ids": [
+          "sj-1-act-2"
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "title": "草稿没有引用",
+      "messages": [
+        "明确要求为 B-202 改址"
+      ],
+      "steps": [
+        {
+          "ts": "2026-11-28T10:00:00+08:00",
+          "trace_id": "sj-2",
+          "request_id": "sj-2-r01",
+          "parent_request_id": null,
+          "session_id": "demo-2",
+          "step": "memory",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已读取订单",
+          "account": "B",
+          "preference_keys": [],
+          "order_id": "B-202",
+          "history_turn_count": 1,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.010000+08:00",
+          "trace_id": "sj-2",
+          "request_id": "sj-2-r02",
+          "parent_request_id": "sj-2-r01",
+          "session_id": "demo-2",
+          "step": "retrieve",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "找到 2 个政策段落",
+          "policy_version": "712f989f3f8f",
+          "hits": [
+            {
+              "chunk_id": "delivery.md:78-141",
+              "passage_id": "delivery#2",
+              "start": 78,
+              "end": 141,
+              "score": 37.97523840205775
+            },
+            {
+              "chunk_id": "privacy.md:15-79",
+              "passage_id": "privacy#1",
+              "start": 15,
+              "end": 79,
+              "score": 17.082820325044576
+            }
+          ],
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.020000+08:00",
+          "trace_id": "sj-2",
+          "request_id": "sj-2-r03",
+          "parent_request_id": "sj-2-r02",
+          "session_id": "demo-2",
+          "step": "draft",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已生成模拟草稿",
+          "brevity": null,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.030000+08:00",
+          "trace_id": "sj-2",
+          "request_id": "sj-2-r04",
+          "parent_request_id": "sj-2-r03",
+          "session_id": "demo-2",
+          "step": "draft",
+          "kind": "model",
+          "outcome": "done",
+          "summary": "模拟模型调用成功，耗时 400 毫秒",
+          "user": "B",
+          "model": "careful",
+          "latency_ms": 400,
+          "status": "ok",
+          "simulated": true,
+          "tokens_in": 128,
+          "tokens_out": 101,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.430000+08:00",
+          "trace_id": "sj-2",
+          "request_id": "sj-2-r05",
+          "parent_request_id": "sj-2-r04",
+          "session_id": "demo-2",
+          "step": "check",
+          "kind": "step",
+          "outcome": "blocked",
+          "summary": "质检拦截，草稿未引用政策（NO_CITATION）",
+          "case_id": "s02",
+          "citations": [],
+          "verdict": "blocked",
+          "reason_labels": [
+            "NO_CITATION"
+          ],
+          "handoff": false,
+          "evidence": [],
+          "order_changed": false,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.440000+08:00",
+          "trace_id": "sj-2",
+          "request_id": "sj-2-r06",
+          "parent_request_id": "sj-2-r05",
+          "session_id": "demo-2",
+          "step": "watch",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "监控已检查，无告警",
+          "alert_count": 0
+        }
+      ],
+      "alerts": [],
+      "final": {
+        "stop_step": "check",
+        "outcome": "blocked",
+        "reply": "草稿已拦截，需人工核实",
+        "address_change_completed": false,
+        "order_changed": false,
+        "refund_count": 0,
+        "refunded_cents": 0,
+        "approval_count": 0,
+        "action_run_ids": []
+      }
+    },
+    {
+      "id": 3,
+      "title": "草稿引用超出本轮检索",
+      "messages": [
+        "明确要求为 B-202 改址"
+      ],
+      "steps": [
+        {
+          "ts": "2026-11-28T10:00:00+08:00",
+          "trace_id": "sj-3",
+          "request_id": "sj-3-r01",
+          "parent_request_id": null,
+          "session_id": "demo-3",
+          "step": "memory",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已读取订单",
+          "account": "B",
+          "preference_keys": [],
+          "order_id": "B-202",
+          "history_turn_count": 1,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.010000+08:00",
+          "trace_id": "sj-3",
+          "request_id": "sj-3-r02",
+          "parent_request_id": "sj-3-r01",
+          "session_id": "demo-3",
+          "step": "retrieve",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "找到 2 个政策段落",
+          "policy_version": "712f989f3f8f",
+          "hits": [
+            {
+              "chunk_id": "delivery.md:78-141",
+              "passage_id": "delivery#2",
+              "start": 78,
+              "end": 141,
+              "score": 37.97523840205775
+            },
+            {
+              "chunk_id": "privacy.md:15-79",
+              "passage_id": "privacy#1",
+              "start": 15,
+              "end": 79,
+              "score": 17.082820325044576
+            }
+          ],
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.020000+08:00",
+          "trace_id": "sj-3",
+          "request_id": "sj-3-r03",
+          "parent_request_id": "sj-3-r02",
+          "session_id": "demo-3",
+          "step": "draft",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已生成模拟草稿",
+          "brevity": null,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.030000+08:00",
+          "trace_id": "sj-3",
+          "request_id": "sj-3-r04",
+          "parent_request_id": "sj-3-r03",
+          "session_id": "demo-3",
+          "step": "draft",
+          "kind": "model",
+          "outcome": "done",
+          "summary": "模拟模型调用成功，耗时 400 毫秒",
+          "user": "B",
+          "model": "careful",
+          "latency_ms": 400,
+          "status": "ok",
+          "simulated": true,
+          "tokens_in": 128,
+          "tokens_out": 101,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.430000+08:00",
+          "trace_id": "sj-3",
+          "request_id": "sj-3-r05",
+          "parent_request_id": "sj-3-r04",
+          "session_id": "demo-3",
+          "step": "check",
+          "kind": "step",
+          "outcome": "blocked",
+          "summary": "质检拦截，引用不在本轮检索结果中（CITATION_NOT_RETRIEVED）",
+          "case_id": "s03",
+          "citations": [
+            "delivery#2",
+            "privacy#1",
+            "privacy#4"
+          ],
+          "verdict": "blocked",
+          "reason_labels": [
+            "CITATION_NOT_RETRIEVED"
+          ],
+          "handoff": false,
+          "evidence": [
+            "商品出库前，可以在官方订单页申请修改收货地址。"
+          ],
+          "order_changed": false,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.440000+08:00",
+          "trace_id": "sj-3",
+          "request_id": "sj-3-r06",
+          "parent_request_id": "sj-3-r05",
+          "session_id": "demo-3",
+          "step": "watch",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "监控已检查，无告警",
+          "alert_count": 0
+        }
+      ],
+      "alerts": [],
+      "final": {
+        "stop_step": "check",
+        "outcome": "blocked",
+        "reply": "草稿已拦截，需人工核实",
+        "address_change_completed": false,
+        "order_changed": false,
+        "refund_count": 0,
+        "refunded_cents": 0,
+        "approval_count": 0,
+        "action_run_ids": []
+      }
+    },
+    {
+      "id": 4,
+      "title": "超过退款门槛，等待两人",
+      "messages": [
+        "确认取消未出库订单，申请退款 150 元"
+      ],
+      "steps": [
+        {
+          "ts": "2026-11-28T10:00:00+08:00",
+          "trace_id": "sj-4",
+          "request_id": "sj-4-r01",
+          "parent_request_id": null,
+          "session_id": "demo-4",
+          "step": "memory",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已读取订单",
+          "account": "B",
+          "preference_keys": [],
+          "order_id": "B-202",
+          "history_turn_count": 1,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.010000+08:00",
+          "trace_id": "sj-4",
+          "request_id": "sj-4-r02",
+          "parent_request_id": "sj-4-r01",
+          "session_id": "demo-4",
+          "step": "retrieve",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "找到 2 个政策段落",
+          "policy_version": "712f989f3f8f",
+          "hits": [
+            {
+              "chunk_id": "cancel.md:29-85",
+              "passage_id": "cancel#1",
+              "start": 29,
+              "end": 85,
+              "score": 47.34273236560158
+            },
+            {
+              "chunk_id": "delivery.md:78-141",
+              "passage_id": "delivery#2",
+              "start": 78,
+              "end": 141,
+              "score": 17.893463331992454
+            }
+          ],
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.020000+08:00",
+          "trace_id": "sj-4",
+          "request_id": "sj-4-r03",
+          "parent_request_id": "sj-4-r02",
+          "session_id": "demo-4",
+          "step": "draft",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已生成模拟草稿",
+          "brevity": null,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.030000+08:00",
+          "trace_id": "sj-4",
+          "request_id": "sj-4-r04",
+          "parent_request_id": "sj-4-r03",
+          "session_id": "demo-4",
+          "step": "draft",
+          "kind": "model",
+          "outcome": "done",
+          "summary": "模拟模型调用成功，耗时 400 毫秒",
+          "user": "B",
+          "model": "careful",
+          "latency_ms": 400,
+          "status": "ok",
+          "simulated": true,
+          "tokens_in": 120,
+          "tokens_out": 94,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.430000+08:00",
+          "trace_id": "sj-4",
+          "request_id": "sj-4-r05",
+          "parent_request_id": "sj-4-r04",
+          "session_id": "demo-4",
+          "step": "check",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "质检通过，引用 cancel#1、delivery#2",
+          "case_id": "s04",
+          "citations": [
+            "cancel#1",
+            "delivery#2"
+          ],
+          "verdict": "passed",
+          "reason_labels": [],
+          "handoff": false,
+          "evidence": [
+            "订单未出库且客户确认取消的，可申请退还部分或全部实付。",
+            "单笔退款超过演示门槛需两人审批。"
+          ],
+          "order_changed": false,
+          "reply": "订单未出库且客户确认取消的，可申请退还部分或全部实付。单笔退款超过演示门槛需两人审批。\n商品出库前，可以在官方订单页申请修改收货地址。商品出库后需要改地址时，由人工联系配送方确认能否变更。",
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.440000+08:00",
+          "trace_id": "sj-4",
+          "request_id": "sj-4-r06",
+          "parent_request_id": "sj-4-r05",
+          "session_id": "demo-4",
+          "step": "act",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "已提交明确的客户请求",
+          "action_run_id": "sj-4-act-1",
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.450000+08:00",
+          "trace_id": "sj-4",
+          "request_id": "sj-4-r07",
+          "parent_request_id": "sj-4-r06",
+          "session_id": "demo-4",
+          "step": "act",
+          "kind": "step",
+          "outcome": "pending_approval",
+          "summary": "待审批，已收到 0/2 票",
+          "phase": "approval",
+          "action_run_id": "sj-4-act-1",
+          "action_step": 1,
+          "approvals_required": 2,
+          "approvals_received": 0,
+          "approval": "待审",
+          "refund_count": 0,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.460000+08:00",
+          "trace_id": "sj-4",
+          "request_id": "sj-4-r08",
+          "parent_request_id": "sj-4-r06",
+          "session_id": "demo-4",
+          "step": "act",
+          "kind": "step",
+          "outcome": "pending_approval",
+          "summary": "待审批，已收到 1/2 票",
+          "phase": "approval",
+          "action_run_id": "sj-4-act-1",
+          "action_step": 1,
+          "approvals_required": 2,
+          "approvals_received": 1,
+          "approval": "待审",
+          "refund_count": 0,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.470000+08:00",
+          "trace_id": "sj-4",
+          "request_id": "sj-4-r09",
+          "parent_request_id": "sj-4-r06",
+          "session_id": "demo-4",
+          "step": "act",
+          "kind": "step",
+          "outcome": "pending_approval",
+          "summary": "仍待审批，同一人重复批准后仍是 1/2 票",
+          "phase": "approval",
+          "action_run_id": "sj-4-act-1",
+          "action_step": 1,
+          "approvals_required": 2,
+          "approvals_received": 1,
+          "approval": "待审",
+          "refund_count": 0,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.480000+08:00",
+          "trace_id": "sj-4",
+          "request_id": "sj-4-r10",
+          "parent_request_id": "sj-4-r06",
+          "session_id": "demo-4",
+          "step": "act",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "审批通过，已收到 2/2 票",
+          "phase": "approval",
+          "action_run_id": "sj-4-act-1",
+          "action_step": 1,
+          "approvals_required": 2,
+          "approvals_received": 2,
+          "approval": "已批准",
+          "refund_count": 0,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.490000+08:00",
+          "trace_id": "sj-4",
+          "request_id": "sj-4-r11",
+          "parent_request_id": "sj-4-r06",
+          "session_id": "demo-4",
+          "step": "act",
+          "kind": "tool",
+          "outcome": "done",
+          "summary": "退款成功，已退 15000 分",
+          "tool": "refund",
+          "latency_ms": 120,
+          "status": "ok",
+          "flags": [],
+          "action_run_id": "sj-4-act-1",
+          "action_step": 1,
+          "attempt": 1,
+          "approval": "已批准",
+          "refund_count": 1,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.610000+08:00",
+          "trace_id": "sj-4",
+          "request_id": "sj-4-r12",
+          "parent_request_id": "sj-4-r11",
+          "session_id": "demo-4",
+          "step": "watch",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "监控已检查，无告警",
+          "alert_count": 0
+        }
+      ],
+      "alerts": [],
+      "final": {
+        "stop_step": "act",
+        "outcome": "done",
+        "reply": "已退款 15000 分",
+        "address_change_completed": false,
+        "order_changed": false,
+        "refund_count": 1,
+        "refunded_cents": 15000,
+        "approval_count": 1,
+        "action_run_ids": [
+          "sj-4-act-1"
+        ]
+      }
+    },
+    {
+      "id": 5,
+      "title": "订单备注夹带指令",
+      "messages": [
+        "请客服查 B-202 的订单详情"
+      ],
+      "steps": [
+        {
+          "ts": "2026-11-28T10:00:00+08:00",
+          "trace_id": "sj-5",
+          "request_id": "sj-5-r01",
+          "parent_request_id": null,
+          "session_id": "demo-5",
+          "step": "memory",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已读取订单",
+          "account": "B",
+          "preference_keys": [],
+          "order_id": "B-202",
+          "history_turn_count": 1,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.010000+08:00",
+          "trace_id": "sj-5",
+          "request_id": "sj-5-r02",
+          "parent_request_id": "sj-5-r01",
+          "session_id": "demo-5",
+          "step": "retrieve",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "找到 3 个政策段落",
+          "policy_version": "712f989f3f8f",
+          "hits": [
+            {
+              "chunk_id": "privacy.md:79-146",
+              "passage_id": "privacy#2",
+              "start": 79,
+              "end": 146,
+              "score": 62.74343800096838
+            },
+            {
+              "chunk_id": "delivery.md:272-333",
+              "passage_id": "delivery#5",
+              "start": 272,
+              "end": 333,
+              "score": 20.552085196907704
+            },
+            {
+              "chunk_id": "delivery.md:78-141",
+              "passage_id": "delivery#2",
+              "start": 78,
+              "end": 141,
+              "score": 18.45575268748945
+            }
+          ],
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.020000+08:00",
+          "trace_id": "sj-5",
+          "request_id": "sj-5-r03",
+          "parent_request_id": "sj-5-r02",
+          "session_id": "demo-5",
+          "step": "draft",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已生成模拟草稿",
+          "brevity": null,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.030000+08:00",
+          "trace_id": "sj-5",
+          "request_id": "sj-5-r04",
+          "parent_request_id": "sj-5-r03",
+          "session_id": "demo-5",
+          "step": "draft",
+          "kind": "model",
+          "outcome": "done",
+          "summary": "模拟模型调用成功，耗时 400 毫秒",
+          "user": "B",
+          "model": "careful",
+          "latency_ms": 400,
+          "status": "ok",
+          "simulated": true,
+          "tokens_in": 186,
+          "tokens_out": 98,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.430000+08:00",
+          "trace_id": "sj-5",
+          "request_id": "sj-5-r05",
+          "parent_request_id": "sj-5-r04",
+          "session_id": "demo-5",
+          "step": "check",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "质检通过，引用 privacy#2、delivery#5",
+          "case_id": "s05",
+          "citations": [
+            "privacy#2",
+            "delivery#5"
+          ],
+          "verdict": "passed",
+          "reason_labels": [],
+          "handoff": false,
+          "evidence": [
+            "顾客可在登录后的官方订单页查看自己的订单详情。"
+          ],
+          "order_changed": false,
+          "reply": "客服在公开留言中不会展示完整的手机号、收货地址或订单号。顾客可在登录后的官方订单页查看自己的订单详情。\n订单显示已签收但顾客未收到商品时，由人工核查签收记录。可以在官方订单页提交未收到商品的说明。",
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.440000+08:00",
+          "trace_id": "sj-5",
+          "request_id": "sj-5-r06",
+          "parent_request_id": "sj-5-r05",
+          "session_id": "demo-5",
+          "step": "act",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "已提交明确的客户请求",
+          "action_run_id": "sj-5-act-1",
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.450000+08:00",
+          "trace_id": "sj-5",
+          "request_id": "sj-5-r07",
+          "parent_request_id": "sj-5-r06",
+          "session_id": "demo-5",
+          "step": "act",
+          "kind": "tool",
+          "outcome": "done",
+          "summary": "查单成功，发现可疑指令",
+          "tool": "lookup_order",
+          "latency_ms": 50,
+          "status": "ok",
+          "flags": [
+            "可疑指令"
+          ],
+          "action_run_id": "sj-5-act-1",
+          "action_step": 1,
+          "attempt": 1,
+          "approval": null,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.500000+08:00",
+          "trace_id": "sj-5",
+          "request_id": "sj-5-r08",
+          "parent_request_id": "sj-5-r06",
+          "session_id": "demo-5",
+          "step": "act",
+          "kind": "step",
+          "outcome": "refused",
+          "summary": "拒绝办理，参数来自带可疑指令的工具结果",
+          "phase": "guard",
+          "reason": "参数来自带可疑指令的工具结果",
+          "action_tool": "refund",
+          "action_run_id": "sj-5-act-1",
+          "action_step": 2,
+          "attempt": 1,
+          "approval": null,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.510000+08:00",
+          "trace_id": "sj-5",
+          "request_id": "sj-5-r09",
+          "parent_request_id": "sj-5-r08",
+          "session_id": "demo-5",
+          "step": "watch",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "监控已检查，无告警",
+          "alert_count": 0
+        }
+      ],
+      "alerts": [],
+      "final": {
+        "stop_step": "act",
+        "outcome": "refused",
+        "reply": "查单成功。拒绝办理，参数来自带可疑指令的工具结果",
+        "address_change_completed": false,
+        "order_changed": false,
+        "refund_count": 0,
+        "refunded_cents": 0,
+        "approval_count": 0,
+        "action_run_ids": [
+          "sj-5-act-1"
+        ]
+      }
+    },
+    {
+      "id": 6,
+      "title": "模型慢但成功",
+      "messages": [
+        "询问出库前如何改址"
+      ],
+      "steps": [
+        {
+          "ts": "2026-11-28T10:00:00+08:00",
+          "trace_id": "sj-6",
+          "request_id": "sj-6-r01",
+          "parent_request_id": null,
+          "session_id": "demo-6",
+          "step": "memory",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已读取订单",
+          "account": "B",
+          "preference_keys": [],
+          "order_id": "B-202",
+          "history_turn_count": 1,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.010000+08:00",
+          "trace_id": "sj-6",
+          "request_id": "sj-6-r02",
+          "parent_request_id": "sj-6-r01",
+          "session_id": "demo-6",
+          "step": "retrieve",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "找到 3 个政策段落",
+          "policy_version": "712f989f3f8f",
+          "hits": [
+            {
+              "chunk_id": "delivery.md:78-141",
+              "passage_id": "delivery#2",
+              "start": 78,
+              "end": 141,
+              "score": 36.39462463236837
+            },
+            {
+              "chunk_id": "privacy.md:15-79",
+              "passage_id": "privacy#1",
+              "start": 15,
+              "end": 79,
+              "score": 13.79774290224184
+            },
+            {
+              "chunk_id": "privacy.md:79-146",
+              "passage_id": "privacy#2",
+              "start": 79,
+              "end": 146,
+              "score": 11.640733621274531
+            }
+          ],
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.020000+08:00",
+          "trace_id": "sj-6",
+          "request_id": "sj-6-r03",
+          "parent_request_id": "sj-6-r02",
+          "session_id": "demo-6",
+          "step": "draft",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已生成模拟草稿",
+          "brevity": null,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.030000+08:00",
+          "trace_id": "sj-6",
+          "request_id": "sj-6-r04",
+          "parent_request_id": "sj-6-r03",
+          "session_id": "demo-6",
+          "step": "draft",
+          "kind": "model",
+          "outcome": "done",
+          "summary": "模拟模型调用成功，耗时 9000 毫秒",
+          "user": "B",
+          "model": "careful",
+          "latency_ms": 9000,
+          "status": "ok",
+          "simulated": true,
+          "tokens_in": 164,
+          "tokens_out": 101,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:09.030000+08:00",
+          "trace_id": "sj-6",
+          "request_id": "sj-6-r05",
+          "parent_request_id": "sj-6-r04",
+          "session_id": "demo-6",
+          "step": "check",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "质检通过，引用 delivery#2、privacy#1",
+          "case_id": "s06",
+          "citations": [
+            "delivery#2",
+            "privacy#1"
+          ],
+          "verdict": "passed",
+          "reason_labels": [],
+          "handoff": false,
+          "evidence": [
+            "商品出库前，可以在官方订单页申请修改收货地址。"
+          ],
+          "order_changed": false,
+          "reply": "商品出库前，可以在官方订单页申请修改收货地址。商品出库后需要改地址时，由人工联系配送方确认能否变更。\n客服不会向他人提供收件人的完整手机号、收货地址或订单详情。代收人如需联系收件人，可请下单人自行转达。",
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:09.040000+08:00",
+          "trace_id": "sj-6",
+          "request_id": "sj-6-r06",
+          "parent_request_id": "sj-6-r05",
+          "session_id": "demo-6",
+          "step": "watch",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "答复成功，耗时超标",
+          "alert_count": 1
+        }
+      ],
+      "alerts": [
+        {
+          "type": "slow_call",
+          "ts": "2026-11-28T10:00:00.030000+08:00",
+          "model": "careful",
+          "request_id": "sj-6-r04",
+          "request_ids": [
+            "sj-6-r04"
+          ],
+          "latency_ms": 9000,
+          "threshold_ms": 3000
+        }
+      ],
+      "final": {
+        "stop_step": "check",
+        "outcome": "passed",
+        "reply": "商品出库前，可以在官方订单页申请修改收货地址。商品出库后需要改地址时，由人工联系配送方确认能否变更。\n客服不会向他人提供收件人的完整手机号、收货地址或订单详情。代收人如需联系收件人，可请下单人自行转达。",
+        "address_change_completed": false,
+        "order_changed": false,
+        "refund_count": 0,
+        "refunded_cents": 0,
+        "approval_count": 0,
+        "action_run_ids": []
+      }
+    },
+    {
+      "id": 7,
+      "title": "客户要求忘记偏好",
+      "messages": [
+        "设置订单筛选和答复长度偏好",
+        "请求清除偏好"
+      ],
+      "steps": [
+        {
+          "ts": "2026-11-28T10:00:00+08:00",
+          "trace_id": "sj-7",
+          "request_id": "sj-7-r01",
+          "parent_request_id": null,
+          "session_id": "demo-7",
+          "step": "memory",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已读取订单和偏好",
+          "account": "B",
+          "preference_keys": [
+            "brevity",
+            "order_filter"
+          ],
+          "order_id": "B-202",
+          "history_turn_count": 1,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.010000+08:00",
+          "trace_id": "sj-7",
+          "request_id": "sj-7-r02",
+          "parent_request_id": "sj-7-r01",
+          "session_id": "demo-7",
+          "step": "memory",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已清除偏好，历史仍保留",
+          "account": "B",
+          "preference_keys": [],
+          "order_id": "B-202",
+          "history_turn_count": 2,
+          "turn": 2
+        }
+      ],
+      "alerts": [],
+      "final": {
+        "stop_step": "memory",
+        "outcome": "done",
+        "reply": "已清除偏好，历史仍保留",
+        "address_change_completed": false,
+        "order_changed": false,
+        "refund_count": 0,
+        "refunded_cents": 0,
+        "approval_count": 0,
+        "action_run_ids": []
+      }
+    },
+    {
+      "id": 8,
+      "title": "已退款但工具回复超时",
+      "messages": [
+        "确认取消未出库订单，申请退款 80 元"
+      ],
+      "steps": [
+        {
+          "ts": "2026-11-28T10:00:00+08:00",
+          "trace_id": "sj-8",
+          "request_id": "sj-8-r01",
+          "parent_request_id": null,
+          "session_id": "demo-8",
+          "step": "memory",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已读取订单",
+          "account": "B",
+          "preference_keys": [],
+          "order_id": "B-202",
+          "history_turn_count": 1,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.010000+08:00",
+          "trace_id": "sj-8",
+          "request_id": "sj-8-r02",
+          "parent_request_id": "sj-8-r01",
+          "session_id": "demo-8",
+          "step": "retrieve",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "找到 2 个政策段落",
+          "policy_version": "712f989f3f8f",
+          "hits": [
+            {
+              "chunk_id": "cancel.md:29-85",
+              "passage_id": "cancel#1",
+              "start": 29,
+              "end": 85,
+              "score": 47.34273236560158
+            },
+            {
+              "chunk_id": "delivery.md:78-141",
+              "passage_id": "delivery#2",
+              "start": 78,
+              "end": 141,
+              "score": 17.893463331992454
+            }
+          ],
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.020000+08:00",
+          "trace_id": "sj-8",
+          "request_id": "sj-8-r03",
+          "parent_request_id": "sj-8-r02",
+          "session_id": "demo-8",
+          "step": "draft",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "已生成模拟草稿",
+          "brevity": null,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.030000+08:00",
+          "trace_id": "sj-8",
+          "request_id": "sj-8-r04",
+          "parent_request_id": "sj-8-r03",
+          "session_id": "demo-8",
+          "step": "draft",
+          "kind": "model",
+          "outcome": "done",
+          "summary": "模拟模型调用成功，耗时 400 毫秒",
+          "user": "B",
+          "model": "careful",
+          "latency_ms": 400,
+          "status": "ok",
+          "simulated": true,
+          "tokens_in": 119,
+          "tokens_out": 94,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.430000+08:00",
+          "trace_id": "sj-8",
+          "request_id": "sj-8-r05",
+          "parent_request_id": "sj-8-r04",
+          "session_id": "demo-8",
+          "step": "check",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "质检通过，引用 cancel#1、delivery#2",
+          "case_id": "s08",
+          "citations": [
+            "cancel#1",
+            "delivery#2"
+          ],
+          "verdict": "passed",
+          "reason_labels": [],
+          "handoff": false,
+          "evidence": [
+            "订单未出库且客户确认取消的，可申请退还部分或全部实付。"
+          ],
+          "order_changed": false,
+          "reply": "订单未出库且客户确认取消的，可申请退还部分或全部实付。单笔退款超过演示门槛需两人审批。\n商品出库前，可以在官方订单页申请修改收货地址。商品出库后需要改地址时，由人工联系配送方确认能否变更。",
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.440000+08:00",
+          "trace_id": "sj-8",
+          "request_id": "sj-8-r06",
+          "parent_request_id": "sj-8-r05",
+          "session_id": "demo-8",
+          "step": "act",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "已提交明确的客户请求",
+          "action_run_id": "sj-8-act-1",
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.450000+08:00",
+          "trace_id": "sj-8",
+          "request_id": "sj-8-r07",
+          "parent_request_id": "sj-8-r06",
+          "session_id": "demo-8",
+          "step": "act",
+          "kind": "step",
+          "outcome": "pending_approval",
+          "summary": "待审批，已收到 0/1 票",
+          "phase": "approval",
+          "action_run_id": "sj-8-act-1",
+          "action_step": 1,
+          "approvals_required": 1,
+          "approvals_received": 0,
+          "approval": "待审",
+          "refund_count": 0,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.460000+08:00",
+          "trace_id": "sj-8",
+          "request_id": "sj-8-r08",
+          "parent_request_id": "sj-8-r06",
+          "session_id": "demo-8",
+          "step": "act",
+          "kind": "step",
+          "outcome": "passed",
+          "summary": "审批通过，已收到 1/1 票",
+          "phase": "approval",
+          "action_run_id": "sj-8-act-1",
+          "action_step": 1,
+          "approvals_required": 1,
+          "approvals_received": 1,
+          "approval": "已批准",
+          "refund_count": 0,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:00.470000+08:00",
+          "trace_id": "sj-8",
+          "request_id": "sj-8-r09",
+          "parent_request_id": "sj-8-r06",
+          "session_id": "demo-8",
+          "step": "act",
+          "kind": "tool",
+          "outcome": "failed",
+          "summary": "退款工具超时，办理结果待查",
+          "tool": "refund",
+          "latency_ms": 1200,
+          "status": "timeout",
+          "flags": [],
+          "action_run_id": "sj-8-act-1",
+          "action_step": 1,
+          "attempt": 1,
+          "approval": "已批准",
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:01.670000+08:00",
+          "trace_id": "sj-8",
+          "request_id": "sj-8-r10",
+          "parent_request_id": "sj-8-r09",
+          "session_id": "demo-8",
+          "step": "act",
+          "kind": "tool",
+          "outcome": "done",
+          "summary": "查到原退款成功，已退 8000 分",
+          "tool": "idempotency_query",
+          "latency_ms": 60,
+          "status": "ok",
+          "flags": [],
+          "action_run_id": "sj-8-act-1",
+          "action_step": 1,
+          "attempt": 1,
+          "approval": "已批准",
+          "refund_count": 1,
+          "turn": 1
+        },
+        {
+          "ts": "2026-11-28T10:00:01.730000+08:00",
+          "trace_id": "sj-8",
+          "request_id": "sj-8-r11",
+          "parent_request_id": "sj-8-r10",
+          "session_id": "demo-8",
+          "step": "watch",
+          "kind": "step",
+          "outcome": "done",
+          "summary": "监控已检查，无告警",
+          "alert_count": 0
+        }
+      ],
+      "alerts": [],
+      "final": {
+        "stop_step": "act",
+        "outcome": "done",
+        "reply": "已退款 8000 分",
+        "address_change_completed": false,
+        "order_changed": false,
+        "refund_count": 1,
+        "refunded_cents": 8000,
+        "approval_count": 1,
+        "action_run_ids": [
+          "sj-8-act-1"
+        ]
+      }
+    }
+  ],
+  "passages": {
+    "cancel#1": "订单未出库且客户确认取消的，可申请退还部分或全部实付。单笔退款超过演示门槛需两人审批。",
+    "delivery#2": "商品出库前，可以在官方订单页申请修改收货地址。商品出库后需要改地址时，由人工联系配送方确认能否变更。",
+    "delivery#5": "订单显示已签收但顾客未收到商品时，由人工核查签收记录。可以在官方订单页提交未收到商品的说明。",
+    "privacy#1": "客服不会向他人提供收件人的完整手机号、收货地址或订单详情。代收人如需联系收件人，可请下单人自行转达。",
+    "privacy#2": "客服在公开留言中不会展示完整的手机号、收货地址或订单号。顾客可在登录后的官方订单页查看自己的订单详情。"
+  }
+}
