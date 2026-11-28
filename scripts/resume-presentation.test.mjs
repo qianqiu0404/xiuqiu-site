@@ -1187,9 +1187,9 @@ test('retrieval displays the exported expansion scores for original and held-out
 
 test('retrieval held-out table keeps different scores in the correct expansion columns', async t => {
   const { held_out: heldOut } = retrievalBundle
-  const key = 'heading/bm25/3/expanded'
+  const configName = 'heading/bm25/3/expanded'
   // The exported held-out scores are identical on and off. Make this pair differ only in the test.
-  const configs = { ...heldOut.configs, [key]: { ...heldOut.configs[key], recall: 0.625, mrr: 0.6875 } }
+  const configs = { ...heldOut.configs, [configName]: { ...heldOut.configs[configName], recall: 0.625, mrr: 0.6875 } }
   const byId = await mountDemo(t, retrievalDir, { ...retrievalBundle, held_out: { ...heldOut, configs } })
   const [, threeResults] = byId('held-out-matrix').children
   const [, , body] = threeResults.children
