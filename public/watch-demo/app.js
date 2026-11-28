@@ -5,6 +5,7 @@ const byId = id => document.getElementById(id)
 const alertType = byId('alert-type')
 const resultCount = byId('result-count')
 const overviewStatus = byId('overview-status')
+let renderedAlerts = new Map()
 
 const metrics = [
   ['calls', '调用数'],
@@ -107,7 +108,12 @@ function alertDetails(alert) {
 function renderAlerts(alerts) {
   const type = alertType.value
   const filtered = filterAlerts(alerts, type)
-  byId('alerts').replaceChildren(...filtered.map(alertDetails))
+  renderedAlerts = new Map(filtered.map(alert => {
+    const details = alertDetails(alert)
+    details.open = renderedAlerts.get(alert)?.open ?? false
+    return [alert, details]
+  }))
+  byId('alerts').replaceChildren(...renderedAlerts.values())
   const count = `${ALERT_NAMES[type] ?? '全部类型'}，共 ${filtered.length} 条事件。`
   resultCount.textContent = filtered.length ? count : `${count}没有符合筛选条件的事件。`
 }

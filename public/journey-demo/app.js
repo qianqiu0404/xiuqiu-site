@@ -74,10 +74,11 @@ function resultView(scenario) {
     ? `已退 ${final.refund_count} 笔，共 ${final.refunded_cents / 100} 元。` : '没有退款。'
   const address = final.address_change_completed ? '已收到改址成功回执。' : '没有改址成功回执。'
   const order = final.order_changed ? '订单地址字段已变更。' : '订单地址字段未变更。'
+  const actualResult = final.stop_step === 'memory' && final.reply ? `${final.reply}。` : `${address}${refund}`
   return el('section', 'card result-card', el('h3', '', '结果'),
     el('p', '', el('strong', '', '引用正确：'), citation),
     el('p', '', el('strong', '', '允许办理：'), permissionText(scenario, check)),
-    el('p', '', el('strong', '', '实际办成：'), address, refund),
+    el('p', '', el('strong', '', '实际办成：'), actualResult),
     el('p', 'final-result',
       `停在哪一步、有没有改订单或退钱：停在${stepNames[final.stop_step]}（${outcomeNames[final.outcome]}）。${order}${refund}`))
 }
@@ -112,7 +113,6 @@ function showScenario(content, scenario, passages) {
 
 async function start() {
   const status = byId('load-status')
-  status.hidden = false
   status.textContent = '正在加载演示数据。'
   try {
     const response = await fetch(new URL('./data/bundle.json', import.meta.url))
@@ -132,14 +132,14 @@ async function start() {
       const scenario = scenarios.find(item => String(item.id) === picker.value)
       if (!scenario) return
       showScenario(content, scenario, passages)
-      byId('result-count').textContent = `已切换到场景 ${scenario.id}，${scenario.title}。`
+      status.textContent = `已切换到场景 ${scenario.id}，${scenario.title}。`
     })
     const provenance = byId('source')
     provenance.append('数据来源：', source.repo, '，提交 ', el('code', '', source.commit), '。')
     provenance.hidden = false
     picker.disabled = false
     byId('scenario-controls').hidden = false
-    status.hidden = true
+    status.textContent = `已加载 ${scenarios.length} 个场景。`
   } catch {
     status.textContent = '演示数据加载失败。请刷新页面重试。'
   }

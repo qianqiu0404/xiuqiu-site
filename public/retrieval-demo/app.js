@@ -50,16 +50,16 @@ function failureView({ method, reason, cutoffs, chunks }) {
 
 function questionDetails({ id, question, gold, failures }) {
   return el('details', 'card case',
-    el('summary', '', `${id} ${question}`),
+    el('summary', '', `失败题目：${id} ${question}`),
     el('div', 'case-body',
       el('h3', '', '标准原句'), el('blockquote', '', gold),
       el('h3', '', '未命中的设置'), ...failures.map(failureView)))
 }
 
-function changeDetails({ id, question, gold, changes }) {
+function changeDetails({ id, question, gold, changes }, group) {
   const rank = value => value === null ? '未找到完整原句' : `第 ${value} 名`
   return el('details', 'card case',
-    el('summary', '', `${id} ${question}`),
+    el('summary', '', `${group}：${id} ${question}`),
     el('div', 'case-body',
       el('p', '', '标准原句'), el('blockquote', '', gold),
       ...changes.map(({ method, before, after, cutoffs, displacing }) => el('div', 'failure',
@@ -74,8 +74,11 @@ function showExpansion(bundle, matrix) {
     `在 ${bundle.questions.length} 道原有题上，用同一检索设置对比关闭和开启扩展。开启时，把同义词加到原问题里，新增词的权重是 ${bundle.expansion_weight}。`
   byId('expansion-matrix').replaceChildren(...Array.from(matrix,
     ([cutoff, rows]) => comparisonTable('原有题', cutoff, rows)))
-  for (const [target, questions] of [['improved', improved], ['worsened', worsened]]) {
-    byId(target).replaceChildren(...(questions.length ? questions.map(changeDetails) : [el('p', '', '无')]))
+  for (const [target, group, questions] of [
+    ['improved', '变好的题目', improved], ['worsened', '变差的题目', worsened],
+  ]) {
+    byId(target).replaceChildren(...(questions.length
+      ? questions.map(question => changeDetails(question, group)) : [el('p', '', '无')]))
   }
   byId('expansion').hidden = false
 
@@ -110,9 +113,15 @@ async function start() {
     const filter = byId('failure-reason')
     const reasons = new Set(questions.flatMap(question => question.failures.map(failure => failure.reason)))
     for (const reason of reasons) filter.add(new Option(reason, reason))
+    let renderedFailures = new Map()
     function renderFailures() {
       const shown = filterFailures(questions, filter.value)
-      byId('failures').replaceChildren(...shown.map(questionDetails))
+      renderedFailures = new Map(shown.map(question => {
+        const details = questionDetails(question)
+        details.open = renderedFailures.get(question.id)?.open ?? false
+        return [question.id, details]
+      }))
+      byId('failures').replaceChildren(...renderedFailures.values())
       status.textContent = `${filter.value || '全部原因'}，共 ${shown.length} 道失败题目。`
     }
     filter.addEventListener('change', renderFailures)
