@@ -672,12 +672,12 @@ test('actions bundle is identical to the pinned supportactions demo export', () 
     'e1e28429ad04054dc3f6bae91668c42fbde8a4ea8d4de9ba16887ee0a5a0046d')
 })
 
-test('retrieval bundle is identical to the pinned kbeval export', () => {
+test('retrieval bundle matches the pinned kbeval export and expanded evaluation', () => {
   const { source, ...data } = retrievalBundle
-  assert.deepEqual(source, { repo: 'kb-retrieval-eval', commit: '203fdfe' })
-  // Digest of the parsed output of python3 -m kbeval export --out … at that revision.
+  assert.deepEqual(source, { repo: 'kb-retrieval-eval', commit: '5663c42' })
+  // Digest of the public chunk text from export and the data from eval --expand at that revision.
   assert.equal(createHash('sha256').update(JSON.stringify(data)).digest('hex'),
-    'e32253142d579b84e85cdeef268c51f5f5d0988cb3436655412f3b4a5bc1c2dc')
+    '3cc340d44c8f09da68ab334e83a0d42b868c03a331628e7c3035a83dd14533b3')
 })
 
 test('memory bundle matches the six-step source export and masks the sample phone', () => {
@@ -884,6 +884,18 @@ test('actions page has one h1, live counts, named links and source evidence for 
 
 test('retrieval page has one h1, a named reason control, a live count and named links', () => {
   assertDemoMarkup(readDemoHtml(retrievalDir), '知识库检索评测演示', 'kb-retrieval-eval', 1)
+})
+
+test('retrieval names both M2 sections and explains why the original gains are optimistic', () => {
+  const html = readDemoHtml(retrievalDir)
+  for (const [id, label] of [['expansion-title', '同义词扩展'], ['held-out-title', '留出题']]) {
+    const [section] = elements(html, node => node.tag === 'section' && attribute(node, 'aria-labelledby') === id)
+    const [heading] = elements(section, node => node.tag === 'h2' && attribute(node, 'id') === id)
+    assert.equal(text(heading), label)
+  }
+  const [heldOut] = elements(html, node => attribute(node, 'id') === 'held-out')
+  assert.ok(elements(heldOut, node => node.tag === 'p').some(node =>
+    text(node) === '同义词表是在看过失败题目后写的，所以原有题上看到的收益偏乐观。'))
 })
 
 test('memory labels the account B isolation claim as a source test', () => {
@@ -1095,18 +1107,19 @@ async function mountDemo(t, dir, bundle, { ok = true, onLoading } = {}) {
   return document.getElementById
 }
 
+const retrievalMethods = [
+  ['heading/bm25', '按标题切块 · BM25'],
+  ['heading/bigram', '按标题切块 · 相邻两字匹配'],
+  ['fixed-200-0/bm25', '每 200 字切块，无重叠 · BM25'],
+  ['fixed-200-0/bigram', '每 200 字切块，无重叠 · 相邻两字匹配'],
+  ['fixed-200-50/bm25', '每 200 字切块，重叠 50 字 · BM25'],
+  ['fixed-200-50/bigram', '每 200 字切块，重叠 50 字 · 相邻两字匹配'],
+]
+
 test('retrieval renders all matrix values with named tables and scoped headers', async t => {
   const byId = await mountDemo(t, retrievalDir, retrievalBundle)
   const tables = byId('matrix').children
   assert.equal(tables.length, 3)
-  const methods = [
-    ['heading/bm25', '按标题切块 · BM25'],
-    ['heading/bigram', '按标题切块 · 相邻两字匹配'],
-    ['fixed-200-0/bm25', '每 200 字切块，无重叠 · BM25'],
-    ['fixed-200-0/bigram', '每 200 字切块，无重叠 · 相邻两字匹配'],
-    ['fixed-200-50/bm25', '每 200 字切块，重叠 50 字 · BM25'],
-    ['fixed-200-50/bigram', '每 200 字切块，重叠 50 字 · 相邻两字匹配'],
-  ]
   for (const [index, cutoff] of [1, 3, 5].entries()) {
     const table = tables[index]
     assert.equal(table.tag, 'table')
@@ -1115,8 +1128,8 @@ test('retrieval renders all matrix values with named tables and scoped headers',
     assert.equal(caption.textContent, `查看前 ${cutoff} 个片段的评测结果`)
     assert.deepEqual(head.children[0].children.map(cell => [cell.tag, cell.attributes.get('scope'), cell.textContent]),
       ['切块与检索方式', `Recall@${cutoff}`, 'MRR'].map(name => ['th', 'col', name]))
-    assert.equal(body.children.length, methods.length)
-    for (const [row, [method, name]] of methods.entries()) {
+    assert.equal(body.children.length, retrievalMethods.length)
+    for (const [row, [method, name]] of retrievalMethods.entries()) {
       const { recall, mrr } = retrievalBundle.configs[`${method}/${cutoff}`]
       const [header, ...values] = body.children[row].children
       assert.equal(header.tag, 'th')
@@ -1126,8 +1139,119 @@ test('retrieval renders all matrix values with named tables and scoped headers',
       assert.deepEqual(values.map(cell => cell.textContent), [recall.toFixed(4), mrr.toFixed(5)])
     }
   }
-  assert.equal(demoExposedText(byId('recommended-setting')), '按标题切块 · 相邻两字匹配，查看前 3 个片段。')
+  assert.equal(demoExposedText(byId('recommended-setting')), '每 200 字切块，重叠 50 字 · BM25，查看前 3 个片段，开启同义词扩展。')
   assert.equal(demoExposedText(byId('recommendation-reason')), retrievalBundle.recommendation.reason)
+})
+
+test('retrieval displays the exported expansion scores for original and held-out questions', async t => {
+  const byId = await mountDemo(t, retrievalDir, retrievalBundle)
+  assert.ok(!byId('expansion').hidden)
+  assert.ok(!byId('held-out').hidden)
+  assert.equal(demoExposedText(byId('expansion-description')),
+    `在 ${retrievalBundle.questions.length} 道原有题上，用同一检索设置对比关闭和开启扩展。开启时，把同义词加到原问题里，新增词的权重是 ${retrievalBundle.expansion_weight}。`)
+  assert.equal(demoExposedText(byId('held-out-description')),
+    `下面是单独评测的 ${retrievalBundle.held_out.questions.length} 道留出题的结果。`)
+
+  for (const [target, label, configs] of [
+    ['expansion-matrix', '原有题', retrievalBundle.configs],
+    ['held-out-matrix', '留出题', retrievalBundle.held_out.configs],
+  ]) {
+    const tables = byId(target).children
+    assert.equal(tables.length, 3)
+    for (const [index, cutoff] of [1, 3, 5].entries()) {
+      const table = tables[index]
+      assert.equal(table.tag, 'table')
+      const [caption, head, body] = table.children
+      assert.equal(caption.tag, 'caption')
+      assert.equal(caption.textContent, `${label}：查看前 ${cutoff} 个片段`)
+      assert.deepEqual(head.children[0].children.map(cell => [cell.tag, cell.attributes.get('scope'), cell.textContent]),
+        ['切块与检索方式', '关闭扩展', '开启扩展'].map(name => ['th', 'col', name]))
+      assert.equal(body.children.length, retrievalMethods.length)
+      for (const [row, [method, name]] of retrievalMethods.entries()) {
+        const key = `${method}/${cutoff}`
+        const [rowHeader, ...values] = body.children[row].children
+        assert.equal(rowHeader.tag, 'th')
+        assert.equal(rowHeader.attributes.get('scope'), 'row')
+        assert.equal(rowHeader.textContent, name, `${label} ${key}`)
+        assert.deepEqual(values.map(cell => cell.tag), ['td', 'td'])
+        for (const [index, config] of [key, `${key}/expanded`].entries()) {
+          const { recall, mrr } = configs[config]
+          const [scores] = values[index].children
+          assert.deepEqual(scores.children.map(cell => cell.textContent),
+            [`Recall@${cutoff} ${recall.toFixed(4)}`, `MRR ${mrr.toFixed(5)}`], `${label} ${config}`)
+        }
+      }
+    }
+  }
+})
+
+test('retrieval held-out table keeps different scores in the correct expansion columns', async t => {
+  const { held_out: heldOut } = retrievalBundle
+  const key = 'heading/bm25/3/expanded'
+  // The exported held-out scores are identical on and off. Make this pair differ only in the test.
+  const configs = { ...heldOut.configs, [key]: { ...heldOut.configs[key], recall: 0.625, mrr: 0.6875 } }
+  const byId = await mountDemo(t, retrievalDir, { ...retrievalBundle, held_out: { ...heldOut, configs } })
+  const [, threeResults] = byId('held-out-matrix').children
+  const [, , body] = threeResults.children
+  const [firstRow] = body.children
+  const [, off, on] = firstRow.children
+  assert.deepEqual(off.children[0].children.map(score => score.textContent), ['Recall@3 0.8750', 'MRR 0.90625'])
+  assert.deepEqual(on.children[0].children.map(score => score.textContent), ['Recall@3 0.6250', 'MRR 0.68750'])
+})
+
+test('retrieval expansion cases disclose the changed ranks and the displacing chunk by keyboard', async t => {
+  const byId = await mountDemo(t, retrievalDir, retrievalBundle)
+  for (const [target, ids] of [['improved', ['Q03', 'Q34', 'Q39']], ['worsened', ['Q39']]]) {
+    const cases = byId(target).children
+    assert.deepEqual(cases.map(({ tag, children: [summary] }) => {
+      assert.equal(tag, 'details')
+      assert.equal(summary.tag, 'summary')
+      return summary.textContent.split(' ')[0]
+    }), ids)
+  }
+
+  for (const [position, id, cutoff, affectedCutoffs] of [[0, 'Q03', 3, '3、5'], [2, 'Q39', 1, '1、3、5']]) {
+    const [, body] = byId('improved').children[position].children
+    const { rank: before } = retrievalBundle.configs[`heading/bm25/${cutoff}`].results[id]
+    const { rank: after } = retrievalBundle.configs[`heading/bm25/${cutoff}/expanded`].results[id]
+    const [change] = body.children.filter(node => node.className === 'failure')
+    assert.equal(change.children[1].textContent,
+      `关闭扩展时第 ${before} 名，开启后第 ${after} 名。查看前 ${affectedCutoffs} 个片段时受到影响。`)
+  }
+
+  const [, q34] = byId('improved').children
+  const [q34Summary, q34Body] = q34.children
+  const root = demoAncestors(q34).at(-1)
+  q34Summary.focus()
+  pressDemoKey(root, 'Enter')
+  assert.ok(visibleDemoElements(q34).includes(q34Body))
+  const q34Changes = q34Body.children.filter(node => node.className === 'failure')
+  assert.deepEqual(q34Changes.map(({ children: [method, ranks] }) => [method.textContent, ranks.textContent]),
+    retrievalMethods.map(([method, name]) => {
+      const { rank: before } = retrievalBundle.configs[`${method}/1`].results.Q34
+      const { rank: after } = retrievalBundle.configs[`${method}/1/expanded`].results.Q34
+      return [name, `关闭扩展时第 ${before} 名，开启后第 ${after} 名。查看前 1、3、5 个片段时受到影响。`]
+    }))
+
+  const [regression] = byId('worsened').children
+  const [summary, body] = regression.children
+  byId('improved').children.at(-1).children[0].focus()
+  pressDemoKey(root, 'Tab')
+  assert.equal(root.activeElement, summary)
+  assert.ok(!visibleDemoElements(regression).includes(body))
+  pressDemoKey(root, 'Enter')
+  assert.ok(visibleDemoElements(regression).includes(body))
+  const { question, gold } = retrievalBundle.questions.find(item => item.id === 'Q39')
+  const { rank: before } = retrievalBundle.configs['heading/bigram/1'].results.Q39
+  const { rank: after, top: [{ chunk }] } = retrievalBundle.configs['heading/bigram/1/expanded'].results.Q39
+  assert.equal(summary.textContent, `Q39 ${question}`)
+  assert.equal(body.children[1].textContent, gold)
+  const [change] = body.children.filter(node => node.className === 'failure')
+  assert.equal(change.children[1].textContent,
+    `关闭扩展时第 ${before} 名，开启后第 ${after} 名。查看前 1、3、5 个片段时受到影响。`)
+  const [[label, fragment]] = change.children[3].children.map(item => item.children)
+  assert.ok(label.textContent.startsWith(chunk))
+  assert.equal(fragment.textContent, retrievalBundle.chunks.heading[chunk].text)
 })
 
 test('retrieval failure filter renders exactly the questions with each chosen reason', async t => {
@@ -1136,7 +1260,8 @@ test('retrieval failure filter renders exactly the questions with each chosen re
   const control = byId('failure-reason')
   const expected = new Map([
     ['', ['Q03', 'Q05', 'Q06', 'Q07', 'Q10', 'Q26', 'Q34', 'Q39']],
-    ['被相似段落挤掉', ['Q03', 'Q05', 'Q39']],
+    ['被相似段落挤掉', ['Q03', 'Q39']],
+    ['同分，按文件名和块起点排序', ['Q05']],
     ['答案被切断', ['Q06', 'Q07', 'Q10', 'Q26']],
     ['关键词不重合', ['Q34']],
   ])
@@ -1191,8 +1316,22 @@ test('retrieval announces loading, empty results and fetch errors', async t => {
       assert.equal(byId('result-count').textContent, message)
       assert.ok(byId('filters').disabled)
       assert.ok(byId('recommendation').hidden)
+      assert.ok(byId('expansion').hidden)
+      assert.ok(byId('held-out').hidden)
     })
   }
+})
+
+test('retrieval still displays the original evaluation if a browser has cached the older export', async t => {
+  const { source, questions, chunks } = retrievalBundle
+  const configs = Object.fromEntries(Object.entries(retrievalBundle.configs).filter(([key]) => !key.endsWith('/expanded')))
+  const recommendation = { config: 'heading/bigram/3', reason: '旧版的推荐设置。' }
+  const byId = await mountDemo(t, retrievalDir, { source, questions, chunks, configs, recommendation })
+  assert.equal(byId('result-count').textContent, '全部原因，共 8 道失败题目。')
+  assert.equal(byId('matrix').children.length, 3)
+  assert.ok(!byId('source').hidden)
+  assert.ok(byId('expansion').hidden)
+  assert.ok(byId('held-out').hidden)
 })
 
 test('actions renders all 13 scenarios in keyboard order with the exported plan and outcomes', async t => {
